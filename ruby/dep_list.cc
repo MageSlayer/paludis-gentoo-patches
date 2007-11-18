@@ -19,7 +19,9 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/dep_list.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/set.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -904,7 +906,6 @@ namespace
         }
     }
 
-#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     tags -> Array
@@ -920,7 +921,7 @@ namespace
             Data_Get_Struct(self, DepListEntry, p);
 
             VALUE result(rb_ary_new());
-            for (DepListEntryTags::Iterator r(p->tags->begin()),
+            for (DepListEntryTags::ConstIterator r(p->tags->begin()),
                     r_end(p->tags->end()) ; r != r_end ; ++r)
                 rb_ary_push(result, dep_tag_to_value((*r).tag));
 
@@ -931,7 +932,6 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-#endif
 
     /*
      * call-seq:
@@ -1252,9 +1252,7 @@ namespace
         rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind), 0);
         rb_define_method(c_dep_list_entry, "package_id", RUBY_FUNC_CAST(&dep_list_entry_package_id), 0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
-#if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
-#endif
     }
 }
 

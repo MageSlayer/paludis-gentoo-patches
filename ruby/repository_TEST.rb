@@ -350,36 +350,6 @@ module Paludis
         end
     end
 
-    class TestCase_QueryRepositoryMasks < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_repository_masks
-###            assert repo.query_repository_masks("foo1/bar","1.0")
-###            assert repo.query_repository_masks("foo2/bar","1.0")
-###            assert ! repo.query_repository_masks("foo3/bar","1.0")
-###            assert ! repo.query_repository_masks("foo4/bar","1.0")
-        end
-
-        def test_repository_masks_bad
-###            assert_raise TypeError do
-###                repo.query_repository_masks(42,"1.0")
-###            end
-###            assert_raise TypeError do
-###                repo.query_repository_masks("foo/bar",[])
-###            end
-
-###            assert_raise ArgumentError do
-###                repo.query_repository_masks
-###            end
-###            assert_raise ArgumentError do
-###                repo.query_repository_masks("foo/bar")
-###            end
-###            assert_raise ArgumentError do
-###                repo.query_repository_masks("foo/bar","1.0","baz")
-###            end
-        end
-    end
-
     class TestCase_RepositoryPortageInterface < Test::Unit::TestCase
         include RepositoryTestCase
 

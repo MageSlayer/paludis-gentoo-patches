@@ -304,6 +304,20 @@ namespace
         }
     };
 
+    template <typename T_>
+    struct SpecTreeValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            tr1::shared_ptr<const typename T_::ConstItem> c = tr1::static_pointer_cast<const MetadataSpecTreeKey<T_> >(*self_ptr)->value();
+            return dep_tree_to_value<T_>(c);
+        }
+    };
+
+
     VALUE
     repository_mask_info_mask_file(VALUE self)
     {
@@ -431,6 +445,7 @@ namespace
          * Metadata class for license specs
          */
         c_metadata_license_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataLicenseSpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_license_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<LicenseSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataProvideSpecTreeKey
@@ -438,6 +453,7 @@ namespace
          * Metadata class for provide specs
          */
         c_metadata_provide_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataProvideSpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_provide_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataRestrictSpecTreeKey
@@ -445,6 +461,7 @@ namespace
          * Metadata class for restrict specs
          */
         c_metadata_restrict_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataRestrictSpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_restrict_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<RestrictSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataDependencySpecTreeKey
@@ -452,6 +469,7 @@ namespace
          * Metadata class for dependency specs
          */
         c_metadata_dependency_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataDependencySpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_dependency_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<DependencySpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataFetchableURISpecTreeKey
@@ -459,6 +477,7 @@ namespace
          * Metadata class for fetchable uri specs
          */
         c_metadata_fetchable_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataFetchableURISpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<FetchableURISpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataSimpleURISpecTreeKey
@@ -466,6 +485,7 @@ namespace
          * Metadata class for simple uri specs
          */
         c_metadata_simple_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataSimpleURISpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_simple_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<SimpleURISpecTree>::fetch)), 0);
 
         /*
          * Document-module: Paludis::MetadataKeyType

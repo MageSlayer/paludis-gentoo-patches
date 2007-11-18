@@ -234,6 +234,21 @@ module Paludis
             assert_equal ["this is", "a test"], pid_testrepo["repository_mask"].value.comment
             assert_nil pid_testrepo["profile_mask"].value
         end
+
+        def test_build_dependencies_key
+            assert_kind_of MetadataDependencySpecTreeKey, pid_testrepo.build_dependencies_key
+            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_key.value
+        end
+
+        def test_homepage_key
+            assert_kind_of MetadataSimpleURISpecTreeKey, pid_testrepo.homepage_key
+            assert_kind_of AllDepSpec, pid_testrepo.homepage_key.value
+        end
+
+        def test_fetches_key
+            assert_kind_of MetadataFetchableURISpecTreeKey, pid_testrepo.fetches_key
+            assert_kind_of AllDepSpec, pid_testrepo.fetches_key.value
+        end
     end
 
     class TestCase_VDBRepo < Test::Unit::TestCase

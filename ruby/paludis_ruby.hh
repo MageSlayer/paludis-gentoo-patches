@@ -78,9 +78,6 @@ namespace paludis
         VALUE repository_to_value(tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE package_id_to_value(tr1::shared_ptr<const PackageID>);
-#if CIARANM_REMOVED_THIS
-        VALUE dep_spec_to_value(tr1::shared_ptr<const DepSpec>);
-#endif
         VALUE dep_tag_to_value(tr1::shared_ptr<const DepTag>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(tr1::shared_ptr<const Contents>);
@@ -90,6 +87,8 @@ namespace paludis
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
+        template <typename T_> VALUE dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstItem> &);
+        VALUE package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> &);
 
         VersionSpec value_to_version_spec(VALUE v);
         tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);

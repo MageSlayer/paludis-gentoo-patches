@@ -24,6 +24,9 @@
 #include <paludis/version_operator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <list>
 #include <ruby.h>
 
 using namespace paludis;
@@ -34,15 +37,213 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_dep_spec;
+    static VALUE c_string_dep_spec;
+
+    static VALUE c_block_dep_spec;
+    static VALUE c_dependency_labels_dep_spec;
+    static VALUE c_fetchable_uri_dep_spec;
+    static VALUE c_license_dep_spec;
+    static VALUE c_named_set_dep_spec;
     static VALUE c_package_dep_spec;
     static VALUE c_plain_text_dep_spec;
+    static VALUE c_simple_uri_dep_spec;
+    static VALUE c_uri_labels_dep_spec;
+
     static VALUE c_all_dep_spec;
     static VALUE c_any_dep_spec;
     static VALUE c_use_dep_spec;
-    static VALUE c_block_dep_spec;
-    static VALUE c_string_dep_spec;
+
     static VALUE c_version_requirements_mode;
     static VALUE c_package_dep_spec_parse_mode;
+
+    struct WrappedSpecBase;
+    template <typename> struct WrappedSpec;
+
+    struct WrappedSpecVisitorTypes :
+        VisitorTypes<
+            WrappedSpecVisitorTypes,
+            WrappedSpecBase,
+            WrappedSpec<PlainTextDepSpec>,
+            WrappedSpec<SimpleURIDepSpec>,
+            WrappedSpec<FetchableURIDepSpec>,
+            WrappedSpec<LicenseDepSpec>,
+            WrappedSpec<PackageDepSpec>,
+            WrappedSpec<BlockDepSpec>,
+            WrappedSpec<URILabelsDepSpec>,
+            WrappedSpec<DependencyLabelsDepSpec>,
+            WrappedSpec<NamedSetDepSpec>,
+            WrappedSpec<AllDepSpec>,
+            WrappedSpec<AnyDepSpec>,
+            WrappedSpec<UseDepSpec>
+        >
+    {
+    };
+
+    struct WrappedSpecBase :
+        virtual ConstAcceptInterface<WrappedSpecVisitorTypes>
+    {
+        typedef std::list<std::pair<VALUE, tr1::shared_ptr<const WrappedSpecBase> > > Children;
+
+        virtual ~WrappedSpecBase()
+        {
+        }
+
+        virtual const tr1::shared_ptr<const DepSpec> base_spec() const = 0;
+        virtual const tr1::shared_ptr<const Children> children() const = 0;
+    };
+
+    template <typename T_>
+    class WrappedSpec :
+        public WrappedSpecBase,
+        public ConstAcceptInterfaceVisitsThis<WrappedSpecVisitorTypes, WrappedSpec<T_> >
+    {
+        private:
+            tr1::shared_ptr<const T_> _spec;
+            tr1::shared_ptr<Children> _children;
+
+        public:
+            WrappedSpec(const tr1::shared_ptr<const T_> & s) :
+                _spec(s),
+                _children(new Children)
+            {
+            }
+
+            virtual const tr1::shared_ptr<const DepSpec> base_spec() const
+            {
+                return _spec;
+            }
+
+            const tr1::shared_ptr<const T_> spec() const
+            {
+                return _spec;
+            }
+
+            template <typename Iter_>
+            WrappedSpec * add_children(Iter_ cur, const Iter_ end);
+
+            virtual const tr1::shared_ptr<const Children> children() const
+            {
+                return _children;
+            }
+    };
+
+    struct TreeToValue :
+        ConstVisitor<GenericSpecTree>
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        VALUE value;
+
+        void visit_leaf(const PackageDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<PackageDepSpec>(tr1::static_pointer_cast<PackageDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_package_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const BlockDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<BlockDepSpec>(tr1::static_pointer_cast<BlockDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_block_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const PlainTextDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<PlainTextDepSpec>(tr1::static_pointer_cast<PlainTextDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_plain_text_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const SimpleURIDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<SimpleURIDepSpec>(tr1::static_pointer_cast<SimpleURIDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_simple_uri_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const FetchableURIDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<FetchableURIDepSpec>(tr1::static_pointer_cast<FetchableURIDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_fetchable_uri_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const URILabelsDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<URILabelsDepSpec>(tr1::static_pointer_cast<URILabelsDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_uri_labels_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const DependencyLabelsDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<DependencyLabelsDepSpec>(tr1::static_pointer_cast<DependencyLabelsDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_dependency_labels_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const NamedSetDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<NamedSetDepSpec>(tr1::static_pointer_cast<NamedSetDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_named_set_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_leaf(const LicenseDepSpec & spec)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    new WrappedSpec<LicenseDepSpec>(tr1::static_pointer_cast<LicenseDepSpec>(spec.clone())));
+            value = Data_Wrap_Struct(c_license_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_sequence(const UseDepSpec & spec,
+                GenericSpecTree::ConstSequenceIterator cur,
+                GenericSpecTree::ConstSequenceIterator end)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    (new WrappedSpec<UseDepSpec>(tr1::static_pointer_cast<UseDepSpec>(spec.clone())))->add_children(cur, end));
+            value = Data_Wrap_Struct(c_use_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_sequence(const AllDepSpec & spec,
+                GenericSpecTree::ConstSequenceIterator cur,
+                GenericSpecTree::ConstSequenceIterator end)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    (new WrappedSpec<AllDepSpec>(tr1::static_pointer_cast<AllDepSpec>(spec.clone())))->add_children(cur, end));
+            value = Data_Wrap_Struct(c_all_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+
+        void visit_sequence(const AnyDepSpec & spec,
+                GenericSpecTree::ConstSequenceIterator cur,
+                GenericSpecTree::ConstSequenceIterator end)
+        {
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(
+                    (new WrappedSpec<AnyDepSpec>(tr1::static_pointer_cast<AnyDepSpec>(spec.clone())))->add_children(cur, end));
+            value = Data_Wrap_Struct(c_any_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+    };
+
+    template <typename T_>
+    template <typename Iter_>
+    WrappedSpec<T_> *
+    WrappedSpec<T_>::add_children(Iter_ cur, const Iter_ end)
+    {
+        for ( ; cur != end ; ++cur)
+        {
+            TreeToValue v;
+            cur->accept(v);
+            _children->push_back(std::make_pair(v.value, *v.ptr));
+        }
+
+        return this;
+    }
+
+    VALUE
+    dep_spec_init_0(VALUE self)
+    {
+        return self;
+    }
 
     VALUE
     dep_spec_init_1(VALUE self, VALUE)
@@ -56,16 +257,15 @@ namespace
         return self;
     }
 
-
     VALUE
     block_dep_spec_new(VALUE self, VALUE spec)
     {
-        tr1::shared_ptr<const DepSpec> * ptr(0);
+        tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
         try
         {
             tr1::shared_ptr<const PackageDepSpec> pkg(value_to_package_dep_spec(spec));
-            ptr = new tr1::shared_ptr<const DepSpec>(new BlockDepSpec(pkg));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<BlockDepSpec>(make_shared_ptr(new BlockDepSpec(pkg))));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
             rb_obj_call_init(tdata, 1, &spec);
             return tdata;
         }
@@ -76,7 +276,6 @@ namespace
         }
     }
 
-#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     blocked_spec -> DepSpec
@@ -86,23 +285,40 @@ namespace
     VALUE
     block_dep_spec_blocked_spec(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
-        return dep_spec_to_value(tr1::static_pointer_cast<const BlockDepSpec>(*p)->blocked_spec());
+        tr1::shared_ptr<const WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocked_spec());
     }
-#endif
 
     template <typename A_>
     struct DepSpecThings
     {
         static VALUE
-        dep_spec_new_1(VALUE self, VALUE s)
+        dep_spec_new_0(VALUE self, VALUE s)
         {
-            tr1::shared_ptr<const DepSpec> * ptr(0);
+            tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
             try
             {
-                ptr = new tr1::shared_ptr<const DepSpec>(new A_(StringValuePtr(s)));
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
+                ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(make_shared_ptr(new A_)));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
+                rb_obj_call_init(tdata, 1, &s);
+                return tdata;
+            }
+            catch (const std::exception & e)
+            {
+                delete ptr;
+                exception_to_ruby_exception(e);
+            }
+        }
+
+        static VALUE
+        dep_spec_new_1(VALUE self, VALUE s)
+        {
+            tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
+            try
+            {
+                ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(make_shared_ptr(new A_(StringValuePtr(s)))));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
                 rb_obj_call_init(tdata, 1, &s);
                 return tdata;
             }
@@ -117,7 +333,7 @@ namespace
     VALUE
     package_dep_spec_new(int argc, VALUE *argv, VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr(0);
+        tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
         try
         {
             PackageDepSpecParseMode p;
@@ -129,8 +345,9 @@ namespace
             else
                 p = static_cast<PackageDepSpecParseMode>(NUM2INT(argv[1]));
 
-            ptr = new tr1::shared_ptr<const DepSpec>(new PackageDepSpec(StringValuePtr(argv[0]), p));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<PackageDepSpec>(
+                        make_shared_ptr(new PackageDepSpec(StringValuePtr(argv[0]), p))));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -150,9 +367,9 @@ namespace
     VALUE
     use_dep_spec_flag(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
-        return rb_str_new2(stringify(tr1::static_pointer_cast<const UseDepSpec>(*p)->flag()).c_str());
+        tr1::shared_ptr<const WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->flag()).c_str());
     }
 
     /*
@@ -164,9 +381,39 @@ namespace
     VALUE
     use_dep_spec_inverse(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
-        return tr1::static_pointer_cast<const UseDepSpec>(*p)->inverse() ? Qtrue : Qfalse;
+        tr1::shared_ptr<const WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        return tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->inverse() ? Qtrue : Qfalse;
+    }
+
+    /*
+     * call-seq:
+     *     tag -> DepTag or Nil
+     *
+     * Fetch the dep tag.
+     */
+    VALUE
+    package_dep_spec_tag(VALUE self)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag())
+            return Qnil;
+        return dep_tag_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag());
+    }
+
+    /*
+     * call-seq:
+     *     without_use_requirements -> PackageDepSpec
+     *
+     * Fetch us without our use requirements.
+     */
+    VALUE
+    package_dep_spec_without_use_requirements(VALUE self)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->without_use_requirements());
     }
 
     /*
@@ -178,11 +425,11 @@ namespace
     VALUE
     package_dep_spec_package(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_ptr())
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr()).c_str());
     }
 
     /*
@@ -194,11 +441,12 @@ namespace
     VALUE
     package_dep_spec_package_name_part(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_name_part_ptr())
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_name_part_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
+                    package_name_part_ptr()).c_str());
     }
 
     /*
@@ -210,11 +458,12 @@ namespace
     VALUE
     package_dep_spec_category_name_part(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->category_name_part_ptr())
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->category_name_part_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
+                    category_name_part_ptr()).c_str());
     }
 
     /*
@@ -224,11 +473,25 @@ namespace
      * Fetch our text.
      */
     VALUE
-    package_dep_spec_text(VALUE self)
+    string_dep_spec_text(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        return rb_str_new2(stringify(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->text()).c_str());
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        return rb_str_new2(stringify(tr1::static_pointer_cast<const StringDepSpec>((*ptr)->base_spec())->text()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     to_s -> String
+     *
+     * Fetch a string representation of ourself.
+     */
+    template <typename T_>
+    VALUE dep_spec_to_s(VALUE self)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<T_> >(*ptr)->spec()).c_str());
     }
 
     /*
@@ -240,11 +503,11 @@ namespace
     VALUE
     package_dep_spec_slot_ptr(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->slot_ptr())
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())
             return Qnil;
-        return rb_str_new2(stringify((*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->slot_ptr())).c_str());
+        return rb_str_new2(stringify((*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())).c_str());
     }
 
     /*
@@ -256,11 +519,11 @@ namespace
     VALUE
     package_dep_spec_repository_ptr(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->repository_ptr())
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->repository_ptr())
             return Qnil;
-        return rb_str_new2(stringify((*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->repository_ptr())).c_str());
+        return rb_str_new2(stringify((*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->repository_ptr())).c_str());
     }
 
     /*
@@ -272,13 +535,15 @@ namespace
     VALUE
     package_dep_spec_version_requirements_ptr(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
-        if (tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr())
-            for (VersionRequirements::ConstIterator i(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr()->begin()),
-                        i_end(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr()->end()) ; i != i_end; ++i)
+        if (tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_ptr())
+            for (VersionRequirements::ConstIterator i(tr1::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->
+                        version_requirements_ptr()->begin()),
+                    i_end(tr1::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->version_requirements_ptr()->end()) ;
+                    i != i_end; ++i)
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
@@ -299,13 +564,15 @@ namespace
     VALUE
     package_dep_spec_use_requirements(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
-        if (tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr())
-            for (UseRequirements::ConstIterator i(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr()->begin()),
-                    i_end(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr()->end()) ; i != i_end; ++i)
+        if (tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->use_requirements_ptr())
+            for (UseRequirements::ConstIterator
+                    i(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->use_requirements_ptr()->begin()),
+                    i_end(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->use_requirements_ptr()->end()) ;
+                    i != i_end; ++i)
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("flag")),
@@ -321,9 +588,59 @@ namespace
     VALUE
     package_dep_spec_version_requirements_mode(VALUE self)
     {
-        tr1::shared_ptr<const DepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
-        return INT2FIX(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_mode());
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        return INT2FIX(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_mode());
+    }
+
+    template <std::string (FetchableURIDepSpec::* m_) () const>
+    struct FetchableURIDepSpecStringValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<const WrappedSpecBase> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+            tr1::shared_ptr<const FetchableURIDepSpec> f_ptr(tr1::static_pointer_cast<const FetchableURIDepSpec>((*ptr)->base_spec()));
+            return rb_str_new2(((f_ptr.get())->*(m_))().c_str());
+        }
+    };
+
+    template <typename T_>
+    struct Composite
+    {
+        /*
+         * call-seq:
+         *     each {|contents_entry| block}
+         *
+         * Iterate through our entries.
+         */
+        static VALUE
+        each(VALUE self)
+        {
+            tr1::shared_ptr<const WrappedSpecBase> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+
+            if ((*ptr)->children())
+                for (WrappedSpecBase::Children::const_iterator i((*ptr)->children()->begin()), i_end((*ptr)->children()->end()) ;
+                        i != i_end ; ++i)
+                    rb_yield(i->first);
+            return self;
+        }
+    };
+
+    /*
+     * call-seq:
+     *     name -> String
+     *
+     * Fetch our set name.
+     */
+    VALUE
+    named_set_dep_spec_name(VALUE self)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<NamedSetDepSpec> >(*ptr)->spec()->text()).c_str());
     }
 
     void do_register_dep_spec()
@@ -339,28 +656,37 @@ namespace
         /*
          * Document-class: Paludis::AllDepSpec
          *
-         * Represents a ( first second third ) or top level group of dependency specs.
+         * Represents a ( first second third ) or top level group of dependency specs. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
          */
         c_all_dep_spec = rb_define_class_under(paludis_module(), "AllDepSpec", c_dep_spec);
         rb_funcall(c_all_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_all_dep_spec, rb_mEnumerable);
+        rb_define_method(c_all_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::AnyDepSpec
          *
-         * Represents a "|| ( )" dependency block.
+         * Represents a "|| ( )" dependency block. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
          */
         c_any_dep_spec = rb_define_class_under(paludis_module(), "AnyDepSpec", c_dep_spec);
         rb_funcall(c_any_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_any_dep_spec, rb_mEnumerable);
+        rb_define_method(c_any_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::UseDepSpec
          *
-         * Represents a use? ( ) dependency spec.
+         * Represents a use? ( ) dependency spec. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
          */
         c_use_dep_spec = rb_define_class_under(paludis_module(), "UseDepSpec", c_dep_spec);
         rb_funcall(c_use_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_use_dep_spec, rb_mEnumerable);
         rb_define_method(c_use_dep_spec, "flag", RUBY_FUNC_CAST(&use_dep_spec_flag), 0);
         rb_define_method(c_use_dep_spec, "inverse?", RUBY_FUNC_CAST(&use_dep_spec_inverse), 0);
+        rb_define_method(c_use_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::StringDepSpec
@@ -369,6 +695,55 @@ namespace
          */
         c_string_dep_spec = rb_define_class_under(paludis_module(), "StringDepSpec", c_dep_spec);
         rb_funcall(c_string_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_string_dep_spec, "text", RUBY_FUNC_CAST(&string_dep_spec_text), 0);
+
+        /*
+         * Document-class: Paludis::FetchableURIDepSpec
+         *
+         * A FetchableURIDepSpec represents a fetchable URI spec.
+         */
+        c_fetchable_uri_dep_spec = rb_define_class_under(paludis_module(), "FetchableURIDepSpec", c_string_dep_spec);
+        rb_funcall(c_fetchable_uri_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        VALUE (* fetchable_uri_dep_spec_to_s) (VALUE) = &dep_spec_to_s<FetchableURIDepSpec>;
+        rb_define_method(c_fetchable_uri_dep_spec, "to_s", RUBY_FUNC_CAST(fetchable_uri_dep_spec_to_s), 0);
+        rb_define_method(c_fetchable_uri_dep_spec, "original_url",
+                RUBY_FUNC_CAST((&FetchableURIDepSpecStringValue<&FetchableURIDepSpec::original_url>::fetch)), 0);
+        rb_define_method(c_fetchable_uri_dep_spec, "renamed_url_suffix",
+                RUBY_FUNC_CAST((&FetchableURIDepSpecStringValue<&FetchableURIDepSpec::renamed_url_suffix>::fetch)), 0);
+        rb_define_method(c_fetchable_uri_dep_spec, "filename",
+                RUBY_FUNC_CAST((&FetchableURIDepSpecStringValue<&FetchableURIDepSpec::filename>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::SimpleURIDepSpec
+         *
+         * A SimpleURIDepSpec represents a simple URI spec.
+         */
+        c_simple_uri_dep_spec = rb_define_class_under(paludis_module(), "SimpleURIDepSpec", c_string_dep_spec);
+        rb_funcall(c_simple_uri_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        VALUE (* simple_uri_dep_spec_to_s) (VALUE) = &dep_spec_to_s<SimpleURIDepSpec>;
+        rb_define_method(c_simple_uri_dep_spec, "to_s", RUBY_FUNC_CAST(simple_uri_dep_spec_to_s), 0);
+
+        /*
+         * Document-class: Paludis::LicenseDepSpec
+         *
+         * A LicenseDepSpec represents a license dep spec.
+         */
+        c_license_dep_spec = rb_define_class_under(paludis_module(), "LicenseDepSpec", c_string_dep_spec);
+        rb_funcall(c_license_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        VALUE (* license_dep_spec_to_s) (VALUE) = &dep_spec_to_s<LicenseDepSpec>;
+        rb_define_method(c_license_dep_spec, "to_s", RUBY_FUNC_CAST(license_dep_spec_to_s), 0);
+
+        /*
+         * Document-class: Paludis::NamedSetDepSpec
+         *
+         * A NamedSetDepSpec represents a fetchable URI spec.
+         */
+        c_named_set_dep_spec = rb_define_class_under(paludis_module(), "NamedSetDepSpec", c_string_dep_spec);
+        rb_funcall(c_named_set_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        VALUE (* named_set_dep_spec_to_s) (VALUE) = &dep_spec_to_s<NamedSetDepSpec>;
+        rb_define_method(c_named_set_dep_spec, "to_s", RUBY_FUNC_CAST(named_set_dep_spec_to_s), 0);
+        rb_define_method(c_named_set_dep_spec, "name", RUBY_FUNC_CAST(&named_set_dep_spec_name), 0);
+
 
         /*
          * Document-class: Paludis::PackageDepSpec
@@ -379,16 +754,18 @@ namespace
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
         rb_define_singleton_method(c_package_dep_spec, "new", RUBY_FUNC_CAST(&package_dep_spec_new), -1);
         rb_define_method(c_package_dep_spec, "initialize", RUBY_FUNC_CAST(&package_dep_spec_init), -1);
-        rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageDepSpec> >::to_s_via_ptr), 0);
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
-        rb_define_method(c_package_dep_spec, "text", RUBY_FUNC_CAST(&package_dep_spec_text), 0);
         rb_define_method(c_package_dep_spec, "slot", RUBY_FUNC_CAST(&package_dep_spec_slot_ptr), 0);
         rb_define_method(c_package_dep_spec, "repository", RUBY_FUNC_CAST(&package_dep_spec_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
+        rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
+        rb_define_method(c_package_dep_spec, "without_use_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_use_requirements), 0);
+        VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;
+        rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(package_dep_spec_to_s), 0);
 
         /*
          * Document-class: Paludis::PlainTextDepSpec
@@ -398,7 +775,30 @@ namespace
         c_plain_text_dep_spec = rb_define_class_under(paludis_module(), "PlainTextDepSpec", c_string_dep_spec);
         rb_define_singleton_method(c_plain_text_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<PlainTextDepSpec>::dep_spec_new_1), 1);
         rb_define_method(c_plain_text_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
-        rb_define_method(c_plain_text_dep_spec, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PlainTextDepSpec> >::to_s_via_ptr), 0);
+        VALUE (* plain_text_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PlainTextDepSpec>;
+        rb_define_method(c_plain_text_dep_spec, "to_s", RUBY_FUNC_CAST(plain_text_dep_spec_to_s), 0);
+
+        /*
+         * Document-class: Paludis::DependencyLabelsDepSpec
+         *
+         * A DependencyLabelsDepSpec holds dependency labels.
+         */
+        c_dependency_labels_dep_spec = rb_define_class_under(paludis_module(), "DependencyLabelsDepSpec", c_string_dep_spec);
+        rb_define_singleton_method(c_dependency_labels_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<DependencyLabelsDepSpec>::dep_spec_new_0), 0);
+        rb_define_method(c_dependency_labels_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_0), 0);
+        VALUE (* dependency_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<DependencyLabelsDepSpec>;
+        rb_define_method(c_dependency_labels_dep_spec, "to_s", RUBY_FUNC_CAST(dependency_labels_dep_spec_to_s), 0);
+
+        /*
+         * Document-class: Paludis::URILabelsDepSpec
+         *
+         * A URILabelsDepSpec holds URI labels.
+         */
+        c_uri_labels_dep_spec = rb_define_class_under(paludis_module(), "URILabelsDepSpec", c_string_dep_spec);
+        rb_define_singleton_method(c_uri_labels_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<URILabelsDepSpec>::dep_spec_new_0), 0);
+        rb_define_method(c_uri_labels_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_0), 0);
+        VALUE (* uri_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<URILabelsDepSpec>;
+        rb_define_method(c_uri_labels_dep_spec, "to_s", RUBY_FUNC_CAST(uri_labels_dep_spec_to_s), 0);
 
         /*
          * Document-class: Paludis::BlockDepSpec
@@ -409,9 +809,9 @@ namespace
         c_block_dep_spec = rb_define_class_under(paludis_module(), "BlockDepSpec", c_string_dep_spec);
         rb_define_singleton_method(c_block_dep_spec, "new", RUBY_FUNC_CAST(&block_dep_spec_new), 1);
         rb_define_method(c_block_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
-#if CIARANM_REMOVED_THIS
         rb_define_method(c_block_dep_spec, "blocked_spec", RUBY_FUNC_CAST(&block_dep_spec_blocked_spec), 0);
-#endif
+        VALUE (* block_dep_spec_to_s) (VALUE) = &dep_spec_to_s<BlockDepSpec>;
+        rb_define_method(c_block_dep_spec, "to_s", RUBY_FUNC_CAST(block_dep_spec_to_s), 0);
 
         /*
          * Document-module: Paludis::VersionRequirementsMode
@@ -446,9 +846,9 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_package_dep_spec))
     {
-        tr1::shared_ptr<const DepSpec> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const DepSpec>, v_ptr);
-        return tr1::static_pointer_cast<const PackageDepSpec>(*v_ptr);
+        tr1::shared_ptr<const WrappedSpecBase> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<const WrappedSpecBase>, v_ptr);
+        return tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*v_ptr)->spec();
     }
     if (T_STRING == TYPE(v))
     {
@@ -466,9 +866,9 @@ paludis::ruby::value_to_dep_spec(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_dep_spec))
     {
-        tr1::shared_ptr<const DepSpec> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const DepSpec>, v_ptr);
-        return *v_ptr;
+        tr1::shared_ptr<const WrappedSpecBase> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<const WrappedSpecBase>, v_ptr);
+        return (*v_ptr)->base_spec();
     }
     else
     {
@@ -476,75 +876,37 @@ paludis::ruby::value_to_dep_spec(VALUE v)
     }
 }
 
-#if CIARANM_REMOVED_THIS
 VALUE
-paludis::ruby::dep_spec_to_value(tr1::shared_ptr<const DepSpec> m)
+paludis::ruby::package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> & p)
 {
-    struct V :
-        DepSpecVisitorTypes::ConstVisitor
-    {
-        VALUE value;
-        tr1::shared_ptr<const DepSpec> mm;
+    tr1::shared_ptr<const WrappedSpecBase> * v_ptr(new tr1::shared_ptr<const WrappedSpecBase>(
+                new WrappedSpec<PackageDepSpec>(tr1::static_pointer_cast<PackageDepSpec>(p->clone()))));
+    return Data_Wrap_Struct(c_package_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, v_ptr);
+}
 
-        V(tr1::shared_ptr<const DepSpec> _m) :
-            mm(_m)
-        {
-        }
-
-        void visit(const AllDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_all_dep_spec, 0, &Common<tr1::shared_ptr<const AllDepSpec> >::free,
-                    new tr1::shared_ptr<const AllDepSpec>(tr1::static_pointer_cast<const AllDepSpec>(mm)));
-        }
-
-        void visit(const AnyDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_any_dep_spec, 0, &Common<tr1::shared_ptr<const AnyDepSpec> >::free,
-                    new tr1::shared_ptr<const AnyDepSpec>(tr1::static_pointer_cast<const AnyDepSpec>(mm)));
-        }
-
-        void visit(const UseDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_use_dep_spec, 0, &Common<tr1::shared_ptr<const UseDepSpec> >::free,
-                    new tr1::shared_ptr<const UseDepSpec>(tr1::static_pointer_cast<const UseDepSpec>(mm)));
-        }
-
-        void visit(const PlainTextDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_plain_text_dep_spec, 0, &Common<tr1::shared_ptr<const PlainTextDepSpec> >::free,
-                    new tr1::shared_ptr<const PlainTextDepSpec>(tr1::static_pointer_cast<const PlainTextDepSpec>(mm)));
-        }
-
-        void visit(const PackageDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_package_dep_spec, 0, &Common<tr1::shared_ptr<const PackageDepSpec> >::free,
-                    new tr1::shared_ptr<const PackageDepSpec>(tr1::static_pointer_cast<const PackageDepSpec>(mm)));
-        }
-
-        void visit(const BlockDepSpec *)
-        {
-            value = Data_Wrap_Struct(c_block_dep_spec, 0, &Common<tr1::shared_ptr<const BlockDepSpec> >::free,
-                    new tr1::shared_ptr<const BlockDepSpec>(tr1::static_pointer_cast<const BlockDepSpec>(mm)));
-        }
-    };
-
-    if (0 == m)
-        return Qnil;
-
-    tr1::shared_ptr<const DepSpec> * m_ptr(0);
+template <typename T_>
+VALUE
+paludis::ruby::dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstItem> & m)
+{
     try
     {
-        V v(m);
-        m->accept(&v);
+        TreeToValue v;
+        m->accept(v);
         return v.value;
     }
     catch (const std::exception & e)
     {
-        delete m_ptr;
         exception_to_ruby_exception(e);
     }
 }
-#endif
+
+template VALUE dep_tree_to_value <SetSpecTree> (const tr1::shared_ptr<const SetSpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <DependencySpecTree> (const tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <FetchableURISpecTree> (const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <SimpleURISpecTree> (const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <RestrictSpecTree> (const tr1::shared_ptr<const RestrictSpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <ProvideSpecTree> (const tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
+template VALUE dep_tree_to_value <LicenseSpecTree> (const tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
 
 RegisterRubyClass::Register paludis_ruby_register_dep_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_spec);

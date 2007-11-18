@@ -119,6 +119,16 @@ module Paludis
             assert_equal 'b', pda.use_requirements[1][:flag]
             assert_equal false, pda.use_requirements[1][:state]
         end
+
+        def test_without_use_requirements
+            assert_equal ">=foo/bar-1:100::testrepo", pda.without_use_requirements.to_s
+            assert_equal "*/bar", pdb.without_use_requirements.to_s
+        end
+
+        def test_tag
+            assert_nil pda.tag
+            assert_nil pdb.tag
+        end
     end
 
     class TestCase_PlainTextDepSpec < Test::Unit::TestCase
@@ -156,9 +166,9 @@ module Paludis
             end
         end
 
-###        def test_blocked_spec
-###            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz", PackageDepSpecParseMode::Permissive)).blocked_spec.to_s
-###        end
+        def test_blocked_spec
+            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz", PackageDepSpecParseMode::Permissive)).blocked_spec.to_s
+        end
     end
 
 ###    class TestCase_Composites < Test::Unit::TestCase
@@ -200,5 +210,4 @@ module Paludis
 ###        end
 ###    end
 end
-
 
