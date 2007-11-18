@@ -264,6 +264,62 @@ namespace
      *
      * Our binary origin repository
      */
+    /*
+     * Document-method: virtual_for_key
+     *
+     * call-seq:
+     *     virtual_for_key -> MetadataPackageIDKey
+     *
+     * What we are a virtual for
+     */
+    /*
+     * Document-method: build_dependencies_key
+     *
+     * call-seq:
+     *     build_dependencies_key -> MetadataDependencySpecTreeKey
+     *
+     * Our build dependencies
+     */
+    /*
+     * Document-method: run_dependencies_key
+     *
+     * call-seq:
+     *     run_dependencies_key -> MetadataDependencySpecTreeKey
+     *
+     * Our run dependencies
+     */
+    /*
+     * Document-method: post_dependencies_key
+     *
+     * call-seq:
+     *     post_dependencies_key -> MetadataDependencySpecTreeKey
+     *
+     * Our post dependencies
+     */
+    /*
+     * Document-method: suggested_dependencies_key
+     *
+     * call-seq:
+     *     suggested_dependencies_key -> MetadataDependencySpecTreeKey
+     *
+     * Our suggested dependencies
+     */
+    /*
+     * Document-method: homepage_key
+     *
+     * call-seq:
+     *     homepage_key -> MetadataSimpleURISpecTreeKey
+     *
+     * Our homepage
+     */
+    /*
+     * Document-method: fetches_key
+     *
+     * call-seq:
+     *     fetches_key -> MetadataFetchableURISpecTreeKey
+     *
+     * Things we fetch
+     */
     template <typename T_, const tr1::shared_ptr<const T_> (PackageID::* m_) () const>
     struct KeyValue
     {
@@ -318,6 +374,19 @@ namespace
         rb_define_method(c_package_id, "installed_time_key", RUBY_FUNC_CAST((&KeyValue<MetadataTimeKey,&PackageID::installed_time_key>::fetch)), 0);
         rb_define_method(c_package_id, "source_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::source_origin_key>::fetch)), 0);
         rb_define_method(c_package_id, "binary_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::binary_origin_key>::fetch)), 0);
+        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataPackageIDKey, &PackageID::virtual_for_key>::fetch)), 0);
+        rb_define_method(c_package_id, "build_dependencies_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::build_dependencies_key>::fetch)), 0);
+        rb_define_method(c_package_id, "run_dependencies_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::run_dependencies_key>::fetch)), 0);
+        rb_define_method(c_package_id, "post_dependencies_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::post_dependencies_key>::fetch)), 0);
+        rb_define_method(c_package_id, "suggested_dependencies_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::suggested_dependencies_key>::fetch)), 0);
+        rb_define_method(c_package_id, "fetches_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<FetchableURISpecTree>, &PackageID::fetches_key>::fetch)), 0);
+        rb_define_method(c_package_id, "homepage_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<SimpleURISpecTree>, &PackageID::homepage_key>::fetch)), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm

@@ -105,12 +105,20 @@ module Paludis
         end
 
         def test_members
-            [:name, :version, :slot, :repository_name, :==, :keywords_key,
-                :iuse_key, :short_description_key,
-                :long_description_key, :contents_key, :installed_time_key,
-                :source_origin_key, :binary_origin_key].each do |method|
+            { :name => String, :version => VersionSpec, :slot => String, :repository_name => String,
+                :keywords_key => MetadataKeywordNameSetKey, :iuse_key => MetadataIUseFlagSetKey,
+                :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
+                :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
+                :source_origin_key => MetadataStringKey, :binary_origin_key => MetadataStringKey
+            }.each_pair do | method, type |
 
                 assert_respond_to pid_testrepo, method
+                x = pid_testrepo.send(method)
+                if x
+                    assert_kind_of type, x
+                else
+                    assert_nil x
+                end
             end
         end
 
