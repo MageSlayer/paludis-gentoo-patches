@@ -253,6 +253,7 @@ namespace paludis
         tr1::shared_ptr<const MetadataStringKey> eapi_when_unknown_key;
         tr1::shared_ptr<const MetadataStringKey> eapi_when_unspecified_key;
         tr1::shared_ptr<const MetadataStringKey> profile_eapi_key;
+        tr1::shared_ptr<const MetadataStringKey> use_manifest_key;
         tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
     };
 
@@ -318,6 +319,8 @@ namespace paludis
                     "eapi_when_unspecified", "eapi_when_unspecified", mkt_normal, params.eapi_when_unspecified)),
         profile_eapi_key(new LiteralMetadataStringKey(
                     "profile_eapi", "profile_eapi", mkt_normal, params.profile_eapi)),
+        use_manifest_key(new LiteralMetadataStringKey(
+                    "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest))),
         info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
                 tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
                         params.environment, layout->info_packages_file(params.location / "profiles"))) :
@@ -491,6 +494,7 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->profile_eapi_key);
     if (_imp->master_repository_key)
         add_metadata_key(_imp->master_repository_key);
+    add_metadata_key(_imp->use_manifest_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
 }
