@@ -268,7 +268,7 @@ main(int argc, char *argv[])
                     }
                     catch (const Exception & e)
                     {
-                        results.insert(std::make_pair(*i, "Exception in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
+                        results.insert(std::make_pair(*i, "Error in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
                                     "' (" + e.what() + ")"));
                         metadata_errors = true;
                     }
