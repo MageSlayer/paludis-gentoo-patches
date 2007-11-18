@@ -79,9 +79,9 @@ namespace
      * Document-method: match_package
      *
      * call-seq:
-     *     match_package(environment, package_dep_spec, target) -> true or false
+     *     match_package(environment, package_dep_spec, package_id) -> true or false
      *
-     * Return whether the specified spec matches the specified target.
+     * Return whether the specified PackageID matches the specified PackageDepSpec.
      *
      */
     VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t)
