@@ -32,14 +32,14 @@ def collect_dependencies env, id, spec, results, recursing_sets = {}
     elsif spec.instance_of? UseDepSpec
         # Was this use flag enabled (or, if we're inverse, disabled) when we
         # built this package?
-        if env.query_use(spec.flag(), id) ^ spec.inverse?
+        if env.query_use(spec.flag, id) ^ spec.inverse?
             spec.each do | child |
                 collect_dependencies(env, id, child, results, recursing_sets)
             end
         end
 
     elsif spec.instance_of? PackageDepSpec
-        # spec.package may be a zero pointer if it's a whildcarded dep.
+        # spec.package may be a zero pointer if it's a wildcarded dep.
         if spec.package and spec.package == "app-arch/unzip"
             results[id.to_s][:has_dep] = true
         end
@@ -91,7 +91,7 @@ def collect_extensions env, id, spec, results, recursing_sets = {}
     elsif spec.instance_of? UseDepSpec
         # Was this use flag enabled (or, if we're inverse, disabled) when we
         # built this package?
-        if env.query_use(spec.flag(), id) ^ spec.inverse?
+        if env.query_use(spec.flag, id) ^ spec.inverse?
             spec.each do | child |
                 collect_extensions(env, id, child, results, recursing_sets)
             end
