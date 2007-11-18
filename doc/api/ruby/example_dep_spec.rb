@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=100 :
 
 =begin description
-This example demonstrates how to handle dependecy specs.
+This example demonstrates how to handle dependency specs.
 =end
 
 require 'Paludis'
