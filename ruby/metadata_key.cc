@@ -77,9 +77,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const S_> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const S_>, self_ptr);
-            return rb_str_new2(stringify(((**self_ptr).*m_)()).c_str());
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return rb_str_new2(stringify(((*tr1::static_pointer_cast<const S_>(*self_ptr)).*m_)()).c_str());
         }
     };
 
@@ -96,26 +96,26 @@ namespace
 
         void visit(const MetadataPackageIDKey &)
         {
-            value = Data_Wrap_Struct(c_metadata_package_id_key, 0, &Common<tr1::shared_ptr<const MetadataPackageIDKey> >::free,
-                    new tr1::shared_ptr<const MetadataPackageIDKey>(tr1::static_pointer_cast<const MetadataPackageIDKey>(mm)));
+            value = Data_Wrap_Struct(c_metadata_package_id_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataStringKey &)
         {
-            value = Data_Wrap_Struct(c_metadata_string_key, 0, &Common<tr1::shared_ptr<const MetadataStringKey> >::free,
-                    new tr1::shared_ptr<const MetadataStringKey>(tr1::static_pointer_cast<const MetadataStringKey>(mm)));
+            value = Data_Wrap_Struct(c_metadata_string_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataTimeKey &)
         {
-            value = Data_Wrap_Struct(c_metadata_time_key, 0, &Common<tr1::shared_ptr<const MetadataTimeKey> >::free,
-                    new tr1::shared_ptr<const MetadataTimeKey>(tr1::static_pointer_cast<const MetadataTimeKey>(mm)));
+            value = Data_Wrap_Struct(c_metadata_time_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataContentsKey &)
         {
-            value = Data_Wrap_Struct(c_metadata_contents_key, 0, &Common<tr1::shared_ptr<const MetadataContentsKey> >::free,
-                    new tr1::shared_ptr<const MetadataContentsKey>(tr1::static_pointer_cast<const MetadataContentsKey>(mm)));
+            value = Data_Wrap_Struct(c_metadata_contents_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataFSEntryKey &)
@@ -130,95 +130,80 @@ namespace
 
         void visit(const MetadataRepositoryMaskInfoKey &)
         {
-            value = Data_Wrap_Struct(c_metadata_repository_mask_info_key, 0, &Common<tr1::shared_ptr<const MetadataContentsKey> >::free,
-                    new tr1::shared_ptr<const MetadataRepositoryMaskInfoKey>(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(mm)));
+            value = Data_Wrap_Struct(c_metadata_repository_mask_info_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<UseFlagNameSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<IUseFlagSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
-            value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >(
-                        tr1::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(mm)));
+            value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> &)
         {
-            value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<tr1::shared_ptr<const FSEntrySequence> >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> >(
-                        tr1::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> &)
         {
-            value = Data_Wrap_Struct(c_metadata_package_id_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > >::free,
-                    new tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-                    (tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_package_id_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_license_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_license_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_provide_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<ProvideSpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_provide_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_dependency_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_dependency_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_restrict_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_restrict_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_fetchable_uri_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_fetchable_uri_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_simple_uri_spec_tree_key, 0,
-                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > >::free,
-                    new tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(
-                        tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_simple_uri_spec_tree_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
     };
 
@@ -229,7 +214,8 @@ namespace
      * Our significance to a user.
      */
     VALUE
-    metadata_key_type(VALUE self) {
+    metadata_key_type(VALUE self)
+    {
         tr1::shared_ptr<const MetadataKey> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
         return INT2FIX((*self_ptr)->type());
@@ -242,41 +228,46 @@ namespace
      * Our Value.
      * */
     VALUE
-    metadata_package_id_key_value(VALUE self) {
-        tr1::shared_ptr<const MetadataPackageIDKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataPackageIDKey>, self_ptr);
-        return package_id_to_value((*self_ptr)->value());
+    metadata_package_id_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        return package_id_to_value((tr1::static_pointer_cast<const MetadataPackageIDKey>(*self_ptr))->value());
     }
 
     VALUE
-    metadata_string_key_value(VALUE self) {
-        tr1::shared_ptr<const MetadataStringKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataStringKey>, self_ptr);
-        return rb_str_new2((*self_ptr)->value().c_str());
+    metadata_string_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        return rb_str_new2((tr1::static_pointer_cast<const MetadataStringKey>(*self_ptr))->value().c_str());
     }
 
     VALUE
-    metadata_time_key_value(VALUE self) {
-        tr1::shared_ptr<const MetadataTimeKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataTimeKey>, self_ptr);
-        return rb_time_new((*self_ptr)->value(),0);
+    metadata_time_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        return rb_time_new((tr1::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value(), 0);
     }
 
     VALUE
-    metadata_contents_key_value(VALUE self) {
-        tr1::shared_ptr<const MetadataContentsKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataContentsKey>, self_ptr);
-        if ((*self_ptr)->value())
-            return contents_to_value((*self_ptr)->value());
+    metadata_contents_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        if (tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value())
+            return contents_to_value(tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value());
         return Qnil;
     }
 
     VALUE
-    metadata_repository_mask_info_key_value(VALUE self) {
-        tr1::shared_ptr<const MetadataRepositoryMaskInfoKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataRepositoryMaskInfoKey>, self_ptr);
-        if ((*self_ptr)->value())
-            return repository_mask_info_to_value((*self_ptr)->value());
+    metadata_repository_mask_info_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        if ((tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr))->value())
+            return repository_mask_info_to_value(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr)->value());
         return Qnil;
     }
 
@@ -286,9 +277,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataCollectionKey<T_> > * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataCollectionKey<T_> >, self_ptr);
-            tr1::shared_ptr<const T_> c = (*self_ptr)->value();
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            tr1::shared_ptr<const T_> c = tr1::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
             VALUE result (rb_ary_new());
             for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
@@ -302,9 +293,10 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >, self_ptr);
-            tr1::shared_ptr<const PackageIDSequence> c = (*self_ptr)->value();
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            tr1::shared_ptr<const PackageIDSequence> c = tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
+                    *self_ptr)->value();
             VALUE result (rb_ary_new());
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
@@ -532,5 +524,4 @@ paludis::ruby::metadata_key_to_value(tr1::shared_ptr<const MetadataKey> m)
 
 RegisterRubyClass::Register paludis_ruby_metadata_key PALUDIS_ATTRIBUTE((used))
     (&do_register_metadata_key);
-
 

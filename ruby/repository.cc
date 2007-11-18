@@ -54,9 +54,9 @@ namespace
     {
         if (rb_obj_is_kind_of(v, c_fake_repository_base))
         {
-            tr1::shared_ptr<FakeRepositoryBase> * v_ptr;
-            Data_Get_Struct(v, tr1::shared_ptr<FakeRepositoryBase>, v_ptr);
-            return *v_ptr;
+            tr1::shared_ptr<Repository> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<Repository>, v_ptr);
+            return tr1::static_pointer_cast<FakeRepositoryBase>(*v_ptr);
         }
         else
         {
@@ -839,9 +839,9 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
 
-            tr1::shared_ptr<FakeRepository> * r = new tr1::shared_ptr<FakeRepository>(new
+            tr1::shared_ptr<Repository> * r = new tr1::shared_ptr<Repository>(new
                     FakeRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<FakeRepository> >::free, r));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }

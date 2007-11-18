@@ -40,53 +40,52 @@ namespace
     static VALUE c_contents_fifo_entry;
 
     struct V :
-            ConstVisitor<ContentsVisitorTypes>
+        ConstVisitor<ContentsVisitorTypes>
+    {
+        VALUE value;
+        tr1::shared_ptr<const ContentsEntry> mm;
+
+        V(tr1::shared_ptr<const ContentsEntry> _m) :
+            mm(_m)
         {
-            VALUE value;
-            tr1::shared_ptr<const ContentsEntry> mm;
+        }
 
-            V(tr1::shared_ptr<const ContentsEntry> _m) :
-                mm(_m)
-            {
-            }
+        void visit(const ContentsFileEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_file_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
 
-            void visit(const ContentsFileEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_file_entry, 0, &Common<tr1::shared_ptr<const ContentsFileEntry> >::free,
-                        new tr1::shared_ptr<const ContentsFileEntry>(tr1::static_pointer_cast<const ContentsFileEntry>(mm)));
-            }
+        void visit(const ContentsDirEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_dir_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
 
-            void visit(const ContentsDirEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_dir_entry, 0, &Common<tr1::shared_ptr<const ContentsDirEntry> >::free,
-                        new tr1::shared_ptr<const ContentsDirEntry>(tr1::static_pointer_cast<const ContentsDirEntry>(mm)));
-            }
+        void visit(const ContentsMiscEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_misc_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
 
-            void visit(const ContentsMiscEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_misc_entry, 0, &Common<tr1::shared_ptr<const ContentsMiscEntry> >::free,
-                        new tr1::shared_ptr<const ContentsMiscEntry>(tr1::static_pointer_cast<const ContentsMiscEntry>(mm)));
-            }
+        void visit(const ContentsSymEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_sym_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
 
-            void visit(const ContentsSymEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_sym_entry, 0, &Common<tr1::shared_ptr<const ContentsSymEntry> >::free,
-                        new tr1::shared_ptr<const ContentsSymEntry>(tr1::static_pointer_cast<const ContentsSymEntry>(mm)));
-            }
+        void visit(const ContentsFifoEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_fifo_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
 
-            void visit(const ContentsFifoEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_fifo_entry, 0, &Common<tr1::shared_ptr<const ContentsFifoEntry> >::free,
-                        new tr1::shared_ptr<const ContentsFifoEntry>(tr1::static_pointer_cast<const ContentsFifoEntry>(mm)));
-            }
-
-            void visit(const ContentsDevEntry &)
-            {
-                value = Data_Wrap_Struct(c_contents_dev_entry, 0, &Common<tr1::shared_ptr<const ContentsDevEntry> >::free,
-                        new tr1::shared_ptr<const ContentsDevEntry>(tr1::static_pointer_cast<const ContentsDevEntry>(mm)));
-            }
-        };
-
+        void visit(const ContentsDevEntry &)
+        {
+            value = Data_Wrap_Struct(c_contents_dev_entry, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free,
+                    new tr1::shared_ptr<const ContentsEntry>(mm));
+        }
+    };
 
     VALUE
     contents_entry_to_value(tr1::shared_ptr<const ContentsEntry> m)
@@ -145,7 +144,6 @@ namespace
                 Data_Get_Struct(v, tr1::shared_ptr<const ContentsEntry>, v_ptr);
                 (*self_ptr)->add(*v_ptr);
                 return self;
-
             }
             catch (const std::exception & e)
             {
@@ -187,18 +185,18 @@ namespace
         static VALUE
         contents_entry_new(int argc, VALUE * argv, VALUE self)
         {
-            typename tr1::shared_ptr<const A_> * ptr(0);
+            typename tr1::shared_ptr<const ContentsEntry> * ptr(0);
             try
             {
                 if (1 == argc)
                 {
-                    ptr = new tr1::shared_ptr<const A_>(new A_(StringValuePtr(argv[0])));
+                    ptr = new tr1::shared_ptr<const ContentsEntry>(new A_(StringValuePtr(argv[0])));
                 }
                 else
                 {
                     rb_raise(rb_eArgError, "ContentsEntry expects one argument, but got %d",argc);
                 }
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const A_> >::free, ptr));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -212,18 +210,18 @@ namespace
 
     VALUE contents_sym_entry_new(int argc, VALUE * argv, VALUE self)
     {
-        tr1::shared_ptr<const ContentsSymEntry> * ptr(0);
+        tr1::shared_ptr<const ContentsEntry> * ptr(0);
         try
         {
             if (2 == argc)
             {
-                ptr = new tr1::shared_ptr<const ContentsSymEntry>(new ContentsSymEntry(StringValuePtr(argv[0]), StringValuePtr(argv[1])));
+                ptr = new tr1::shared_ptr<const ContentsEntry>(new ContentsSymEntry(StringValuePtr(argv[0]), StringValuePtr(argv[1])));
             }
             else
             {
                 rb_raise(rb_eArgError, "ContentsSymEntry expects two arguments, but got %d",argc);
             }
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const ContentsSymEntry> >::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const ContentsEntry> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -250,9 +248,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const T_> * ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const T_>, ptr);
-            return rb_str_new2((((**ptr).*m_)()).c_str());
+            tr1::shared_ptr<const ContentsEntry> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const ContentsEntry>, ptr);
+            return rb_str_new2((((*tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
         }
     };
 
@@ -332,7 +330,6 @@ namespace
         c_contents_sym_entry = rb_define_class_under(paludis_module(), "ContentsSymEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_sym_entry, "new", RUBY_FUNC_CAST(&contents_sym_entry_new), -1);
         rb_define_method(c_contents_sym_entry, "target", RUBY_FUNC_CAST((&ContentsThings<ContentsSymEntry,&ContentsSymEntry::target>::fetch)), 0);
-        rb_define_method(c_contents_sym_entry, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const ContentsSymEntry> >::to_s_via_ptr), 0);
     }
 }
 

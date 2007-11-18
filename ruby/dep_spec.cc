@@ -60,12 +60,12 @@ namespace
     VALUE
     block_dep_spec_new(VALUE self, VALUE spec)
     {
-        tr1::shared_ptr<const BlockDepSpec> * ptr(0);
+        tr1::shared_ptr<const DepSpec> * ptr(0);
         try
         {
             tr1::shared_ptr<const PackageDepSpec> pkg(value_to_package_dep_spec(spec));
-            ptr = new tr1::shared_ptr<const BlockDepSpec>(new BlockDepSpec(pkg));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const BlockDepSpec> >::free, ptr));
+            ptr = new tr1::shared_ptr<const DepSpec>(new BlockDepSpec(pkg));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
             rb_obj_call_init(tdata, 1, &spec);
             return tdata;
         }
@@ -86,9 +86,9 @@ namespace
     VALUE
     block_dep_spec_blocked_spec(VALUE self)
     {
-        tr1::shared_ptr<const BlockDepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const BlockDepSpec>, p);
-        return dep_spec_to_value((*p)->blocked_spec());
+        tr1::shared_ptr<const DepSpec> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
+        return dep_spec_to_value(tr1::static_pointer_cast<const BlockDepSpec>(*p)->blocked_spec());
     }
 #endif
 
@@ -98,11 +98,11 @@ namespace
         static VALUE
         dep_spec_new_1(VALUE self, VALUE s)
         {
-            tr1::shared_ptr<const A_> * ptr(0);
+            tr1::shared_ptr<const DepSpec> * ptr(0);
             try
             {
-                ptr = new tr1::shared_ptr<const A_>(new A_(StringValuePtr(s)));
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const A_> >::free, ptr));
+                ptr = new tr1::shared_ptr<const DepSpec>(new A_(StringValuePtr(s)));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
                 rb_obj_call_init(tdata, 1, &s);
                 return tdata;
             }
@@ -117,7 +117,7 @@ namespace
     VALUE
     package_dep_spec_new(int argc, VALUE *argv, VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr(0);
+        tr1::shared_ptr<const DepSpec> * ptr(0);
         try
         {
             PackageDepSpecParseMode p;
@@ -129,12 +129,10 @@ namespace
             else
                 p = static_cast<PackageDepSpecParseMode>(NUM2INT(argv[1]));
 
-            ptr = new tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(argv[0]), p));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const PackageDepSpec> >::free, ptr));
+            ptr = new tr1::shared_ptr<const DepSpec>(new PackageDepSpec(StringValuePtr(argv[0]), p));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepSpec> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
-
-
         }
         catch (const std::exception & e)
         {
@@ -152,9 +150,9 @@ namespace
     VALUE
     use_dep_spec_flag(VALUE self)
     {
-        tr1::shared_ptr<const UseDepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const UseDepSpec>, p);
-        return rb_str_new2(stringify((*p)->flag()).c_str());
+        tr1::shared_ptr<const DepSpec> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
+        return rb_str_new2(stringify(tr1::static_pointer_cast<const UseDepSpec>(*p)->flag()).c_str());
     }
 
     /*
@@ -166,27 +164,10 @@ namespace
     VALUE
     use_dep_spec_inverse(VALUE self)
     {
-        tr1::shared_ptr<const UseDepSpec> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const UseDepSpec>, p);
-        return (*p)->inverse() ? Qtrue : Qfalse;
+        tr1::shared_ptr<const DepSpec> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, p);
+        return tr1::static_pointer_cast<const UseDepSpec>(*p)->inverse() ? Qtrue : Qfalse;
     }
-
-#if CIARANM_REMOVED_THIS
-    /*
-     * call-seq: each {|spec| block }
-     *
-     * Iterate over each child DepSpec.
-     */
-    VALUE
-    composite_dep_spec_each(VALUE self)
-    {
-        tr1::shared_ptr<CompositeDepSpec> * m_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<CompositeDepSpec>, m_ptr);
-        for (CompositeDepSpec::ConstIterator i((*m_ptr)->begin()), i_end((*m_ptr)->end()) ; i != i_end ; ++i)
-            rb_yield(dep_spec_to_value(*i));
-        return self;
-    }
-#endif
 
     /*
      * call-seq:
@@ -197,11 +178,11 @@ namespace
     VALUE
     package_dep_spec_package(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        if (0 == (*ptr)->package_ptr())
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*(*ptr)->package_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_ptr()).c_str());
     }
 
     /*
@@ -213,11 +194,11 @@ namespace
     VALUE
     package_dep_spec_package_name_part(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        if (0 == (*ptr)->package_name_part_ptr())
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_name_part_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*(*ptr)->package_name_part_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->package_name_part_ptr()).c_str());
     }
 
     /*
@@ -229,11 +210,11 @@ namespace
     VALUE
     package_dep_spec_category_name_part(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        if (0 == (*ptr)->category_name_part_ptr())
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->category_name_part_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*(*ptr)->category_name_part_ptr()).c_str());
+        return rb_str_new2(stringify(*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->category_name_part_ptr()).c_str());
     }
 
     /*
@@ -245,9 +226,9 @@ namespace
     VALUE
     package_dep_spec_text(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        return rb_str_new2(stringify((*ptr)->text()).c_str());
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        return rb_str_new2(stringify(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->text()).c_str());
     }
 
     /*
@@ -259,11 +240,11 @@ namespace
     VALUE
     package_dep_spec_slot_ptr(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        if (0 == (*ptr)->slot_ptr())
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->slot_ptr())
             return Qnil;
-        return rb_str_new2(stringify((*(*ptr)->slot_ptr())).c_str());
+        return rb_str_new2(stringify((*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->slot_ptr())).c_str());
     }
 
     /*
@@ -275,11 +256,11 @@ namespace
     VALUE
     package_dep_spec_repository_ptr(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        if (0 == (*ptr)->repository_ptr())
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        if (0 == tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->repository_ptr())
             return Qnil;
-        return rb_str_new2(stringify((*(*ptr)->repository_ptr())).c_str());
+        return rb_str_new2(stringify((*tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->repository_ptr())).c_str());
     }
 
     /*
@@ -291,13 +272,13 @@ namespace
     VALUE
     package_dep_spec_version_requirements_ptr(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
-        if ((*ptr)->version_requirements_ptr())
-            for (VersionRequirements::ConstIterator i((*ptr)->version_requirements_ptr()->begin()),
-                        i_end((*ptr)->version_requirements_ptr()->end()) ; i != i_end; ++i)
+        if (tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr())
+            for (VersionRequirements::ConstIterator i(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr()->begin()),
+                        i_end(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_ptr()->end()) ; i != i_end; ++i)
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
@@ -318,13 +299,13 @@ namespace
     VALUE
     package_dep_spec_use_requirements(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
-        if ((*ptr)->use_requirements_ptr())
-            for (UseRequirements::ConstIterator i((*ptr)->use_requirements_ptr()->begin()),
-                        i_end((*ptr)->use_requirements_ptr()->end()) ; i != i_end; ++i)
+        if (tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr())
+            for (UseRequirements::ConstIterator i(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr()->begin()),
+                    i_end(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->use_requirements_ptr()->end()) ; i != i_end; ++i)
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("flag")),
@@ -340,9 +321,9 @@ namespace
     VALUE
     package_dep_spec_version_requirements_mode(VALUE self)
     {
-        tr1::shared_ptr<const PackageDepSpec> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
-        return INT2FIX((*ptr)->version_requirements_mode());
+        tr1::shared_ptr<const DepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepSpec>, ptr);
+        return INT2FIX(tr1::static_pointer_cast<const PackageDepSpec>(*ptr)->version_requirements_mode());
     }
 
     void do_register_dep_spec()
@@ -465,9 +446,9 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_package_dep_spec))
     {
-        tr1::shared_ptr<const PackageDepSpec> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const PackageDepSpec>, v_ptr);
-        return *v_ptr;
+        tr1::shared_ptr<const DepSpec> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<const DepSpec>, v_ptr);
+        return tr1::static_pointer_cast<const PackageDepSpec>(*v_ptr);
     }
     if (T_STRING == TYPE(v))
     {

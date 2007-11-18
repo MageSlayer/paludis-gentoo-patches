@@ -45,9 +45,9 @@ namespace
     {
         if (rb_obj_is_kind_of(v, c_adapted_environment))
         {
-            tr1::shared_ptr<AdaptedEnvironment> * v_ptr;
-            Data_Get_Struct(v, tr1::shared_ptr<AdaptedEnvironment>, v_ptr);
-            return *v_ptr;
+            tr1::shared_ptr<Environment> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<Environment>, v_ptr);
+            return tr1::static_pointer_cast<AdaptedEnvironment>(*v_ptr);
         }
         else
         {
@@ -67,7 +67,8 @@ namespace
     {
         try
         {
-            return value_to_environment(self)->query_use(UseFlagName(StringValuePtr(flag)), *(value_to_package_id(pid))) ? Qtrue : Qfalse;
+            return value_to_environment(self)->query_use(
+                    UseFlagName(StringValuePtr(flag)), *(value_to_package_id(pid))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -127,7 +128,8 @@ namespace
     {
         try
         {
-            return value_to_environment(self)->accept_license(std::string(StringValuePtr(license)), *(value_to_package_id(p))) ? Qtrue : Qfalse;
+            return value_to_environment(self)->accept_license(
+                    std::string(StringValuePtr(license)), *(value_to_package_id(p))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -199,9 +201,9 @@ namespace
     {
         if (rb_obj_is_kind_of(v, c_paludis_environment))
         {
-            tr1::shared_ptr<PaludisEnvironment> * v_ptr;
-            Data_Get_Struct(v, tr1::shared_ptr<PaludisEnvironment>, v_ptr);
-            return *v_ptr;
+            tr1::shared_ptr<Environment> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<Environment>, v_ptr);
+            return tr1::static_pointer_cast<PaludisEnvironment>(*v_ptr);
         }
         else
         {
@@ -233,8 +235,8 @@ namespace
             else if (0 != argc)
                 rb_raise(rb_eArgError, "PaludisEnvironment.new expects one or zero arguments, but got %d", argc);
 
-            tr1::shared_ptr<PaludisEnvironment> * e = new tr1::shared_ptr<PaludisEnvironment>(new PaludisEnvironment(config_suffix));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<PaludisEnvironment> >::free, e));
+            tr1::shared_ptr<Environment> * e = new tr1::shared_ptr<Environment>(new PaludisEnvironment(config_suffix));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -304,7 +306,7 @@ namespace
             else
                 path = StringValuePtr(argv[0]);
 
-            tr1::shared_ptr<NoConfigEnvironment> * e = new tr1::shared_ptr<NoConfigEnvironment>(new
+            tr1::shared_ptr<Environment> * e = new tr1::shared_ptr<Environment>(new
                     NoConfigEnvironment(no_config_environment::Params::create()
                         .repository_dir(FSEntry(path))
                         .write_cache(write_cache)
@@ -313,7 +315,7 @@ namespace
                         .repository_type(no_config_environment::ncer_auto)
                         .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                         .master_repository_dir(FSEntry(master_repository_dir))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<NoConfigEnvironment> >::free, e));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -393,8 +395,8 @@ namespace
             rb_raise(rb_eArgError, "AdaptedEnvironment.new expects one argument, but got %d", argc);
         try
         {
-            tr1::shared_ptr<AdaptedEnvironment> * e = new tr1::shared_ptr<AdaptedEnvironment>(new AdaptedEnvironment(value_to_environment(argv[0])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<AdaptedEnvironment> >::free, e));
+            tr1::shared_ptr<Environment> * e = new tr1::shared_ptr<Environment>(new AdaptedEnvironment(value_to_environment(argv[0])));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -424,8 +426,8 @@ namespace
                 rb_raise(rb_eTypeError, "Can't convert %s into UseFlagState", rb_obj_classname(use_flag_state));
 
             value_to_adapted_environment(self)->adapt_use(value_to_package_dep_spec(package_dep_spec),
-                                                            UseFlagName(StringValuePtr(use_flag_name)),
-                                                            ufs);
+                    UseFlagName(StringValuePtr(use_flag_name)),
+                    ufs);
             return Qnil;
         }
         catch (const std::exception & e)
@@ -564,9 +566,9 @@ paludis::ruby::value_to_no_config_environment(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_no_config_environment))
     {
-        tr1::shared_ptr<NoConfigEnvironment> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<NoConfigEnvironment>, v_ptr);
-        return *v_ptr;
+        tr1::shared_ptr<Environment> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<Environment>, v_ptr);
+        return tr1::static_pointer_cast<NoConfigEnvironment>(*v_ptr);
     }
     else
     {

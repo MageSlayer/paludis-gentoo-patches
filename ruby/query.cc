@@ -91,11 +91,11 @@ namespace
     VALUE
     matches_new(VALUE self, VALUE pda)
     {
-        query::Matches * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::Matches(*value_to_package_dep_spec(pda));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Matches>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 1, &pda);
             return tdata;
 
@@ -116,11 +116,11 @@ namespace
     VALUE
     package_new(VALUE self, VALUE qpn)
     {
-        query::Package * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::Package(value_to_qualified_package_name(qpn));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Package>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 1, &qpn);
             return tdata;
 
@@ -138,8 +138,8 @@ namespace
         static VALUE
         query_new(VALUE self)
         {
-            A_ * ptr = new A_();
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<A_>::free, ptr));
+            Query * ptr = new A_();
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 0, 0);
             return tdata;
         }
@@ -154,11 +154,11 @@ namespace
     VALUE
     installed_at_root_new(VALUE self, VALUE root)
     {
-        query::InstalledAtRoot * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::InstalledAtRoot(FSEntry(StringValuePtr(root)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::InstalledAtRoot>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 1, &root);
             return tdata;
 
@@ -179,11 +179,11 @@ namespace
     VALUE
     repository_new(VALUE self, VALUE repository_name)
     {
-        query::Repository * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::Repository(RepositoryName(StringValuePtr(repository_name)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Repository>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 1, &repository_name);
             return tdata;
         }
@@ -203,11 +203,11 @@ namespace
     VALUE
     all_new(VALUE self)
     {
-        query::All * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::All();
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::All>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 0, 0);
             return tdata;
         }
@@ -227,11 +227,11 @@ namespace
     VALUE
     category_new(VALUE self, VALUE category_name)
     {
-        query::Category * ptr(0);
+        Query * ptr(0);
         try
         {
             ptr = new query::Category(CategoryNamePart(StringValuePtr(category_name)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Category>::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<Query>::free, ptr));
             rb_obj_call_init(tdata, 1, &category_name);
             return tdata;
         }
