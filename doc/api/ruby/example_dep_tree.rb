@@ -116,7 +116,7 @@ end
 # We start with an Environment, respecting the user's '--environment' choice.
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
-# Fetch package IDs for installed 'sys-apps/paludis'
+# Fetch package IDs for all installed packages.
 ids = env.package_database.query(
     Query::SupportsInstalledAction.new, QueryOrder::OrderByVersion)
 
