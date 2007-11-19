@@ -211,7 +211,8 @@ HtmlWriter::arg_group_item(const char & short_name, const std::string & long_nam
 {
     _os << "<dt>";
     if (short_name)
-        _os << "-" << short_name << ", " << "--" << long_name;
+        _os << "-" << short_name << ", ";
+    _os << "--" << long_name;
     if (! negated_long_name.empty())
         _os << " (" << "--" << negated_long_name << ")";
     _os << "</dt>" << endl;
