@@ -30,17 +30,17 @@ CommandLine::CommandLine() :
     action_args(this, "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
-    a_install(&action_args,   "install",      'i',  "Install one or more packages (default)"),
-    a_version(&action_args,   "version",      'V',  "Display program version"),
-    a_help(&action_args,      "help",         'h',  "Display program help"),
+    a_install(&action_args,   "install",      'i',  "Install one or more packages (default)", false),
+    a_version(&action_args,   "version",      'V',  "Display program version", false),
+    a_help(&action_args,      "help",         'h',  "Display program help", false),
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
-    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
+    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
-    a_compact(&general_args, "compact", '\0', "Display output using one line per entry"),
+    a_compact(&general_args, "compact", '\0', "Display output using one line per entry", true),
 
     source_args(this, "Source options",
             "Options affecting the source image"),
@@ -51,7 +51,7 @@ CommandLine::CommandLine() :
     a_description(&metadata_args, "description", 'D', "Specify a package description"),
     a_build_dependency(&metadata_args, "build-dependency", 'B', "Specify a build dependency"),
     a_run_dependency(&metadata_args, "run-dependency", 'R', "Specify a run dependency"),
-    a_preserve_metadata(&metadata_args, "preserve-metadata", 'P', "If replacing a package, copy its description and dependencies"),
+    a_preserve_metadata(&metadata_args, "preserve-metadata", 'P', "If replacing a package, copy its description and dependencies", true),
 
     install_args(this, "Install options",
             "Options which are relevant for --install"),

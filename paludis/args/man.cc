@@ -118,7 +118,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         for (paludis::args::ArgsGroup::ConstIterator b((*a)->begin()), b_end((*a)->end()) ;
                 b != b_end ; ++b)
         {
-            dw.arg_group_item((*b)->short_name(), (*b)->long_name(), (*b)->description());
+            dw.arg_group_item((*b)->short_name(), (*b)->long_name(),
+                    (*b)->can_be_negated() ? "no-" + (*b)->long_name() : "", (*b)->description());
 
             ExtraText t(dw);
             (*b)->accept(t);
@@ -206,12 +207,14 @@ HtmlWriter::start_arg_group(const std::string & name, const std::string & descri
 
 void
 HtmlWriter::arg_group_item(const char & short_name, const std::string & long_name,
-        const std::string & description)
+        const std::string & negated_long_name, const std::string & description)
 {
     _os << "<dt>";
     if (short_name)
-        _os << "-" << short_name << ", ";
-    _os << "--" << long_name << "</dt>" << endl;
+        _os << "-" << short_name << ", " << "--" << long_name;
+    if (! negated_long_name.empty())
+        _os << ", " << "--" << negated_long_name;
+    _os << "</dt>" << endl;
     _os << "<dd>" << description << endl;
 }
 
@@ -374,13 +377,16 @@ ManWriter::start_arg_group(const std::string & name, const std::string & descrip
 
 void
 ManWriter::arg_group_item(const char & short_name, const std::string & long_name,
-        const std::string & description)
+        const std::string & negated_long_name, const std::string & description)
 {
     _os << ".TP" << endl;
     _os << ".B \"";
     if (short_name)
         _os << "\\-" << short_name << " , ";
-    _os << "\\-\\-" << long_name << "\"" << endl;
+    _os << "\\-\\-" << long_name;
+    if (! negated_long_name.empty())
+        _os << " (\\-\\-" << negated_long_name << ")\"";
+    _os << endl;
     _os << description << endl;
 }
 

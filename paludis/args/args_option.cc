@@ -81,7 +81,15 @@ ArgsOption::remove()
 
 SwitchArg::SwitchArg(ArgsGroup * const our_group, std::string our_long_name, char our_short_name,
         std::string our_description) :
-    ArgsOption(our_group, our_long_name, our_short_name, our_description)
+    ArgsOption(our_group, our_long_name, our_short_name, our_description),
+    _can_be_negated(false)
+{
+}
+
+SwitchArg::SwitchArg(ArgsGroup * const our_group, std::string our_long_name, char our_short_name,
+        std::string our_description, const bool c) :
+    ArgsOption(our_group, our_long_name, our_short_name, our_description),
+    _can_be_negated(c)
 {
 }
 
@@ -314,5 +322,41 @@ StringSetArg::AllowedArgConstIterator
 StringSetArg::end_allowed_args() const
 {
     return AllowedArgConstIterator(_imp->allowed_args.end());
+}
+
+bool
+AliasArg::can_be_negated() const
+{
+    return _other->can_be_negated();
+}
+
+bool
+StringArg::can_be_negated() const
+{
+    return false;
+}
+
+bool
+IntegerArg::can_be_negated() const
+{
+    return false;
+}
+
+bool
+EnumArg::can_be_negated() const
+{
+    return false;
+}
+
+bool
+StringSetArg::can_be_negated() const
+{
+    return false;
+}
+
+bool
+SwitchArg::can_be_negated() const
+{
+    return _can_be_negated;
 }
 

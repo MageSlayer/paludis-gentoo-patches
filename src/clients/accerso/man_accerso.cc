@@ -36,7 +36,7 @@ namespace
 
         ManCommandLine() :
             group(this, "", ""),
-            a_html(&group, "html", '\0', "")
+            a_html(&group, "html", '\0', "", false)
         {
         }
 

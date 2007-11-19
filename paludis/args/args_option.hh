@@ -129,6 +129,13 @@ namespace paludis
                 {
                     return _group;
                 }
+
+                /**
+                 * Can we be negated?
+                 *
+                 * Needs to match up with ArgsVisitor logic.
+                 */
+                virtual bool can_be_negated() const = 0;
         };
 
         /**
@@ -141,14 +148,29 @@ namespace paludis
             public ArgsOption,
             public AcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>
         {
+            private:
+                bool _can_be_negated;
+
             public:
                 /**
                  * Constructor.
+                 *
+                 * \since 0.26
                  */
                 SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
-                        std::string description);
+                        std::string description, const bool can_be_negated);
+
+                /**
+                 * Constructor.
+                 *
+                 * \deprecated Use the form with the additional can_be_negated arg. Deprecated in 0.26.
+                 */
+                SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
+                        std::string description) PALUDIS_ATTRIBUTE((deprecated));
 
                 ~SwitchArg();
+
+                virtual bool can_be_negated() const;
         };
 
         /**
@@ -187,6 +209,8 @@ namespace paludis
                  * Set the argument returned by argument().
                  */
                 void set_argument(const std::string& arg);
+
+                virtual bool can_be_negated() const;
         };
 
         /**
@@ -287,6 +311,8 @@ namespace paludis
                 AllowedArgConstIterator end_allowed_args() const;
 
                 ///\}
+
+                virtual bool can_be_negated() const;
         };
 
 
@@ -325,6 +351,8 @@ namespace paludis
                 {
                     return _other;
                 }
+
+                virtual bool can_be_negated() const;
         };
 
         /**
@@ -354,6 +382,8 @@ namespace paludis
                  * Set the argument returned by argument().
                  */
                 void set_argument(const int arg) { _argument = arg; }
+
+                virtual bool can_be_negated() const;
         };
 
         /**
@@ -450,6 +480,8 @@ namespace paludis
                 AllowedArgConstIterator end_allowed_args() const;
 
                 ///\}
+
+                virtual bool can_be_negated() const;
         };
     }
 }

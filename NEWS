@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * Various switches now support --no-, for negation.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

@@ -32,19 +32,19 @@ CommandLine::CommandLine() :
             "be specified."),
 
     a_find_stable_candidates(&tree_action_args,
-            "find-stable-candidates", 's',  "Search for stable package candidates"),
+            "find-stable-candidates", 's',  "Search for stable package candidates", false),
     a_find_dropped_keywords(&tree_action_args,
-            "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
+            "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped", false),
     a_find_insecure_packages(&tree_action_args,
-            "find-insecure-packages", 'i',  "Search for packages marked as insecure by a GLSA"),
+            "find-insecure-packages", 'i',  "Search for packages marked as insecure by a GLSA", false),
     a_find_unused_packages(&tree_action_args,
-            "find-unused-packages",   'U',  "Search package versions that can probably safely be removed"),
+            "find-unused-packages",   'U',  "Search package versions that can probably safely be removed", false),
     a_keywords_graph(&tree_action_args,
-            "keyword-graph",          'k',  "Display keywords graphically"),
+            "keyword-graph",          'k',  "Display keywords graphically", false),
     a_reverse_deps(&tree_action_args,
-            "reverse-deps",           'r',  "Find all package that depend on a given dep spec"),
+            "reverse-deps",           'r',  "Find all package that depend on a given dep spec", false),
     a_what_needs_keywording(&tree_action_args,
-            "what-needs-keywording", 'w', "Display what needs to be done to keyword a target"),
+            "what-needs-keywording", 'w', "Display what needs to be done to keyword a target", false),
 
     profile_action_args(this, "Profile-Oriented Actions",
             "Selects which basic profile-oriented action to perform. Exactly one action should "
@@ -52,30 +52,30 @@ CommandLine::CommandLine() :
 
     a_display_default_system_resolution(&profile_action_args,
             "display-default-system-resolution", 'S', "Display package names and versions that are included in "
-            "the default resolution of the system set"),
+            "the default resolution of the system set", false),
 
     downgrade_check_args(this, "Downgrade Check Actions",
             "Selects which downgrade check related action to perform. Exactly one action should "
             "be specified."),
 
     a_build_downgrade_check_list(&downgrade_check_args,
-            "build-downgrade-check-list", '\0', "Build the downgrade check lists"),
+            "build-downgrade-check-list", '\0', "Build the downgrade check lists", false),
     a_downgrade_check(&downgrade_check_args,
-            "downgrade-check", '\0', "Perform the dowgrade check"),
+            "downgrade-check", '\0', "Perform the dowgrade check", false),
 
     general_action_args(this, "General Actions",
             "Selects which basic general action to perform. Exactly one action should "
             "be specified."),
 
     a_version(&general_action_args,
-            "version",                'V',  "Display program version"),
+            "version",                'V',  "Display program version", false),
     a_help(&general_action_args,
-            "help",                   'h',  "Display program help"),
+            "help",                   'h',  "Display program help", false),
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
-    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
+    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
 
     a_repository_directory(&general_args, "repository-dir", 'D',
@@ -95,7 +95,7 @@ CommandLine::CommandLine() :
     a_profile(&profile_args,    "profile",    '\0',
             "Display results for this profile path, rather than all profiles (may be specified multiple times)"),
     a_unstable(&profile_args,   "unstable",    '\0',
-            "Accept ~arch as well as arch"),
+            "Accept ~arch as well as arch", true),
 
     configuration_options(this, "Configuration options",
             "Options that control general configuration."),

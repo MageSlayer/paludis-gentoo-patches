@@ -18,6 +18,7 @@
 
 #include "args_option.hh"
 #include "args_error.hh"
+#include "bad_argument.hh"
 
 #include <paludis/util/visitor.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -63,7 +64,8 @@ ArgsVisitor::ArgsVisitor(ArgsIterator * ai, ArgsIterator ae,
         const std::string & env_prefix) :
     _args_index(ai),
     _args_end(ae),
-    _env_prefix(env_prefix)
+    _env_prefix(env_prefix),
+    _no(false)
 {
 }
 
@@ -78,16 +80,16 @@ ArgsVisitor::get_param(const ArgsOption & arg)
 
 void ArgsVisitor::visit(StringArg & arg)
 {
-    arg.set_specified(true);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), "1", 1);
-
-    std::string p(get_param(arg));
-    arg.set_argument(p);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
+    if (! _no)
+    {
+        std::string p(get_param(arg));
+        arg.set_specified(true);
+        arg.set_argument(p);
+        if (! _env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
+    }
+    else
+        throw BadArgument("--no-" + arg.long_name());
 }
 
 void ArgsVisitor::visit(AliasArg & arg)
@@ -97,61 +99,74 @@ void ArgsVisitor::visit(AliasArg & arg)
 
 void ArgsVisitor::visit(SwitchArg & arg)
 {
-    arg.set_specified(true);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), "1", 1);
+    if (! _no)
+    {
+        arg.set_specified(true);
+        if (! _env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), "1", 1);
+    }
+    else if (! arg.can_be_negated())
+        throw BadArgument("--no-" + arg.long_name());
+    else
+    {
+        arg.set_specified(false);
+        if (! _env_prefix.empty())
+            unsetenv(env_name(arg.long_name()).c_str());
+    }
 }
 
 void ArgsVisitor::visit(IntegerArg & arg)
 {
-    arg.set_specified(true);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), "1", 1);
-
-    std::string param = get_param(arg);
-    try
+    if (! _no)
     {
-        int a(destringify<int>(param));
-        arg.set_argument(a);
+        arg.set_specified(true);
+        std::string param = get_param(arg);
+        try
+        {
+            int a(destringify<int>(param));
+            arg.set_argument(a);
 
-        if (! _env_prefix.empty())
-            setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
+            if (! _env_prefix.empty())
+                setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
+        }
+        catch (const DestringifyError &)
+        {
+            throw BadValue("--" + arg.long_name(), param);
+        }
     }
-    catch (const DestringifyError &)
-    {
-        throw BadValue("--" + arg.long_name(), param);
-    }
+    else
+        throw BadArgument("--no-" + arg.long_name());
 }
 
 void ArgsVisitor::visit(EnumArg & arg)
 {
-    arg.set_specified(true);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), "1", 1);
-
-    std::string p(get_param(arg));
-    arg.set_argument(p);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
+    if (! _no)
+    {
+        arg.set_specified(true);
+        std::string p(get_param(arg));
+        arg.set_argument(p);
+        if (! _env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
+    }
+    else
+        throw BadArgument("--no-" + arg.long_name());
 }
 
 void ArgsVisitor::visit(StringSetArg & arg)
 {
-    arg.set_specified(true);
+    if (! _no)
+    {
+        arg.set_specified(true);
 
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), "1", 1);
+        std::string param = get_param(arg);
+        arg.add_argument(param);
 
-    std::string param = get_param(arg);
-    arg.add_argument(param);
-
-    if (! _env_prefix.empty())
-        setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
-                    arg.end_args(), " ").c_str(), 1);
+        if (! _env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
+                        arg.end_args(), " ").c_str(), 1);
+    }
+    else
+        throw BadArgument("--no-" + arg.long_name());
 }
 
 std::string
@@ -160,5 +175,11 @@ ArgsVisitor::env_name(const std::string & long_name) const
     std::string result(_env_prefix + "_" + long_name);
     std::replace(result.begin(), result.end(), '-', '_');
     return result;
+}
+
+void
+ArgsVisitor::set_no(const bool n)
+{
+    _no = n;
 }
 

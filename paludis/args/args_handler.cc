@@ -141,6 +141,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
     for ( ; argit != arge; ++argit )
     {
         std::string arg = *argit;
+        visitor.set_no(false);
 
         if (arg == "--")
         {
@@ -152,8 +153,18 @@ ArgsHandler::run(const int argc, const char * const * const argv,
             arg.erase(0, 2);
             std::map<std::string, ArgsOption *>::iterator it = _imp->longopts.find(arg);
             if (it == _imp->longopts.end())
-                throw BadArgument("--" + arg);
-            it->second->accept(visitor);
+            {
+                if (0 != arg.compare(0, 3, "no-"))
+                    throw BadArgument("--" + arg);
+                arg.erase(0, 3);
+                it = _imp->longopts.find(arg);
+                if (it == _imp->longopts.end())
+                    throw BadArgument("--no-" + arg);
+                visitor.set_no(true);
+                it->second->accept(visitor);
+            }
+            else
+                it->second->accept(visitor);
         }
         else if (arg[0] == '-')
         {

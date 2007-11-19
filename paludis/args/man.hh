@@ -62,7 +62,7 @@ namespace paludis
                 virtual void start_description(const std::string & description) = 0;
                 virtual void start_arg_group(const std::string & name, const std::string & description) = 0;
                 virtual void arg_group_item(const char & short_name, const std::string & long_name,
-                        const std::string & description) = 0;
+                        const std::string & negated_long_name, const std::string & description) = 0;
                 virtual void start_extra_arg() = 0;
                 virtual void extra_arg_enum(const std::string & first, const std::string & second,
                         const std::string & default_arg) = 0;
@@ -118,7 +118,7 @@ namespace paludis
                 void start_description(const std::string & description);
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
-                        const std::string & description);
+                        const std::string & negated_long_name, const std::string & description);
                 void start_extra_arg();
                 void extra_arg_enum(const std::string & first, const std::string & second,
                         const std::string & default_arg);
@@ -172,7 +172,7 @@ namespace paludis
                 void start_description(const std::string & description);
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
-                        const std::string & description);
+                        const std::string & negated_long_name, const std::string & description);
                 void start_extra_arg();
                 void extra_arg_enum(const std::string & first, const std::string & second,
                         const std::string & default_arg);

@@ -86,6 +86,8 @@ namespace paludis
 
                 std::string env_name(const std::string & long_name) const;
 
+                bool _no;
+
             public:
                 /**
                  * Constructor
@@ -110,6 +112,9 @@ namespace paludis
 
                 /// Visit a StringSetArg.
                 void visit(StringSetArg &);
+
+                /// Change whether we're visiting a --no- option
+                void set_no(const bool);
         };
     }
 }

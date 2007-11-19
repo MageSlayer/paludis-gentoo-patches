@@ -24,8 +24,8 @@ CommandLine::CommandLine() :
     action_args(this, "Actions",
             "Selects which basic action to perform. At most one action should "
             "be specified."),
-    a_version(&action_args,   "version",      'V',  "Display program version"),
-    a_help(&action_args,      "help",         'h',  "Display program help"),
+    a_version(&action_args,   "version",      'V',  "Display program version", false),
+    a_help(&action_args,      "help",         'h',  "Display program help", false),
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),

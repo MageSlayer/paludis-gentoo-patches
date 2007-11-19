@@ -31,14 +31,14 @@ CommandLine::CommandLine() :
     action_args(this, "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
-    a_search(&action_args,     "search",        's',  "Search for a package"),
-    a_version(&action_args,   "version",      'V',  "Display program version"),
-    a_help(&action_args,      "help",         'h',  "Display program help"),
+    a_search(&action_args,     "search",        's',  "Search for a package", false),
+    a_version(&action_args,   "version",      'V',  "Display program version", false),
+    a_help(&action_args,      "help",         'h',  "Display program help", false),
 
     general_args(this, "General options",
             "Options that are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
-    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
+    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
 
@@ -51,9 +51,9 @@ CommandLine::CommandLine() :
             ("pcre",        "Regular expression match using pcre")
             ("exact",       "Exact text match"),
             "text"),
-    a_flatten(&match_args, "flatten", 'f', "Flatten spec trees, rather than matching against individual items"),
-    a_enabled_only(&match_args, "enabled-only", 'e', "When searching spec trees, only look in enabled subtrees"),
-    a_not(&match_args, "not", 'n', "Select packages that do not match"),
+    a_flatten(&match_args, "flatten", 'f', "Flatten spec trees, rather than matching against individual items", true),
+    a_enabled_only(&match_args, "enabled-only", 'e', "When searching spec trees, only look in enabled subtrees", true),
+    a_not(&match_args, "not", 'n', "Select packages that do not match", true),
 
     filter_args(this, "Filter options",
             "Options that control whether or not a package is considered for matching."),
@@ -65,8 +65,8 @@ CommandLine::CommandLine() :
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
     a_package(&filter_args,    "package",    '\0', "Matches with this package name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
-    a_visible_only(&filter_args, "visible-only", 'v', "Only consider visible packages"),
-    a_all_versions(&filter_args, "all-versions", 'a', "Check all versions, rather than only one (slower)"),
+    a_visible_only(&filter_args, "visible-only", 'v', "Only consider visible packages", true),
+    a_all_versions(&filter_args, "all-versions", 'a', "Check all versions, rather than only one (slower)", true),
     a_kind(&filter_args, "kind", 'K', "Packages of this kind only",
             paludis::args::EnumArg::EnumArgOptions
             ("installable",        "Installable packages")
@@ -77,9 +77,9 @@ CommandLine::CommandLine() :
     output_args(this, "Output options",
             "Options that control how output is generated."),
 
-    a_compact(&output_args, "compact", '\0', "Display output using one line per entry"),
-    a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies"),
-    a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata"),
+    a_compact(&output_args, "compact", '\0', "Display output using one line per entry", true),
+    a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies", true),
+    a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata", true),
 
     deprecated_args(this, "Deprecated options", "Deprecated options."),
     a_config_suffix(&deprecated_args, "config-suffix", 'c',

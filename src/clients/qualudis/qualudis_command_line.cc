@@ -30,8 +30,8 @@ QualudisCommandLine::QualudisCommandLine() :
             "be specified. If no action is specified, the directories specifed "
             "on the command line (or, if none, the current directory) are "
             "checked."),
-    a_version(&action_args,  "version",      'V', "Display program version"),
-    a_help(&action_args,     "help",         'h', "Display program help"),
+    a_version(&action_args,  "version",      'V', "Display program version", false),
+    a_help(&action_args,     "help",         'h', "Display program help", false),
 
     check_options(this, "Options for general checks",
             "Options relevant for the --owner actions."),
@@ -55,7 +55,7 @@ QualudisCommandLine::QualudisCommandLine() :
     a_master_repository_dir(&configuration_options, "master-repository-dir", '\0',
             "Use the specified location for the master repository"),
     a_use_repository_cache(&configuration_options, "use-repository-cache", '\0',
-            "Use the repository's metadata cache, if available (faster, but may miss certain errors)")
+            "Use the repository's metadata cache, if available (faster, but may miss certain errors)", true)
 {
     add_usage_line("[ options ] [ directories ... ]");
     add_environment_variable("QUALUDIS_OPTIONS", "Default command-line options.");

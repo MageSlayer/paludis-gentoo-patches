@@ -50,6 +50,7 @@ struct CommandLine : public ArgsHandler
     AliasArg arg_other_monkey;
     IntegerArg arg_somenum;
     EnumArg arg_enum;
+    SwitchArg arg_spider;
 
     ArgsGroup group_three;
     EnumArg arg_other_enum;
@@ -76,19 +77,21 @@ struct CommandLine : public ArgsHandler
 
 CommandLine::CommandLine() :
     group_one(this, "Group one", "Description of group one"),
-    arg_foo(&group_one, "foo", 'f', "Enable foo"),
-    arg_bar(&group_one, "bar", 'b', "Enable bar"),
-    arg_dummy(&group_one, "dummy", 'd', "Enable something else"),
-    arg_removed(&group_one, "removed", 'r', "Removed"),
+    arg_foo(&group_one, "foo", 'f', "Enable foo", false),
+    arg_bar(&group_one, "bar", 'b', "Enable bar", false),
+    arg_dummy(&group_one, "dummy", 'd', "Enable something else", false),
+    arg_removed(&group_one, "removed", 'r', "Removed", false),
 
     group_two(this, "Group two", "Description of group two"),
-    arg_baz(&group_two, "baz", 'z', "Enable baz"),
+    arg_baz(&group_two, "baz", 'z', "Enable baz", false),
     arg_other_baz(&arg_baz, "other-baz"),
-    arg_something(&group_two, "something", 's', "Value of something"),
-    arg_monkey(&group_two, "monkey", 'm', "A monkey?"),
+    arg_something(&group_two, "something", 's', "Value of something", false),
+    arg_monkey(&group_two, "monkey", 'm', "A monkey?", false),
     arg_other_monkey(&arg_monkey, "other-monkey"),
     arg_somenum(&group_two, "num", 'n', "Some number"),
-    arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
+    arg_enum(&group_two, "enum", 'e', "One of three",
+            EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
+    arg_spider(&group_two, "spider", '\0', "A spider?", true),
 
     group_three(this, "Group three", "Description of group three"),
     arg_other_enum(&group_three, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
@@ -114,10 +117,10 @@ namespace test_cases
 
         void run()
         {
-            const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz",
+            const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz", "--spider", "--no-spider",
                 "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
             CommandLine c1;
-            c1.run(12, args, "", "", "");
+            c1.run(14, args, "", "", "");
             TEST_CHECK(c1.arg_foo.specified());
             TEST_CHECK(! c1.arg_bar.specified());
             TEST_CHECK(c1.arg_baz.specified());
@@ -133,6 +136,7 @@ namespace test_cases
             TEST_CHECK(c1.arg_other_enum.argument() == "b");
             TEST_CHECK(c1.arg_monkey.specified());
             TEST_CHECK(c1.arg_monkey.argument() == "chimp");
+            TEST_CHECK(! c1.arg_spider.specified());
 
             TEST_CHECK_EQUAL(std::distance(c1.begin_parameters(), c1.end_parameters()), 3);
             TEST_CHECK_EQUAL(*c1.begin_parameters(), "--dummy");
@@ -156,6 +160,18 @@ namespace test_cases
             TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), MissingValue);
         }
     } test_args_no_param;
+
+    struct ArgsTestNoNo : TestCase
+    {
+        ArgsTestNoNo() : TestCase("No --no-") { }
+
+        void run()
+        {
+            const char *args[] = { "program-name", "--no-num" };
+            CommandLine c1;
+            TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), BadArgument);
+        }
+    } test_args_no_no;
 
     /**
      * \test Removed arguments tests.

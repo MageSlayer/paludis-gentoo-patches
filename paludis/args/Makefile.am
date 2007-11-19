@@ -62,6 +62,7 @@ noinst_LIBRARIES = libpaludisman.a
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
+	$(top_builddir)/paludis/util/test_extras.o \
 	libpaludisargs.la \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la

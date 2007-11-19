@@ -30,16 +30,16 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
                                    const std::string & our_description) :
     ArgsGroup(h, our_name, our_description),
 
-    a_pretend(this, "pretend", 'p', "Pretend only"),
+    a_pretend(this, "pretend", 'p', "Pretend only", false),
     a_destinations(this, "destinations", 'd', "Use specified destinations instead of defaults"),
-    a_preserve_world(this, "preserve-world", '1', "Don't modify the world file"),
+    a_preserve_world(this, "preserve-world", '1', "Don't modify the world file", true),
     a_add_to_world_spec(this, "add-to-world-spec", '\0',
             "Use this spec, rather than all targets, for updating world (for resume commands)"),
-    a_no_config_protection(this, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
+    a_no_config_protection(this, "no-config-protection", '\0', "Disable config file protection (dangerous)", false),
     a_debug_build(this, "debug-build", '\0'),
     a_checks(this, "checks", '\0'),
-    a_fetch(this, "fetch", 'f', "Only fetch sources; don't install anything"),
-    a_no_safe_resume(this, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed"),
+    a_fetch(this, "fetch", 'f', "Only fetch sources; don't install anything", false),
+    a_no_safe_resume(this, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed", false),
     a_show_reasons(this, "show-reasons", '\0', "Show why packages are being (un)installed",
             args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")

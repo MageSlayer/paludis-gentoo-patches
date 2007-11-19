@@ -29,13 +29,13 @@ CommandLine::CommandLine() :
             "Selects which basic action to perform. Up to one action should "
             "be specified. If no action is specified, contrarius tries to create"
             "a cross toolchain."),
-    a_version(&action_args,  "version",      'V', "Display program version"),
-    a_help(&action_args,     "help",         'h', "Display program help"),
+    a_version(&action_args,  "version",      'V', "Display program version", false),
+    a_help(&action_args,     "help",         'h', "Display program help", false),
 
     build_args(this, "Building",
             "Tweak toolchain creation."),
-    a_fetch(&build_args,     "fetch",        'f', "Only fetch sources; don't install anything"),
-    a_pretend(&build_args,   "pretend",      'p', "Pretend only"),
+    a_fetch(&build_args,     "fetch",        'f', "Only fetch sources; don't install anything", false),
+    a_pretend(&build_args,   "pretend",      'p', "Pretend only", true),
     a_environment(&build_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_show_reasons(&build_args, "show-reasons", '\0', "Show why packages are being installed",
             paludis::args::EnumArg::EnumArgOptions
@@ -52,8 +52,8 @@ CommandLine::CommandLine() :
             "binutils"),
     a_target(&build_args,    "target",       't', "Build for specified CTARGET."),
     a_headers(&build_args,   "headers",      'H',
-            "Add additional stage to install kernel- and libc-headers before gcc."),
-    a_always_rebuild(&build_args,   "always-rebuild",   'r',    "Always rebuild already built stages."),
+            "Add additional stage to install kernel- and libc-headers before gcc.", true),
+    a_always_rebuild(&build_args,   "always-rebuild",   'r',    "Always rebuild already built stages.", true),
 
     a_debug_build(&build_args, "debug-build", '\0', "What to do with debug information",
             paludis::args::EnumArg::EnumArgOptions
@@ -64,9 +64,9 @@ CommandLine::CommandLine() :
 
     output_options(this, "Options for output verbosity",
             "Control how verbose contrarius is."),
-    a_verbose(&output_options,   "verbose", 'v', "Be verbose"),
+    a_verbose(&output_options,   "verbose", 'v', "Be verbose", true),
     a_log_level(&output_options, "log-level", 'L'),
-    a_no_colour(&output_options, "no-colour", 'C', "Do not use colour"),
+    a_no_colour(&output_options, "no-colour", 'C', "Do not use colour", false),
     a_no_color(&a_no_colour,     "no-color"),
     a_resume_command_template(&output_options, "resume-command-template", '\0', "Save the resume command to a file made using mkstemp(3)")
 {
