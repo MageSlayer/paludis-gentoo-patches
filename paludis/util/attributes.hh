@@ -56,11 +56,11 @@
  * \ingroup g_utils
  */
 
-#if (defined(__GNUC__) || defined(DOXYGEN))
+#if (defined(__GNUC__) && ! defined(DOXYGEN))
 #  if defined(__ICC)
 #    define PALUDIS_ATTRIBUTE(x)
 #  else
-#    if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || defined(DOXYGEN))
+#    if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
 #      define PALUDIS_ATTRIBUTE(x) __attribute__(x)
 #      define PALUDIS_CAN_USE_ATTRIBUTE 1
 #    else
@@ -71,7 +71,7 @@
 #  define PALUDIS_ATTRIBUTE(x)
 #endif
 
-#ifdef PALUDIS_ENABLE_VISIBILITY
+#if (defined(PALUDIS_ENABLE_VISIBILITY) && ! defined(DOXYGEN))
 #  define PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((visibility("default")))
 #  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))
 #else
