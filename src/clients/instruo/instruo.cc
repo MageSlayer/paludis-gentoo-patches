@@ -180,7 +180,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_version.specified())
         {
             cout << "instruo, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
-                << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
+                << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO << PALUDIS_VERSION_SUFFIX;
             if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
                 cout << " svn " << PALUDIS_SUBVERSION_REVISION;
             cout << endl << endl;
