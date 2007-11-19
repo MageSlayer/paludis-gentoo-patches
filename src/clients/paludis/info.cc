@@ -24,6 +24,7 @@
 #include <paludis/about.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
@@ -32,6 +33,7 @@
 #include <paludis/metadata_key.hh>
 #include <iostream>
 #include <iomanip>
+#include <set>
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
@@ -42,6 +44,20 @@ using std::cout;
 
 namespace
 {
+    struct MetadataKeyComparator
+    {
+        bool operator() (const tr1::shared_ptr<const MetadataKey> & a, const tr1::shared_ptr<const MetadataKey> & b) const
+        {
+            bool a_is_section(visitor_cast<const MetadataSectionKey>(*a));
+            bool b_is_section(visitor_cast<const MetadataSectionKey>(*b));
+            if (a_is_section != b_is_section)
+                return b_is_section;
+            if (a->type() != b->type())
+                return a->type() < b->type();
+            return a->human_name() < b->human_name();
+        }
+    };
+
     struct InfoDisplayer :
         ConstVisitor<MetadataKeyVisitorTypes>
     {
@@ -56,8 +72,9 @@ namespace
         {
             cout << endl;
             cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
+            std::set<tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(k.begin_metadata(), k.end_metadata());
             InfoDisplayer i(indent + "    ");
-            std::for_each(indirect_iterator(k.begin_metadata()), indirect_iterator(k.end_metadata()), accept_visitor(i));
+            std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
         }
 
         void visit(const MetadataStringKey & k)
@@ -280,8 +297,9 @@ do_info(const tr1::shared_ptr<const Environment> & env)
             r != r_end ; ++r)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
+        std::set<tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
         InfoDisplayer i("    ");
-        std::for_each(indirect_iterator(r->begin_metadata()), indirect_iterator(r->end_metadata()), accept_visitor(i));
+        std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
         cout << endl;
     }
 
