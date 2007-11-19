@@ -37,13 +37,6 @@
  * \ingroup g_utils
  */
 
-/** \def PALUDIS_CAN_USE_ATTRIBUTE
- * Defined if we can rely upon PALUDIS_ATTRIBUTE working (for example, for
- * weak).
- *
- * \ingroup g_utils
- */
-
 /** \def PALUDIS_VISIBLE
  * Marker used to represent 'make visible', if visibility is enabled.
  *
