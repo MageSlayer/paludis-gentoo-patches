@@ -68,43 +68,6 @@ namespace paludis
      * \ingroup g_fs
      */
     bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
-
-    /**
-     * The IsFileWithExtension class is a functor that determines whether an
-     * FSEntry instance is a file with a given extension and (optionally) a
-     * given filename prefix.
-     *
-     * \ingroup g_fs
-     * \deprecated Use is_file_with_extension and tr1::bind.
-     */
-#ifdef DOXYGEN
-    class IsFileWithExtension :
-#else
-    class PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((deprecated)) IsFileWithExtension :
-#endif
-        public std::unary_function<bool, FSEntry>
-    {
-        private:
-            const std::string _prefix;
-            const std::string _ext;
-
-        public:
-            /**
-             * Constructor.
-             */
-            IsFileWithExtension(const std::string & ext) PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
-             * Constructor.
-             */
-            IsFileWithExtension(const std::string & prefix, const std::string & ext) PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
-             * Operator.
-             */
-            bool operator() (const FSEntry & f) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
 }
 
 #endif

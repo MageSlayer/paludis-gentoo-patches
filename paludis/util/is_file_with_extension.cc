@@ -48,21 +48,3 @@ paludis::is_file_with_prefix_extension(const FSEntry & f, const std::string & pr
     return f.is_regular_file() || ((! o[ifwo_no_follow_symlinks]) && f.exists() && f.realpath().is_regular_file());
 }
 
-IsFileWithExtension::IsFileWithExtension(const std::string & ext) :
-    _prefix(""),
-    _ext(ext)
-{
-}
-
-IsFileWithExtension::IsFileWithExtension(const std::string & prefix, const std::string & ext) :
-    _prefix(prefix),
-    _ext(ext)
-{
-}
-
-bool
-IsFileWithExtension::operator() (const FSEntry & f) const
-{
-    return is_file_with_prefix_extension(f, _prefix, _ext, IsFileWithOptions());
-}
-

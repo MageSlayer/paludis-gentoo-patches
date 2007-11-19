@@ -79,12 +79,6 @@ NonUniqueQueryResultError::NonUniqueQueryResultError(const Query & q,
 {
 }
 
-NoSuchRepositoryError::NoSuchRepositoryError(const std::string & n) throw () :
-    PackageDatabaseLookupError("Could not find repository '" + n + "'"),
-    _name("UNKNOWN")
-{
-}
-
 NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) throw () :
     PackageDatabaseLookupError("Could not find repository '" + stringify(n) + "'"),
     _name(n)
