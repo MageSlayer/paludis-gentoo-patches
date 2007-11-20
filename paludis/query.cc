@@ -128,6 +128,19 @@ namespace
                 result->insert(*spec.category_name_part_ptr());
                 return result;
             }
+            else if (spec.package_name_part_ptr())
+            {
+                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                for (RepositoryNameSequence::ConstIterator it(r->begin()),
+                         it_end(r->end()); it_end != it; ++it)
+                {
+                    tr1::shared_ptr<const CategoryNamePartSet> cats(
+                        e.package_database()->fetch_repository(*it)
+                        ->category_names_containing_package(*spec.package_name_part_ptr()));
+                    std::copy(cats->begin(), cats->end(), result->inserter());
+                }
+                return result;
+            }
             else
                 return QueryDelegate::categories(e, r);
         }

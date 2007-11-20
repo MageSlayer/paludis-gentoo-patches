@@ -42,11 +42,13 @@ class TestCase_PackageDatabase(unittest.TestCase):
     def test_03_fech_unique_qpn(self):
         self.get_db()
         self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar")))
+        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar", Query.SupportsInstallAction())))
 
     def test_04_exceptions(self):
         self.get_db()
         self.assertRaises(AmbiguousPackageNameError, self.db.fetch_unique_qualified_package_name, "baz")
         self.assertRaises(NoSuchPackageError, self.db.fetch_unique_qualified_package_name, "foobarbaz")
+        self.assertRaises(NoSuchPackageError, self.db.fetch_unique_qualified_package_name, "bar", Query.SupportsUninstallAction())
 
     def test_5_query(self):
         self.get_db()

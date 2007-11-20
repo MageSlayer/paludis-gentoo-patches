@@ -190,6 +190,17 @@ PackageDatabase::add_repository(int i, const tr1::shared_ptr<Repository> r)
 
 namespace
 {
+    struct CategoryRepositoryNamePairComparator
+    {
+        bool operator() (const std::pair<CategoryNamePart, RepositoryName> & a,
+                         const std::pair<CategoryNamePart, RepositoryName> & b) const
+        {
+            if (a.first != b.first)
+                return a.first < b.first;
+            return RepositoryNameComparator()(a.second, b.second);
+        }
+    };
+
     struct IsInstalled
     {
         const FSEntry _root;
@@ -215,42 +226,53 @@ namespace
         typedef QualifiedPackageName argument_type;
         typedef bool result_type;
 
-        typedef Map<const QualifiedPackageName, const tr1::shared_ptr<const CategoryNamePartSet> > QPNCMap;
-        const tr1::shared_ptr<QPNCMap> _map;
+        typedef Map<const QualifiedPackageName, bool> QPNIMap;
+        const tr1::shared_ptr<QPNIMap> _map;
 
-        IsImportant(const tr1::shared_ptr<QPNCMap> & m) :
+        IsImportant(const tr1::shared_ptr<QPNIMap> & m) :
             _map(m)
         {
         }
 
         bool operator() (const QualifiedPackageName & qpn) const
         {
-            return (_map->find(qpn)->second->end() == _map->find(qpn)->second->find(qpn.category));
+            return _map->find(qpn)->second;
         }
     };
 }
 
 QualifiedPackageName
 PackageDatabase::fetch_unique_qualified_package_name(
-        const PackageNamePart & p) const
+        const PackageNamePart & p, const Query & q) const
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    // Map matching QualifiedPackageNames with unimportant_category_names sets from their repository.
-    typedef Map<const QualifiedPackageName, const tr1::shared_ptr<const CategoryNamePartSet> > QPNCMap;
-    tr1::shared_ptr<QPNCMap> result(new QPNCMap);
+    const Query & real_q(q & query::Matches(PackageDepSpec(
+                                 tr1::shared_ptr<QualifiedPackageName>(),
+                                 tr1::shared_ptr<CategoryNamePart>(),
+                                 tr1::shared_ptr<PackageNamePart>(new PackageNamePart(p)))));
 
-    for (IndirectIterator<RepositoryConstIterator> r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
+    // Map matching QualifiedPackageNames with a flag specifying that
+    // at least one repository containing the package things the
+    // category is important
+    typedef Map<const QualifiedPackageName, bool> QPNIMap;
+    tr1::shared_ptr<QPNIMap> result(new QPNIMap);
+    std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
+
+    tr1::shared_ptr<const PackageIDSequence> pkgs(query(real_q, qo_whatever));
+    for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
+             it_end(pkgs->end()); it_end != it; ++it)
     {
-        Context local_context("When looking in repository '" + stringify(r->name()) + "':");
+        Context local_context("When checking category '" + stringify(it->name().category) + "' in repository '" + stringify(it->repository()->name()) + "':");
 
-        tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names_containing_package(p));
-        tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(r->unimportant_category_names());
+        if (! checked.insert(std::make_pair(it->name().category, it->repository()->name())).second)
+            continue;
 
-        for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-                c != c_end ; ++c)
-            result->insert(*c + p, unimportant_cats);
+        tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
+        bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category));
+        if (is_important)
+            result->erase(it->name());
+        result->insert(it->name(), is_important);
     }
 
     if (result->empty())

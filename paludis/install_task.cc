@@ -195,7 +195,7 @@ InstallTask::add_target(const std::string & target)
             try
             {
                 QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(target)));
+                            PackageNamePart(target), query::MaybeSupportsAction<InstallAction>()));
                 modified_target = stringify(q);
                 tr1::shared_ptr<PackageDepSpec> spec(
                     new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q))));

@@ -56,6 +56,7 @@ module Paludis
 
         def test_package_database_fetch_unique_qualified_package_name
             assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
+            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar", Query::SupportsInstallAction.new)
         end
 
         def test_error
@@ -64,6 +65,24 @@ module Paludis
             end
             assert_raise NoSuchPackageError do
                 db.fetch_unique_qualified_package_name('foobarbaz')
+            end
+            assert_raise NoSuchPackageError do
+                db.fetch_unique_qualified_package_name('bar', Query::SupportsInstalledAction.new)
+            end
+        end
+
+        def test_bad
+            assert_raise ArgumentError do
+                db.fetch_unique_qualified_package_name
+            end
+            assert_raise ArgumentError do
+                db.fetch_unique_qualified_package_name(1, 2, 3)
+            end
+            assert_raise TypeError do
+                db.fetch_unique_qualified_package_name([])
+            end
+            assert_raise TypeError do
+                db.fetch_unique_qualified_package_name('bar', db)
             end
         end
     end

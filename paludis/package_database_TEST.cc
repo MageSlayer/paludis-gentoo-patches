@@ -278,37 +278,39 @@ namespace test_cases
             PackageDatabase & p(*e.package_database());
 
             tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
-            r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"));
-            r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"));
-            r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"));
-            r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-three"));
+            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0"));
+            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0"));
+            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0"));
+            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-three"), VersionSpec("0"));
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
             tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
-            r2->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
-            r2->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
+            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0"));
+            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0"));
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
             tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
-            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"));
-            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
 
-            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"));
-            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-installed"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-installed"), VersionSpec("0"));
 
-            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail1"));
-            r3->add_package(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail1"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail1"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail1"), VersionSpec("0"));
 
-            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail2"));
-            r3->add_package(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail2"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail2"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail2"), VersionSpec("0"));
 
-            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail3"));
-            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail3"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail3"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail3"), VersionSpec("0"));
 
-            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"));
-            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+
+            r3->add_version(CategoryNamePart("avail-cat") + PackageNamePart("pkg-foo"), VersionSpec("0"));
             p.add_repository(10, r3);
             TEST_CHECK(true);
 
@@ -316,6 +318,7 @@ namespace test_cases
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
             r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+            r4->add_version(CategoryNamePart("inst-cat") + PackageNamePart("pkg-foo"), VersionSpec("0"));
             p.add_repository(10, r4);
 
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),
@@ -345,6 +348,15 @@ namespace test_cases
 
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-five")),
                     NoSuchPackageError);
+
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one"),
+                                  query::SupportsAction<InstalledAction>()),
+                    NoSuchPackageError);
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo")),
+                    "inst-cat/pkg-foo");
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"),
+                                  query::SupportsAction<InstallAction>()),
+                    "avail-cat/pkg-foo");
 
         }
     } package_database_disambiguate_test;

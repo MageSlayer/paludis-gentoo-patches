@@ -75,7 +75,7 @@ namespace
         tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
                 new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                             env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(target))))) :
+                                PackageNamePart(target), query::InstalledAtRoot(env->root()))))) :
                 new PackageDepSpec(target, pds_pm_permissive));
 
         tr1::shared_ptr<const PackageIDSequence>

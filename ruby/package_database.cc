@@ -58,18 +58,25 @@ namespace
     /*
      * call-seq:
      *     fetch_unique_qualified_package_name(package_name) -> QualifiedPackageName
+     *     fetch_unique_qualified_package_name(package_name, query) -> QualifiedPackageName
      *
-     * Disambiguate a package name
+     * Disambiguate a package name.  If a query is specified, limit
+     * the potential results to packages that match.
      */
     VALUE
-    package_database_fetch_unique_qualified_package_name(VALUE self, VALUE pkg)
+    package_database_fetch_unique_qualified_package_name(int argc, VALUE *argv, VALUE self)
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
-            return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
-                            PackageNamePart(StringValuePtr(pkg)))).c_str());
+            if (1 == argc || 2 == argc)
+            {
+                tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+                return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
+                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_query(argv[1]) : query::All())).c_str());
+            }
+            else
+                rb_raise(rb_eArgError, "fetch_unique_qualified_package_name expects one or two arguments, but got %d",argc);
         }
         catch (const std::exception & e)
         {
@@ -208,7 +215,7 @@ namespace
         rb_funcall(c_package_database, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_package_database, "favourite_repository", RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
         rb_define_method(c_package_database, "fetch_unique_qualified_package_name",
-                RUBY_FUNC_CAST(&package_database_fetch_unique_qualified_package_name), 1);
+                RUBY_FUNC_CAST(&package_database_fetch_unique_qualified_package_name), -1);
         rb_define_method(c_package_database, "query",
                 RUBY_FUNC_CAST(&package_database_query), -1);
         rb_define_method(c_package_database, "repositories",

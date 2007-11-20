@@ -31,6 +31,9 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    fetch_unique_qualified_package_name_overloads, fetch_unique_qualified_package_name, 1, 2)
+
 void expose_package_database()
 {
     /**
@@ -91,8 +94,11 @@ void expose_package_database()
             )
 
         .def("fetch_unique_qualified_package_name", &PackageDatabase::fetch_unique_qualified_package_name,
-                "fetch_unique_qualified_package_name(PackageNamePart) -> QualifiedPackageName\n"
-                "Disambiguate a package name."
+             fetch_unique_qualified_package_name_overloads(
+                "fetch_unique_qualified_package_name(PackageNamePart[, Query]) -> QualifiedPackageName\n"
+                "Disambiguate a package name.  If a query is specified, "
+                "limit the potential results to packages that match."
+                 )
             )
 
         .def("more_important_than", &PackageDatabase::more_important_than,

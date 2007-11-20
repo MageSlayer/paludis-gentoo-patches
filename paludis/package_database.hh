@@ -24,7 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
-#include <paludis/query-fwd.hh>
+#include <paludis/query.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/join.hh>
@@ -289,13 +289,14 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Disambiguate a package name.
+             * Disambiguate a package name.  If a query is specified,
+             * limit the potential results to packages that match.
              *
              * \throw AmbiguousPackageNameError if there is no unambiguous
-             * disabmiguation.
+             * disambiguation.
              */
             QualifiedPackageName fetch_unique_qualified_package_name(
-                    const PackageNamePart &) const
+                    const PackageNamePart &, const Query & = query::All()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

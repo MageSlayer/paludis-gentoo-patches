@@ -190,7 +190,7 @@ UninstallTask::add_target(const std::string & target)
                 tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                         _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                            PackageNamePart(target))))));
+                                            PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>())))));
                 pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets.push_back(pds);
             }
@@ -204,7 +204,7 @@ UninstallTask::add_target(const std::string & target)
             tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
                             tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                     _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                        PackageNamePart(target))))));
+                                        PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>())))));
             pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets.push_back(pds);
         }
