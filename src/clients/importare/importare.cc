@@ -30,7 +30,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/about.hh>
 #include <paludis/repository_maker.hh>
-#include <paludis/fuzzy_finder.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -112,104 +111,79 @@ main(int argc, char *argv[])
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);
 
-        try
+        std::vector<std::string> params(
+                CommandLine::get_instance()->begin_parameters(),
+                CommandLine::get_instance()->end_parameters());
+
+        if ((params.size() > 3) || (params.size() < 1))
+            throw args::DoHelp("install action takes between one and three parameters (cat/pkg version slot)");
+
+        QualifiedPackageName q(params[0]);
+        VersionSpec v(params.size() >= 2 ? params[1] : "0");
+        SlotName s(params.size() >= 3 ? params[2] : "0");
+
+        std::string build_dependencies, run_dependencies, description;
+
+        if (CommandLine::get_instance()->a_preserve_metadata.specified())
         {
-            std::vector<std::string> params(
-                    CommandLine::get_instance()->begin_parameters(),
-                    CommandLine::get_instance()->end_parameters());
-
-            if ((params.size() > 3) || (params.size() < 1))
-                throw args::DoHelp("install action takes between one and three parameters (cat/pkg version slot)");
-
-            QualifiedPackageName q(params[0]);
-            VersionSpec v(params.size() >= 2 ? params[1] : "0");
-            SlotName s(params.size() >= 3 ? params[2] : "0");
-
-            std::string build_dependencies, run_dependencies, description;
-
-            if (CommandLine::get_instance()->a_preserve_metadata.specified())
+            tr1::shared_ptr<const PackageIDSequence> old_ids(
+                    env->package_database()->query(query::Package(q), qo_order_by_version));
+            tr1::shared_ptr<const PackageID> old_id;
+            for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
+                    i != i_end ; ++i)
             {
-                tr1::shared_ptr<const PackageIDSequence> old_ids(
-                        env->package_database()->query(query::Package(q), qo_order_by_version));
-                tr1::shared_ptr<const PackageID> old_id;
-                for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
-                        i != i_end ; ++i)
-                {
-                    if (! (*i)->repository()->format_key())
-                        continue;
-                    if ((*i)->repository()->format_key()->value() != "installed_unpackaged")
-                        continue;
-                    old_id = *i;
-                    break;
-                }
-
-                if (! old_id)
-                    throw args::DoHelp("--" + CommandLine::get_instance()->a_preserve_metadata.long_name() + " specified but "
-                            "no old ID available");
-
-                StringifyFormatter f;
-                if (old_id->short_description_key())
-                    description = old_id->short_description_key()->value();
-                if (old_id->build_dependencies_key())
-                    build_dependencies = old_id->build_dependencies_key()->pretty_print_flat(f);
-                if (old_id->run_dependencies_key())
-                    run_dependencies = old_id->run_dependencies_key()->pretty_print_flat(f);
+                if (! (*i)->repository()->format_key())
+                    continue;
+                if ((*i)->repository()->format_key()->value() != "installed_unpackaged")
+                    continue;
+                old_id = *i;
+                break;
             }
 
-            if (CommandLine::get_instance()->a_description.specified())
-                description = CommandLine::get_instance()->a_description.argument();
-            if (CommandLine::get_instance()->a_build_dependency.specified())
-                build_dependencies = join(
-                        CommandLine::get_instance()->a_build_dependency.begin_args(),
-                        CommandLine::get_instance()->a_build_dependency.end_args(), ", ");
-            if (CommandLine::get_instance()->a_run_dependency.specified())
-                run_dependencies = join(
-                        CommandLine::get_instance()->a_run_dependency.begin_args(),
-                        CommandLine::get_instance()->a_run_dependency.end_args(), ", ");
+            if (! old_id)
+                throw args::DoHelp("--" + CommandLine::get_instance()->a_preserve_metadata.long_name() + " specified but "
+                        "no old ID available");
 
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("location", stringify(
-                        CommandLine::get_instance()->a_location.specified() ?
-                        FSEntry(CommandLine::get_instance()->a_location.argument()) :
-                        FSEntry::cwd()));
-            keys->insert("format", "unpackaged");
-            keys->insert("name", stringify(q));
-            keys->insert("version", stringify(v));
-            keys->insert("slot", stringify(s));
-            keys->insert("description", description);
-            keys->insert("build_dependencies", build_dependencies);
-            keys->insert("run_dependencies", run_dependencies);
-            tr1::shared_ptr<Repository> repo((*RepositoryMaker::get_instance()->find_maker("unpackaged"))(env.get(), keys));
-            env->package_database()->add_repository(10, repo);
-            tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
-            if (1 != std::distance(ids->begin(), ids->end()))
-                throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
-                                ids->end()), " ") + "'");
-
-            return do_install(env, *ids->begin());
+            StringifyFormatter f;
+            if (old_id->short_description_key())
+                description = old_id->short_description_key()->value();
+            if (old_id->build_dependencies_key())
+                build_dependencies = old_id->build_dependencies_key()->pretty_print_flat(f);
+            if (old_id->run_dependencies_key())
+                run_dependencies = old_id->run_dependencies_key()->pretty_print_flat(f);
         }
-        catch (const NoSuchRepositoryError & e)
-        {
-            cout << endl;
-            cerr << "Unhandled exception:" << endl
-                << "  * " << e.backtrace("\n  * ")
-                << e.message() << " (" << e.what() << ")" << endl;
-            cerr << "  * Looking for suggestions:" << endl;
 
-            FuzzyRepositoriesFinder f(*env, stringify(e.name()));
+        if (CommandLine::get_instance()->a_description.specified())
+            description = CommandLine::get_instance()->a_description.argument();
+        if (CommandLine::get_instance()->a_build_dependency.specified())
+            build_dependencies = join(
+                    CommandLine::get_instance()->a_build_dependency.begin_args(),
+                    CommandLine::get_instance()->a_build_dependency.end_args(), ", ");
+        if (CommandLine::get_instance()->a_run_dependency.specified())
+            run_dependencies = join(
+                    CommandLine::get_instance()->a_run_dependency.begin_args(),
+                    CommandLine::get_instance()->a_run_dependency.end_args(), ", ");
 
-            if (f.begin() == f.end())
-                cerr << "No suggestions found." << endl;
-            else
-                cerr << "Suggestions:" << endl;
+        tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        keys->insert("location", stringify(
+                    CommandLine::get_instance()->a_location.specified() ?
+                    FSEntry(CommandLine::get_instance()->a_location.argument()) :
+                    FSEntry::cwd()));
+        keys->insert("format", "unpackaged");
+        keys->insert("name", stringify(q));
+        keys->insert("version", stringify(v));
+        keys->insert("slot", stringify(s));
+        keys->insert("description", description);
+        keys->insert("build_dependencies", build_dependencies);
+        keys->insert("run_dependencies", run_dependencies);
+        tr1::shared_ptr<Repository> repo((*RepositoryMaker::get_instance()->find_maker("unpackaged"))(env.get(), keys));
+        env->package_database()->add_repository(10, repo);
+        tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
+        if (1 != std::distance(ids->begin(), ids->end()))
+            throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
+                            ids->end()), " ") + "'");
 
-            for (FuzzyRepositoriesFinder::RepositoriesConstIterator r(f.begin()), r_end(f.end()) ;
-                    r != r_end ; ++r)
-                cerr << " * " << colour(cl_repository_name, *r) << endl;
-            cerr << endl;
-
-            return EXIT_FAILURE;
-        }
+        return do_install(env, *ids->begin());
     }
     catch (const DoVersion &)
     {

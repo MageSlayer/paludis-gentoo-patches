@@ -297,6 +297,7 @@ namespace paludis
             virtual bool want_existing_descriptions() const = 0;
 
             virtual bool want_compact() const = 0;
+            virtual bool want_suggestions() const = 0;
 
             ///\}
 

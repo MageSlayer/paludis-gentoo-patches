@@ -70,6 +70,7 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
+    a_no_suggestions(&general_args, "no-suggestions", '\0', "Do not give suggestions if an unknown name is specified", false),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_resume_command_template(&general_args, "resume-command-template", '\0',
             "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),

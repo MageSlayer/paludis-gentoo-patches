@@ -101,6 +101,11 @@ namespace
                 return false;
             }
 
+            virtual bool want_suggestions() const
+            {
+                return false;
+            }
+
             virtual std::string make_resume_command(const PackageIDSequence &) const
             {
                 return "";

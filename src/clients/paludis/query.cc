@@ -189,18 +189,24 @@ int do_query(tr1::shared_ptr<Environment> env)
             cout << endl;
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
-            cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+            cerr << "Could not find '" << e.name() << "'.";
 
-            FuzzyCandidatesFinder f(*env, e.name(), query::All());
+            if (! CommandLine::get_instance()->a_no_suggestions.specified())
+            {
+                cerr << " Looking for suggestions:" << endl;
 
-            if (f.begin() == f.end())
-                cerr << "No suggestions found." << endl;
-            else
-                cerr << "Suggestions:" << endl;
+                FuzzyCandidatesFinder f(*env, e.name(), query::All());
 
-            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
-                    c_end(f.end()) ; c != c_end ; ++c)
-                cerr << "  * " << colour(cl_package_name, *c) << endl;
+                if (f.begin() == f.end())
+                    cerr << "No suggestions found." << endl;
+                else
+                    cerr << "Suggestions:" << endl;
+
+                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                         c_end(f.end()) ; c != c_end ; ++c)
+                    cerr << "  * " << colour(cl_package_name, *c) << endl;
+            }
+
             cerr << endl;
         }
         catch (const PackageDatabaseLookupError & e)

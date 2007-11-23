@@ -49,6 +49,7 @@
 #include <iterator>
 
 #include <time.h>
+#include <unistd.h>
 
 /** \file
  * Main paludis program.
@@ -93,6 +94,8 @@ main(int argc, char *argv[])
     {
         CommandLine::get_instance()->run(argc, argv, "paludis", "PALUDIS_OPTIONS", "PALUDIS_CMDLINE");
         set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
+        if (1 != isatty(1))
+            CommandLine::get_instance()->a_no_suggestions.set_specified(true);
 
         if (CommandLine::get_instance()->a_help.specified())
             throw args::DoHelp();
@@ -473,19 +476,23 @@ main(int argc, char *argv[])
             cerr << "Unhandled exception:" << endl
                 << "  * " << e.backtrace("\n  * ")
                 << e.message() << " (" << e.what() << ")" << endl;
-            cerr << "  * Looking for suggestions:" << endl;
 
-            FuzzyRepositoriesFinder f(*env, stringify(e.name()));
+            if (! CommandLine::get_instance()->a_no_suggestions.specified())
+            {
+                cerr << "  * Looking for suggestions:" << endl;
 
-            if (f.begin() == f.end())
-                cerr << "No suggestions found." << endl;
-            else
-                cerr << "Suggestions:" << endl;
+                FuzzyRepositoriesFinder f(*env, stringify(e.name()));
 
-            for (FuzzyRepositoriesFinder::RepositoriesConstIterator r(f.begin()), r_end(f.end()) ;
-                    r != r_end ; ++r)
-                cerr << " * " << colour(cl_repository_name, *r) << endl;
-            cerr << endl;
+                if (f.begin() == f.end())
+                    cerr << "No suggestions found." << endl;
+                else
+                    cerr << "Suggestions:" << endl;
+
+                for (FuzzyRepositoriesFinder::RepositoriesConstIterator r(f.begin()), r_end(f.end()) ;
+                        r != r_end ; ++r)
+                    cerr << " * " << colour(cl_repository_name, *r) << endl;
+                cerr << endl;
+            }
 
             return EXIT_FAILURE;
         }

@@ -179,18 +179,24 @@ ConsoleInstallTask::try_to_add_target(const std::string & s)
         output_stream() << endl;
         output_stream() << "Query error:" << endl;
         output_stream() << "  * " << e.backtrace("\n  * ");
-        output_stream() << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+        output_stream() << "Could not find '" << e.name() << "'.";
 
-        FuzzyCandidatesFinder f(*environment(), e.name(), query::SupportsAction<InstallAction>() & query::NotMasked());
+        if (want_suggestions())
+        {
+            output_stream() << " Looking for suggestions:" << endl;
 
-        if (f.begin() == f.end())
-            output_stream() << "No suggestions found." << endl;
-        else
-            output_stream() << "Suggestions:" << endl;
+            FuzzyCandidatesFinder f(*environment(), e.name(), query::SupportsAction<InstallAction>() & query::NotMasked());
 
-        for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
-                c_end(f.end()) ; c != c_end ; ++c)
-            output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+            if (f.begin() == f.end())
+                output_stream() << "No suggestions found." << endl;
+            else
+                output_stream() << "Suggestions:" << endl;
+
+            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                     c_end(f.end()) ; c != c_end ; ++c)
+                output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+        }
+
         output_stream() << endl;
         is_ok = false;;
     }
@@ -1450,19 +1456,25 @@ ConsoleInstallTask::on_no_such_package_error(const NoSuchPackageError & e)
     output_stream() << endl;
     output_stream() << "Query error:" << endl;
     output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+    output_stream() << "Could not find '" << e.name() << "'.";
 
-    FuzzyCandidatesFinder f(*environment(), e.name(),
-            query::SupportsAction<InstallAction>() & query::NotMasked());
+    if (want_suggestions())
+    {
+        output_stream() << " Looking for suggestions:" << endl;
 
-    if (f.begin() == f.end())
-        output_stream() << "No suggestions found." << endl;
-    else
-        output_stream() << "Suggestions:" << endl;
+        FuzzyCandidatesFinder f(*environment(), e.name(),
+                query::SupportsAction<InstallAction>() & query::NotMasked());
 
-    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
-            ; c != c_end ; ++c)
-        output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+        if (f.begin() == f.end())
+            output_stream() << "No suggestions found." << endl;
+        else
+            output_stream() << "Suggestions:" << endl;
+
+        for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
+                 ; c != c_end ; ++c)
+            output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+    }
+
     output_stream() << endl;
 }
 
@@ -1479,19 +1491,24 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             output_stream() << endl;
             output_stream() << "Query error:" << endl;
             output_stream() << "  * " << e.backtrace("\n  * ");
-            output_stream() << "No versions of '" << e.query() << "' are available. Looking for suggestions:" << endl;
+            output_stream() << "No versions of '" << e.query() << "' are available.";
 
-            FuzzyCandidatesFinder f(*environment(), stringify(e.query()),
-                    query::SupportsAction<InstallAction>() & query::NotMasked());
+            if (want_suggestions())
+            {
+                output_stream() << " Looking for suggestions:" << endl;
 
-            if (f.begin() == f.end())
-                output_stream() << "No suggestions found." << endl;
-            else
-                output_stream() << "Suggestions:" << endl;
+                FuzzyCandidatesFinder f(*environment(), stringify(e.query()),
+                        query::SupportsAction<InstallAction>() & query::NotMasked());
 
-            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
-                    ; c != c_end ; ++c)
-                output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+                if (f.begin() == f.end())
+                    output_stream() << "No suggestions found." << endl;
+                else
+                    output_stream() << "Suggestions:" << endl;
+
+                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
+                        ; c != c_end ; ++c)
+                    output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+            }
         }
         else
         {

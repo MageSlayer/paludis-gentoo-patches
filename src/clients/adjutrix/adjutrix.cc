@@ -35,6 +35,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <iostream>
+#include <unistd.h>
 
 using namespace paludis;
 using std::cout;
@@ -94,6 +95,8 @@ main(int argc, char *argv[])
     {
         CommandLine::get_instance()->run(argc, argv, "adjutrix", "ADJUTRIX_OPTIONS", "ADJUTRIX_CMDLINE");
         set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
+        if (1 != isatty(1))
+            CommandLine::get_instance()->a_no_suggestions.set_specified(true);
 
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();

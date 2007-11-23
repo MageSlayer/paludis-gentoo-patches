@@ -103,6 +103,11 @@ namespace
                 return CommandLine::get_instance()->a_compact.specified();
             }
 
+            virtual bool want_suggestions() const
+            {
+                return false;
+            }
+
             virtual bool want_new_descriptions() const
             {
                 return CommandLine::get_instance()->install_args.want_new_descriptions();

@@ -77,6 +77,7 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
+    a_no_suggestions(&general_args, "no-suggestions", '\0', "Do not give suggestions if an unknown name is specified", false),
 
     a_repository_directory(&general_args, "repository-dir", 'D',
             "Where to find the repository (default: detected from ./ or ../ or ../..)"),
