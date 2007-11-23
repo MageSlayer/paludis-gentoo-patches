@@ -21,6 +21,8 @@ builtin_saveenv()
     [[ -d "${PALUDIS_LOADSAVEENV_DIR}" ]] || die "\$PALUDIS_LOADSAVEENV_DIR (\"${PALUDIS_LOADSAVEENV_DIR}\") not a directory"
     [[ -f "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv" ]] && rm -f "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv"
     ( set ; export -p ) | sed \
+        -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\)=/d' \
+        -e '/^\(FUNCNAME\|GROUPS\)=/d' \
         -e '/^\(declare -[rx]\+ \)\?SANDBOX_/d' \
         -e '/^\(declare -[rx]\+ \)\?.\?[UP]ID/d' \
         -e '/^\(declare -[rx]\+ \)\?BASH_REMATCH/d' \
