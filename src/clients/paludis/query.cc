@@ -58,6 +58,11 @@ namespace
                 return CommandLine::get_instance()->a_show_metadata.specified();
             }
 
+            bool want_authors() const
+            {
+                return CommandLine::get_instance()->a_show_authors.specified();
+            }
+
             bool want_compact() const
             {
                 return CommandLine::get_instance()->a_compact.specified();

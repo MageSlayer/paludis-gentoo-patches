@@ -60,6 +60,7 @@ namespace paludis
             virtual bool want_compact() const = 0;
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;
+            virtual bool want_authors() const = 0;
 
             const tr1::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
     };

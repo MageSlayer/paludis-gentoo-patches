@@ -215,8 +215,8 @@ namespace
          * the key should be displayed when outputting the package (for
          * example, 'paludis --query' shows mkt_significant keys first,
          * then mkt_normal keys, and doesn't show mkt_dependencies
-         * without '--show-deps' or mkt_internal without
-         * '--show-metadata'. */
+         * without '--show-deps', mkt_author without '--show-author'
+         * or mkt_internal without '--show-metadata'. */
         cout << indent << left << setw(30) << "    Raw name:" << " " << key.raw_name() << endl;
         cout << indent << left << setw(30) << "    Human name:" << " " << key.human_name() << endl;
         cout << indent << left << setw(30) << "    Type:" << " " << key.type() << endl;

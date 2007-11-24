@@ -7,6 +7,7 @@ make_enum_MetadataKeyType()
 
     key mkt_significant      "A key of significant interest, to be shown early on"
     key mkt_normal           "A normal key, to be shown underneath mkt_significant keys"
+    key mkt_author           "Should only be shown if the user asks for author information"
     key mkt_dependencies     "Should only be shown if the user asks for dependencies"
     key mkt_internal         "Should not usually be displayed to the user"
 

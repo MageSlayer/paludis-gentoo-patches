@@ -186,6 +186,9 @@ class CommandLine :
         /// --show-deps
         paludis::args::SwitchArg a_show_deps;
 
+        /// --show-authors
+        paludis::args::SwitchArg a_show_authors;
+
         /// --show-metadata
         paludis::args::SwitchArg a_show_metadata;
 

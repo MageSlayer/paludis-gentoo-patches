@@ -7,6 +7,8 @@ of every change, see the ChangeLog.
 trunk/:
     * Various switches now support --no-, for negation.
 
+    * paludis, inquisitio --show-authors.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

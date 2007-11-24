@@ -46,3 +46,9 @@ InquisitioQueryTask::want_compact() const
     return CommandLine::get_instance()->a_compact.specified();
 }
 
+bool
+InquisitioQueryTask::want_authors() const
+{
+    return CommandLine::get_instance()->a_show_authors.specified();
+}
+

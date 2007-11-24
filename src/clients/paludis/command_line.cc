@@ -85,6 +85,7 @@ CommandLine::CommandLine() :
     query_args(this, "Query options",
             "Options which are relevant for --query."),
     a_show_deps(&query_args,        "show-deps",    'D', "Show dependencies", true),
+    a_show_authors(&query_args, "show-authors", 'A', "Show author information", true),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata", true),
 
     install_args(this, "Install, Uninstall options",

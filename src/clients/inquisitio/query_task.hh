@@ -33,6 +33,7 @@ namespace inquisitio
             virtual bool want_compact() const;
             virtual bool want_deps() const;
             virtual bool want_raw() const;
+            virtual bool want_authors() const;
     };
 }
 

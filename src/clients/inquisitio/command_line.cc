@@ -79,6 +79,7 @@ CommandLine::CommandLine() :
 
     a_compact(&output_args, "compact", '\0', "Display output using one line per entry", true),
     a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies", true),
+    a_show_authors(&output_args, "show-authors", 'A', "Show author information", true),
     a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata", true),
 
     deprecated_args(this, "Deprecated options", "Deprecated options."),

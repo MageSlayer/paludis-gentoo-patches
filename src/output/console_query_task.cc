@@ -623,6 +623,12 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr
     Displayer dn(this, _imp->env, id, mkt_normal);
     std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dn));
 
+    if (want_authors() || want_raw())
+    {
+        Displayer dd(this, _imp->env, id, mkt_author);
+        std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dd));
+    }
+
     if (want_deps() || want_raw())
     {
         Displayer dd(this, _imp->env, id, mkt_dependencies);
