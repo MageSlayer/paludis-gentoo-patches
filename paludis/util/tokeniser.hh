@@ -48,9 +48,7 @@ namespace paludis
          *
          * \ingroup g_strings
          */
-        struct AnyOfTag
-        {
-        };
+        struct AnyOfTag;
     }
 
     /**
@@ -65,18 +63,14 @@ namespace paludis
          *
          * \ingroup g_strings
          */
-        struct DelimiterTag
-        {
-        };
+        struct DelimiterTag;
 
         /**
          * Keep the delimiters.
          *
          * \ingroup g_strings
          */
-        struct BoundaryTag
-        {
-        };
+        struct BoundaryTag;
     }
 
     /**
