@@ -52,6 +52,7 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
             TEST_CHECK(env->query_use(UseFlagName("moo"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("quoted-name"), *one));
 
             TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
             TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));

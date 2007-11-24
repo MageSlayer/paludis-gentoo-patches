@@ -60,15 +60,15 @@ touch sixthrepo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
 
 mkdir -p home1/.paludis/repositories
 cat <<END > home1/.paludis/use.conf
-*/* foo bar baz -fnord
+*/* foo bar baz -fnord "quoted-name"
 */* EXP: two
 >=cat-one/pkg-two-2 THIRD_EXP: two
 END
 cat <<END > home1/.paludis/keywords.conf
-*/* keyword
+*/* keyword "quoted-keyword"
 END
 cat <<END > home1/.paludis/licenses.conf
-*/* keyword
+*/* keyword "quoted keyword"
 END
 cat <<END > home1/.paludis/repositories/foo.conf
 format = ebuild
@@ -80,7 +80,7 @@ END
 
 mkdir -p home2/.paludis/repositories
 cat <<END > home2/.paludis/use.conf
-*/* -* foo bar baz -fnord
+*/* -* foo bar baz -fnord "quoted-name"
 */* EXP: -* two
 >=cat-one/pkg-two-2 THIRD_EXP: -* two
 END
@@ -100,7 +100,7 @@ END
 
 mkdir -p home3/.paludis/repositories
 cat <<END > home3/.paludis/use.conf
-*/* foo bar baz -fnord
+*/* foo bar baz -fnord "-quoted-name"
 */* EXP: -* two
 >=cat-one/pkg-two-2 THIRD_EXP: -* two
 END

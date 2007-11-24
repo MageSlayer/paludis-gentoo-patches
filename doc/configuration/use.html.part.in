@@ -18,6 +18,8 @@ any of:</p>
     <li>A complex dependency specification.</li>
 </ul>
 
+<p>Any token may be quoted using either single or double quotes.</p>
+
 <p>A use flag or label can be:</p>
 
 <ul>

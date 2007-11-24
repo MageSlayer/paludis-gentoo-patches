@@ -9,6 +9,9 @@ trunk/:
 
     * paludis, inquisitio --show-authors.
 
+    * {keywords,licenses,use}.conf can now contain single- or double- quoted
+      tokens.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
