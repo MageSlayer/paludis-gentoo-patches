@@ -13,6 +13,7 @@ def get_contents(repo, files, root)
     repo.category_names do |cat|
         repo.package_names(cat) do |pkg|
             repo.package_ids(pkg) do |pid|
+                next unless pid.supports_action(SupportsInstalledActionTest.new)
                 next if pid.contents_key.nil?
                 contents = pid.contents_key.value
                 contents.each do |entry|
@@ -102,7 +103,7 @@ in_fs = []
 Find.find(*files) {|file| in_fs << file}
 
 db.repositories do |repo|
-    next if repo.installed_interface.nil?
+    next unless repo.some_ids_might_support_action(SupportsInstalledActionTest.new)
     in_fs-= get_contents(repo, files, root)
 end
 
