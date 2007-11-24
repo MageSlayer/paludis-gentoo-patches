@@ -339,8 +339,7 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
     else
     {
         std::list<KeywordName> accepted;
-        WhitespaceTokeniser::tokenise(ak,
-                create_inserter<KeywordName>(std::back_inserter(accepted)));
+        tokenise_whitespace(ak, create_inserter<KeywordName>(std::back_inserter(accepted)));
 
         for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                 k != k_end ; ++k)

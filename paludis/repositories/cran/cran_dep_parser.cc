@@ -39,7 +39,7 @@ cranrepository::parse_depends(const std::string & s)
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::list<std::string> specs;
-    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, ",", std::back_inserter(specs));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(specs));
 
     std::list<std::string>::const_iterator a(specs.begin()), a_end(specs.end());
     for ( ; a != a_end ; ++a)

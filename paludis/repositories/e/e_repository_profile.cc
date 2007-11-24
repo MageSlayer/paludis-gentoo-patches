@@ -310,8 +310,8 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         if (is_incremental(k->first))
         {
             std::list<std::string> val, val_add;
-            WhitespaceTokeniser::tokenise(environment_variables[k->first], std::back_inserter(val));
-            WhitespaceTokeniser::tokenise(k->second, std::back_inserter(val_add));
+            tokenise_whitespace(environment_variables[k->first], std::back_inserter(val));
+            tokenise_whitespace(k->second, std::back_inserter(val_add));
 
             for (std::list<std::string>::const_iterator v(val_add.begin()), v_end(val_add.end()) ;
                     v != v_end ; ++v)
@@ -338,7 +338,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     {
         use_expand.clear();
         if (! use_expand_var.empty())
-            WhitespaceTokeniser::tokenise(environment_variables[use_expand_var],
+            tokenise_whitespace(environment_variables[use_expand_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
     catch (const Exception & e)
@@ -357,7 +357,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     {
         use.clear();
         if (! use_var.empty())
-            WhitespaceTokeniser::tokenise(environment_variables[use_var],
+            tokenise_whitespace(environment_variables[use_var],
                     create_inserter<UseFlagName>(std::inserter(use, use.end())));
     }
     catch (const Exception & e)
@@ -372,7 +372,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     {
         use_expand.clear();
         if (! use_expand_var.empty())
-            WhitespaceTokeniser::tokenise(environment_variables[use_expand_var],
+            tokenise_whitespace(environment_variables[use_expand_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
     catch (const Exception & e)
@@ -387,7 +387,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     {
         use_expand_hidden.clear();
         if (! use_expand_hidden_var.empty())
-            WhitespaceTokeniser::tokenise(environment_variables[use_expand_hidden_var],
+            tokenise_whitespace(environment_variables[use_expand_hidden_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
     }
     catch (const Exception & e)
@@ -460,7 +460,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+                tokenise_whitespace(*line, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
 
@@ -513,7 +513,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
             line != line_end ; ++line)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+        tokenise_whitespace(*line, std::back_inserter(tokens));
 
         for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                 t != t_end ; ++t)
@@ -548,7 +548,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
             line != line_end ; ++line)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+        tokenise_whitespace(*line, std::back_inserter(tokens));
 
         if (tokens.empty())
             continue;
@@ -603,7 +603,7 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
                 &::tolower);
 
         std::list<std::string> uses;
-        WhitespaceTokeniser::tokenise(environment_variables[stringify(*x)],
+        tokenise_whitespace(environment_variables[stringify(*x)],
                 std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)

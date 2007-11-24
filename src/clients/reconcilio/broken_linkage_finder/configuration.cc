@@ -73,16 +73,16 @@ namespace
         }
     };
 
-    template <typename Tokeniser_, typename T_>
+    template <typename T_>
     void
-    from_string(const tr1::function<std::string (const std::string &)> & source,
-                const std::string & varname, std::vector<T_> & vec, const std::string & delims)
+    from_colon_string(const tr1::function<std::string (const std::string &)> & source,
+                const std::string & varname, std::vector<T_> & vec)
     {
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
-            Tokeniser_::tokenise(str, delims, std::back_inserter(vec));
+            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(str, ":", "", std::back_inserter(vec));
         }
     }
 
@@ -95,7 +95,7 @@ namespace
         if (! str.empty())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
-            WhitespaceTokeniser::tokenise(str, std::back_inserter(vec));
+            tokenise_whitespace(str, std::back_inserter(vec));
         }
     }
 
@@ -238,14 +238,12 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
         opts += kvcfo_ignore_export;
 
         KeyValueConfigFile kvs(etc_profile_env, opts);
-        typedef Tokeniser<delim_kind::AnyOfTag> Tokeniser;
-        const std::string delims(":");
 
         tr1::function<std::string (const std::string &)> fromfile(
             tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
 
-        from_string<Tokeniser>(fromfile, "PATH",     search_dirs, delims);
-        from_string<Tokeniser>(fromfile, "ROOTPATH", search_dirs, delims);
+        from_colon_string(fromfile, "PATH",     search_dirs);
+        from_colon_string(fromfile, "ROOTPATH", search_dirs);
     }
     else if (etc_profile_env.exists())
         Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_profile_env) + "' exists but is not a regular file");
@@ -288,19 +286,19 @@ Implementation<Configuration>::add_defaults()
     static const std::string default_ld_so_conf("/lib /usr/lib");
 
     Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + default_ld_library_mask + "\"");
-    WhitespaceTokeniser::tokenise(
+    tokenise_whitespace(
             default_ld_library_mask, std::back_inserter(ld_library_mask));
 
     Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + default_search_dirs + "\"");
-    WhitespaceTokeniser::tokenise(
+    tokenise_whitespace(
             default_search_dirs, std::back_inserter(search_dirs));
 
     Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + default_search_dirs_mask + "\"");
-    WhitespaceTokeniser::tokenise(
+    tokenise_whitespace(
             default_search_dirs_mask, std::back_inserter(search_dirs_mask));
 
     Log::get_instance()->message(ll_debug, lc_context, "Default ld.so.conf contents is \"" + default_ld_so_conf + "\"");
-    WhitespaceTokeniser::tokenise(
+    tokenise_whitespace(
             default_ld_so_conf, std::back_inserter(ld_so_conf));
 }
 

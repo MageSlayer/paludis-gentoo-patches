@@ -40,7 +40,7 @@ paludis::erepository::whitespace_check(
         << entry << "', '" << *id << "', '" << name << "'";
 
     std::list<std::string> lines;
-    Tokeniser<delim_kind::AnyOfTag>::tokenise(content, "\n", std::back_inserter(lines));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
 
     unsigned line(0), err_count(0);
     for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;

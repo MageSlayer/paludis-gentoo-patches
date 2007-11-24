@@ -43,7 +43,7 @@ namespace
     std::string normalise(const std::string & s)
     {
         std::list<std::string> words;
-        WhitespaceTokeniser::tokenise(s, std::back_inserter(words));
+        tokenise_whitespace(s, std::back_inserter(words));
         return join(words.begin(), words.end(), " ");
     }
 
@@ -96,8 +96,7 @@ namespace
                         if (name == "arch")
                         {
                             std::set<std::string> archs;
-                            WhitespaceTokeniser::tokenise(retarded_libxml_string_to_string(
-                                        xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
+                            tokenise_whitespace(retarded_libxml_string_to_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
                                     std::inserter(archs, archs.end()));
                             archs.erase("*");
                             for (std::set<std::string>::const_iterator r(archs.begin()), r_end(archs.end()) ;

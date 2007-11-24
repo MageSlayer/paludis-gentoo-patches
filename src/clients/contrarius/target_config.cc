@@ -47,7 +47,7 @@ TargetConfig::_parse_defaults()
     {
         Context c2("While parsing line '" + *l + "'");
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::tokenise(*l, std::back_inserter(tokens));
+        tokenise_whitespace(*l, std::back_inserter(tokens));
         SpecEntryList * list(&_binutils_list);
 
         if ((("aux" == tokens[1]) || "headers" == tokens[1]) && (2 == std::distance(tokens.begin(), tokens.end())))
@@ -86,7 +86,7 @@ TargetConfig::_find_match(SpecEntryList & list)
             i != i_end ; ++i)
     {
         tokens.clear();
-        Tokeniser<delim_kind::AnyOfTag>::tokenise(i->first, "-", std::back_inserter(tokens));
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(i->first, "-", "", std::back_inserter(tokens));
 
         for (unsigned index(0) ; index < 4 ; ++index)
         {

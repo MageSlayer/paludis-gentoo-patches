@@ -72,8 +72,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
         l != l_end ; ++l)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::tokenise((*l),
-            create_inserter<std::string>(std::back_inserter(tokens)));
+        tokenise_whitespace((*l), create_inserter<std::string>(std::back_inserter(tokens)));
         std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
 
         std::string type, name, sha1, sha256, rmd160, md5;

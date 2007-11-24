@@ -50,7 +50,7 @@ HostTupleName::HostTupleName(const std::string & s) :
     Context c("When creating a HostTupleName from '" + s + "':");
 
     std::vector<std::string> tokens;
-    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, "-", std::back_inserter(tokens));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, "-", "", std::back_inserter(tokens));
 
     switch (tokens.size())
     {

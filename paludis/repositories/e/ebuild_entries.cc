@@ -221,7 +221,7 @@ namespace
 
             /* possible values from profile */
             std::set<UseFlagName> possible_values;
-            WhitespaceTokeniser::tokenise(profile->environment_variable(stringify(*x)),
+            tokenise_whitespace(profile->environment_variable(stringify(*x)),
                     create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
             /* possible values from environment */

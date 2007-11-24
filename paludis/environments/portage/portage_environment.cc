@@ -154,7 +154,7 @@ namespace
             return true;
 
         std::set<std::string> use_expand;
-        WhitespaceTokeniser::tokenise(k.get("USE_EXPAND"),
+        tokenise_whitespace(k.get("USE_EXPAND"),
                 std::inserter(use_expand, use_expand.begin()));
         if (use_expand.end() != use_expand.find(s))
             return true;
@@ -195,16 +195,16 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _add_portdir_repository(FSEntry(_imp->vars->get("PORTDIR")));
     _add_vdb_repository();
     std::list<FSEntry> portdir_overlay;
-    WhitespaceTokeniser::tokenise(_imp->vars->get("PORTDIR_OVERLAY"),
+    tokenise_whitespace(_imp->vars->get("PORTDIR_OVERLAY"),
             create_inserter<FSEntry>(std::back_inserter(portdir_overlay)));
     std::for_each(portdir_overlay.begin(), portdir_overlay.end(),
             tr1::bind(tr1::mem_fn(&PortageEnvironment::_add_portdir_overlay_repository), this, _1));
 
     /* use etc */
 
-    WhitespaceTokeniser::tokenise(_imp->vars->get("USE"), std::inserter(_imp->use_with_expands,
+    tokenise_whitespace(_imp->vars->get("USE"), std::inserter(_imp->use_with_expands,
                 _imp->use_with_expands.begin()));
-    WhitespaceTokeniser::tokenise(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand,
+    tokenise_whitespace(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand,
                 _imp->use_expand.begin()));
     for (std::set<std::string>::const_iterator i(_imp->use_expand.begin()), i_end(_imp->use_expand.end()) ;
             i != i_end ; ++i)
@@ -213,7 +213,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         std::transform(i->begin(), i->end(), std::back_inserter(lower_i), ::tolower);
 
         std::set<std::string> values;
-        WhitespaceTokeniser::tokenise(_imp->vars->get(*i), std::inserter(values,
+        tokenise_whitespace(_imp->vars->get(*i), std::inserter(values,
                     values.begin()));
         for (std::set<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
                 v != v_end ; ++v)
@@ -221,7 +221,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     }
 
     /* accept keywords */
-    WhitespaceTokeniser::tokenise(_imp->vars->get("ACCEPT_KEYWORDS"),
+    tokenise_whitespace(_imp->vars->get("ACCEPT_KEYWORDS"),
             std::inserter(_imp->accept_keywords, _imp->accept_keywords.begin()));
 
     /* files */
@@ -235,7 +235,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     /* mirrors */
     std::list<std::string> gentoo_mirrors;
-    WhitespaceTokeniser::tokenise(_imp->vars->get("GENTOO_MIRRORS"),
+    tokenise_whitespace(_imp->vars->get("GENTOO_MIRRORS"),
             std::back_inserter(gentoo_mirrors));
     for (std::list<std::string>::const_iterator m(gentoo_mirrors.begin()), m_end(gentoo_mirrors.end()) ;
             m != m_end ; ++m)
@@ -248,7 +248,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
-            WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+            tokenise_whitespace(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
 
@@ -282,7 +282,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
-            WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+            tokenise_whitespace(*line, std::back_inserter(tokens));
 
             if (tokens.empty())
                 continue;

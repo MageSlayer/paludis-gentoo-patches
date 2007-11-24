@@ -98,7 +98,7 @@ void
 FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 {
     _imp->collection.reset(new KeywordNameSet);
-    WhitespaceTokeniser::tokenise(s, create_inserter<KeywordName>(_imp->collection->inserter()));
+    tokenise_whitespace(s, create_inserter<KeywordName>(_imp->collection->inserter()));
 }
 
 FakeMetadataIUseSetKey::FakeMetadataIUseSetKey(const std::string & r,
@@ -114,7 +114,7 @@ FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagPar
 {
     _imp->collection.reset(new IUseFlagSet);
     std::list<std::string> tokens;
-    WhitespaceTokeniser::tokenise(s, std::back_inserter(tokens));
+    tokenise_whitespace(s, std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
         _imp->collection->insert(IUseFlag(*t, m, std::string::npos));

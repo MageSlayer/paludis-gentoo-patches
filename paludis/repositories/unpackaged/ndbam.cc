@@ -299,7 +299,7 @@ NDBAM::entries(const QualifiedPackageName & q)
             try
             {
                 std::vector<std::string> tokens;
-                Tokeniser<delim_kind::AnyOfTag>::tokenise(d->basename(), ":", std::back_inserter(tokens));
+                tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(d->basename(), ":", "", std::back_inserter(tokens));
                 if (tokens.size() < 3)
                 {
                     Log::get_instance()->message(ll_warning, lc_context) << "Not using '" << *d <<

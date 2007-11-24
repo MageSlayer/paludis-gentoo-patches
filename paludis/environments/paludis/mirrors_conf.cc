@@ -75,7 +75,7 @@ MirrorsConf::add(const FSEntry & filename)
             line != line_end ; ++line)
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
+        tokenise_whitespace(*line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;

@@ -275,7 +275,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
                 + "' returned success '" + stringify(exit_status) + "', result '" + deps + "'");
 
         std::set<std::string> deps_s;
-        WhitespaceTokeniser::tokenise(deps, std::inserter(deps_s, deps_s.end()));
+        tokenise_whitespace(deps, std::inserter(deps_s, deps_s.end()));
 
         for (std::set<std::string>::const_iterator d(deps_s.begin()), d_end(deps_s.end()) ;
                 d != d_end ; ++d)

@@ -102,8 +102,7 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
     try
     {
         KeyValueConfigFile kvs(stream, opts);
-        WhitespaceTokeniser::tokenise(
-            kvs.get("dependency_libs"), std::back_inserter(deps));
+        tokenise_whitespace(kvs.get("dependency_libs"), std::back_inserter(deps));
     }
     catch (const ConfigFileError & ex)
     {

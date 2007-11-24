@@ -36,7 +36,7 @@ DepParser::parse(const std::string & s)
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::list<std::string> tokens;
-    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, ",", std::back_inserter(tokens));
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>(s, ",", "", std::back_inserter(tokens));
 
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)

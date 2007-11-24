@@ -660,7 +660,7 @@ namespace
     std::string normalise(const std::string & s)
     {
         std::list<std::string> w;
-        WhitespaceTokeniser::tokenise(s, std::back_inserter(w));
+        tokenise_whitespace(s, std::back_inserter(w));
         return join(w.begin(), w.end(), " ");
     }
 }

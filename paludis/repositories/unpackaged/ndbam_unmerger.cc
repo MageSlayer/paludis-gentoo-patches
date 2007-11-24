@@ -62,10 +62,8 @@ namespace paludis
         Implementation(const NDBAMUnmergerOptions & o) :
             options(o)
         {
-            WhitespaceTokeniser::tokenise(o.config_protect,
-                    std::back_inserter(config_protect));
-            WhitespaceTokeniser::tokenise(o.config_protect_mask,
-                    std::back_inserter(config_protect_mask));
+            tokenise_whitespace(o.config_protect, std::back_inserter(config_protect));
+            tokenise_whitespace(o.config_protect_mask, std::back_inserter(config_protect_mask));
         }
     };
 }

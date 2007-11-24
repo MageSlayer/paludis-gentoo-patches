@@ -253,7 +253,7 @@ namespace
     std::string purdy(const std::string & s)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::tokenise(s, std::back_inserter(tokens));
+        tokenise_whitespace(s, std::back_inserter(tokens));
         return join(tokens.begin(), tokens.end(), " \\n ");
     }
 }
