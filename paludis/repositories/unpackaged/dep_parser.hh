@@ -27,7 +27,7 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
-        class DepParser :
+        class PALUDIS_VISIBLE DepParser :
             private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
         {
             public:

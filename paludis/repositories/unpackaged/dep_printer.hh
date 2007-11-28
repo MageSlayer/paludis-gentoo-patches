@@ -30,7 +30,7 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
-        class DepPrinter :
+        class PALUDIS_VISIBLE DepPrinter :
             public ConstVisitor<DependencySpecTree>,
             public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AllDepSpec>,
             public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AnyDepSpec>,

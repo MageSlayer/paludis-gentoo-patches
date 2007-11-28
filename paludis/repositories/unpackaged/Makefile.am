@@ -83,6 +83,17 @@ installed_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+dep_parser_TEST_SOURCES = dep_parser_TEST.cc
+
+dep_parser_TEST_LDADD = \
+	libpaludisunpackagedrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 EXTRA_DIST = \
 	ndbam.sr \
 	ndbam-sr.hh \
@@ -105,7 +116,8 @@ EXTRA_DIST = \
 	installed_repository.sr \
 	installed_repository-sr.hh \
 	installed_repository-sr.cc \
-	installed_id.cc
+	installed_id.cc \
+	dep_parser_TEST.cc
 
 BUILT_SOURCES = \
 	ndbam-sr.hh ndbam-sr.cc \
@@ -136,7 +148,8 @@ TESTS_ENVIRONMENT = env \
 
 TESTS = \
 	unpackaged_repository_TEST \
-	installed_repository_TEST
+	installed_repository_TEST \
+	dep_parser_TEST
 
 check_PROGRAMS = $(TESTS)
 
@@ -180,3 +193,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
