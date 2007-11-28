@@ -17,7 +17,7 @@ that is executed when a particular well defined action occurs.</p>
     <li>Ebuild phase hooks. These have <code>ebuild</code> in the hook name, and
     have full access to the ebuild environment (including the ability to call
     <code>die</code>), but are only used for ebuild-based activities.
-    See <a href="#ebuild-hooks">Ebuild Hooks</a>.</li>
+    See <a href="#ebuild-phase-hooks">Ebuild Phase Hooks</a>.</li>
 
     <li>Ebuild message hooks. These are special hooks that are called for
     <code>einfo</code>, <code>ewarn</code> etc.
@@ -146,9 +146,9 @@ target. The <code>PALUDIS_CMDLINE</code> variables described below are also avai
 <code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
 interest.</p>
 
-<h3 id="ebuild-hooks">Ebuild Hooks</h3>
+<h3 id="ebuild-phase-hooks">Ebuild Phase Hooks</h3>
 
-<p>The following ebuild hooks are available:</p>
+<p>The following ebuild phase hooks are available:</p>
 
 <ul>
     <li><code>ebuild_metadata_pre</code></li>
@@ -297,9 +297,10 @@ to be unlinked, and <code>ROOT</code> is the filesystem root.</p>
 
 <h2>User Defined Hooks</h2>
 
-<p>User defined hooks should be executable (<code>chmod a+x</code>) scripts named
-<code>*.bash</code> or <code>*.hook</code>. They can live in two locations (or
-be symlinked there, to allow a single script to be shared between hooks):</p>
+<p>User defined hooks should be files named <code>*.bash</code>, <code>*.hook</code>,
+<code>*.py</code> or <code>*.so</code>. <code>.bash</code> and <code>.hook</code>
+scripts should be executable (<code>chmod a+x</code>). They can live in three locations
+(or be symlinked there, to allow a single script to be shared between hooks):</p>
 
 <ul>
     <li><code><em>confdir</em>/hooks/<em>hookname</em>/</code>, where
