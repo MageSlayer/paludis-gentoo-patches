@@ -208,6 +208,16 @@ namespace test_cases
         }
     } test_vdb_merger_sym_newline;
 
+    struct VDBMergerTestSymTargetNewline : VDBMergerTest
+    {
+        VDBMergerTestSymTargetNewline() : VDBMergerTest("sym_target_newline") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_sym_target_newline;
+
     struct VDBMergerTestSymArrow : VDBMergerTest
     {
         VDBMergerTestSymArrow() : VDBMergerTest("sym_arrow") { }

@@ -278,9 +278,12 @@ VDBMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (is_check)
     {
         if (std::string::npos != src.basename().find('\n'))
-            throw MergerError("'" + stringify(src) + "Symlink ' contains a newline in its name, which cannot be stored by VDB");
+            throw MergerError("Symlink '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+        if (std::string::npos != src.readlink().find('\n'))
+            throw MergerError("Symlink '" + stringify(src) + "' contains a newline in its target '" +
+                              src.readlink() + "', which cannot be stored by VDB");
         if (std::string::npos != stringify(src).find(" -> "))
-            throw MergerError("'" + stringify(src) + "Symlink ' contains a ' -> ' in its name, which cannot be stored by VDB");
+            throw MergerError("Symlink '" + stringify(src) + "' contains a ' -> ' in its name, which cannot be stored by VDB");
     }
     Merger::on_sym(is_check, src, dst);
 }

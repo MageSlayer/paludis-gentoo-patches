@@ -63,22 +63,26 @@ cd ../..
 
 mkdir -p file_newline_dir/{image,root} || exit 4
 touch file_newline_dir/image/"file
-newline"
+newline" || exit 5
 
 mkdir -p dir_newline_dir/{image,root} || exit 4
 mkdir dir_newline_dir/image/"dir
-newline"
+newline" || exit 5
 
 mkdir -p sym_newline_dir/{image,root} || exit 4
 ln -s foo sym_newline_dir/image/"sym
-newline"
+newline" || exit 5
+
+mkdir -p sym_target_newline_dir/{image,root} || exit 4
+ln -s "foo
+bar" sym_target_newline_dir/image/sym_target_newline || exit 5
 
 mkdir -p sym_arrow_dir/{image,root} || exit 4
-ln -s bar sym_arrow_dir/image/"sym -> arrow"
+ln -s bar sym_arrow_dir/image/"sym -> arrow" || exit 5
 
 mkdir -p sym_arrow2_dir/{image,root} || exit 4
-mkdir sym_arrow2_dir/image/"dir -> ectory"
-ln -s bar sym_arrow2_dir/image/"dir -> ectory/sym"
+mkdir sym_arrow2_dir/image/"dir -> ectory" || exit 5
+ln -s bar sym_arrow2_dir/image/"dir -> ectory/sym" || exit 5
 
 
 for d in *_dir; do
