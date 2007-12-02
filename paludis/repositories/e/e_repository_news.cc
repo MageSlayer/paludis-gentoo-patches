@@ -67,9 +67,9 @@ namespace paludis
             environment(e),
             e_repository(p),
             params(k),
-            skip_file(e->root() / "var" / "lib" / "paludis" / "news" /
+            skip_file(e->root() / "var" / "lib" / "gentoo" / "news" /
                     ("news-" + stringify(e_repository->name()) + ".skip")),
-            unread_file(e->root() / "var" / "lib" / "paludis" / "news" /
+            unread_file(e->root() / "var" / "lib" / "gentoo" / "news" /
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }
