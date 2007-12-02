@@ -32,14 +32,14 @@ names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
 
-mkdir -p var/lib/paludis/news
-cat <<END > var/lib/paludis/news/news-one.read
+mkdir -p var/lib/gentoo/news
+cat <<END > var/lib/gentoo/news/news-one.read
 END
-cat <<END > var/lib/paludis/news/news-one.unread
+cat <<END > var/lib/gentoo/news/news-one.unread
 END
-cat <<END > var/lib/paludis/news/news-two.read
+cat <<END > var/lib/gentoo/news/news-two.read
 END
-cat <<END > var/lib/paludis/news/news-two.unread
+cat <<END > var/lib/gentoo/news/news-two.unread
 monkey
 END
 
