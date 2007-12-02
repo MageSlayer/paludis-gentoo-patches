@@ -48,9 +48,12 @@ int main(int argc, char * argv[])
                 q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
         {
             /* Create a PackageDepSpec from the parameter. For user-inputted
-             * data, pds_pm_permissive or pds_pm_unspecific should be used (only
-             * the latter allows wildcards). */
-            PackageDepSpec spec(*q, pds_pm_unspecific);
+             * data, parse_user_package_dep_spec() should be used. If wildcards
+             * are to be permitted, the updso_allow_wildcards option should be
+             * included. If data about the spec is known at compile time,
+             * make_package_dep_spec() should be used instead. */
+            PackageDepSpec spec(parse_user_package_dep_spec(
+                        *q, UserPackageDepSpecOptions() + updso_allow_wildcards));
 
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;

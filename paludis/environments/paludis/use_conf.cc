@@ -24,6 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/options.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
@@ -128,7 +129,8 @@ UseConf::add(const FSEntry & filename)
         }
         else
         {
-            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+                            tokens.at(0), UserPackageDepSpecOptions() + updso_allow_wildcards)));
 
             if (d->use_requirements_ptr())
             {

@@ -79,6 +79,7 @@ paludis_repositories_e_include_HEADERS = \
 	make_ebuild_repository.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
+	package_dep_spec.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
@@ -125,6 +126,7 @@ libpaludiserepository_la_SOURCES = \
 	make_ebin_repository.cc \
 	make_ebuild_repository.cc \
 	manifest2_reader.cc \
+	package_dep_spec.cc \
 	registration.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \

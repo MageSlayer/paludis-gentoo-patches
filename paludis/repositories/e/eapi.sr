@@ -153,11 +153,9 @@ make_class_SupportedEAPI()
     visible
     allow_named_args cc
 
-    key package_dep_spec_parse_mode PackageDepSpecParseMode
-    key strict_package_dep_spec_parse_mode PackageDepSpecParseMode
-    key dependency_spec_tree_parse_mode "erepository::DependencySpecTreeParseMode"
+    key package_dep_spec_parse_options "erepository::PackageDepSpecParseOptions"
+    key dependency_spec_tree_parse_options "erepository::DependencySpecTreeParseOptions"
     key iuse_flag_parse_mode IUseFlagParseMode
-    key strict_iuse_flag_parse_mode IUseFlagParseMode
     key uri_supports_arrow bool
 
     key breaks_portage bool

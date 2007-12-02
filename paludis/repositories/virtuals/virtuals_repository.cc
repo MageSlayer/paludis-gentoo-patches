@@ -163,8 +163,7 @@ VirtualsRepository::need_names() const
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
             _imp->names.push_back(std::make_pair(p->virtual_name, tr1::shared_ptr<const PackageDepSpec>(
-                            new PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p->provided_by->name()))))));
+                            new PackageDepSpec(make_package_dep_spec().package(p->provided_by->name())))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());

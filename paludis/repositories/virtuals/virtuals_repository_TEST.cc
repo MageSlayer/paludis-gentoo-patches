@@ -30,6 +30,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/options.hh>
 #include <paludis/query.hh>
 
 using namespace test;
@@ -56,7 +57,8 @@ namespace test_cases
 
             repo->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
             repo->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
-            repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(">=cat/pkg-2", pds_pm_permissive)));
+            repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
+                            parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
 
             TEST_CHECK(repo->virtual_packages());
             TEST_CHECK_EQUAL(std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()), 1);
@@ -89,11 +91,15 @@ namespace test_cases
 
             repo1->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
             repo1->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
-            repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(">=cat/pkg-2", pds_pm_permissive)));
-            repo1->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(new PackageDepSpec(">=cat/pkg-2", pds_pm_permissive)));
+            repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(
+                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+            repo1->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(
+                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
 
-            repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(">=cat/pkg-2", pds_pm_permissive)));
-            repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(new PackageDepSpec("<=cat/pkg-1", pds_pm_permissive)));
+            repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
+                            parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+            repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(new PackageDepSpec(
+                            parse_user_package_dep_spec("<=cat/pkg-1", UserPackageDepSpecOptions()))));
 
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));

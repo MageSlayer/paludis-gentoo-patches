@@ -21,6 +21,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/query.hh>
@@ -50,8 +51,8 @@ AuxiliaryStage::is_rebuild() const
     for (std::list<std::string>::const_iterator p(packages.begin()), p_end(packages.end()) ;
             p != p_end ; ++p)
         if ( _env->package_database()->query(
-                    query::Matches(PackageDepSpec(*p, pds_pm_permissive)) &
-                        query::InstalledAtRoot(_env->root()),
+                    query::Matches(parse_user_package_dep_spec(*p, UserPackageDepSpecOptions())) &
+                    query::InstalledAtRoot(_env->root()),
                     qo_whatever)->empty())
             return false;
 
@@ -63,8 +64,8 @@ BinutilsStage::build(const StageOptions &) const
 {
     Context context("When building BinutilsStage:");
 
-    tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(TargetConfig::get_instance()->binutils(),
-                pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(
+                parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -75,7 +76,7 @@ bool
 BinutilsStage::is_rebuild() const
 {
     return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->binutils(), pds_pm_permissive)) &
+                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever)->empty());
 }
@@ -85,8 +86,8 @@ KernelHeadersStage::build(const StageOptions &) const
 {
     Context context("When building KernelHeadersStage:");
 
-    tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(TargetConfig::get_instance()->headers(),
-                pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(
+                parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -99,8 +100,8 @@ bool
 KernelHeadersStage::is_rebuild() const
 {
     return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->headers(), pds_pm_permissive)) &
-                    query::InstalledAtRoot(_env->root()),
+                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())) &
+                query::InstalledAtRoot(_env->root()),
                 qo_whatever)->empty());
 }
 
@@ -109,8 +110,8 @@ MinimalStage::build(const StageOptions &) const
 {
     Context context("When executing MinimalStage:");
 
-    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
-                pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+                    UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -131,9 +132,9 @@ bool
 MinimalStage::is_rebuild() const
 {
    return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
-                    query::InstalledAtRoot(_env->root()),
-                qo_whatever)->empty());
+               query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) &
+               query::InstalledAtRoot(_env->root()),
+               qo_whatever)->empty());
 }
 
 int
@@ -141,8 +142,8 @@ LibCHeadersStage::build(const StageOptions &) const
 {
     Context context("When building LIbCHeaderStage:");
 
-    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
-                pds_pm_unspecific));
+    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+                    UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -155,7 +156,7 @@ bool
 LibCHeadersStage::is_rebuild() const
 {
     return (! tr1::shared_ptr<const PackageIDSequence>(_env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_unspecific)) &
+                    query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever))->empty());
 }
@@ -165,8 +166,8 @@ LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");
 
-    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
-                pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+                    UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -177,8 +178,8 @@ bool
 LibCStage::is_rebuild() const
 {
     tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_permissive)) &
-                    query::InstalledAtRoot(_env->root()),
+                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
+                query::InstalledAtRoot(_env->root()),
                 qo_whatever));
 
     if (c->empty())
@@ -192,8 +193,8 @@ FullStage::build(const StageOptions &) const
 {
     Context context("When building FullStage:");
 
-    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
-                pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+                    UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -211,8 +212,8 @@ bool
 FullStage::is_rebuild() const
 {
     tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
-                    query::InstalledAtRoot(_env->root()),
+                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) &
+                query::InstalledAtRoot(_env->root()),
                 qo_whatever));
 
     if (c->empty())

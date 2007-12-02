@@ -85,10 +85,11 @@ ERepositorySets::~ERepositorySets()
 {
 }
 
-
 tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepositorySets::package_set(const SetName & s) const
 {
+    using namespace tr1::placeholders;
+
     if ("system" == s.data())
         throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
     else if ("security" == s.data())
@@ -106,9 +107,8 @@ ERepositorySets::package_set(const SetName & s) const
                 .file_name(ff)
                 .environment(_imp->environment)
                 .type(sft_paludis_conf)
-                .parse_mode(pds_pm_eapi_0)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tag));
-
 
         return f.contents();
     }
@@ -269,15 +269,11 @@ ERepositorySets::security_set(bool insecurity) const
 
                     if (insecurity)
                     {
-                        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
-                        v->push_back(VersionRequirement(vo_equal, (*c)->version()));
                         tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*c)->name())),
-                                    tr1::shared_ptr<CategoryNamePart>(),
-                                    tr1::shared_ptr<PackageNamePart>(),
-                                    v, vr_and,
-                                    tr1::shared_ptr<SlotName>(),
-                                    tr1::shared_ptr<RepositoryName>(new RepositoryName((*c)->repository()->name()))));
+                                    make_package_dep_spec()
+                                    .package((*c)->name())
+                                    .version_requirement(VersionRequirement(vo_equal, (*c)->version()))
+                                    .repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
@@ -292,14 +288,9 @@ ERepositorySets::security_set(bool insecurity) const
                         bool ok(false);
                         tr1::shared_ptr<const PackageIDSequence> available(
                                 _imp->environment->package_database()->query(
-                                    query::Matches(PackageDepSpec(
-                                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                                    glsa_pkg->name())),
-                                            tr1::shared_ptr<CategoryNamePart>(),
-                                            tr1::shared_ptr<PackageNamePart>(),
-                                            tr1::shared_ptr<VersionRequirements>(),
-                                            vr_and,
-                                            tr1::shared_ptr<SlotName>(new SlotName((*c)->slot())))) &
+                                    query::Matches(make_package_dep_spec()
+                                        .package(glsa_pkg->name())
+                                        .slot((*c)->slot())) &
                                     query::SupportsAction<InstallAction>() &
                                     query::NotMasked(),
                                     qo_order_by_version));
@@ -313,15 +304,10 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
-                            v->push_back(VersionRequirement(vo_equal, (*r)->version()));
-                            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*r)->name())),
-                                        tr1::shared_ptr<CategoryNamePart>(),
-                                        tr1::shared_ptr<PackageNamePart>(),
-                                        v, vr_and,
-                                        tr1::shared_ptr<SlotName>(),
-                                        tr1::shared_ptr<RepositoryName>(new RepositoryName((*r)->repository()->name()))));
+                            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+                                        .package((*r)->name())
+                                        .version_requirement(VersionRequirement(vo_equal, (*r)->version()))
+                                        .repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(
                                         new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));

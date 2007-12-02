@@ -208,27 +208,17 @@ query::Matches::Matches(const PackageDepSpec & a) :
 }
 
 query::Package::Package(const QualifiedPackageName & a) :
-    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(a))))))
+    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(make_package_dep_spec().package(a)))))
 {
 }
 
 query::Repository::Repository(const RepositoryName & a) :
-    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        tr1::shared_ptr<VersionRequirements>(),
-                        vr_and,
-                        tr1::shared_ptr<SlotName>(),
-                        tr1::shared_ptr<RepositoryName>(new RepositoryName(a))))))
+    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(make_package_dep_spec().repository(a))))
 {
 }
 
 query::Category::Category(const CategoryNamePart & a) :
-    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(),
-                        tr1::shared_ptr<CategoryNamePart>(new CategoryNamePart(a))))))
+    Query(tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(make_package_dep_spec().category_name_part(a))))
 {
 }
 

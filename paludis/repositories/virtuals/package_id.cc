@@ -54,19 +54,17 @@ namespace paludis
             env(e),
             value(exact ?
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                make_shared_ptr(new QualifiedPackageName(v->name())),
-                                tr1::shared_ptr<CategoryNamePart>(),
-                                tr1::shared_ptr<PackageNamePart>(),
-                                make_equal_to_version_requirements(v->version()),
-                                vr_and,
-                                make_shared_ptr(new SlotName(v->slot())),
-                                make_shared_ptr(new RepositoryName(v->repository()->name()))
-                                )))
+                                make_package_dep_spec()
+                                .package(v->name())
+                                .version_requirement(VersionRequirement(vo_equal, v->version()))
+                                .slot(v->slot())
+                                .repository(v->repository()->name()))))
                     :
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                make_shared_ptr(new QualifiedPackageName(v->name()))
+                                make_package_dep_spec()
+                                .package(v->name())
                                 )))
-                    )
+                 )
         {
         }
     };

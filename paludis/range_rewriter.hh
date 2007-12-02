@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RANGE_REWRITER_HH 1
 
 #include <paludis/dep_tree.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declarations for RangeRewriter, which is used internally by Deplist.
@@ -43,12 +44,9 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RangeRewriter :
-        public ConstVisitor<DependencySpecTree>
+        public ConstVisitor<DependencySpecTree>,
+        private PrivateImplementationPattern<RangeRewriter>
     {
-        private:
-            tr1::shared_ptr<PackageDepSpec> _spec;
-            bool _invalid;
-
         public:
             ///\name Basic operations
             ///\{
@@ -62,13 +60,7 @@ namespace paludis
              * Our rewritten spec, or a zero pointer if we couldn't do any
              * rewriting.
              */
-            tr1::shared_ptr<PackageDepSpec> spec() const
-            {
-                if (_invalid)
-                    return tr1::shared_ptr<PackageDepSpec>();
-
-                return _spec;
-            }
+            tr1::shared_ptr<PackageDepSpec> spec() const;
 
             ///\name Visit methods
             ///\{

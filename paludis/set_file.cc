@@ -186,7 +186,7 @@ namespace
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
                         "' should start with '?' or '*', assuming '*'");
 
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(0))));
                 if (params.tag)
                     spec->set_tag(params.tag);
                 result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -194,7 +194,7 @@ namespace
             }
             else if ("*" == tokens.at(0))
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                 if (params.tag)
                     spec->set_tag(params.tag);
                 result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -202,7 +202,7 @@ namespace
             }
             else if ("?" == tokens.at(0))
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                 if (params.tag)
                     spec->set_tag(params.tag);
 
@@ -279,7 +279,7 @@ SimpleHandler::_create_contents() const
             }
             else
             {
-                tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(stringify(*i), _p.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser(stringify(*i))));
                 if (_p.tag)
                     p->set_tag(_p.tag);
                 _contents->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(

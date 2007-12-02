@@ -43,14 +43,9 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
     tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
-                query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        tr1::shared_ptr<VersionRequirements>(),
-                        vr_and,
-                        tr1::shared_ptr<SlotName>(),
-                        tr1::shared_ptr<RepositoryName>(new RepositoryName(_repo->name())))),
+                query::Matches(make_package_dep_spec()
+                    .package(package)
+                    .repository(_repo->name())),
                 qo_group_by_slot));
 
     SlotName old_slot("I_am_a_slot");

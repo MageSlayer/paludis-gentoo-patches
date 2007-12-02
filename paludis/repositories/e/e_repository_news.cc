@@ -19,6 +19,8 @@
 
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/package_dep_spec.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
@@ -134,7 +136,8 @@ ERepositoryNews::update_news() const
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! _imp->environment->package_database()->query(
-                                query::Matches(PackageDepSpec(*i, pds_pm_permissive)) &
+                                query::Matches(PackageDepSpec(erepository::parse_e_package_dep_spec(*i,
+                                            *erepository::EAPIData::get_instance()->eapi_from_string(_imp->e_repository->params().profile_eapi)))) &
                                 query::SupportsAction<InstalledAction>(),
                                 qo_whatever)->empty())
                         local_show = true;

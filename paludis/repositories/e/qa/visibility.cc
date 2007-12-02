@@ -101,6 +101,8 @@ namespace
 
         void visit_leaf(const PackageDepSpec & orig_p)
         {
+            using namespace tr1::placeholders;
+
             success = false;
             viable = true;
 
@@ -113,35 +115,23 @@ namespace
                 ERepositoryProfile::VirtualsConstIterator v(profile->profile->find_virtual(*p->package_ptr()));
                 if (profile->profile->end_virtuals() != v)
                 {
-                    tr1::shared_ptr<VersionRequirements> reqs;
+                    PartiallyMadePackageDepSpec pp;
+
                     if (v->second->version_requirements_ptr())
-                    {
-                        reqs.reset(new VersionRequirements);
-                        std::copy(v->second->version_requirements_ptr()->begin(), v->second->version_requirements_ptr()->end(),
-                                reqs->back_inserter());
-                    }
+                        std::for_each(v->second->version_requirements_ptr()->begin(), v->second->version_requirements_ptr()->end(),
+                                tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
                     if (orig_p.version_requirements_ptr())
-                    {
-                        if (! reqs)
-                            reqs.reset(new VersionRequirements);
-                        std::copy(orig_p.version_requirements_ptr()->begin(), orig_p.version_requirements_ptr()->end(),
-                                reqs->back_inserter());
-                    }
-                    local_p.reset(new PackageDepSpec(
-                                make_shared_ptr(new QualifiedPackageName(*v->second->package_ptr())),
-                                tr1::shared_ptr<CategoryNamePart>(),
-                                tr1::shared_ptr<PackageNamePart>(),
-                                reqs,
-                                vr_and,
-                                orig_p.slot_ptr() ?
-                                    make_shared_ptr(new SlotName(*orig_p.slot_ptr())) :
-                                    tr1::shared_ptr<SlotName>(),
-                                orig_p.repository_ptr() ?
-                                    make_shared_ptr(new RepositoryName(*orig_p.repository_ptr())) :
-                                    tr1::shared_ptr<RepositoryName>(),
-                                tr1::shared_ptr<UseRequirements>(),
-                                orig_p.tag()
-                                ));
+                        std::for_each(orig_p.version_requirements_ptr()->begin(), orig_p.version_requirements_ptr()->end(),
+                                tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
+
+                    pp.package(*v->second->package_ptr());
+                    if (orig_p.slot_ptr())
+                        pp.slot(*orig_p.slot_ptr());
+                    if (orig_p.repository_ptr())
+                        pp.repository(*orig_p.repository_ptr());
+
+                    local_p.reset(new PackageDepSpec(pp));
+                    local_p->set_tag(orig_p.tag());
                     p = local_p.get();
                 }
             }

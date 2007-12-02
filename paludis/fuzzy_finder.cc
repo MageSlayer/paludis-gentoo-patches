@@ -21,6 +21,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/damerau_levenshtein.hh>
+#include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
@@ -74,7 +75,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
     if (std::string::npos != name.find('/'))
     {
-        PackageDepSpec pds(name, pds_pm_permissive);
+        PackageDepSpec pds(parse_user_package_dep_spec(name, UserPackageDepSpecOptions()));
 
         if (pds.package_ptr())
         {

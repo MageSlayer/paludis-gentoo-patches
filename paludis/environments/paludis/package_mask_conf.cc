@@ -29,6 +29,7 @@
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -74,7 +75,8 @@ PackageMaskConf::add(const FSEntry & filename)
 
     for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
-        _imp->masks.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*line, pds_pm_unspecific)));
+        _imp->masks.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
+                            *line, UserPackageDepSpecOptions() + updso_allow_wildcards))));
 }
 
 bool

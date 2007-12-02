@@ -37,6 +37,7 @@
 
 #include <map>
 #include <vector>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -66,22 +67,32 @@ namespace paludis
 
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions());
 
+                PackageDepSpecParseOptions package_dep_spec_parse_options;
+                {
+                    std::list<std::string> package_dep_spec_parse_options_tokens;
+                    tokenise_whitespace(k.get("package_dep_spec_parse_options"), std::back_inserter(package_dep_spec_parse_options_tokens));
+                    for (std::list<std::string>::const_iterator t(package_dep_spec_parse_options_tokens.begin()),
+                            t_end(package_dep_spec_parse_options_tokens.end()) ;
+                            t != t_end ; ++t)
+                        package_dep_spec_parse_options += destringify<PackageDepSpecParseOption>(*t);
+                }
+
+                DependencySpecTreeParseOptions dependency_spec_tree_parse_options;
+                {
+                    std::list<std::string> dependency_spec_tree_parse_options_tokens;
+                    tokenise_whitespace(k.get("dependency_spec_tree_parse_options"), std::back_inserter(dependency_spec_tree_parse_options_tokens));
+                    for (std::list<std::string>::const_iterator t(dependency_spec_tree_parse_options_tokens.begin()),
+                            t_end(dependency_spec_tree_parse_options_tokens.end()) ;
+                            t != t_end ; ++t)
+                        dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(*t);
+                }
+
                 tr1::shared_ptr<EAPI> eapi(new EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
                                     SupportedEAPI::create()
-                                    .package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
-                                            k.get("package_dep_spec_parse_mode")))
-                                    .strict_package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
-                                            k.get("strict_package_dep_spec_parse_mode").empty() ?
-                                            k.get("package_dep_spec_parse_mode") :
-                                            k.get("strict_package_dep_spec_parse_mode")))
-                                    .dependency_spec_tree_parse_mode(destringify<DependencySpecTreeParseMode>(
-                                            k.get("dependency_spec_tree_parse_mode")))
+                                    .package_dep_spec_parse_options(package_dep_spec_parse_options)
+                                    .dependency_spec_tree_parse_options(dependency_spec_tree_parse_options)
                                     .iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
                                             k.get("iuse_flag_parse_mode")))
-                                    .strict_iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
-                                            k.get("strict_iuse_flag_parse_mode").empty() ?
-                                            k.get("iuse_flag_parse_mode") :
-                                            k.get("strict_iuse_flag_parse_mode")))
                                     .breaks_portage(destringify<bool>(k.get("breaks_portage")))
                                     .uri_supports_arrow(destringify<bool>(k.get("uri_supports_arrow")))
 

@@ -132,7 +132,8 @@ namespace test_cases
             {
                 DepList d(&env, DepListOptions());
                 set_options(*d.options());
-                d.add(PackageDepSpec(merge_target, pds_pm_unspecific), env.default_destinations());
+                d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions() + updso_allow_wildcards)),
+                        env.default_destinations());
                 TEST_CHECK(true);
 
                 TestMessageSuffix s("got={ " + join(d.begin(), d.end(), ", ") + " }", false);

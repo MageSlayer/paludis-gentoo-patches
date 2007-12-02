@@ -55,7 +55,7 @@ module Paludis
 
     class TestCase_Matches < Test::Unit::TestCase
         def get_query
-            Query::Matches.new(PackageDepSpec.new('>=foo-bar/baz-1', PackageDepSpecParseMode::Permissive))
+            Query::Matches.new(Paludis::parse_user_package_dep_spec('>=foo-bar/baz-1', []))
         end
 
         def test_create

@@ -287,7 +287,7 @@ do_search(const Environment & env)
             i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
         if (i->second)
         {
-            task.show(PackageDepSpec(make_shared_ptr(new QualifiedPackageName(i->first))), i->second);
+            task.show(make_package_dep_spec().package(i->first), i->second);
             any = true;
         }
 

@@ -18,7 +18,7 @@ env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.envir
 
 # Fetch package IDs for 'sys-apps/paludis'
 ids = env.package_database.query(
-    Query::Matches.new(PackageDepSpec.new("sys-apps/paludis", PackageDepSpecParseMode::Permissive)),
+    Query::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])),
     QueryOrder::OrderByVersion)
 
 # For each ID:

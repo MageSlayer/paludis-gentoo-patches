@@ -53,7 +53,7 @@ namespace test_cases
             TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
 
             const tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
-            FetchVisitor v(&env, *env.package_database()->query(query::Matches(PackageDepSpec("=cat/pkg-1", pds_pm_permissive)),
+            FetchVisitor v(&env, *env.package_database()->query(query::Matches(parse_user_package_dep_spec("=cat/pkg-1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);

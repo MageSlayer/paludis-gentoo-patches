@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
 
         /* And use flags, for which we need a package IDs: */
         tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)) &
+                    query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) &
                     query::SupportsAction<InstalledAction>(),
                     qo_order_by_version));
 

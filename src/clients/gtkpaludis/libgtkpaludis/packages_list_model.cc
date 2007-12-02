@@ -15,6 +15,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/options.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -136,26 +137,18 @@ namespace
                 environment->package_database()->query(
                     query::InstalledAtRoot(environment->root()) &
                     query::Matches(pds) &
-                    query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                            paludis::tr1::shared_ptr<CategoryNamePart>(),
-                            paludis::tr1::shared_ptr<PackageNamePart>(),
-                            paludis::tr1::shared_ptr<VersionRequirements>(),
-                            vr_and,
-                            paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
+                    query::Matches(make_package_dep_spec()
+                        .package(id->name())
+                        .slot(id->slot())),
                     qo_order_by_version));
 
         paludis::tr1::shared_ptr<const PackageIDSequence> av(
                 environment->package_database()->query(
                     query::SupportsAction<InstallAction>() &
                     query::Matches(pds) &
-                    query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                            paludis::tr1::shared_ptr<CategoryNamePart>(),
-                            paludis::tr1::shared_ptr<PackageNamePart>(),
-                            paludis::tr1::shared_ptr<VersionRequirements>(),
-                            vr_and,
-                            paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
+                    query::Matches(make_package_dep_spec()
+                        .package(id->name())
+                        .slot(id->slot())) &
                     query::NotMasked(),
                     qo_order_by_version));
 
@@ -183,13 +176,9 @@ namespace
             paludis::tr1::shared_ptr<const PackageIDSequence> av(
                     environment->package_database()->query(
                         query::Matches(pds) &
-                        query::Matches(PackageDepSpec(
-                                paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                                paludis::tr1::shared_ptr<CategoryNamePart>(),
-                                paludis::tr1::shared_ptr<PackageNamePart>(),
-                                paludis::tr1::shared_ptr<VersionRequirements>(),
-                                vr_and,
-                                paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
+                        query::Matches(make_package_dep_spec()
+                            .package(id->name())
+                            .slot(id->slot())) &
                         query::SupportsAction<InstallAction>() &
                         query::NotMasked(),
                         qo_order_by_version));
@@ -238,15 +227,14 @@ PackagesListModel::populate_in_paludis_thread()
             if (old_qpn != (*p)->name())
             {
                 data->items.push_front(PopulateItem(stringify((*p)->name().package)));
-                data->items.begin()->children.push_front(make_item(
-                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName((*p)->name()))),
+                data->items.begin()->children.push_front(make_item(make_package_dep_spec().package((*p)->name()),
                             *p, _imp->main_window->environment()));
                 data->items.begin()->qpn = data->items.begin()->children.begin()->qpn;
                 old_qpn = (*p)->name();
             }
             else
                 data->items.begin()->children.push_front(make_item(
-                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName((*p)->name()))),
+                            PackageDepSpec(make_package_dep_spec().package((*p)->name())),
                             *p, _imp->main_window->environment()));
         }
     }
@@ -263,7 +251,7 @@ PackagesListModel::populate_in_paludis_thread()
         {
             std::list<PopulateItem>::iterator atom_iter(data->items.insert(data->items.end(), PopulateItem(*i)));
             atom_iter->merge_if_one_child = false;
-            PackageDepSpec ds(*i, pds_pm_unspecific);
+            PackageDepSpec ds(parse_user_package_dep_spec(*i, UserPackageDepSpecOptions() + updso_allow_wildcards));
             if (ds.package_ptr())
             {
                 paludis::tr1::shared_ptr<const PackageIDSequence> c(

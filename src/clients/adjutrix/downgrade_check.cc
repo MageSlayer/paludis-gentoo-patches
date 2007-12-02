@@ -136,13 +136,9 @@ namespace
             std::map<QPNS, VersionSpec>::const_iterator a(after.find(b->first));
             if (after.end() == a)
             {
-                if (! env.package_database()->query(query::Matches(PackageDepSpec(
-                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(b->first.name)),
-                                    tr1::shared_ptr<CategoryNamePart>(),
-                                    tr1::shared_ptr<PackageNamePart>(),
-                                    tr1::shared_ptr<VersionRequirements>(),
-                                    vr_and,
-                                    tr1::shared_ptr<SlotName>(new SlotName(b->first.slot)))),
+                if (! env.package_database()->query(query::Matches(make_package_dep_spec()
+                                .package(b->first.name)
+                                .slot(b->first.slot)),
                             qo_whatever)->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));

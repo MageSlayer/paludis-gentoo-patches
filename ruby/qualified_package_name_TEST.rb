@@ -95,7 +95,7 @@ module Paludis
 
         def test_to_value_type_error
             assert_raise TypeError do
-                QualifiedPackageName.new('foo-bar/baz') <=> PackageDepSpec.new('foo-bar/baz', PackageDepSpecParseMode::Permissive)
+                QualifiedPackageName.new('foo-bar/baz') <=> Paludis::parse_user_package_dep_spec('foo-bar/baz', [])
             end
         end
     end

@@ -42,7 +42,7 @@ end
 
 # And use flags, for which we need package IDs:
 ids = env.package_database.query(
-    Query::Matches.new(PackageDepSpec.new('sys-apps/paludis', PackageDepSpecParseMode::Permissive)) &
+    Query::Matches.new(Paludis::parse_user_package_dep_spec('sys-apps/paludis', [])) &
     Query::SupportsInstalledAction.new,
     QueryOrder::OrderByVersion)
 

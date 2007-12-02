@@ -32,14 +32,6 @@ template class Sequence<VersionRequirement>;
 template class WrappedForwardIterator<Sequence<VersionRequirement>::ConstIteratorTag, const VersionRequirement>;
 template class WrappedOutputIterator<Sequence<VersionRequirement>::InserterTag, VersionRequirement>;
 
-tr1::shared_ptr<VersionRequirements>
-paludis::make_equal_to_version_requirements(const VersionSpec & v)
-{
-    tr1::shared_ptr<VersionRequirements> result(new VersionRequirements);
-    result->push_back(VersionRequirement(vo_equal, v));
-    return result;
-}
-
 std::ostream &
 paludis::operator<< (std::ostream & o, const VersionRequirementsMode & s)
 {

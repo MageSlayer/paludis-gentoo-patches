@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
         tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)),
+                    query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))),
                     qo_order_by_version));
 
         /* For each ID: */

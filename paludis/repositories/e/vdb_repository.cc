@@ -618,8 +618,7 @@ VDBRepository::package_set(const SetName & s) const
             for (QualifiedPackageNameSet::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                     e != e_end ; ++e)
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*e))));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(*e)));
                 spec->set_tag(tag);
                 result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
@@ -635,7 +634,7 @@ VDBRepository::package_set(const SetName & s) const
             SetFile world(SetFileParams::create()
                     .file_name(_imp->params.world)
                     .type(sft_simple)
-                    .parse_mode(pds_pm_unspecific)
+                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tag)
                     .environment(_imp->params.environment));
             return world.contents();
@@ -679,6 +678,8 @@ VDBRepository::invalidate_masks()
 void
 VDBRepository::add_string_to_world(const std::string & n) const
 {
+    using namespace tr1::placeholders;
+
     Lock l(*_imp->big_nasty_mutex);
 
     Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
@@ -697,7 +698,7 @@ VDBRepository::add_string_to_world(const std::string & n) const
     SetFile world(SetFileParams::create()
             .file_name(_imp->params.world)
             .type(sft_simple)
-            .parse_mode(pds_pm_unspecific)
+            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
             .tag(tr1::shared_ptr<DepTag>())
             .environment(_imp->params.environment));
     world.add(n);
@@ -707,6 +708,8 @@ VDBRepository::add_string_to_world(const std::string & n) const
 void
 VDBRepository::remove_string_from_world(const std::string & n) const
 {
+    using namespace tr1::placeholders;
+
     Lock l(*_imp->big_nasty_mutex);
 
     Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
@@ -716,7 +719,7 @@ VDBRepository::remove_string_from_world(const std::string & n) const
         SetFile world(SetFileParams::create()
                 .file_name(_imp->params.world)
                 .type(sft_simple)
-                .parse_mode(pds_pm_unspecific)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tr1::shared_ptr<DepTag>())
                 .environment(_imp->params.environment));
 
@@ -1218,7 +1221,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 if (std::string::npos == s.rfind('-'))
                     continue;
 
-                PackageDepSpec p("=" + stringify(c) + "/" + s, pds_pm_permissive);
+                PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s, UserPackageDepSpecOptions()));
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)

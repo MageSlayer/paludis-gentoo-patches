@@ -41,11 +41,11 @@ module Paludis
 
     class TestCase_PackageDepSpec < Test::Unit::TestCase
         def pda
-            PackageDepSpec.new('>=foo/bar-1:100::testrepo[a][-b]', PackageDepSpecParseMode::Permissive)
+            Paludis::parse_user_package_dep_spec('>=foo/bar-1:100::testrepo[a][-b]', [])
         end
 
         def pdb
-            PackageDepSpec.new('*/bar', PackageDepSpecParseMode::Unspecific)
+            Paludis::parse_user_package_dep_spec('*/bar', [:allow_wildcards])
         end
 
         def test_create
@@ -54,11 +54,23 @@ module Paludis
         end
 
         def test_create_error
-            assert_raise TypeError do
-                v = PackageDepSpec.new(0, PackageDepSpecParseMode::Permissive)
+            assert_raise NoMethodError do
+                v = PackageDepSpec.new("foo")
             end
             assert_raise PackageDepSpecError do
-                v = PackageDepSpec.new("=sys-apps/foo", PackageDepSpecParseMode::Permissive)
+                Paludis::parse_user_package_dep_spec("=sys-apps/foo", [])
+            end
+            assert_raise TypeError do
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", {})
+            end
+            assert_raise TypeError do
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", ["foo"])
+            end
+            assert_raise ArgumentError do
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", [:unknown])
+            end
+            assert_raise ArgumentError do
+                Paludis::parse_user_package_dep_spec("sys-apps/foo")
             end
         end
 
@@ -149,7 +161,7 @@ module Paludis
 
     class TestCase_BlockDepSpec < Test::Unit::TestCase
         def test_create
-            v = BlockDepSpec.new(PackageDepSpec.new(">=foo/bar-1", PackageDepSpecParseMode::Permissive))
+            v = BlockDepSpec.new(Paludis::parse_user_package_dep_spec(">=foo/bar-1", []))
         end
 
         def test_create_error
@@ -157,17 +169,13 @@ module Paludis
                 v = BlockDepSpec.new(0)
             end
 
-            assert_raise PackageDepSpecError do
-                v = BlockDepSpec.new(PackageDepSpec.new("=foo/bar", PackageDepSpecParseMode::Permissive))
-            end
-
-            assert_raise TypeError do 
+            assert_raise TypeError do
                 v = BlockDepSpec.new(PlainTextDepSpec.new('foo-bar/baz'))
             end
         end
 
         def test_blocked_spec
-            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz", PackageDepSpecParseMode::Permissive)).blocked_spec.to_s
+            assert_equal "foo/baz", BlockDepSpec.new(Paludis::parse_user_package_dep_spec("foo/baz", [])).blocked_spec.to_s
         end
     end
 

@@ -36,7 +36,8 @@ paludis_repositories_cran_include_HEADERS = \
 	masks.hh \
 	keys.hh \
 	normalise.hh \
-	dep_spec_pretty_printer.hh
+	dep_spec_pretty_printer.hh \
+	package_dep_spec.hh
 
 libpaludiscranrepository_la_SOURCES = \
 	cran_package_id.cc \
@@ -49,6 +50,7 @@ libpaludiscranrepository_la_SOURCES = \
 	masks.cc \
 	keys.cc \
 	dep_spec_pretty_printer.cc \
+	package_dep_spec.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
 libpaludiscranrepository_la_LIBADD = \

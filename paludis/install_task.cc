@@ -30,6 +30,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/tasks_exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -185,7 +186,7 @@ InstallTask::add_target(const std::string & target)
 
         if (std::string::npos != target.find('/'))
         {
-            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(target, pds_pm_permissive));
+            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
             spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                         new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
@@ -197,8 +198,7 @@ InstallTask::add_target(const std::string & target)
                 QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(target), query::MaybeSupportsAction<InstallAction>()));
                 modified_target = stringify(q);
-                tr1::shared_ptr<PackageDepSpec> spec(
-                    new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q))));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(q)));
                 spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                             new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
@@ -229,14 +229,11 @@ InstallTask::add_exact_package(const tr1::shared_ptr<const PackageID> & target)
     if (! _imp->override_target_type)
         _imp->dep_list.options()->target_type = dl_target_package;
 
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(target->name())),
-                tr1::shared_ptr<CategoryNamePart>(),
-                tr1::shared_ptr<PackageNamePart>(),
-                make_equal_to_version_requirements(target->version()),
-                vr_and,
-                tr1::shared_ptr<SlotName>(new SlotName(target->slot())),
-                tr1::shared_ptr<RepositoryName>(new RepositoryName(target->repository()->name()))));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+                .package(target->name())
+                .version_requirement(VersionRequirement(vo_equal, target->version()))
+                .slot(target->slot())
+                .repository(target->repository()->name())));
 
     spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
     _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -509,14 +506,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     if (dep->destination)
         collision_list = _imp->env->package_database()->query(
-                query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        tr1::shared_ptr<VersionRequirements>(),
-                        vr_and,
-                        tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
-                        tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
+                query::Matches(make_package_dep_spec()
+                    .package(dep->package_id->name())
+                    .slot(dep->package_id->slot())
+                    .repository(dep->destination->name())) &
                 query::SupportsAction<UninstallAction>(),
                 qo_order_by_version);
 
@@ -734,7 +727,7 @@ InstallTask::_main_actions()
                             t != t_end ; ++t)
                         all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                                            new PackageDepSpec(*t, pds_pm_permissive)))));
+                                            new PackageDepSpec(parse_user_package_dep_spec(*t, UserPackageDepSpecOptions()))))));
                     world_update_packages(all);
                 }
                 else

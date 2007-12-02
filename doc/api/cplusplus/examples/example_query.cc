@@ -60,19 +60,19 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Make some queries, and display what they give. */
-        show_query(env, query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)));
+        show_query(env, query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))));
 
         /* Queries can be combined. The resulting query is optimised internally,
          * potentially giving better performance than doing things by hand. */
         show_query(env,
-                query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)) &
+                query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) &
                 query::SupportsAction<InstalledAction>());
 
         /* Usually query::NotMasked should be combined with
          * query::SupportsAction<InstallAction>, since installed packages aren't
          * masked. */
         show_query(env,
-                query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)) &
+                query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) &
                 query::SupportsAction<InstallAction>() &
                 query::NotMasked());
 

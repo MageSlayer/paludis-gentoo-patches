@@ -100,17 +100,15 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
                 std::cout << std::endl;
             }
 
-        targets->push_back(
-            stringify(
-                PackageDepSpec(
-                    make_shared_ptr(new QualifiedPackageName((*pkg_it)->name())),
-                    tr1::shared_ptr<CategoryNamePart>(),
-                    tr1::shared_ptr<PackageNamePart>(),
-                    CommandLine::get_instance()->a_exact.specified()
-                        ? make_equal_to_version_requirements((*pkg_it)->version())
-                        : tr1::shared_ptr<VersionRequirements>(),
-                    vr_and,
-                    make_shared_ptr(new SlotName((*pkg_it)->slot())))));
+        if (CommandLine::get_instance()->a_exact.specified())
+            targets->push_back(stringify(make_package_dep_spec()
+                        .package((*pkg_it)->name())
+                        .version_requirement(VersionRequirement(vo_equal, (*pkg_it)->version()))
+                        .slot((*pkg_it)->slot())));
+        else
+            targets->push_back(stringify(make_package_dep_spec()
+                        .package((*pkg_it)->name())
+                        .slot((*pkg_it)->slot())));
     }
 
     tr1::shared_ptr<const PackageID> orphans;

@@ -24,6 +24,7 @@
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -333,7 +334,8 @@ namespace test_cases
             tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > world(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                         tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/moo", pds_pm_permissive)))));
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("foo/moo", UserPackageDepSpecOptions()))))));
             installed_repo->add_package_set(SetName("world"), world);
         }
 
@@ -373,9 +375,11 @@ namespace test_cases
             tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > world(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                         tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/moo", pds_pm_permissive)))));
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("foo/moo", UserPackageDepSpecOptions()))))));
             world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/bar", pds_pm_permissive)))));
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions()))))));
             installed_repo->add_package_set(SetName("world"), world);
         }
 

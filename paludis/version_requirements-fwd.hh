@@ -46,15 +46,6 @@ namespace paludis
     typedef Sequence<VersionRequirement> VersionRequirements;
 
     /**
-     * Convenience function: make VersionRequirements with an equals match on a
-     * single entry.
-     *
-     * \see VersionRequirements
-     * \ingroup g_dep_spec
-     */
-    tr1::shared_ptr<VersionRequirements> make_equal_to_version_requirements(const VersionSpec &) PALUDIS_VISIBLE;
-
-    /**
      * Whether our version requirements are an 'and' or an 'or' set.
      *
      * \see PackageDepSpec

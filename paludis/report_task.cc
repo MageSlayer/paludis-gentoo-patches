@@ -29,6 +29,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
+#include <paludis/version_requirements.hh>
 #include <set>
 #include <map>
 
@@ -194,21 +195,14 @@ ReportTask::execute()
 
                     if ((*v)->source_origin_key())
                     {
-                        tr1::shared_ptr<QualifiedPackageName> pkg_name(new QualifiedPackageName((*v)->name()));
-                        tr1::shared_ptr<VersionRequirements> ver_reqs(make_equal_to_version_requirements((*v)->version()));
                         repo_name.reset(new RepositoryName((*v)->source_origin_key()->value()));
 
                         tr1::shared_ptr<const PackageIDSequence> installable(
                             e->package_database()->query(
-                                query::Matches(
-                                    PackageDepSpec(
-                                        pkg_name,
-                                        tr1::shared_ptr<CategoryNamePart>(),
-                                        tr1::shared_ptr<PackageNamePart>(),
-                                        ver_reqs,
-                                        vr_and,
-                                        tr1::shared_ptr<SlotName>(),
-                                        repo_name)) &
+                                query::Matches(make_package_dep_spec()
+                                    .package((*v)->name())
+                                    .version_requirement(VersionRequirement(vo_equal, (*v)->version()))
+                                    .repository(*repo_name)) &
                                 query::SupportsAction<InstallAction>(),
                                 qo_best_version_only));
 

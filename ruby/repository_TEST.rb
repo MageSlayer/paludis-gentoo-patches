@@ -58,7 +58,8 @@ module Paludis
         end
 
         def p
-            db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            db.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
         end
 
         def installed_pid

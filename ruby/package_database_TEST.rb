@@ -97,11 +97,11 @@ module Paludis
         end
 
         def pda
-            PackageDepSpec.new('=foo/bar-1.0', PackageDepSpecParseMode::Permissive)
+            Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])
         end
 
         def pda2
-            PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive)
+            Paludis::parse_user_package_dep_spec('foo/bar', [])
         end
 
         def test_arg_count
@@ -177,7 +177,7 @@ module Paludis
             assert_equal pid.repository_name, pid2.repository_name
 
 
-            a = db.query(Query::Matches.new(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive)),
+            a = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('>=foo/bar-27', [])),
                          QueryOrder::Whatever)
             assert a.empty?
 

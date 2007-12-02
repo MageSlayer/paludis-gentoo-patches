@@ -24,6 +24,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/options.hh>
 #include <paludis/qa.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
@@ -79,32 +80,32 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             {
-                tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/visible-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/visible-1", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
                 TestReporter r1;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r1, &env, repo, id1, "visibility"));
                 TEST_CHECK_EQUAL(r1.count, 0u);
             }
 
             {
-                tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/visible-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/visible-2", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
                 TestReporter r2;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r2, &env, repo, id2, "visibility"));
                 TEST_CHECK_EQUAL(r2.count, 0u);
             }
 
             {
-                tr1::shared_ptr<const PackageID> id3(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/masked-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> id3(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/masked-1", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
                 TestReporter r3;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r3, &env, repo, id3, "visibility"));
                 TEST_CHECK_EQUAL(r3.count, 0u);
             }
 
             {
-                tr1::shared_ptr<const PackageID> id4(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/needs-masked-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> id4(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/needs-masked-1", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
                 TestReporter r4;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r4, &env, repo, id4, "visibility"));
                 TestMessageSuffix s4(r4.messages);

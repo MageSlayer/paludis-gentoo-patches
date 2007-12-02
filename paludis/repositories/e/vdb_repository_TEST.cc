@@ -23,7 +23,9 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/query.hh>
+#include <paludis/dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
@@ -107,7 +109,8 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             tr1::shared_ptr<const PackageID> e1(*env.package_database()->query(query::Matches(
-                            PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                            PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))),
+                        qo_require_exactly_one)->begin());
 
             TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag1"), *e1) == use_enabled);
             TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag2"), *e1) == use_enabled);
@@ -315,7 +318,8 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             tr1::shared_ptr<const PackageID> e1(*env.package_database()->query(query::Matches(
-                            PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                            PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))),
+                        qo_require_exactly_one)->begin());
             ContentsGatherer gatherer;
             std::for_each(indirect_iterator(e1->contents_key()->value()->begin()),
                           indirect_iterator(e1->contents_key()->value()->end()),

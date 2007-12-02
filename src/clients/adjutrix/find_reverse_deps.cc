@@ -26,6 +26,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/options.hh>
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -259,13 +260,12 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
         {
-            spec.reset(new PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                env.package_database()->fetch_unique_qualified_package_name(
-                                    PackageNamePart(*CommandLine::get_instance()->begin_parameters()))))));
+            spec.reset(new PackageDepSpec(make_package_dep_spec().package(env.package_database()->fetch_unique_qualified_package_name(
+                                PackageNamePart(*CommandLine::get_instance()->begin_parameters())))));
         }
         else
-            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters(), pds_pm_permissive));
+            spec.reset(new PackageDepSpec(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
+                            UserPackageDepSpecOptions())));
     }
     catch (const AmbiguousPackageNameError & e)
     {

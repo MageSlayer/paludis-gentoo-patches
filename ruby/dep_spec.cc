@@ -26,6 +26,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/options.hh>
 #include <list>
 #include <ruby.h>
 
@@ -54,7 +55,6 @@ namespace
     static VALUE c_use_dep_spec;
 
     static VALUE c_version_requirements_mode;
-    static VALUE c_package_dep_spec_parse_mode;
 
     struct WrappedSpecBase;
     template <typename> struct WrappedSpec;
@@ -329,34 +329,6 @@ namespace
             }
         }
     };
-
-    VALUE
-    package_dep_spec_new(int argc, VALUE *argv, VALUE self)
-    {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
-        try
-        {
-            PackageDepSpecParseMode p;
-            if (1 == argc)
-            {
-                rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
-                p = pds_pm_permissive;
-            }
-            else
-                p = static_cast<PackageDepSpecParseMode>(NUM2INT(argv[1]));
-
-            ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<PackageDepSpec>(
-                        make_shared_ptr(new PackageDepSpec(StringValuePtr(argv[0]), p))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
-            rb_obj_call_init(tdata, argc, argv);
-            return tdata;
-        }
-        catch (const std::exception & e)
-        {
-            delete ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
 
     /*
      * call-seq:
@@ -643,6 +615,48 @@ namespace
         return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<NamedSetDepSpec> >(*ptr)->spec()->text()).c_str());
     }
 
+    /*
+     * Document-method: parse_user_package_dep_spec
+     *
+     * call-seq:
+     *     parse_user_package_dep_spec(String, Array) -> PackageDepSpec
+     *
+     * Return a PackageDepSpec parsed from user input. The second parameter is either an empty
+     * array, or [ :allow_wildcards ] to allow wildcards.
+     *
+     */
+    VALUE paludis_parse_user_dep_spec(VALUE, VALUE str, VALUE opts)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
+
+        try
+        {
+            std::string s(StringValuePtr(str));
+
+            Check_Type(opts, T_ARRAY);
+            UserPackageDepSpecOptions o;
+            for (unsigned i(0) ; i < RARRAY(opts)->len ; ++i)
+            {
+                VALUE entry(rb_ary_entry(opts, i));
+                Check_Type(entry, T_SYMBOL);
+                if (SYM2ID(entry) == rb_intern("allow_wildcards"))
+                    o += updso_allow_wildcards;
+                else
+                    rb_raise(rb_eArgError, "Unknown parse_user_package_dep_spec option '%s'", rb_obj_as_string(entry));
+            }
+
+            ptr = new tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<PackageDepSpec>(
+                        make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(s, o)))));
+            return Data_Wrap_Struct(c_package_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+
+    }
+
     void do_register_dep_spec()
     {
         /*
@@ -749,11 +763,10 @@ namespace
          * Document-class: Paludis::PackageDepSpec
          *
          * A PackageDepSpec represents a package name (for example, 'app-editors/vim'),
-         * possibly with associated version and SLOT restrictions.
+         * possibly with associated version and SLOT restrictions. To create a PackageDepSpec,
+         * use Paludis::parse_user_package_dep_spec or Paludis::make_package_dep_spec.
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
-        rb_define_singleton_method(c_package_dep_spec, "new", RUBY_FUNC_CAST(&package_dep_spec_new), -1);
-        rb_define_method(c_package_dep_spec, "initialize", RUBY_FUNC_CAST(&package_dep_spec_init), -1);
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
@@ -826,18 +839,7 @@ namespace
 
         // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
 
-        /*
-         * Document-module: Paludis::PackageDepSpecParseMode
-         *
-         * How to parse a PackageDepSpec string.
-         *
-         */
-        c_package_dep_spec_parse_mode = rb_define_module_under(paludis_module(), "PackageDepSpecParseMode");
-        for (PackageDepSpecParseMode l(static_cast<PackageDepSpecParseMode>(0)), l_end(last_pds_pm) ; l != l_end ;
-                l = static_cast<PackageDepSpecParseMode>(static_cast<int>(l) + 1))
-            rb_define_const(c_package_dep_spec_parse_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/dep_spec-se.hh, PackageDepSpecParseMode, c_package_dep_spec_parse_mode>
+        rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), 2);
     }
 }
 
@@ -849,11 +851,6 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
         tr1::shared_ptr<const WrappedSpecBase> * v_ptr;
         Data_Get_Struct(v, tr1::shared_ptr<const WrappedSpecBase>, v_ptr);
         return tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*v_ptr)->spec();
-    }
-    if (T_STRING == TYPE(v))
-    {
-        rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
-        return tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(v), pds_pm_permissive));
     }
     else
     {

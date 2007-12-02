@@ -171,7 +171,7 @@ int do_has_version(tr1::shared_ptr<Environment> env)
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
     tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_whatever));
 
@@ -188,7 +188,7 @@ int do_best_version(tr1::shared_ptr<Environment> env)
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
     tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
@@ -228,7 +228,7 @@ int do_match(tr1::shared_ptr<Environment> env)
     Context context("When performing match action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
     tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
@@ -271,7 +271,7 @@ int do_environment_variable(tr1::shared_ptr<Environment> env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str, pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(spec_str, UserPackageDepSpecOptions())));
 
     tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));

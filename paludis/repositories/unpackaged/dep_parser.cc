@@ -21,6 +21,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <list>
 
@@ -49,7 +50,7 @@ DepParser::parse(const std::string & s)
 
         tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
                 new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(a, pds_pm_permissive))));
+                        new PackageDepSpec(parse_user_package_dep_spec(a, UserPackageDepSpecOptions())))));
         result->add(spec);
     }
 

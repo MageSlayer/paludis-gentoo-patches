@@ -388,7 +388,7 @@ InstalledUnpackagedRepository::package_set(const SetName & s) const
             for (QualifiedPackageNameSet::ConstIterator e(pkgs->begin()), e_end(pkgs->end()) ;
                     e != e_end ; ++e)
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_shared_ptr(new QualifiedPackageName(*e))));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(QualifiedPackageName(*e))));
                 spec->set_tag(tag);
                 result->add(make_shared_ptr(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }

@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_lexer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -76,10 +77,10 @@ namespace
 
     struct ParsePackageDepSpec
     {
-        PackageDepSpecParseMode _parse_mode;
+        const EAPI & _eapi;
 
-        ParsePackageDepSpec(PackageDepSpecParseMode m) :
-            _parse_mode(m)
+        ParsePackageDepSpec(const EAPI & e) :
+            _eapi(e)
         {
         }
 
@@ -88,7 +89,7 @@ namespace
         add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_e_package_dep_spec(s, _eapi))))));
         }
 
         template <typename H_>
@@ -101,10 +102,10 @@ namespace
 
     struct ParsePackageOrBlockDepSpec
     {
-        PackageDepSpecParseMode _parse_mode;
+        const EAPI & _eapi;
 
-        ParsePackageOrBlockDepSpec(PackageDepSpecParseMode m) :
-            _parse_mode(m)
+        ParsePackageOrBlockDepSpec(const EAPI & e) :
+            _eapi(e)
         {
         }
 
@@ -114,11 +115,13 @@ namespace
         {
             if (s.empty() || '!' != s.at(0))
                 p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
-                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
+                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                        parse_e_package_dep_spec(s, _eapi))))));
             else
                 p(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
                                 tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
-                                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode)))))));
+                                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                                parse_e_package_dep_spec(s.substr(1), _eapi))))))));
         }
 
         template <typename H_>
@@ -310,24 +313,6 @@ namespace
                 throw DepStringParseError(s, "Dependency labels not allowed in this EAPI");
         }
     };
-
-    bool disallow_any_use(const DependencySpecTreeParseMode tree_mode)
-    {
-        switch (tree_mode)
-        {
-            case dst_pm_eapi_0:
-                return false;
-
-            case dst_pm_paludis_1:
-            case dst_pm_exheres_0:
-                return true;
-
-            case last_dst_pm:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "bad _tree_mode");
-    }
 }
 
 namespace
@@ -683,8 +668,8 @@ paludis::erepository::parse_depend(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' dependencies");
 
     return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, LabelsAreDependency>(s,
-            disallow_any_use(e.supported->dependency_spec_tree_parse_mode),
-            ParsePackageOrBlockDepSpec(e.supported->package_dep_spec_parse_mode), e);
+            e.supported->dependency_spec_tree_parse_options[dstpo_disallow_any_use],
+            ParsePackageOrBlockDepSpec(e), e);
 }
 
 tr1::shared_ptr<ProvideSpecTree::ConstItem>
@@ -695,8 +680,7 @@ paludis::erepository::parse_provide(const std::string & s, const EAPI & e)
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' provides");
 
-    return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false,
-            ParsePackageDepSpec(pds_pm_eapi_0), e);
+    return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false, ParsePackageDepSpec(e), e);
 }
 
 tr1::shared_ptr<RestrictSpecTree::ConstItem>

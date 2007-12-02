@@ -30,6 +30,7 @@
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
+#include <paludis/repositories/cran/package_dep_spec.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -444,7 +445,7 @@ CRANInstalledRepository::package_set(const SetName & s) const
         {
             tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
                     new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(
-                            new PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->first))))));
+                            new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package))))));
             result->add(spec);
         }
 
@@ -458,10 +459,11 @@ CRANInstalledRepository::package_set(const SetName & s) const
 
         if (_imp->params.world.exists())
         {
+            using namespace tr1::placeholders;
             SetFile world(SetFileParams::create()
                     .file_name(_imp->params.world)
                     .type(sft_simple)
-                    .parse_mode(pds_pm_unspecific)
+                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tag)
                     .environment(_imp->params.environment));
 
@@ -503,6 +505,8 @@ CRANInstalledRepository::invalidate_masks()
 void
 CRANInstalledRepository::add_string_to_world(const std::string & n) const
 {
+    using namespace tr1::placeholders;
+
     Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
 
     if (! _imp->params.world.exists())
@@ -519,7 +523,7 @@ CRANInstalledRepository::add_string_to_world(const std::string & n) const
     SetFile world(SetFileParams::create()
             .file_name(_imp->params.world)
             .type(sft_simple)
-            .parse_mode(pds_pm_unspecific)
+            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
             .tag(tr1::shared_ptr<DepTag>())
             .environment(_imp->params.environment));
     world.add(n);
@@ -529,6 +533,8 @@ CRANInstalledRepository::add_string_to_world(const std::string & n) const
 void
 CRANInstalledRepository::remove_string_from_world(const std::string & n) const
 {
+    using namespace tr1::placeholders;
+
     Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
 
     if (_imp->params.world.exists())
@@ -536,7 +542,7 @@ CRANInstalledRepository::remove_string_from_world(const std::string & n) const
         SetFile world(SetFileParams::create()
                 .file_name(_imp->params.world)
                 .type(sft_simple)
-                .parse_mode(pds_pm_unspecific)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tr1::shared_ptr<DepTag>())
                 .environment(_imp->params.environment));
 

@@ -28,6 +28,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/options.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -117,7 +118,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:0", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1"));
@@ -135,7 +136,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(d1.s.str(), "dir</fnord>");
 
             const tr1::shared_ptr<const PackageID> id2(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:1", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2"));
@@ -171,13 +172,13 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:0", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK(! id1->masked());
 
             const tr1::shared_ptr<const PackageID> id2(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:1", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK(! id2->masked());
@@ -208,7 +209,7 @@ namespace test_cases
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
             const tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:1", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK(! id1->supports_action(SupportsActionTest<InstallAction>()));
@@ -301,7 +302,7 @@ namespace test_cases
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
             const tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:fred", pds_pm_unspecific)),
+                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             UninstallAction action(UninstallActionOptions::create()
@@ -543,7 +544,7 @@ namespace test_cases
 
                 UninstallAction action(UninstallActionOptions::create()
                         .no_config_protect(false));
-                (*env.package_database()->query(query::Matches(PackageDepSpec("cat/pkg4a", pds_pm_unspecific)),
+                (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4a", UserPackageDepSpecOptions())),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
@@ -583,7 +584,7 @@ namespace test_cases
 
                 UninstallAction action(UninstallActionOptions::create()
                         .no_config_protect(false));
-                (*env.package_database()->query(query::Matches(PackageDepSpec("cat/pkg4b", pds_pm_unspecific)),
+                (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4b", UserPackageDepSpecOptions())),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());

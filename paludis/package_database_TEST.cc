@@ -27,6 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/options.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -120,49 +121,49 @@ namespace test_cases
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
-            PackageDepSpec d1("r1c1/r1c1p1", pds_pm_permissive);
+            PackageDepSpec d1(parse_user_package_dep_spec("r1c1/r1c1p1", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q1(p.query(
                         query::Matches(d1), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
-            PackageDepSpec d2("r1c1/r1c1p2", pds_pm_permissive);
+            PackageDepSpec d2(parse_user_package_dep_spec("r1c1/r1c1p2", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q2(p.query(
                         query::Matches(d2), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
-            PackageDepSpec d3(">=r1c1/r1c1p2-1", pds_pm_permissive);
+            PackageDepSpec d3(parse_user_package_dep_spec(">=r1c1/r1c1p2-1", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q3(p.query(
                         query::Matches(d3), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
-            PackageDepSpec d4(">=r1c1/r1c1p2-2", pds_pm_permissive);
+            PackageDepSpec d4(parse_user_package_dep_spec(">=r1c1/r1c1p2-2", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q4(p.query(
                         query::Matches(d4), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "r1c1/r1c1p2-2:0::repo1");
             TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
-            PackageDepSpec d5(">=r1c1/r1c1p2-3", pds_pm_permissive);
+            PackageDepSpec d5(parse_user_package_dep_spec(">=r1c1/r1c1p2-3", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q5(p.query(
                         query::Matches(d5), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
-            PackageDepSpec d6("<r1c1/r1c1p2-3", pds_pm_permissive);
+            PackageDepSpec d6(parse_user_package_dep_spec("<r1c1/r1c1p2-3", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q6(p.query(
                         query::Matches(d6), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
-            PackageDepSpec d7("rac1/rac1pa", pds_pm_permissive);
+            PackageDepSpec d7(parse_user_package_dep_spec("rac1/rac1pa", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q7(p.query(
                         query::Matches(d7), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
-            PackageDepSpec d8("foo/bar", pds_pm_permissive);
+            PackageDepSpec d8(parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q8(p.query(
                         query::Matches(d8), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
 
-            PackageDepSpec d9("r1c1/r1c1p1", pds_pm_permissive);
+            PackageDepSpec d9(parse_user_package_dep_spec("r1c1/r1c1p1", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q9(p.query(
                         query::Matches(d9) & query::SupportsAction<InstallAction>(), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q9->begin(), q9->end()), 1);
@@ -192,7 +193,7 @@ namespace test_cases
             p.add_repository(5, r2);
             TEST_CHECK(true);
 
-            PackageDepSpec d("cat/pkg", pds_pm_permissive);
+            PackageDepSpec d(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()));
 
             const tr1::shared_ptr<const PackageIDSequence> q1(p.query(query::Matches(d), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q1->begin()), indirect_iterator(q1->end()), " "),
@@ -215,7 +216,7 @@ namespace test_cases
             p.add_repository(5, r3);
             TEST_CHECK(true);
 
-            PackageDepSpec c("cat/*", pds_pm_unspecific);
+            PackageDepSpec c(parse_user_package_dep_spec("cat/*", UserPackageDepSpecOptions() + updso_allow_wildcards));
 
             const tr1::shared_ptr<const PackageIDSequence> q5(p.query(query::Matches(c), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q5->begin()), indirect_iterator(q5->end()), " "),
@@ -235,12 +236,12 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(q8->begin()), indirect_iterator(q8->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            PackageDepSpec b("cat/pkg:a", pds_pm_permissive);
+            PackageDepSpec b(parse_user_package_dep_spec("cat/pkg:a", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q9(p.query(query::Matches(b), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q9->begin()), indirect_iterator(q9->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
-            PackageDepSpec a("cat/pkg[=1|=3]", pds_pm_permissive);
+            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg[=1|=3]", UserPackageDepSpecOptions()));
             const tr1::shared_ptr<const PackageIDSequence> q10(p.query(query::Matches(a), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q10->begin()), indirect_iterator(q10->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1");

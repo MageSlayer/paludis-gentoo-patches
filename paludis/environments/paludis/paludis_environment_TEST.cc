@@ -23,6 +23,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/options.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <test/test_runner.hh>
@@ -45,9 +46,9 @@ namespace test_cases
 
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
             const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
             const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
@@ -77,7 +78,7 @@ namespace test_cases
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
             tr1::shared_ptr<const UseFlagNameSet> k1(env->known_use_expand_names(UseFlagName("foo_cards"), *one));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
         }
@@ -95,9 +96,9 @@ namespace test_cases
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
             const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
@@ -126,9 +127,9 @@ namespace test_cases
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
             const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
+                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));

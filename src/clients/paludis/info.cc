@@ -194,10 +194,10 @@ int do_one_info(
 
     tr1::shared_ptr<PackageDepSpec> spec;
     if (std::string::npos != q.find('/'))
-        spec.reset(new PackageDepSpec(q, pds_pm_permissive));
+        spec.reset(new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
     else
-        spec.reset(new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                            env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))));
+        spec.reset(new PackageDepSpec(make_package_dep_spec().package(
+                        env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))));
 
     tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec), qo_order_by_version)),

@@ -271,8 +271,7 @@ namespace
         {
             return ! env.package_database()->query(
                     query::SupportsAction<InstalledAction>() &
-                    query::Matches(PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr())))),
+                    query::Matches(make_package_dep_spec().package(*u->package_ptr())),
                     qo_whatever)->empty();
         }
         else
@@ -557,13 +556,9 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         d->_imp->env->package_database()->query(
                             query::SupportsAction<InstalledAction>() &
-                            query::Matches(PackageDepSpec(
-                                    make_shared_ptr(new QualifiedPackageName(best_visible_candidate->name())),
-                                    tr1::shared_ptr<CategoryNamePart>(),
-                                    tr1::shared_ptr<PackageNamePart>(),
-                                    tr1::shared_ptr<VersionRequirements>(),
-                                    vr_and,
-                                    make_shared_ptr(new SlotName(best_visible_candidate->slot())))),
+                            query::Matches(make_package_dep_spec()
+                                .package(best_visible_candidate->name())
+                                .slot(best_visible_candidate->slot())),
                             qo_order_by_version));
 
                 if (are_we_downgrading->empty())
@@ -652,14 +647,16 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
                 tr1::bind(&is_viable_any_child, tr1::cref(*d->_imp->env), d->_imp->current_package_id(), _1)))
         return;
 
-    RangeRewriter r;
-    std::for_each(cur, end, accept_visitor(r));
-    if (r.spec())
     {
-        Context context("When using rewritten range '" + stringify(*r.spec()) + "':");
-        TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
-        d->add_not_top_level(rr, destinations, conditions);
-        return;
+        RangeRewriter r;
+        std::for_each(cur, end, accept_visitor(r));
+        tr1::shared_ptr<PackageDepSpec> rewritten_spec(r.spec());
+        if (rewritten_spec)
+        {
+            TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
+            d->add_not_top_level(rr, destinations, conditions);
+            return;
+        }
     }
 
     Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
@@ -761,8 +758,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
     if (a.blocked_spec()->package_ptr())
     {
-        PackageDepSpec just_package(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                        *a.blocked_spec()->package_ptr())));
+        PackageDepSpec just_package(make_package_dep_spec().package(*a.blocked_spec()->package_ptr()));
         already_installed = d->_imp->env->package_database()->query(
                 query::SupportsAction<InstalledAction>() &
                 query::Matches(just_package),
@@ -1039,13 +1035,9 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
-            v->push_back(VersionRequirement(vo_equal, p->version()));
-            tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*i)->text())),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        v, vr_and));
+            tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec()
+                        .package(*(*i)->package_ptr())
+                        .version_requirement(VersionRequirement(vo_equal, p->version()))));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z;
             if (pp->package_ptr())
@@ -1518,7 +1510,7 @@ DepList::replaced(const PackageID & m) const
     std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
             _imp->merge_list_index.equal_range(m.name()));
 
-    PackageDepSpec spec(make_shared_ptr(new QualifiedPackageName(m.name())));
+    PackageDepSpec spec(make_package_dep_spec().package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec)))))
     {

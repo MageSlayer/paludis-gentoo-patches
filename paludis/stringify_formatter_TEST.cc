@@ -20,6 +20,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
 #include <test/test_runner.hh>
@@ -109,10 +110,10 @@ namespace test_cases
         {
             PartialFormatter f;
             StringifyFormatter ff(f);
-            BlockDepSpec b(make_shared_ptr(new PackageDepSpec("cat/pkg", pds_pm_permissive)));
+            BlockDepSpec b(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()))));
             UseDepSpec u(UseFlagName("foo"), true);
             std::string s(format_three(
-                        PackageDepSpec("cat/pkg", pds_pm_permissive),
+                        parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()),
                         b, u,
                         ff));
             TEST_CHECK_EQUAL(s, "<cat/pkg> !cat/pkg !foo?");

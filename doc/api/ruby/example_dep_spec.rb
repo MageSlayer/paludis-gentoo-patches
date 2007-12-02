@@ -17,10 +17,9 @@ env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.envir
 
 # For each command line parameter:
 ARGV.each do | arg |
-    # Create a PackageDepSpec from the parameter. For user-inputted data,
-    # PackageDepSpecParseMode::Permissive or PackageDepSpecParseMode::Unspecific should be used
-    # (only the latter allows wildcards).
-    spec = PackageDepSpec.new(arg, PackageDepSpecParseMode::Unspecific)
+    # Create a PackageDepSpec from the parameter. The second parameter should be either
+    # an empty array or [:allow_wildcards].
+    spec = Paludis::parse_user_package_dep_spec(arg, [:allow_wildcards])
 
     # Display information about the PackageDepSpec.
     puts "Information about '#{spec}':"

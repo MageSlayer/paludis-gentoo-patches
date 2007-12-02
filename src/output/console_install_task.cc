@@ -343,25 +343,15 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         repo.reset(new RepositoryName(d.destination->name()));
 
     tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
-            query(query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        tr1::shared_ptr<VersionRequirements>(),
-                        vr_and,
-                        tr1::shared_ptr<SlotName>(),
-                        repo)),
+            query(query::Matches(repo ?
+                    make_package_dep_spec().package(d.package_id->name()).repository(*repo) :
+                    make_package_dep_spec().package(d.package_id->name())),
                 qo_order_by_version));
 
     tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
-            query(query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
-                        tr1::shared_ptr<CategoryNamePart>(),
-                        tr1::shared_ptr<PackageNamePart>(),
-                        tr1::shared_ptr<VersionRequirements>(),
-                        vr_and,
-                        tr1::shared_ptr<SlotName>(new SlotName(d.package_id->slot())),
-                        repo)),
+            query(query::Matches(repo ?
+                    make_package_dep_spec().package(d.package_id->name()).slot(d.package_id->slot()).repository(*repo) :
+                    make_package_dep_spec().package(d.package_id->name()).slot(d.package_id->slot())),
                 qo_order_by_version));
 
     display_merge_list_entry_start(d, m);

@@ -21,3 +21,26 @@ make_enum_DependencySpecTreeParseMode()
 END
 }
 
+make_enum_PackageDepSpecParseOption()
+{
+    prefix pdspo
+    want_destringify
+    namespace paludis::erepository
+
+    key pdspo_allow_slot_deps            "Allow :slot deps"
+    key pdspo_allow_repository_deps      "Allow ::repo deps"
+    key pdspo_allow_square_bracket_deps  "Allow [use] and [opver] deps"
+    key pdspo_allow_tilde_greater_deps   "Allow ~> deps"
+    key pdspo_strict_star_operator       "* with an operator other than = is an error"
+    key pdspo_strict_parsing             "Error rather than warn for violations"
+}
+
+make_enum_DependencySpecTreeParseOption()
+{
+    prefix dstpo
+    want_destringify
+    namespace paludis::erepository
+
+    key dstpo_disallow_any_use           "Disallow || ( use? ( ... ) )"
+}
+

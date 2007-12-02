@@ -389,11 +389,11 @@ namespace test_cases
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
                             tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
-                        indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                        tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
-                        indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                        tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
@@ -474,7 +474,8 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
                 tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                 TEST_CHECK(id->short_description_key());
                 TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description");
@@ -517,7 +518,8 @@ namespace test_cases
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
                     tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
-                                    PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                                            UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(id1->short_description_key());
@@ -533,7 +535,8 @@ namespace test_cases
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
                     tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
-                                    PackageDepSpec("=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
+                                            UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(id2->short_description_key());
@@ -582,7 +585,8 @@ namespace test_cases
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
                     tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
-                                    PackageDepSpec("=cat-one/stale-pkg-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-1",
+                                            UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(id1->short_description_key());
@@ -594,7 +598,8 @@ namespace test_cases
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
                     tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
-                                    PackageDepSpec("=cat-one/stale-pkg-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-2",
+                                            UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(id1->short_description_key());
@@ -639,7 +644,8 @@ namespace test_cases
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
                 tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("=cat-one/pkg-two-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                                PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                 TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                 TEST_CHECK_EQUAL(tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi()->name, "UNKNOWN");
@@ -672,12 +678,12 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-two/pkg-two-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(
-                                    "=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", 
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-two/pkg-two-1", 
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2", 
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                 TEST_CHECK(repo->query_use(UseFlagName("flag1"), *p1) == use_enabled);
                 TEST_CHECK(repo->query_use(UseFlagName("flag2"), *p1) == use_disabled);
@@ -720,12 +726,15 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/masked-0", pds_pm_unspecific)),
-                            qo_require_exactly_one)->begin())->masked());
-                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
-                              qo_require_exactly_one)->begin())->masked());
-                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/not_masked-0", pds_pm_unspecific)),
-                              qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/masked-0",
+                                            UserPackageDepSpecOptions()))),
+                                qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
+                                            UserPackageDepSpecOptions()))),
+                                qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/not_masked-0",
+                                            UserPackageDepSpecOptions()))),
+                                qo_require_exactly_one)->begin())->masked());
             }
         }
     } test_e_repository_query_profile_masks;
@@ -750,14 +759,17 @@ namespace test_cases
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
-                        qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
+                                        UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin())->masked());
             repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile/subprofile"));
-            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
-                          qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
+                                        UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin())->masked());
             repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile"));
-            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
-                        qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
+                                        UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin())->masked());
         }
     } test_e_repository_invalidate_masks;
 
@@ -786,7 +798,7 @@ namespace test_cases
 
             tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
-                     it_end(seq->end()); it_end != it; ++it, ++count)
+                    it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify(it->virtual_name))
                 {
                     has_one = true;
@@ -810,7 +822,7 @@ namespace test_cases
 
             seq = repo->virtual_packages();
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
-                     it_end(seq->end()); it_end != it; ++it, ++count)
+                    it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify(it->virtual_name))
                 {
                     has_one = true;
@@ -904,7 +916,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("no files", true);
                 const tr1::shared_ptr<const PackageID> no_files_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/no-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/no-files",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(no_files_id);
                 TEST_CHECK(no_files_id->short_description_key());
                 TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Description");
@@ -914,7 +927,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("fetched files", true);
                 const tr1::shared_ptr<const PackageID> fetched_files_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/fetched-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetched_files_id);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
                 fetched_files_id->perform_action(action);
@@ -925,7 +939,8 @@ namespace test_cases
                 TestMessageSuffix suffix("fetchable files", true);
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
                 const tr1::shared_ptr<const PackageID> fetchable_files_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/fetchable-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetchable_files_id);
                 fetchable_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
@@ -935,7 +950,8 @@ namespace test_cases
                 TestMessageSuffix suffix("arrow files", true);
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
                 const tr1::shared_ptr<const PackageID> arrow_files_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/arrow-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(arrow_files_id);
                 arrow_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
@@ -944,28 +960,32 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("unfetchable files", true);
                 const tr1::shared_ptr<const PackageID> unfetchable_files_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/unfetchable-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(unfetchable_files_id);
                 TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), FetchActionError);
             }
 
             {
                 const tr1::shared_ptr<const PackageID> no_files_restricted_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/no-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/no-files-restricted",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(no_files_restricted_id);
                 no_files_restricted_id->perform_action(action);
             }
 
             {
                 const tr1::shared_ptr<const PackageID> fetched_files_restricted_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/fetched-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files-restricted",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetched_files_restricted_id);
                 fetched_files_restricted_id->perform_action(action);
             }
 
             {
                 const tr1::shared_ptr<const PackageID> fetchable_files_restricted_id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/fetchable-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetchable_files_restricted_id);
                 TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), FetchActionError);
             }
@@ -1000,7 +1020,8 @@ namespace test_cases
                     );
 
             const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                            PackageDepSpec("category/package", pds_pm_unspecific)), qo_order_by_version)->last());
+                            PackageDepSpec(parse_user_package_dep_spec("category/package",
+                                    UserPackageDepSpecOptions()))), qo_order_by_version)->last());
             TEST_CHECK(id);
             id->perform_action(action);
         }
@@ -1045,7 +1066,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/in-ebuild-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1053,7 +1075,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("in-subshell die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/in-subshell-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1061,7 +1084,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("success", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/success", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/success",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 id->perform_action(action);
             }
@@ -1069,7 +1093,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("unpack die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/unpack-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1077,7 +1102,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("emake fail", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/emake-fail", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 id->perform_action(action);
             }
@@ -1085,7 +1111,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("econf source 0", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("=cat/econf-source-0", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**id->find_metadata("EAPI"))->value(), "0");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
@@ -1132,7 +1159,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("econf source 1", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("=cat/econf-source-1", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
@@ -1179,7 +1207,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/in-ebuild-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1187,7 +1216,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("in-subshell die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/in-subshell-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1195,7 +1225,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("success", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/success", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/success",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 id->perform_action(action);
             }
@@ -1203,7 +1234,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("unpack die", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/unpack-die", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
@@ -1211,7 +1243,8 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("emake fail", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
-                                PackageDepSpec("cat/emake-fail", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                                PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }

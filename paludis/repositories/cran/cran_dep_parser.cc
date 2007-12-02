@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/normalise.hh>
+#include <paludis/repositories/cran/package_dep_spec.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
@@ -39,45 +40,37 @@ cranrepository::parse_depends(const std::string & s)
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::list<std::string> specs;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(specs));
+
+    std::string::size_type p(0), s_p(0);
+    while (p < s.length())
+    {
+        if (s[p] == ',')
+        {
+            specs.push_back(s.substr(s_p, p - s_p));
+            s_p = ++p;
+        }
+        else if (s[p] == '(')
+        {
+            p = s.find(')', p);
+            if (std::string::npos == p)
+                p = s.length();
+        }
+        else
+            ++p;
+    }
+
+    if (s_p < s.length())
+        specs.push_back(s.substr(s_p));
 
     std::list<std::string>::const_iterator a(specs.begin()), a_end(specs.end());
     for ( ; a != a_end ; ++a)
     {
         Context local_context("When processing token '" + *a + "':");
 
-        std::string aa = strip_leading(strip_trailing(*a, ")"), " \t");
-
-        std::string name, tmp, version, range;
-        std::string::size_type p(aa.find('('));
-        if ((std::string::npos != p))
-        {
-            name = strip_leading(strip_trailing(aa.substr(0, p), " \t"), " \t");
-            tmp = aa.substr(p + 1);
-            p = tmp.find(')');
-            aa = tmp.substr(0, p);
-            version = strip_trailing(strip_leading(aa, " \t(<>=~"), " )\t\n");
-            range = strip_trailing(strip_leading(aa.substr(0, aa.find(version)), " \t"), " \t\n");
-        }
-        else
-            name = strip_leading(strip_trailing(aa, " \t"), " \t");
-
-        name = cran_name_to_internal(name);
-        version = cran_version_to_internal(version);
-
-        if ("R" == name)
-            name = "dev-lang/R";
-        else
-            name = "cran/" + name;
-
-        std::string spec_string;
-        if (version.empty() || range.empty())
-            spec_string = name;
-        else
-            spec_string = range + name + "-" + version;
         tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
                 new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(spec_string, pds_pm_permissive))));
+                        new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
+                                strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))))));
         result->add(spec);
     }
 

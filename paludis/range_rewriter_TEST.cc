@@ -20,6 +20,7 @@
 #include <paludis/range_rewriter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/options.hh>
 
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -39,9 +40,9 @@ namespace test_cases
         void run()
         {
             tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("=a/b-1", pds_pm_permissive))));
+                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1", UserPackageDepSpecOptions())))));
             tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("=a/b-2", pds_pm_permissive))));
+                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2", UserPackageDepSpecOptions())))));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());
@@ -50,7 +51,7 @@ namespace test_cases
             TEST_CHECK(r.spec());
 
             TEST_CHECK(r.spec());
-            TEST_CHECK_STRINGIFY_EQUAL(*r.spec(), "a/b[=1|=2]");
+            TEST_CHECK_STRINGIFY_EQUAL(*r.spec(), "a/b[=1|=2] (rewritten from { =a/b-1, =a/b-2 })");
         }
     } test_range_rewriter;
 }

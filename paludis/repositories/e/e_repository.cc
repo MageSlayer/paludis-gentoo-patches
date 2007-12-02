@@ -29,6 +29,7 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_entries.hh>
+#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
@@ -116,6 +117,7 @@ namespace
 
             const Environment * const _env;
             const FSEntry _f;
+            const std::string & _p;
 
         protected:
             virtual void need_keys_added() const
@@ -141,7 +143,8 @@ namespace
                         tr1::shared_ptr<MetadataKey> key;
                         tr1::shared_ptr<const PackageIDSequence> q(
                                 _env->package_database()->query(
-                                    query::Matches(PackageDepSpec(*i, pds_pm_eapi_0)) &
+                                    query::Matches(erepository::parse_e_package_dep_spec(*i,
+                                            *erepository::EAPIData::get_instance()->eapi_from_string(_p))) &
                                     query::InstalledAtRoot(_env->root()),
                                     qo_order_by_version));
                         if (q->empty())
@@ -161,11 +164,12 @@ namespace
             }
 
         public:
-            PkgInfoSectionKey(const Environment * const e, const FSEntry & f) :
+            PkgInfoSectionKey(const Environment * const e, const FSEntry & f, const std::string & p) :
                 MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
                 _added(false),
                 _env(e),
-                _f(f)
+                _f(f),
+                _p(p)
             {
             }
 
@@ -323,7 +327,7 @@ namespace paludis
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest))),
         info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
                 tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
-                        params.environment, layout->info_packages_file(params.location / "profiles"))) :
+                        params.environment, layout->info_packages_file(params.location / "profiles"), params.profile_eapi)) :
                 tr1::shared_ptr<MetadataSectionKey>())
     {
     }
@@ -551,7 +555,8 @@ ERepository::repository_masked(const PackageID & id) const
                 {
                     try
                     {
-                        tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(line->first, pds_pm_eapi_0));
+                        tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
+                                        line->first, *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi))));
                         if (a->package_ptr())
                             _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
                         else

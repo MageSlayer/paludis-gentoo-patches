@@ -30,18 +30,18 @@ end
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
 # Make some queries, and display what they give.
-show_query(env, Query::Matches.new(PackageDepSpec.new("sys-apps/paludis", PackageDepSpecParseMode::Permissive)))
+show_query(env, Query::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])))
 
 # Queries can be combined. The resulting query is optimised internally,
 # potentially giving better performance than doing things by hand.
 show_query(env,
-           Query::Matches.new(PackageDepSpec.new("sys-apps/paludis", PackageDepSpecParseMode::Permissive)) &
+           Query::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])) &
            Query::SupportsInstalledAction.new)
 
 # Usually Query::NotMasked should be combined with Query::SupportsInstallAction,
 # since installed packages aren't masked.
 show_query(env,
-           Query::Matches.new(PackageDepSpec.new("sys-apps/paludis", PackageDepSpecParseMode::Permissive)) &
+           Query::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])) &
            Query::SupportsInstallAction.new &
            Query::NotMasked.new)
 

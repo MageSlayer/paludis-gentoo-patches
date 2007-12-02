@@ -24,6 +24,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/dep_spec-fwd.hh>

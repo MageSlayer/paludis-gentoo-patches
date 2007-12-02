@@ -1,25 +1,18 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et ft=sh :
 
-make_enum_PackageDepSpecParseMode()
+make_enum_UserPackageDepSpecOption()
 {
-    prefix pds_pm
-    want_destringify
+    prefix updso
 
-    key pds_pm_eapi_0        "EAPI 0"
-    key pds_pm_eapi_0_strict "EAPI 0, errors for non-permitted things"
-    key pds_pm_eapi_1        "EAPI 1"
-    key pds_pm_eapi_1_strict "EAPI 1, errors for non-permitted things"
-    key pds_pm_exheres_0     "EAPI exheres-0"
-    key pds_pm_permissive    "Permissive"
-    key pds_pm_unspecific    "Permissive, and allow unspecific cat/pkg"
+    key updso_allow_wildcards "Allow wildcards for category, package"
 
     doxygen_comment << "END"
         /**
-         * How to parse a PackageDepSpec string.
+         * Options for parse_user_package_dep_spec
          *
-         * \see PackageDepSpec
          * \ingroup g_dep_spec
+         * \since 0.26
          */
 END
 }

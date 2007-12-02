@@ -30,6 +30,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -160,7 +161,7 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(target, pds_pm_permissive));
+        tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
         pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
         _imp->targets.push_back(pds);
     }
@@ -187,10 +188,9 @@ UninstallTask::add_target(const std::string & target)
                     throw HadBothPackageAndSetTargets();
 
                 _imp->had_package_targets = false;
-                tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                        _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                            PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>())))));
+                tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
+                            .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
+                                    PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>()))));
                 pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets.push_back(pds);
             }
@@ -201,10 +201,9 @@ UninstallTask::add_target(const std::string & target)
                 throw HadBothPackageAndSetTargets();
 
             _imp->had_package_targets = false;
-            tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                    _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                        PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>())))));
+            tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
+                        .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
+                                PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>()))));
             pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets.push_back(pds);
         }
@@ -314,8 +313,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             tr1::shared_ptr<const PackageIDSequence> installed(
-                    _imp->env->package_database()->query(query::Matches(PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))) &
+                    _imp->env->package_database()->query(query::Matches(make_package_dep_spec().package(i->first)) &
                         query::SupportsAction<InstalledAction>(),
                         qo_whatever));
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
@@ -325,8 +323,7 @@ UninstallTask::execute()
 
             if (remove)
                 all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))))));
+                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(make_package_dep_spec().package(i->first))))));
         }
 
         world_remove_packages(all);

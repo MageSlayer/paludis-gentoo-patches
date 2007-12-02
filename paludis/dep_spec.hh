@@ -238,8 +238,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Insert a new requirement.
-            bool insert(const UseFlagName & u, UseFlagState s)
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool insert(const UseFlagName & u, UseFlagState s);
 
             /// What state is desired for a particular use flag?
             UseFlagState state(const UseFlagName &) const
@@ -251,53 +250,119 @@ namespace paludis
     };
 
     /**
+     * A PartiallyMadePackageDepSpec is returned by make_package_dep_spec()
+     * and is used to incrementally build a PackageDepSpec.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    class PALUDIS_VISIBLE PartiallyMadePackageDepSpec :
+        private PrivateImplementationPattern<PartiallyMadePackageDepSpec>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            PartiallyMadePackageDepSpec();
+            ~PartiallyMadePackageDepSpec();
+            PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec &);
+
+            ///\}
+
+            /**
+             * Set our package requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & package(const QualifiedPackageName &);
+
+            /**
+             * Set our slot requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & slot(const SlotName &);
+
+            /**
+             * Set our repository requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & repository(const RepositoryName &);
+
+            /**
+             * Set our package name part requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & package_name_part(const PackageNamePart &);
+
+            /**
+             * Set our category name part requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & category_name_part(const CategoryNamePart &);
+
+            /**
+             * Add a version requirement, return ourself.
+             */
+            PartiallyMadePackageDepSpec & version_requirement(const VersionRequirement &);
+
+            /**
+             * Set our version requirements mode, return ourself.
+             */
+            PartiallyMadePackageDepSpec & version_requirements_mode(const VersionRequirementsMode &);
+
+            /**
+             * Add a use requirement, return ourself.
+             */
+            PartiallyMadePackageDepSpec & use_requirement(const UseFlagName &, const UseFlagState);
+
+            /**
+             * Turn ourselves into a PackageDepSpec.
+             */
+            operator const PackageDepSpec() const;
+
+            /**
+             * Explicitly turn ourselves into a PackageDepSpec.
+             */
+            const PackageDepSpec to_package_dep_spec() const;
+    };
+
+    /**
      * A PackageDepSpec represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
+     *
+     * A PackageDepSpec is implemented in terms of PackageDepSpecData. Individual
+     * repositories provide their own way of creating PackageDepSpec::Data that
+     * handle the native syntax for those repositories (e.g. CRAN uses
+     * "Blah (>= 1.23)" whilst E uses ">=cat/blah-1.23").
+     *
+     * To create a PackageDepSpec from user input, use
+     * parse_user_package_dep_spec(), and for programmer input, use
+     * make_package_dep_spec().
      *
      * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PackageDepSpec :
         public StringDepSpec,
-        private PrivateImplementationPattern<PackageDepSpec>
+        private PrivateImplementationPattern<PackageDepSpec>,
+        public CloneUsingThis<DepSpec, PackageDepSpec>
     {
+        friend std::ostream & operator<< (std::ostream &, const PackageDepSpec &);
+
         private:
             const PackageDepSpec & operator= (const PackageDepSpec &);
-
-            void _do_parse(const std::string &, const PackageDepSpecParseMode);
-            void _make_unique();
+            std::string _as_string() const;
 
         public:
             ///\name Basic operations
             ///\{
 
             /**
-             * Constructor, no version or SLOT restrictions.
+             * Constructor.
              *
-             * \deprecated Use the two arg form.
-             */
-            PackageDepSpec(const QualifiedPackageName & package) PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
-             * Constructor, parse restrictions ourself.
+             * Clients will usually use either parse_user_package_dep_spec() or
+             * make_package_dep_spec() rather than calling this method
+             * directly. Repositories will define their own way of creating
+             * a PackageDepSpec.
              *
-             * \deprecated Use the two arg form.
+             * \since 0.26
              */
-            explicit PackageDepSpec(const std::string &) PALUDIS_ATTRIBUTE((deprecated));
-
-            PackageDepSpec(const std::string &, const PackageDepSpecParseMode);
-
-            explicit PackageDepSpec(
-                tr1::shared_ptr<QualifiedPackageName> q = tr1::shared_ptr<QualifiedPackageName>(),
-                tr1::shared_ptr<CategoryNamePart> c = tr1::shared_ptr<CategoryNamePart>(),
-                tr1::shared_ptr<PackageNamePart> p = tr1::shared_ptr<PackageNamePart>(),
-                tr1::shared_ptr<VersionRequirements> v = tr1::shared_ptr<VersionRequirements>(),
-                VersionRequirementsMode m = vr_and,
-                tr1::shared_ptr<SlotName> s = tr1::shared_ptr<SlotName>(),
-                tr1::shared_ptr<RepositoryName> r = tr1::shared_ptr<RepositoryName>(),
-                tr1::shared_ptr<UseRequirements> u = tr1::shared_ptr<UseRequirements>(),
-                tr1::shared_ptr<const DepTag> t = tr1::shared_ptr<const DepTag>());
+            PackageDepSpec(const tr1::shared_ptr<const PackageDepSpecData> &);
 
             PackageDepSpec(const PackageDepSpec &);
 
@@ -326,19 +391,9 @@ namespace paludis
             tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
 
             /**
-             * Fetch the version requirements (may be a zero pointer).
-             */
-            tr1::shared_ptr<VersionRequirements> version_requirements_ptr();
-
-            /**
              * Fetch the version requirements mode.
              */
-            VersionRequirementsMode version_requirements_mode() const;
-
-            /**
-             * Set the version requirements mode.
-             */
-            void set_version_requirements_mode(const VersionRequirementsMode m);
+            const VersionRequirementsMode version_requirements_mode() const;
 
             /**
              * Fetch the slot name (may be a zero pointer).
@@ -371,8 +426,68 @@ namespace paludis
             tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
+    };
 
-            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    /**
+     * Data for a PackageDepSpec.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE PackageDepSpecData
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            virtual ~PackageDepSpecData();
+
+            ///\}
+
+            /**
+             * Fetch ourself as a string.
+             */
+            virtual std::string as_string() const = 0;
+
+            /**
+             * Fetch the package name (may be a zero pointer).
+             */
+            virtual tr1::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
+
+            /**
+             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
+             */
+            virtual tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
+
+            /**
+             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
+             */
+            virtual tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
+
+            /**
+             * Fetch the version requirements (may be a zero pointer).
+             */
+            virtual tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
+
+            /**
+             * Fetch the version requirements mode.
+             */
+            virtual const VersionRequirementsMode version_requirements_mode() const = 0;
+
+            /**
+             * Fetch the slot name (may be a zero pointer).
+             */
+            virtual tr1::shared_ptr<const SlotName> slot_ptr() const = 0;
+
+            /**
+             * Fetch the repo name (may be a zero pointer).
+             */
+            virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const = 0;
+
+            /**
+             * Fetch the use requirements (may be a zero pointer).
+             */
+            virtual tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const = 0;
     };
 
     /**

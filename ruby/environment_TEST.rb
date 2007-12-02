@@ -79,8 +79,9 @@ module Paludis
         end
 
         def test_query_use
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo',
-                    PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            pid = env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])),
+                QueryOrder::RequireExactlyOne).first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
@@ -103,14 +104,17 @@ module Paludis
         end
 
         def pid
-            env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])),
+                QueryOrder::RequireExactlyOne).first
         end
 
         def test_accept_license
             assert env.accept_license('GPL-2', pid)
             assert !env.accept_license('Failure', pid)
 
-            pid2 = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/baz-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            pid2 = env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
             assert env.accept_license('GPL-2', pid2)
             assert env.accept_license('Failure', pid2)
         end
@@ -128,7 +132,8 @@ module Paludis
         end
 
         def pid
-            env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
         end
 
         def test_accept_keywords
@@ -156,7 +161,8 @@ module Paludis
         end
 
         def test_query_use
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            pid = env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
             assert ! env.query_use("foo", pid)
         end
 
@@ -194,29 +200,27 @@ module Paludis
         end
 
         def test_adapt_use
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            pid = env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
             assert env.query_use("sometimes_enabled", pid)
 
-            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'enabled', false);
             assert ! env.query_use('enabled', pid);
-            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'not_enabled', true);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'not_enabled', true);
             assert env.query_use("not_enabled", pid)
-            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'sometimes_enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'sometimes_enabled', false);
             assert ! env.query_use("sometimes_enabled", pid)
         end
 
         def test_adapt_use_bad
             assert_raise TypeError do
-                env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'not_enabled', 'lemon');
+                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'not_enabled', 'lemon');
             end
             assert_raise TypeError do
-                env.adapt_use(PackageDepSpec.new(123, PackageDepSpecParseMode::Permissive), 'not_enabled', false);
-            end
-            assert_raise TypeError do
-                env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 7, false);
+                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 7, false);
             end
         end
     end
@@ -227,11 +231,12 @@ module Paludis
         end
 
         def test_clear_adaptions
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            pid = env.package_database.query(Query::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
 
             assert env.query_use("enabled", pid)
 
-            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'enabled', false);
             assert ! env.query_use('enabled', pid);
 
             env.clear_adaptions;
@@ -367,10 +372,10 @@ module Paludis
 
         def test_set_accept_unstable
             assert_respond_to env, :accept_unstable=
-	    assert_nothing_raised do
-	    	env.accept_unstable=true
-	    	env.accept_unstable=false
-	    end
+            assert_nothing_raised do
+                env.accept_unstable=true
+                env.accept_unstable=false
+            end
         end
     end
 end

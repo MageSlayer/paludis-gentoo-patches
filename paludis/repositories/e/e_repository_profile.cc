@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/util/log.hh>
@@ -119,7 +120,6 @@ namespace paludis
             erepository::ProfileFile<erepository::MaskFile> package_mask_file;
 
             bool is_incremental(const std::string & s) const;
-
 
         public:
             ///\name General variables
@@ -441,7 +441,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                     continue;
 
                 Context context_spec("When parsing '" + *i + "':");
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                            erepository::parse_e_package_dep_spec(i->substr(1), *erepository::EAPIData::get_instance()->eapi_from_string(
+                                    repository->params().profile_eapi))));
+
                 spec->set_tag(system_tag);
                 system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
@@ -466,8 +469,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 
                 QualifiedPackageName v(tokens[0]);
                 virtuals.erase(v);
-                virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
-                                    pds_pm_eapi_0))));
+                virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    erepository::parse_e_package_dep_spec(tokens[1], *erepository::EAPIData::get_instance()->eapi_from_string(
+                                            repository->params().profile_eapi))))));
             }
         }
         catch (const Exception & e)
@@ -484,7 +488,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(line->first, pds_pm_eapi_0));
+            tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+                        erepository::parse_e_package_dep_spec(line->first, *erepository::EAPIData::get_instance()->eapi_from_string(
+                                repository->params().profile_eapi))));
+
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
             else
@@ -555,7 +562,9 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
 
         try
         {
-            tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin(), pds_pm_eapi_0));
+            tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
+                        erepository::parse_e_package_dep_spec(*tokens.begin(), *erepository::EAPIData::get_instance()->eapi_from_string(
+                                repository->params().profile_eapi))));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;

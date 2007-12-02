@@ -247,10 +247,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    const Query & real_q(q & query::Matches(PackageDepSpec(
-                                 tr1::shared_ptr<QualifiedPackageName>(),
-                                 tr1::shared_ptr<CategoryNamePart>(),
-                                 tr1::shared_ptr<PackageNamePart>(new PackageNamePart(p)))));
+    const Query & real_q(q & query::Matches(make_package_dep_spec().package_name_part(p)));
 
     // Map matching QualifiedPackageNames with a flag specifying that
     // at least one repository containing the package things the

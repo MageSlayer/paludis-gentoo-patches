@@ -52,6 +52,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/options.hh>
 
 #include <functional>
 #include <algorithm>
@@ -340,6 +341,8 @@ PaludisEnvironment::syncers_dirs() const
 tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisEnvironment::local_set(const SetName & s) const
 {
+    using namespace tr1::placeholders;
+
     Context context("When looking for package set '" + stringify(s) + "' in paludis environment:");
 
     Lock l(_imp->sets_mutex);
@@ -356,7 +359,7 @@ PaludisEnvironment::local_set(const SetName & s) const
         SetFile f(SetFileParams::create()
                 .file_name(dir / (stringify(s) + ".bash"))
                 .type(sft_paludis_bash)
-                .parse_mode(pds_pm_unspecific)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
                 .environment(this));
 
@@ -368,7 +371,7 @@ PaludisEnvironment::local_set(const SetName & s) const
         SetFile f(SetFileParams::create()
                 .file_name(dir / (stringify(s) + ".conf"))
                 .type(sft_paludis_conf)
-                .parse_mode(pds_pm_unspecific)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
                 .environment(this));
 
