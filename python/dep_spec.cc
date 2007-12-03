@@ -20,6 +20,7 @@
 #include "dep_spec.hh"
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
+#include <python/options.hh>
 #include <python/nice_names-nn.hh>
 
 #include <paludis/dep_tag.hh>
@@ -291,34 +292,42 @@ PythonPackageDepSpec::~PythonPackageDepSpec()
 {
 }
 
-tr1::shared_ptr<const PythonPackageDepSpec>
-PythonPackageDepSpec::make_from_string(const std::string & ss, const PackageDepSpecParseMode p)
-{
-    return make_shared_ptr(new PythonPackageDepSpec(PackageDepSpec(ss, p)));
-}
-
 PythonPackageDepSpec::operator PackageDepSpec() const
 {
-    PackageDepSpec p
-        (
-         deep_copy(package_ptr()),
-         deep_copy(category_name_part_ptr()),
-         deep_copy(package_name_part_ptr()),
-         make_shared_ptr(new VersionRequirements),
-         version_requirements_mode(),
-         deep_copy(slot_ptr()),
-         deep_copy(repository_ptr()),
-         deep_copy(use_requirements_ptr()),
-         tag()
-        );
+    PartiallyMadePackageDepSpec p;
+
+    if (package_ptr())
+        p.package(*package_ptr());
+
+    if (category_name_part_ptr())
+        p.category_name_part(*category_name_part_ptr());
+
+    if (package_name_part_ptr())
+        p.package_name_part(*package_name_part_ptr());
+
+    p.version_requirements_mode(version_requirements_mode());
+
+    if (slot_ptr())
+        p.slot(*slot_ptr());
+
+    if (repository_ptr())
+        p.repository(*repository_ptr());
+
+    if (use_requirements_ptr())
+    {
+        for (UseRequirements::ConstIterator i(use_requirements_ptr()->begin()),
+                i_end(use_requirements_ptr()->end()) ; i != i_end ; ++i)
+            p.use_requirement(i->first, i->second);
+    }
 
     if (version_requirements_ptr())
     {
-        std::copy(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
-                p.version_requirements_ptr()->back_inserter());
+        for (VersionRequirements::ConstIterator i(version_requirements_ptr()->begin()),
+                i_end(version_requirements_ptr()->end()) ; i != i_end ; ++i)
+            p.version_requirement(*i);
     }
 
-    return p;
+    return p.to_package_dep_spec();
 }
 
 
@@ -1047,8 +1056,14 @@ void expose_dep_spec()
     /**
      * Enums
      */
-    enum_auto("PackageDepSpecParseMode", last_pds_pm,
-            "How to parse a PackageDepSpec string.");
+    enum_auto("UserPackageDepSpecOption", last_updso,
+            "Options for parse_user_package_dep_spec.");
+
+    /**
+     * Options
+     */
+    class_options<UserPackageDepSpecOptions>("UserPackageDepSpecOptions", "UserPackageDepSpecOption",
+            "Options for parse_user_package_dep_spec.");
 
     RegisterSpecTreeToPython<DependencySpecTree>();
     RegisterSpecTreeToPython<ProvideSpecTree>();
@@ -1182,6 +1197,12 @@ void expose_dep_spec()
     /**
      * PackageDepSpec
      */
+
+    bp::def("parse_user_package_dep_spec", &parse_user_package_dep_spec,
+            "parse_user_package_dep_spec(str, options=UserPackageDepSpecOptions()) -> PackageDepSpec\n"
+            "Create a PackageDepSpec from user input."
+           );
+
     bp::implicitly_convertible<PythonPackageDepSpec, PackageDepSpec>();
     bp::implicitly_convertible<PythonPackageDepSpec, tr1::shared_ptr<PackageDepSpec> >();
     bp::implicitly_convertible<tr1::shared_ptr<PackageDepSpec>, tr1::shared_ptr<const PackageDepSpec> >();
@@ -1194,9 +1215,6 @@ void expose_dep_spec()
          " possibly with associated version and SLOT restrictions.",
          bp::no_init
         )
-        .def("__init__", bp::make_constructor(&PythonPackageDepSpec::make_from_string),
-                "__init__(string, PackageDepSpecParseMode)"
-            )
 
         .add_property("package", &PythonPackageDepSpec::package_ptr,
                 "[ro] QualifiedPackageName\n"

@@ -32,6 +32,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
+#include <paludis/util/options.hh>
 #include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
@@ -275,7 +276,7 @@ namespace formatter
     // CanFormat for PackageRoles
     void test_package_roles(CanFormat<PackageDepSpec> & f)
     {
-        PackageDepSpec p("cat/pkg", pds_pm_permissive);
+        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()));
         f.format(p, Plain());
         f.format(p, Installed());
         f.format(p, Installable());

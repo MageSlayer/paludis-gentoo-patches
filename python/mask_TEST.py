@@ -35,7 +35,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.db = self.e.package_database
 
     def test_01_user_mask(self):
-        q = Query.Matches(PackageDepSpec("=masked/user-1.0", PackageDepSpecParseMode.PERMISSIVE))
+        q = Query.Matches(parse_user_package_dep_spec("=masked/user-1.0", []))
         pid = iter(self.db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         m = iter(pid.masks).next()
 
@@ -46,7 +46,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.description(), "user")
 
     def test_02_unaccepted_mask(self):
-        q = Query.Matches(PackageDepSpec("=masked/unaccepted-1.0", PackageDepSpecParseMode.PERMISSIVE))
+        q = Query.Matches(parse_user_package_dep_spec("=masked/unaccepted-1.0", []))
         pid = iter(self.db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         m = iter(pid.masks).next()
 
@@ -58,7 +58,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m.unaccepted_key(), MetadataKeywordNameIterableKey))
 
     def test_03_repository_mask(self):
-        q = Query.Matches(PackageDepSpec("=masked/repo-1.0", PackageDepSpecParseMode.PERMISSIVE))
+        q = Query.Matches(parse_user_package_dep_spec("=masked/repo-1.0", []))
         pid = iter(self.db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         m = iter(pid.masks).next()
 
@@ -73,7 +73,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m.mask_key().value().comment, StringIterable))
 
     def test_04_unsupported_mask(self):
-        q = Query.Matches(PackageDepSpec("=masked/unsupported-1.0", PackageDepSpecParseMode.PERMISSIVE))
+        q = Query.Matches(parse_user_package_dep_spec("=masked/unsupported-1.0", []))
         pid = iter(self.db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         m = iter(pid.masks).next()
 
@@ -85,7 +85,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
 
     def test_05_association_mask(self):
-        q = Query.Matches(PackageDepSpec("=virtual/association-1.0", PackageDepSpecParseMode.PERMISSIVE))
+        q = Query.Matches(parse_user_package_dep_spec("=virtual/association-1.0", []))
         pid = iter(self.db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         m = iter(pid.masks).next()
 
@@ -157,7 +157,7 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
             def associated_package(self):
                 e = EnvironmentMaker.instance.make_from_spec("")
                 db = e.package_database
-                q = Query.Matches(PackageDepSpec("=masked/user-1.0", PackageDepSpecParseMode.PERMISSIVE))
+                q = Query.Matches(parse_user_package_dep_spec("=masked/user-1.0", []))
                 pid = iter(db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
                 return pid
 

@@ -24,7 +24,11 @@ import unittest
 class TestCase_1_DepSpecs(unittest.TestCase):
     def get_depspecs(self):
         self.ptds = PlainTextDepSpec("foo")
-        self.pds = PackageDepSpec(">=foo/bar-1:100::testrepo", PackageDepSpecParseMode.PERMISSIVE)
+        self.pds = parse_user_package_dep_spec(">=foo/bar-1:100::testrepo", [])
+        self.pds2 = parse_user_package_dep_spec("*/*::testrepo",
+                UserPackageDepSpecOptions() + UserPackageDepSpecOption.ALLOW_WILDCARDS)
+        self.pds3 = parse_user_package_dep_spec("*/*::testrepo", [UserPackageDepSpecOption.ALLOW_WILDCARDS])
+        self.pds4 = parse_user_package_dep_spec("cat/pkg::testrepo", [])
         self.bds = BlockDepSpec(self.pds)
         self.nds = NamedSetDepSpec("system")
 
@@ -33,9 +37,16 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
     def test_02_create_error(self):
         self.assertRaises(Exception, DepSpec)
+        self.assertRaises(Exception, PackageDepSpec)
         self.assertRaises(Exception, StringDepSpec)
-        self.assertRaises(BadVersionOperatorError, PackageDepSpec, "<>foo/bar", PackageDepSpecParseMode.PERMISSIVE)
-        self.assertRaises(PackageDepSpecError, PackageDepSpec, "=foo/bar", PackageDepSpecParseMode.PERMISSIVE)
+        self.assertRaises(BadVersionOperatorError, parse_user_package_dep_spec,
+                "<>foo/bar", UserPackageDepSpecOptions())
+        self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
+                "=foo/bar", [])
+        self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
+                "*/*::testrepo", UserPackageDepSpecOptions())
+        self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
+                "*/*::testrepo", [])
 
     def test_03_str(self):
         self.get_depspecs()
@@ -69,13 +80,13 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assertEquals(self.pds.version_requirements_mode, VersionRequirementsMode.AND)
 
     def test_09_use_requirements(self):
-        spec = PackageDepSpec("foo/monkey[foo]", PackageDepSpecParseMode.PERMISSIVE)
+        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
         ur = iter(spec.use_requirements).next()
         self.assertEquals(str(ur[0]), "foo")
         self.assertEquals(ur[1], UseFlagState.ENABLED)
 
     def test_10_without_use_requirements(self):
-        spec = PackageDepSpec("foo/monkey[foo]", PackageDepSpecParseMode.PERMISSIVE)
+        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
         pds = spec.without_use_requirements()
         self.assertEquals(pds.use_requirements, None)
         self.assertEquals(str(pds), "foo/monkey")

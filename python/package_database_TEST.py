@@ -57,7 +57,7 @@ class TestCase_PackageDatabase(unittest.TestCase):
             "foo/bar-1.0::testrepo",
             "foo/bar-2.0::testrepo"])
 
-        pkgs = list(self.db.query(Query.Matches(PackageDepSpec(">=foo/bar-10", PackageDepSpecParseMode.PERMISSIVE)),
+        pkgs = list(self.db.query(Query.Matches(parse_user_package_dep_spec(">=foo/bar-10", [])),
             QueryOrder.ORDER_BY_VERSION))
         self.assertEqual(len(pkgs), 0)
 

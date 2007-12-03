@@ -164,9 +164,6 @@ namespace paludis
                 PythonPackageDepSpec(const PythonPackageDepSpec &);
                 ~PythonPackageDepSpec();
 
-                static tr1::shared_ptr<const PythonPackageDepSpec>
-                    make_from_string(const std::string &, const PackageDepSpecParseMode);
-
                 operator PackageDepSpec() const;
                 operator tr1::shared_ptr<PackageDepSpec>() const;
 

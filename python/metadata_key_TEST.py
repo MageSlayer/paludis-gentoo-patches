@@ -207,11 +207,11 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                pds = parse_user_package_dep_spec("cat/pkg", [])
                 return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                pds = parse_user_package_dep_spec("cat/pkg", [])
                 return f.format_package_dep_spec_plain(pds)
 
         test_metadata_provide_spec_tree_key(TestKey())
@@ -225,11 +225,11 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                pds = parse_user_package_dep_spec("cat/pkg", [])
                 return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                pds = parse_user_package_dep_spec("cat/pkg", [])
                 return f.format_package_dep_spec_plain(pds)
 
         test_metadata_dependency_spec_tree_key(TestKey())

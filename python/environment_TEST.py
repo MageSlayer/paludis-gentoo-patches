@@ -53,7 +53,7 @@ class TestCase_01_Environments(unittest.TestCase):
 
     def test_04_query_use(self):
         pid = iter(self.e.package_database.query(Query.Matches(
-            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            parse_user_package_dep_spec("=foo/bar-1.0", [])),
             QueryOrder.REQUIRE_EXACTLY_ONE)).next()
 
         self.assert_(self.e.query_use("enabled", pid))
@@ -103,9 +103,9 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
     def test_02_adapt_use(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
         pid = iter(env.package_database.query(Query.Matches(
-            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            parse_user_package_dep_spec("=foo/bar-1.0", [])),
             QueryOrder.REQUIRE_EXACTLY_ONE)).next()
-        pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
+        pds = parse_user_package_dep_spec("foo/bar", [])
 
         self.assert_(env.query_use("enabled", pid))
         self.assert_(not env.query_use("not_enabled", pid))
@@ -122,10 +122,9 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
 
     def test_03_clear_adaptions(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
-        pid = iter(env.package_database.query(Query.Matches(
-            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+        pid = iter(env.package_database.query(Query.Matches(parse_user_package_dep_spec("=foo/bar-1.0", [])),
             QueryOrder.REQUIRE_EXACTLY_ONE)).next()
-        pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
+        pds = parse_user_package_dep_spec("foo/bar", [])
 
         self.assert_(env.query_use("enabled", pid))
 

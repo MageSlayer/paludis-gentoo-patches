@@ -67,7 +67,7 @@ void expose_qa()
      * Options
      */
     class_options<QACheckProperties>("QACheckProperties", "QACheckProperty",
-            "NEED_DOC");
+            "A collection of properties for a QA check.");
 
     /**
      * QAMessage
