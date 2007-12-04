@@ -46,6 +46,7 @@ namespace
             int (*_setfscreatecon)(security_context_t);
             int (*_matchpathcon)(const char *, mode_t, security_context_t*);
             int (*_matchpathcon_init)(const char *);
+            int (*_setfilecon)(const char *, security_context_t);
             int (*_is_selinux_enabled)(void);
 
         public:
@@ -60,12 +61,18 @@ namespace
                 {
                     _freecon = STUPID_CAST(void (*)(security_context_t), dlsym(_handle, "freecon"));
                     _getcon = STUPID_CAST(int (*)(security_context_t*), dlsym(_handle, "getcon"));
-                    _getfscreatecon = STUPID_CAST(int (*) (security_context_t*), dlsym(_handle, "getfscreatecon"));
-                    _setfscreatecon = STUPID_CAST(int (*) (security_context_t), dlsym(_handle, "setfscreatecon"));
+                    _getfscreatecon = STUPID_CAST(int (*) (security_context_t*),
+                            dlsym(_handle, "getfscreatecon"));
+                    _setfscreatecon = STUPID_CAST(int (*) (security_context_t),
+                            dlsym(_handle, "setfscreatecon"));
                     _matchpathcon = STUPID_CAST(int (*) (const char *, mode_t, security_context_t *),
                             dlsym(_handle, "matchpathcon"));
-                    _matchpathcon_init = STUPID_CAST(int (*) (const char *), dlsym(_handle, "matchpathcon_init"));
-                    _is_selinux_enabled = STUPID_CAST(int (*)(void), dlsym(_handle, "is_selinux_enabled"));
+                    _matchpathcon_init = STUPID_CAST(int (*) (const char *),
+                            dlsym(_handle, "matchpathcon_init"));
+                    _setfilecon = STUPID_CAST(int (*) (const char *, security_context_t),
+                            dlsym(_handle, "setfilecon"));
+                    _is_selinux_enabled = STUPID_CAST(int (*)(void),
+                            dlsym(_handle, "is_selinux_enabled"));
                 }
             }
 
@@ -106,6 +113,13 @@ namespace
             {
                 if (0 != _matchpathcon && is_selinux_enabled())
                     return _matchpathcon(path, mode, con);
+                return 0;
+            }
+
+            int setfilecon(const char *path, security_context_t con)
+            {
+                if (0 != _setfilecon && is_selinux_enabled())
+                    return _setfilecon(path, con);
                 return 0;
             }
 
@@ -241,3 +255,9 @@ tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & p
     }
     return p;
 }
+
+int paludis::setfilecon(const paludis::FSEntry & path, tr1::shared_ptr<const SecurityContext> con)
+{
+    return libselinux.setfilecon(stringify(path).c_str(), con->_imp->_context);
+}
+

@@ -24,6 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry.hh>
 
 /** \file
  * Declarations for SecurityContext and associated classes.
@@ -81,6 +82,7 @@ namespace paludis
             friend std::ostream& paludis::operator<<(std::ostream&, const SecurityContext &);
             friend class paludis::FSCreateCon;
             friend class paludis::MatchPathCon;
+            friend int paludis::setfilecon(const paludis::FSEntry &, tr1::shared_ptr<const SecurityContext>);
 
             /**
              * Returns a SecurityContext referring to the current process's context
@@ -162,6 +164,13 @@ namespace paludis
              */
             bool good() const;
     };
+
+    /**
+     * Thin wrapper around setfilecon()
+     *
+     * \ingroup grplibpaludisselinux
+     */
+    int setfilecon(const FSEntry & file, tr1::shared_ptr<const SecurityContext> con);
 
 }
 
