@@ -154,7 +154,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     DirIterator d(src, false), d_end;
 
-    if (! is_check && d == d_end)
+    if (! is_check && d == d_end && dst != _options.root.realpath())
         Log::get_instance()->message(ll_warning, lc_context) << "Installing empty directory '"
             << stringify(dst) << "'";
 
