@@ -158,7 +158,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_package_id</td>
         <td><a href="cplusplus/example__package__id_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_package_id.html">Ruby</a></td>
         <td></td>
         <td>How to use PackageID</td>
     </tr>
