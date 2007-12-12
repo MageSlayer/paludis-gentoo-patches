@@ -416,7 +416,7 @@ namespace
         rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataPackageIDSequenceKey
+         * Document-class: Paludis::MetadataFSEntrySequenceKey
          *
          * Metadata class for filesystem sequences
          */
