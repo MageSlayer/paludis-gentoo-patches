@@ -185,6 +185,74 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     masks -> Array
+     *
+     * Our masks.
+     */
+    VALUE
+    package_id_masks(VALUE self)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        VALUE result(rb_ary_new());
+        for (PackageID::MasksConstIterator it((*self_ptr)->begin_masks()),
+                it_end((*self_ptr)->end_masks()); it_end != it; ++it)
+        {
+            rb_ary_push(result, mask_to_value(*it));
+        }
+        return result;
+    }
+
+    /*
+     * call-seq:
+     *     invalidate_masks -> Qnil
+     *
+     * Invalidate any masks.
+     *
+     * PackageID implementations may cache masks. This can cause problems if the operating environment changes.
+     * Calling this method will clear any masks held by the PackageID.
+     */
+    VALUE
+    package_id_invalidate_masks(VALUE self)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        (*self_ptr)->invalidate_masks();
+        return Qnil;
+    }
+
+    /*
+     * Document-method: masked?
+     *
+     * call-seq:
+     *     masked? -> true or false
+     *
+     * Do we have any masks?
+     */
+    /*
+     * Document-method: breaks_portage?
+     *
+     * call-seq:
+     *     breaks_portage? -> true or false
+     *
+     *  Do we break Portage?
+     *
+     *  This method may be used by Environment implementations to apply a "we don't want packages that break Portage" mask.
+     */
+    template <bool (PackageID::* m_) () const>
+    struct PackageIDBool
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<const PackageID> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+            return (self_ptr->get()->*m_)() ? Qtrue : Qfalse;
+        }
+    };
+
+    /*
      * Document-method: keywords_key
      *
      * call-seq:
@@ -366,6 +434,11 @@ namespace
         rb_define_method(c_package_id, "supports_action", RUBY_FUNC_CAST(&package_id_supports_action), 1);
         rb_define_method(c_package_id, "perform_action", RUBY_FUNC_CAST(&package_id_perform_action), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
+
+        rb_define_method(c_package_id, "masks", RUBY_FUNC_CAST(&package_id_masks), 0);
+        rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
+        rb_define_method(c_package_id, "invalidate_masks", RUBY_FUNC_CAST(&package_id_invalidate_masks), 0);
+        rb_define_method(c_package_id, "breaks_portage?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::breaks_portage>::fetch)), 0);
 
         rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataPackageIDKey, &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);

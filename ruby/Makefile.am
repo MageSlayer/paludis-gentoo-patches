@@ -53,7 +53,8 @@ IF_RUBY_SOURCES = \
 	qualified_package_name.cc \
 	query.cc \
 	repository.cc \
-	version_spec.cc
+	version_spec.cc \
+	mask.cc
 
 IF_RUBY_QA_SOURCES = \
 	qa.cc

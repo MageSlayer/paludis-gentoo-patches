@@ -89,6 +89,7 @@ namespace paludis
 #endif
         template <typename T_> VALUE dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstItem> &);
         VALUE package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> &);
+        VALUE mask_to_value(tr1::shared_ptr<const Mask>);
 
         VersionSpec value_to_version_spec(VALUE v);
         tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);

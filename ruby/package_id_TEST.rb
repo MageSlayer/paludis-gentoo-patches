@@ -109,7 +109,8 @@ module Paludis
                 :keywords_key => MetadataKeywordNameSetKey, :iuse_key => MetadataIUseFlagSetKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
-                :source_origin_key => MetadataStringKey, :binary_origin_key => MetadataStringKey
+                :source_origin_key => MetadataStringKey, :binary_origin_key => MetadataStringKey,
+                :masks => Array
             }.each_pair do | method, type |
 
                 assert_respond_to pid_testrepo, method
@@ -160,6 +161,23 @@ module Paludis
                 keys.delete key.raw_name
             end
             assert keys.empty?
+        end
+
+        def test_masked?
+            assert pid_testrepo.masked?
+            assert !pid_installed.masked?
+        end
+
+        def test_breaks_portage?
+            assert !pid_testrepo.breaks_portage?
+        end
+
+        def test_masks
+            masks = pid_testrepo.masks
+            assert_equal 1, masks.length
+            mask = masks.first
+            assert_kind_of RepositoryMask, mask
+            assert_equal "repository_mask", mask.mask_key.raw_name
         end
     end
 
