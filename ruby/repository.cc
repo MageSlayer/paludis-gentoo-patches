@@ -851,6 +851,27 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     each_metadata {|key| block } -> Nil
+     *
+     * Our metadata.
+     */
+    VALUE
+    repository_each_metadata(VALUE self)
+    {
+        tr1::shared_ptr<Repository> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+        for (Repository::MetadataConstIterator it((*self_ptr)->begin_metadata()),
+                it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+        {
+            VALUE val(metadata_key_to_value(*it));
+            if (Qnil != val)
+                rb_yield(val);
+        }
+            return Qnil;
+    }
+
     void do_register_repository()
     {
         /*
@@ -906,6 +927,8 @@ namespace
         rb_define_method(c_repository, "set_profile", RUBY_FUNC_CAST(&repository_set_profile),1);
 
         rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
+
+        rb_define_method(c_repository, "each_metadata", RUBY_FUNC_CAST(&repository_each_metadata), 0);
 
         /*
          * Document-class: Paludis::ProfilesDescLine

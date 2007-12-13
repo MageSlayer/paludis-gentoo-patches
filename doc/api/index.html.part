@@ -179,7 +179,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_repository</td>
         <td><a href="cplusplus/example__repository_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_repository.html">Ruby</a></td>
         <td></td>
         <td>How to use Repository</td>
     </tr>
