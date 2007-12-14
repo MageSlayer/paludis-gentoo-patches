@@ -274,9 +274,10 @@ DepTag::operator< (const DepTag & other) const
     return c1.value < c2.value;
 }
 
-GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title) :
+GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title, const FSEntry& our_glsa_file) :
     _id(id),
-    _glsa_title(our_glsa_title)
+    _glsa_title(our_glsa_title),
+    _glsa_file(our_glsa_file)
 {
 }
 
@@ -294,6 +295,12 @@ std::string
 GLSADepTag::category() const
 {
     return "glsa";
+}
+
+const FSEntry
+GLSADepTag::glsa_file() const
+{
+    return _glsa_file;
 }
 
 std::string

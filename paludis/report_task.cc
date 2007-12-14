@@ -27,6 +27,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
 #include <paludis/version_requirements.hh>
@@ -94,7 +95,7 @@ namespace
                 _env.package_database()->query(query::Matches(a), qo_order_by_version));
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
-            if (a.tag())
+            if (a.tag() && visitor_cast<const GLSADepTag>(*a.tag()))
                 _found.insert(std::make_pair(*i, a.tag()));
             else
                 throw InternalError(PALUDIS_HERE, "didn't get a tag");
@@ -232,7 +233,7 @@ ReportTask::execute()
                         {
                             on_report_package_is_vulnerable_pre(*v);
                             for (VulnerableChecker::ConstIterator itag(pi.first) ; itag != pi.second ; ++itag)
-                                on_report_package_is_vulnerable(*v, itag->second->short_text());
+                                on_report_package_is_vulnerable(*v, *static_cast<const GLSADepTag *>(itag->second.get()) );
                             on_report_package_is_vulnerable_post(*v);
                         }
                         if (is_missing)
@@ -252,4 +253,3 @@ ReportTask::execute()
 
     on_report_all_post();
 }
-

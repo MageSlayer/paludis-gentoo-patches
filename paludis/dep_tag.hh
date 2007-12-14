@@ -43,6 +43,7 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/operators.hh>
 
 #include <string>
@@ -227,25 +228,36 @@ namespace paludis
         private:
             const std::string _id;
             const std::string _glsa_title;
+            const FSEntry _glsa_file;
 
         public:
             ///\name Basic operations
             ///\{
 
-            GLSADepTag(const std::string & id, const std::string & glsa_title);
+            GLSADepTag(const std::string & id, const std::string & glsa_title, const FSEntry&);
             ~GLSADepTag();
 
             ///\}
+
+            ///\name Content information
+            ///\{
 
             virtual std::string short_text() const;
 
             virtual std::string category() const;
 
             /**
+             * The full path to the glsa announcement file.
+             */
+            const FSEntry glsa_file() const;
+
+            /**
              * Fetch our GLSA title (for example, 'Yet another PHP remote access
              * hole').
              */
             std::string glsa_title() const;
+
+            ///\}
     };
 
     /**

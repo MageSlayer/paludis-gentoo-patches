@@ -68,7 +68,7 @@ module Paludis
 
     class TestCase_GLSADepTag < Test::Unit::TestCase
         def get_dt
-            GLSADepTag.new("id", "title")
+            GLSADepTag.new("id", "title", "/path")
         end
 
         def test_create
@@ -85,7 +85,7 @@ module Paludis
             end
 
             assert_raise TypeError do
-                GLSADepTag.new(1,1)
+                GLSADepTag.new(1,1,3)
             end
         end
 
@@ -94,7 +94,8 @@ module Paludis
             {
                 :short_text => 'GLSA-id',
                 :category=>'glsa',
-                :glsa_title => 'title'
+                :glsa_title => 'title',
+                :glsa_file => "/path"
             }.each do |method, val|
                 assert_respond_to dt, method
                 assert_equal val, dt.send(method)

@@ -28,7 +28,7 @@ class TestCase_01_DepTag(unittest.TestCase):
 class TestCase_02_GLSADepTag(unittest.TestCase):
     def setUp(self):
         global dt
-        dt = GLSADepTag("id", "title")
+        dt = GLSADepTag("id", "title", "/path")
 
     def test_01_instance(self):
         self.assert_(isinstance(dt, DepTag))
@@ -37,6 +37,7 @@ class TestCase_02_GLSADepTag(unittest.TestCase):
         self.assertEquals(dt.category, "glsa")
         self.assertEquals(dt.short_text, "GLSA-id")
         self.assertEquals(dt.glsa_title, "title")
+        self.assertEquals(dt.glsa_file, "/path")
 
 class TestCase_03_GeneralSetDepTag(unittest.TestCase):
     def setUp(self):

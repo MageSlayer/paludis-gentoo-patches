@@ -265,7 +265,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
                         glsa_tags.insert(std::make_pair(glsa->id(), tr1::shared_ptr<GLSADepTag>(
-                                        new GLSADepTag(glsa->id(), glsa->title()))));
+                                        new GLSADepTag(glsa->id(), glsa->title(), *f))));
 
                     if (insecurity)
                     {

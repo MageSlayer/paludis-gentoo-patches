@@ -23,6 +23,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repository.hh>
+#include <paludis/dep_tag-fwd.hh>
 
 /** \file
  * Declarations for ReportTask.
@@ -74,7 +75,7 @@ namespace paludis
             virtual void on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id,
                     const tr1::shared_ptr<const PackageID> & origin) = 0;
             virtual void on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const std::string & tag) = 0;
+            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag) = 0;
             virtual void on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> & id) = 0;
             virtual void on_report_package_is_missing(const tr1::shared_ptr<const PackageID> & id,
                     const RepositoryName & repo_name) = 0;

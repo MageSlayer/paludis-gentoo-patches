@@ -22,6 +22,7 @@
 #include <src/output/mask_displayer.hh>
 #include <paludis/report_task.hh>
 #include <paludis/mask.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <iostream>
@@ -59,7 +60,7 @@ namespace
             virtual void on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id, const tr1::shared_ptr<const PackageID> & origin);
             virtual void on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const std::string & tag);
+            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag);
             virtual void on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_missing(const tr1::shared_ptr<const PackageID> & id, const RepositoryName & repo_name);
             virtual void on_report_package_is_unused(const tr1::shared_ptr<const PackageID> & id);
@@ -121,13 +122,14 @@ namespace
     void
     OurReportTask::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
     {
-        cout << endl << "    Affected by:";
+        cout << endl << "this package has following security issues:" << endl;
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &, const std::string & tag)
+    OurReportTask::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &, const GLSADepTag & glsa_tag)
     {
-        cout << " " << colour(cl_tag, tag);
+        cout << "    " << colour(cl_error, glsa_tag.short_text() + ": \"" + glsa_tag.glsa_title() +"\"")
+                    << endl << colour(cl_error, "        -> " + stringify(glsa_tag.glsa_file())) << endl;
         ++_n_errors;
     }
 

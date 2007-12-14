@@ -110,13 +110,14 @@ namespace
     VALUE
     glsa_dep_tag_new(int argc, VALUE * argv, VALUE self)
     {
-        if (2 != argc)
-            rb_raise(rb_eArgError, "GLSADepTag expects two arguments, but got %d",argc);
+        if (3 != argc)
+            rb_raise(rb_eArgError, "GLSADepTag expects three arguments, but got %d",argc);
 
         tr1::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1])));
+            ptr = new tr1::shared_ptr<const DepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
+                        FSEntry(StringValuePtr(argv[2]))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -212,6 +213,26 @@ namespace
         }
     };
 
+    /*
+     * Document-method: glsa_file
+     *
+     * call-seq:
+     *     glsa_file -> String
+     *
+     * Fetch our GLSA file.
+     */
+    template <typename T_, const FSEntry (T_::* m_) () const>
+    struct DepTagFSEntryThings
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<const DepTag> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
+            return rb_str_new2(stringify(((*tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
+        }
+    };
+
     void do_register_dep_tag()
     {
         /*
@@ -244,6 +265,8 @@ namespace
         rb_define_singleton_method(c_glsa_dep_tag, "new", RUBY_FUNC_CAST(&glsa_dep_tag_new), -1);
         rb_define_method(c_glsa_dep_tag, "glsa_title", RUBY_FUNC_CAST((&DepTagThings<GLSADepTag,
                         &GLSADepTag::glsa_title>::fetch)), 0);
+        rb_define_method(c_glsa_dep_tag, "glsa_file", RUBY_FUNC_CAST((&DepTagFSEntryThings<GLSADepTag,
+                        &GLSADepTag::glsa_file>::fetch)), 0);
 
         /*
          * Document-class: Paludis::GeneralSetDepTag
