@@ -480,9 +480,7 @@ namespace
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column("");
-                        task->output_stream() << k.pretty_print_flat(formatter);
-                        task->output_endl();
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
             }
