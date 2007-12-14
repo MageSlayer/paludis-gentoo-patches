@@ -63,9 +63,10 @@ namespace paludis
         VersionSpec version;
 
         tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
-        tr1::shared_ptr<SimpleURIKey> homepage_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> url_key;
         tr1::shared_ptr<LiteralMetadataStringKey> short_description_key;
         tr1::shared_ptr<LiteralMetadataStringKey> long_description_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> license_key;
         tr1::shared_ptr<PackageIDKey> contained_in_key;
         tr1::shared_ptr<PackageIDSequenceKey> contains_key;
         tr1::shared_ptr<DepKey> depends_key;
@@ -149,11 +150,20 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
             _imp->version = VersionSpec(cran_version_to_internal(file.get("Version")));
         }
 
+        if (! file.get("License").empty())
+        {
+            /* License often isn't in the format the spec requires, so we can't parse it. */
+            Context local_context("When handling License: key:");
+            _imp->license_key.reset(new LiteralMetadataStringKey("License", "License", mkt_dependencies, file.get("License")));
+            add_metadata_key(_imp->license_key);
+        }
+
         if (! file.get("URL").empty())
         {
+            /* URL is also in stupid formats */
             Context local_context("When handling URL: key:");
-            _imp->homepage_key.reset(new SimpleURIKey("URL", "URL", file.get("URL"), mkt_significant));
-            add_metadata_key(_imp->homepage_key);
+            _imp->url_key.reset(new LiteralMetadataStringKey("URL", "URL", mkt_significant, file.get("URL")));
+            add_metadata_key(_imp->url_key);
         }
 
         if (! file.get("Title").empty())
@@ -176,16 +186,23 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
                         mkt_normal, file.get("BundleDescription")));
         }
 
+        if (! file.get("Date").empty())
+        {
+            Context local_context("When handling Date: key:");
+            /* no guarantee on the format */
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Date", "Date", mkt_normal, file.get("Date"))));
+        }
+
         if (! file.get("Author").empty())
         {
             Context local_context("When handling Author: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Author", "Author", mkt_normal, file.get("Author"))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Author", "Author", mkt_author, file.get("Author"))));
         }
 
         if (! file.get("Maintainer").empty())
         {
             Context local_context("When handling Maintainer: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Maintainer", "Maintainer", mkt_normal, file.get("Maintainer"))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Maintainer", "Maintainer", mkt_author, file.get("Maintainer"))));
         }
 
         if (! file.get("Contains").empty())
@@ -216,6 +233,13 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
             add_metadata_key(_imp->suggests_key);
         }
 
+        if (! file.get("SystemRequirements").empty())
+        {
+            Context local_context("When handling SystemRequirements: key:");
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("SystemRequirements", "System Requirements", mkt_normal,
+                            file.get("SystemRequirements"))));
+        }
+
         if (! file.get("Depends").empty())
         {
             Context local_context("When handling Depends: key:");
@@ -231,37 +255,6 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
             << e.message() << "' (" << e.what() << ")";
         add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "Got exception '" + stringify(e.message()) + "' (" + e.what() + "')")));
     }
-
-#if 0
-    for (cranrepository::DescriptionFile::Iterator i(file.begin()), i_end(file.end()) ;
-            i != i_end ; ++i)
-    {
-        if (("Package" == key) || ("Bundle" == key))
-        {
-            metadata->set_homepage("http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html");
-            if ("Package" == key)
-            {
-                CRANDescription::normalise_name(value);
-                if (n != value)
-                    Log::get_instance()->message(ll_warning, lc_context) << "Inconsistent package name in file '" <<
-                        f << "': '" << value << "'";
-            }
-            else
-                metadata->cran_interface->is_bundle = true;
-        }
-        else if ("Depends" == key)
-        {
-            if (value.empty())
-                value = "R";
-            else
-                value.append(", R");
-            metadata->deps_interface->set_build_depend(value);
-            metadata->deps_interface->set_run_depend(value);
-        }
-        else if ("Suggests" == key)
-            metadata->deps_interface->set_suggested_depend(value);
-    }
-#endif
 }
 
 CRANPackageID::CRANPackageID(const Environment * const e,
@@ -370,7 +363,7 @@ CRANPackageID::fetches_key() const
 const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 CRANPackageID::homepage_key() const
 {
-    return _imp->homepage_key;
+    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>

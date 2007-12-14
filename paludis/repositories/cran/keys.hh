@@ -31,25 +31,6 @@ namespace paludis
     {
         class CRANPackageID;
 
-        class SimpleURIKey :
-            public MetadataSpecTreeKey<SimpleURISpecTree>
-        {
-            private:
-                const std::string _v;
-
-            public:
-                SimpleURIKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-
-                virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class PackageIDSequenceKey :
             public MetadataCollectionKey<PackageIDSequence>
         {
@@ -84,17 +65,17 @@ namespace paludis
         };
 
         class DepKey :
-            public MetadataSpecTreeKey<DependencySpecTree>
+            public MetadataSpecTreeKey<DependencySpecTree>,
+            private PrivateImplementationPattern<DepKey>
         {
             private:
-                const Environment * const _env;
-                mutable Mutex _m;
-                mutable tr1::shared_ptr<DependencySpecTree::ConstItem> _c;
-                const std::string _v;
+                PrivateImplementationPattern<DepKey>::ImpPtr & _imp;
 
             public:
                 DepKey(const Environment * const,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+
+                ~DepKey();
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

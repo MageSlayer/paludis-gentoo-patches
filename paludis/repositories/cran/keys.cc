@@ -35,30 +35,6 @@
 using namespace paludis;
 using namespace paludis::cranrepository;
 
-SimpleURIKey::SimpleURIKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
-    _v(v)
-{
-}
-
-const tr1::shared_ptr<const SimpleURISpecTree::ConstItem>
-SimpleURIKey::value() const
-{
-    return make_shared_ptr(new TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(_v))));
-}
-
-std::string
-SimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    return f.format(_v, format::Plain());
-}
-
-std::string
-SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    return f.format(_v, format::Plain());
-}
-
 PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
         const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataCollectionKey<PackageIDSequence>(r, h, t),
@@ -102,31 +78,54 @@ PackageIDKey::value() const
     return _v->shared_from_this();
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<DepKey>
+    {
+        const Environment * const env;
+        const std::string v;
+
+        mutable Mutex mutex;
+        mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> c;
+
+        Implementation(const Environment * const e, const std::string & vv) :
+            env(e),
+            v(vv)
+        {
+        }
+    };
+}
+
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    _env(e),
-    _v(v)
+    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v)),
+    _imp(PrivateImplementationPattern<DepKey>::_imp)
+{
+}
+
+DepKey::~DepKey()
 {
 }
 
 const tr1::shared_ptr<const DependencySpecTree::ConstItem>
 DepKey::value() const
 {
-    Lock l(_m);
-    if (_c)
-        return _c;
+    Lock l(_imp->mutex);
+    if (_imp->c)
+        return _imp->c;
 
     Context context("When parsing CRAN dependency string:");
-    _c = parse_depends(_v);
-    return _c;
+    _imp->c = parse_depends(_imp->v);
+    return _imp->c;
 }
 
 std::string
 DepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_env, ff, 12, true);
+    DepSpecPrettyPrinter p(_imp->env, ff, 12, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -135,7 +134,7 @@ std::string
 DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_env, ff, 0, false);
+    DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }
