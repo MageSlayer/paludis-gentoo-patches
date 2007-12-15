@@ -780,12 +780,10 @@ namespace
 bool
 EbuildID::supports_action(const SupportsActionTestBase & b) const
 {
-    if (! eapi()->supported)
-        return false;
-
     SupportsActionQuery q;
     b.accept(q);
-    return q.result;
+
+    return q.result && eapi()->supported;
 }
 
 namespace
