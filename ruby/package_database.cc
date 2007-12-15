@@ -204,6 +204,28 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     has_repository_named?(repository_name) -> true or false
+     *
+     *  Do we have a named repository?
+     */
+    VALUE
+    package_database_has_repository_named(VALUE self, VALUE name)
+    {
+        try
+        {
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+
+            return ((*self_ptr)->has_repository_named(RepositoryName(StringValuePtr(name)))) ? true : false;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_package_database()
     {
         /*
@@ -224,6 +246,8 @@ namespace
                 RUBY_FUNC_CAST(&package_database_fetch_repository), 1);
         rb_define_method(c_package_database, "more_important_than",
                 RUBY_FUNC_CAST(&package_database_more_important_than), 2);
+        rb_define_method(c_package_database, "has_repository_named?",
+                RUBY_FUNC_CAST(&package_database_has_repository_named), 1);
 
         /*
          * Document-module: Paludis::QueryOrder

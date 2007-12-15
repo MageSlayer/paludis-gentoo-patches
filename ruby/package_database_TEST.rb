@@ -232,6 +232,12 @@ module Paludis
             assert db.more_important_than('testrepo', 'virtuals')
             assert ! db.more_important_than('virtuals', 'testrepo')
         end
+
+        def test_has_repository_named?
+            assert db.has_repository_named? 'testrepo'
+            assert db.has_repository_named? 'virtuals'
+            assert ! db.has_repository_named?('foobarbaz')
+        end
     end
 end
 
