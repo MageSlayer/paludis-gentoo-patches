@@ -586,5 +586,13 @@ module Paludis
             assert_raise BadVersionSpecError do f.add_version('foo', 'bar', 'abc') end
         end
     end
+    class TestCase_Repository < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def format_key
+            assert_kind_of MetadataStringKey, repo.format_key
+            assert_equal 'ebuild', repo.format_key.value
+        end
+    end
 end
 

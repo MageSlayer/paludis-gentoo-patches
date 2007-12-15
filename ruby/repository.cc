@@ -880,7 +880,7 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            return metadata_key_to_value(((**self_ptr).*m_)());
+            return (((**self_ptr).*m_)()) ? metadata_key_to_value(((**self_ptr).*m_)()) : Qnil;
         }
     };
 
