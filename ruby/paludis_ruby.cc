@@ -169,7 +169,16 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
         rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee))
-        rb_raise(c_ambiguous_package_name_error, dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee)->message().c_str());
+    {
+        VALUE ex_args[2];
+        ex_args[0] = rb_str_new2(dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee)->message().c_str());
+        ex_args[1] = rb_ary_new();
+        const AmbiguousPackageNameError * e = dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee);
+        for (AmbiguousPackageNameError::OptionsConstIterator f(e->begin_options()), f_end(e->end_options()) ;
+                f != f_end ; ++f)
+            rb_ary_unshift(ex_args[1], rb_str_new2(stringify(*f).c_str()));
+        rb_exc_raise(rb_class_new_instance(2, ex_args, c_ambiguous_package_name_error));
+    }
     else if (0 != dynamic_cast<const paludis::NoSuchPackageError *>(&ee))
         rb_raise(c_no_such_package_error, dynamic_cast<const paludis::NoSuchPackageError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee))
@@ -202,6 +211,7 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     else if (0 != dynamic_cast<const paludis::FetchActionError *>(&ee))
     {
         VALUE ex_args[2];
+        ex_args[0] = rb_str_new2(dynamic_cast<const paludis::FetchActionError *>(&ee)->message().c_str());
         ex_args[1] = rb_ary_new();
         const FetchActionError * e = dynamic_cast<const paludis::FetchActionError *>(&ee);
         for (Sequence<FetchActionFailure>::ConstIterator f(e->failures()->begin()), f_end(e->failures()->end()) ;
@@ -306,6 +316,29 @@ fetch_action_error_failures(VALUE self)
     return rb_attr_get(self, rb_intern("failures"));
 }
 
+static VALUE
+ambiguous_package_name_error_init(int argc, VALUE* argv, VALUE self)
+{
+    VALUE options;
+
+    options = (argc > 1) ? argv[--argc] : Qnil;
+    rb_call_super(argc, argv);
+    rb_iv_set(self, "options", options);
+    return self;
+}
+
+/*
+ * call-seq:
+ *     options -> Array
+ *
+ * Our options
+ */
+VALUE
+ambiguous_package_name_error_failures(VALUE self)
+{
+    return rb_attr_get(self, rb_intern("options"));
+}
+
 void PALUDIS_VISIBLE paludis::ruby::init()
 {
     /*
@@ -320,7 +353,6 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_package_dep_spec_error = rb_define_class_under(c_paludis_module, "PackageDepSpecError", rb_eRuntimeError);
     c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
     c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
-    c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
     c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
     c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
     c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
@@ -374,9 +406,17 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      * Thrown if a PackageID fails to perform a FetchAction.
      */
     c_fetch_action_error = rb_define_class_under(c_paludis_module, "FetchActionError", c_action_error);
-    rb_define_module_function(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
     rb_define_method(c_fetch_action_error, "initialize", RUBY_FUNC_CAST(&fetch_action_error_init), -1);
     rb_define_method(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
+
+    /*
+     * Document-class: Paludis::AmbiguousPackageNameError
+     *
+     * Thrown if a PackageDatabase query results in more than one matching Package.
+     */
+    c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
+    rb_define_method(c_ambiguous_package_name_error, "initialize", RUBY_FUNC_CAST(&ambiguous_package_name_error_init), -1);
+    rb_define_method(c_ambiguous_package_name_error, "options", RUBY_FUNC_CAST(&ambiguous_package_name_error_failures), 0);
 
     /*
      * Document-class: Paludis::InfoActionError

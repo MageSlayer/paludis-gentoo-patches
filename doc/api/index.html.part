@@ -151,7 +151,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_package_database</td>
         <td><a href="cplusplus/example__package__database_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_package_database.html">Ruby</a></td>
         <td></td>
         <td>How to use PackageDatabase</td>
     </tr>
