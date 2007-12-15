@@ -174,7 +174,7 @@ CommandLine::CommandLine() :
             "paludis --install world",
             "...and, having checked the output above, perform the install.");
     add_example(
-            "paluds --install --continue-on-failure if-satisfied world",
+            "paludis --install --continue-on-failure if-satisfied world",
             "...and continue as far as possible even after errors are encountered.");
     add_example(
             "paludis --install --pretend --dl-reinstall if-use-changed world",
