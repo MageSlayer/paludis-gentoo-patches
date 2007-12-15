@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv,
-                "example_dep_spec_flattener", "EXAMPLE_DEP_SPEC_FLATTENER_OPTIONS", "EXAMPLE_DEP_SPEC_FLATTENER_CMDLINE");
+                "example_package_database", "EXAMPLE_PACKAGE_DATABASE_OPTIONS", "EXAMPLE_PACKAGE_DATABASE_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
