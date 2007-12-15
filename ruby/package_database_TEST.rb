@@ -234,8 +234,8 @@ module Paludis
         end
 
         def test_has_repository_named?
-            assert db.has_repository_named? 'testrepo'
-            assert db.has_repository_named? 'virtuals'
+            assert db.has_repository_named?('testrepo')
+            assert db.has_repository_named?('virtuals')
             assert ! db.has_repository_named?('foobarbaz')
         end
     end
