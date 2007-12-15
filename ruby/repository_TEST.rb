@@ -589,9 +589,21 @@ module Paludis
     class TestCase_Repository < Test::Unit::TestCase
         include RepositoryTestCase
 
-        def format_key
+        def test_format_key
             assert_kind_of MetadataStringKey, repo.format_key
             assert_equal 'ebuild', repo.format_key.value
+            assert_kind_of MetadataStringKey, installed_repo.format_key
+            assert_equal 'vdb', installed_repo.format_key.value
+        end
+
+        def test_installed_root_key
+            assert_nil repo.installed_root_key
+            assert_kind_of MetadataFSEntryKey, installed_repo.installed_root_key
+            assert_equal '/', installed_repo.installed_root_key.value
+        end
+
+        def test_each_metadata
+            assert_respond_to repo, :each_metadata
         end
     end
 end
