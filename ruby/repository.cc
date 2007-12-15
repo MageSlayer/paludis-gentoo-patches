@@ -872,6 +872,18 @@ namespace
             return Qnil;
     }
 
+    template <typename T_, const tr1::shared_ptr<const T_> (Repository::* m_) () const>
+    struct RepositoryKey
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            return metadata_key_to_value(((**self_ptr).*m_)());
+        }
+    };
+
     void do_register_repository()
     {
         /*
@@ -929,6 +941,10 @@ namespace
         rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
 
         rb_define_method(c_repository, "each_metadata", RUBY_FUNC_CAST(&repository_each_metadata), 0);
+        rb_define_method(c_repository, "format_key",
+                RUBY_FUNC_CAST((&RepositoryKey<MetadataStringKey, &Repository::format_key>::fetch)), 0);
+        rb_define_method(c_repository, "installed_root_key",
+                RUBY_FUNC_CAST((&RepositoryKey<MetadataFSEntryKey, &Repository::installed_root_key>::fetch)), 0);
 
         /*
          * Document-class: Paludis::ProfilesDescLine

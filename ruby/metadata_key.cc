@@ -45,6 +45,7 @@ namespace
     static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_package_id_sequence_key;
+    static VALUE c_metadata_fsentry_key;
     static VALUE c_metadata_fsentry_sequence_key;
     static VALUE c_metadata_key_type;
     static VALUE c_metadata_provide_spec_tree_key;
@@ -120,7 +121,8 @@ namespace
 
         void visit(const MetadataFSEntryKey &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_fsentry_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataSectionKey &)
@@ -241,6 +243,14 @@ namespace
         tr1::shared_ptr<const MetadataKey> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
         return rb_str_new2((tr1::static_pointer_cast<const MetadataStringKey>(*self_ptr))->value().c_str());
+    }
+
+    VALUE
+    metadata_fsentry_key_value(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        return rb_str_new2(stringify((tr1::static_pointer_cast<const MetadataFSEntryKey>(*self_ptr))->value()).c_str());
     }
 
     VALUE
@@ -366,6 +376,14 @@ namespace
          */
         c_metadata_string_key = rb_define_class_under(paludis_module(), "MetadataStringKey", c_metadata_key);
         rb_define_method(c_metadata_string_key, "value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
+
+        /*
+         * Document-class: Paludis::MetadataFSEntryKey
+         *
+         * Metadata class for FSEntry
+         */
+        c_metadata_fsentry_key = rb_define_class_under(paludis_module(), "MetadataFSEntryKey", c_metadata_key);
+        rb_define_method(c_metadata_fsentry_key, "value", RUBY_FUNC_CAST(&metadata_fsentry_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataTimeKey
