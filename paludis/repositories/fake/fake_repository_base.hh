@@ -57,7 +57,7 @@ namespace paludis
              * Constructor.
              */
             FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
-                    const RepositoryCapabilities & caps);
+                    const RepositoryCapabilities & caps, const std::string & eapi);
 
             virtual void need_keys_added() const;
 

@@ -553,6 +553,59 @@ namespace paludis
             virtual const tr1::shared_ptr<const URILabel> initial_label() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
+
+    /**
+     * A MetadataSpecTreeKey<DependencySpecTree> is a MetadataKey that holds
+     * a FetchableURISpecTree as its value.
+     *
+     * This specialisation of MetadataSpecTreeKey provides an additional
+     * initial_label method.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     * \nosubgrouping
+     */
+    template <>
+    class PALUDIS_VISIBLE MetadataSpecTreeKey<DependencySpecTree> :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<DependencySpecTree> >
+    {
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
+
+            ///\}
+
+        public:
+            /**
+             * Fetch our value.
+             */
+            virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a multiline-line indented and formatted version of our
+             * value, using the supplied Formatter to format individual items.
+             */
+            virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a single-line formatted version of our value, using the
+             * supplied Formatter to format individual items.
+             */
+            virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a DependencyLabelSequence that represents the initial labels to use when
+             * deciding the behaviour of individual items in the heirarchy.
+             */
+            virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
 }
 
 #endif

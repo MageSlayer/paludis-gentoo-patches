@@ -24,6 +24,8 @@
 
 namespace paludis
 {
+#include <paludis/repositories/fake/fake_repository-sr.hh>
+
     /**
      * Fake repository for use in test cases.
      *
@@ -44,6 +46,10 @@ namespace paludis
 
             FakeRepository(const Environment * const, const RepositoryName &);
             ~FakeRepository();
+
+            ///\since 0.26
+            FakeRepository(const FakeRepositoryParams &);
+
 
             ///\}
 

@@ -34,6 +34,8 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/fake/fake_repository-sr.cc>
+
 namespace paludis
 {
     template<>
@@ -72,7 +74,32 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0)),
+            .manifest_interface(0),
+            "0"),
+            _imp(PrivateImplementationPattern<FakeRepository>::_imp)
+{
+    add_metadata_key(_imp->format_key);
+}
+
+FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
+    PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
+    FakeRepositoryBase(params.environment, params.name, RepositoryCapabilities::create()
+            .sets_interface(this)
+            .syncable_interface(0)
+            .use_interface(this)
+            .world_interface(0)
+            .mirrors_interface(this)
+            .environment_variable_interface(0)
+            .provides_interface(0)
+            .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
+                    params.environment->default_distribution())->support_old_style_virtuals ? this : 0)
+            .destination_interface(0)
+            .e_interface(0)
+            .make_virtuals_interface(0)
+            .qa_interface(0)
+            .hook_interface(0)
+            .manifest_interface(0),
+            params.eapi),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);

@@ -195,6 +195,11 @@ MetadataSpecTreeKey<FetchableURISpecTree>::MetadataSpecTreeKey(const std::string
 {
 }
 
+MetadataSpecTreeKey<DependencySpecTree>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
 template class MetadataCollectionKey<KeywordNameSet>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class MetadataCollectionKey<IUseFlagSet>;

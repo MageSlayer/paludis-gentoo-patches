@@ -134,6 +134,36 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    template <>
+    class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<DependencySpecTree> :
+        public MetadataSpecTreeKey<DependencySpecTree>,
+        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >
+    {
+        private:
+            PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::ImpPtr & _imp;
+
+        public:
+            FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
+                    const tr1::function<const tr1::shared_ptr<const DependencySpecTree::ConstItem> (const std::string &)> &,
+                    const tr1::shared_ptr<const DependencyLabelSequence> &,
+                    const MetadataKeyType);
+            ~FakeMetadataSpecTreeKey();
+
+            virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void set_from_string(const std::string &);
+
+            virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     class PALUDIS_VISIBLE FakeUnacceptedMask :
         public UnacceptedMask,
         private PrivateImplementationPattern<FakeUnacceptedMask>
@@ -161,7 +191,7 @@ namespace paludis
         public:
             FakePackageID(const Environment * const e,
                     const tr1::shared_ptr<const FakeRepositoryBase> &,
-                    const QualifiedPackageName &, const VersionSpec &);
+                    const QualifiedPackageName &, const VersionSpec &, const std::string & eapi);
             ~FakePackageID();
 
             virtual const std::string canonical_form(const PackageIDCanonicalForm) const;

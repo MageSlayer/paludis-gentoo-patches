@@ -508,6 +508,61 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     }
 };
 
+template <>
+struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
+    MetadataSpecTreeKey<DependencySpecTree>,
+    bp::wrapper<MetadataSpecTreeKey<DependencySpecTree> >
+{
+    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSpecTreeKey<DependencySpecTree>(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+    }
+
+    virtual std::string pretty_print(const DependencySpecTree::ItemFormatter & formatter) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("pretty_print"))
+            return f(boost::cref(formatter));
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
+    }
+
+    virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & formatter) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("pretty_print_flat"))
+            return f(boost::cref(formatter));
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
+    }
+
+    virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("initial_labels"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_labels");
+    }
+};
+
 template <typename C_>
 struct class_set_key :
     bp::class_<MetadataCollectionKeyWrapper<C_>, tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
@@ -672,6 +727,55 @@ struct class_spec_tree_key<FetchableURISpecTree> :
         def("initial_label", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::initial_label),
                 "initial_label() -> URILabel\n"
                 "Return a URILabel that represents the initial label to use when\n"
+                "deciding the behaviour of individual items in the heirarchy."
+           );
+    }
+};
+
+template <>
+struct class_spec_tree_key<DependencySpecTree> :
+    bp::class_<MetadataSpecTreeKeyWrapper<DependencySpecTree>,
+        tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+        bp::bases<MetadataKey>, boost::noncopyable>
+{
+    class_spec_tree_key(const std::string & spec_tree) :
+        bp::class_<MetadataSpecTreeKeyWrapper<DependencySpecTree>, 
+            tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+            bp::bases<MetadataKey>, boost::noncopyable>(
+                    ("Metadata" + spec_tree + "Key").c_str(),
+                    "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
+                    "kind as its value.\n\n"
+
+                    "This class can be subclassed in Python.",
+                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
+                        "__init__(raw_name, human_name, MetadataKeyType)"
+                        )
+                    )
+    {
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+                tr1::shared_ptr<MetadataKey> >();
+
+        def("value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::value),
+                ("value() -> " + spec_tree + "\n"
+                 "Fetch our value").c_str()
+           );
+
+        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::pretty_print),
+                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
+                 "Return a multiline-line indented and formatted version of our\n"
+                 "value, using the supplied Formatter to format individual items.").c_str()
+           );
+
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::pretty_print_flat),
+                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items.").c_str()
+           );
+
+        def("initial_labels", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::initial_labels),
+                "initial_label() -> DependencyLabelSequence\n"
+                "Return a DependencyLabelSequence that represents the initial labels to use when\n"
                 "deciding the behaviour of individual items in the heirarchy."
            );
     }

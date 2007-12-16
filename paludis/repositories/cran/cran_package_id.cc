@@ -37,6 +37,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <string>
@@ -72,14 +73,22 @@ namespace paludis
         tr1::shared_ptr<DepKey> depends_key;
         tr1::shared_ptr<DepKey> suggests_key;
 
+        tr1::shared_ptr<DependencyLabelSequence> suggests_labels;
+        tr1::shared_ptr<DependencyLabelSequence> depends_labels;
+
         Implementation(const Environment * const e,
                 const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
             env(e),
             repository(r),
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
-            version("0")
+            version("0"),
+            suggests_labels(new DependencyLabelSequence),
+            depends_labels(new DependencyLabelSequence)
         {
+            suggests_labels->push_back(make_shared_ptr(new DependencySuggestedLabel("Suggests")));
+            suggests_labels->push_back(make_shared_ptr(new DependencyPostLabel("Suggests")));
+            depends_labels->push_back(make_shared_ptr(new DependencyBuildLabel("Depends")));
         }
 
         Implementation(const Environment * const e,
@@ -89,8 +98,13 @@ namespace paludis
             cran_repository(c),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
-            contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal))
+            contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal)),
+            suggests_labels(new DependencyLabelSequence),
+            depends_labels(new DependencyLabelSequence)
         {
+            suggests_labels->push_back(make_shared_ptr(new DependencySuggestedLabel("Suggests")));
+            suggests_labels->push_back(make_shared_ptr(new DependencyPostLabel("Suggests")));
+            depends_labels->push_back(make_shared_ptr(new DependencyBuildLabel("Depends")));
         }
     };
 }
@@ -229,7 +243,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (! file.get("Suggests").empty())
         {
             Context local_context("When handling Suggests: key:");
-            _imp->suggests_key.reset(new DepKey(_imp->env, "Suggests", "Suggests", file.get("Suggests"), mkt_dependencies));
+            _imp->suggests_key.reset(new DepKey(_imp->env, "Suggests", "Suggests", file.get("Suggests"),
+                        _imp->suggests_labels, mkt_dependencies));
             add_metadata_key(_imp->suggests_key);
         }
 
@@ -243,10 +258,11 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (! file.get("Depends").empty())
         {
             Context local_context("When handling Depends: key:");
-            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", file.get("Depends") + ", R", mkt_dependencies));
+            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", file.get("Depends") + ", R",
+                        _imp->depends_labels, mkt_dependencies));
         }
         else
-            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", "R", mkt_dependencies));
+            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", "R", _imp->depends_labels, mkt_dependencies));
         add_metadata_key(_imp->depends_key);
     }
     catch (const Exception & e)

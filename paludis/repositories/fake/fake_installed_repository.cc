@@ -67,7 +67,8 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0)),
+            .manifest_interface(0),
+            "0"),
     PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {

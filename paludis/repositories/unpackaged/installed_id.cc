@@ -175,13 +175,16 @@ namespace
             mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> _v;
             mutable Mutex _mutex;
             const FSEntry _f;
+            const tr1::shared_ptr<const DependencyLabelSequence> _labels;
 
         public:
             InstalledUnpackagedDependencyKey(const Environment * const e,
-                    const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
+                    const std::string & r, const std::string & h, const FSEntry & f,
+                    const tr1::shared_ptr<const DependencyLabelSequence> & l, const MetadataKeyType t) :
                 MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
                 _env(e),
-                _f(f)
+                _f(f),
+                _labels(l)
             {
             }
 
@@ -217,6 +220,11 @@ namespace
                 value()->accept(p);
                 return p.result();
             }
+
+            const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+            {
+                return _labels;
+            }
     };
 }
 
@@ -232,6 +240,9 @@ namespace paludis
         const RepositoryName repository_name;
         const FSEntry root;
         const NDBAM * const ndbam;
+
+        tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
+        tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
 
         tr1::shared_ptr<InstalledUnpackagedFSEntryKey> fs_location_key;
         tr1::shared_ptr<InstalledUnpackagedContentsKey> contents_key;
@@ -259,8 +270,13 @@ namespace paludis
             repository_name(r),
             root(ro),
             ndbam(d),
+            build_dependencies_labels(new DependencyLabelSequence),
+            run_dependencies_labels(new DependencyLabelSequence),
             fs_location_key(new InstalledUnpackagedFSEntryKey(l))
         {
+            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build_dependencies")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run_dependencies")));
+
             if ((l / "contents").exists())
             {
                 contents_key.reset(new InstalledUnpackagedContentsKey(id, d));
@@ -280,11 +296,13 @@ namespace paludis
 
             if ((l / "build_dependencies").exists())
                 build_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
-                            "build_dependencies", "Build dependencies", l / "build_dependencies", mkt_dependencies));
+                            "build_dependencies", "Build dependencies", l / "build_dependencies",
+                            build_dependencies_labels, mkt_dependencies));
 
             if ((l / "run_dependencies").exists())
                 run_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
-                            "run_dependencies", "Run dependencies", l / "run_dependencies", mkt_dependencies));
+                            "run_dependencies", "Run dependencies", l / "run_dependencies",
+                            run_dependencies_labels, mkt_dependencies));
         }
     };
 }

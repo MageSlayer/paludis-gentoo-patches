@@ -49,8 +49,11 @@ namespace paludis
     {
         const Environment * const env;
         const tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
+        const tr1::shared_ptr<const DependencyLabelSequence> labels;
 
-        Implementation(const Environment * const e, const tr1::shared_ptr<const PackageID> & v, bool exact) :
+        Implementation(const Environment * const e, const tr1::shared_ptr<const PackageID> & v,
+                const tr1::shared_ptr<const DependencyLabelSequence> & l,
+                bool exact) :
             env(e),
             value(exact ?
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
@@ -64,16 +67,19 @@ namespace paludis
                                 make_package_dep_spec()
                                 .package(v->name())
                                 )))
-                 )
+                 ),
+            labels(l)
         {
         }
     };
 }
 
 VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & r, const std::string & h,
-        const tr1::shared_ptr<const PackageID> & v, const bool exact) :
+        const tr1::shared_ptr<const PackageID> & v,
+        const tr1::shared_ptr<const DependencyLabelSequence> & l,
+        const bool exact) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
-    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, exact)),
+    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact)),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
 {
 }
@@ -124,6 +130,12 @@ VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
         return f.format(*_imp->value->item(), format::Plain());
 }
 
+const tr1::shared_ptr<const DependencyLabelSequence>
+VirtualsDepKey::initial_labels() const
+{
+    return _imp->labels;
+}
+
 namespace paludis
 {
     template <>
@@ -133,6 +145,8 @@ namespace paludis
         const tr1::shared_ptr<const Repository> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
+        tr1::shared_ptr<DependencyLabelSequence> bdep_labels;
+        tr1::shared_ptr<DependencyLabelSequence> rdep_labels;
         const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
@@ -149,11 +163,15 @@ namespace paludis
             repository(o),
             name(n),
             version(p->version()),
+            bdep_labels(new DependencyLabelSequence),
+            rdep_labels(new DependencyLabelSequence),
             virtual_for(new LiteralMetadataPackageIDKey("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
-            bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, b)),
-            rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, b)),
+            bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
+            rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
         {
+            bdep_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
+            rdep_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
         }
     };
 }

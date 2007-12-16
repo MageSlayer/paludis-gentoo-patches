@@ -88,19 +88,22 @@ namespace paludis
 
         mutable Mutex mutex;
         mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> c;
+        const tr1::shared_ptr<const DependencyLabelSequence> labels;
 
-        Implementation(const Environment * const e, const std::string & vv) :
+        Implementation(const Environment * const e, const std::string & vv,
+                const tr1::shared_ptr<const DependencyLabelSequence> & s) :
             env(e),
-            v(vv)
+            v(vv),
+            labels(s)
         {
         }
     };
 }
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
-        const MetadataKeyType t) :
+        const tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v)),
+    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s)),
     _imp(PrivateImplementationPattern<DepKey>::_imp)
 {
 }
@@ -137,5 +140,11 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
     DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
     value()->accept(p);
     return stringify(p);
+}
+
+const tr1::shared_ptr<const DependencyLabelSequence>
+DepKey::initial_labels() const
+{
+    return _imp->labels;
 }
 

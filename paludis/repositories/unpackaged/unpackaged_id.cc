@@ -26,6 +26,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -49,6 +50,9 @@ namespace paludis
         const SlotName slot;
         const RepositoryName repository_name;
 
+        tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
+        tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
+
         const tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
@@ -68,11 +72,17 @@ namespace paludis
             version(v),
             slot(s),
             repository_name(n),
+            build_dependencies_labels(new DependencyLabelSequence),
+            run_dependencies_labels(new DependencyLabelSequence),
             fs_location_key(new LiteralMetadataFSEntryKey("location", "Location", mkt_normal, l)),
-            build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies, b)),
-            run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies, r)),
+            build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies,
+                        build_dependencies_labels, b)),
+            run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies,
+                        run_dependencies_labels, r)),
             description_key(new LiteralMetadataStringKey("description", "Description", mkt_significant, d))
         {
+            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build_dependencies")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run_dependencies")));
         }
     };
 }

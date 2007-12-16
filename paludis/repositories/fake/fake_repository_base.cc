@@ -39,45 +39,35 @@ using namespace paludis;
 
 namespace paludis
 {
-    /**
-     * Implementation data for FakeRepositoryBase.
-     *
-     * \ingroup grpfakerepository
-     */
     template<>
     struct Implementation<FakeRepositoryBase> :
         private InstantiationPolicy<Implementation<FakeRepositoryBase>, instantiation_method::NonCopyableTag>
     {
-        /// Our category names.
         tr1::shared_ptr<CategoryNamePartSet> category_names;
-
-        /// Our package names.
         std::map<CategoryNamePart, tr1::shared_ptr<PackageNamePartSet> > package_names;
-
-        /// Our IDs.
         std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> > ids;
-
-        /// Our sets.
         std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
         const Environment * const env;
+        const std::string eapi;
 
-        /// Constructor.
-        Implementation(const Environment * const);
+        Implementation(const Environment * const, const std::string & ea);
     };
 
-    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e) :
+    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e, const std::string & ea) :
         category_names(new CategoryNamePartSet),
-        env(e)
+        env(e),
+        eapi(ea)
     {
     }
 }
 
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
-        const RepositoryName & our_name, const RepositoryCapabilities & caps) :
+        const RepositoryName & our_name, const RepositoryCapabilities & caps,
+        const std::string & eapi) :
     Repository(our_name, caps),
     RepositoryUseInterface(),
-    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e)),
+    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e, eapi)),
     _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
 {
 }
@@ -149,7 +139,7 @@ tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
-    tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
+    tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v, _imp->eapi));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }

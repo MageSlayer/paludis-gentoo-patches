@@ -36,6 +36,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <iterator>
 #include <fstream>
@@ -101,6 +102,10 @@ namespace paludis
         tr1::shared_ptr<const MetadataStringKey> pkgmanager;
         tr1::shared_ptr<const MetadataStringKey> vdb_format;
 
+        tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
+        tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
+        tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
+
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
                 const tr1::shared_ptr<const Repository> r, const FSEntry & f) :
@@ -109,8 +114,14 @@ namespace paludis
             environment(e),
             repository(r),
             dir(f),
-            has_keys(false)
+            has_keys(false),
+            build_dependencies_labels(new DependencyLabelSequence),
+            run_dependencies_labels(new DependencyLabelSequence),
+            post_dependencies_labels(new DependencyLabelSequence)
         {
+            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
+            post_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("PDEPEND")));
         }
     };
 }
@@ -207,7 +218,8 @@ VDBID::need_keys_added() const
         if ((_imp->dir / vars->metadata_build_depend).exists())
         {
             _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_build_depend,
-                        vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend), mkt_dependencies));
+                        vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend),
+                        _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->build_dependencies);
         }
 
@@ -215,7 +227,8 @@ VDBID::need_keys_added() const
         if ((_imp->dir / vars->metadata_run_depend).exists())
         {
             _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_run_depend,
-                        vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend), mkt_dependencies));
+                        vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend),
+                        _imp->run_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->run_dependencies);
         }
 
@@ -223,7 +236,8 @@ VDBID::need_keys_added() const
         if ((_imp->dir / vars->metadata_pdepend).exists())
         {
             _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_pdepend,
-                        vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend), mkt_dependencies));
+                        vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend),
+                        _imp->post_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->post_dependencies);
         }
 

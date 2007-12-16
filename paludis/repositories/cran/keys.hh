@@ -73,7 +73,8 @@ namespace paludis
 
             public:
                 DepKey(const Environment * const,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                        const std::string &, const std::string &, const std::string &,
+                        const tr1::shared_ptr<const DependencyLabelSequence> &, const MetadataKeyType);
 
                 ~DepKey();
 
@@ -84,6 +85,9 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

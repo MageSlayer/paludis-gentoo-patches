@@ -84,13 +84,16 @@ namespace paludis
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
         mutable tr1::function<void () throw ()> value_used;
+        const tr1::shared_ptr<const DependencyLabelSequence> labels;
 
         Implementation(
                 const Environment * const e,
-                const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+                const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
+                const tr1::shared_ptr<const DependencyLabelSequence> & s) :
             env(e),
             id(i),
-            string_value(v)
+            string_value(v),
+            labels(s)
         {
         }
     };
@@ -99,9 +102,10 @@ namespace paludis
 EDependenciesKey::EDependenciesKey(
         const Environment * const e,
         const tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+        const std::string & r, const std::string & h, const std::string & v,
+        const tr1::shared_ptr<const DependencyLabelSequence> & l, const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v)),
+    PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v, l)),
     _imp(PrivateImplementationPattern<EDependenciesKey>::_imp)
 {
 }
@@ -127,6 +131,12 @@ EDependenciesKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
+}
+
+const tr1::shared_ptr<const DependencyLabelSequence>
+EDependenciesKey::initial_labels() const
+{
+    return _imp->labels;
 }
 
 std::string
