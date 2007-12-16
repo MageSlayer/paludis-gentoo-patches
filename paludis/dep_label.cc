@@ -18,10 +18,21 @@
  */
 
 #include <paludis/dep_label.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <ostream>
+#include <algorithm>
 
 using namespace paludis;
+
+template class Sequence<tr1::shared_ptr<const DependencyLabel> >;
+template class Sequence<tr1::shared_ptr<const DependencySystemLabel> >;
+template class Sequence<tr1::shared_ptr<const DependencyTypeLabel> >;
+template class Sequence<tr1::shared_ptr<const DependencySuggestLabel> >;
+template class Sequence<tr1::shared_ptr<const DependencyABIsLabel> >;
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const URILabel & l)
@@ -128,10 +139,184 @@ ConcreteDependencyLabel<T_, C_>::text() const
     return _imp->text;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<ActiveDependencyLabels>
+    {
+        tr1::shared_ptr<DependencySystemLabelSequence> system_labels;
+        tr1::shared_ptr<DependencyTypeLabelSequence> type_labels;
+        tr1::shared_ptr<DependencyABIsLabelSequence> abi_labels;
+        tr1::shared_ptr<DependencySuggestLabelSequence> suggest_labels;
+    };
+}
+
+namespace
+{
+    struct LabelsPopulator :
+        ConstVisitor<DependencyLabelVisitorTypes>
+    {
+        Implementation<ActiveDependencyLabels> & _imp;
+        const tr1::shared_ptr<const DependencyLabel> _l;
+
+        LabelsPopulator(Implementation<ActiveDependencyLabels> & i,
+                const tr1::shared_ptr<const DependencyLabel> & l) :
+            _imp(i),
+            _l(l)
+        {
+        }
+
+        void visit(const DependencySuggestLabel &)
+        {
+            if (! _imp.suggest_labels)
+                _imp.suggest_labels.reset(new DependencySuggestLabelSequence);
+            _imp.suggest_labels->push_back(tr1::static_pointer_cast<const DependencySuggestLabel>(_l));
+        }
+
+        void visit(const DependencySystemLabel &)
+        {
+            if (! _imp.system_labels)
+                _imp.system_labels.reset(new DependencySystemLabelSequence);
+            _imp.system_labels->push_back(tr1::static_pointer_cast<const DependencySystemLabel>(_l));
+        }
+
+        void visit(const DependencyABIsLabel &)
+        {
+            if (! _imp.abi_labels)
+                _imp.abi_labels.reset(new DependencyABIsLabelSequence);
+            _imp.abi_labels->push_back(tr1::static_pointer_cast<const DependencyABIsLabel>(_l));
+        }
+
+        void visit(const DependencyTypeLabel &)
+        {
+            if (! _imp.type_labels)
+                _imp.type_labels.reset(new DependencyTypeLabelSequence);
+            _imp.type_labels->push_back(tr1::static_pointer_cast<const DependencyTypeLabel>(_l));
+        }
+    };
+}
+
+ActiveDependencyLabels::ActiveDependencyLabels(const DependencyLabelsDepSpec & spec) :
+    PrivateImplementationPattern<ActiveDependencyLabels>(new Implementation<ActiveDependencyLabels>)
+{
+    for (DependencyLabelsDepSpec::ConstIterator i(spec.begin()), i_end(spec.end()) ;
+            i != i_end ; ++i)
+    {
+        LabelsPopulator p(*_imp.get(), *i);
+        (*i)->accept(p);
+    }
+
+    if (! _imp->system_labels)
+        _imp->system_labels.reset(new DependencySystemLabelSequence);
+    if (! _imp->type_labels)
+        _imp->type_labels.reset(new DependencyTypeLabelSequence);
+    if (! _imp->suggest_labels)
+        _imp->suggest_labels.reset(new DependencySuggestLabelSequence);
+    if (! _imp->abi_labels)
+        _imp->abi_labels.reset(new DependencyABIsLabelSequence);
+}
+
+ActiveDependencyLabels::ActiveDependencyLabels(const ActiveDependencyLabels & other) :
+    PrivateImplementationPattern<ActiveDependencyLabels>(new Implementation<ActiveDependencyLabels>)
+{
+    _imp->system_labels.reset(new DependencySystemLabelSequence);
+    std::copy(other._imp->system_labels->begin(), other._imp->system_labels->end(), _imp->system_labels->back_inserter());
+
+    _imp->type_labels.reset(new DependencyTypeLabelSequence);
+    std::copy(other._imp->type_labels->begin(), other._imp->type_labels->end(), _imp->type_labels->back_inserter());
+
+    _imp->suggest_labels.reset(new DependencySuggestLabelSequence);
+    std::copy(other._imp->suggest_labels->begin(), other._imp->suggest_labels->end(), _imp->suggest_labels->back_inserter());
+
+    _imp->abi_labels.reset(new DependencyABIsLabelSequence);
+    std::copy(other._imp->abi_labels->begin(), other._imp->abi_labels->end(), _imp->abi_labels->back_inserter());
+}
+
+ActiveDependencyLabels::ActiveDependencyLabels(const ActiveDependencyLabels & other, const DependencyLabelsDepSpec & spec) :
+    PrivateImplementationPattern<ActiveDependencyLabels>(new Implementation<ActiveDependencyLabels>)
+{
+    for (DependencyLabelsDepSpec::ConstIterator i(spec.begin()), i_end(spec.end()) ;
+            i != i_end ; ++i)
+    {
+        LabelsPopulator p(*_imp.get(), *i);
+        (*i)->accept(p);
+    }
+
+    if (! _imp->system_labels)
+    {
+        _imp->system_labels.reset(new DependencySystemLabelSequence);
+        std::copy(other._imp->system_labels->begin(), other._imp->system_labels->end(), _imp->system_labels->back_inserter());
+    }
+    if (! _imp->type_labels)
+    {
+        _imp->type_labels.reset(new DependencyTypeLabelSequence);
+        std::copy(other._imp->type_labels->begin(), other._imp->type_labels->end(), _imp->type_labels->back_inserter());
+    }
+    if (! _imp->suggest_labels)
+    {
+        _imp->suggest_labels.reset(new DependencySuggestLabelSequence);
+        std::copy(other._imp->suggest_labels->begin(), other._imp->suggest_labels->end(), _imp->suggest_labels->back_inserter());
+    }
+    if (! _imp->abi_labels)
+    {
+        _imp->abi_labels.reset(new DependencyABIsLabelSequence);
+        std::copy(other._imp->abi_labels->begin(), other._imp->abi_labels->end(), _imp->abi_labels->back_inserter());
+    }
+}
+
+ActiveDependencyLabels::ActiveDependencyLabels(const DependencyLabelSequence & spec) :
+    PrivateImplementationPattern<ActiveDependencyLabels>(new Implementation<ActiveDependencyLabels>)
+{
+    for (DependencyLabelSequence::ConstIterator i(spec.begin()), i_end(spec.end()) ;
+            i != i_end ; ++i)
+    {
+        LabelsPopulator p(*_imp.get(), *i);
+        (*i)->accept(p);
+    }
+
+    if (! _imp->system_labels)
+        _imp->system_labels.reset(new DependencySystemLabelSequence);
+    if (! _imp->type_labels)
+        _imp->type_labels.reset(new DependencyTypeLabelSequence);
+    if (! _imp->suggest_labels)
+        _imp->suggest_labels.reset(new DependencySuggestLabelSequence);
+    if (! _imp->abi_labels)
+        _imp->abi_labels.reset(new DependencyABIsLabelSequence);
+}
+
+ActiveDependencyLabels::~ActiveDependencyLabels()
+{
+}
+
+const tr1::shared_ptr<const DependencySystemLabelSequence>
+ActiveDependencyLabels::system_labels() const
+{
+    return _imp->system_labels;
+}
+
+const tr1::shared_ptr<const DependencyTypeLabelSequence>
+ActiveDependencyLabels::type_labels() const
+{
+    return _imp->type_labels;
+}
+
+const tr1::shared_ptr<const DependencyABIsLabelSequence>
+ActiveDependencyLabels::abi_labels() const
+{
+    return _imp->abi_labels;
+}
+
+const tr1::shared_ptr<const DependencySuggestLabelSequence>
+ActiveDependencyLabels::suggest_labels() const
+{
+    return _imp->suggest_labels;
+}
+
 template class ConcreteDependencyLabel<DependencyHostLabel::Tag, DependencySystemLabel>;
 template class ConcreteDependencyLabel<DependencyTargetLabel::Tag, DependencySystemLabel>;
 template class ConcreteDependencyLabel<DependencyBuildLabel::Tag, DependencyTypeLabel>;
 template class ConcreteDependencyLabel<DependencyRunLabel::Tag, DependencyTypeLabel>;
+template class ConcreteDependencyLabel<DependencyPostLabel::Tag, DependencyTypeLabel>;
 template class ConcreteDependencyLabel<DependencyInstallLabel::Tag, DependencyTypeLabel>;
 template class ConcreteDependencyLabel<DependencyCompileLabel::Tag, DependencyTypeLabel>;
 template class ConcreteDependencyLabel<DependencySuggestedLabel::Tag, DependencySuggestLabel>;

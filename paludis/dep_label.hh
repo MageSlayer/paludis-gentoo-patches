@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LABEL_HH 1
 
 #include <paludis/dep_label-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -111,6 +112,7 @@ namespace paludis
             DependencyTypeLabel,
             DependencyBuildLabel,
             DependencyRunLabel,
+            DependencyPostLabel,
             DependencyInstallLabel,
             DependencyCompileLabel
         >
@@ -245,6 +247,9 @@ namespace paludis
     {
         /// Convenience alias for our visitor types.
         typedef DependencySystemLabelVisitorTypes VisitorTypes;
+
+        typedef ConstAcceptInterface<DependencySystemLabelVisitorTypes>::Heirarchy Heirarchy;
+        using ConstAcceptInterface<DependencySystemLabelVisitorTypes>::accept;
     };
 
     /**
@@ -261,6 +266,9 @@ namespace paludis
     {
         /// Convenience alias for our visitor types.
         typedef DependencyTypeLabelVisitorTypes VisitorTypes;
+
+        typedef ConstAcceptInterface<DependencyTypeLabelVisitorTypes>::Heirarchy Heirarchy;
+        using ConstAcceptInterface<DependencyTypeLabelVisitorTypes>::accept;
     };
 
     /**
@@ -277,6 +285,9 @@ namespace paludis
     {
         /// Convenience alias for our visitor types.
         typedef DependencySuggestLabelVisitorTypes VisitorTypes;
+
+        typedef ConstAcceptInterface<DependencySuggestLabelVisitorTypes>::Heirarchy Heirarchy;
+        using ConstAcceptInterface<DependencySuggestLabelVisitorTypes>::accept;
     };
 
     /**
@@ -293,6 +304,9 @@ namespace paludis
     {
         /// Convenience alias for our visitor types.
         typedef DependencyABIsLabelVisitorTypes VisitorTypes;
+
+        typedef ConstAcceptInterface<DependencyABIsLabelVisitorTypes>::Heirarchy Heirarchy;
+        using ConstAcceptInterface<DependencyABIsLabelVisitorTypes>::accept;
     };
 
     /**
@@ -324,6 +338,38 @@ namespace paludis
 
             /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;
+    };
+
+    /**
+     * A collection of each dependency label type.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE ActiveDependencyLabels :
+        private PrivateImplementationPattern<ActiveDependencyLabels>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ActiveDependencyLabels(const DependencyLabelsDepSpec &);
+            ActiveDependencyLabels(const DependencyLabelSequence &);
+            ActiveDependencyLabels(const ActiveDependencyLabels &);
+            ActiveDependencyLabels(const ActiveDependencyLabels &, const DependencyLabelsDepSpec &);
+            ~ActiveDependencyLabels();
+
+            ///\}
+
+            ///\name Current label selections
+            ///\{
+
+            const tr1::shared_ptr<const DependencySystemLabelSequence> system_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const tr1::shared_ptr<const DependencyTypeLabelSequence> type_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const tr1::shared_ptr<const DependencyABIsLabelSequence> abi_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const tr1::shared_ptr<const DependencySuggestLabelSequence> suggest_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
     };
 }
 

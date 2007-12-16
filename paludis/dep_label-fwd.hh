@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LABEL_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <iosfwd>
 
 /** \file
@@ -69,6 +71,46 @@ namespace paludis
     struct DependencySuggestLabel;
     struct DependencyABIsLabel;
 
+    /**
+     * A collection of DependencyLabel instances.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef Sequence<tr1::shared_ptr<const DependencyLabel> > DependencyLabelSequence;
+
+    /**
+     * A collection of DependencySystemLabel instances.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef Sequence<tr1::shared_ptr<const DependencySystemLabel> > DependencySystemLabelSequence;
+
+    /**
+     * A collection of DependencyTypeLabel instances.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef Sequence<tr1::shared_ptr<const DependencyTypeLabel> > DependencyTypeLabelSequence;
+
+    /**
+     * A collection of DependencySuggestLabel instances.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef Sequence<tr1::shared_ptr<const DependencySuggestLabel> > DependencySuggestLabelSequence;
+
+    /**
+     * A collection of DependencyABIsLabel instances.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef Sequence<tr1::shared_ptr<const DependencyABIsLabel> > DependencyABIsLabelSequence;
+
     template <typename T_, typename Category_> struct ConcreteDependencyLabel;
 
     struct DependencyHostLabelTag;
@@ -110,6 +152,16 @@ namespace paludis
      * \since 0.26
      */
     typedef ConcreteDependencyLabel<DependencyRunLabelTag, DependencyTypeLabel> DependencyRunLabel;
+
+    struct DependencyPostLabelTag;
+
+    /**
+     * A DependencyPostLabel specifies build-time requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef ConcreteDependencyLabel<DependencyPostLabelTag, DependencyTypeLabel> DependencyPostLabel;
 
     struct DependencyInstallLabelTag;
 
@@ -212,6 +264,8 @@ namespace paludis
      * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const DependencyLabel &) PALUDIS_VISIBLE;
+
+    struct ActiveDependencyLabels;
 }
 
 #endif
