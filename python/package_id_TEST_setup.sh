@@ -19,6 +19,9 @@ ARCH=test
 USERLAND=test
 KERNEL=test
 END
+cat <<END > profiles/testprofile/virtuals
+virtual/bar foo/bar
+END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"

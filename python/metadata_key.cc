@@ -348,7 +348,9 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
     }
 
-    std::string pretty_print_flat(const Formatter<typename C_::value_type> & formatter) const
+    std::string pretty_print_flat(const Formatter<
+            typename tr1::remove_const<
+                    typename RemoveSharedPtr<typename C_::value_type>::Type>::type> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -924,6 +926,7 @@ void expose_metadata_key()
     class_set_key<IUseFlagSet>("IUseFlagIterable");
     class_set_key<Set<std::string> >("StringIterable");
     class_set_key<FSEntrySequence>("FSEntryIterable");
+    class_set_key<PackageIDSequence>("PackageIDIterable");
 
     /**
      * MetadataSpecTreeKeys

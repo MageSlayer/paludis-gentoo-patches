@@ -33,6 +33,7 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
         self.ie = NoConfigEnvironment(irepo_path)
         self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar")).next()
+        self.vpid = iter(self.e.package_database.fetch_repository("virtuals").package_ids("virtual/bar")).next()
         self.ipid = iter(self.ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one")).next()
         self.mpid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("cat/masked")).next()
 
@@ -56,17 +57,27 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(str(self.ipid.repository.name), "installed")
 
     def test_07_canonical_form(self):
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0::testrepo")
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "foo/bar::testrepo")
+        # Load the metadata
+        self.pid.slot
+        self.ipid.slot
 
-        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.FULL), "cat-one/pkg-one-1::installed")
+        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0:0::testrepo")
+        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")
+        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "foo/bar:0::testrepo")
+
+        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.FULL),
+                "cat-one/pkg-one-1:test_slot::installed")
         self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.VERSION), "1")
-        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "cat-one/pkg-one::installed")
+        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION),
+                "cat-one/pkg-one:test_slot::installed")
 
     def test_08_str(self):
-        self.assertEquals(str(self.pid), "foo/bar-1.0::testrepo")
-        self.assertEquals(str(self.ipid), "cat-one/pkg-one-1::installed")
+        # Load the metadata
+        self.pid.slot
+        self.ipid.slot
+
+        self.assertEquals(str(self.pid), "foo/bar-1.0:0::testrepo")
+        self.assertEquals(str(self.ipid), "cat-one/pkg-one-1:test_slot::installed")
 
     def test_09_find_metadata(self):
         self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
@@ -100,6 +111,76 @@ class TestCase_01_PackageID(unittest.TestCase):
     def test_13_masks(self):
         mask = iter(self.mpid.masks).next()
         self.assert_(isinstance(mask, UnacceptedMask))
+
+    def test_14_virtual_for_key(self):
+        self.assertEquals(self.vpid.virtual_for_key().value(), self.pid)
+        self.assertEquals(self.pid.virtual_for_key(), None)
+        self.assertEquals(self.ipid.virtual_for_key(), None)
+
+    def test_15_provide_key(self):
+        self.assert_(isinstance(self.pid.provide_key(), MetadataProvideSpecTreeKey))
+        self.assertEquals(self.ipid.provide_key(), None)
+
+    def test_16_contains_key(self):
+        self.assertEquals(self.pid.contains_key(), None)
+        self.assertEquals(self.ipid.contains_key(), None)
+
+    def test_17_contained_in_key(self):
+        self.assertEquals(self.pid.contained_in_key(), None)
+        self.assertEquals(self.ipid.contained_in_key(), None)
+
+    def test_18_build_dependencies_key(self):
+        self.assert_(isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assertEquals(self.ipid.build_dependencies_key(), None)
+
+    def test_19_run_dependencies_key(self):
+        self.assert_(isinstance(self.pid.run_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assertEquals(self.ipid.run_dependencies_key(), None)
+
+    def test_20_post_dependencies_key(self):
+        self.assert_(isinstance(self.pid.post_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assertEquals(self.ipid.post_dependencies_key(), None)
+
+    def test_21_suggested_dependencies_key(self):
+        self.assertEquals(self.pid.suggested_dependencies_key(), None)
+        self.assertEquals(self.ipid.suggested_dependencies_key(), None)
+
+    def test_22_fetches_key(self):
+        self.assert_(isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey))
+        self.assertEquals(self.ipid.fetches_key(), None)
+
+    def test_23_homepage_key(self):
+        self.assert_(isinstance(self.pid.homepage_key(), MetadataSimpleURISpecTreeKey))
+        self.assertEquals(self.ipid.homepage_key(), None)
+
+    def test_24_short_description_key(self):
+        self.assertEquals(self.pid.short_description_key().value(), "Test package")
+        self.assertEquals(self.ipid.short_description_key().value(), "a description")
+
+    def test_25_long_description_key(self):
+        self.assertEquals(self.pid.long_description_key(), None)
+        self.assertEquals(self.ipid.long_description_key(), None)
+
+    def test_26_contents_key(self):
+        self.assertEquals(self.pid.contents_key(), None)
+        self.assert_(isinstance(self.ipid.contents_key(), MetadataContentsKey))
+
+    def test_27_installed_time_key(self):
+        self.assertEquals(self.pid.installed_time_key(), None)
+        self.assert_(isinstance(self.ipid.installed_time_key(), MetadataTimeKey))
+
+    def test_28_source_origin_key(self):
+        self.assertEquals(self.pid.source_origin_key(), None)
+        self.assertEquals(self.ipid.source_origin_key().value(), "origin_test")
+
+    def test_29_binary_origin_key(self):
+        self.assertEquals(self.pid.binary_origin_key(), None)
+        self.assertEquals(self.ipid.binary_origin_key(), None)
+
+    def test_30_fs_location_key(self):
+        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
+        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
+
 
 if __name__ == "__main__":
     unittest.main()

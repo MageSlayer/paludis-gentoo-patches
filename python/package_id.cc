@@ -112,6 +112,107 @@ void expose_package_id()
                 "NEED_DOC"
                 )
 
+        .def("virtual_for_key", &PackageID::virtual_for_key,
+                "The virtual_for_key, if not None, indicates that we are an\n"
+                "(old-style) virtual for another package. This affects dependency\n"
+                " resolution."
+            )
+
+        .def("keywords_key", &PackageID::keywords_key,
+                "The keywords_key, if not None, is used by FindUnusedPackagesTask\n"
+                "to determine whether a package is unused."
+            )
+
+        .def("iuse_key", &PackageID::iuse_key,
+                "The iuse_key, if not None, is used when displaying single-line\n"
+                "install-pretend output, and when resolving where DepList's\n"
+                "DepListReinstallOption is dl_reinstall_if_use_changed."
+            )
+
+        .def("provide_key", &PackageID::provide_key,
+                "The provide_key, if not None, indicates that a package provides\n"
+                "certain old-style virtuals. This affects dependency resolution."
+            )
+
+        .def("contains_key", &PackageID::contains_key,
+                "The contains_key, if not None, indicates that a package contains\n"
+                "other packages. This affects dependency resolution."
+            )
+
+        .def("contained_in_key", &PackageID::contained_in_key,
+                "The contained_in_key, if not None, indicates that a package is\n"
+                "contained in another package. This affects dependency resolution."
+            )
+
+        .def("build_dependencies_key", &PackageID::build_dependencies_key,
+                "The build_dependencies_key, if not None, indicates a package's\n"
+                "build-time dependencies."
+            )
+
+        .def("run_dependencies_key", &PackageID::run_dependencies_key,
+                "The run_dependencies_key, if not None, indicates a package's\n"
+                "run-time dependencies."
+            )
+
+        .def("post_dependencies_key", &PackageID::post_dependencies_key,
+                "The post_dependencies_key, if not None, indicates a package's\n"
+                "post-merge dependencies."
+            )
+
+        .def("suggested_dependencies_key", &PackageID::suggested_dependencies_key,
+                "The suggested_dependencies_key, if not None, indicates a package's\n"
+                "suggested post-merge dependencies."
+            )
+
+        .def("fetches_key", &PackageID::fetches_key,
+                "The fetches_key, if not None, indicates files that have to be fetched\n"
+                "in order to install a package."
+            )
+
+        .def("homepage_key", &PackageID::homepage_key,
+                "The homepage_key, if not None, describes a package's homepages."
+            )
+
+        .def("short_description_key", &PackageID::short_description_key,
+                "The short_description_key, if not None, provides a short (no more\n"
+                "than a few hundred characters) description of a package."
+            )
+
+        .def("long_description_key", &PackageID::long_description_key,
+                "The long_description_key, if not None, provides a long\n"
+                "description of a package."
+            )
+
+        .def("contents_key", &PackageID::contents_key,
+                "The contents_key, if not None, contains the contents of a\n"
+                "package. For installed packages, this means the files installed;\n"
+                "for installable packages, this means the files that will be\n"
+                "installed (if known, which it may be for some binary packages)."
+            )
+
+
+        .def("installed_time_key", &PackageID::installed_time_key,
+                "The installed_time_key, if not None, contains the time a package\n"
+                "was installed. It affects dependency resolution if DepList is\n"
+                "using dl_reinstall_scm_daily or dl_reinstall_scm_weekly."
+            )
+
+        .def("source_origin_key", &PackageID::source_origin_key,
+                "The source_origin_key, if not None, contains a string describing\n"
+                "the source repository whence a package originated."
+            )
+
+        .def("binary_origin_key", &PackageID::binary_origin_key,
+                "The binary_origin_key, if not None, contains a string describing\n"
+                "the binary repository whence a package originated."
+            )
+
+        .def("fs_location_key", &PackageID::fs_location_key,
+                "The fs_location_key, if not None, indicates the filesystem\n"
+                "location (for example, the ebuild file or VDB directory) that\n"
+                "best describes the location of a PackageID."
+            )
+
         .def("__eq__", &py_eq<PackageID>)
 
         .def("__ne__", &py_ne<PackageID>)
