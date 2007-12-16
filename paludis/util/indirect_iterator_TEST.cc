@@ -19,6 +19,8 @@
  */
 
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <vector>
@@ -136,5 +138,24 @@ namespace test_cases
             std::for_each(v.begin(), v.end(), Deleter());
         }
     } test_indirect_iterator_list_p_int;
+
+    struct IndirectIteratorListListIterIntTest : TestCase
+    {
+        IndirectIteratorListListIterIntTest() : TestCase("list<list<int>::iterator>") { }
+
+        void run()
+        {
+            std::list<int> v;
+            v.push_back(5);
+            v.push_back(10);
+
+            std::list<std::list<int>::iterator> w;
+            w.push_back(v.begin());
+            w.push_back(next(v.begin()));
+
+            TEST_CHECK_EQUAL(join(indirect_iterator(w.begin()), indirect_iterator(w.end()), ", "), "5, 10");
+
+        }
+    } test_indirect_iterator_list_list_int_iter;
 }
 

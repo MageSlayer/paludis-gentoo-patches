@@ -29,6 +29,12 @@
 namespace paludis
 {
     template <typename T_>
+    struct IndirectIteratorValueType
+    {
+        typedef typename std::iterator_traits<T_>::value_type Type;
+    };
+
+    template <typename T_>
     struct IndirectIteratorValueType<T_ *>
     {
         typedef T_ Type;
