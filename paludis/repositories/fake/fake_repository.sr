@@ -1,0 +1,24 @@
+# vim: set tw=120 ft=sh et :
+
+make_class_FakeRepositoryParams()
+{
+    visible
+    allow_named_args
+
+    key environment "const Environment *"
+    key name "RepositoryName"
+    key eapi "std::string"
+
+    doxygen_comment << "END"
+        /**
+         * Options for FakeRepository.
+         *
+         * \ingroup grpfakerepository
+         * \see FakeRepository
+         * \since 0.26
+         * \nosubgrouping
+         */
+END
+}
+
+
