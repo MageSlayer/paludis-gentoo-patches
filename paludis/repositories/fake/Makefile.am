@@ -29,7 +29,8 @@ EXTRA_DIST = \
 	fake_repository_TEST.cc \
 	fake_installed_repository_TEST.cc \
 	fake_repository-sr.hh \
-	fake_repository-sr.cc
+	fake_repository-sr.cc \
+	fake_repository.sr
 
 fake_repository_TEST_LDADD = \
 	libpaludisfakerepository.la \
