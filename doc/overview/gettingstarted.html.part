@@ -156,7 +156,7 @@ if [[ "${CATEGORY}/${PN}" == "sys-apps/paludis" ]] ; then
 fi
 </pre>
 
-<h3>repositories/</h3>
+<h3 id="repositories">repositories/</h3>
 
 <p>Rather than a couple of simple variables containing directory names, Paludis uses a configuration file for every
 repository. This allows substantially more flexibility.</p>
