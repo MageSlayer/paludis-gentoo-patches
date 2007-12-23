@@ -141,7 +141,7 @@ Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
     else if (check_file(f, ei))
     {
         display("<<<         " + stringify(f));
-        unlink_sym(f_real, ei);
+        unlink_file(f_real, ei);
     }
 }
 
