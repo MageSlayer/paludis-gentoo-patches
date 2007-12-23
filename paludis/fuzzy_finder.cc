@@ -87,8 +87,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
             real_generator = real_generator & query::Repository(*pds.repository_ptr());
     }
 
-    std::string package_0_cost(tolower_0_cost(package));
-    DamerauLevenshtein distance_calculator(package);
+    DamerauLevenshtein distance_calculator(tolower_0_cost(package));
 
     unsigned threshold(package.length() <= 4 ? 1 : 2);
 
