@@ -32,6 +32,8 @@ namespace paludis
         virtual typename WrappedForwardIterator<Tag_, Value_>::pointer pointer() const = 0;
         virtual typename WrappedForwardIterator<Tag_, Value_>::reference reference() const = 0;
         virtual bool equal(const Base *) const = 0;
+        virtual void * underlying_iterator_ptr() = 0;
+        virtual const void * underlying_iterator_ptr() const = 0;
 
         virtual ~Base()
         {
@@ -73,6 +75,16 @@ namespace paludis
         bool equal(const Base * other) const
         {
             return i == static_cast<const BaseImpl *>(other)->i;
+        }
+
+        void * underlying_iterator_ptr()
+        {
+            return &i;
+        }
+
+        const void * underlying_iterator_ptr() const
+        {
+            return &i;
         }
     };
 
@@ -149,6 +161,22 @@ namespace paludis
             return ! other._base;
 
         return _base->equal(other._base);
+    }
+
+    template <typename Tag_, typename Value_>
+    template <typename Iter_>
+    Iter_ &
+    WrappedForwardIterator<Tag_, Value_>::underlying_iterator()
+    {
+        return *static_cast<Iter_ *>(_base->underlying_iterator_ptr());
+    }
+
+    template <typename Tag_, typename Value_>
+    template <typename Iter_>
+    const Iter_ &
+    WrappedForwardIterator<Tag_, Value_>::underlying_iterator() const
+    {
+        return *static_cast<const Iter_ *>(_base->underlying_iterator_ptr());
     }
 }
 

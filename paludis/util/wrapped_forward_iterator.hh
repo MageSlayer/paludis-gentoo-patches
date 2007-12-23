@@ -99,6 +99,14 @@ namespace paludis
             bool operator== (const WrappedForwardIterator &) const;
 
             ///\}
+
+            ///\name Underlying iterator
+            ///\{
+
+            template <typename T_> T_ & underlying_iterator();
+            template <typename T_> const T_ & underlying_iterator() const;
+
+            ///\}
     };
 }
 

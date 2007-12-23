@@ -63,6 +63,6 @@ add(`validated',                         `hh', `fwd', `test')
 add(`virtual_constructor',               `hh', `impl', `test')
 add(`visitor',                           `hh', `impl', `fwd', `test')
 add(`visitor_cast',                      `hh', `test')
-add(`wrapped_forward_iterator',          `hh', `fwd', `impl')
+add(`wrapped_forward_iterator',          `hh', `fwd', `impl', `test')
 add(`wrapped_output_iterator',           `hh', `fwd', `impl')
 
