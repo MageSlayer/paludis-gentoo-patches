@@ -34,6 +34,7 @@
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -1483,7 +1484,8 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             output_stream() << "  * " << e.backtrace("\n  * ");
             output_stream() << "No versions of '" << e.query() << "' are available.";
 
-            if (want_suggestions())
+            if (want_suggestions()
+                    && e.query().tag() && visitor_cast<const TargetDepTag>(*e.query().tag()))
             {
                 output_stream() << " Looking for suggestions:" << endl;
 
