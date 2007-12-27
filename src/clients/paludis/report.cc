@@ -122,14 +122,14 @@ namespace
     void
     OurReportTask::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
     {
-        cout << endl << "this package has following security issues:" << endl;
+        cout << endl << "    This package has following security issues:";
     }
 
     void
     OurReportTask::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &, const GLSADepTag & glsa_tag)
     {
-        cout << "    " << colour(cl_error, glsa_tag.short_text() + ": \"" + glsa_tag.glsa_title() +"\"")
-                    << endl << colour(cl_error, "        -> " + stringify(glsa_tag.glsa_file())) << endl;
+        cout << endl << "    " << colour(cl_error, glsa_tag.short_text() + ": \"" + glsa_tag.glsa_title() +"\"")
+                    << endl << colour(cl_error, "        -> " + stringify(glsa_tag.glsa_file()));
         ++_n_errors;
     }
 
