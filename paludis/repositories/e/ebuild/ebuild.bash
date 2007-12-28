@@ -105,6 +105,7 @@ ebuild_load_module install_functions
 ebuild_load_module build_functions
 ebuild_load_module eclass_functions
 ebuild_load_module exlib_functions
+ebuild_load_module source_functions
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
@@ -198,28 +199,15 @@ export REAL_CHOST="${CHOST}"
 
 ebuild_scrub_environment()
 {
-    local filters=(
-        -e '/^\(EU\|PP\|U\)ID=/d'
-        -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\|REMATCH\)=/d'
-        -e '/^BASH_COMPLETION\(_DIR\)\?=/d'
-        -e '/^PALUDIS_SOURCE_MERGED_VARIABLES=/d'
-        -e '/^bash[0-9]\+[a-z]\?=/d'
-        -e '/^\(FUNCNAME\|GROUPS\|SHELLOPTS\)=/d'
-        -e '/^\(declare -x \|export \)\?SANDBOX_ACTIVE=/d'
-    )
-
-    sed -i "${filters[@]}" "${1}"
-
     (
-        source "${1}" || exit 1
+        ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES || exit 1
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
-        unset -f portageq best_version has_version
+        unset -f ebuild_safe_source portageq best_version has_version
 
-        unset -v PATH ROOTPATH T HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
+        unset -v ROOTPATH T HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
         unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR
-        unset -v PALUDIS_EXTRA_DIE_MESSAGE PALUDIS_COMMAND PALUDIS_CLIENT
-        unset -v PALUDIS_LOADSAVEENV_DIR SKIP_FUNCTIONS PALUDIS_DO_NOTHING_SANDBOXY
+        unset -v PALUDIS_EXTRA_DIE_MESSAGE PALUDIS_COMMAND SKIP_FUNCTIONS
         unset -v FETCHEDDIR REPODIR
 
         unset -v ${!PALUDIS_CMDLINE_*} PALUDIS_OPTIONS
@@ -228,35 +216,34 @@ ebuild_scrub_environment()
         unset -v ${!ADJUTRIX_CMDLINE_*} ADJUTRIX_OPTIONS
         unset -v ${!QUALUDIS_CMDLINE_*} QUALUDIS_OPTIONS
         unset -v ${!RECONCILIO_CMDLINE_*} RECONCILIO_OPTIONS
+        eval unset -v $(
+            PALUDIS_CLIENT_UPPER=$(tr a-z A-Z <<<${PALUDIS_CLIENT})
+            echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
+        unset -v PALUDIS_CLIENT
 
-        unset -v PALUDIS_HOME PALUDIS_PID EBUILD_KILL_PID ROOT
+        unset -v PALUDIS_HOME PALUDIS_PID ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
 
         unset -v ebuild EBUILD
-        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
-            e_v=E_${v}
-            unset -v ${e_v}
-        done
+        unset -v $(
+            for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+                echo E_${v}
+            done )
 
-        for v in ${!SANDBOX*}; do
-            [[ "${v}" == SANDBOX_ACTIVE ]] || unset "${v}"
-        done
+        unset -v $(
+            for v in ${!SANDBOX_*}; do
+                [[ ${v} != SANDBOX_ACTIVE ]] && echo ${v}
+            done )
+        export -n SANDBOX_ACTIVE
 
-        for v in ${!BASH_*}; do
-            case "${v#BASH_}" in
-                ARGC|ARGV|LINENO|SOURCE|VERSINFO) ;;
-                *) unset -v "${v}"
-            esac
-        done
+        unset -v $(
+            for v in ${!BASH_*}; do
+                [[ ${v#BASH_} != @(ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH) ]] && echo ${v}
+            done )
 
         set >"${1}"
-        export -p >>"${1}"
-    ) || return $?
-
-    sed -i \
-        -e 's:^declare -rx:declare -x:' \
-        -e 's:^declare -x :export :' \
-        "${filters[@]}" "${1}"
+        print_exports >>"${1}"
+    )
 }
 
 ebuild_load_environment()
@@ -291,8 +278,8 @@ ebuild_load_environment()
         ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
             || die "Can't load saved environment for cleaning"
 
-        echo source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
-        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
+        echo ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
+        ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
             || die "Can't load saved environment"
 
         export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"

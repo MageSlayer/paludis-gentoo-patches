@@ -39,6 +39,7 @@ libexecprog_SCRIPTS = \
 	pkg_setup.bash \
 	portage_stubs.bash \
 	sandbox.bash \
+	source_functions.bash \
 	src_compile.bash \
 	src_install.bash \
 	src_test.bash \

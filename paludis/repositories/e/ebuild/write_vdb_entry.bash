@@ -46,6 +46,7 @@ ebuild_load_module()
 
 ebuild_load_module die_functions
 ebuild_load_module echo_functions
+ebuild_load_module source_functions
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
@@ -60,7 +61,7 @@ main()
 
     ebuild_section "Writing VDB entry to '${vdbdir}'..."
 
-    source ${envfile}
+    ebuild_safe_source ${envfile}
 
     ebuild_section "Writing VDB entry keys ..."
 

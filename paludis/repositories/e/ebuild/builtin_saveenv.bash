@@ -20,20 +20,7 @@ builtin_saveenv()
 {
     [[ -d "${PALUDIS_LOADSAVEENV_DIR}" ]] || die "\$PALUDIS_LOADSAVEENV_DIR (\"${PALUDIS_LOADSAVEENV_DIR}\") not a directory"
     [[ -f "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv" ]] && rm -f "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv"
-    ( set ; export -p ) | sed \
-        -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\)=/d' \
-        -e '/^\(FUNCNAME\|GROUPS\)=/d' \
-        -e '/^\(declare -[rx]\+ \)\?SANDBOX_/d' \
-        -e '/^\(declare -[rx]\+ \)\?.\?[UP]ID/d' \
-        -e '/^\(declare -[rx]\+ \)\?BASH_REMATCH/d' \
-        -e '/^\(declare -[rx]\+ \)\?BASH_VERSINFO/d' \
-        -e '/^\(declare -[rx]\+ \)\?PALUDIS_LOADSAVEENV_DIR/d' \
-        -e '/^\(declare -[rx]\+ \)\?PALUDIS_DO_NOTHING_SANDBOXY/d' \
-        -e '/^\(declare -[rx]\+ \)\?SHELLOPTS/d' \
-        -e '/^\(declare -[rx]\+ \)\?EBUILD_KILL_PID/d' \
-        -e 's:^declare -rx:declare -x:' \
-        -e 's:^declare -x :export :' \
-        > ${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv
+    ( set ; print_exports ) > ${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv
 }
 
 ebuild_f_saveenv()

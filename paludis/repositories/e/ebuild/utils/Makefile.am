@@ -57,6 +57,11 @@ libexecprog_SCRIPTS = \
 	awk \
 	patch
 
+libexecbindir = $(libexecdir)/paludis/utils
+libexecbin_PROGRAMS = print_exports
+
+print_exports_SOURCES = print_exports.cc
+
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 TESTS_ENVIRONMENT = env \
