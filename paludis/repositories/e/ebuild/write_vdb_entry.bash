@@ -107,7 +107,7 @@ main()
     ebuild_section "Generating saved ebuild and environment..."
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${vdbdir}/
-    sed -e 's:^declare -rx:declare -x:' < ${envfile} | bzip2 > ${vdbdir}/environment.bz2
+    bzip2 < ${envfile} > ${vdbdir}/environment.bz2
 
     ebuild_section "Finished writing VDB entry"
 
