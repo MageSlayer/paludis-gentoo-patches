@@ -21,6 +21,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/use_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -35,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <list>
 #include <map>
 
@@ -278,62 +280,8 @@ namespace paludis
     template<>
     struct Implementation<UseRequirements>
     {
-        std::map<UseFlagName, UseFlagState> reqs;
+        std::map<UseFlagName, UseRequirementState> reqs;
     };
-}
-
-UseRequirements::UseRequirements() :
-    PrivateImplementationPattern<UseRequirements>(new Implementation<UseRequirements>)
-{
-}
-
-UseRequirements::UseRequirements(const UseRequirements & c) :
-    PrivateImplementationPattern<UseRequirements>(new Implementation<UseRequirements>)
-{
-    _imp->reqs = c._imp->reqs;
-}
-
-UseRequirements::~UseRequirements()
-{
-}
-
-UseRequirements::ConstIterator
-UseRequirements::begin() const
-{
-    return ConstIterator(_imp->reqs.begin());
-}
-
-UseRequirements::ConstIterator
-UseRequirements::end() const
-{
-    return ConstIterator(_imp->reqs.end());
-}
-
-bool
-UseRequirements::empty() const
-{
-    return _imp->reqs.empty();
-}
-
-UseRequirements::ConstIterator
-UseRequirements::find(const UseFlagName & u) const
-{
-    return ConstIterator(_imp->reqs.find(u));
-}
-
-bool
-UseRequirements::insert(const UseFlagName & u, UseFlagState s)
-{
-    return _imp->reqs.insert(std::make_pair(u, s)).second;
-}
-
-UseFlagState
-UseRequirements::state(const UseFlagName & u) const
-{
-    ConstIterator i(find(u));
-    if (end() == i)
-        return use_unspecified;
-    return i->second;
 }
 
 tr1::shared_ptr<const PackageDepSpec>
@@ -674,16 +622,18 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
 
             default:
                 {
-                    UseFlagState state(use_enabled);
+                    tr1::shared_ptr<UseRequirement> req;
                     if ('-' == flag.at(0))
                     {
-                        state = use_disabled;
                         flag.erase(0, 1);
                         if (flag.empty())
                             throw PackageDepSpecError("Invalid [] contents");
+                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
                     }
-                    UseFlagName name(flag);
-                    result.use_requirement(name, state);
+                    else
+                        req.reset(new EnabledUseRequirement(UseFlagName(flag)));
+
+                    result.use_requirement(req);
                 }
                 break;
         };
@@ -804,6 +754,32 @@ paludis::make_package_dep_spec()
 
 namespace
 {
+    struct UseRequirementPrinter :
+        ConstVisitor<UseRequirementVisitorTypes>
+    {
+        std::ostringstream s;
+
+        void visit(const EnabledUseRequirement & r)
+        {
+            s << "[" << r.flag() << "]";
+        }
+
+        void visit(const DisabledUseRequirement & r)
+        {
+            s << "[-" << r.flag() << "]";
+        }
+
+        void visit(const EqualUseRequirement & r)
+        {
+            s << "[" << r.flag() << "?]";
+        }
+
+        void visit(const NotEqualUseRequirement & r)
+        {
+            s << "[" << r.flag() << "!?]";
+        }
+    };
+
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
@@ -944,8 +920,11 @@ namespace
             {
                 for (UseRequirements::ConstIterator u(use_requirements_ptr()->begin()),
                         u_end(use_requirements_ptr()->end()) ; u != u_end ; ++u)
-                    s << "[" << (u->second == use_disabled ? "-" + stringify(u->first) :
-                            stringify(u->first)) << "]";
+                {
+                    UseRequirementPrinter p;
+                    (*u)->accept(p);
+                    s << p.s.str();
+                }
             }
 
             return s.str();
@@ -1078,11 +1057,11 @@ PartiallyMadePackageDepSpec::version_requirements_mode(const VersionRequirements
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::use_requirement(const UseFlagName & f, const UseFlagState s)
+PartiallyMadePackageDepSpec::use_requirement(const tr1::shared_ptr<const UseRequirement> & req)
 {
     if (! _imp->data->use_requirements)
         _imp->data->use_requirements.reset(new UseRequirements);
-    _imp->data->use_requirements->insert(f, s);
+    _imp->data->use_requirements->insert(req);
     return *this;
 }
 

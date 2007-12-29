@@ -17,20 +17,19 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PACKAGE_DEP_SPEC_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PACKAGE_DEP_SPEC_HH 1
-
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/repositories/e/eapi-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_USE_REQUIREMENTS_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_USE_REQUIREMENTS_FWD_HH 1
 
 namespace paludis
 {
-    namespace erepository
-    {
-        PackageDepSpec parse_e_package_dep_spec(const std::string &, const EAPI & eapi,
-                const tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
-    }
+    class UseRequirements;
+    class UseRequirement;
+
+    class UseRequirementVisitorTypes;
+    class EnabledUseRequirement;
+    class DisabledUseRequirement;
+    class EqualUseRequirement;
+    class NotEqualUseRequirement;
 }
 
 #endif

@@ -40,15 +40,18 @@ namespace test_cases
             StringifyFormatter ff;
 
             DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "foo/bar bar/baz");
 
             DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
+            parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "foo/bar moo? ( bar/baz )");
 
             DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
+            parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "|| ( a/b ( c/d e/f ) )");
 
             DepSpecPrettyPrinter p4(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
@@ -75,15 +78,18 @@ namespace test_cases
             StringifyFormatter ff;
 
             DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
-            parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "    foo/bar\n    bar/baz\n");
 
             DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
-            parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
+            parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "    foo/bar\n    moo? (\n        bar/baz\n    )\n");
 
             DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
-            parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
+            parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "    || (\n        a/b\n        (\n            c/d\n"
                     "            e/f\n        )\n    )\n");
 

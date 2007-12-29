@@ -23,7 +23,10 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/use_requirements.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -114,21 +117,17 @@ namespace test_cases
             TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar-1.2[=1.3]", UserPackageDepSpecOptions()), PackageDepSpecError);
 
             PackageDepSpec i(parse_user_package_dep_spec("foo/bar[one][-two]", UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(i, "foo/bar[one][-two]");
+            TEST_CHECK_STRINGIFY_EQUAL(i, "foo/bar[-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*i.package_ptr(), "foo/bar");
             TEST_CHECK(! i.version_requirements_ptr());
             TEST_CHECK(! i.repository_ptr());
             TEST_CHECK(! i.slot_ptr());
             TEST_CHECK(i.use_requirements_ptr());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("one")) !=
-                    i.use_requirements_ptr()->end());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("two")) !=
-                    i.use_requirements_ptr()->end());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("three")) ==
-                    i.use_requirements_ptr()->end());
-            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("one")) == use_enabled);
-            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
-            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("one")) != i.use_requirements_ptr()->end());
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("two")) != i.use_requirements_ptr()->end());
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("three")) == i.use_requirements_ptr()->end());
+            TEST_CHECK(visitor_cast<const EnabledUseRequirement>(**i.use_requirements_ptr()->find(UseFlagName("one"))));
+            TEST_CHECK(visitor_cast<const DisabledUseRequirement>(**i.use_requirements_ptr()->find(UseFlagName("two"))));
 
             PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(j, "=foo/bar-scm-r3");
@@ -145,7 +144,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(k.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
             PackageDepSpec l(parse_user_package_dep_spec("foo/bar[one][-two][>=1.2&<2.0]", UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(l, "foo/bar[>=1.2&<2.0][one][-two]");
+            TEST_CHECK_STRINGIFY_EQUAL(l, "foo/bar[>=1.2&<2.0][-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*l.package_ptr(), "foo/bar");
             TEST_CHECK(l.version_requirements_ptr());
             TEST_CHECK(! l.repository_ptr());
@@ -155,15 +154,11 @@ namespace test_cases
             TEST_CHECK_EQUAL(next(l.version_requirements_ptr()->begin())->version_operator, vo_less);
             TEST_CHECK(! l.slot_ptr());
             TEST_CHECK(l.use_requirements_ptr());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("one")) !=
-                    l.use_requirements_ptr()->end());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("two")) !=
-                    l.use_requirements_ptr()->end());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("three")) ==
-                    l.use_requirements_ptr()->end());
-            TEST_CHECK(l.use_requirements_ptr()->state(UseFlagName("one")) == use_enabled);
-            TEST_CHECK(l.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
-            TEST_CHECK(l.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
+            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("one")) != l.use_requirements_ptr()->end());
+            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("two")) != l.use_requirements_ptr()->end());
+            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("three")) == l.use_requirements_ptr()->end());
+            TEST_CHECK(visitor_cast<const EnabledUseRequirement>(**l.use_requirements_ptr()->find(UseFlagName("one"))));
+            TEST_CHECK(visitor_cast<const DisabledUseRequirement>(**l.use_requirements_ptr()->find(UseFlagName("two"))));
 
             PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(m, "foo/bar[=1.2|=1.3*|~1.4]");

@@ -22,6 +22,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/use_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -29,6 +30,44 @@
 #include <algorithm>
 
 using namespace paludis;
+
+namespace
+{
+    struct UseRequirementChecker :
+        ConstVisitor<UseRequirementVisitorTypes>
+    {
+        bool ok;
+        const Environment * const env;
+        const PackageID & id;
+
+        UseRequirementChecker(const Environment * const e, const PackageID & i) :
+            ok(true),
+            env(e),
+            id(i)
+        {
+        }
+
+        void visit(const EnabledUseRequirement & r)
+        {
+            ok = env->query_use(r.flag(), id);
+        }
+
+        void visit(const DisabledUseRequirement & r)
+        {
+            ok = ! env->query_use(r.flag(), id);
+        }
+
+        void visit(const EqualUseRequirement & r)
+        {
+            ok = (env->query_use(r.flag(), id) == env->query_use(r.flag(), *r.package_id()));
+        }
+
+        void visit(const NotEqualUseRequirement & r)
+        {
+            ok = ! (env->query_use(r.flag(), id) == env->query_use(r.flag(), *r.package_id()));
+        }
+    };
+}
 
 bool
 paludis::match_package(
@@ -88,25 +127,11 @@ paludis::match_package(
         for (UseRequirements::ConstIterator u(spec.use_requirements_ptr()->begin()),
                 u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
         {
-            switch (u->second)
-            {
-                case use_unspecified:
-                    continue;
+            UseRequirementChecker v(&env, entry);
+            (*u)->accept(v);
 
-                case use_enabled:
-                    if (! env.query_use(u->first, entry))
-                        return false;
-                    continue;
-
-                case use_disabled:
-                    if (env.query_use(u->first, entry))
-                        return false;
-                    continue;
-
-                case last_use:
-                    ;
-            }
-            throw InternalError(PALUDIS_HERE, "bad UseFlagState");
+            if (! v.ok)
+                return false;
         }
     }
 

@@ -34,6 +34,7 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/use_requirements-fwd.hh>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -203,53 +204,6 @@ namespace paludis
     };
 
     /**
-     * A selection of USE flag requirements.
-     *
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE UseRequirements :
-        private PrivateImplementationPattern<UseRequirements>
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            UseRequirements();
-            UseRequirements(const UseRequirements &);
-            ~UseRequirements();
-
-            ///\}
-
-            ///\name Iterate over our USE requirements
-            ///\{
-
-            struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag,
-                    const std::pair<const UseFlagName, UseFlagState> > ConstIterator;
-
-            ConstIterator begin() const;
-            ConstIterator end() const;
-
-            ///\}
-
-            /// Find the requirement for a particular USE flag.
-            ConstIterator find(const UseFlagName & u) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /// Insert a new requirement.
-            bool insert(const UseFlagName & u, UseFlagState s);
-
-            /// What state is desired for a particular use flag?
-            UseFlagState state(const UseFlagName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /// Are we empty?
-            bool empty() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
      * A PartiallyMadePackageDepSpec is returned by make_package_dep_spec()
      * and is used to incrementally build a PackageDepSpec.
      *
@@ -307,7 +261,7 @@ namespace paludis
             /**
              * Add a use requirement, return ourself.
              */
-            PartiallyMadePackageDepSpec & use_requirement(const UseFlagName &, const UseFlagState);
+            PartiallyMadePackageDepSpec & use_requirement(const tr1::shared_ptr<const UseRequirement> &);
 
             /**
              * Turn ourselves into a PackageDepSpec.

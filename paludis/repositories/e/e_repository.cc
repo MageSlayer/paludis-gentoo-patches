@@ -144,7 +144,8 @@ namespace
                         tr1::shared_ptr<const PackageIDSequence> q(
                                 _env->package_database()->query(
                                     query::Matches(erepository::parse_e_package_dep_spec(*i,
-                                            *erepository::EAPIData::get_instance()->eapi_from_string(_p))) &
+                                            *erepository::EAPIData::get_instance()->eapi_from_string(_p),
+                                            tr1::shared_ptr<const PackageID>())) &
                                     query::InstalledAtRoot(_env->root()),
                                     qo_order_by_version));
                         if (q->empty())
@@ -556,7 +557,9 @@ ERepository::repository_masked(const PackageID & id) const
                     try
                     {
                         tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
-                                        line->first, *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi))));
+                                        line->first,
+                                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi),
+                                        tr1::shared_ptr<const PackageID>())));
                         if (a->package_ptr())
                             _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
                         else

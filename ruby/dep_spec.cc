@@ -22,6 +22,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/use_requirements.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -527,6 +528,7 @@ namespace
         return result;
     }
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     use_requirements -> Array
@@ -556,6 +558,7 @@ namespace
             }
         return result;
     }
+#endif
 
     VALUE
     package_dep_spec_version_requirements_mode(VALUE self)
@@ -774,7 +777,9 @@ namespace
         rb_define_method(c_package_dep_spec, "repository", RUBY_FUNC_CAST(&package_dep_spec_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
+#endif
         rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
         rb_define_method(c_package_dep_spec, "without_use_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_use_requirements), 0);
         VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;

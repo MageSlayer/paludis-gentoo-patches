@@ -137,7 +137,9 @@ ERepositoryNews::update_news() const
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! _imp->environment->package_database()->query(
                                 query::Matches(PackageDepSpec(erepository::parse_e_package_dep_spec(*i,
-                                            *erepository::EAPIData::get_instance()->eapi_from_string(_imp->e_repository->params().profile_eapi)))) &
+                                            *erepository::EAPIData::get_instance()->eapi_from_string(
+                                                _imp->e_repository->params().profile_eapi),
+                                            tr1::shared_ptr<const PackageID>()))) &
                                 query::SupportsAction<InstalledAction>(),
                                 qo_whatever)->empty())
                         local_show = true;

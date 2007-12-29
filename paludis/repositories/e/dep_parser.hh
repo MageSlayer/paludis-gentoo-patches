@@ -22,6 +22,7 @@
 
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/dep_tree.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/repositories/e/dep_lexer.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/exception.hh>
@@ -75,7 +76,7 @@ namespace paludis
          * Parse a dependency heirarchy.
          */
         tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const EAPI &, const tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a dep spec label.

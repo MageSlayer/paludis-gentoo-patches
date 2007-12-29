@@ -5,7 +5,7 @@ make_enum_UserPackageDepSpecOption()
 {
     prefix updso
 
-    key updso_allow_wildcards "Allow wildcards for category, package"
+    key updso_allow_wildcards      "Allow wildcards for category, package"
 
     doxygen_comment << "END"
         /**
@@ -17,3 +17,22 @@ make_enum_UserPackageDepSpecOption()
 END
 }
 
+make_enum_UseRequirementState()
+{
+    prefix urs
+
+    key urs_enabled          "Enabled"
+    key urs_disabled         "Disabled"
+    key urs_equal            "Equal"
+    key urs_not_equal        "Not equal"
+    key urs_any              "Any"
+
+    doxygen_comment << "END"
+        /**
+         * Requirement for a UseRequirements entry.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         */
+END
+}

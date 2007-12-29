@@ -188,7 +188,6 @@ namespace
                 for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
-                    using namespace tr1::placeholders;
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
                     for (PackageIDSequence::ConstIterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)

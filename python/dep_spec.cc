@@ -25,6 +25,7 @@
 
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/use_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -317,7 +318,7 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     {
         for (UseRequirements::ConstIterator i(use_requirements_ptr()->begin()),
                 i_end(use_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.use_requirement(i->first, i->second);
+            p.use_requirement(*i);
     }
 
     if (version_requirements_ptr())
@@ -1186,10 +1187,6 @@ void expose_dep_spec()
          "A selection of USE flag requirements.",
          bp::no_init
         )
-        .def("state", &UseRequirements::state,
-                "state(UseFlagName) -> UseFlagState\n"
-                "What state is desired for a particular use flag?"
-            )
 
         .def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end))
         ;

@@ -25,12 +25,13 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/use_requirements.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 PackageDepSpec
-paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi)
+paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
 {
     Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi.name) + "':");
 
@@ -133,16 +134,35 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
 
             default:
                 {
-                    UseFlagState state(use_enabled);
+                    tr1::shared_ptr<const UseRequirement> req;
                     if ('-' == flag.at(0))
                     {
-                        state = use_disabled;
                         flag.erase(0, 1);
                         if (flag.empty())
                             throw PackageDepSpecError("Invalid [] contents");
+                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
                     }
-                    UseFlagName name(flag);
-                    result.use_requirement(name, state);
+                    else if ('?' == flag.at(flag.length() - 1))
+                    {
+                        if (! id)
+                            throw PackageDepSpecError("Cannot use [use?] without an associated ID");
+
+                        flag.erase(flag.length() - 1);
+                        if (flag.empty())
+                            throw PackageDepSpecError("Invalid [] contents");
+                        if ('!' == flag.at(flag.length() - 1))
+                        {
+                            flag.erase(flag.length() - 1);
+                            if (flag.empty())
+                                throw PackageDepSpecError("Invalid [] contents");
+                            req.reset(new NotEqualUseRequirement(UseFlagName(flag), id));
+                        }
+                        else
+                            req.reset(new EqualUseRequirement(UseFlagName(flag), id));
+                    }
+                    else
+                        req.reset(new EnabledUseRequirement(UseFlagName(flag)));
+                    result.use_requirement(req);
                 }
                 break;
         };

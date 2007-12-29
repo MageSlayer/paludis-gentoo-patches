@@ -129,7 +129,7 @@ EDependenciesKey::value() const
     }
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi(), _imp->id);
     return _imp->value;
 }
 

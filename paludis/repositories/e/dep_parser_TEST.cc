@@ -50,7 +50,8 @@ namespace test_cases
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_empty;
@@ -68,7 +69,8 @@ namespace test_cases
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("   \n   \t",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_blank;
@@ -86,7 +88,8 @@ namespace test_cases
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("app-editors/vim",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
         }
     } test_dep_spec_parser_package;
@@ -105,17 +108,20 @@ namespace test_cases
 
             DepSpecPrettyPrinter d1(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(">=app-editors/vim-6.4_alpha",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d1);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
 
             DepSpecPrettyPrinter d2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("=app-editors/vim-6.4_alpha-r1",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d2);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
 
             DepSpecPrettyPrinter d3(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(">=app-editors/vim-6.4_alpha:one",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d3);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
         }
     } test_dep_spec_parser_decorated_package;
@@ -134,7 +140,8 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
         }
     } test_dep_spec_parser_packages;
@@ -149,7 +156,8 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one two/two )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
@@ -164,15 +172,18 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one foo? ( two/two ) )",
-                    *EAPIData::get_instance()->eapi_from_string("0"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("0"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
 
             TEST_CHECK_THROWS(parse_depend("|| ( one/one foo? ( two/two ) )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
 
             DepSpecPrettyPrinter e(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
         }
     } test_dep_spec_parser_any_use;
@@ -191,7 +202,8 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(" ( one/one two/two )    ",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
         }
     } test_dep_spec_parser_all;
@@ -209,7 +221,8 @@ namespace test_cases
             StringifyFormatter ff;
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            parse_depend("foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
         }
     } test_dep_spec_parser_use;
@@ -227,7 +240,8 @@ namespace test_cases
             StringifyFormatter ff;
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("!foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            parse_depend("!foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
         }
     } test_dep_spec_parser_inv_use;
@@ -267,15 +281,20 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) ) ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend(")",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_nesting;
 
@@ -293,19 +312,26 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("||",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("|| ",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("foo?",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("!foo? ||",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("(((",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend(")",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("(foo/bar)",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_license("a -> b",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
 
@@ -341,10 +367,12 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("build: one/one",
-                    *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(d);
+                    *EAPIData::get_instance()->eapi_from_string("exheres-0"),
+                    tr1::shared_ptr<const PackageID>())->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "build: one/one");
             TEST_CHECK_THROWS(parse_depend("build: one/one",
-                        *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringParseError);
+                        *EAPIData::get_instance()->eapi_from_string("0"),
+                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringParseError);
         }
     } test_dep_spec_parser_labels;
 }

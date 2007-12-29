@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <list>
 #include <map>
+#include <sstream>
 
 using namespace paludis;
 using namespace examples;
@@ -31,6 +32,36 @@ using std::cout;
 using std::endl;
 using std::setw;
 using std::left;
+
+namespace
+{
+    /* Used to print out more information about a UseRequirement. */
+    struct UseRequirementPrinter :
+        ConstVisitor<UseRequirementVisitorTypes>
+    {
+        std::ostringstream s;
+
+        void visit(const EnabledUseRequirement & r)
+        {
+            s << "[" << r.flag() << "]";
+        }
+
+        void visit(const DisabledUseRequirement & r)
+        {
+            s << "[!" << r.flag() << "]";
+        }
+
+        void visit(const EqualUseRequirement & r)
+        {
+            s << "[" << r.flag() << "?] (using '" << *r.package_id() << "')";
+        }
+
+        void visit(const NotEqualUseRequirement & r)
+        {
+            s << "[!" << r.flag() << "?] (using '" << *r.package_id() << "')";
+        }
+    };
+}
 
 int main(int argc, char * argv[])
 {
@@ -113,21 +144,11 @@ int main(int argc, char * argv[])
                     if (need_join)
                         cout << " and ";
 
-                    switch (u->second)
-                    {
-                        case use_enabled:
-                        case use_unspecified:
-                            break;
-
-                        case use_disabled:
-                            cout << "-";
-                            break;
-
-                        case last_use:
-                            throw InternalError(PALUDIS_HERE, "Bad use requirements");
-                    }
-                    cout << u->first;
-
+                    /* A UseRequirement could be one of various subclasses. We
+                     * use a visitor to do the right thing. */
+                    UseRequirementPrinter p;
+                    (*u)->accept(p);
+                    cout << p.s.str();
                     need_join = true;
                 }
                 cout << endl;
