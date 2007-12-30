@@ -533,6 +533,19 @@ paludis::run_command(const Command & cmd)
             else
             {
                 char buf[1024];
+
+                if (cmd.captured_stdout_stream() && FD_ISSET(captured_stdout->read_fd(), &read_fds))
+                {
+                    int r;
+                    if (((r = read(captured_stdout->read_fd(), buf, 1024))) > 0)
+                    {
+                        *cmd.captured_stdout_stream() << std::string(buf, r);
+                        /* don't look at the other FDs yet to avoid a partial read from being snipped
+                         * when capturing output */
+                        continue;
+                    }
+                }
+
                 if (cmd.pipe_command_handler() && FD_ISSET(pipe_command_reader->read_fd(), &read_fds))
                 {
                     int r;
@@ -545,13 +558,6 @@ paludis::run_command(const Command & cmd)
                     int r;
                     if (((r = read(internal_command_reader->read_fd(), buf, 1024))) > 0)
                         internal_command_buffer.append(std::string(buf, r));
-                }
-
-                if (cmd.captured_stdout_stream() && FD_ISSET(captured_stdout->read_fd(), &read_fds))
-                {
-                    int r;
-                    if (((r = read(captured_stdout->read_fd(), buf, 1024))) > 0)
-                        *cmd.captured_stdout_stream() << std::string(buf, r);
                 }
             }
 
