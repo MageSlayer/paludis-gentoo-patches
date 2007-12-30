@@ -274,16 +274,6 @@ SimpleURIDepSpec::clone() const
     return tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
 }
 
-
-namespace paludis
-{
-    template<>
-    struct Implementation<UseRequirements>
-    {
-        std::map<UseFlagName, UseRequirementState> reqs;
-    };
-}
-
 tr1::shared_ptr<const PackageDepSpec>
 BlockDepSpec::blocked_spec() const
 {
