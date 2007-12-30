@@ -32,7 +32,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/graph-impl.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/about.hh>
@@ -159,10 +158,11 @@ BashHookFile::run(const Hook & hook) const
     std::string output("");
     if (hook.output_dest == hod_grab)
     {
-        PStream s(cmd);
+        std::stringstream s;
+        cmd.with_captured_stdout_stream(&s);
+        exit_status = run_command(cmd);
         output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
                 " \t\n");
-        exit_status = s.exit_status();
     }
     else
         exit_status = run_command(cmd);
@@ -210,10 +210,10 @@ FancyHookFile::run(const Hook & hook) const
     std::string output("");
     if (hook.output_dest == hod_grab)
     {
-        PStream s(cmd);
+        std::stringstream s;
+        exit_status = run_command(cmd.with_captured_stdout_stream(&s));
         output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
                 " \t\n");
-        exit_status = s.exit_status();
     }
     else
         exit_status = run_command(cmd);
@@ -265,10 +265,13 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
-    PStream s(cmd);
+    std::stringstream s;
+    cmd
+        .with_captured_stdout_stream(&s);
+    int exit_status(run_command(cmd));
+
     std::string deps((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
 
-    int exit_status(s.exit_status());
     if (0 == exit_status)
     {
         Log::get_instance()->message(ll_debug, lc_no_context, "Hook dependencies for '" + stringify(file_name())

@@ -221,7 +221,7 @@ ebuild_scrub_environment()
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
         unset -v PALUDIS_CLIENT
 
-        unset -v PALUDIS_HOME PALUDIS_PID ROOT
+        unset -v PALUDIS_HOME PALUDIS_PID PALUDIS_PIPE_COMMAND_WRITE_FD PALUDIS_PIPE_COMMAND_READ_FD ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
 
         unset -v ebuild EBUILD

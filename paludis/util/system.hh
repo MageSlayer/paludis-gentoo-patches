@@ -23,6 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 #include <sys/types.h>
@@ -170,6 +171,16 @@ namespace paludis
              */
             Command & with_prefix_blank_lines();
 
+            /**
+             * Specify a pipe command handler.
+             */
+            Command & with_pipe_command_handler(const tr1::function<std::string (const std::string &)> &);
+
+            /**
+             * Specify a stream to which stdout is captured and written.
+             */
+            Command & with_captured_stdout_stream(std::ostream * const);
+
             ///\}
 
             ///\name Fetch command execution options
@@ -220,6 +231,16 @@ namespace paludis
              * Prefix blank lines?
              */
             bool prefix_blank_lines() const;
+
+            /**
+             * The pipe command handler.
+             */
+            const tr1::function<std::string (const std::string &)> & pipe_command_handler() const;
+
+            /**
+             * The captured stdout stream, or null.
+             */
+            std::ostream * captured_stdout_stream() const;
 
             ///\}
 

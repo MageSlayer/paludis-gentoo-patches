@@ -25,7 +25,6 @@
 
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -269,7 +268,9 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id) + "':");
 
-        PStream prog(cmd);
+        std::stringstream prog;
+        Command real_cmd(cmd);
+        int exit_status(run_command(real_cmd.with_captured_stdout_stream(&prog)));
         input.assign((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>());
         std::stringstream input_stream(input);
         KeyValueConfigFile f(input_stream, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
@@ -277,7 +278,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
                 + kvcfo_disallow_variables + kvcfo_preserve_whitespace);
 
         std::copy(f.begin(), f.end(), keys->inserter());
-        if (0 == prog.exit_status())
+        if (0 == exit_status)
             ok = true;
     }
     catch (const Exception & e)
@@ -433,12 +434,14 @@ EbuildVariableCommand::extend_command(const Command & cmd)
 bool
 EbuildVariableCommand::do_run_command(const Command & cmd)
 {
-    PStream prog(cmd);
+    std::stringstream prog;
+    Command real_cmd(cmd);
+    int exit_status(run_command(real_cmd.with_captured_stdout_stream(&prog)));
     _result = strip_trailing_string(
             std::string((std::istreambuf_iterator<char>(prog)),
                 std::istreambuf_iterator<char>()), "\n");
 
-    return (0 == prog.exit_status());
+    return (0 == exit_status);
 }
 
 std::string

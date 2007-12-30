@@ -18,7 +18,6 @@
  */
 
 #include <paludis/util/system.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/thread_pool.hh>
@@ -29,11 +28,6 @@
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <sched.h>
 #endif
-
-/** \file
- * Test cases for system.hh .
- *
- */
 
 using namespace test;
 using namespace paludis;
@@ -70,15 +64,24 @@ namespace
             if (0 != run_command("/bin/true"))
                 throw InternalError(PALUDIS_HERE, "true isn't");
     }
+
+    std::string response_handler(const std::string & s)
+    {
+        if (s == "ONE")
+            return "1";
+        else if (s == "TWO")
+            return "2";
+        else if (s == "THREE")
+            return "3";
+        else if (s == "FOUR")
+            return "4";
+        else
+            return "9";
+    }
 }
 
 namespace test_cases
 {
-
-    /**
-     * \test Test getenv_with_default.
-     *
-     */
     struct GetenvWithDefaultTest : TestCase
     {
         GetenvWithDefaultTest() : TestCase("getenv_with_default") { }
@@ -91,10 +94,6 @@ namespace test_cases
         }
     } test_getenv_with_default;
 
-    /**
-     * \test Test getenv_or_error.
-     *
-     */
     struct GetenvOrErrorTest : TestCase
     {
         GetenvOrErrorTest() : TestCase("getenv_or_error") { }
@@ -106,10 +105,6 @@ namespace test_cases
         }
     } test_getenv_or_error;
 
-    /**
-     * \test Test kernel_version.
-     *
-     */
     struct KernelVersionTest : TestCase
     {
         KernelVersionTest() : TestCase("kernel version") { }
@@ -121,18 +116,14 @@ namespace test_cases
             TEST_CHECK('2' == kernel_version().at(0));
             TEST_CHECK('.' == kernel_version().at(1));
 #elif defined(__FreeBSD__)
-	    TEST_CHECK('6' == kernel_version().at(0));
-	    TEST_CHECK('.' == kernel_version().at(1));
+            TEST_CHECK('6' == kernel_version().at(0));
+            TEST_CHECK('.' == kernel_version().at(1));
 #else
 #  error You need to write a sanity test for kernel_version() for your platform.
 #endif
         }
     } test_kernel_version;
 
-    /**
-     * \test Test run_command.
-     *
-     */
     struct RunCommandTest : TestCase
     {
         RunCommandTest() : TestCase("run_command") { }
@@ -159,10 +150,6 @@ namespace test_cases
         }
     } test_run_command_mutex;
 
-    /**
-     * \test Test run_command_in_directory.
-     *
-     */
     struct RunCommandInDirectoryTest : TestCase
     {
         RunCommandInDirectoryTest() : TestCase("run_command_in_directory") { }
@@ -179,10 +166,6 @@ namespace test_cases
         }
     } test_run_command_in_directory;
 
-    /**
-     * \test Test make_env_command.
-     *
-     */
     struct MakeEnvCommandTest : TestCase
     {
         MakeEnvCommandTest() : TestCase("make_env_command") { }
@@ -210,10 +193,6 @@ namespace test_cases
         }
     } test_make_env_command;
 
-    /**
-     * \test Test make_env_command with quotes.
-     *
-     */
     struct MakeEnvCommandQuoteTest : TestCase
     {
         MakeEnvCommandQuoteTest() : TestCase("make_env_command quotes") { }
@@ -228,5 +207,93 @@ namespace test_cases
                         .with_setenv("PALUDUS_TEST_ENV_VAR", "..'..")));
         }
     } test_make_env_command_quotes;
+
+    struct PipeCommandTest : TestCase
+    {
+        PipeCommandTest() : TestCase("pipe command") { }
+
+        void run()
+        {
+            TEST_CHECK_EQUAL(run_command(Command("bash system_TEST_dir/pipe_test.bash ONE TWO")
+                        .with_pipe_command_handler(&response_handler)), 12);
+            TEST_CHECK_EQUAL(run_command(Command("bash system_TEST_dir/pipe_test.bash THREE FOUR")
+                        .with_pipe_command_handler(&response_handler)), 34);
+        }
+    } test_pipe_command;
+
+    struct CapturedTest : TestCase
+    {
+        CapturedTest() : TestCase("captured stdout") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK_EQUAL(run_command(Command("echo hi").with_captured_stdout_stream(&s)), 0);
+            std::string line;
+            TEST_CHECK(std::getline(s, line));
+            TEST_CHECK_EQUAL(line, "hi");
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured;
+
+    struct CapturedNoExistTest : TestCase
+    {
+        CapturedNoExistTest() : TestCase("captured nonexistent command") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK(run_command(Command("thiscommanddoesnotexist 2>/dev/null").with_captured_stdout_stream(&s)) != 0);
+            std::string line;
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured_no_exist;
+
+    struct CapturedSilentFailTest : TestCase
+    {
+        CapturedSilentFailTest() : TestCase("captured silent fail") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK(run_command(Command("test -e /doesnotexist").with_captured_stdout_stream(&s)) != 0);
+            std::string line;
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured_silent_fail;
+
+    struct CapturedFailTest : TestCase
+    {
+        CapturedFailTest() : TestCase("captured fail") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK(run_command(Command("cat /doesnotexist 2>&1").with_captured_stdout_stream(&s)) != 0);
+            std::string line;
+            TEST_CHECK(std::getline(s, line));
+            TEST_CHECK(! line.empty());
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured_fail;
+
+
+    struct CapturedPipeCommandTest : TestCase
+    {
+        CapturedPipeCommandTest() : TestCase("captured pipe command") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK_EQUAL(run_command(Command("bash system_TEST_dir/captured_pipe_test.bash ONE TWO THREE")
+                        .with_pipe_command_handler(&response_handler)
+                        .with_captured_stdout_stream(&s)),
+                    13);
+            std::string line;
+            TEST_CHECK(std::getline(s, line));
+            TEST_CHECK_EQUAL(line, "2");
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured_pipe_command;
 }
 

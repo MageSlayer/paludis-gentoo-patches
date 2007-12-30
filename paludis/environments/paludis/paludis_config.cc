@@ -32,7 +32,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/set.hh>
@@ -148,17 +147,19 @@ namespace paludis
             kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions()));
         else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
+            std::stringstream s;
             Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "environment.bash") + "'")
                     .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                     .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix("environment.bash> "));
-            PStream s(cmd);
+                    .with_stderr_prefix("environment.bash> ")
+                    .with_captured_stdout_stream(&s));
+            int exit_status(run_command(cmd));
             kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions()));
 
-            if (s.exit_status() != 0)
+            if (exit_status != 0)
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(FSEntry(config_dir) / "environment.bash")
-                        + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                        + "' returned non-zero exit status '" + stringify(exit_status) + "'");
                 kv.reset();
             }
         }
@@ -300,13 +301,18 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
         else if ((local_config_dir / "repository_defaults.bash").exists())
         {
+            std::stringstream s;
             Command cmd(Command("bash '" + stringify(local_config_dir / "repository_defaults.bash") + "'")
                     .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                     .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix("repository_defaults.bash> "));
-            PStream s(cmd);
+                    .with_stderr_prefix("repository_defaults.bash> ")
+                    .with_captured_stdout_stream(&s));
+            int exit_status(run_command(cmd));
             KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
+            if (exit_status != 0)
+                Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(local_config_dir / "repository_defaults.bash")
+                        + "' returned non-zero exit status '" + stringify(exit_status) + "'");
         }
 
         std::list<FSEntry> dirs;
@@ -334,17 +340,19 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             tr1::shared_ptr<KeyValueConfigFile> kv;
             if (is_file_with_extension(*repo_file, ".bash", IsFileWithOptions()))
             {
+                std::stringstream s;
                 Command cmd(Command("bash '" + stringify(*repo_file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                         .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                        .with_stderr_prefix(repo_file->basename() + "> "));
-                PStream s(cmd);
+                        .with_stderr_prefix(repo_file->basename() + "> ")
+                        .with_captured_stdout_stream(&s));
+                int exit_status(run_command(cmd));
                 kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
 
-                if (s.exit_status() != 0)
+                if (exit_status != 0)
                 {
                     Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*repo_file)
-                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                            + "' returned non-zero exit status '" + stringify(exit_status) + "'");
                     kv.reset();
                 }
             }

@@ -6,7 +6,6 @@
 #include <paludis/query.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <vtemm/terminal_widget.hh>
@@ -90,7 +89,6 @@ MessagesPage::set_capture_output_options()
 {
     set_run_command_stdout_fds(_imp->slave_fd, _imp->master_fd);
     set_run_command_stderr_fds(_imp->slave_fd, _imp->master_fd);
-    PStream::set_stderr_fd(_imp->slave_fd, _imp->master_fd);
     Log::get_instance()->set_log_stream(_imp->messages_stream.get());
 }
 

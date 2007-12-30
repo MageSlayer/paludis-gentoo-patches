@@ -20,10 +20,10 @@
 #include "bashable_conf.hh"
 #include <paludis/util/config_file.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -37,17 +37,19 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
 
     if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
     {
+        std::stringstream s;
         Command cmd(Command("bash '" + stringify(f) + "'")
                 .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                 .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .with_stderr_prefix(f.basename() + "> "));
-        PStream s(cmd);
+                .with_stderr_prefix(f.basename() + "> ")
+                .with_captured_stdout_stream(&s));
+        int exit_status(run_command(cmd));
         result.reset(new LineConfigFile(s, LineConfigFileOptions()));
 
-        if (s.exit_status() != 0)
+        if (exit_status != 0)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(f)
-                    + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    + "' returned non-zero exit status '" + stringify(exit_status) + "'");
             result.reset();
         }
     }

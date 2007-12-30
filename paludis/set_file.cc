@@ -21,13 +21,13 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/system.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
@@ -421,14 +421,16 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     Context context("When loading paludis bash set file '" + stringify(_p.file_name) + "':");
     _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
+    std::stringstream s;
     Command cmd(Command("bash '" + stringify(_p.file_name) + "'")
             .with_setenv("ROOT", _p.environment ? stringify(_p.environment->root()) : "/")
             .with_setenv("SET", stringify(_p.file_name))
             .with_setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_COMMAND", _p.environment ? _p.environment->paludis_command() : "")
-            .with_stderr_prefix(_p.file_name.basename() + "> "));
-    PStream s(cmd);
+            .with_stderr_prefix(_p.file_name.basename() + "> ")
+            .with_captured_stdout_stream(&s));
+    int exit_status(run_command(cmd));
 
     LineConfigFile ff(s, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments
             + lcfo_no_skip_blank_lines);
@@ -436,10 +438,10 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
             line != line_end ; ++line)
         do_one_conf_line(*line, _contents, _p);
 
-    if (s.exit_status() != 0)
+    if (exit_status != 0)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Set file script '" + stringify(_p.file_name) +
-                "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                "' returned non-zero exit status '" + stringify(exit_status) + "'");
         _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 }

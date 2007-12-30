@@ -20,7 +20,6 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
-#include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 
@@ -39,11 +38,12 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' -- "
-                        "bash output_wrapper_TEST_dir/stdout_prefix.bash"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(run_command(Command("./outputwrapper --stdout-prefix 'o p ' -- "
+                            "bash output_wrapper_TEST_dir/stdout_prefix.bash")
+                        .with_captured_stdout_stream(&p)), 0);
             std::string s((std::istreambuf_iterator<char>(p)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(s, "o p one\no p two\no p three\n");
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_stdout_prefix;
 
@@ -53,11 +53,12 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stderr-prefix 'e p ' -- "
-                        "bash output_wrapper_TEST_dir/stderr_prefix.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stderr-prefix 'e p ' -- "
+                            "bash output_wrapper_TEST_dir/stderr_prefix.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::string s((std::istreambuf_iterator<char>(p)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(s, "e p one\ne p two\ne p three\n");
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_stderr_prefix;
 
@@ -67,8 +68,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
-                        "bash output_wrapper_TEST_dir/mixed_prefix.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
+                            "bash output_wrapper_TEST_dir/mixed_prefix.bash 2>&1")
+                        .with_captured_stdout_stream(&p)), 0);
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -79,7 +82,6 @@ namespace test_cases
             TEST_CHECK(lines.count("e p one"));
             TEST_CHECK(lines.count("e p three"));
             TEST_CHECK(lines.count("o p two"));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_mixed_prefix;
 
@@ -89,7 +91,9 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("bash output_wrapper_TEST_dir/long_lines.bash"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(run_command(Command("bash output_wrapper_TEST_dir/long_lines.bash")
+                        .with_captured_stdout_stream(&p)), 0);
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -99,7 +103,6 @@ namespace test_cases
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(2));
             TEST_CHECK(lines.count("e p " + std::string(10000, 'e')));
             TEST_CHECK(lines.count("o p " + std::string(10000, 'o')));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_long_lines;
 
@@ -109,7 +112,9 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("bash output_wrapper_TEST_dir/no_trailing_newlines.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("bash output_wrapper_TEST_dir/no_trailing_newlines.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -118,7 +123,6 @@ namespace test_cases
             TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(1));
             TEST_CHECK(lines.count("o p monkeye p pants"));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_no_trailing_newline;
 
@@ -128,8 +132,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
-                        "bash output_wrapper_TEST_dir/exit_status.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(5, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
+                            "bash output_wrapper_TEST_dir/exit_status.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -139,7 +145,6 @@ namespace test_cases
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(2));
             TEST_CHECK(lines.count("o p lorem ipsum dolor"));
             TEST_CHECK(lines.count("e p sit amet"));
-            TEST_CHECK_EQUAL(5, p.exit_status());
         }
     } test_exit_status;
 
@@ -149,8 +154,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
-                        "bash output_wrapper_TEST_dir/no_wrap_blanks.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
+                            "bash output_wrapper_TEST_dir/no_wrap_blanks.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -162,7 +169,6 @@ namespace test_cases
             TEST_CHECK(lines.count("e p three"));
             TEST_CHECK(lines.count("o p two"));
             TEST_CHECK_EQUAL(lines.count(""), static_cast<std::size_t>(4));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_no_wrap_blanks;
 
@@ -172,8 +178,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/wrap_blanks.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --wrap-blanks -- "
+                            "bash output_wrapper_TEST_dir/wrap_blanks.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -186,7 +194,6 @@ namespace test_cases
             TEST_CHECK(lines.count("o p two"));
             TEST_CHECK_EQUAL(lines.count("e p "), static_cast<std::size_t>(2));
             TEST_CHECK_EQUAL(lines.count("o p "), static_cast<std::size_t>(2));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_wrap_blanks;
 
@@ -196,8 +203,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
-                        "bash output_wrapper_TEST_dir/discard_blank_output.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                            "bash output_wrapper_TEST_dir/discard_blank_output.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -205,7 +214,6 @@ namespace test_cases
 
             TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_discard_blank_output;
 
@@ -215,8 +223,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
-                        "bash output_wrapper_TEST_dir/discard_blank_output_not_blank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                            "bash output_wrapper_TEST_dir/discard_blank_output_not_blank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -226,7 +236,6 @@ namespace test_cases
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(4));
             TEST_CHECK(lines.count("o p monkey"));
             TEST_CHECK_EQUAL(lines.count(""), static_cast<std::size_t>(3));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_discard_blank_output_not_blank;
 
@@ -236,8 +245,11 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/discard_wrap_blank_output.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command(
+                            "./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                            "bash output_wrapper_TEST_dir/discard_wrap_blank_output.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -245,7 +257,6 @@ namespace test_cases
 
             TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_discard_wrap_blank_output;
 
@@ -255,8 +266,11 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/discard_wrap_blank_output_not_blank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(
+                        Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                            "bash output_wrapper_TEST_dir/discard_wrap_blank_output_not_blank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -266,7 +280,6 @@ namespace test_cases
             TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(4));
             TEST_CHECK(lines.count("o p monkey"));
             TEST_CHECK_EQUAL(lines.count("o p "), static_cast<std::size_t>(3));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_discard_wrap_blank_output_not_blank;
 
@@ -276,8 +289,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
-                        "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
+                            "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -299,7 +314,6 @@ namespace test_cases
             TEST_CHECK(lines.count("e p foo\\r\\re p bar"));
             TEST_CHECK(lines.count("\\re p foo"));
             TEST_CHECK_EQUAL(lines.count("\\r"), static_cast<std::size_t>(2));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_carriage_return;
 
@@ -309,8 +323,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --wrap-blanks -- "
+                        "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -333,7 +349,6 @@ namespace test_cases
             TEST_CHECK(lines.count("e p foo\\re p \\re p bar"));
             TEST_CHECK(lines.count("e p \\re p foo"));
             TEST_CHECK(lines.count("e p \\re p "));
-            TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_carriage_return_wrap_blank;
 
@@ -343,8 +358,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
-                        "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                            "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -366,8 +383,11 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(
+                        Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                            "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -389,8 +409,10 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
-                        "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                            "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))
@@ -415,8 +437,11 @@ namespace test_cases
 
         void run()
         {
-            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
-                        "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1"));
+            std::stringstream p;
+            TEST_CHECK_EQUAL(0, run_command(
+                        Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                            "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1")
+                        .with_captured_stdout_stream(&p)));
             std::multiset<std::string> lines;
             std::string line;
             while (std::getline(p, line))

@@ -57,7 +57,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
@@ -778,12 +777,14 @@ VDBRepository::get_environment_variable(
     }
     else if ((vdb_dir / "environment.bz2").is_regular_file_or_symlink_to_regular_file())
     {
-        PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
-                " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");
+        std::stringstream p;
+        Command cmd(Command("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
+                    " ; echo echo \\$" + var + " ) | bash 2>/dev/null'").with_captured_stdout_stream(&p));
+        int exit_status(run_command(cmd));
         std::string result(strip_trailing_string(std::string(
                         (std::istreambuf_iterator<char>(p)),
                         std::istreambuf_iterator<char>()), "\n"));
-        if (0 != p.exit_status())
+        if (0 != exit_status)
             throw ActionError("Could not load environment.bz2");
         return result;
     }

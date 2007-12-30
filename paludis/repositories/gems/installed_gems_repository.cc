@@ -30,7 +30,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/mutex.hh>
