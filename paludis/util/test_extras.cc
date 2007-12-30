@@ -23,7 +23,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/pstream.hh>
 #include <sstream>
 #include <fcntl.h>
 #include <test/test_framework.hh>
@@ -55,7 +54,6 @@ namespace
                 Log::get_instance()->set_log_stream(&s);
 
                 set_run_command_stderr_fds(dev_null_pid, -1);
-                PStream::set_stderr_fd(dev_null_pid, -1);
             }
             else
                 Log::get_instance()->set_log_level(ll_debug);
