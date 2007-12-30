@@ -22,26 +22,58 @@
 
 #include <python/paludis_python.hh>
 
+#include <paludis/util/validated.hh>
+
 namespace paludis
 {
     namespace python
     {
         // expose Validated classes
-        template <typename V_, typename Data_=std::string>
-        class class_validated :
-            public boost::python::class_<V_>
+        template <typename V_>
+        class class_validated;
+
+        template <typename ValidatedDataType_, typename Validator_>
+        class class_validated<Validated<ValidatedDataType_, Validator_, true> > :
+            public boost::python::class_<Validated<ValidatedDataType_, Validator_, true> >
         {
             public:
                 class_validated(const std::string & name,
                         const std::string & class_doc, const std::string & init_arg="string") :
-                    boost::python::class_<V_>(name.c_str(), class_doc.c_str(),
-                            boost::python::init<const Data_ &>(("__init__("+init_arg+")").c_str())
+                    boost::python::class_<Validated<ValidatedDataType_, Validator_, true> >(
+                            name.c_str(), class_doc.c_str(),
+                            boost::python::init<const ValidatedDataType_ &>(("__init__("+init_arg+")").c_str())
                             )
                 {
                     this->def(boost::python::self_ns::str(boost::python::self));
-                    boost::python::implicitly_convertible<Data_, V_>();
+                    this->def("__cmp__",
+                            &paludis::python::py_cmp<Validated<ValidatedDataType_, Validator_, true> >);
+                    boost::python::implicitly_convertible<ValidatedDataType_,
+                            Validated<ValidatedDataType_, Validator_, true> >();
                 }
         };
+
+        template <typename ValidatedDataType_, typename Validator_>
+        class class_validated<Validated<ValidatedDataType_, Validator_, false> > :
+            public boost::python::class_<Validated<ValidatedDataType_, Validator_, false> >
+        {
+            public:
+                class_validated(const std::string & name,
+                        const std::string & class_doc, const std::string & init_arg="string") :
+                    boost::python::class_<Validated<ValidatedDataType_, Validator_, false> >(
+                            name.c_str(), class_doc.c_str(),
+                            boost::python::init<const ValidatedDataType_ &>(("__init__("+init_arg+")").c_str())
+                            )
+                {
+                    this->def(boost::python::self_ns::str(boost::python::self));
+                    this->def("__eq__",
+                            &paludis::python::py_eq<Validated<ValidatedDataType_, Validator_, false> >);
+                    this->def("__ne__",
+                            &paludis::python::py_ne<Validated<ValidatedDataType_, Validator_, false> >);
+                    boost::python::implicitly_convertible<ValidatedDataType_,
+                            Validated<ValidatedDataType_, Validator_, false> >();
+                }
+        };
+
     } // namespace paludis::python
 } // namespace paludis
 
