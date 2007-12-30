@@ -65,12 +65,6 @@ namespace
     struct DoVersion
     {
     };
-
-    template <typename T_>
-    const void * address_of(const T_ & t)
-    {
-        return &t;
-    }
 }
 
 namespace
