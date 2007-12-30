@@ -27,6 +27,7 @@ IF_PYTHON_TESTS = \
 	version_operator_TEST.py \
 	version_requirements_TEST.py \
 	contents_TEST.py \
+	use_requirements_TEST.py \
 	dep_spec_TEST.py \
 	dep_tag_TEST.py \
 	dep_label_TEST.py \
@@ -72,6 +73,7 @@ IF_PYTHON_SOURCES = \
 	package_id.cc \
 	query.cc \
 	repository.cc \
+	use_requirements.cc \
 	version_operator.cc \
 	version_requirements.cc \
 	version_spec.cc

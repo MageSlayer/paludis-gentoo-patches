@@ -1176,22 +1176,6 @@ void expose_dep_spec()
         ;
 
     /**
-     * UseRequirements
-     */
-    bp::to_python_converter<std::pair<const UseFlagName, UseFlagState>,
-        pair_to_tuple<const UseFlagName, UseFlagState> >();
-    register_shared_ptrs_to_python<UseRequirements>();
-    bp::class_<UseRequirements>
-        (
-         "UseRequirements",
-         "A selection of USE flag requirements.",
-         bp::no_init
-        )
-
-        .def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end))
-        ;
-
-    /**
      * PackageDepSpec
      */
 
