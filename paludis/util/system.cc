@@ -351,7 +351,7 @@ paludis::run_command(const Command & cmd)
                 close(internal_command_reader->read_fd());
                 internal_command_reader->clear_read_fd();
                 close(internal_command_reader->write_fd());
-                internal_command_reader->write_fd();
+                internal_command_reader->clear_write_fd();
 
                 if (! cmd.chdir().empty())
                     if (-1 == chdir(stringify(cmd.chdir()).c_str()))
@@ -435,6 +435,8 @@ paludis::run_command(const Command & cmd)
             {
                 close(pipe_command_reader->read_fd());
                 pipe_command_reader->clear_read_fd();
+                close(pipe_command_reader->write_fd());
+                pipe_command_reader->clear_write_fd();
 
                 close(pipe_command_response->read_fd());
                 pipe_command_response->clear_read_fd();
