@@ -226,10 +226,12 @@ class RunTest
 {
     private:
         bool * const _had_a_failure;
+        const std::string _named_test;
 
     public:
-        RunTest(bool * had_a_failure) :
-            _had_a_failure(had_a_failure)
+        RunTest(bool * had_a_failure, const std::string & named_test) :
+            _had_a_failure(had_a_failure),
+            _named_test(named_test)
         {
         }
 
@@ -240,6 +242,12 @@ void
 RunTest::operator() (TestCase * test_case) const
 {
     bool had_local_failure(false);
+
+    if ((! _named_test.empty()) && (_named_test != test_case->name()))
+    {
+        std::cout << "* \"" << test_case->name() << "\": (skip due to NAMED_TEST_ONLY)" << std::endl;
+        return;
+    }
 
     std::cout << "* \"" << test_case->name() << "\": " << std::flush;
 
@@ -301,10 +309,14 @@ TestCaseList::run_tests()
 {
     bool had_a_failure(get_test_case_list()->empty());
 
+    std::string named_test;
+    if (getenv("NAMED_TEST_ONLY"))
+        named_test = getenv("NAMED_TEST_ONLY");
+
     std::for_each(
             get_test_case_list()->begin(),
             get_test_case_list()->end(),
-            RunTest(&had_a_failure));
+            RunTest(&had_a_failure, named_test));
 
     return ! had_a_failure;
 }
