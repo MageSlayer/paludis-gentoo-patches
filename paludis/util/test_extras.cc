@@ -57,7 +57,7 @@ namespace
             if (getenv_with_default("PALUDIS_TESTS_KEEP_LOG", "").empty())
                 Log::get_instance()->set_log_stream(s);
 
-            if (getenv_with_default("PALUDIS_TESTS_DEBUG_LOG", "").empty())
+            if (getenv_with_default("PALUDIS_TESTS_NO_DEBUG_LOG", "").empty())
                 Log::get_instance()->set_log_level(ll_debug);
         }
     };
