@@ -18,6 +18,7 @@
  */
 
 #include <paludis/action.hh>
+#include <paludis/repository.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -182,7 +183,7 @@ namespace
         {
             s << "install to ";
             if (a.options.destination)
-                s << &a.options.destination;
+                s << a.options.destination->name();
             else
                 s << "nowhere";
         }
