@@ -31,44 +31,6 @@
 
 using namespace paludis;
 
-namespace
-{
-    struct UseRequirementChecker :
-        ConstVisitor<UseRequirementVisitorTypes>
-    {
-        bool ok;
-        const Environment * const env;
-        const PackageID & id;
-
-        UseRequirementChecker(const Environment * const e, const PackageID & i) :
-            ok(true),
-            env(e),
-            id(i)
-        {
-        }
-
-        void visit(const EnabledUseRequirement & r)
-        {
-            ok = env->query_use(r.flag(), id);
-        }
-
-        void visit(const DisabledUseRequirement & r)
-        {
-            ok = ! env->query_use(r.flag(), id);
-        }
-
-        void visit(const EqualUseRequirement & r)
-        {
-            ok = (env->query_use(r.flag(), id) == env->query_use(r.flag(), *r.package_id()));
-        }
-
-        void visit(const NotEqualUseRequirement & r)
-        {
-            ok = ! (env->query_use(r.flag(), id) == env->query_use(r.flag(), *r.package_id()));
-        }
-    };
-}
-
 bool
 paludis::match_package(
         const Environment & env,
@@ -126,13 +88,8 @@ paludis::match_package(
     {
         for (UseRequirements::ConstIterator u(spec.use_requirements_ptr()->begin()),
                 u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
-        {
-            UseRequirementChecker v(&env, entry);
-            (*u)->accept(v);
-
-            if (! v.ok)
+            if (! (*u)->satisfied_by(&env, entry))
                 return false;
-        }
     }
 
     return true;

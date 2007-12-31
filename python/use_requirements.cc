@@ -20,6 +20,8 @@
 #include <python/paludis_python.hh>
 
 #include <paludis/use_requirements.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 
@@ -86,6 +88,11 @@ void expose_use_requirements()
                 "flag() -> UseFlagName\n"
                 "Our use flag."
             )
+
+        .def("satisfied_by", &UseRequirement::satisfied_by,
+                "satisfied_by(Environment, PackageID) -> bool\n"
+                "Does the package meet the requirement?"
+            )
         ;
 
     /**
@@ -109,9 +116,77 @@ void expose_use_requirements()
         );
 
     /**
+     * ConditionalUseRequirement
+     */
+    bp::class_<ConditionalUseRequirement, bp::bases<UseRequirement>, boost::noncopyable>
+        (
+         "ConditionalUseRequirement",
+         "A use requirement that depends on the use flags of the package it appears in.",
+         bp::no_init
+        )
+
+        .def("package_id", &ConditionalUseRequirement::package_id,
+                "package_id() -> PackageID\n"
+                "Out package."
+            )
+        ;
+
+    /**
+     * IfMineThenUseRequirement
+     */
+    bp::class_<IfMineThenUseRequirement, bp::bases<ConditionalUseRequirement> >
+        (
+         "IfMineThenUseRequirement",
+         "An if-then requirement for a use flag.",
+         bp::init<const UseFlagName &, const tr1::shared_ptr<const PackageID> &>(
+             "__init__(UseFlagName, PackageID)"
+             )
+        )
+        ;
+
+    /**
+     * IfNotMineThenUseRequirement
+     */
+    bp::class_<IfNotMineThenUseRequirement, bp::bases<ConditionalUseRequirement> >
+        (
+         "IfNotMineThenUseRequirement",
+         "An if-not-then requirement for a use flag.",
+         bp::init<const UseFlagName &, const tr1::shared_ptr<const PackageID> &>(
+             "__init__(UseFlagName, PackageID)"
+             )
+        )
+        ;
+
+    /**
+     * IfMineThenNotUseRequirement
+     */
+    bp::class_<IfMineThenNotUseRequirement, bp::bases<ConditionalUseRequirement> >
+        (
+         "IfMineThenNotUseRequirement",
+         "An if-then-not requirement for a use flag.",
+         bp::init<const UseFlagName &, const tr1::shared_ptr<const PackageID> &>(
+             "__init__(UseFlagName, PackageID)"
+             )
+        )
+        ;
+
+    /**
+     * IfNotMineThenNotUseRequirement
+     */
+    bp::class_<IfNotMineThenNotUseRequirement, bp::bases<ConditionalUseRequirement> >
+        (
+         "IfNotMineThenNotUseRequirement",
+         "An if-not-then-not requirement for a use flag.",
+         bp::init<const UseFlagName &, const tr1::shared_ptr<const PackageID> &>(
+             "__init__(UseFlagName, PackageID)"
+             )
+        )
+        ;
+
+    /**
      * EqualUseRequirement
      */
-    bp::class_<EqualUseRequirement, bp::bases<UseRequirement> >
+    bp::class_<EqualUseRequirement, bp::bases<ConditionalUseRequirement> >
         (
          "EqualUseRequirement",
          "An equal requirement for a use flag.",
@@ -119,17 +194,12 @@ void expose_use_requirements()
              "__init__(UseFlagName, PackageID)"
              )
         )
-
-        .def("package_id", &EqualUseRequirement::package_id,
-                "package_id() -> PackageID\n"
-                "Our package."
-            )
         ;
 
     /**
      * NotEqualUseRequirement
      */
-    bp::class_<NotEqualUseRequirement, bp::bases<UseRequirement> >
+    bp::class_<NotEqualUseRequirement, bp::bases<ConditionalUseRequirement> >
         (
          "NotEqualUseRequirement",
          "A not equal requirement for a use flag.",
@@ -137,11 +207,6 @@ void expose_use_requirements()
              "__init__(UseFlagName, PackageID)"
              )
         )
-
-        .def("package_id", &NotEqualUseRequirement::package_id,
-                "package_id() -> PackageID\n"
-                "Our package."
-            )
         ;
 
 }

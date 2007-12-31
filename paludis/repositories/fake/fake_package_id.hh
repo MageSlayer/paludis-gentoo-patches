@@ -179,7 +179,8 @@ namespace paludis
 
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
-        private PrivateImplementationPattern<FakePackageID>
+        private PrivateImplementationPattern<FakePackageID>,
+        public tr1::enable_shared_from_this<FakePackageID>
     {
         private:
             PrivateImplementationPattern<FakePackageID>::ImpPtr & _imp;

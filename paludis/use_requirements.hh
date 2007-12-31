@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_USE_REQUIREMENTS_HH 1
 
 #include <paludis/use_requirements-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -83,6 +84,10 @@ namespace paludis
             UseRequirement,
             EnabledUseRequirement,
             DisabledUseRequirement,
+            IfMineThenUseRequirement,
+            IfNotMineThenUseRequirement,
+            IfMineThenNotUseRequirement,
+            IfNotMineThenNotUseRequirement,
             EqualUseRequirement,
             NotEqualUseRequirement
         >
@@ -98,11 +103,26 @@ namespace paludis
     class PALUDIS_VISIBLE UseRequirement :
         public virtual ConstAcceptInterface<UseRequirementVisitorTypes>
     {
+        private:
+            const UseFlagName _name;
+
         public:
+            ///\name Basic operations
+            ///\{
+
+            UseRequirement(const UseFlagName &);
             virtual ~UseRequirement() = 0;
 
+            ///\}
+
             /// Our use flag.
-            virtual const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _name;
+            }
+
+            /// Does the package meet the requirement?
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -115,9 +135,6 @@ namespace paludis
         public UseRequirement,
         public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, EnabledUseRequirement>
     {
-        private:
-            const UseFlagName _name;
-
         public:
             ///\name Basic operations
             ///\{
@@ -127,7 +144,7 @@ namespace paludis
 
             ///\}
 
-            virtual const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -140,9 +157,6 @@ namespace paludis
         public UseRequirement,
         public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, DisabledUseRequirement>
     {
-        private:
-            const UseFlagName _name;
-
         public:
             ///\name Basic operations
             ///\{
@@ -152,7 +166,128 @@ namespace paludis
 
             ///\}
 
-            const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * A use requirement that depends on the use flags of the package
+     * it appears in.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE ConditionalUseRequirement :
+        public UseRequirement
+    {
+        private:
+            const tr1::shared_ptr<const PackageID> _id;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ConditionalUseRequirement(const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+            ~ConditionalUseRequirement();
+
+            ///\}
+
+            /// Our package.
+            const tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _id;
+            }
+    };
+
+    /**
+     * An if-then requirement for a use flag.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE IfMineThenUseRequirement :
+        public ConditionalUseRequirement,
+        public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, IfMineThenUseRequirement>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            IfMineThenUseRequirement(const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+            ~IfMineThenUseRequirement();
+
+            ///\}
+
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+    };
+
+    /**
+     * An if-not-then requirement for a use flag.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE IfNotMineThenUseRequirement :
+        public ConditionalUseRequirement,
+        public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, IfNotMineThenUseRequirement>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            IfNotMineThenUseRequirement(const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+            ~IfNotMineThenUseRequirement();
+
+            ///\}
+
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+    };
+
+    /**
+     * An if-then-not requirement for a use flag.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE IfMineThenNotUseRequirement :
+        public ConditionalUseRequirement,
+        public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, IfMineThenNotUseRequirement>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            IfMineThenNotUseRequirement(const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+            ~IfMineThenNotUseRequirement();
+
+            ///\}
+
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+    };
+
+    /**
+     * An if-not-then-not requirement for a use flag.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE IfNotMineThenNotUseRequirement :
+        public ConditionalUseRequirement,
+        public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, IfNotMineThenNotUseRequirement>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            IfNotMineThenNotUseRequirement(const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+            ~IfNotMineThenNotUseRequirement();
+
+            ///\}
+
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
     };
 
     /**
@@ -162,13 +297,9 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE EqualUseRequirement :
-        public UseRequirement,
+        public ConditionalUseRequirement,
         public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, EqualUseRequirement>
     {
-        private:
-            const UseFlagName _name;
-            const tr1::shared_ptr<const PackageID> _id;
-
         public:
             ///\name Basic operations
             ///\{
@@ -178,10 +309,8 @@ namespace paludis
 
             ///\}
 
-            const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /// Our package.
-            const tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -191,13 +320,9 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE NotEqualUseRequirement :
-        public UseRequirement,
+        public ConditionalUseRequirement,
         public ConstAcceptInterfaceVisitsThis<UseRequirementVisitorTypes, NotEqualUseRequirement>
     {
-        private:
-            const UseFlagName _name;
-            const tr1::shared_ptr<const PackageID> _id;
-
         public:
             ///\name Basic operations
             ///\{
@@ -207,10 +332,7 @@ namespace paludis
 
             ///\}
 
-            const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /// Our package.
-            const tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool satisfied_by(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

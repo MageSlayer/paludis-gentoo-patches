@@ -28,6 +28,10 @@ namespace paludis
     class UseRequirementVisitorTypes;
     class EnabledUseRequirement;
     class DisabledUseRequirement;
+    class IfMineThenUseRequirement;
+    class IfNotMineThenUseRequirement;
+    class IfMineThenNotUseRequirement;
+    class IfNotMineThenNotUseRequirement;
     class EqualUseRequirement;
     class NotEqualUseRequirement;
 }

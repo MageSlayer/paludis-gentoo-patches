@@ -51,14 +51,34 @@ namespace
             s << "[!" << r.flag() << "]";
         }
 
-        void visit(const EqualUseRequirement & r)
+        void visit(const IfMineThenUseRequirement & r)
         {
             s << "[" << r.flag() << "?] (using '" << *r.package_id() << "')";
         }
 
+        void visit(const IfNotMineThenUseRequirement & r)
+        {
+            s << "[" << r.flag() << "!?] (using '" << *r.package_id() << "')";
+        }
+
+        void visit(const IfMineThenNotUseRequirement & r)
+        {
+            s << "[-" << r.flag() << "?] (using '" << *r.package_id() << "')";
+        }
+
+        void visit(const IfNotMineThenNotUseRequirement & r)
+        {
+            s << "[-" << r.flag() << "!?] (using '" << *r.package_id() << "')";
+        }
+
+        void visit(const EqualUseRequirement & r)
+        {
+            s << "[" << r.flag() << "=] (using '" << *r.package_id() << "')";
+        }
+
         void visit(const NotEqualUseRequirement & r)
         {
-            s << "[!" << r.flag() << "?] (using '" << *r.package_id() << "')";
+            s << "[" << r.flag() << "!=] (using '" << *r.package_id() << "')";
         }
     };
 }

@@ -135,12 +135,23 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
             default:
                 {
                     tr1::shared_ptr<const UseRequirement> req;
-                    if ('-' == flag.at(0))
+                    if ('=' == flag.at(flag.length() - 1))
                     {
-                        flag.erase(0, 1);
+                        if (! id)
+                            throw PackageDepSpecError("Cannot use [use=] without an associated ID");
+
+                        flag.erase(flag.length() - 1);
                         if (flag.empty())
                             throw PackageDepSpecError("Invalid [] contents");
-                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
+                        if ('!' == flag.at(flag.length() - 1))
+                        {
+                            flag.erase(flag.length() - 1);
+                            if (flag.empty())
+                                throw PackageDepSpecError("Invalid [] contents");
+                            req.reset(new NotEqualUseRequirement(UseFlagName(flag), id));
+                        }
+                        else
+                            req.reset(new EqualUseRequirement(UseFlagName(flag), id));
                     }
                     else if ('?' == flag.at(flag.length() - 1))
                     {
@@ -155,10 +166,37 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
                             flag.erase(flag.length() - 1);
                             if (flag.empty())
                                 throw PackageDepSpecError("Invalid [] contents");
-                            req.reset(new NotEqualUseRequirement(UseFlagName(flag), id));
+                            if ('-' == flag.at(0))
+                            {
+                                flag.erase(0, 1);
+                                if (flag.empty())
+                                    throw PackageDepSpecError("Invalid [] contents");
+
+                                req.reset(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
+                            }
+                            else
+                                req.reset(new IfNotMineThenUseRequirement(UseFlagName(flag), id));
                         }
                         else
-                            req.reset(new EqualUseRequirement(UseFlagName(flag), id));
+                        {
+                            if ('-' == flag.at(0))
+                            {
+                                flag.erase(0, 1);
+                                if (flag.empty())
+                                    throw PackageDepSpecError("Invalid [] contents");
+
+                                req.reset(new IfMineThenNotUseRequirement(UseFlagName(flag), id));
+                            }
+                            else
+                                req.reset(new IfMineThenUseRequirement(UseFlagName(flag), id));
+                        }
+                    }
+                    else if ('-' == flag.at(0))
+                    {
+                        flag.erase(0, 1);
+                        if (flag.empty())
+                            throw PackageDepSpecError("Invalid [] contents");
+                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
                     }
                     else
                         req.reset(new EnabledUseRequirement(UseFlagName(flag)));

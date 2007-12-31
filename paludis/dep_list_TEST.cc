@@ -1391,6 +1391,394 @@ namespace test_cases
     } test_dep_list_65;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase66 : DepListTestCase<66>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname?] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname?] )");
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname?] )");
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat6/disabled-1:0::repo");
+            expected.push_back("cat5/disabled-1:0::repo");
+            expected.push_back("cat4/enabled-1:0::repo");
+            expected.push_back("cat3/disabled-1:0::repo");
+            expected.push_back("cat2/enabled-1:0::repo");
+            expected.push_back("cat1/enabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_66;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase67 : DepListTestCase<67>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname?] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/enabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_67;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase68 : DepListTestCase<68>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!?] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!?] )");
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname!?] )");
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat6/disabled-1:0::repo");
+            expected.push_back("cat5/enabled-1:0::repo");
+            expected.push_back("cat4/enabled-1:0::repo");
+            expected.push_back("cat3/enabled-1:0::repo");
+            expected.push_back("cat2/enabled-1:0::repo");
+            expected.push_back("cat1/disabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_68;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase69 : DepListTestCase<69>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!?] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/disabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_69;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase70 : DepListTestCase<70>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname?] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname?] )");
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname?] )");
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat6/disabled-1:0::repo");
+            expected.push_back("cat5/disabled-1:0::repo");
+            expected.push_back("cat4/enabled-1:0::repo");
+            expected.push_back("cat3/disabled-1:0::repo");
+            expected.push_back("cat2/disabled-1:0::repo");
+            expected.push_back("cat1/enabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_70;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase71 : DepListTestCase<71>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[-pkgname?] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/enabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_71;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase72 : DepListTestCase<72>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname!?] )");
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname!?] )");
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat6/disabled-1:0::repo");
+            expected.push_back("cat5/enabled-1:0::repo");
+            expected.push_back("cat4/enabled-1:0::repo");
+            expected.push_back("cat3/enabled-1:0::repo");
+            expected.push_back("cat2/disabled-1:0::repo");
+            expected.push_back("cat1/disabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_72;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase73 : DepListTestCase<73>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/disabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_73;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase74 : DepListTestCase<74>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/disabled[pkgname=] )");
+            repo->add_version("cat4", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat4/disabled-1:0::repo");
+            expected.push_back("cat3/disabled-1:0::repo");
+            expected.push_back("cat2/enabled-1:0::repo");
+            expected.push_back("cat1/enabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_74;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase75 : DepListTestCase<75>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname=] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/enabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_75;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase76 : DepListTestCase<76>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/disabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_76;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase77 : DepListTestCase<77>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!=] )");
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/all";
+            expected.push_back("cat4/enabled-1:0::repo");
+            expected.push_back("cat3/disabled-1:0::repo");
+            expected.push_back("cat2/disabled-1:0::repo");
+            expected.push_back("cat1/enabled-1:0::repo");
+            expected.push_back("cat/all-1:0::repo");
+        }
+    } test_dep_list_77;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase78 : DepListTestCase<78>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/enabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_78;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase79 : DepListTestCase<79>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!=] )");
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat1/disabled";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env, DepListOptions());
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+                        env.default_destinations()), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_79;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      */

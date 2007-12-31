@@ -25,6 +25,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/use_requirements.hh>
 #include <test/test_framework.hh>
@@ -172,6 +173,15 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_spec, "1.4");
             TEST_CHECK_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_operator, vo_tilde);
             TEST_CHECK(! m.slot_ptr());
+
+            PackageDepSpec n(make_package_dep_spec()
+                    .use_requirement(make_shared_ptr(new IfMineThenUseRequirement(UseFlagName("if-mine-then"), tr1::shared_ptr<const PackageID>())))
+                    .use_requirement(make_shared_ptr(new IfNotMineThenUseRequirement(UseFlagName("if-not-mine-then"), tr1::shared_ptr<const PackageID>())))
+                    .use_requirement(make_shared_ptr(new IfMineThenNotUseRequirement(UseFlagName("if-mine-then-not"), tr1::shared_ptr<const PackageID>())))
+                    .use_requirement(make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName("if-not-mine-then-not"), tr1::shared_ptr<const PackageID>())))
+                    .use_requirement(make_shared_ptr(new EqualUseRequirement(UseFlagName("equal"), tr1::shared_ptr<const PackageID>())))
+                    .use_requirement(make_shared_ptr(new NotEqualUseRequirement(UseFlagName("not-equal"), tr1::shared_ptr<const PackageID>()))));
+            TEST_CHECK_STRINGIFY_EQUAL(n, "*/*[if-mine-then?][if-not-mine-then!?][-if-mine-then-not?][-if-not-mine-then-not!?][equal=][not-equal!=]");
         }
     } test_package_dep_spec;
 

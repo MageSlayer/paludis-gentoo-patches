@@ -18,6 +18,7 @@
  */
 
 #include <paludis/use_requirements.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -97,12 +98,17 @@ UseRequirements::empty() const
     return _imp->reqs.empty();
 }
 
+UseRequirement::UseRequirement(const UseFlagName & n) :
+    _name(n)
+{
+}
+
 UseRequirement::~UseRequirement()
 {
 }
 
 EnabledUseRequirement::EnabledUseRequirement(const UseFlagName & n) :
-    _name(n)
+    UseRequirement(n)
 {
 }
 
@@ -110,14 +116,14 @@ EnabledUseRequirement::~EnabledUseRequirement()
 {
 }
 
-const UseFlagName
-EnabledUseRequirement::flag() const
+bool
+EnabledUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
 {
-    return _name;
+    return env->query_use(flag(), pkg);
 }
 
 DisabledUseRequirement::DisabledUseRequirement(const UseFlagName & n) :
-    _name(n)
+    UseRequirement(n)
 {
 }
 
@@ -125,15 +131,84 @@ DisabledUseRequirement::~DisabledUseRequirement()
 {
 }
 
-const UseFlagName
-DisabledUseRequirement::flag() const
+bool
+DisabledUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
 {
-    return _name;
+    return ! env->query_use(flag(), pkg);
+}
+
+ConditionalUseRequirement::ConditionalUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+    UseRequirement(n),
+    _id(i)
+{
+}
+
+ConditionalUseRequirement::~ConditionalUseRequirement()
+{
+}
+
+IfMineThenUseRequirement::IfMineThenUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+    ConditionalUseRequirement(n, i)
+{
+}
+
+IfMineThenUseRequirement::~IfMineThenUseRequirement()
+{
+}
+
+bool
+IfMineThenUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
+{
+    return ! env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+}
+
+IfNotMineThenUseRequirement::IfNotMineThenUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+    ConditionalUseRequirement(n, i)
+{
+}
+
+IfNotMineThenUseRequirement::~IfNotMineThenUseRequirement()
+{
+}
+
+bool
+IfNotMineThenUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
+{
+    return env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+}
+
+IfMineThenNotUseRequirement::IfMineThenNotUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+    ConditionalUseRequirement(n, i)
+{
+}
+
+IfMineThenNotUseRequirement::~IfMineThenNotUseRequirement()
+{
+}
+
+bool
+IfMineThenNotUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
+{
+    return ! env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
+}
+
+IfNotMineThenNotUseRequirement::IfNotMineThenNotUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+    ConditionalUseRequirement(n, i)
+{
+}
+
+IfNotMineThenNotUseRequirement::~IfNotMineThenNotUseRequirement()
+{
+}
+
+bool
+IfNotMineThenNotUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
+{
+    return env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
 }
 
 EqualUseRequirement::EqualUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
-    _name(n),
-    _id(i)
+    ConditionalUseRequirement(n, i)
 {
 }
 
@@ -141,21 +216,14 @@ EqualUseRequirement::~EqualUseRequirement()
 {
 }
 
-const UseFlagName
-EqualUseRequirement::flag() const
+bool
+EqualUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
 {
-    return _name;
-}
-
-const tr1::shared_ptr<const PackageID>
-EqualUseRequirement::package_id() const
-{
-    return _id;
+    return env->query_use(flag(), pkg) == env->query_use(flag(), *package_id());
 }
 
 NotEqualUseRequirement::NotEqualUseRequirement(const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
-    _name(n),
-    _id(i)
+    ConditionalUseRequirement(n, i)
 {
 }
 
@@ -163,15 +231,9 @@ NotEqualUseRequirement::~NotEqualUseRequirement()
 {
 }
 
-const UseFlagName
-NotEqualUseRequirement::flag() const
+bool
+NotEqualUseRequirement::satisfied_by(const Environment * const env, const PackageID & pkg) const
 {
-    return _name;
-}
-
-const tr1::shared_ptr<const PackageID>
-NotEqualUseRequirement::package_id() const
-{
-    return _id;
+    return env->query_use(flag(), pkg) != env->query_use(flag(), *package_id());
 }
 

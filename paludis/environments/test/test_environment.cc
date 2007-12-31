@@ -57,8 +57,11 @@ TestEnvironment::~TestEnvironment()
 }
 
 bool
-TestEnvironment::query_use(const UseFlagName & u, const PackageID &) const
+TestEnvironment::query_use(const UseFlagName & u, const PackageID & p) const
 {
+    if (UseFlagName("pkgname") == u)
+        return PackageNamePart("enabled") == p.name().package;
+
     return (std::string::npos != u.data().find("enabled"));
 }
 
