@@ -59,12 +59,12 @@ namespace paludis
             ///\name File descriptors
             ///\{
 
-            int read_fd() const
+            int read_fd() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _fds[0];
             }
 
-            int write_fd() const
+            int write_fd() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _fds[1];
             }
