@@ -148,6 +148,15 @@ make_class_EAPIEbuildOptions()
 END
 }
 
+make_class_EAPIPipeCommands()
+{
+    visible
+    allow_named_args cc
+
+    key rewrite_virtuals bool
+    key no_slot_or_repo bool
+}
+
 make_class_SupportedEAPI()
 {
     visible
@@ -166,6 +175,7 @@ make_class_SupportedEAPI()
     key ebuild_environment_variables  "tr1::shared_ptr<const EAPIEbuildEnvironmentVariables>"
     key uri_labels                    "tr1::shared_ptr<const EAPILabels>"
     key dependency_labels             "tr1::shared_ptr<const EAPILabels>"
+    key pipe_commands                 "tr1::shared_ptr<const EAPIPipeCommands>"
 
     doxygen_comment << "END"
         /**

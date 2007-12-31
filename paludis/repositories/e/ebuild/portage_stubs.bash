@@ -20,11 +20,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-has_version()
-{
-    ${PALUDIS_COMMAND} --has-version "$@"
-}
-
 portageq()
 {
     # \todo Make this suck less...
@@ -52,7 +47,10 @@ portageq()
             die "portageq match emulation only works on current ROOT"
         else
             shift ; shift
-            ${PALUDIS_COMMAND} --match "$@"
+            [[ "${#@}" -ne 1 ]] && die "match should take exactly one arg"
+            local r=$(paludis_pipe_command MATCH "$EAPI" "$1" ) m=""
+            echo "${r#*;}"
+            return ${r%%;*}
         fi
     else
         eerror "Error emulating 'portageq $@':"
@@ -62,14 +60,25 @@ portageq()
 
 best_version()
 {
-    ${PALUDIS_COMMAND} --best-version "$@"
+    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
+    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$1" )
+    echo ${r#*;}
+    return ${r%%;*}
+}
+
+has_version()
+{
+    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
+    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$1" )
+    return ${r%%;*}
 }
 
 vdb_path()
 {
-    if ! ${PALUDIS_COMMAND} --configuration-variable installed location ; then
-        die "Could not find vdb_path"
-    fi
+    [[ "${#@}" -ne 0 ]] && die "vdb_path should take exactly zero args"
+    local r=$(paludis_pipe_command VDB_PATH "$EAPI" "$1" )
+    echo ${r#*;}
+    return ${r%%;*}
 }
 
 check_KV()

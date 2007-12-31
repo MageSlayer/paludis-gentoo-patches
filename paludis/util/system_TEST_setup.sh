@@ -7,11 +7,21 @@ cd system_TEST_dir || exit 3
 cat <<'END' > pipe_test.bash
 #!/bin/bash
 
-echo $1 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
-read -u$PALUDIS_PIPE_COMMAND_READ_FD response1
+echo "$1" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
+response1=
+while true ; do
+    c=$(head -c1 <&$PALUDIS_PIPE_COMMAND_READ_FD )
+    [[ "$c" == $'\0' ]] && break
+    response1="${response1}${c}"
+done
 
-echo $2 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
-read -u$PALUDIS_PIPE_COMMAND_READ_FD response2
+echo "$2" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
+response2=
+while true ; do
+    c=$(head -c1 <&$PALUDIS_PIPE_COMMAND_READ_FD )
+    [[ "$c" == $'\0' ]] && break
+    response2="${response2}${c}"
+done
 
 exit $response1$response2
 END
@@ -19,14 +29,29 @@ END
 cat <<'END' > captured_pipe_test.bash
 #!/bin/bash
 
-echo $1 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
-read -u$PALUDIS_PIPE_COMMAND_READ_FD response1
+echo "$1" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
+response1=
+while true ; do
+    c=$(head -c1 <&$PALUDIS_PIPE_COMMAND_READ_FD )
+    [[ "$c" == $'\0' ]] && break
+    response1="${response1}${c}"
+done
 
-echo $2 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
-read -u$PALUDIS_PIPE_COMMAND_READ_FD response2
+echo "$2" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
+response2=
+while true ; do
+    c=$(head -c1 <&$PALUDIS_PIPE_COMMAND_READ_FD )
+    [[ "$c" == $'\0' ]] && break
+    response2="${response2}${c}"
+done
 
-echo $3 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
-read -u$PALUDIS_PIPE_COMMAND_READ_FD response3
+echo "$3" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
+response3=
+while true ; do
+    c=$(head -c1 <&$PALUDIS_PIPE_COMMAND_READ_FD )
+    [[ "$c" == $'\0' ]] && break
+    response3="${response3}${c}"
+done
 
 echo $response2
 

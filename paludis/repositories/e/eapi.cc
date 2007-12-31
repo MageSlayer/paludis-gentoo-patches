@@ -122,6 +122,11 @@ namespace paludis
                                                 .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
                                                 )))
 
+                                                .pipe_commands(make_shared_ptr(new EAPIPipeCommands(
+                                                                EAPIPipeCommands::create()
+                                                                .rewrite_virtuals(destringify<bool>(k.get("pipe_commands_rewrite_virtuals")))
+                                                                .no_slot_or_repo(destringify<bool>(k.get("pipe_commands_no_slot_or_repo"))))))
+
                                                 .ebuild_phases(make_shared_ptr(new EAPIEbuildPhases(
                                                                 EAPIEbuildPhases::create()
                                                                 .ebuild_install(k.get("ebuild_install"))

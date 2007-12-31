@@ -4,6 +4,9 @@
 mkdir e_repository_TEST_dir || exit 1
 cd e_repository_TEST_dir || exit 1
 
+mkdir -p vdb
+touch vdb/THISISTHEVDB
+
 mkdir -p build
 
 mkdir -p distdir
@@ -477,6 +480,10 @@ mkdir -p repo13/{profiles/profile,metadata,eclass} || exit 1
 cd repo13 || exit 1
 echo "test-repo-13" >> profiles/repo_name || exit 1
 echo "cat" >> profiles/categories || exit 1
+cat <<END > profiles/profile/virtuals
+virtual/virtual-pretend-installed cat/pretend-installed
+virtual/virtual-doesnotexist cat/doesnotexist
+END
 cat <<END > profiles/profile/make.defaults
 ARCH="test"
 USERLAND="GNU"
@@ -556,6 +563,20 @@ src_compile() {
     emake monkey
 }
 END
+mkdir -p "cat/pretend-installed"
+cat <<END > cat/pretend-installed/pretend-installed-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    die "not supposed to install this"
+}
+END
 mkdir -p "cat/econf-source"
 cat <<END > cat/econf-source/econf-source-0.ebuild || exit 1
 EAPI="\${PV}"
@@ -582,11 +603,107 @@ src_install() {
 }
 END
 cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
+mkdir -p "cat/best-version"
+cat <<'END' > cat/best-version/best-version-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    if ! best_version cat/pretend-installed >/dev/null ; then
+        die "failed cat/pretend-installed"
+    fi
+
+    BV1=$(best_version cat/pretend-installed )
+    [[ "$BV1" == "cat/pretend-installed-1" ]] || die "BV1 is $BV1"
+
+    if best_version cat/doesnotexist >/dev/null ; then
+        die "not failed cat/doesnotexist"
+    fi
+
+    BV2=$(best_version cat/doesnotexist )
+    [[ "$BV2" == "" ]] || die "BV2 is $BV2"
+
+    if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
+        die "failed virtual/virtual-pretend-installed"
+    fi
+
+    BV3=$(best_version virtual/virtual-pretend-installed )
+    [[ "$BV3" == "cat/pretend-installed-1" ]] || die "BV3 is $BV3"
+
+    if best_version virtual/virtual-doesnotexist >/dev/null ; then
+        die "not failed virtual/virtual-doesnotexist"
+    fi
+
+    BV2=$(best_version virtual/virtual-doesnotexist )
+    [[ "$BV4" == "" ]] || die "BV4 is $BV4"
+}
+END
+mkdir -p "cat/has-version"
+cat <<'END' > cat/has-version/has-version-0.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    if ! has_version cat/pretend-installed ; then
+        die "failed cat/pretend-installed"
+    fi
+
+    if has_version cat/doesnotexist >/dev/null ; then
+        die "not failed cat/doesnotexist"
+    fi
+}
+END
+mkdir -p "cat/match"
+cat <<'END' > cat/match/match-0.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    if ! portageq match "${ROOT}" cat/pretend-installed >/dev/null ; then
+        die "failed cat/pretend-installed"
+    fi
+
+    cat <<'DONE' > ${T}/expected
+cat/pretend-installed-0
+cat/pretend-installed-1
+DONE
+    portageq match "${ROOT}" cat/pretend-installed > ${T}/got
+    cmp ${T}/expected ${T}/got || die "oops"
+
+    if portageq match "${ROOT}" cat/doesnotexist >/dev/null ; then
+        die "not failed cat/doesnotexist"
+    fi
+
+    BV2=$(portageq match "${ROOT}" cat/doesnotexist )
+    [[ "$BV2" == "" ]] || die "BV2 is $BV2"
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
 cd repo14 || exit 1
 echo "test-repo-14" >> profiles/repo_name || exit 1
+cat <<END > profiles/profile/virtuals
+virtual/virtual-pretend-installed cat/pretend-installed
+virtual/virtual-doesnotexist cat/doesnotexist
+END
 echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
@@ -661,6 +778,83 @@ PLATFORMS="test"
 
 src_compile() {
     emake monkey
+}
+END
+mkdir -p "packages/cat/best-version"
+cat <<'END' > packages/cat/best-version/best-version-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    if ! best_version cat/pretend-installed >/dev/null ; then
+        die "failed cat/pretend-installed"
+    fi
+
+    BV1=$(best_version cat/pretend-installed )
+    [[ "$BV1" == "cat/pretend-installed-1:0::installed" ]] || die "BV1 is $BV1"
+
+    if best_version cat/doesnotexist >/dev/null ; then
+        die "not failed cat/doesnotexist"
+    fi
+
+    BV2=$(best_version cat/doesnotexist )
+    [[ "$BV2" == "" ]] || die "BV2 is $BV2"
+
+    if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
+        die "failed virtual/virtual-pretend-installed"
+    fi
+
+    BV3=$(best_version virtual/virtual-pretend-installed )
+    [[ "$BV3" == "virtual/virtual-pretend-installed-1::installed-virtuals (virtual for cat/pretend-installed-1:0::installed)" ]] \
+        || die "BV3 is $BV3"
+
+    if best_version virtual/virtual-doesnotexist >/dev/null ; then
+        die "not failed virtual/virtual-doesnotexist"
+    fi
+
+    BV2=$(best_version virtual/virtual-doesnotexist )
+    [[ "$BV4" == "" ]] || die "BV4 is $BV4"
+}
+END
+mkdir -p "packages/cat/has-version"
+cat <<'END' > packages/cat/has-version/has-version-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    if ! has_version cat/pretend-installed ; then
+        die "failed cat/pretend-installed"
+    fi
+
+    if has_version cat/doesnotexist >/dev/null ; then
+        die "not failed cat/doesnotexist"
+    fi
+}
+END
+mkdir -p "packages/cat/match"
+cat <<'END' > packages/cat/match/match-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORM="test"
+
+pkg_setup() {
+    portageq match "${ROOT}" cat/foo | while read a ; do
+        einfo moo
+    done
 }
 END
 cd ..

@@ -94,6 +94,38 @@ ebuild_load_module()
     exit 123
 }
 
+paludis_pipe_command()
+{
+    [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
+
+    [[ -z "${PALUDIS_PIPE_COMMAND_WRITE_FD}" ]] && die "PALUDIS_PIPE_COMMAND_WRITE_FD unset"
+    [[ -z "${PALUDIS_PIPE_COMMAND_READ_FD}" ]] && die "PALUDIS_PIPE_COMMAND_READ_FD unset"
+
+    local r r1 rest
+    r="$(echo "$@" | {
+        if ! locked_pipe_command "${PALUDIS_PIPE_COMMAND_WRITE_FD}" "${PALUDIS_PIPE_COMMAND_READ_FD}" ; then
+            # die might not be available yet
+            die "locked_pipe_command failed"
+
+            echo "!!! locked_pipe_command failed, and no die available yet" 1>&2
+            kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+            exit 249
+        fi
+    })"
+
+    r1="${r:0:1}"
+    rest="${r:1}"
+    if [[ "${r1}" != "O" ]] ; then
+        die "paludis_pipe_command returned error '${r1}' with text '${rest}'"
+
+        echo "!!! paludis_pipe_command returned error '${r1}' with text '${rest}', and no die available yet" 1>&2
+        kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+        exit 249
+    fi
+
+    echo "$rest"
+}
+
 ebuild_load_module die_functions
 ebuild_load_module echo_functions
 ebuild_load_module kernel_functions
@@ -106,6 +138,11 @@ ebuild_load_module build_functions
 ebuild_load_module eclass_functions
 ebuild_load_module exlib_functions
 ebuild_load_module source_functions
+
+if [[ -z "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] ; then
+    pcr=$(paludis_pipe_command PING DUNNOYET $$ )
+    [[ "$pcr" == "PONG $$" ]] || die "paludis_pipe_command isn't working (got '$pcr')"
+fi
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
@@ -203,7 +240,7 @@ ebuild_scrub_environment()
         ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES || exit 1
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
-        unset -f ebuild_safe_source portageq best_version has_version
+        unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
 
         unset -v ROOTPATH T HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
         unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR

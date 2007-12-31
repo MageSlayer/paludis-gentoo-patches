@@ -23,6 +23,8 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -1039,6 +1041,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
@@ -1054,7 +1057,15 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+            installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
+
+            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            iv_keys->insert("root", "/");
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env, iv_keys));
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
+                        tr1::shared_ptr<Map<std::string, std::string> >()));
 
             InstallAction action(InstallActionOptions::create()
                     .debug_build(iado_none)
@@ -1062,6 +1073,13 @@ namespace test_cases
                     .no_config_protect(false)
                     .destination(installed_repo)
                     );
+
+            {
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=virtual/virtual-pretend-installed-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+            }
 
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
@@ -1116,6 +1134,33 @@ namespace test_cases
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**id->find_metadata("EAPI"))->value(), "0");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("best version", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("has version", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("match", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
             }
         }
     } test_e_repository_install_eapi_0;
@@ -1195,7 +1240,15 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+            installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
+
+            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            iv_keys->insert("root", "/");
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env, iv_keys));
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
+                        tr1::shared_ptr<Map<std::string, std::string> >()));
 
             InstallAction action(InstallActionOptions::create()
                     .debug_build(iado_none)
@@ -1244,6 +1297,33 @@ namespace test_cases
                 TestMessageSuffix suffix("emake fail", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("best version", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("has version", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("match", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);

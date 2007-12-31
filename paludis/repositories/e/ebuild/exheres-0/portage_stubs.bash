@@ -22,7 +22,9 @@
 
 has_version()
 {
-    ${PALUDIS_COMMAND} --has-version "$@"
+    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
+    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$1" )
+    return ${r%%;*}
 }
 
 portageq()
@@ -32,7 +34,10 @@ portageq()
 
 best_version()
 {
-    ${PALUDIS_COMMAND} --best-version "$@"
+    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
+    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$1" )
+    echo ${r#*;}
+    return ${r%%;*}
 }
 
 vdb_path()

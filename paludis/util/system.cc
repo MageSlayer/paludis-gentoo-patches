@@ -570,7 +570,7 @@ paludis::run_command(const Command & cmd)
 
             while (! pipe_command_buffer.empty())
             {
-                std::string::size_type n_p(pipe_command_buffer.find('\n'));
+                std::string::size_type n_p(pipe_command_buffer.find('\0'));
                 if (std::string::npos == n_p)
                     break;
 
@@ -588,7 +588,6 @@ paludis::run_command(const Command & cmd)
                     Log::get_instance()->message(ll_warning, lc_context) << "Pipe command op '" << op <<
                         "' was requested but no handler defined. This is probably a bug...";
 
-                response = strip_trailing(response, "\n") + "\n";
                 ssize_t n(0);
                 while (! response.empty())
                 {
@@ -598,6 +597,11 @@ paludis::run_command(const Command & cmd)
                     else
                         response.erase(0, n);
                 }
+
+                char c(0);
+                n = write(pipe_command_response->write_fd(), &c, 1);
+                if (1 != n)
+                    throw InternalError(PALUDIS_HERE, "write failed: " + stringify(strerror(errno)));
             }
 
             while (! internal_command_buffer.empty())

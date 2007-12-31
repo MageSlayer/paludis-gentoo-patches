@@ -58,9 +58,12 @@ libexecprog_SCRIPTS = \
 	patch
 
 libexecbindir = $(libexecdir)/paludis/utils
-libexecbin_PROGRAMS = print_exports
+libexecbin_PROGRAMS = \
+	print_exports \
+	locked_pipe_command
 
 print_exports_SOURCES = print_exports.cc
+locked_pipe_command_SOURCES = locked_pipe_command.cc
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 

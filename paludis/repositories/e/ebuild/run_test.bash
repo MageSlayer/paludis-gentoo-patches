@@ -32,9 +32,19 @@ test_equality()
     fi
 }
 
+export PALUDIS_PIPE_COMMAND_WRITE_FD=
+export PALUDIS_PIPE_COMMAND_READ_FD=
+export PALUDIS_SKIP_PIPE_COMMAND_CHECK=yes
+
 echo "Test program ${1}:"
 source "$(dirname ${1} )/ebuild.bash" || exit 200
 source "${1}" || exit 200
+
+paludis_pipe_command()
+{
+    echo "No paludis_pipe_command here"
+    exit 127
+}
 
 for testname in $(set | grep '_TEST *() *$' ) ; do
     [[ ${testname/()} != ${testname} ]] && continue
