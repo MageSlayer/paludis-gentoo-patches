@@ -41,21 +41,23 @@ namespace
 
     struct C
     {
-        std::stringstream s;
+        /* icky hack: don't bother destructing s, it makes log assplode */
+        std::stringstream * s;
         int dev_null_pid;
 
         C() :
+            s(new std::stringstream),
             dev_null_pid(open("/dev/stderr", O_RDONLY))
         {
             test::set_exception_to_debug_string(&verbose_exception_to_debug_string);
 
-            if (getenv_with_default("PALUDIS_VERBOSE_TESTS", "").empty())
-            {
-                Log::get_instance()->set_log_stream(&s);
-
+            if (getenv_with_default("PALUDIS_TESTS_KEEP_STDERR", "").empty())
                 set_run_command_stderr_fds(dev_null_pid, -1);
-            }
-            else
+
+            if (getenv_with_default("PALUDIS_TESTS_KEEP_LOG", "").empty())
+                Log::get_instance()->set_log_stream(s);
+
+            if (getenv_with_default("PALUDIS_TESTS_DEBUG_LOG", "").empty())
                 Log::get_instance()->set_log_level(ll_debug);
         }
     };
