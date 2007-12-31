@@ -54,7 +54,7 @@ namespace paludis
         mutable ActionQueue action_queue;
 
         Implementation() :
-            log_level(initial_ll),
+            log_level(ll_qa),
             stream(&std::cerr),
             program_name("paludis"),
             action_queue(1, false, false)
@@ -198,34 +198,6 @@ void
 Log::complete_pending() const
 {
     _imp->action_queue.complete_pending();
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const LogLevel & l)
-{
-    switch (l)
-    {
-        case ll_qa:
-            s << "qa";
-            return s;
-
-        case ll_warning:
-            s << "warning";
-            return s;
-
-        case ll_debug:
-            s << "debug";
-            return s;
-
-        case ll_silent:
-            s << "silent";
-            return s;
-
-        case last_ll:
-            ;
-    };
-
-    throw InternalError(PALUDIS_HERE, "Bad log level '" + stringify(static_cast<int>(l)) + "'");
 }
 
 void

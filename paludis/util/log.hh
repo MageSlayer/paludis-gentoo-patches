@@ -38,28 +38,6 @@
 
 namespace paludis
 {
-    /**
-     * Specifies the level of a log message.
-     *
-     * Keep this in order. When deciding whether to display a message, Log
-     * uses message log level >= current log level, so it's important that
-     * least critical levels have lower numeric values.
-     *
-     * When modifying this, you will probably also want to take a look at
-     * ebuild/echo_functions.bash and the command_line source files.
-     *
-     * \ingroup g_log
-     */
-    enum LogLevel
-    {
-        ll_debug,             ///< Debug message
-        ll_qa,                ///< QA messages
-        ll_warning,           ///< Warning message
-        ll_silent,            ///< Silent (for set_log_level)
-        last_ll,              ///< Number of items
-        initial_ll = ll_qa    ///< Initial value
-    };
-
 #include <paludis/util/log-se.hh>
 
     class LogMessageHandler;
@@ -173,14 +151,6 @@ namespace paludis
                 return *this;
             }
     };
-
-    /**
-     * Stringify a LogLevel constant.
-     *
-     * \ingroup g_log
-     */
-    std::ostream &
-    operator<< (std::ostream &, const LogLevel &) PALUDIS_VISIBLE;
 }
 
 #endif

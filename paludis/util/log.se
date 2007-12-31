@@ -16,3 +16,24 @@ make_enum_LogContext()
          */
 END
 }
+
+make_enum_LogLevel()
+{
+    prefix ll
+
+    key ll_debug   "Debug"
+    key ll_qa      "QA"
+    key ll_warning "Warning"
+    key ll_silent  "Silent"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * Importance of a log message.
+         *
+         * \ingroup g_log
+         */
+END
+}
+
