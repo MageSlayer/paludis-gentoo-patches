@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,17 +24,8 @@
 using namespace test;
 using namespace paludis;
 
-/** \file
- * Test cases for save.hh .
- *
- */
-
 namespace test_cases
 {
-    /**
-     * \test Test Save.
-     *
-     */
     struct SaveTest : TestCase
     {
         SaveTest() : TestCase("save") { }
@@ -62,5 +53,21 @@ namespace test_cases
             TEST_CHECK_EQUAL(s, "one");
         }
     } test_save;
+
+    struct RunOnDestructionTest : TestCase
+    {
+        RunOnDestructionTest() : TestCase("run on destruction") { }
+
+        void run()
+        {
+            std::string s("one");
+            TEST_CHECK_EQUAL(s, "one");
+            {
+                RunOnDestruction save_s(tr1::bind(&std::string::clear, &s));
+                TEST_CHECK_EQUAL(s, "one");
+            }
+            TEST_CHECK_EQUAL(s, "");
+        }
+    } test_run_on_destruction;
 }
 

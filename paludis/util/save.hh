@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SAVE_HH
 #define PALUDIS_GUARD_PALUDIS_SAVE_HH 1
 
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/attributes.hh>
+
 /** \file
- * Declarations for the Save class.
+ * Declarations for the Save and RunOnDestruction classes.
  *
  * \ingroup g_utils
  *
@@ -83,6 +86,33 @@ namespace paludis
 
             ///\}
     };
+
+    /**
+     * Run the supplied function when the class is destructed.
+     *
+     * \ingroup g_utils
+     * \since 0.26
+     */
+    class PALUDIS_VISIBLE RunOnDestruction
+    {
+        private:
+            RunOnDestruction(const RunOnDestruction &);
+            void operator= (const RunOnDestruction &);
+
+            const tr1::function<void ()> _f;
+
+        public:
+            RunOnDestruction(const tr1::function<void ()> & f) :
+                _f(f)
+            {
+            }
+
+            ~RunOnDestruction()
+            {
+                _f();
+            }
+    };
+
 }
 
 #endif
