@@ -42,6 +42,7 @@ paludis_repositories_e_include_HEADERS = \
 	dep_parser-se.hh \
 	dep_parser-fwd.hh \
 	dep_spec_pretty_printer.hh \
+	dependencies_rewriter.hh \
 	e_key.hh \
 	e_mask.hh \
 	e_repository.hh \
@@ -99,6 +100,7 @@ libpaludiserepository_la_SOURCES = \
 	check_fetched_files_visitor.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
+	dependencies_rewriter.cc \
 	e_key.cc \
 	e_mask.cc \
 	e_repository.cc \

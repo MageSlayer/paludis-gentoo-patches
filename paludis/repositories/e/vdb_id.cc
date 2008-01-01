@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/dependencies_rewriter.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -214,32 +215,55 @@ VDBID::need_keys_added() const
             add_metadata_key(_imp->provide);
         }
 
-    if (! vars->metadata_build_depend.empty())
-        if ((_imp->dir / vars->metadata_build_depend).exists())
+    if (! vars->metadata_dependencies.empty())
+    {
+        if ((_imp->dir / vars->metadata_dependencies).exists())
         {
-            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_build_depend,
-                        vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend),
-                        _imp->build_dependencies_labels, mkt_dependencies));
+            DependenciesRewriter rewriter;
+            parse_depend(file_contents(_imp->dir / vars->metadata_dependencies), *eapi(), shared_from_this())->accept(rewriter);
+
+            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".DEPEND",
+                        vars->description_dependencies + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->build_dependencies);
-        }
 
-    if (! vars->metadata_run_depend.empty())
-        if ((_imp->dir / vars->metadata_run_depend).exists())
-        {
-            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_run_depend,
-                        vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend),
-                        _imp->run_dependencies_labels, mkt_dependencies));
+            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".RDEPEND",
+                        vars->description_dependencies + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->run_dependencies);
-        }
 
-    if (! vars->metadata_pdepend.empty())
-        if ((_imp->dir / vars->metadata_pdepend).exists())
-        {
-            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_pdepend,
-                        vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend),
-                        _imp->post_dependencies_labels, mkt_dependencies));
+            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".PDEPEND",
+                        vars->description_dependencies + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->post_dependencies);
         }
+    }
+    else
+    {
+        if (! vars->metadata_build_depend.empty())
+            if ((_imp->dir / vars->metadata_build_depend).exists())
+            {
+                _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_build_depend,
+                            vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend),
+                            _imp->build_dependencies_labels, mkt_dependencies));
+                add_metadata_key(_imp->build_dependencies);
+            }
+
+        if (! vars->metadata_run_depend.empty())
+            if ((_imp->dir / vars->metadata_run_depend).exists())
+            {
+                _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_run_depend,
+                            vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend),
+                            _imp->run_dependencies_labels, mkt_dependencies));
+                add_metadata_key(_imp->run_dependencies);
+            }
+
+        if (! vars->metadata_pdepend.empty())
+            if ((_imp->dir / vars->metadata_pdepend).exists())
+            {
+                _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_pdepend,
+                            vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend),
+                            _imp->post_dependencies_labels, mkt_dependencies));
+                add_metadata_key(_imp->post_dependencies);
+            }
+    }
 
     if (! vars->metadata_restrict.empty())
         if ((_imp->dir / vars->metadata_restrict).exists())

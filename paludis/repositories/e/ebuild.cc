@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/pipe_command_handler.hh>
+#include <paludis/repositories/e/dependencies_rewriter.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -361,14 +362,26 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! m.metadata_description.empty())
         id->load_short_description(m.metadata_description, m.description_description, get(keys, m.metadata_description));
 
-    if (! m.metadata_build_depend.empty())
-        id->load_build_depend(m.metadata_build_depend, m.description_build_depend, get(keys, m.metadata_build_depend));
 
-    if (! m.metadata_run_depend.empty())
-        id->load_run_depend(m.metadata_run_depend, m.description_run_depend, get(keys, m.metadata_run_depend));
+    if (! m.metadata_dependencies.empty())
+    {
+        DependenciesRewriter rewriter;
+        parse_depend(get(keys, m.metadata_dependencies), *id->eapi(), id)->accept(rewriter);
+        id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
+        id->load_build_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
+        id->load_build_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());
+    }
+    else
+    {
+        if (! m.metadata_build_depend.empty())
+            id->load_build_depend(m.metadata_build_depend, m.description_build_depend, get(keys, m.metadata_build_depend));
 
-    if (! m.metadata_pdepend.empty())
-        id->load_post_depend(m.metadata_pdepend, m.description_pdepend, get(keys, m.metadata_pdepend));
+        if (! m.metadata_run_depend.empty())
+            id->load_run_depend(m.metadata_run_depend, m.description_run_depend, get(keys, m.metadata_run_depend));
+
+        if (! m.metadata_pdepend.empty())
+            id->load_post_depend(m.metadata_pdepend, m.description_pdepend, get(keys, m.metadata_pdepend));
+    }
 
     if (! m.metadata_slot.empty())
     {

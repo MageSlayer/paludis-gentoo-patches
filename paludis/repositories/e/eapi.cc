@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -155,6 +155,7 @@ namespace paludis
                                                                 .metadata_pdepend(k.get("metadata_pdepend"))
                                                                 .metadata_provide(k.get("metadata_provide"))
                                                                 .metadata_eapi(k.get("metadata_eapi"))
+                                                                .metadata_dependencies(k.get("metadata_dependencies"))
                                                                 .description_build_depend(k.get("description_build_depend"))
                                                                 .description_run_depend(k.get("description_run_depend"))
                                                                 .description_slot(k.get("description_slot"))
@@ -170,6 +171,7 @@ namespace paludis
                                                                 .description_pdepend(k.get("description_pdepend"))
                                                                 .description_provide(k.get("description_provide"))
                                                                 .description_eapi(k.get("description_eapi"))
+                                                                .description_dependencies(k.get("description_dependencies"))
                                                                 )))
 
                                                                 .ebuild_environment_variables(make_shared_ptr(new EAPIEbuildEnvironmentVariables(
