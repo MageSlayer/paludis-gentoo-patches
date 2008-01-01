@@ -98,29 +98,32 @@ paludis_pipe_command()
 {
     [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
 
-    [[ -z "${PALUDIS_PIPE_COMMAND_WRITE_FD}" ]] && die "PALUDIS_PIPE_COMMAND_WRITE_FD unset"
-    [[ -z "${PALUDIS_PIPE_COMMAND_READ_FD}" ]] && die "PALUDIS_PIPE_COMMAND_READ_FD unset"
+    if [[ -z "${PALUDIS_PIPE_COMMAND_WRITE_FD}" ]]; then
+        type die &>/dev/null && die "PALUDIS_PIPE_COMMAND_WRITE_FD unset"
+        echo "PALUDIS_PIPE_COMMAND_WRITE_FD unset" 1>&2
+        exit 123
+    fi
+    if [[ -z "${PALUDIS_PIPE_COMMAND_READ_FD}" ]]; then
+        type die &>/dev/null && die "PALUDIS_PIPE_COMMAND_READ_FD unset"
+        echo "PALUDIS_PIPE_COMMAND_READ_FD unset" 1>&2
+        exit 123
+    fi
 
     local r r1 rest
     r="$(echo "$@" | {
         if ! locked_pipe_command "${PALUDIS_PIPE_COMMAND_WRITE_FD}" "${PALUDIS_PIPE_COMMAND_READ_FD}" ; then
-            # die might not be available yet
-            die "locked_pipe_command failed"
-
-            echo "!!! locked_pipe_command failed, and no die available yet" 1>&2
-            kill -s SIGUSR1 "${EBUILD_KILL_PID}"
-            exit 249
+            type die &>/dev/null && die "locked_pipe_command failed"
+            echo "locked_pipe_command failed" 1>&2
+            exit 123
         fi
     })"
 
     r1="${r:0:1}"
     rest="${r:1}"
     if [[ "${r1}" != "O" ]] ; then
-        die "paludis_pipe_command returned error '${r1}' with text '${rest}'"
-
-        echo "!!! paludis_pipe_command returned error '${r1}' with text '${rest}', and no die available yet" 1>&2
-        kill -s SIGUSR1 "${EBUILD_KILL_PID}"
-        exit 249
+        type die &>/dev/null && die "paludis_pipe_command returned error '${r1}' with text '${rest}'"
+        echo "paludis_pipe_command returned error '${r1}' with text '${rest}'" 1>&2
+        exit 123
     fi
 
     echo "$rest"
