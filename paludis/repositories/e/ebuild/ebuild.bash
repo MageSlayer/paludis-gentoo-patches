@@ -131,6 +131,7 @@ ebuild_load_module echo_functions
 ebuild_load_module kernel_functions
 ebuild_load_module sandbox
 ebuild_load_module portage_stubs
+ebuild_load_module ever_functions
 ebuild_load_module list_functions
 ebuild_load_module multilib_functions
 ebuild_load_module install_functions
@@ -436,6 +437,9 @@ ebuild_main()
             for f in cut tr date ; do
                 eval "export ebuild_real_${f}=\"$(which $f )\""
                 eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+            done
+            for f in locked_pipe_command ; do
+                eval "${f}() { $(which $f ) \"\$@\" ; }"
             done
             PATH="" ebuild_load_ebuild "${ebuild}"
         fi

@@ -1328,6 +1328,17 @@ namespace test_cases
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
+
+            {
+                TestMessageSuffix suffix("ever", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/ever-1.3",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK(id->short_description_key());
+                TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Description");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_exheres_0;
 }

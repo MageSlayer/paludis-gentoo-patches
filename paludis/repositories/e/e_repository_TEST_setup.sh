@@ -857,6 +857,33 @@ pkg_setup() {
     done
 }
 END
+mkdir -p "packages/cat/ever"
+cat <<'END' > packages/cat/ever/ever-1.3.ebuild || exit 1
+if ever at_least 2 ; then
+    DESCRIPTION="Really Not The Description"
+elif ever at_least 1.2.3 ; then
+    DESCRIPTION="The Description"
+else
+    DESCRIPTION="Not The Description"
+fi
+
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORM="test"
+
+pkg_setup() {
+    ever at_least 1.2 || die "at_least 1.2"
+    ever at_least 1.3 || die "at_least 1.3"
+    ever at_least 1.4 && die "at_least 1.4"
+
+    ever at_least 1.2 1.2 || die "at_least 1.2 1.2"
+    ever at_least 1.3 1.2 && die "at_least 1.3 1.2"
+    ever at_least 1.4 1.2 && die "at_least 1.4 1.2"
+}
+END
 cd ..
 
 mkdir -p repo15/{eclass,distfiles,profiles/profile/subprofile} || exit 1

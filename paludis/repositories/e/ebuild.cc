@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/package_dep_spec.hh>
+#include <paludis/repositories/e/pipe_command_handler.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -54,7 +55,6 @@
 #include <unistd.h>
 
 #include <list>
-#include <vector>
 
 #include "config.h"
 
@@ -103,7 +103,7 @@ EbuildCommand::operator() ()
         cmd.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
 
     using namespace tr1::placeholders;
-    cmd.with_pipe_command_handler(tr1::bind(tr1::mem_fn(&EbuildCommand::pipe_command_handler), this, _1));
+    cmd.with_pipe_command_handler(tr1::bind(&pipe_command_handler, params.environment, params.package_id, _1));
 
     tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment->syncers_dirs());
     tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment->bashrc_files());
@@ -226,201 +226,6 @@ bool
 EbuildCommand::do_run_command(const Command & cmd)
 {
     return 0 == run_command(cmd);
-}
-
-namespace
-{
-    std::string name_and_version(const PackageID & id)
-    {
-        return stringify(id.name()) + "-" + stringify(id.version());
-    }
-}
-
-std::string
-EbuildCommand::pipe_command_handler(const std::string & s) const
-{
-    Context context("In ebuild pipe command handler for '" + s + "':");
-
-    try
-    {
-        std::vector<std::string> tokens;
-        tokenise_whitespace(s, std::back_inserter(tokens));
-        if (tokens.empty())
-        {
-            Log::get_instance()->message(ll_warning, lc_context) << "Got empty pipe command";
-            return "Eempty pipe command";
-        }
-
-        if (tokens[0] == "PING")
-        {
-            if (tokens.size() != 3)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad PING command";
-                return "Ebad PING command";
-            }
-            else
-                return "OPONG " + tokens[2];
-        }
-        else if (tokens[0] == "LOG")
-        {
-            if (tokens.size() < 4)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got too short LOG pipe command";
-                return "Ebad LOG command";
-            }
-            else
-            {
-                Log::get_instance()->message(destringify<LogLevel>(tokens[2]), lc_context) << join(next(next(next(tokens.begin()))),
-                        tokens.end(), " ");
-                return "O";
-            }
-        }
-        else if (tokens[0] == "BEST_VERSION")
-        {
-            if (tokens.size() != 3)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad BEST_VERSION pipe command";
-                return "Ebad BEST_VERSION command";
-            }
-            else
-            {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
-                    return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
-
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, params.package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(params.environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(params.environment->root()), qo_order_by_version));
-                if (eapi->supported->pipe_commands->rewrite_virtuals && (! entries->empty()) &&
-                        (*entries->last())->virtual_for_key())
-                {
-                    Log::get_instance()->message(ll_qa, lc_context) << "best-version of '" << spec <<
-                        "' resolves to '" << **entries->last() << "', which is a virtual for '"
-                        << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
-                        "new style virtuals.";
-                    tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
-                    new_entries->push_back((*entries->last())->virtual_for_key()->value());
-                    entries = new_entries;
-                }
-
-                if (entries->empty())
-                    return "O1;";
-                else
-                {
-                    if (eapi->supported->pipe_commands->no_slot_or_repo)
-                        return "O0;" + name_and_version(**entries->last());
-                    else
-                        return "O0;" + stringify(**entries->last());
-                }
-            }
-        }
-        else if (tokens[0] == "HAS_VERSION")
-        {
-            if (tokens.size() != 3)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad HAS_VERSION pipe command";
-                return "Ebad HAS_VERSION command";
-            }
-            else
-            {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
-                    return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
-
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, params.package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(params.environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(params.environment->root()), qo_order_by_version));
-                if (entries->empty())
-                    return "O1;";
-                else
-                    return "O0;";
-            }
-        }
-        else if (tokens[0] == "MATCH")
-        {
-            if (tokens.size() != 3)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad MATCH pipe command";
-                return "Ebad MATCH command";
-            }
-            else
-            {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
-                    return "EMATCH EAPI " + tokens[1] + " unsupported";
-
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, params.package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(params.environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(params.environment->root()), qo_order_by_version));
-                if (eapi->supported->pipe_commands->rewrite_virtuals && (! entries->empty()))
-                {
-                    tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
-                    for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
-                            i != i_end ; ++i)
-                    {
-                        if ((*i)->virtual_for_key())
-                        {
-                            Log::get_instance()->message(ll_qa, lc_context) << "match of '" << spec <<
-                                "' resolves to '" << **i << "', which is a virtual for '"
-                                << *(*i)->virtual_for_key()->value() << "'. This will break with "
-                                "new style virtuals.";
-                            new_entries->push_back((*i)->virtual_for_key()->value());
-                        }
-                        else
-                            new_entries->push_back(*i);
-                    }
-                    entries = new_entries;
-                }
-
-                if (entries->empty())
-                    return "O1;";
-                else
-                {
-                    if (eapi->supported->pipe_commands->no_slot_or_repo)
-                        return "O0;" + join(indirect_iterator(entries->begin()), indirect_iterator(entries->end()), "\n", &name_and_version);
-                    else
-                        return "O0;" + join(indirect_iterator(entries->begin()), indirect_iterator(entries->end()), "\n");
-                }
-            }
-        }
-        else if (tokens[0] == "VDB_PATH")
-        {
-            if (tokens.size() != 2)
-            {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad VDB_PATH pipe command";
-                return "Ebad VDB_PATH command";
-            }
-            else
-            {
-                if (! params.environment->package_database()->has_repository_named(RepositoryName("installed")))
-                    return "Eno installed repository available";
-                tr1::shared_ptr<const Repository> repo(params.environment->package_database()->fetch_repository(RepositoryName("installed")));
-                Repository::MetadataConstIterator key(repo->find_metadata("location"));
-                if (repo->end_metadata() == key)
-                    return "Einstalled repository has no location key";
-                if (! visitor_cast<const MetadataFSEntryKey>(**key))
-                    return "Einstalled repository location key is not a MetadataFSEntryKey";
-                return "O0;" + stringify(visitor_cast<const MetadataFSEntryKey>(**key)->value());
-            }
-        }
-        else
-        {
-            Log::get_instance()->message(ll_warning, lc_context) << "Got unknown ebuild pipe command '" + s + "'";
-            return "Eunknown pipe command";
-        }
-    }
-    catch (const Exception & e)
-    {
-        return "Eexception '" + e.message() + "' (" + e.what() + ")";
-    }
-    catch (const std::exception & e)
-    {
-        return "Eexception " + stringify(e.what());
-    }
-    catch (...)
-    {
-        return "Eexception ???";
-    }
 }
 
 EbuildMetadataCommand::EbuildMetadataCommand(const EbuildCommandParams & p) :

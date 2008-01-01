@@ -9,6 +9,7 @@ libexecprogexheres_SCRIPTS = \
 	pkg_nofetch.bash \
 	list_functions.bash \
 	echo_functions.bash \
+	ever_functions.bash \
 	portage_stubs.bash
 
 TESTS_ENVIRONMENT = env \

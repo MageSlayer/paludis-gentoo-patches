@@ -80,6 +80,7 @@ paludis_repositories_e_include_HEADERS = \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
 	package_dep_spec.hh \
+	pipe_command_handler.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
@@ -127,6 +128,7 @@ libpaludiserepository_la_SOURCES = \
 	make_ebuild_repository.cc \
 	manifest2_reader.cc \
 	package_dep_spec.cc \
+	pipe_command_handler.cc \
 	registration.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \
@@ -388,6 +390,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	PALUDIS_NO_CHOWN="yes" \
+	PALUDIS_TESTS_KEEP_STDERR="yes" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \

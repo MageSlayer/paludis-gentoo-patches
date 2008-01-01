@@ -112,11 +112,6 @@ namespace paludis
                  */
                 virtual Command extend_command(const Command &) = 0;
 
-                /**
-                 * Pipe command handler.
-                 */
-                virtual std::string pipe_command_handler(const std::string &) const;
-
             public:
                 /**
                  * Destructor.
