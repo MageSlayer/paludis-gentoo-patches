@@ -140,10 +140,16 @@ ebuild_load_module eclass_functions
 ebuild_load_module exlib_functions
 ebuild_load_module source_functions
 
-if [[ -z "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] ; then
+check_paludis_pipe_command()
+{
+    [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
+    [[ -z "${PALUDIS_PIPE_COMMANDS_SUPPORTED}" ]] && return
+
     pcr=$(paludis_pipe_command PING DUNNOYET $$ )
     [[ "$pcr" == "PONG $$" ]] || die "paludis_pipe_command isn't working (got '$pcr')"
-fi
+}
+
+check_paludis_pipe_command
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 

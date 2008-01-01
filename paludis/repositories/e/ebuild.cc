@@ -163,6 +163,7 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->must_not_change_variables)
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
                     params.package_id->eapi()->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
+            .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")
         .with_setenv("PALUDIS_PROFILE_DIR", "")
