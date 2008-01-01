@@ -622,22 +622,22 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir/dst_name), src.permissions()));
     FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
     if (-1 == input_fd)
-        throw MergerError("Cannot read '" + stringify(src) + "'");
+        throw MergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
 
     FDHolder output_fd(::open(stringify(dst_dir / dst_name).c_str(), O_WRONLY | O_CREAT,
                 src.permissions()), false);
     if (-1 == output_fd)
-        throw MergerError("Cannot write '" + stringify(dst_dir / dst_name) + "'");
+        throw MergerError("Cannot write '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
 
     if (! _options.no_chown)
         if (0 != ::fchown(output_fd,
                     src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
                     src.group() == _options.environment->reduced_gid() ? 0 : src.group()))
-            throw MergerError("Cannot fchown '" + stringify(dst_dir / dst_name) + "'");
+            throw MergerError("Cannot fchown '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
 
     /* set*id bits */
     if (0 != ::fchmod(output_fd, src.permissions()))
-        throw MergerError("Cannot fchmod '" + stringify(dst_dir / dst_name) + "'");
+        throw MergerError("Cannot fchmod '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
 
     char buf[4096];
     ssize_t count;
@@ -700,7 +700,7 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
     if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
-        throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "'");
+        throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "': " + stringify(::strerror(errno)));
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")
