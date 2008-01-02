@@ -163,9 +163,9 @@ DependenciesRewriter::visit_sequence(const UseDepSpec & spec,
 
     std::for_each(cur, end, accept_visitor(*this));
 
-    _imp->depend = d + stringify(spec) + " ( " + _imp->depend + " )";
-    _imp->rdepend = r + stringify(spec) + " ( " + _imp->rdepend + " )";
-    _imp->pdepend = p + stringify(spec) + " ( " + _imp->pdepend + " )";
+    _imp->depend = d + " " + stringify(spec) + " ( " + _imp->depend + " )";
+    _imp->rdepend = r + " " + stringify(spec) + " ( " + _imp->rdepend + " )";
+    _imp->pdepend = p + " " + stringify(spec) + " ( " + _imp->pdepend + " )";
 }
 
 namespace
