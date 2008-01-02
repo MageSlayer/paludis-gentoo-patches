@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -442,6 +442,18 @@ const tr1::shared_ptr<const MetadataPackageIDKey>
 GemSpecification::contained_in_key() const
 {
     return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+
+const tr1::shared_ptr<const MetadataSizeKey>
+GemSpecification::size_of_download_required_key() const
+{
+    return tr1::shared_ptr<const MetadataSizeKey>();
+}
+
+const tr1::shared_ptr<const MetadataSizeKey>
+GemSpecification::size_of_all_distfiles_key() const
+{
+    return tr1::shared_ptr<const MetadataSizeKey>();
 }
 
 bool
