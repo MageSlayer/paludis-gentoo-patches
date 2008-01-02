@@ -26,6 +26,8 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
@@ -46,6 +48,11 @@ paludis::make_ebuild_repository(
     std::string location;
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
+
+    tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(FSEntry(location) / "metadata/layout.conf")).exists() ?
+            new KeyValueConfigFile(FSEntry(FSEntry(location) / "metadata/layout.conf"),
+                KeyValueConfigFileOptions())
+            : 0);
 
     tr1::shared_ptr<const RepositoryName> master_repository_name;
     tr1::shared_ptr<const ERepository> master_repository;
@@ -160,18 +167,30 @@ paludis::make_ebuild_repository(
 
     std::string eapi_when_unknown;
     if (m->end() == m->find("eapi_when_unknown") || ((eapi_when_unknown = m->find("eapi_when_unknown")->second)).empty())
-        eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_ebuild_eapi_when_unknown;
+    {
+        if (! layout_conf
+                || (eapi_when_unknown = layout_conf->get("eapi_when_unknown")).empty())
+            eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_eapi_when_unknown;
+    }
 
     std::string eapi_when_unspecified;
     if (m->end() == m->find("eapi_when_unspecified") || ((eapi_when_unspecified = m->find("eapi_when_unspecified")->second)).empty())
-        eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_ebuild_eapi_when_unspecified;
+    {
+        if (! layout_conf 
+                || (eapi_when_unspecified = layout_conf->get("eapi_when_unspecified")).empty())
+            eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_eapi_when_unspecified;
+    }
 
     std::string profile_eapi;
     if (m->end() == m->find("profile_eapi") || ((profile_eapi = m->find("profile_eapi")->second)).empty())
-        profile_eapi = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_ebuild_profile_eapi;
+    {
+        if (! layout_conf
+                || (profile_eapi = layout_conf->get("eapi_when_unspecified")).empty())
+            profile_eapi = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_profile_eapi;
+    }
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
@@ -216,8 +235,12 @@ paludis::make_ebuild_repository(
 
     std::string layout;
     if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
-        layout = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_ebuild_layout;
+    {
+        if (! layout_conf
+                || (layout = layout_conf->get("layout")).empty())
+            layout = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_layout;
+    }
 
     erepository::UseManifest use_manifest(erepository::manifest_use);
     if (m->end() != m->find("use_manifest") && ! m->find("use_manifest")->second.empty())
