@@ -24,8 +24,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 
-#include <paludis/repositories/e/distfiles_size_visitor.hh>
-
 namespace paludis
 {
     namespace erepository
@@ -316,27 +314,6 @@ namespace paludis
                 ~ECTimeKey();
 
                 time_t value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class EDistSizeKey:
-            public MetadataSizeKey,
-            private PrivateImplementationPattern<EDistSizeKey>
-        {
-            private:
-                PrivateImplementationPattern<EDistSizeKey>::ImpPtr & _imp;
-
-            public:
-                EDistSizeKey(const std::string &, const std::string &, const MetadataKeyType,
-                        const tr1::shared_ptr<const EFetchableURIKey> &,
-                        const tr1::shared_ptr<DistfilesSizeVisitor> &);
-
-                ~EDistSizeKey();
-
-                long value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                std::string pretty_print() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

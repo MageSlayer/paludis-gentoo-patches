@@ -82,11 +82,6 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
 
-        void visit(const MetadataSizeKey & k)
-        {
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
-        }
-
         void visit(const MetadataFSEntryKey & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;

@@ -902,18 +902,6 @@ FakePackageID::fs_location_key() const
     return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
-FakePackageID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataSizeKey>();
-}
-
-const tr1::shared_ptr<const MetadataSizeKey>
-FakePackageID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataSizeKey>();
-}
-
 std::string
 FakeMetadataIUseSetKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
 {

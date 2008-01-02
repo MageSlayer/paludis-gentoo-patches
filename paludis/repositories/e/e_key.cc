@@ -46,7 +46,6 @@
 #include <vector>
 #include <fstream>
 #include <map>
-#include <iomanip>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -1091,72 +1090,3 @@ ECTimeKey::value() const
     return *_imp->value;
 }
 
-namespace paludis
-{
-    template <>
-    struct Implementation<EDistSizeKey>
-    {
-        const tr1::shared_ptr<const EFetchableURIKey> src_uri;
-        const tr1::shared_ptr<DistfilesSizeVisitor> dsv;
-        mutable Mutex value_mutex;
-        mutable tr1::shared_ptr<long> value;
-
-        Implementation(const tr1::shared_ptr<const EFetchableURIKey> & s,
-                const tr1::shared_ptr<DistfilesSizeVisitor> & d) :
-            src_uri(s),
-            dsv(d)
-        {
-        }
-    };
-}
-
-EDistSizeKey::EDistSizeKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-        const tr1::shared_ptr<const EFetchableURIKey> & s,
-        const tr1::shared_ptr<DistfilesSizeVisitor> & d) :
-    MetadataSizeKey(r, h, t),
-    PrivateImplementationPattern<EDistSizeKey>(new Implementation<EDistSizeKey>(s, d)),
-    _imp(PrivateImplementationPattern<EDistSizeKey>::_imp)
-{
-}
-
-EDistSizeKey::~EDistSizeKey()
-{
-}
-
-long
-EDistSizeKey::value() const
-{
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return *_imp->value;
-
-    _imp->value.reset(new long(0));
-
-    if (_imp->src_uri)
-        _imp->src_uri->value()->accept(*_imp->dsv);
-
-    *_imp->value = _imp->dsv->size();
-
-    return *_imp->value;
-}
-
-std::string
-EDistSizeKey::pretty_print() const
-{
-    double size(value());
-    int i(0);
-    std::string suffix[] = {"Bytes", "kBytes", "MBytes", "GBytes"};
-    std::ostringstream val;
-
-    while (size >= 1024.0 && i < 4)
-    {
-        size /= 1024.0;
-        i++;
-        val << std::fixed << std::setprecision(2);
-    }
-
-    val << size << " " << suffix[i];
-
-    return val.str();
-}

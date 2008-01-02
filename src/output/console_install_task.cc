@@ -370,7 +370,6 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         display_merge_list_entry_package_tags(d, m);
     display_merge_list_entry_description(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
-    display_merge_list_entry_distsize(d, m);
     if (want_compact())
         display_merge_list_entry_package_tags(d, m);
     display_merge_list_entry_end(d, m);
@@ -1156,28 +1155,6 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     _add_descriptions(formatter.seen_use_flag_names(), d.package_id, uds_all);
     std::copy(formatter.seen_use_expand_prefixes()->begin(), formatter.seen_use_expand_prefixes()->end(),
             _all_expand_prefixes->inserter());
-}
-
-void
-ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
-        const DisplayMode m)
-{
-    if (normal_entry != m && suggested_entry != m)
-        return;
-
-    if (! d.package_id->size_of_download_required_key() || d.package_id->size_of_download_required_key()->value() == 0)
-        return;
-
-    if (want_compact())
-        output_no_endl(" ");
-    else
-    {
-        output_endl();
-        output_no_endl("    ");
-    }
-
-    output_stream() << d.package_id->size_of_download_required_key()->pretty_print()
-        << " to download";
 }
 
 void

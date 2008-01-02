@@ -82,8 +82,6 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
                 virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
-                virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_download_required_key() const;
-                virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_all_distfiles_key() const;
 
                 const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;

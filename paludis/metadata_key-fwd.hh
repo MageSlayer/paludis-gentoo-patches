@@ -37,7 +37,6 @@ namespace paludis
     class MetadataKey;
     class MetadataPackageIDKey;
     class MetadataStringKey;
-    class MetadataSizeKey;
     class MetadataContentsKey;
     class MetadataTimeKey;
     class MetadataRepositoryMaskInfoKey;

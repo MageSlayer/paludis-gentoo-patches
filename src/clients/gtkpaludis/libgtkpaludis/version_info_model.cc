@@ -174,11 +174,6 @@ namespace gtkpaludis
             got_key(k, markup_escape(stringify(k.value())));
         }
 
-        void visit(const MetadataSizeKey & k)
-        {
-            got_key(k, markup_escape(stringify(k.value())));
-        }
-
         void visit(const MetadataTimeKey & k)
         {
             char buf[255];

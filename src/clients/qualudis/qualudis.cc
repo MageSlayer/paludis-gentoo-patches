@@ -130,11 +130,6 @@ namespace
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
-        void visit(const MetadataSizeKey & k)
-        {
-            stream << k.raw_name() << ": " << k.value() << "\n";
-        }
-
         void visit(const MetadataTimeKey & k)
         {
             stream << k.raw_name() << ": " << k.value() << "\n";

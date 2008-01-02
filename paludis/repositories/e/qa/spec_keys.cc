@@ -266,10 +266,6 @@ namespace
         {
         }
 
-        void visit(const MetadataSizeKey &)
-        {
-        }
-
         void visit(const MetadataTimeKey &)
         {
         }

@@ -37,7 +37,6 @@ namespace
     static VALUE c_metadata_key;
     static VALUE c_metadata_package_id_key;
     static VALUE c_metadata_string_key;
-    static VALUE c_metadata_size_key;
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
     static VALUE c_metadata_repository_mask_info_key;
@@ -105,12 +104,6 @@ namespace
         void visit(const MetadataStringKey &)
         {
             value = Data_Wrap_Struct(c_metadata_string_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
-                    new tr1::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataSizeKey &)
-        {
-            value = Data_Wrap_Struct(c_metadata_size_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
                     new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -253,14 +246,6 @@ namespace
     }
 
     VALUE
-    metadata_size_key_value(VALUE self)
-    {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return LONG2NUM((tr1::static_pointer_cast<const MetadataSizeKey>(*self_ptr))->value());
-    }
-
-    VALUE
     metadata_fsentry_key_value(VALUE self)
     {
         tr1::shared_ptr<const MetadataKey> * self_ptr;
@@ -391,14 +376,6 @@ namespace
          */
         c_metadata_string_key = rb_define_class_under(paludis_module(), "MetadataStringKey", c_metadata_key);
         rb_define_method(c_metadata_string_key, "value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
-
-        /*
-         * Document-class: Paludis::MetadataSizeKey
-         *
-         * Metadata class for file sizes
-         */
-        c_metadata_size_key = rb_define_class_under(paludis_module(), "MetadataSizeKey", c_metadata_key);
-        rb_define_method(c_metadata_size_key, "value", RUBY_FUNC_CAST(&metadata_size_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataFSEntryKey

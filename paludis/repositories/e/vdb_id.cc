@@ -618,18 +618,6 @@ VDBID::fs_location_key() const
     return _imp->fs_location;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
-VDBID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataSizeKey>();
-}
-
-const tr1::shared_ptr<const MetadataSizeKey>
-VDBID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataSizeKey>();
-}
-
 
 bool
 VDBID::arbitrary_less_than_comparison(const PackageID &) const
