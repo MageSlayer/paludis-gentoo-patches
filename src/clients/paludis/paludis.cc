@@ -37,6 +37,7 @@
 #include <paludis/paludis.hh>
 #include <paludis/environment_maker.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
 #include <paludis/fuzzy_finder.hh>
@@ -82,7 +83,12 @@ namespace
 int
 main(int argc, char *argv[])
 {
-    Context context("In program " + join(argv, argv + argc, " ") + ":");
+    std::string options(paludis::getenv_with_default("PALUDIS_OPTIONS", ""));
+    if (! options.empty())
+        options = "(" + options + ") ";
+    options += join(argv + 1, argv + argc, " ");
+
+    Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
     try
     {

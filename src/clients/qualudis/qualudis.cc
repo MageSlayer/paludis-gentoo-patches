@@ -20,6 +20,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
 #include <paludis/qa.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
@@ -251,7 +252,12 @@ namespace
 
 int main(int argc, char *argv[])
 {
-    Context context("In main program:");
+    std::string options(paludis::getenv_with_default("QUALUDIS_OPTIONS", ""));
+    if (! options.empty())
+        options = "(" + options + ") ";
+    options += join(argv + 1, argv + argc, " ");
+
+    Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
     try
     {

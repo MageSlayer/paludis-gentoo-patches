@@ -23,6 +23,7 @@
 #include <paludis/about.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
@@ -156,7 +157,12 @@ namespace
 int
 main(int argc, char *argv[])
 {
-    Context context("In program " + join(argv, argv + argc, " ") + ":");
+    std::string options(paludis::getenv_with_default("INSTRUO_OPTIONS", ""));
+    if (! options.empty())
+        options = "(" + options + ") ";
+    options += join(argv + 1, argv + argc, " ");
+
+    Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
     try
     {

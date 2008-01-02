@@ -22,6 +22,7 @@
 #include <paludis/environment_maker.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/util/util.hh>
+#include <paludis/util/system.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -44,7 +45,12 @@ struct DoVersion
 
 int main(int argc, char *argv[])
 {
-    Context context("In main program:");
+    std::string options(paludis::getenv_with_default("CONTRARIUS_OPTIONS", ""));
+    if (! options.empty())
+        options = "(" + options + ") ";
+    options += join(argv + 1, argv + argc, " ");
+
+    Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
     try
     {
