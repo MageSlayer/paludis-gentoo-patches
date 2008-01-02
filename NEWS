@@ -12,6 +12,10 @@ trunk/:
     * {keywords,licenses,use}.conf can now contain single- or double- quoted
       tokens.
 
+    * paludis --install --pretend will show how many bytes still need to be
+      downloaded for a given package to be installed. Two new metadata keys,
+      size_of_download_required and size_of_all_distfiles, have been added.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
