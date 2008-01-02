@@ -75,6 +75,7 @@ namespace paludis
             MetadataSpecTreeKey<ProvideSpecTree>,
             MetadataSpecTreeKey<RestrictSpecTree>,
             MetadataStringKey,
+            MetadataSizeKey,
             MetadataContentsKey,
             MetadataTimeKey,
             MetadataRepositoryMaskInfoKey,
@@ -199,6 +200,40 @@ namespace paludis
              * Fetch our value.
              */
             virtual const std::string value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * A MetadataSizeKey is a MetadataKey that represents the size of a file or
+     * some files on disk in bytes.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE MetadataSizeKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSizeKey>
+    {
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            MetadataSizeKey(const std::string &, const std::string &, const MetadataKeyType);
+
+            ///\}
+
+        public:
+            /**
+             * Fetch our raw value.
+             */
+            virtual long value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Get a pretty string version of our value.
+             */
+            virtual std::string pretty_print() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

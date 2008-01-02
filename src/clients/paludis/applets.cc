@@ -57,6 +57,11 @@ namespace
             std::cout << k.value() << std::endl;
         }
 
+        void visit(const MetadataSizeKey & k)
+        {
+            std::cout << k.value() << std::endl;
+        }
+
         void visit(const MetadataFSEntryKey & k)
         {
             std::cout << k.value() << std::endl;

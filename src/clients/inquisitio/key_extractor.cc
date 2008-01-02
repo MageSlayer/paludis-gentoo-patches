@@ -202,6 +202,11 @@ namespace
                 result = _m(s.value());
             }
 
+            void visit(const MetadataSizeKey & s)
+            {
+                result = _m(stringify(s.value()));
+            }
+
             void visit(const MetadataTimeKey & s)
             {
                 result = _m(stringify(s.value()));

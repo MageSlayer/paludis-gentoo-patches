@@ -69,6 +69,11 @@ namespace
             s << k.value();
         }
 
+        void visit(const MetadataSizeKey & k)
+        {
+            s << k.value();
+        }
+
         void visit(const MetadataSectionKey & k)
         {
             s << "(";

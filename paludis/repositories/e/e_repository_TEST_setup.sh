@@ -910,5 +910,54 @@ virtual/three	cat-three/pkg-three
 END
 cd ..
 
+mkdir -p repo16/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo16/category/package-{a,b,c} || exit 1
+cd repo16 || exit 1
+echo "test-repo-16" >> profiles/repo_name || exit 1
+echo "category" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > category/package-a/package-a-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="foo"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package-b/package-b-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="bar"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package-c/package-c-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="foo bar"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+echo "something" > distfiles/foo || exit 1
+cat <<END > Manifest || exit 1
+DIST bar 12 RMD160 90bd2a71cf9d8cf744b0afc0e9a00b999bb59f72 SHA256 27cd06afc317a809166e7730736663b9f09dd863fcc37b69d32d4f5eb58708b2
+DIST foo 10 RMD160 9e19cc1527a061585aa02dae8b7f4047dcd16275 SHA256 4bc453b53cb3d914b45f4b250294236adba2c0e09ff6f03793949e7e39fd4cc1
+END
+cp Manifest category/package-a/
+cp Manifest category/package-b/
+cp Manifest category/package-c/
+rm Manifest
+cd ..
+
 cd ..
 

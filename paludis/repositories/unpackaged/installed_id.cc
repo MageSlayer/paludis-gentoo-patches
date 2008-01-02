@@ -505,6 +505,18 @@ InstalledUnpackagedID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
+const tr1::shared_ptr<const MetadataSizeKey>
+InstalledUnpackagedID::size_of_download_required_key() const
+{
+    return tr1::shared_ptr<const MetadataSizeKey>();
+}
+
+const tr1::shared_ptr<const MetadataSizeKey>
+InstalledUnpackagedID::size_of_all_distfiles_key() const
+{
+    return tr1::shared_ptr<const MetadataSizeKey>();
+}
+
 namespace
 {
     struct SupportVisitor :

@@ -226,6 +226,7 @@ namespace paludis
             virtual void display_merge_list_entry_use(const DepListEntry &,
                     tr1::shared_ptr<const PackageIDSequence>,
                     tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+            virtual void display_merge_list_entry_distsize(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_non_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
