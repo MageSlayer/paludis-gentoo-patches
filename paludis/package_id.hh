@@ -281,6 +281,20 @@ namespace paludis
              */
             virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const = 0;
 
+            /**
+             * The size_of_download_required_key, if non-zero, contains a
+             * long integer representing the size of distfiles that still need
+             * to be downloaded.
+             */
+            virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_download_required_key() const = 0;
+
+            /**
+             * The size_of_all_distfiles_key, if non-zero, contains a long
+             * integer representing the size of all distfiles used by the
+             * package with the current USE settings.
+             */
+            virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_all_distfiles_key() const = 0;
+
             ///\}
 
             ///\name Finding and iterating over metadata keys

@@ -519,6 +519,23 @@ namespace
                 }
             }
 
+            void visit(const MetadataSizeKey & k)
+            {
+                if (k.type() == type)
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column(stringify(k.value()));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column(k.pretty_print());
+                    }
+                }
+            }
+
             void visit(const MetadataSectionKey & k)
             {
                 if (k.type() == type)

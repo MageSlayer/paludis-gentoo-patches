@@ -55,6 +55,11 @@ namespace
             const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
+        void visit(const MetadataSizeKey & k)
+        {
+            long PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
         void visit(const MetadataPackageIDKey & k)
         {
             const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
