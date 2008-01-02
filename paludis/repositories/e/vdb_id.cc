@@ -226,11 +226,11 @@ VDBID::need_keys_added() const
                         vars->description_dependencies + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->build_dependencies);
 
-            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".RDEPEND",
+            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".RDEPEND",
                         vars->description_dependencies + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->run_dependencies);
 
-            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".PDEPEND",
+            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".PDEPEND",
                         vars->description_dependencies + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->post_dependencies);
         }
