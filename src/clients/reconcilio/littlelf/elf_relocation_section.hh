@@ -100,7 +100,7 @@ class RelocationSection :
     using paludis::PrivateImplementationPattern<RelocationSection>::_imp;
 
     public:
-        RelocationSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
+        RelocationSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~RelocationSection();
 
         virtual std::string get_type() const

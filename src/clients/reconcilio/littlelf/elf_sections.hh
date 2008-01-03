@@ -90,6 +90,7 @@ class Section :
     friend class littlelf_internals::SectionNameResolvingVisitor<ElfType_>;
 
     private:
+        typename ElfType_::Word _index;
         typename ElfType_::SectionHeader _shdr;
         std::string _name;
 
@@ -105,7 +106,7 @@ class Section :
         }
 
     public:
-        Section(const typename ElfType_::SectionHeader &);
+        Section(typename ElfType_::Word, const typename ElfType_::SectionHeader &);
         virtual ~Section();
 
         virtual typename ElfType_::Offset get_data_offset() const
@@ -118,6 +119,10 @@ class Section :
             return _name;
         }
         virtual std::string get_type() const = 0;
+        typename ElfType_::Word get_index() const
+        {
+            return _index;
+        }
 
         typename ElfType_::Word get_link_index() const
         {
@@ -133,6 +138,8 @@ class Section :
         {
             return _shdr.sh_size;
         }
+
+        std::string description() const;
 };
 
 
@@ -142,7 +149,7 @@ class GenericSection :
     public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , GenericSection<ElfType_> >
 {
     public:
-        GenericSection(const typename ElfType_::SectionHeader &);
+        GenericSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &);
         virtual ~GenericSection();
         virtual std::string get_type() const;
 };
@@ -156,10 +163,14 @@ class StringSection :
         std::string _stringTable;
 
     public:
-        StringSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
+        StringSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~StringSection();
 
         std::string get_string(typename ElfType_::Word) const;
+        typename ElfType_::Word get_max_string() const
+        {
+            return _stringTable.length();
+        }
 
         virtual std::string get_type() const;
 };

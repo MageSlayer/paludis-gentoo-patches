@@ -27,6 +27,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/stringify.hh>
 
 #include <istream>
 #include <vector>
@@ -95,12 +96,14 @@ template <typename ElfType_> const std::string RelocationA<ElfType_>::type_name 
 
 template <typename ElfType_, typename Relocation_>
 RelocationSection<ElfType_, Relocation_>::RelocationSection(
-    const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
-    Section<ElfType_>(shdr),
+    typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
+    Section<ElfType_>(index, shdr),
     PrivateImplementationPattern<RelocationSection>(new Implementation<RelocationSection>)
 {
     if (sizeof(typename Relocation_::Type) != shdr.sh_entsize)
-        throw InvalidElfFileError();
+        throw InvalidElfFileError(
+            "bad sh_entsize for " + this->description() + ": got " + stringify(shdr.sh_entsize) + ", expected " +
+            stringify(sizeof(typename Relocation_::Type)));
 
     std::vector<typename Relocation_::Type> relocations(shdr.sh_size / sizeof(typename Relocation_::Type));
     stream.seekg(shdr.sh_offset, std::ios::beg);

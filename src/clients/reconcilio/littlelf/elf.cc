@@ -33,6 +33,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/stringify.hh>
 
 #include <string>
 #include <exception>
@@ -150,7 +151,9 @@ namespace
             {
                 typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
                 if (_elf_object->section_end() == sec)
-                    throw InvalidElfFileError();
+                    throw InvalidElfFileError(
+                        section.description() + " references non-existent section " +
+                        stringify(section.get_link_index()) + " in sh_link");
                 section.resolve_symbols(*sec);
             }
 
@@ -158,7 +161,9 @@ namespace
             {
                 typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
                 if (_elf_object->section_end() == sec)
-                    throw InvalidElfFileError();
+                    throw InvalidElfFileError(
+                        section.description() + " references non-existent section " +
+                        stringify(section.get_link_index()) + " in sh_link");
                 section.resolve_entry_names(*sec);
             }
     };
@@ -184,15 +189,18 @@ namespace littlelf_internals
 
             virtual void visit(const StringSection<ElfType_> & section)
             {
-                try
-                {
-                    for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
+                for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
+                    try
+                    {
                         i->resolve_section_name(section.get_string(i->get_name_index()));
-                }
-                catch (std::out_of_range &)
-                {
-                    throw InvalidElfFileError();
-                }
+                    }
+                    catch (std::out_of_range &)
+                    {
+                        throw InvalidElfFileError(
+                            i->description() + " has out-of-range name index " +
+                            stringify(i->get_name_index()) + " for " + section.description() +
+                            " (max " + stringify(section.get_max_string()) + ")");
+                    }
             }
     };
 }
@@ -202,8 +210,8 @@ InvalidElfFileError::InvalidElfFileError(const InvalidElfFileError & other) :
 {
 }
 
-InvalidElfFileError::InvalidElfFileError() throw ():
-    Exception("Invalid ELF file")
+InvalidElfFileError::InvalidElfFileError(const std::string & s) throw ():
+    Exception(s)
 {
 }
 
@@ -263,12 +271,23 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
         if (_hdr.e_shoff)
         {
             if (sizeof(typename ElfType_::SectionHeader) != _hdr.e_shentsize)
-                throw InvalidElfFileError();
+                throw InvalidElfFileError(
+                    "bad e_shentsize: got " + stringify(_hdr.e_shentsize) + ", expected " +
+                    stringify(sizeof(typename ElfType_::SectionHeader)));
+
+            stream.seekg(0, std::ios::end);
+            typename ElfType_::Word max_shdrs(
+                (typename ElfType_::Word(stream.tellg()) - _hdr.e_shoff) / sizeof(typename ElfType_::SectionHeader));
             stream.seekg(_hdr.e_shoff, std::ios::beg);
 
             if (_hdr.e_shnum)
             {
+                if (_hdr.e_shnum > max_shdrs)
+                    throw InvalidElfFileError(
+                        "file claims to contain " + stringify(_hdr.e_shnum) +
+                        " section headers, but is only big enough to contain " + stringify(max_shdrs));
                 std::vector<typename ElfType_::SectionHeader> my_shdrs(_hdr.e_shnum);
+
                 stream.read(reinterpret_cast<char *>(&my_shdrs.front()), sizeof(typename ElfType_::SectionHeader) * _hdr.e_shnum);
                 if (need_byte_swap)
                     std::for_each(my_shdrs.begin(), my_shdrs.end(),
@@ -282,9 +301,14 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
                 if (need_byte_swap)
                     ByteSwapSectionHeader<ElfType_>::swap_in_place(first_shdr);
                 if (0 == first_shdr.sh_size)
-                    throw InvalidElfFileError();
+                    throw InvalidElfFileError("got non-zero e_shoff and zero e_shnum, but sh_size of the first section is zero");
 
+                if (first_shdr.sh_size > max_shdrs)
+                    throw InvalidElfFileError(
+                        "file claims to contain " + stringify(first_shdr.sh_size) +
+                        " section headers, but is only big enough to contain " + stringify(max_shdrs));
                 std::vector<typename ElfType_::SectionHeader> my_shdrs(first_shdr.sh_size);
+
                 my_shdrs[0] = first_shdr;
                 stream.read(reinterpret_cast<char *>(&my_shdrs[1]), sizeof(typename ElfType_::SectionHeader) * (first_shdr.sh_size - 1));
                 if (need_byte_swap)
@@ -297,31 +321,33 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
         for (typename std::vector<typename ElfType_::SectionHeader>::iterator i = shdrs.begin(); i != shdrs.end(); ++i)
         {
             if (i->sh_type == SHT_STRTAB)
-                _imp->sections.push_back(make_shared_ptr(new StringSection<ElfType_>(*i, stream, need_byte_swap)));
+                _imp->sections.push_back(make_shared_ptr(new StringSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
             else if ( (i->sh_type == SHT_SYMTAB) || (i->sh_type == SHT_DYNSYM) )
-                _imp->sections.push_back(make_shared_ptr(new SymbolSection<ElfType_>(*i, stream, need_byte_swap)));
+                _imp->sections.push_back(make_shared_ptr(new SymbolSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_DYNAMIC)
-                _imp->sections.push_back(make_shared_ptr(new DynamicSection<ElfType_>(*i, stream, need_byte_swap)));
+                _imp->sections.push_back(make_shared_ptr(new DynamicSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_REL)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, Relocation<ElfType_> >(*i, stream, need_byte_swap)));
+                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, Relocation<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_RELA)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, RelocationA<ElfType_> >(*i, stream, need_byte_swap)));
+                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, RelocationA<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap)));
             else
-                _imp->sections.push_back(make_shared_ptr(new GenericSection<ElfType_>(*i)));
+                _imp->sections.push_back(make_shared_ptr(new GenericSection<ElfType_>(_imp->sections.size(), *i)));
         }
 
         if (! _hdr.e_shstrndx)
             return;
         typename ElfType_::Half shstrndx(SHN_XINDEX == _hdr.e_shstrndx ? shdrs[0].sh_link : _hdr.e_shstrndx);
         if (_imp->sections.size() <= shstrndx)
-            throw InvalidElfFileError();
+            throw InvalidElfFileError(
+                "section name table has index " + stringify(shstrndx) +
+                ", but only found " + stringify(_imp->sections.size()) + " sections");
 
         littlelf_internals::SectionNameResolvingVisitor<ElfType_> res(section_begin(), section_end());
         _imp->sections[shstrndx]->accept(res);
     }
     catch (const std::ios_base::failure &)
     {
-        throw InvalidElfFileError();
+        throw InvalidElfFileError("file is truncated, or an offset points past the end of the file");
     }
 }
 

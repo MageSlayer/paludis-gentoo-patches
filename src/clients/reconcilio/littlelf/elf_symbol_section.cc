@@ -27,6 +27,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/stringify.hh>
 
 #include <istream>
 #include <vector>
@@ -69,26 +70,33 @@ namespace littlelf_internals
         using SectionVisitor<ElfType_>::visit;
 
         private:
+            const SymbolSection<ElfType_> & _sym_section;
             typename std::vector<Symbol<ElfType_> >::iterator _begin, _end;
 
         public:
-            SymbolStringResolvingVisitor(typename std::vector<Symbol<ElfType_> >::iterator begin, typename std::vector<Symbol<ElfType_> >::iterator end) :
+            SymbolStringResolvingVisitor(const SymbolSection<ElfType_> & sym_section,
+                typename std::vector<Symbol<ElfType_> >::iterator begin,
+                typename std::vector<Symbol<ElfType_> >::iterator end) :
+                _sym_section(sym_section),
                 _begin(begin),
                 _end(end)
             {
             }
 
-            virtual void visit(StringSection<ElfType_> & section)
+            virtual void visit(StringSection<ElfType_> & string_section)
             {
-                try
-                {
-                    for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
-                        i->resolve_symbol(section.get_string(i->get_symbol_index()));
-                }
-                catch (std::out_of_range &)
-                {
-                    throw InvalidElfFileError();
-                }
+                for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
+                    try
+                    {
+                        i->resolve_symbol(string_section.get_string(i->get_symbol_index()));
+                    }
+                    catch (std::out_of_range &)
+                    {
+                        throw InvalidElfFileError(
+                            "symbol " + stringify(i - _begin) + " in " + _sym_section.description() + " has out-of-range string index " +
+                            stringify(i->get_symbol_index()) + " for " + string_section.description() +
+                            " (max " + stringify(string_section.get_max_string()) + ")");
+                    }
             }
     };
 }
@@ -151,8 +159,8 @@ Symbol<ElfType_>::~Symbol()
 }
 
 template <typename ElfType_>
-SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
-    Section<ElfType_>(shdr),
+SymbolSection<ElfType_>::SymbolSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
+    Section<ElfType_>(index, shdr),
     PrivateImplementationPattern<SymbolSection>(new Implementation<SymbolSection>),
     _type("invalid")
 {
@@ -162,7 +170,10 @@ SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & 
         _type = "SYMTAB";
 
     if (sizeof(typename ElfType_::Symbol) != shdr.sh_entsize)
-        throw InvalidElfFileError();
+        throw InvalidElfFileError(
+            "bad sh_entsize for " + this->description() + ": got " + stringify(shdr.sh_entsize) + ", expected " +
+            stringify(sizeof(typename ElfType_::Symbol)));
+
     std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / sizeof(typename ElfType_::Symbol));
     stream.seekg(shdr.sh_offset, std::ios::beg);
     stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
@@ -183,7 +194,8 @@ template <typename ElfType_>
 void
 SymbolSection<ElfType_>::resolve_symbols(Section<ElfType_> & string_section)
 {
-    littlelf_internals::SymbolStringResolvingVisitor<ElfType_> v(_imp->symbols.begin(), _imp->symbols.end());
+    littlelf_internals::SymbolStringResolvingVisitor<ElfType_> v(
+        *this, _imp->symbols.begin(), _imp->symbols.end());
     string_section.accept(v);
 }
 

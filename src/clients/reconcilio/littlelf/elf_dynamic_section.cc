@@ -62,10 +62,14 @@ namespace littlelf_internals
         using DynamicEntriesVisitor<ElfType_>::visit;
 
         private:
+            const DynamicSection<ElfType_> & _dyn_section;
             const StringSection<ElfType_> & _string_section;
 
         public:
-            DynEntriesStringResolvingVisitor(const StringSection<ElfType_> & string_section) :
+            DynEntriesStringResolvingVisitor(
+                const DynamicSection<ElfType_> & dyn_section,
+                const StringSection<ElfType_> & string_section) :
+                _dyn_section(dyn_section),
                 _string_section(string_section)
             {
             }
@@ -78,7 +82,10 @@ namespace littlelf_internals
                 }
                 catch (std::out_of_range &)
                 {
-                    throw InvalidElfFileError();
+                    throw InvalidElfFileError(
+                        entry.description() + " in " + _dyn_section.description() + " has out-of-range string index " +
+                        stringify(entry.get_string_index()) + " for " + _string_section.description() +
+                        " (max " + stringify(_string_section.get_max_string()) + ")");
                 }
             }
     };
@@ -103,20 +110,23 @@ namespace
         using SectionVisitor<ElfType_>::visit;
 
         private:
+            const DynamicSection<ElfType_> & _dyn_section;
             typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator _begin, _end;
 
         public:
-            DynamicSectionStringResolvingVisitor(
+            DynamicSectionStringResolvingVisitor(const DynamicSection<ElfType_> & dyn_section,
                 typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator begin,
                 typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator end) :
+                _dyn_section(dyn_section),
                 _begin(begin),
                 _end(end)
+
             {
             }
 
             virtual void visit(StringSection<ElfType_> & section)
             {
-                littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_> v(section);
+                littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_> v(_dyn_section, section);
                 for(typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator i = _begin; i != _end; ++i)
                     (*i)->accept(v);
             }
@@ -135,6 +145,20 @@ DynamicEntry<ElfType_>::~DynamicEntry()
 }
 
 template <typename ElfType_>
+void
+DynamicEntry<ElfType_>::initialize(typename ElfType_::Word index, const typename ElfType_::DynamicEntry &)
+{
+    _index = index;
+}
+
+template <typename ElfType_>
+std::string
+DynamicEntry<ElfType_>::description() const
+{
+    return tag_name() + " dynamic entry " + stringify(_index);
+}
+
+template <typename ElfType_>
 DynamicEntryUnknown<ElfType_>::DynamicEntryUnknown() :
     DynamicEntry<ElfType_>("unknown")
 {
@@ -146,12 +170,6 @@ DynamicEntryUnknown<ElfType_>::~DynamicEntryUnknown()
 }
 
 template <typename ElfType_>
-void
-DynamicEntryUnknown<ElfType_>::initialize(const typename ElfType_::DynamicEntry &)
-{
-}
-
-template <typename ElfType_>
 DynamicEntryFlag<ElfType_>::DynamicEntryFlag(const std::string & name) :
     DynamicEntry<ElfType_>(name)
 {
@@ -159,12 +177,6 @@ DynamicEntryFlag<ElfType_>::DynamicEntryFlag(const std::string & name) :
 
 template <typename ElfType_>
 DynamicEntryFlag<ElfType_>::~DynamicEntryFlag()
-{
-}
-
-template <typename ElfType_>
-void
-DynamicEntryFlag<ElfType_>::initialize(const typename ElfType_::DynamicEntry &)
 {
 }
 
@@ -181,8 +193,9 @@ DynamicEntryValue<ElfType_>::~DynamicEntryValue()
 
 template <typename ElfType_>
 void
-DynamicEntryValue<ElfType_>::initialize(const typename ElfType_::DynamicEntry & entry)
+DynamicEntryValue<ElfType_>::initialize(typename ElfType_::Word index, const typename ElfType_::DynamicEntry & entry)
 {
+    DynamicEntry<ElfType_>::initialize(index, entry);
     _value = entry.d_un.d_val;
 }
 
@@ -199,8 +212,9 @@ DynamicEntryPointer<ElfType_>::~DynamicEntryPointer()
 
 template <typename ElfType_>
 void
-DynamicEntryPointer<ElfType_>::initialize(const typename ElfType_::DynamicEntry & entry)
+DynamicEntryPointer<ElfType_>::initialize(typename ElfType_::Word index, const typename ElfType_::DynamicEntry & entry)
 {
+    DynamicEntry<ElfType_>::initialize(index, entry);
     _pointer = entry.d_un.d_ptr;
 }
 
@@ -218,8 +232,9 @@ DynamicEntryString<ElfType_>::~DynamicEntryString()
 
 template <typename ElfType_>
 void
-DynamicEntryString<ElfType_>::initialize(const typename ElfType_::DynamicEntry & entry)
+DynamicEntryString<ElfType_>::initialize(typename ElfType_::Word index, const typename ElfType_::DynamicEntry & entry)
 {
+    DynamicEntry<ElfType_>::initialize(index, entry);
     _value = entry.d_un.d_val;
 }
 
@@ -267,12 +282,14 @@ DynamicEntries<ElfType_>::has_entry(typename ElfType_::DynamicTag identifier) co
 }
 
 template <typename ElfType_>
-DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
-    Section<ElfType_>(shdr),
+DynamicSection<ElfType_>::DynamicSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
+    Section<ElfType_>(index, shdr),
     PrivateImplementationPattern<DynamicSection>(new Implementation<DynamicSection>)
 {
     if (sizeof(typename ElfType_::DynamicEntry) != shdr.sh_entsize)
-        throw InvalidElfFileError();
+        throw InvalidElfFileError(
+            "bad sh_entsize for " + this->description() + ": got " + stringify(shdr.sh_entsize) + ", expected " +
+            stringify(sizeof(typename ElfType_::DynamicEntry)));
 
     stream.seekg(shdr.sh_offset, std::ios::beg);
     std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / sizeof(typename ElfType_::DynamicEntry));
@@ -284,7 +301,7 @@ DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader 
     for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
     {
         paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
-        instance->initialize(*i);
+        instance->initialize(_imp->dynamic_entries.size(), *i);
         _imp->dynamic_entries.push_back(instance);
     }
 }
@@ -306,7 +323,8 @@ template <typename ElfType_>
 void
 DynamicSection<ElfType_>::resolve_entry_names(Section<ElfType_> & string_section)
 {
-    DynamicSectionStringResolvingVisitor<ElfType_> v(_imp->dynamic_entries.begin(), _imp->dynamic_entries.end());
+    DynamicSectionStringResolvingVisitor<ElfType_> v(
+        *this, _imp->dynamic_entries.begin(), _imp->dynamic_entries.end());
     string_section.accept(v);
 }
 

@@ -22,6 +22,7 @@
 #include "elf_types.hh"
 
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/stringify.hh>
 
 #include <istream>
 #include <algorithm>
@@ -29,7 +30,8 @@
 using namespace paludis;
 
 template <typename ElfType_>
-Section<ElfType_>::Section(const typename ElfType_::SectionHeader & shdr) :
+Section<ElfType_>::Section(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr) :
+    _index(index),
     _shdr(shdr),
     _name("")
 {
@@ -41,8 +43,16 @@ Section<ElfType_>::~Section()
 }
 
 template <typename ElfType_>
-GenericSection<ElfType_>::GenericSection(const typename ElfType_::SectionHeader & shdr) :
-    Section<ElfType_>(shdr)
+std::string
+Section<ElfType_>::description() const
+{
+    return get_type() + " section " + (get_name().empty() ? "[name not yet resolved]" : get_name())
+        + " " + stringify(get_index());
+}
+
+template <typename ElfType_>
+GenericSection<ElfType_>::GenericSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr) :
+    Section<ElfType_>(index, shdr)
 {
 }
 
@@ -60,8 +70,8 @@ GenericSection<ElfType_>::get_type() const
 }
 
 template <typename ElfType_>
-StringSection<ElfType_>::StringSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool) :
-    Section<ElfType_>(shdr),
+StringSection<ElfType_>::StringSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool) :
+    Section<ElfType_>(index, shdr),
     _stringTable(shdr.sh_size, ' ')
 {
     std::string tmp_table(shdr.sh_size, '\0');

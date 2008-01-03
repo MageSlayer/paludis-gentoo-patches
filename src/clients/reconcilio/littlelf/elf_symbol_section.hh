@@ -86,7 +86,7 @@ class SymbolSection :
         std::string _type;
 
     public:
-        SymbolSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
+        SymbolSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~SymbolSection();
 
         virtual std::string get_type() const

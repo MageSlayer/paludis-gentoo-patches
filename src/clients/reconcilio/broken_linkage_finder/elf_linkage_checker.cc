@@ -206,9 +206,9 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream
                 }
         }
     }
-    catch (const InvalidElfFileError &)
+    catch (const InvalidElfFileError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted");
+        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted: " + e.message());
     }
 
     return true;
@@ -345,9 +345,9 @@ Implementation<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::is
         else
             Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a library");
     }
-    catch (const InvalidElfFileError &)
+    catch (const InvalidElfFileError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted");
+        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted: " + e.message());
     }
 
     return true;

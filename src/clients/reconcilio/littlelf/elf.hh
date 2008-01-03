@@ -35,7 +35,7 @@ class InvalidElfFileError :
 {
     public:
         InvalidElfFileError(const InvalidElfFileError &);
-        InvalidElfFileError() throw ();
+        InvalidElfFileError(const std::string &) throw ();
 };
 
 template <typename ElfType_>

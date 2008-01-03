@@ -73,16 +73,19 @@ class DynamicEntry :
 {
     private:
         std::string _tag_name;
+        typename ElfType_::Word _index;
 
     public:
         DynamicEntry(const std::string &);
         ~DynamicEntry();
-        virtual void initialize(const typename ElfType_::DynamicEntry & entry) = 0;
+        virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry & entry);
 
         std::string tag_name() const
         {
             return _tag_name;
         }
+
+        std::string description() const;
 };
 
 template <typename ElfType_>
@@ -94,7 +97,6 @@ class DynamicEntryUnknown :
     public:
         DynamicEntryUnknown();
         virtual ~DynamicEntryUnknown();
-        virtual void initialize(const typename ElfType_::DynamicEntry &);
 };
 
 template <typename ElfType_>
@@ -106,7 +108,6 @@ class DynamicEntryFlag :
     public:
         DynamicEntryFlag(const std::string &);
         ~DynamicEntryFlag();
-        virtual void initialize(const typename ElfType_::DynamicEntry &);
 };
 
 template <typename ElfType_>
@@ -121,7 +122,7 @@ class DynamicEntryValue :
     public:
         DynamicEntryValue(const std::string &);
         virtual ~DynamicEntryValue();
-        virtual void initialize(const typename ElfType_::DynamicEntry & entry);
+        virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry & entry);
 
         typename ElfType_::DynamicValue operator() () const
         {
@@ -141,7 +142,7 @@ class DynamicEntryPointer :
     public:
         DynamicEntryPointer(const std::string &);
         virtual ~DynamicEntryPointer();
-        virtual void initialize(const typename ElfType_::DynamicEntry &);
+        virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &);
 
         typename ElfType_::DynamicPointer operator() () const
         {
@@ -169,7 +170,7 @@ class DynamicEntryString :
     public:
         DynamicEntryString(const std::string &);
         virtual ~DynamicEntryString();
-        virtual void initialize(const typename ElfType_::DynamicEntry &);
+        virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &);
 
         std::string operator() () const
         {
@@ -216,7 +217,7 @@ class DynamicSection :
     using paludis::PrivateImplementationPattern<DynamicSection>::_imp;
 
     public:
-        DynamicSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
+        DynamicSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~DynamicSection();
 
         virtual std::string get_type() const;
