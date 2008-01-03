@@ -50,7 +50,7 @@ paludis::make_ebuild_repository(
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
     tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-            new KeyValueConfigFile(FSEntry(FSEntry(location) / "metadata/layout.conf"),
+            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf",
                 KeyValueConfigFileOptions())
             : 0);
 
