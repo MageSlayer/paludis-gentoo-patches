@@ -1,0 +1,65 @@
+#compdef reconcilio
+#
+# vim: set et sw=4 sts=4 ts=4 ft=zsh :
+# ZSH completion for adjutrix
+# Written by Baptiste Daroussin <baptux at free.fr>
+_reconcilio() {
+    local actions action_options general_options fix_linkage_options install_options deplist_options
+    actions=(
+        --fix-linkage
+        --version -V
+        --help -h
+    )
+    general_options=(
+        '--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))' 
+        '(--no-colour --no-color)'{--no-colour,--no-color}"[Do not use colour]"
+        "(--environment -E)"{-E,--environment}"[Environment specification]"
+        "--exact[Rebuild the same package version that is currently installed]"
+        "(--verbose, -v)"{-v,--verbose}"[Display more detailed output]"
+        "--resume-command-template[Save the resume command to a file]:file:_files"
+	"--compact[Display output using one line per entry]"
+    )
+    fix_linkage_options=(
+        "--library[Only rebuild packages linked against this library, even if it exists]"
+    )
+    install_options=(
+        "(--pretend -p)"{--pretend,-p}"[Pretend only]"
+        "--no-config-protection[Disable config file protection (dangerous)]"
+        "--debug-build[What to do with debug information]:Debug Build:(( none\:Discard\ debug\ information split\:Split\ debug\ information internal\:Keep\ debug\ information\ with\ binaries ))"
+        "(--fetch -f)"{--fetch,-f}"[Only fetch sources; don t install anything]"
+	    "--checks[Whether to run post-build checks]:When:((none\:Don\ t\ run\ checks,\ even\ if\ they\ should\ be\ run default\:Run\ checks\ if\ they\ should\ be\ run\ by\ default always\:Always\ run\ checks))"
+        "--no-safe-resume[Do not allow interrupted downloads to be resumed]"
+        "--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))"
+        "--show-use-descriptions[Show descriptions of USE flags]:case to show:((none\:Don\ t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))"
+        "--show-package-descriptions[Show package descriptions]:When:((none\:Don\ t\ show\ any\ descriptions new\:Show\ descriptions\ for\ new\ packages all\:Show\ descriptions\ for\ all\ packages))"
+        "--continue-on-failure[Whether to continue after a fetch or install error]:When:((if-fetch-only\:If\ fetching\ only never\:Never if-satisfied\:If\ remaining\ packages\ dependencies\ are\ satisfied if-independent\:If\ independent\ of\ failed\ and\ skipped\ packages always\:Always))"
+    )
+    deplist_options=(
+        "--dl-reinstall[When to reinstall packages]:When:(never always if-use-changed)"
+        "--dl-reinstall-scm[When to reinstall scm packages]:When:(never always daily weekly)"
+        "--dl-upgrade[When to upgrade packages]:When:(always as-needed)"
+        "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:(always as-needed)"
+        "--dl-downgrade[When to downgrade packages]:When:(as-needed warning error)"
+        "--dl-installed-deps-pre[How to handle pre dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-installed-deps-runtime[How to handle runtime dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-installed-deps-post[How to handle post dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-uninstalled-deps-pre[How to handle pre dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-uninstalled-deps-post[How to handle post dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-uninstalled-deps-runtime[How to handle runtime dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
+        "--dl-uninstalled-deps-suggested[How to handle suggested dependencies for uninstalled packages]:How(pre pre-or-post post try-post discard)"
+        "--dl-suggested[How to handle suggested dependencies]:How:(show install discard)"
+        "--dl-circular[How to handle circular dependencies]:How:(error discard)"
+        "--dl-blocks[How to handle blocks]:How:(accumulate error discard)"
+        "--dl-override-masks[Zero or more mask kinds that can be overridden as necessary]:What:(tilde-keyword unkeyworded profile repository license)"
+        "--dl-fall-back[When to fall back to installed packages]:When:(as-needed-except-targets as-needed never)"
+    )
+    action_options=(
+        "($actions)"{--fix-linkage}"[Search for and rebuild packages linked against non-existant libraries]"
+        "(: -)"{--version,-V}"[Display program version]"
+        "(: -)"{--help,-h}"[Display program help]"
+    )
+    _arguments -s \
+        $general_options[@] $fix_linkage_options[@] $install_options[@] $deplist_options[@] $action_options[@] && return 0
+}
+
+_reconcilio "$@"
