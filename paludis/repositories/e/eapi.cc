@@ -128,6 +128,7 @@ namespace paludis
                                                 .restrict_fetch(make_shared_ptr(new Set<std::string>))
                                                 .restrict_mirror(make_shared_ptr(new Set<std::string>))
                                                 .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
+                                                .merge_rewrite_symlinks(destringify<bool>(k.get("merge_rewrite_symlinks")))
                                                 )))
 
                                                 .pipe_commands(make_shared_ptr(new EAPIPipeCommands(

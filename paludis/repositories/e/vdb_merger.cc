@@ -68,7 +68,8 @@ VDBMerger::VDBMerger(const VDBMergerOptions & o) :
             .environment(o.environment)
             .image(o.image)
             .root(o.root)
-            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())),
+            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
+            .rewrite_symlinks(o.rewrite_symlinks)),
     PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(o))
 {
 }

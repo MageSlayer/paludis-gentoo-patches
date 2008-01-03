@@ -134,6 +134,8 @@ make_class_EAPIEbuildOptions()
     key vdb_from_env_variables std::string
     key vdb_from_env_unless_empty_variables std::string
 
+    key merge_rewrite_symlinks bool
+
     key restrict_fetch "tr1::shared_ptr<Set<std::string> >"
     key restrict_mirror "tr1::shared_ptr<Set<std::string> >"
     key restrict_primaryuri "tr1::shared_ptr<Set<std::string> >"

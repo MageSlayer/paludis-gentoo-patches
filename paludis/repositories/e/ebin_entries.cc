@@ -310,6 +310,7 @@ EbinEntries::install(const tr1::shared_ptr<const PackageID> & id,
                     + stringify(id->version())) / "image")
             .environment_file(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
                     + stringify(id->version())) / "temp" / "loadsaveenv")
+            .rewrite_symlinks(true)
             );
 
     if (o.destination->destination_interface->want_pre_post_phases())

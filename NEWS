@@ -20,6 +20,9 @@ trunk/:
       parent directory or merging each file separately. If a copy is needed,
       merge to a temporary file and then rename to the real destination.
 
+    * Symlink rewriting is now part of the merger and is EAPI-configurable. All
+      EAPIs known to paludis allow symlink rewriting except exheres-0.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

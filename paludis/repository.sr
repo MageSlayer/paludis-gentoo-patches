@@ -104,6 +104,7 @@ make_class_MergeOptions()
     key package_id "tr1::shared_ptr<const PackageID>"
     key image_dir FSEntry
     key environment_file FSEntry
+    key rewrite_symlinks bool
 
     allow_named_args
 

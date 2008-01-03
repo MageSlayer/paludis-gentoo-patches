@@ -1128,7 +1128,8 @@ VDBRepository::merge(const MergeOptions & m)
             .contents_file(vdb_dir / "CONTENTS")
             .config_protect(config_protect)
             .config_protect_mask(config_protect_mask)
-            .package_id(m.package_id));
+            .package_id(m.package_id)
+            .rewrite_symlinks(m.rewrite_symlinks));
 
     if (! merger.check())
     {

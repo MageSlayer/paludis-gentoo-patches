@@ -7,14 +7,19 @@ cd merger_TEST_dir || exit 3
 
 mkdir -p sym_over_nothing_dir/{image,root}
 ln -s image_dst sym_over_nothing_dir/image/sym
+ln -s ${PWD}/sym_over_nothing_dir/image/rewrite_target sym_over_nothing_dir/image/rewrite_me
 
 mkdir -p sym_over_sym_dir/{image,root}
 ln -s image_dst sym_over_sym_dir/image/sym
 ln -s root_dst sym_over_sym_dir/root/sym
+ln -s ${PWD}/sym_over_sym_dir/image/rewrite_target sym_over_sym_dir/image/rewrite_me
+ln -s rewrite_target sym_over_sym_dir/root/rewrite_me
 
 mkdir -p sym_over_file_dir/{image,root}
 ln -s image_dst sym_over_file_dir/image/sym
 > sym_over_file_dir/root/sym
+ln -s ${PWD}/sym_over_file_dir/image/rewrite_target sym_over_file_dir/image/rewrite_me
+> sym_over_file_dir/root/rewrite_target
 
 mkdir -p sym_over_dir_dir/{image,root}
 ln -s image_dst sym_over_dir_dir/image/sym

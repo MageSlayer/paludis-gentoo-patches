@@ -82,7 +82,8 @@ namespace
                         .contents_file(FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what)
                         .config_protect("/protected_file /protected_dir")
                         .config_protect_mask("/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        .package_id(tr1::shared_ptr<PackageID>()))
+                        .package_id(tr1::shared_ptr<PackageID>())
+                        .rewrite_symlinks(true))
             {
             }
     };

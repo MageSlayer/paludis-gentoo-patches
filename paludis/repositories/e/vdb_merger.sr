@@ -12,6 +12,7 @@ make_class_VDBMergerOptions()
     key config_protect std::string
     key config_protect_mask std::string
     key package_id "tr1::shared_ptr<const PackageID>"
+    key rewrite_symlinks bool
 
     allow_named_args
 

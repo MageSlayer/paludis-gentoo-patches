@@ -377,6 +377,11 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
             return;
         }
     }
+    else
+    {
+        if (symlink_needs_rewriting(src) && ! _options.rewrite_symlinks)
+            throw MergerError("Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
+    }
 
     do
     {
@@ -679,6 +684,35 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
 }
 
+bool
+Merger::symlink_needs_rewriting(const FSEntry & sym)
+{
+    std::string target(sym.readlink());
+    std::string real_image(stringify(_options.image.realpath()));
+
+    return (0 == target.compare(0, real_image.length(), real_image));
+}
+
+void
+Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
+{
+    if (! symlink_needs_rewriting(src))
+        return;
+
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
+
+    FSEntry real_image(_options.image.realpath());
+    FSEntry dst(src.readlink());
+    std::string fixed_dst(stringify(dst.strip_leading(real_image)));
+
+    Log::get_instance()->message(ll_qa, lc_context, "Rewriting bad symlink: "
+            + stringify(src) + " -> " + stringify(dst) + " to " + fixed_dst);
+
+    FSEntry s(dst_dir / src.basename());
+    s.unlink();
+    s.symlink(fixed_dst);
+}
+
 void
 Merger::record_renamed_dir_recursive(const FSEntry & dst)
 {
@@ -689,6 +723,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
         switch (m)
         {
             case et_sym:
+                rewrite_symlink_as_needed(*d, dst);
                 record_install_sym(*d, dst);
                 continue;
 
@@ -789,9 +824,15 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
-    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
-    if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
-        throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "': " + stringify(::strerror(errno)));
+    if (symlink_needs_rewriting(src))
+        rewrite_symlink_as_needed(src, dst_dir);
+    else
+    {
+        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
+        if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
+            throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "': "
+                    + stringify(::strerror(errno)));
+    }
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")

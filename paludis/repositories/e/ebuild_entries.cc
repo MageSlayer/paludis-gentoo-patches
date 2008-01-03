@@ -546,6 +546,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                                 + stringify(id->version())) / "image")
                         .environment_file(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
+                        .rewrite_symlinks(id->eapi()->supported->ebuild_options->merge_rewrite_symlinks)
                         );
         }
         else if ((! phase->option("prepost")) ||

@@ -20,8 +20,7 @@ installhookcommonprog_SCRIPTS = \
 	news.hook \
 	installable_cache_regen.bash \
 	installed_cache_regen.bash \
-	write_cache_clean.bash \
-	fix_symlinks.bash
+	write_cache_clean.bash
 
 installhookinstallallpost_SCRIPTS = \
 	find_config_updates.hook
@@ -254,8 +253,6 @@ install-data-local :
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_post/
-	ln -sf ../common/fix_symlinks.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/merger_check_sym_post/
-	ln -sf ../common/fix_symlinks.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/merger_install_sym_post/
 
 uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
@@ -263,7 +260,6 @@ uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/news.hook
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/write_cache_clean.bash
-	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/fix_symlinks.bash
 
 Makefile.am : Makefile.am.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

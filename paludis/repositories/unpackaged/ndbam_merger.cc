@@ -69,7 +69,8 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerOptions & o) :
             .environment(o.environment)
             .image(o.image)
             .root(o.root)
-            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())),
+            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
+            .rewrite_symlinks(true)),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(o))
 {
 }

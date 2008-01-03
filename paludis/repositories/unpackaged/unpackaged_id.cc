@@ -309,6 +309,7 @@ UnpackagedID::perform_action(Action & action) const
             .package_id(shared_from_this())
             .image_dir(fs_location_key()->value())
             .environment_file(FSEntry("/dev/null"))
+            .rewrite_symlinks(true)
             );
 }
 

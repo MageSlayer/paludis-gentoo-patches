@@ -9,6 +9,7 @@ make_class_MergerOptions()
     key image "FSEntry"
     key root "FSEntry"
     key no_chown bool
+    key rewrite_symlinks bool
 
     allow_named_args
 

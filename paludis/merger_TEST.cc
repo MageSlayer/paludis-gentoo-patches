@@ -143,15 +143,16 @@ namespace
                 TestCase("merge " + stringify(src_type) + " over " + stringify(dst_type) + (0 == n ? "" : " "
                             + stringify(n))),
                 image_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
-                        + (0 == n ? "" : "_" + stringify(n)) + "/image"),
+                        + (0 == n ? "" : "_" + stringify(n)) + "_dir/image"),
                 root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
-                        + (0 == n ? "" : "_" + stringify(n)) + "/root"),
+                        + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(MergerOptions::create()
                         .image(image_dir)
                         .root(root_dir)
                         .environment(&env)
-                        .no_chown(true))
+                        .no_chown(true)
+                        .rewrite_symlinks(true))
             {
             }
 
@@ -164,7 +165,8 @@ namespace
                         .image(image_dir)
                         .root(root_dir)
                         .environment(&env)
-                        .no_chown(true))
+                        .no_chown(true)
+                        .rewrite_symlinks(true))
             {
             }
  
@@ -185,7 +187,9 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "sym").is_symbolic_link());
+            TEST_CHECK((root_dir / "rewrite_me").is_symbolic_link());
             TEST_CHECK_EQUAL((root_dir / "sym").readlink(), "image_dst");
+            TEST_CHECK_EQUAL((root_dir / "rewrite_me").readlink(), "/rewrite_target");
         }
     } test_merger_sym_nothing;
 
@@ -202,7 +206,9 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "sym").is_symbolic_link());
+            TEST_CHECK((root_dir / "rewrite_me").is_symbolic_link());
             TEST_CHECK_EQUAL((root_dir / "sym").readlink(), "image_dst");
+            TEST_CHECK_EQUAL((root_dir / "rewrite_me").readlink(), "/rewrite_target");
         }
     } test_merger_sym_sym;
 
@@ -218,7 +224,9 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "sym").is_symbolic_link());
+            TEST_CHECK((root_dir / "rewrite_me").is_symbolic_link());
             TEST_CHECK_EQUAL((root_dir / "sym").readlink(), "image_dst");
+            TEST_CHECK_EQUAL((root_dir / "rewrite_me").readlink(), "/rewrite_target");
         }
     } test_merger_sym_file;
 
