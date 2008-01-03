@@ -172,6 +172,12 @@ namespace paludis
      */
     int setfilecon(const FSEntry & file, tr1::shared_ptr<const SecurityContext> con);
 
+    /**
+     * Whether SELinux is enabled. Ideally, you are not using this function.
+     *
+     * \ingroup grplibpaludisselinux
+     */
+    bool is_selinux_enabled();
 }
 
 #endif

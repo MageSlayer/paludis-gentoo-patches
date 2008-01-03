@@ -40,6 +40,7 @@
  */
 
 struct stat;
+struct utimbuf;
 
 namespace paludis
 {
@@ -337,6 +338,17 @@ namespace paludis
              *   existing occurs.
              */
             bool rmdir();
+
+            /**
+             * Try to set atime and mtime
+             *
+             * \return True, if we succeeded, and false if we don't exist
+             *   already.
+             *
+             * \exception FSError If an error other than us already not
+             *   existing ocurrs.
+             */
+            bool utime(const struct ::utimbuf * buf = 0);
 
             /**
              * Change our permissions.

@@ -261,3 +261,7 @@ int paludis::setfilecon(const paludis::FSEntry & path, tr1::shared_ptr<const Sec
     return libselinux.setfilecon(stringify(path).c_str(), con->_imp->_context);
 }
 
+bool paludis::is_selinux_enabled()
+{
+    return libselinux.is_selinux_enabled() == 1;
+}

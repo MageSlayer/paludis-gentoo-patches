@@ -16,6 +16,10 @@ trunk/:
       downloaded for a given package to be installed. Two new metadata keys,
       size_of_download_required and size_of_all_distfiles, have been added.
 
+    * Some merger improvements were implemented: try to merge by renaming a
+      parent directory or merging each file separately. If a copy is needed,
+      merge to a temporary file and then rename to the real destination.
+
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

@@ -76,6 +76,8 @@ namespace paludis
             MergerOptions _options;
             bool _result;
             bool _skip_dir;
+            void record_renamed_dir_recursive(const FSEntry &);
+            void relabel_dir_recursive(const FSEntry &, const FSEntry &);
 
         protected:
             ///\name Basic operations

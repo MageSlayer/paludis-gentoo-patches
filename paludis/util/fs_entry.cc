@@ -33,6 +33,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <utime.h>
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
@@ -573,6 +574,19 @@ FSEntry::rmdir()
         return false;
     else
         throw FSError("rmdir '" + _imp->path + "' failed: " + ::strerror(e));
+}
+
+bool
+FSEntry::utime(const struct ::utimbuf * buf)
+{
+    if (0 == ::utime(_imp->path.c_str(), buf))
+        return true;
+
+    int e(errno);
+    if (e == ENOENT)
+        return false;
+    else
+        throw FSError("utime '" + _imp->path + "' failed: " + ::strerror(e));
 }
 
 std::string

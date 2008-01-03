@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -619,33 +620,56 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
-    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir/dst_name), src.permissions()));
-    FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
-    if (-1 == input_fd)
-        throw MergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
+    FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
+    FSEntry dst_real(dst_dir / dst_name);
 
-    FDHolder output_fd(::open(stringify(dst_dir / dst_name).c_str(), O_WRONLY | O_CREAT,
-                src.permissions()), false);
-    if (-1 == output_fd)
-        throw MergerError("Cannot write '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
+    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
+    FSCreateCon createcon(secctx);
+    if (0 != paludis::setfilecon(src, secctx))
+        throw MergerError("Could not set SELinux context on '"
+                + stringify(src) + "': " + stringify(::strerror(errno)));
 
-    if (! _options.no_chown)
-        if (0 != ::fchown(output_fd,
-                    src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
-                    src.group() == _options.environment->reduced_gid() ? 0 : src.group()))
-            throw MergerError("Cannot fchown '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
+    if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
+    {
+        if (! dst_real.utime())
+            throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
+    }
+    else
+    {
+        Log::get_instance()->message(ll_debug, lc_context,
+                "link failed: " + stringify(::strerror(errno))
+                + ". Falling back to regular read/write copy");
+        FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
+        if (-1 == input_fd)
+            throw MergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
 
-    /* set*id bits */
-    if (0 != ::fchmod(output_fd, src.permissions()))
-        throw MergerError("Cannot fchmod '" + stringify(dst_dir / dst_name) + "': " + stringify(::strerror(errno)));
+        FDHolder output_fd(::open(stringify(dst).c_str(), O_WRONLY | O_CREAT,
+                    src.permissions()), false);
+        if (-1 == output_fd)
+            throw MergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
-    char buf[4096];
-    ssize_t count;
-    while ((count = read(input_fd, buf, 4096)) > 0)
-        if (-1 == write(output_fd, buf, count))
-            throw MergerError("write failed: " + stringify(::strerror(errno)));
-    if (-1 == count)
-        throw MergerError("read failed: " + stringify(::strerror(errno)));
+        if (! _options.no_chown)
+            if (0 != ::fchown(output_fd,
+                        src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
+                        src.group() == _options.environment->reduced_gid() ? 0 : src.group()))
+                throw MergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+
+        /* set*id bits */
+        if (0 != ::fchmod(output_fd, src.permissions()))
+            throw MergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+
+        char buf[4096];
+        ssize_t count;
+        while ((count = read(input_fd, buf, 4096)) > 0)
+            if (-1 == write(output_fd, buf, count))
+                throw MergerError("write failed: " + stringify(::strerror(errno)));
+        if (-1 == count)
+            throw MergerError("read failed: " + stringify(::strerror(errno)));
+
+        if (0 != ::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
+            throw MergerError(
+                    "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
+    }
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_file_post")
@@ -653,6 +677,56 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
+}
+
+void
+Merger::record_renamed_dir_recursive(const FSEntry & dst)
+{
+    record_install_dir(dst, dst.dirname());
+    for (DirIterator d(dst, false), d_end ; d != d_end ; ++d)
+    {
+        EntryType m(entry_type(*d));
+        switch (m)
+        {
+            case et_sym:
+                record_install_sym(*d, dst);
+                continue;
+
+            case et_file:
+                record_install_file(*d, dst, stringify(d->basename()));
+                continue;
+
+            case et_dir:
+                record_renamed_dir_recursive(*d);
+                continue;
+
+            case et_misc:
+                throw MergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
+                continue;
+
+            case et_nothing:
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    }
+}
+
+void
+Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
+{
+    for (DirIterator d(src, false), d_end ; d != d_end ; ++d)
+    {
+        mode_t mode(d->permissions());
+        tr1::shared_ptr<const SecurityContext> secctx(
+                MatchPathCon::get_instance()->match(stringify(dst / d->basename()), mode));
+        if (0 != paludis::setfilecon(*d, secctx))
+            throw MergerError("Could not set SELinux context on '"
+                    + stringify(*d) + "' : " + stringify(::strerror(errno)));
+        if (d->is_directory())
+            relabel_dir_recursive(*d, dst / d->basename());
+    }
 }
 
 void
@@ -669,14 +743,31 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 
     mode_t mode(src.permissions());
     FSEntry dst(dst_dir / src.basename());
-    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), mode));
-    dst.mkdir(mode);
-    if (! _options.no_chown)
-        dst.chown(
-                src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
-                src.group() == _options.environment->reduced_gid() ? 0 : src.group());
-    /* pick up set*id bits */
-    dst.chmod(src.permissions());
+    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
+    FSCreateCon createcon(secctx);
+    if (0 != paludis::setfilecon(src, secctx))
+        throw MergerError("Could not set SELinux context on '"
+                + stringify(src) + "': " + stringify(::strerror(errno)));
+
+    if (is_selinux_enabled())
+        relabel_dir_recursive(src, dst);
+
+    if (0 == ::rename(stringify(src).c_str(), stringify(dst).c_str()))
+    {
+        record_renamed_dir_recursive(dst);
+        _skip_dir = true;
+    }
+    else
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "rename failed. Falling back to recursive copy.");
+        dst.mkdir(mode);
+        if (! _options.no_chown)
+            dst.chown(
+                    src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
+                    src.group() == _options.environment->reduced_gid() ? 0 : src.group());
+        /* pick up set*id bits */
+        dst.chmod(src.permissions());
+    }
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_dir_post")
