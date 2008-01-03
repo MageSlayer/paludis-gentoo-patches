@@ -87,14 +87,22 @@ namespace paludis
                         dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(*t);
                 }
 
+                IUseFlagParseOptions iuse_flag_parse_options;
+                {
+                    std::list<std::string> iuse_flag_parse_options_tokens;
+                    tokenise_whitespace(k.get("iuse_flag_parse_options"), std::back_inserter(iuse_flag_parse_options_tokens));
+                    for (std::list<std::string>::const_iterator t(iuse_flag_parse_options_tokens.begin()),
+                            t_end(iuse_flag_parse_options_tokens.end()) ;
+                            t != t_end ; ++t)
+                        iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
+                }
+
                 tr1::shared_ptr<EAPI> eapi(new EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
                                     SupportedEAPI::create()
                                     .package_dep_spec_parse_options(package_dep_spec_parse_options)
                                     .dependency_spec_tree_parse_options(dependency_spec_tree_parse_options)
-                                    .iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
-                                            k.get("iuse_flag_parse_mode")))
+                                    .iuse_flag_parse_options(iuse_flag_parse_options)
                                     .breaks_portage(destringify<bool>(k.get("breaks_portage")))
-                                    .uri_supports_arrow(destringify<bool>(k.get("uri_supports_arrow")))
 
                                     .ebuild_options(make_shared_ptr(new EAPIEbuildOptions(
                                                 EAPIEbuildOptions::create()

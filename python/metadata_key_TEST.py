@@ -155,7 +155,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataIUseFlagIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
-                return [IUseFlag("iuse", IUseFlagParseMode.PERMISSIVE, -1)]
+                return [IUseFlag("iuse", IUseFlagParseOptions(), -1)]
 
             def pretty_print_flat(self, f):
                 return f.format_iuse_flag_plain(IUseFlag("foo", UseFlagState.ENABLED, 0))

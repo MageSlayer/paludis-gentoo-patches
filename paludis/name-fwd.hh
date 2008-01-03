@@ -24,6 +24,7 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options-fwd.hh>
 #include <string>
 
 /** \file
@@ -92,6 +93,14 @@ namespace paludis
 
     class QualifiedPackageName;
     class IUseFlag;
+
+    /**
+     * Options for IUseFlag.
+     *
+     * \ingroup g_names
+     * \since 0.26
+     */
+    typedef Options<IUseFlagParseOption> IUseFlagParseOptions;
 
     /**
      * Output a QualifiedPackageName to a stream.

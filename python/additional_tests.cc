@@ -263,7 +263,7 @@ namespace formatter
     // CanFormat for IUseRoles
     void test_iuse_roles(CanFormat<IUseFlag> & f)
     {
-        IUseFlag u("iuse_flag", iuse_pm_permissive, 1);
+        IUseFlag u("iuse_flag", IUseFlagParseOptions(), 1);
         f.format(u, Plain());
         f.format(u, Enabled());
         f.format(u, Disabled());

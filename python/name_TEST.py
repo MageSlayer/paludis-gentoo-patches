@@ -33,7 +33,7 @@ class TestCase_Names(unittest.TestCase):
         self.names["repo"] = RepositoryName("repo")
         self.names["keyword"] = KeywordName("keyword")
         self.names["set"] = SetName("set")
-        IUseFlag("foo", IUseFlagParseMode.PERMISSIVE, -1)
+        IUseFlag("foo", IUseFlagParseOptions(), -1)
         IUseFlag("foo", UseFlagState.ENABLED, -1)
 
     def test_2_create_error(self):
@@ -60,7 +60,8 @@ class TestCase_Names(unittest.TestCase):
 
     def test_4_operators(self):
         self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
-        self.assert_(IUseFlag("foo", UseFlagState.ENABLED, -1) == IUseFlag("+foo", IUseFlagParseMode.PERMISSIVE, 2))
+        self.assert_(IUseFlag("foo", UseFlagState.ENABLED, -1) ==
+                     IUseFlag("+foo", IUseFlagParseOptions() + IUseFlagParseOption.ALLOW_IUSE_DEFAULTS, 2))
 
 
     def test_5_data_members(self):

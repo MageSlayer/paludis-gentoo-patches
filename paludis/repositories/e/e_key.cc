@@ -586,7 +586,7 @@ EIUseKey::value() const
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
     {
-        IUseFlag f(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode, std::string::npos);
+        IUseFlag f(*t, _imp->id->eapi()->supported->iuse_flag_parse_options, std::string::npos);
         for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == stringify(f.flag).compare(0, stringify(*p).length(), stringify(*p), 0, stringify(*p).length()))

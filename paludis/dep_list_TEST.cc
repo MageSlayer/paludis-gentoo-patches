@@ -922,7 +922,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -942,7 +942,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[-disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -962,7 +962,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -989,7 +989,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[-enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1016,7 +1016,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1036,7 +1036,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[-disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1056,7 +1056,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1083,7 +1083,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[-enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1399,11 +1399,11 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
         }
 
@@ -1429,7 +1429,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1456,11 +1456,11 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname!?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
         }
 
@@ -1486,7 +1486,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1513,11 +1513,11 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
         }
 
@@ -1543,7 +1543,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[-pkgname?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1570,11 +1570,11 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname!?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname!?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
         }
 
@@ -1600,7 +1600,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1627,9 +1627,9 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/disabled[pkgname=] )");
-            repo->add_version("cat4", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
         }
 
@@ -1653,7 +1653,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1680,7 +1680,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1707,9 +1707,9 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!=] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
             repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
         }
 
@@ -1733,7 +1733,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()
@@ -1760,7 +1760,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", iuse_pm_permissive);
+            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
         }
 
         void populate_expected()

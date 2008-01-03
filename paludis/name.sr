@@ -35,7 +35,7 @@ make_class_IUseFlag()
     comparison_operators all flag
 
     extra_constructors <<END
-        IUseFlag(const std::string &, const IUseFlagParseMode, const std::string::size_type);
+        IUseFlag(const std::string &, const IUseFlagParseOptions &, const std::string::size_type);
 END
 
     doxygen_comment << "END"

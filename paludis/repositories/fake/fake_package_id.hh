@@ -64,10 +64,10 @@ namespace paludis
         public FakeMetadataCollectionKey<IUseFlagSet>
     {
         public:
-            FakeMetadataIUseSetKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
+            FakeMetadataIUseSetKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseOptions &,
                     const MetadataKeyType, const PackageID * const, const Environment * const);
 
-            void set_from_string(const std::string &, const IUseFlagParseMode);
+            void set_from_string(const std::string &, const IUseFlagParseOptions &);
 
             virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -1,26 +1,6 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et ft=sh :
 
-make_enum_DependencySpecTreeParseMode()
-{
-    prefix dst_pm
-    want_destringify
-    namespace paludis::erepository
-
-    key dst_pm_eapi_0        "EAPI 0"
-    key dst_pm_exheres_0     "EAPI exheres-0"
-    key dst_pm_paludis_1     "EAPI paludis-1"
-
-    doxygen_comment << "END"
-        /**
-         * How DepParser should parse a DependencySpecTree string.
-         *
-         * \see DepParser
-         * \ingroup grpdepspecs
-         */
-END
-}
-
 make_enum_PackageDepSpecParseOption()
 {
     prefix pdspo
@@ -42,5 +22,6 @@ make_enum_DependencySpecTreeParseOption()
     namespace paludis::erepository
 
     key dstpo_disallow_any_use           "Disallow || ( use? ( ... ) )"
+    key dstpo_uri_supports_arrow         "Allow -> in FetchableURIDepSpec"
 }
 

@@ -709,7 +709,8 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
     return parse<FetchableURISpecTree, ParseFetchableURIDepSpec, false, true, LabelsAreURI>(s, false,
-            ParseFetchableURIDepSpec(e.supported->uri_supports_arrow), e, tr1::shared_ptr<const PackageID>());
+            ParseFetchableURIDepSpec(e.supported->dependency_spec_tree_parse_options[dstpo_uri_supports_arrow]),
+            e, tr1::shared_ptr<const PackageID>());
 }
 
 tr1::shared_ptr<SimpleURISpecTree::ConstItem>

@@ -21,6 +21,7 @@
 #include <python/exception.hh>
 #include <python/validated.hh>
 #include <python/iterable.hh>
+#include <python/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <paludis/name.hh>
@@ -68,8 +69,14 @@ void expose_name()
      */
     enum_auto("UseFlagState", last_use,
             "A USE flag can be on, off or unspecified.");
-    enum_auto("IUseFlagParseMode", last_iuse_pm,
+    enum_auto("IUseFlagParseOption", last_iufpo,
             "How to parse an IUSE flag string.");
+
+    /**
+     * Options
+     */
+    class_options<IUseFlagParseOptions>("IUseFlagParseOptions", "IUseFlagParseOption",
+            "Options for IUseFlag.");
 
     /**
      * PackageNamePart
@@ -249,8 +256,8 @@ void expose_name()
         (
          "IUseFlag",
          "Represents an IUse flag.",
-         bp::init<const std::string &, IUseFlagParseMode, const std::string::size_type>(
-             "__init__(string, IUseFlagParseMode, Integer)")
+         bp::init<const std::string &, IUseFlagParseOptions, const std::string::size_type>(
+             "__init__(string, IUseFlagParseOptions, Integer)")
         )
         .def(bp::init<const UseFlagName &, const UseFlagState &, const std::string::size_type>(
                     "__init__(UseFlagName, UseFlagState, Integer)"))

@@ -102,22 +102,22 @@ FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 }
 
 FakeMetadataIUseSetKey::FakeMetadataIUseSetKey(const std::string & r,
-        const std::string & h, const std::string & v, const IUseFlagParseMode m, const MetadataKeyType t,
+        const std::string & h, const std::string & v, const IUseFlagParseOptions & o, const MetadataKeyType t,
         const PackageID * const i, const Environment * const e) :
     FakeMetadataCollectionKey<IUseFlagSet>(r, h, t, i, e)
 {
-    set_from_string(v, m);
+    set_from_string(v, o);
 }
 
 void
-FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagParseMode m)
+FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagParseOptions & o)
 {
     _imp->collection.reset(new IUseFlagSet);
     std::list<std::string> tokens;
     tokenise_whitespace(s, std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
-        _imp->collection->insert(IUseFlag(*t, m, std::string::npos));
+        _imp->collection->insert(IUseFlag(*t, o, std::string::npos));
 }
 
 namespace paludis
@@ -401,7 +401,8 @@ namespace paludis
             post_dependencies_labels(new DependencyLabelSequence),
             suggested_dependencies_labels(new DependencyLabelSequence),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
-            iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal, id, env)),
+            iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "",
+                            erepository::EAPIData::get_instance()->eapi_from_string(eapi)->supported->iuse_flag_parse_options, mkt_normal, id, env)),
             license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
                         "", tr1::bind(&erepository::parse_license, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string(eapi)), mkt_normal)),

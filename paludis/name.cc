@@ -25,6 +25,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/options.hh>
 #include <ostream>
 #include <utility>
 
@@ -397,7 +398,7 @@ namespace
             return UseFlagName(s.substr(1));
     }
 
-    UseFlagState get_state(const std::string & s, IUseFlagParseMode m)
+    UseFlagState get_state(const std::string & s, const IUseFlagParseOptions & o)
     {
         Context c("When extracting USE flag state from IUSE flag '" + s + "':");
 
@@ -405,34 +406,24 @@ namespace
             return use_unspecified;
         if ('-' == s[0] || '+' == s[0])
         {
-            switch (m)
+            if (! o[iufpo_allow_iuse_defaults])
             {
-                case iuse_pm_eapi_0:
+                if (o[iufpo_strict_parsing])
+                    throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
+                else
                     Log::get_instance()->message(ll_warning, lc_context,
                             "+/- prefixed IUSE flag names not allowed in this EAPI");
-
-                    /* fall through */
-
-                case iuse_pm_permissive:
-                case iuse_pm_eapi_1:
-                case iuse_pm_eapi_1_strict:
-                    return '-' == s[0] ? use_disabled : use_enabled;
-
-                case iuse_pm_eapi_0_strict:
-                case iuse_pm_exheres_0:
-                    throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
-
-                case last_iuse_pm:
-                    ;
             }
+
+            return '-' == s[0] ? use_disabled : use_enabled;
         }
         return use_unspecified;
     }
 }
 
-IUseFlag::IUseFlag(const std::string & s, IUseFlagParseMode m, const std::string::size_type p) try:
+IUseFlag::IUseFlag(const std::string & s, const IUseFlagParseOptions & o, const std::string::size_type p) try:
     flag(get_flag(s)),
-    state(get_state(s, m)),
+    state(get_state(s, o)),
     prefix_delim_pos(p)
 {
 }
