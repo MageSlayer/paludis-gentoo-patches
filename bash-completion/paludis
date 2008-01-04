@@ -67,6 +67,7 @@ _paludis() {
     general_opts="--log-level \
         --no-colour \
         --no-color \
+        --no-suggestions \
         --environment -E \
         --resume-command-template \
         --multitask"
@@ -253,11 +254,7 @@ _paludis() {
                     COMPREPLY=($(compgen -W "auto never always" -- "${cur}"))
                     return 0
                     ;;
-                --dl-upgrade)
-                    COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
-                    return 0
-                    ;;
-                --dl-new-slots)
+                --dl-upgrade|--dl-new-slots)
                     COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
                     return 0
                     ;;

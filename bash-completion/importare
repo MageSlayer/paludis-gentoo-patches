@@ -118,11 +118,7 @@ _importare() {
                     COMPREPLY=($(compgen -W "never always daily weekly" -- "${cur}"))
                     return 0
                     ;;
-                --dl-upgrade)
-                    COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
-                    return 0
-                    ;;
-                --dl-new-slots)
+                --dl-upgrade|--dl-new-slots)
                     COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
                     return 0
                     ;;

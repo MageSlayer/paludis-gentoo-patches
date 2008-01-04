@@ -47,6 +47,7 @@ _adjutrix() {
         --log-level \
         --no-colour \
         --no-color \
+        --no-suggestions \
         --repository-dir -D \
         --category -C \
         --package -P \
