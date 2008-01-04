@@ -330,7 +330,7 @@ namespace paludis
             const tr1::shared_ptr<const PackageDepSpec> dependency() const;
 
             /**
-             * The AllDepSpec instances and UseDepSpec instances that our dependency
+             * The AnyDepSpec instances and UseDepSpec instances that our dependency
              * is conditional upon.
              */
             const tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
