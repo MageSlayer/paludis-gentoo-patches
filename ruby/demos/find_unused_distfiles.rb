@@ -54,19 +54,32 @@ end
 
 env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 
+def collect_filenames(env, parts, id, spec)
+    case spec
+    when Paludis::AllDepSpec
+        spec.each { | item | collect_filenames(env, parts, id, item) }
+    when Paludis::UseDepSpec
+        spec.each { | item | collect_filenames(env, parts, id, item) } if
+            env.query_use(spec.flag, id) ^ spec.inverse?
+    when Paludis::FetchableURIDepSpec
+        parts[spec.filename] = true
+    when Paludis::URILabelsDepSpec
+        # don't need to do anything
+    else
+        raise "Unexpected DepSpec class #{spec.class} in #{id}"
+    end
+end
+
 # build up a list of all src_uri things that're used by installed packages
 parts = Hash.new
 env.package_database.repositories.each do | repo |
-    repo.installed_interface or next
+    repo.some_ids_might_support_action(Paludis::SupportsInstalledActionTest.new) or next
     repo.category_names.each do | cat |
         repo.package_names(cat).each do | pkg |
-            repo.version_specs(pkg).each do | ver |
-                src_uri = repo.version_metadata(pkg, ver).src_uri_string
-                src_uri or next
-                src_uri.split(/\s+/).each do | part |
-                    part =~ %r~/~ or next
-                    parts[part.sub(%r~^.*/~, "")] = true
-                end
+            repo.package_ids(pkg).each do | id |
+                id.supports_action(Paludis::SupportsInstalledActionTest.new) or next
+                collect_filenames(env, parts, id, id.fetches_key.value) if
+                    id.fetches_key && id.fetches_key.value
             end
         end
     end
@@ -75,12 +88,8 @@ end
 # figure out a list of places where distfiles can be found
 distdirs = []
 env.package_database.repositories.each do | repo |
-    repo.info(false).sections.each do | info_section |
-        info_section.kvs.each do | key, value |
-            key == "distdir" or next
-            distdirs << value unless distdirs.member? value
-        end
-    end
+    key = repo['distdir'] or next
+    distdirs << key.value unless distdirs.member? key.value
 end
 
 # display each unused distfile
