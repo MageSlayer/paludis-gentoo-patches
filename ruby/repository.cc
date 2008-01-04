@@ -853,6 +853,23 @@ namespace
 
     /*
      * call-seq:
+     *     [String] -> MetadataKey or Nil
+     *
+     * The named metadata key.
+     */
+    VALUE
+    repository_subscript(VALUE self, VALUE raw_name)
+    {
+        tr1::shared_ptr<const Repository> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const Repository>, self_ptr);
+        Repository::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
+        if ((*self_ptr)->end_metadata() == it)
+            return Qnil;
+        return metadata_key_to_value(*it);
+    }
+
+    /*
+     * call-seq:
      *     each_metadata {|key| block } -> Nil
      *
      * Our metadata.
@@ -940,6 +957,7 @@ namespace
 
         rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
 
+        rb_define_method(c_repository, "[]", RUBY_FUNC_CAST(&repository_subscript), 1);
         rb_define_method(c_repository, "each_metadata", RUBY_FUNC_CAST(&repository_each_metadata), 0);
         rb_define_method(c_repository, "format_key",
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataStringKey, &Repository::format_key>::fetch)), 0);

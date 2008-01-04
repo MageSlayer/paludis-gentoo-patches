@@ -605,6 +605,13 @@ module Paludis
         def test_each_metadata
             assert_respond_to repo, :each_metadata
         end
+
+        def test_subscript
+            assert_respond_to repo, :[]
+            assert_kind_of MetadataStringKey, repo['format']
+            assert_equal 'ebuild', repo['format'].value
+            assert_nil repo['monkey']
+        end
     end
 end
 
