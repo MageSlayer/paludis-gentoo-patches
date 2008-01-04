@@ -4,7 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_alpha5:
+    * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
+      dep list.
+
     * Various switches now support --no-, for negation.
 
     * paludis, inquisitio --show-authors.
@@ -22,6 +25,11 @@ trunk/:
 
     * Symlink rewriting is now part of the merger and is EAPI-configurable. All
       EAPIs known to paludis allow symlink rewriting except exheres-0.
+
+    * Rather than spawning a second paludis instance, has_version etc in ebuilds
+      now communicate back to the original Paludis process through a pipe.
+
+    * Paludis will now work with Bash 3.2_p20 and later (gentoo#190128).
 
 0.26.0_alpha4:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
