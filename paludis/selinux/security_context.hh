@@ -170,14 +170,14 @@ namespace paludis
      *
      * \ingroup grplibpaludisselinux
      */
-    int setfilecon(const FSEntry & file, tr1::shared_ptr<const SecurityContext> con);
+    int setfilecon(const FSEntry & file, tr1::shared_ptr<const SecurityContext> con) PALUDIS_VISIBLE;
 
     /**
      * Whether SELinux is enabled. Ideally, you are not using this function.
      *
      * \ingroup grplibpaludisselinux
      */
-    bool is_selinux_enabled();
+    bool is_selinux_enabled() PALUDIS_VISIBLE;
 }
 
 #endif

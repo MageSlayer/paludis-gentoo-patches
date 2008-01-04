@@ -598,6 +598,11 @@ namespace test_cases
                 }
             }
         }
+
+        bool repeatable() const
+        {
+            return false;
+        }
     } test_multiple_ops;
 }
 
