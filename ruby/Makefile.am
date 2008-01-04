@@ -62,6 +62,8 @@ IF_RUBY_QA_SOURCES = \
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	paludis_ruby_so.cc \
+	dep_spec_TEST_setup.sh dep_spec_TEST_cleanup.sh \
+	dep_tag_TEST_setup.sh dep_tag_TEST_cleanup.sh \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh \

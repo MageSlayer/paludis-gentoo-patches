@@ -21,6 +21,8 @@
 require 'test/unit'
 require 'Paludis'
 
+ENV['PALUDIS_HOME'] = Dir.getwd() + '/dep_spec_TEST_dir/home'
+
 module Paludis
     class TestCase_DepSpec < Test::Unit::TestCase
         def test_create_error
@@ -179,43 +181,46 @@ module Paludis
         end
     end
 
-###    class TestCase_Composites < Test::Unit::TestCase
-###        def test_composites
-###            spec = PortageDepParser::parse_depend("|| ( foo/bar foo/baz ) foo/monkey", PackageDepSpecParseMode::Permissive)
-###            assert_kind_of CompositeDepSpec, spec
-###            assert_kind_of AllDepSpec, spec
-###
-###            assert_equal 2, spec.to_a.length
-###
-###            spec.each_with_index do | a, i |
-###                case i
-###                when 0
-###                    assert_kind_of AnyDepSpec, a
-###                    assert_equal 2, a.to_a.length
-###                    a.each_with_index do | b, j |
-###                        case j
-###                        when 0
-###                            assert_kind_of PackageDepSpec, b
-###                            assert_equal "foo/bar", b.to_s
-###
-###                        when 1
-###                            assert_kind_of PackageDepSpec, b
-###                            assert_equal "foo/baz", b.to_s
-###
-###                        else
-###                            throw "Too many items"
-###                        end
-###                    end
-###
-###                when 1
-###                    assert_kind_of PackageDepSpec, a
-###                    assert_equal "foo/monkey", a.to_s
-###
-###                else
-###                    throw "Too many items"
-###                end
-###            end
-###        end
-###    end
+    class TestCase_Composites < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def test_composites
+            spec = env.package_database.query(Query::All.new, QueryOrder::RequireExactlyOne).last.build_dependencies_key.value
+            assert_kind_of AllDepSpec, spec
+
+            assert_equal 2, spec.to_a.length
+
+            spec.each_with_index do | a, i |
+                case i
+                when 0
+                    assert_kind_of AnyDepSpec, a
+                    assert_equal 2, a.to_a.length
+                    a.each_with_index do | b, j |
+                        case j
+                        when 0
+                            assert_kind_of PackageDepSpec, b
+                            assert_equal "foo/bar", b.to_s
+
+                        when 1
+                            assert_kind_of PackageDepSpec, b
+                            assert_equal "foo/baz", b.to_s
+
+                        else
+                            throw "Too many items"
+                        end
+                    end
+
+                when 1
+                    assert_kind_of PackageDepSpec, a
+                    assert_equal "foo/monkey", a.to_s
+
+                else
+                    throw "Too many items"
+                end
+            end
+        end
+    end
 end
 
