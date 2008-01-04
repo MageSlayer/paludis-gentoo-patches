@@ -33,7 +33,7 @@ ebuild_safe_source()
     shopt -s extdebug
     trap "[[ \${BASH_COMMAND%% *} == @(eval|trap) ||
               ( \${BASH_COMMAND} != *([^\$'\n'])=* && \${BASH_COMMAND} != export\ * ) ||
-              \${BASH_COMMAND} != ?(export\ )@($(IFS='|'; shift; echo "${*}"))?(=*) ]]" DEBUG
+              \${BASH_COMMAND} != ?(export\ |declare\ ?(+([^\ ])\ ))@($(IFS='|'; shift; echo "${*}"))?(=*) ]]" DEBUG
 
     source "${1}"
     eval "trap DEBUG; shopt -u extdebug; set +T; return ${?}"
