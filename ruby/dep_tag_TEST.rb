@@ -70,6 +70,31 @@ module Paludis
                 assert_equal val, dt.send(method)
             end
         end
+
+        def test_package_id
+            dt = get_dt
+            assert_respond_to dt, :package_id
+            id = dt.package_id
+            assert_kind_of PackageID, id
+            assert_equal "foo/bar-1.0::testrepo", id.to_s
+        end
+
+        def test_dependency
+            dt = get_dt
+            assert_respond_to dt, :dependency
+            pds = dt.dependency
+            assert_kind_of PackageDepSpec, pds
+            assert_equal "foo/bar", pds.to_s
+        end
+
+        # XXX extend this once we can define a non-trival condition in ruby
+        def test_conditions
+            dt = get_dt
+            assert_respond_to dt, :conditions
+            cond = dt.conditions
+            assert_kind_of AllDepSpec, cond
+            assert_equal 0, cond.to_a.length
+        end
     end
 
     class TestCase_GLSADepTag < Test::Unit::TestCase

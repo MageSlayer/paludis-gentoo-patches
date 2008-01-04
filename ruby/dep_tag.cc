@@ -106,6 +106,48 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     package_id -> PackageID
+     *
+     * The PackageID that contains our dependency.
+     */
+    VALUE
+    dependency_dep_tag_package_id(VALUE self)
+    {
+        tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
+        return package_id_to_value((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->package_id());
+    }
+
+    /*
+     * call-seq:
+     *     dependency -> PackageDepSpec
+     *
+     * The PackageDepSpec that pulled us in.
+     */
+    VALUE
+    dependency_dep_tag_dependency(VALUE self)
+    {
+        tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
+        return package_dep_spec_to_value((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
+    }
+
+    /*
+     * call-seq:
+     *     conditions -> DepSpec
+     *
+     * The AnyDepSpec instances and UseDepSpec instances that our dependency
+     * is conditional upon.
+     */
+    VALUE
+    dependency_dep_tag_conditions(VALUE self)
+    {
+        tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
+        return dep_tree_to_value<DependencySpecTree>((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->conditions());
+    }
 
     VALUE
     glsa_dep_tag_new(int argc, VALUE * argv, VALUE self)
@@ -255,6 +297,9 @@ namespace
          */
         c_dependency_dep_tag = rb_define_class_under(paludis_module(), "DependencyDepTag", c_dep_tag);
         rb_define_singleton_method(c_dependency_dep_tag, "new", RUBY_FUNC_CAST(&dependency_dep_tag_new), -1);
+        rb_define_method(c_dependency_dep_tag, "package_id", RUBY_FUNC_CAST(&dependency_dep_tag_package_id), 0);
+        rb_define_method(c_dependency_dep_tag, "dependency", RUBY_FUNC_CAST(&dependency_dep_tag_dependency), 0);
+        rb_define_method(c_dependency_dep_tag, "conditions", RUBY_FUNC_CAST(&dependency_dep_tag_conditions), 0);
 
         /*
          * Document-class: Paludis::GLSADepTag
