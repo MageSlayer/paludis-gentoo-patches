@@ -6,6 +6,7 @@ libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
 libexecprog_SCRIPTS = \
 	dodoc \
 	dohard \
+	dohtml \
 	dosed \
 	donewins \
 	prepall \
@@ -40,7 +41,7 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) \
 	banned_in_eapi_exheres-0 $(TESTS)
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
-		prepinfo prepdocs prepalldocs dohard donewins dosed
+		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml
 
 CLEANFILES = *~ $(bannedscripts)
 
