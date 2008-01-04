@@ -32,6 +32,7 @@ allowed_exts="png gif html htm jpg css jps"
 disallowed_dirs=""
 allowed_files=""
 recurse=0
+doc_prefix=""
 args=( )
 
 split_names() {
@@ -67,6 +68,10 @@ parse_args() {
                 disallowed_dirs="$(split_names $2)"
                 shift
                 ;;
+            -p)
+                doc_prefix="$2"
+                shift
+                ;;
             *)
                 args=( "${args[@]}" "$1" ) ;;
         esac
@@ -86,7 +91,7 @@ install_file() {
 
     [[ -z ${DOCDESTTREE} ]] && DOCDESTTREE="html"
 
-    dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}/${prefix}"
+    dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}/${doc_prefix}/${prefix}"
 
     if [[ -f ${path} ]]; then
         ext="$(basename ${path})"
