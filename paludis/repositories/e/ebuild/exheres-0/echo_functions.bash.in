@@ -201,6 +201,7 @@ option_enable()
 
 ebuild_notice()
 {
+    [[ -z "${PALUDIS_PIPE_COMMANDS_SUPPORTED}" ]] && return
     paludis_pipe_command LOG "$EAPI" "$@" >/dev/null
 }
 
