@@ -672,6 +672,8 @@ WriteVDBEntryCommand::WriteVDBEntryCommand(const WriteVDBEntryParams & p) :
 void
 WriteVDBEntryCommand::operator() ()
 {
+    using namespace tr1::placeholders;
+
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/write_vdb_entry.bash '" +
             stringify(params.output_directory) + "' '" +
@@ -700,6 +702,7 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->vdb_from_env_variables)
             .with_setenv("PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES",
                     params.package_id->eapi()->supported->ebuild_options->vdb_from_env_unless_empty_variables)
+            .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params.environment, params.package_id, _1))
             );
 
     if (0 != (run_command(cmd)))
