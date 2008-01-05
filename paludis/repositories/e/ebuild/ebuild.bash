@@ -82,14 +82,14 @@ ebuild_load_module()
     for d in ${EBUILD_MODULES_DIRS}; do
         if [[ -f "${d}/${1}.bash" ]]; then
             if ! source "${d}/${1}.bash"; then
-                type die &>/dev/null && die "Error loading module ${1}"
+                type die &>/dev/null && eval die "\"Error loading module \${1}\""
                 echo "Error loading module ${1}" 1>&2
                 exit 123
             fi
             return
         fi
     done
-    type die &>/dev/null && die "Couldn't find module ${1}"
+    type die &>/dev/null && eval die "\"Couldn't find module \${1}\""
     echo "Couldn't find module ${1}" 1>&2
     exit 123
 }
@@ -99,12 +99,12 @@ paludis_pipe_command()
     [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
 
     if [[ -z "${PALUDIS_PIPE_COMMAND_WRITE_FD}" ]]; then
-        type die &>/dev/null && die "PALUDIS_PIPE_COMMAND_WRITE_FD unset"
+        type die &>/dev/null && eval die "\"PALUDIS_PIPE_COMMAND_WRITE_FD unset\""
         echo "PALUDIS_PIPE_COMMAND_WRITE_FD unset" 1>&2
         exit 123
     fi
     if [[ -z "${PALUDIS_PIPE_COMMAND_READ_FD}" ]]; then
-        type die &>/dev/null && die "PALUDIS_PIPE_COMMAND_READ_FD unset"
+        type die &>/dev/null && eval die "\"PALUDIS_PIPE_COMMAND_READ_FD unset\""
         echo "PALUDIS_PIPE_COMMAND_READ_FD unset" 1>&2
         exit 123
     fi
@@ -112,7 +112,7 @@ paludis_pipe_command()
     local r r1 rest
     r="$(echo "$@" | {
         if ! locked_pipe_command "${PALUDIS_PIPE_COMMAND_WRITE_FD}" "${PALUDIS_PIPE_COMMAND_READ_FD}" ; then
-            type die &>/dev/null && die "locked_pipe_command failed"
+            type die &>/dev/null && eval die "\"locked_pipe_command failed\""
             echo "locked_pipe_command failed" 1>&2
             exit 123
         fi
@@ -121,7 +121,7 @@ paludis_pipe_command()
     r1="${r:0:1}"
     rest="${r:1}"
     if [[ "${r1}" != "O" ]] ; then
-        type die &>/dev/null && die "paludis_pipe_command returned error '${r1}' with text '${rest}'"
+        type die &>/dev/null && eval die "\"paludis_pipe_command returned error '\${r1}' with text '\${rest}'\""
         echo "paludis_pipe_command returned error '${r1}' with text '${rest}'" 1>&2
         exit 123
     fi
