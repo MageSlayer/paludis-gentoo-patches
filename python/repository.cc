@@ -209,6 +209,15 @@ void expose_repository()
                 "Fetch our versions."
             )
 
+        .def("some_ids_might_support_action", &Repository::some_ids_might_support_action,
+                "some_ids_might_support_action(SupportsActionTestBase) -> bool\n"
+                "Might some of our IDs support a particular action?\n\n"
+
+                "Used to optimise PackageDatabase::query. If a repository doesn't\n"
+                "support, say, InstallAction, a query can skip searching it\n"
+                "entirely when looking for installable packages."
+            )
+
         .add_property("use_interface", bp::make_function(&RepositoryWrapper::get_use_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryUseInterface"

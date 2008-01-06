@@ -79,6 +79,20 @@ class TestCase_01_Repository(unittest.TestCase):
             self.assertEquals(i, 0)
             self.assertEquals(str(qpn), "foo/bar")
 
+    def test_11_some_ids_might_support_action(self):
+        self.assert_(repo.some_ids_might_support_action(SupportsFetchActionTest()))
+        self.assert_(not irepo.some_ids_might_support_action(SupportsFetchActionTest()))
+        self.assert_(repo.some_ids_might_support_action(SupportsInstallActionTest()))
+        self.assert_(not irepo.some_ids_might_support_action(SupportsInstallActionTest()))
+        self.assert_(not repo.some_ids_might_support_action(SupportsUninstallActionTest()))
+        self.assert_(irepo.some_ids_might_support_action(SupportsUninstallActionTest()))
+        self.assert_(not repo.some_ids_might_support_action(SupportsInstalledActionTest()))
+        self.assert_(irepo.some_ids_might_support_action(SupportsInstalledActionTest()))
+        self.assert_(repo.some_ids_might_support_action(SupportsPretendActionTest()))
+        self.assert_(not irepo.some_ids_might_support_action(SupportsPretendActionTest()))
+        self.assert_(not repo.some_ids_might_support_action(SupportsConfigActionTest()))
+        self.assert_(irepo.some_ids_might_support_action(SupportsConfigActionTest()))
+
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):
         global e, nce, db, repo, irepo
