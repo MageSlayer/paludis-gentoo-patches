@@ -14,11 +14,12 @@ cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
 
-mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
+mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files,bar/foo/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
+bar
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
@@ -38,5 +39,17 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 DEPEND="|| ( foo/bar foo/baz ) foo/monkey"
+END
+
+cat <<"END" > bar/foo/foo-1.0.ebuild || exit 1
+EAPI="exheres-0"
+DESCRIPTION="Test package"
+HOMEPAGE="http://paludis.pioto.org/"
+SRC_URI="mirrors-first: mirrors-only: listed-only: listed-first: local-only: manual: "
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
 END
 

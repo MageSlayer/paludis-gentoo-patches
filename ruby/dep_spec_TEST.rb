@@ -187,7 +187,7 @@ module Paludis
         end
 
         def test_composites
-            spec = env.package_database.query(Query::All.new, QueryOrder::RequireExactlyOne).last.build_dependencies_key.value
+            spec = env.package_database.query(Query::Package.new("foo/bar"), QueryOrder::RequireExactlyOne).last.build_dependencies_key.value
             assert_kind_of AllDepSpec, spec
 
             assert_equal 2, spec.to_a.length
@@ -220,6 +220,67 @@ module Paludis
                     throw "Too many items"
                 end
             end
+        end
+    end
+
+    class TestCase_URILabels < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def spec_key
+            env.package_database.query(Query::Package.new("bar/foo"), QueryOrder::RequireExactlyOne).last.fetches_key
+        end
+
+        def test_no_create
+            assert_raise NoMethodError do URILabel.new end
+            [URILabel, URIMirrorsThenListedLabel, URIMirrorsOnlyLabel,
+             URIListedOnlyLabel, URIListedThenMirrorsLabel,
+             URILocalMirrorsOnlyLabel, URIManualOnlyLabel].each do | c |
+                assert_raise NoMethodError do c.new end
+            end
+        end
+
+        def test_initial_label
+            assert_kind_of URIListedThenMirrorsLabel, spec_key.initial_label
+            assert_equal "default", spec_key.initial_label.text
+            assert_equal "default", spec_key.initial_label.to_s
+        end
+
+        def test_uri_labels_dep_spec
+            specs = spec_key.value.to_a
+            assert_equal 6, specs.length
+
+            specs.each do | spec |
+                assert_kind_of URILabelsDepSpec, spec
+                assert_kind_of Array, spec.labels
+
+                array_from_block = []
+                spec.labels { | label | array_from_block << label }
+
+                [spec.labels, array_from_block].each do | array |
+                    assert_equal 1, array.length
+                    assert_kind_of URILabel, array[0]
+                    assert_equal array[0].text, array[0].to_s
+                end
+
+                assert_equal spec.labels[0].class, array_from_block[0].class
+                assert_equal spec.labels[0].text,  array_from_block[0].text
+            end
+
+            assert_kind_of URIMirrorsThenListedLabel, specs.to_a[0].labels[0]
+            assert_kind_of URIMirrorsOnlyLabel,       specs.to_a[1].labels[0]
+            assert_kind_of URIListedOnlyLabel,        specs.to_a[2].labels[0]
+            assert_kind_of URIListedThenMirrorsLabel, specs.to_a[3].labels[0]
+            assert_kind_of URILocalMirrorsOnlyLabel,  specs.to_a[4].labels[0]
+            assert_kind_of URIManualOnlyLabel,        specs.to_a[5].labels[0]
+
+            assert_equal "mirrors-first", specs.to_a[0].labels[0].text
+            assert_equal "mirrors-only",  specs.to_a[1].labels[0].text
+            assert_equal "listed-only",   specs.to_a[2].labels[0].text
+            assert_equal "listed-first",  specs.to_a[3].labels[0].text
+            assert_equal "local-only",    specs.to_a[4].labels[0].text
+            assert_equal "manual",        specs.to_a[5].labels[0].text
         end
     end
 end

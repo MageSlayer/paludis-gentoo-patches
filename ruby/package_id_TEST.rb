@@ -270,6 +270,10 @@ module Paludis
         def test_fetches_key
             assert_kind_of MetadataFetchableURISpecTreeKey, pid_testrepo.fetches_key
             assert_kind_of AllDepSpec, pid_testrepo.fetches_key.value
+            assert_respond_to pid_testrepo.fetches_key, :initial_label
+            assert_kind_of URILabel, pid_testrepo.fetches_key.initial_label
+            assert_kind_of URIMirrorsThenListedLabel, pid_testrepo.fetches_key.initial_label
+            assert_equal "default", pid_testrepo.fetches_key.initial_label.text
         end
     end
 

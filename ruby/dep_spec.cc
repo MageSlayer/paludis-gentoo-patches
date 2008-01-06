@@ -57,6 +57,14 @@ namespace
 
     static VALUE c_version_requirements_mode;
 
+    static VALUE c_uri_label;
+    static VALUE c_uri_mirrors_then_listed_label;
+    static VALUE c_uri_mirrors_only_label;
+    static VALUE c_uri_listed_only_label;
+    static VALUE c_uri_listed_then_mirrors_label;
+    static VALUE c_uri_local_mirrors_only_label;
+    static VALUE c_uri_manual_only_label;
+
     struct WrappedSpecBase;
     template <typename> struct WrappedSpec;
 
@@ -267,6 +275,33 @@ namespace
     package_dep_spec_init(int, VALUE *, VALUE self)
     {
         return self;
+    }
+
+    VALUE
+    uri_labels_dep_spec_labels(VALUE self)
+    {
+        tr1::shared_ptr<const WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<const URILabelsDepSpec> real_ptr(tr1::static_pointer_cast<const WrappedSpec<URILabelsDepSpec> >(*ptr)->spec());
+
+        if (rb_block_given_p())
+        {
+            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
+                     it_end(real_ptr->end()); it_end != it; ++it)
+                rb_yield(uri_label_to_value(*it));
+
+            return Qnil;
+        }
+        else
+        {
+            VALUE result(rb_ary_new());
+
+            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
+                     it_end(real_ptr->end()); it_end != it; ++it)
+                rb_ary_push(result, uri_label_to_value(*it));
+
+            return result;
+        }
     }
 
     VALUE
@@ -671,6 +706,78 @@ namespace
 
     }
 
+    struct URILabelToValue :
+        ConstVisitor<URILabelVisitorTypes>
+    {
+        VALUE value;
+        tr1::shared_ptr<const URILabel> mm;
+
+        URILabelToValue(const tr1::shared_ptr<const URILabel> & _m) :
+            mm(_m)
+        {
+        }
+
+        void visit(const URIMirrorsThenListedLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_mirrors_then_listed_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+
+        void visit(const URIMirrorsOnlyLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_mirrors_only_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+
+        void visit(const URIListedOnlyLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_listed_only_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+
+        void visit(const URIListedThenMirrorsLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_listed_then_mirrors_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+
+        void visit(const URILocalMirrorsOnlyLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_local_mirrors_only_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+
+        void visit(const URIManualOnlyLabel &)
+        {
+            value = Data_Wrap_Struct(c_uri_manual_only_label, 0, &Common<tr1::shared_ptr<const URILabel> >::free,
+                    new tr1::shared_ptr<const URILabel>(mm));
+        }
+    };
+
+    /*
+     * Document-method: text
+     *
+     * call-seq:
+     *     text -> String
+     *
+     * Our text.
+     */
+    /*
+     * Document-method: to_s
+     *
+     * call-seq:
+     *     to_s -> String
+     *
+     * Fetch a string representation of ourself.
+     */
+    VALUE
+    uri_label_text(VALUE self)
+    {
+        tr1::shared_ptr<const URILabel> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const URILabel>, ptr);
+        return rb_str_new2((*ptr)->text().c_str());
+    }
+
     void do_register_dep_spec()
     {
         /*
@@ -828,6 +935,7 @@ namespace
         rb_define_method(c_uri_labels_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_0), 0);
         VALUE (* uri_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<URILabelsDepSpec>;
         rb_define_method(c_uri_labels_dep_spec, "to_s", RUBY_FUNC_CAST(uri_labels_dep_spec_to_s), 0);
+        rb_define_method(c_uri_labels_dep_spec, "labels", RUBY_FUNC_CAST(&uri_labels_dep_spec_labels), 0);
 
         /*
          * Document-class: Paludis::BlockDepSpec
@@ -841,6 +949,23 @@ namespace
         rb_define_method(c_block_dep_spec, "blocked_spec", RUBY_FUNC_CAST(&block_dep_spec_blocked_spec), 0);
         VALUE (* block_dep_spec_to_s) (VALUE) = &dep_spec_to_s<BlockDepSpec>;
         rb_define_method(c_block_dep_spec, "to_s", RUBY_FUNC_CAST(block_dep_spec_to_s), 0);
+
+        /*
+         * Document-class: Paludis::URILabel
+         *
+         * URI label base class.
+         */
+        c_uri_label = rb_define_class_under(paludis_module(), "URILabel", rb_cObject);
+        rb_funcall(c_uri_label, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_uri_label, "text", RUBY_FUNC_CAST(&uri_label_text), 0);
+        rb_define_method(c_uri_label, "to_s", RUBY_FUNC_CAST(&uri_label_text), 0);
+
+        c_uri_mirrors_then_listed_label = rb_define_class_under(paludis_module(), "URIMirrorsThenListedLabel", c_uri_label);
+        c_uri_mirrors_only_label = rb_define_class_under(paludis_module(), "URIMirrorsOnlyLabel", c_uri_label);
+        c_uri_listed_only_label = rb_define_class_under(paludis_module(), "URIListedOnlyLabel", c_uri_label);
+        c_uri_listed_then_mirrors_label = rb_define_class_under(paludis_module(), "URIListedThenMirrorsLabel", c_uri_label);
+        c_uri_local_mirrors_only_label = rb_define_class_under(paludis_module(), "URILocalMirrorsOnlyLabel", c_uri_label);
+        c_uri_manual_only_label = rb_define_class_under(paludis_module(), "URIManualOnlyLabel", c_uri_label);
 
         /*
          * Document-module: Paludis::VersionRequirementsMode
@@ -904,6 +1029,21 @@ paludis::ruby::dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstI
     try
     {
         TreeToValue v;
+        m->accept(v);
+        return v.value;
+    }
+    catch (const std::exception & e)
+    {
+        exception_to_ruby_exception(e);
+    }
+}
+
+VALUE
+paludis::ruby::uri_label_to_value(const tr1::shared_ptr<const URILabel> & m)
+{
+    try
+    {
+        URILabelToValue v(m);
         m->accept(v);
         return v.value;
     }

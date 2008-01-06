@@ -419,6 +419,27 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     initial_label -> URILabel
+     *
+     * Return the initial label to use when deciding the behaviour of
+     * individual items in the heirarchy.
+     */
+    VALUE
+    metadata_fetchable_uri_spec_tree_key_initial_label(VALUE self)
+    {
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return uri_label_to_value((tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(*self_ptr))->initial_label());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
 
     VALUE
     repository_mask_info_mask_file(VALUE self)
@@ -596,6 +617,7 @@ namespace
          */
         c_metadata_fetchable_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataFetchableURISpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<FetchableURISpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "initial_label", RUBY_FUNC_CAST(&metadata_fetchable_uri_spec_tree_key_initial_label), 0);
 
         /*
          * Document-class: Paludis::MetadataSimpleURISpecTreeKey
