@@ -91,7 +91,18 @@ namespace
 
         virtual const tr1::shared_ptr<const DepSpec> base_spec() const = 0;
         virtual const tr1::shared_ptr<const Children> children() const = 0;
+
+        static void mark(tr1::shared_ptr<const WrappedSpecBase> *);
     };
+
+    void
+    WrappedSpecBase::mark(tr1::shared_ptr<const WrappedSpecBase> * ptr)
+    {
+        tr1::shared_ptr<const Children> children((*ptr)->children());
+        for (Children::const_iterator it(children->begin()),
+                 it_end(children->end()); it_end != it; ++it)
+            rb_gc_mark(it->first);
+    }
 
     template <typename T_>
     class WrappedSpec :
@@ -203,7 +214,7 @@ namespace
         {
             ptr = new tr1::shared_ptr<const WrappedSpecBase>(
                     (new WrappedSpec<UseDepSpec>(tr1::static_pointer_cast<UseDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_use_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            value = Data_Wrap_Struct(c_use_dep_spec, &WrappedSpecBase::mark, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
 
         void visit_sequence(const AllDepSpec & spec,
@@ -212,7 +223,7 @@ namespace
         {
             ptr = new tr1::shared_ptr<const WrappedSpecBase>(
                     (new WrappedSpec<AllDepSpec>(tr1::static_pointer_cast<AllDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_all_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            value = Data_Wrap_Struct(c_all_dep_spec, &WrappedSpecBase::mark, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
 
         void visit_sequence(const AnyDepSpec & spec,
@@ -221,7 +232,7 @@ namespace
         {
             ptr = new tr1::shared_ptr<const WrappedSpecBase>(
                     (new WrappedSpec<AnyDepSpec>(tr1::static_pointer_cast<AnyDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_any_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            value = Data_Wrap_Struct(c_any_dep_spec, &WrappedSpecBase::mark, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
     };
 
