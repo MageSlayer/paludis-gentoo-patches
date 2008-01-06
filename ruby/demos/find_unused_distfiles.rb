@@ -8,15 +8,22 @@ Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 Paludis::Log.instance.program_name = $0
 
 opts = GetoptLong.new(
-    [ '--help',          '-h',  GetoptLong::NO_ARGUMENT ],
-    [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
-    [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--environment',   '-E',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--size-limit',    '-s',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--time-limit',    '-t',  GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--help',          '-h',   GetoptLong::NO_ARGUMENT ],
+    [ '--version',       '-V',   GetoptLong::NO_ARGUMENT ],
+    [ '--log-level',             GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--environment',   '-E',   GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--size-limit',    '-s',   GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--time-limit',    '-t',   GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--mirror-repository',     GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--mirror-distdir',        GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--master-repository-dir', GetoptLong::REQUIRED_ARGUMENT ])
 
-env_spec = ""
-size_limit = time_limit = nil
+env_spec                                  = nil
+size_limit        = time_limit            = nil
+mirror_repository = mirror_distdir        = nil
+write_cache_dir   = master_repository_dir = "/var/empty"
+
 opts.each do | opt, arg |
     case opt
     when '--help'
@@ -31,6 +38,11 @@ opts.each do | opt, arg |
         puts
         puts "  --size-limit limit      Don't delete anything bigger than limit (number followed by one of g, m, k, b)"
         puts "  --time-limit limit      Don't delete anything newer than limit (number followed by one of h, d, w, m, y)"
+        puts
+        puts "  --mirror-repository     In mirror mode, the location of the ebuild repository"
+        puts "  --mirror-distdir        In mirror mode, the location of the downloaded files"
+        puts "  --write-cache-dir       Use a subdirectory named for the repository name under the specified directory for repository write cache"
+        puts "  --master-repository-dir Use the specified location for the master repository"
         exit 0
 
     when '--version'
@@ -84,22 +96,67 @@ opts.each do | opt, arg |
             exit 1
         end
 
+    when '--mirror-repository'
+        mirror_repository = arg
+    when '--mirror-distdir'
+        mirror_distdir = arg
+
+    when '--write-cache-dir'
+        write_cache_dir = arg
+    when '--master-repository-dir'
+        master_repository_dir = arg
+
     end
 end
 
-env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
+if mirror_repository.nil? ^ mirror_distdir.nil? then
+    puts "Must specify neither or both of --mirror-repository and --mirror-distdir"
+    exit 1
+end
+if mirror_repository && env_spec then
+    puts "Can't use --environment in mirror mode"
+    exit 1
+end
 
-def collect_filenames(env, parts, id, spec)
+if mirror_repository then
+    env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_dir)
+    relevant_packages = Paludis::Query::Repository.new(env.main_repository.name)
+    $check_use = lambda { true }
+    $banned_labels = {
+        Paludis::URIListedOnlyLabel       => true,
+        Paludis::URILocalMirrorsOnlyLabel => true,
+        Paludis::URIManualOnlyLabel       => true,
+    }
+else
+    env = Paludis::EnvironmentMaker.instance.make_from_spec(env_spec || "")
+    relevant_packages = Paludis::Query::SupportsInstalledAction.new
+    $check_use = lambda { | spec, id | env.query_use(spec.flag, id) ^ spec.inverse? }
+    $banned_labels = { }
+end
+
+def collect_filenames(parts, id, label, spec)
     case spec
+
     when Paludis::AllDepSpec
-        spec.each { | item | collect_filenames(env, parts, id, item) }
+        new_label = [label[0]]
+        spec.each do | item |
+            collect_filenames(parts, id, new_label, item)
+        end
+
     when Paludis::UseDepSpec
-        spec.each { | item | collect_filenames(env, parts, id, item) } if
-            env.query_use(spec.flag, id) ^ spec.inverse?
+        if $check_use[spec, id] then
+            new_label = label.dup
+            spec.each do | item |
+                collect_filenames(parts, id, new_label, item)
+            end
+        end
+
     when Paludis::FetchableURIDepSpec
-        parts[spec.filename] = true
+        parts[spec.filename] = true unless $banned_labels[label[0]]
+
     when Paludis::URILabelsDepSpec
-        # don't need to do anything
+        label[0] = spec.labels[0].class
+
     else
         raise "Unexpected DepSpec class #{spec.class} in #{id}"
     end
@@ -107,24 +164,20 @@ end
 
 # build up a list of all src_uri things that're used by installed packages
 parts = Hash.new
-env.package_database.repositories.each do | repo |
-    repo.some_ids_might_support_action(Paludis::SupportsInstalledActionTest.new) or next
-    repo.category_names.each do | cat |
-        repo.package_names(cat).each do | pkg |
-            repo.package_ids(pkg).each do | id |
-                id.supports_action(Paludis::SupportsInstalledActionTest.new) or next
-                collect_filenames(env, parts, id, id.fetches_key.value) if
-                    id.fetches_key && id.fetches_key.value
-            end
-        end
-    end
+env.package_database.query(relevant_packages, Paludis::QueryOrder::Whatever).each do | id |
+    key = id.fetches_key
+    collect_filenames(parts, id, [key.initial_label.class], key.value) if key && key.value
 end
 
 # figure out a list of places where distfiles can be found
 distdirs = []
-env.package_database.repositories.each do | repo |
-    key = repo['distdir'] or next
-    distdirs << key.value unless distdirs.member? key.value
+if mirror_distdir then
+    distdirs << mirror_distdir
+else
+    env.package_database.repositories.each do | repo |
+        key = repo['distdir'] or next
+        distdirs << key.value unless distdirs.member? key.value
+    end
 end
 
 # display each unused distfile
