@@ -79,9 +79,16 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2(stringify(((*tr1::static_pointer_cast<const S_>(*self_ptr)).*m_)()).c_str());
+            try
+            {
+                tr1::shared_ptr<const MetadataKey> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+                return rb_str_new2(stringify(((*tr1::static_pointer_cast<const S_>(*self_ptr)).*m_)()).c_str());
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
         }
     };
 
@@ -239,61 +246,110 @@ namespace
     VALUE
     metadata_package_id_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return package_id_to_value((tr1::static_pointer_cast<const MetadataPackageIDKey>(*self_ptr))->value());
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return package_id_to_value((tr1::static_pointer_cast<const MetadataPackageIDKey>(*self_ptr))->value());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_string_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return rb_str_new2((tr1::static_pointer_cast<const MetadataStringKey>(*self_ptr))->value().c_str());
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return rb_str_new2((tr1::static_pointer_cast<const MetadataStringKey>(*self_ptr))->value().c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_size_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return LONG2NUM((tr1::static_pointer_cast<const MetadataSizeKey>(*self_ptr))->value());
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return LONG2NUM((tr1::static_pointer_cast<const MetadataSizeKey>(*self_ptr))->value());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_fsentry_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return rb_str_new2(stringify((tr1::static_pointer_cast<const MetadataFSEntryKey>(*self_ptr))->value()).c_str());
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return rb_str_new2(stringify((tr1::static_pointer_cast<const MetadataFSEntryKey>(*self_ptr))->value()).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_time_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        return rb_time_new((tr1::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value(), 0);
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return rb_time_new((tr1::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value(), 0);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_contents_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        if (tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value())
-            return contents_to_value(tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value());
-        return Qnil;
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            if (tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value())
+                return contents_to_value(tr1::static_pointer_cast<const MetadataContentsKey>(*self_ptr)->value());
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     VALUE
     metadata_repository_mask_info_key_value(VALUE self)
     {
-        tr1::shared_ptr<const MetadataKey> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-        if ((tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr))->value())
-            return repository_mask_info_to_value(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr)->value());
-        return Qnil;
+        try
+        {
+            tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+            if ((tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr))->value())
+                return repository_mask_info_to_value(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(*self_ptr)->value());
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     template <typename T_>
@@ -302,13 +358,20 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-            tr1::shared_ptr<const T_> c = tr1::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
-            VALUE result (rb_ary_new());
-            for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
-            return result;
+            try
+            {
+                tr1::shared_ptr<const MetadataKey> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+                tr1::shared_ptr<const T_> c = tr1::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
+                VALUE result (rb_ary_new());
+                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                        rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+                return result;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
         }
     };
 
@@ -318,14 +381,21 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-            tr1::shared_ptr<const PackageIDSequence> c = tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
-                    *self_ptr)->value();
-            VALUE result (rb_ary_new());
-            for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, package_id_to_value(*i));
-            return result;
+            try
+            {
+                tr1::shared_ptr<const MetadataKey> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+                tr1::shared_ptr<const PackageIDSequence> c = tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
+                        *self_ptr)->value();
+                VALUE result (rb_ary_new());
+                for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_ary_push(result, package_id_to_value(*i));
+                return result;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
         }
     };
 
@@ -335,10 +405,17 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
-            tr1::shared_ptr<const typename T_::ConstItem> c = tr1::static_pointer_cast<const MetadataSpecTreeKey<T_> >(*self_ptr)->value();
-            return dep_tree_to_value<T_>(c);
+            try
+            {
+                tr1::shared_ptr<const MetadataKey> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+                tr1::shared_ptr<const typename T_::ConstItem> c = tr1::static_pointer_cast<const MetadataSpecTreeKey<T_> >(*self_ptr)->value();
+                return dep_tree_to_value<T_>(c);
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
         }
     };
 

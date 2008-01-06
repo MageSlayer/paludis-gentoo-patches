@@ -43,6 +43,10 @@ module Paludis
             env.package_database.fetch_repository("testrepo").package_ids("foo/bar").first
         end
 
+        def pid_bad
+            env.package_database.fetch_repository("testrepo").package_ids("bad/pkg").first
+        end
+
         def pid_installed
             env_vdb.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one").first
         end
@@ -340,6 +344,28 @@ module Paludis
             assert_kind_of MetadataStringSetKey, pid_installed["INHERITED"]
             assert_kind_of Array, pid_installed["INHERITED"].value
             assert_equal ['test_inherited'], pid_installed["INHERITED"].value
+        end
+    end
+
+    class TestCase_BadKeys < Test::Unit::TestCase
+        include TestStuff
+
+        def test_keywords_key
+            assert_raise NameError do
+                pid_bad.keywords_key.value
+            end
+        end
+
+        def test_iuse_key
+            assert_raise NameError do
+                pid_bad.iuse_key.value
+            end
+        end
+
+        def test_build_dependenciess_key
+            assert_raise RuntimeError do
+                pid_bad.build_dependencies_key.value
+            end
         end
     end
 end
