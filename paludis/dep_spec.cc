@@ -359,7 +359,10 @@ template <typename T_>
 tr1::shared_ptr<DepSpec>
 LabelsDepSpec<T_>::clone() const
 {
-    return tr1::shared_ptr<LabelsDepSpec<T_> >(new LabelsDepSpec<T_>);
+    using namespace tr1::placeholders;
+    tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
+    std::for_each(begin(), end(), tr1::bind(&LabelsDepSpec<T_>::add_label, my_clone, _1));
+    return my_clone;
 }
 
 template <typename T_>
