@@ -172,6 +172,8 @@ namespace
         FSEntry previous_entry;
         std::string previous_name;
 
+        std::set<const MetadataKey *> printed_keys;
+
         QualudisReporter() :
             previous_entry("/NONE"),
             previous_name("NONE")
@@ -236,6 +238,10 @@ namespace
                 for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys->begin()),
                         i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
                 {
+                    if (printed_keys.end() != printed_keys.find(&**i))
+                        continue;
+                    printed_keys.insert(&**i);
+
                     MetadataKeyPrettyPrinter pp;
                     (*i)->accept(pp);
                     std::cout << "      " << pp.stream.str();
