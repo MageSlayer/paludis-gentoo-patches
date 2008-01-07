@@ -28,6 +28,7 @@ dist_paludis_qa_data_DATA = \
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
 	eapi_supported.hh \
+	metadata_keys.hh \
 	extractors.hh \
 	homepage_key.hh \
 	spec_keys.hh \
@@ -46,6 +47,7 @@ lib_LTLIBRARIES = libpaludiserepositoryqa.la
 libpaludiserepositoryqa_la_SOURCES = \
 	qa.cc \
 	eapi_supported.cc \
+	metadata_keys.cc \
 	extractors.cc \
 	homepage_key.cc \
 	qa_checks.cc \

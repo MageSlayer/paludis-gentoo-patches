@@ -23,6 +23,7 @@
 
 #include <paludis/repositories/e/qa/stray_files.hh>
 #include <paludis/repositories/e/qa/eapi_supported.hh>
+#include <paludis/repositories/e/qa/metadata_keys.hh>
 #include <paludis/repositories/e/qa/short_description_key.hh>
 #include <paludis/repositories/e/qa/homepage_key.hh>
 #include <paludis/repositories/e/qa/spec_keys.hh>
@@ -74,24 +75,29 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("eapi_supported",
             tr1::bind(eapi_supported_check, _1, _2, _5, "eapi_supported"));
 
+    _imp->package_id_checks_group->add_check("metadata_keys",
+            tr1::bind(metadata_keys_check, _1, _2, _5, "metadata_keys"));
+    _imp->package_id_checks_group->add_prerequirement("metadata_keys", "eapi_supported");
+
     _imp->package_id_checks_group->add_check("short_description_key",
             tr1::bind(short_description_key_check, _1, _2, _5, "short_description_key"));
-    _imp->package_id_checks_group->add_prerequirement("short_description_key", "eapi_supported");
+    _imp->package_id_checks_group->add_prerequirement("short_description_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("homepage_key",
             tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
-    _imp->package_id_checks_group->add_prerequirement("homepage_key", "eapi_supported");
+    _imp->package_id_checks_group->add_prerequirement("homepage_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("spec_keys",
             tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
-    _imp->package_id_checks_group->add_prerequirement("spec_keys", "eapi_supported");
+    _imp->package_id_checks_group->add_prerequirement("spec_keys", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("extractors",
             tr1::bind(extractors_check, _1, _2, _5, "extractors"));
-    _imp->package_id_checks_group->add_prerequirement("extractors", "eapi_supported");
+    _imp->package_id_checks_group->add_prerequirement("extractors", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("visibility",
             tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
+    _imp->package_id_checks_group->add_prerequirement("visibility", "metadata_keys");
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
             tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));

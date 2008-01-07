@@ -248,9 +248,17 @@ namespace
                         printed_keys.insert(&**i);
                     }
 
-                    MetadataKeyPrettyPrinter pp;
-                    (*i)->accept(pp);
-                    std::cout << "      " << pp.stream.str();
+                    try
+                    {
+                        MetadataKeyPrettyPrinter pp;
+                        (*i)->accept(pp);
+                        std::cout << "      " << pp.stream.str();
+                    }
+                    catch (const Exception &)
+                    {
+                        // assume one of the QA checks already
+                        // printed a suitable error
+                    }
                 }
             }
         }
