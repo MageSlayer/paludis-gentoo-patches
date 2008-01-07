@@ -172,11 +172,14 @@ namespace
         FSEntry previous_entry;
         std::string previous_name;
 
+        bool show_keys, show_keys_once;
         std::set<const MetadataKey *> printed_keys;
 
-        QualudisReporter() :
+        QualudisReporter(const std::string & show_associated_keys) :
             previous_entry("/NONE"),
-            previous_name("NONE")
+            previous_name("NONE"),
+            show_keys("never" != show_associated_keys),
+            show_keys_once("once" == show_associated_keys)
         {
         }
 
@@ -233,14 +236,17 @@ namespace
                         std::cout << "      " << stringify(**i) << std::endl;
             }
 
-            if (! msg.associated_keys->empty())
+            if (show_keys && ! msg.associated_keys->empty())
             {
                 for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys->begin()),
                         i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
                 {
-                    if (printed_keys.end() != printed_keys.find(&**i))
-                        continue;
-                    printed_keys.insert(&**i);
+                    if (show_keys_once)
+                    {
+                        if (printed_keys.end() != printed_keys.find(&**i))
+                            continue;
+                        printed_keys.insert(&**i);
+                    }
 
                     MetadataKeyPrettyPrinter pp;
                     (*i)->accept(pp);
@@ -315,7 +321,7 @@ int main(int argc, char *argv[])
         if (! env->main_repository()->qa_interface)
             throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");
 
-        QualudisReporter r;
+        QualudisReporter r(QualudisCommandLine::get_instance()->a_show_associated_keys.argument());
         if (QualudisCommandLine::get_instance()->empty())
         {
             env->main_repository()->qa_interface->check_qa(

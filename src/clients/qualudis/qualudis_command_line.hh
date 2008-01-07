@@ -59,6 +59,9 @@ class QualudisCommandLine :
 
         paludis::QAMessageLevel message_level;
 
+        /// --show-associated-keys
+        paludis::args::EnumArg a_show_associated_keys;
+
         ///\}
 
         ///\name Configuration options

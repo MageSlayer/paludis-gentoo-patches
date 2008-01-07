@@ -45,8 +45,14 @@ QualudisCommandLine::QualudisCommandLine() :
             ("normal", "Show normal and upwards")
             ("severe", "Show severe and upwards"),
             "maybe"),
-
     message_level(paludis::qaml_maybe),
+
+    a_show_associated_keys(&check_options, "show-associated-keys", '\0', "Show the contents of relevant metadata keys",
+            paludis::args::EnumArg::EnumArgOptions
+            ("never",  "Never show metadata keys")
+            ("once",   "Show each metadata key at most once")
+            ("always", "Always show metadata keys"),
+            "once"),
 
     configuration_options(this, "Configuration options",
             "Options that control general configuration."),
