@@ -44,7 +44,7 @@ namespace
         const tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
         QAReporter & reporter;
-        const tr1::shared_ptr<const ERepositoryID> id;
+        const tr1::shared_ptr<const PackageID> id;
         const std::string name;
         bool found_one;
 
@@ -52,7 +52,7 @@ namespace
                 const tr1::shared_ptr<const MetadataKey> & k,
                 const FSEntry & f,
                 QAReporter & r,
-                const tr1::shared_ptr<const ERepositoryID> & i,
+                const tr1::shared_ptr<const PackageID> & i,
                 const std::string & n) :
             key(k),
             entry(f),
@@ -66,16 +66,18 @@ namespace
         ~HomepageChecker()
         {
             if (! found_one)
-                reporter.message(QAMessage(entry, qaml_normal, name, "Homepage specifies no URIs"));
+                reporter.message(QAMessage(entry, qaml_normal, name, "Homepage specifies no URIs")
+                        .with_associated_id(id)
+                        .with_associated_key(key));
         }
 
         void visit_leaf(const SimpleURIDepSpec & u)
         {
             found_one = true;
 
-            if (0 == u.text().compare(0, 7, "http://") &&
-                    0 == u.text().compare(0, 8, "https://") &&
-                    0 == u.text().compare(0, 6, "ftp://"))
+            if (0 != u.text().compare(0, 7, "http://") &&
+                    0 != u.text().compare(0, 8, "https://") &&
+                    0 != u.text().compare(0, 6, "ftp://"))
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Homepage uses no or unknown protocol in part '" + u.text() + "'")
                         .with_associated_id(id)
@@ -88,7 +90,7 @@ bool
 paludis::erepository::homepage_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepositoryID> & id,
+        const tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");

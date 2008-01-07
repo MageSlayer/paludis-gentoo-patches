@@ -99,6 +99,7 @@ if ENABLE_QA
 
 TESTS = \
 	extractors_TEST \
+	homepage_key_TEST \
 	spec_keys_TEST \
 	stray_files_TEST \
 	kv_variables_TEST \
@@ -132,6 +133,18 @@ stray_files_TEST_LDADD = \
 
 extractors_TEST_SOURCES = extractors_TEST.cc
 extractors_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+homepage_key_TEST_SOURCES = homepage_key_TEST.cc
+homepage_key_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \

@@ -31,8 +31,8 @@ namespace paludis
         bool homepage_key_check(
                 const FSEntry &,
                 QAReporter &,
-                const tr1::shared_ptr<const ERepositoryID> &,
-                const std::string &);
+                const tr1::shared_ptr<const PackageID> &,
+                const std::string &) PALUDIS_VISIBLE;
     }
 }
 
