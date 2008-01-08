@@ -53,7 +53,7 @@ TESTS_ENVIRONMENT = env \
 TESTS = conditional_functions_TEST.bash list_functions_TEST.bash
 check_SCRIPTS = $(TESTS)
 
-EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS)
+EXTRA_DIST = $(libexecprog0_SCRIPTS) $(check_SCRIPTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
