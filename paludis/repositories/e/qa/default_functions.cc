@@ -85,7 +85,8 @@ paludis::erepository::default_functions_check(
                     {
                         state = st_default;
                         if (! src_compile_changed)
-                            reporter.message(QAMessage(entry, qaml_minor, name, "src_compile is redundant"));
+                            reporter.message(QAMessage(entry, qaml_minor, name, "src_compile is redundant")
+                                    .with_associated_id(id));
                     }
                     else if (l->empty())
                         ;
@@ -112,7 +113,8 @@ paludis::erepository::default_functions_check(
                     {
                         state = st_default;
                         if (! src_unpack_changed)
-                            reporter.message(QAMessage(entry, qaml_minor, name, "src_unpack is redundant"));
+                            reporter.message(QAMessage(entry, qaml_minor, name, "src_unpack is redundant")
+                                    .with_associated_id(id));
                     }
                     else if (l->empty())
                         ;
