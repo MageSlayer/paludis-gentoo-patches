@@ -32,6 +32,7 @@
 #include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
+#include <paludis/repositories/e/qa/header.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
 
 using namespace paludis;
@@ -108,6 +109,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("whitespace",
             tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
+
+    _imp->package_id_file_contents_checks_group->add_check("header",
+            tr1::bind(header_check, _1, _2, _5, _6, "header"));
 }
 
 QAChecks::~QAChecks()

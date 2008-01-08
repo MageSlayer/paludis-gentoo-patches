@@ -41,6 +41,7 @@ paludis_repositories_e_include_HEADERS = \
 	kv_variables.hh \
 	visibility.hh \
 	whitespace.hh \
+	header.hh \
 	repo_name.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
@@ -61,6 +62,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	kv_variables.cc \
 	visibility.cc \
 	whitespace.cc \
+	header.cc \
 	repo_name.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
