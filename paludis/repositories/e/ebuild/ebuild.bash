@@ -70,7 +70,6 @@ if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
     echo "${EBUILD_MODULES_DIR} is not a directory" 1>&2
     exit 123
 fi
-export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
 for p in ${PALUDIS_EBUILD_MODULE_SUFFIXES}; do
     EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}/${p}"
@@ -80,8 +79,11 @@ for p in ${PALUDIS_EXTRA_EBUILD_MODULES_DIRS} ; do
 done
 EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}"
 
+export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
+
 ebuild_load_module()
 {
+    local t= d=
     for d in ${EBUILD_MODULES_DIRS}; do
         if [[ -f "${d}/${1}.bash" ]]; then
             if ! source "${d}/${1}.bash"; then
@@ -90,10 +92,12 @@ ebuild_load_module()
                 exit 123
             fi
             return
+        else
+            t="${t:+${t}, }${d}"
         fi
     done
-    type die &>/dev/null && eval die "\"Couldn't find module \${1}\""
-    echo "Couldn't find module ${1}" 1>&2
+    type die &>/dev/null && eval die "\"Couldn't find module \${1} (looked in \${t})\""
+    echo "Couldn't find module ${1} (looked in ${t})" 1>&2
     exit 123
 }
 
@@ -133,6 +137,7 @@ paludis_pipe_command()
 }
 
 ebuild_load_module die_functions
+ebuild_load_module output_functions
 ebuild_load_module echo_functions
 ebuild_load_module conditional_functions
 ebuild_load_module kernel_functions
@@ -456,7 +461,7 @@ ebuild_main()
             done
             PATH="" ebuild_load_ebuild "${ebuild}"
         fi
-        if ! ebuild_f_${1} ; then
+        if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${1} ; then
             perform_hook ebuild_${action}_fail
             die "${1} failed"
         fi
@@ -469,7 +474,7 @@ ebuild_main()
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
-            if ! ebuild_f_${action} ; then
+            if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 perform_hook ebuild_${action}_fail
                 die "${action} failed"
             fi

@@ -3,7 +3,7 @@
 
 @GENERATED_FILE@
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -169,16 +169,5 @@ ewend()
     shift
     _eend ${retval} ewarn "$*"
     return ${retval}
-}
-
-ebuild_notice()
-{
-    [[ -z "${PALUDIS_PIPE_COMMANDS_SUPPORTED}" ]] && return
-    paludis_pipe_command LOG "$EAPI" "$@" >/dev/null
-}
-
-ebuild_section()
-{
-    echo ">>> $*"
 }
 

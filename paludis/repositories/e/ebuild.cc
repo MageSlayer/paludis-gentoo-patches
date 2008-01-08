@@ -164,6 +164,8 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->must_not_change_variables)
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
                     params.package_id->eapi()->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
+            .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
+                params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")
@@ -699,9 +701,11 @@ WriteVDBEntryCommand::operator() ()
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_VDB_FROM_ENV_VARIABLES",
-                    params.package_id->eapi()->supported->ebuild_options->vdb_from_env_variables)
+                params.package_id->eapi()->supported->ebuild_options->vdb_from_env_variables)
             .with_setenv("PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES",
-                    params.package_id->eapi()->supported->ebuild_options->vdb_from_env_unless_empty_variables)
+                params.package_id->eapi()->supported->ebuild_options->vdb_from_env_unless_empty_variables)
+            .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
+                params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
             .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params.environment, params.package_id, _1))
             );
 

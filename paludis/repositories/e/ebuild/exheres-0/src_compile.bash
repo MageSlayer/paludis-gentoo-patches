@@ -20,37 +20,35 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_pkg_nofetch()
+default_src_compile()
 {
-    [[ -z "${A}" ]] && return
-
-    local f g=
-    for f in ${A} ; do
-        [[ -f "${FETCHEDDIR}/${A}" ]] && continue
-        if [[ -z "${g}" ]] ; then
-            echo "The following files could not be fetched automatically for ${PN}:"
-            g=no
-        fi
-        echo "* ${f}"
-    done
+    [[ -x ./configure ]] && econf
+    if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
+        emake || die "emake failed"
+    fi
 }
 
-pkg_nofetch()
+src_compile()
 {
     default "$@"
 }
 
-exheres_internal_nofetch()
+exheres_internal_compile()
 {
-    local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-    if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
-    else
-        ebuild_section "Starting pkg_nofetch"
-        pkg_nofetch
-        ebuild_section "Done pkg_nofetch"
+    if [[ -d "${S}" ]] ; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -d "${WORKDIR}" ]] ; then
+        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
-    true
+
+    if hasq "compile" ${RESTRICT} ; then
+        ebuild_section "Skipping src_compile (RESTRICT)"
+    elif hasq "compile" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting src_compile"
+        src_compile
+        ebuild_section "Done src_compile"
+    fi
 }
+

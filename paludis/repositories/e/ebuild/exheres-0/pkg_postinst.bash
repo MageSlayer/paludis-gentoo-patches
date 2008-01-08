@@ -20,37 +20,32 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_pkg_nofetch()
+default_pkg_postinst()
 {
-    [[ -z "${A}" ]] && return
-
-    local f g=
-    for f in ${A} ; do
-        [[ -f "${FETCHEDDIR}/${A}" ]] && continue
-        if [[ -z "${g}" ]] ; then
-            echo "The following files could not be fetched automatically for ${PN}:"
-            g=no
-        fi
-        echo "* ${f}"
-    done
+    :
 }
 
-pkg_nofetch()
+pkg_postinst()
 {
     default "$@"
 }
 
-exheres_internal_nofetch()
+exheres_internal_postinst()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-    if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
+    if hasq "postinst" ${RESTRICT} ; then
+        ebuild_section "Skipping pkg_postinst (RESTRICT)"
+    elif hasq "postinst" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_postinst (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting pkg_nofetch"
-        pkg_nofetch
-        ebuild_section "Done pkg_nofetch"
+        ebuild_section "Starting pkg_postinst"
+        pkg_postinst
+        ebuild_section "Done pkg_postinst"
     fi
+
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
     true
 }
+

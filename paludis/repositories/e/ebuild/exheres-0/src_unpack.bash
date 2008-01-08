@@ -20,37 +20,28 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_pkg_nofetch()
+default_src_unpack()
 {
-    [[ -z "${A}" ]] && return
-
-    local f g=
-    for f in ${A} ; do
-        [[ -f "${FETCHEDDIR}/${A}" ]] && continue
-        if [[ -z "${g}" ]] ; then
-            echo "The following files could not be fetched automatically for ${PN}:"
-            g=no
-        fi
-        echo "* ${f}"
-    done
+    [[ -n "${A}" ]] && unpack ${A}
 }
 
-pkg_nofetch()
+src_unpack()
 {
     default "$@"
 }
 
-exheres_internal_nofetch()
+exheres_internal_unpack()
 {
-    local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-    if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
+    cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+
+    if hasq "unpack" ${RESTRICT} ; then
+        ebuild_section "Skipping src_unpack (RESTRICT)"
+    elif hasq "unpack" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting pkg_nofetch"
-        pkg_nofetch
-        ebuild_section "Done pkg_nofetch"
+        ebuild_section "Starting src_unpack"
+        src_unpack
+        ebuild_section "Done src_unpack"
     fi
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
-    true
 }
+

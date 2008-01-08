@@ -4,11 +4,44 @@ SUBDIRS = .
 
 libexecprog0dir = $(libexecdir)/paludis/0/
 
-libexecprog0_SCRIPTS =
+libexecprog0_SCRIPTS = \
+	builtin_infovars.bash \
+	builtin_init.bash \
+	builtin_initbin.bash \
+	builtin_loadenv.bash \
+	builtin_metadata.bash \
+	builtin_prepare.bash \
+	builtin_saveenv.bash \
+	builtin_strip.bash \
+	builtin_tidyup.bash \
+	builtin_unpackbin.bash \
+	builtin_variable.bash \
+	conditional_functions.bash \
+	eclass_functions.bash \
+	ever_functions.bash \
+	exlib_functions.bash \
+	list_functions.bash \
+	output_functions.bash \
+	pkg_config.bash \
+	pkg_info.bash \
+	pkg_nofetch.bash \
+	pkg_postinst.bash \
+	pkg_postrm.bash \
+	pkg_preinst.bash \
+	pkg_prerm.bash \
+	pkg_pretend.bash \
+	pkg_setup.bash \
+	portage_stubs.bash \
+	src_compile.bash \
+	src_install.bash \
+	src_test.bash \
+	src_unpack.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_EBUILD_MODULE_SUFFIXES="0" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
@@ -17,10 +50,10 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
-TESTS =
+TESTS = conditional_functions_TEST.bash list_functions_TEST.bash
 check_SCRIPTS = $(TESTS)
 
-EXTRA_DIST = $(libexecprog_SCRIPTS)
+EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

@@ -7,7 +7,12 @@ set +o posix
 
 export TEST_STATUS=
 export PALUDIS_IN_TEST_FRAMEWORK="yes"
-unset PALUDIS_UTILITY_PATH_SUFFIXES PALUDIS_EBUILD_MODULE_SUFFIXES
+unset PALUDIS_UTILITY_PATH_SUFFIXES
+
+if [[ -z "${PALUDIS_EBUILD_MODULE_SUFFIXES}" ]] ; then
+    echo "Eek! PALUDIS_EBUILD_MODULE_SUFFIXES unset or empty"
+    exit 123
+fi
 
 test_return_code()
 {
@@ -37,7 +42,7 @@ export PALUDIS_PIPE_COMMAND_READ_FD=
 export PALUDIS_SKIP_PIPE_COMMAND_CHECK=yes
 
 echo "Test program ${1}:"
-source "$(dirname ${1} )/ebuild.bash" || exit 200
+source "${PALUDIS_EBUILD_DIR}/ebuild.bash" || exit 200
 source "${1}" || exit 200
 
 paludis_pipe_command()

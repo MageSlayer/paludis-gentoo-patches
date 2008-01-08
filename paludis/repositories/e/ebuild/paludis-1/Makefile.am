@@ -1,28 +1,16 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
-SUBDIRS = . 0 1 exheres-0 paludis-1 utils
+SUBDIRS = .
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+libexecprogpaludis1dir = $(libexecdir)/paludis/paludis-1
 
-libexecprogdir = $(libexecdir)/paludis/
-
-libexecprog_SCRIPTS = \
-	build_functions.bash \
-	die_functions.bash \
-	ebuild.bash \
-	kernel_functions.bash \
-	install_functions.bash \
-	multilib_functions.bash \
-	sandbox.bash \
-	source_functions.bash \
-	usage_error.bash \
-	write_vdb_entry.bash
+libexecprogpaludis1_SCRIPTS = \
+	output_functions.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EBUILD_MODULE_SUFFIXES="0" \
+	PALUDIS_EBUILD_MODULE_SUFFIXES="1 0" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
@@ -31,9 +19,10 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
-TESTS = kernel_functions_TEST.bash
+TESTS =
+check_SCRIPTS = $(TESTS)
 
-EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS) $(check_SCRIPTS)
+EXTRA_DIST = $(libexecprogexheres_SCRIPTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
