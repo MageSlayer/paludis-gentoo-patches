@@ -29,6 +29,7 @@
 #include <paludis/repositories/e/qa/spec_keys.hh>
 #include <paludis/repositories/e/qa/extractors.hh>
 #include <paludis/repositories/e/qa/visibility.hh>
+#include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
@@ -98,6 +99,9 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("visibility",
             tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
     _imp->package_id_checks_group->add_prerequirement("visibility", "metadata_keys");
+
+    _imp->package_id_file_contents_checks_group->add_check("default_functions",
+            tr1::bind(default_functions_check, _1, _2, _5, _6, "default_functions"));
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
             tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));

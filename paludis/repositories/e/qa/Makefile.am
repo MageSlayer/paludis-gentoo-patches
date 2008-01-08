@@ -37,6 +37,7 @@ paludis_repositories_e_include_HEADERS = \
 	qa_controller.hh \
 	short_description_key.hh \
 	stray_files.hh \
+	default_functions.hh \
 	kv_variables.hh \
 	visibility.hh \
 	whitespace.hh \
@@ -56,6 +57,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	short_description_key.cc \
 	spec_keys.cc \
 	stray_files.cc \
+	default_functions.cc \
 	kv_variables.cc \
 	visibility.cc \
 	whitespace.cc \
@@ -105,6 +107,7 @@ TESTS = \
 	homepage_key_TEST \
 	spec_keys_TEST \
 	stray_files_TEST \
+	default_functions_TEST \
 	kv_variables_TEST \
 	visibility_TEST
 
@@ -160,6 +163,18 @@ homepage_key_TEST_LDADD = \
 
 visibility_TEST_SOURCES = visibility_TEST.cc
 visibility_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+default_functions_TEST_SOURCES = default_functions_TEST.cc
+default_functions_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
