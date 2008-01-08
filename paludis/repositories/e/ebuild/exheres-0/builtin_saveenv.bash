@@ -42,3 +42,8 @@ exheres_internal_saveenv()
     true
 }
 
+ebuild_f_saveenv()
+{
+    exheres_internal_saveenv ""
+}
+

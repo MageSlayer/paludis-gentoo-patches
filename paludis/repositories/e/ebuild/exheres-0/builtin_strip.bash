@@ -84,3 +84,8 @@ exheres_internal_strip()
     fi
 }
 
+ebuild_f_strip()
+{
+    exheres_internal_strip ""
+}
+

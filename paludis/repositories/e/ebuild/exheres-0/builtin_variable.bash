@@ -21,3 +21,8 @@ ebuild_f_variable()
     echo "${!PALUDIS_VARIABLE}"
 }
 
+ebuild_f_variable()
+{
+    exheres_internal_variable ""
+}
+

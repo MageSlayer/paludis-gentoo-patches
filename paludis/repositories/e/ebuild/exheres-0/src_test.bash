@@ -71,4 +71,3 @@ exheres_internal_test()
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${old_sandbox_predict}"
     true
 }
-

@@ -79,4 +79,3 @@ inherit()
         export ECLASS="${old_ECLASS}"
     done
 }
-

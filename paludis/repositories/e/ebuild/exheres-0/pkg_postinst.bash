@@ -48,4 +48,3 @@ exheres_internal_postinst()
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
     true
 }
-

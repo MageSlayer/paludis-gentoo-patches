@@ -93,3 +93,8 @@ exheres_internal_init()
     fi
 }
 
+ebuild_f_init()
+{
+    exheres_internal_init ""
+}
+

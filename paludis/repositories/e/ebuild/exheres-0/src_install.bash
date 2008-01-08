@@ -48,4 +48,3 @@ exheres_internal_install()
         ebuild_section "Done src_install"
     fi
 }
-

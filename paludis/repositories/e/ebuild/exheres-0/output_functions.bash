@@ -27,4 +27,3 @@ ebuild_section()
     echo -ne "${COLOUR_PINK}===${COLOUR_NORMAL} "
     echo "$@"
 }
-

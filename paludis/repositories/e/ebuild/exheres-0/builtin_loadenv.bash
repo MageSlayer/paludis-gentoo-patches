@@ -45,4 +45,8 @@ exheres_internal_loadenv()
     true
 }
 
+ebuild_f_loadenv()
+{
+    exheres_internal_loadenv ""
+}
 

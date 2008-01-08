@@ -44,4 +44,3 @@ exheres_internal_unpack()
         ebuild_section "Done src_unpack"
     fi
 }
-

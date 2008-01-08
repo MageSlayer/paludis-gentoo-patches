@@ -87,4 +87,3 @@ hasq()
     done
     return 1
 }
-

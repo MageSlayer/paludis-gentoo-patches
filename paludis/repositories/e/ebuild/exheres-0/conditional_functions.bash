@@ -47,4 +47,3 @@ option_enable()
         echo "--disable-${2:-${1}}"
     fi
 }
-

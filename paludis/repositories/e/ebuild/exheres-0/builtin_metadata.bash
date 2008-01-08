@@ -39,3 +39,8 @@ exheres_internal_metadata()
     done
 }
 
+ebuild_f_metadata()
+{
+    exheres_internal_metadata ""
+}
+

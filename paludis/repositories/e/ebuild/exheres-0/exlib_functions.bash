@@ -80,4 +80,3 @@ default()
     [[ $(type -t "default_${FUNCNAME[1]}" ) == "function" ]] || die "default_${FUNCNAME[1]} not a function"
     default_${FUNCNAME[1]} "$@"
 }
-

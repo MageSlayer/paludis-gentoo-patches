@@ -64,4 +64,3 @@ debug-print-section()
 {
     die "Function 'debug-print-section' banned in this EAPI"
 }
-

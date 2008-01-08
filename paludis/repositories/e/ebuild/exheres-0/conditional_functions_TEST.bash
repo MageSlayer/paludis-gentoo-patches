@@ -42,4 +42,3 @@ option_enable_TEST()
     test_equality "$(option_enable foo bar )" "--disable-bar"
     test_equality "$(option_enable foo bar baz )" "--disable-bar"
 }
-

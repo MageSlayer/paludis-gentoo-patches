@@ -71,4 +71,3 @@ optionq_TEST()
     optionq !foofoo ; test_return_code
     optionq !fo ; test_return_code
 }
-

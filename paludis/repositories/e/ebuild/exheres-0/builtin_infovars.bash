@@ -51,4 +51,8 @@ exheres_internal_infovars()
     true
 }
 
+ebuild_f_infovars()
+{
+    exheres_internal_infovars ""
+}
 

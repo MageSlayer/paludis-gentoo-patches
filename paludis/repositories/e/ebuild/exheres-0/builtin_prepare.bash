@@ -46,4 +46,8 @@ exheres_internal_prepare()
     fi
 }
 
+ebuild_f_prepare()
+{
+    exheres_internal_prepare ""
+}
 

@@ -41,3 +41,8 @@ exheres_internal_tidyup()
     fi
 }
 
+ebuild_f_tidyup()
+{
+    exheres_internal_tidyup ""
+}
+

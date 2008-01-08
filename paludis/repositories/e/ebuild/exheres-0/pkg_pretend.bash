@@ -40,5 +40,3 @@ exheres_internal_pretend()
 
     true
 }
-
-
