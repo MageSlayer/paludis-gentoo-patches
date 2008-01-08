@@ -1302,9 +1302,7 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/0/Makefile
 	paludis/repositories/e/ebuild/1/Makefile
 	paludis/repositories/e/ebuild/Makefile
-	paludis/repositories/e/ebuild/echo_functions.bash
 	paludis/repositories/e/ebuild/exheres-0/Makefile
-	paludis/repositories/e/ebuild/exheres-0/echo_functions.bash
 	paludis/repositories/e/ebuild/utils/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/e/qa/Makefile
@@ -1315,6 +1313,7 @@ AC_OUTPUT(
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
 	paludis/util/Makefile
+	paludis/util/echo_functions.bash
 	pkg-config/Makefile
 	python/Makefile
 	ruby/Makefile

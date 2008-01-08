@@ -66,7 +66,7 @@ include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
-	hashed_containers.hh util.hh
+	hashed_containers.hh util.hh echo_functions.bash
 DISTCLEANFILES = srcleanlist secleanlist
 BUILT_SOURCES = srcleanlist secleanlist
 DEFS=\
@@ -74,7 +74,8 @@ DEFS=\
 	-DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist secleanlist \
 	testscriptlist \
-	test_extras.cc
+	test_extras.cc \
+	echo_functions.bash.in
 SUBDIRS = .
 
 libpaludisutil_la_SOURCES = filelist
@@ -102,8 +103,12 @@ Makefile.am : Makefile.am.m4 files.m4
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh
 
-libexecprogdir = $(libexecdir)/paludis/utils
-libexecprog_PROGRAMS = outputwrapper
+libexecutilsdir = $(libexecdir)/paludis/utils
+libexecutils_PROGRAMS = outputwrapper
+
+libexecpaludisdir = $(libexecdir)/paludis
+libexecpaludis_SCRIPTS = echo_functions.bash
+
 outputwrapper_SOURCES = output_wrapper.cc
 
 changequote(`<', `>')

@@ -1,7 +1,11 @@
 #!/bin/bash
-# vim: set et sw=4 sts=4 :
+# vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+#
+# Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
+# Gentoo Foundation and distributed under the terms of the GNU General
+# Public License v2.
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -16,13 +20,31 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
+use_with()
+{
+    die "Function 'use_with' banned in this EAPI"
+}
 
-echo
-einfo_unhooked "Regenerating cache for installable repositories..."
-${PALUDIS_COMMAND} --regenerate-installable-cache
-einfo_unhooked "Done regenerating cache for installable repositories"
+use_enable()
+{
+    die "Function 'use_enable' banned in this EAPI"
+}
 
-true
+option_with()
+{
+    if optionq "${1}" ; then
+        echo "--with-${2:-${1}}${3+=${3}}"
+    else
+        echo "--without-${2:-${1}}"
+    fi
+}
+
+option_enable()
+{
+    if optionq "${1}" ; then
+        echo "--enable-${2:-${1}}${3+=${3}}"
+    else
+        echo "--disable-${2:-${1}}"
+    fi
+}
 

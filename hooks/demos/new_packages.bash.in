@@ -10,7 +10,7 @@
 #
 # You should ensure that it has execute permissions.
 
-source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
 
 syncfile="${PALUDIS_HOOKS_TMPDIR:-${ROOT}/var/tmp/paludis}/sync.${PALUDIS_PID}"
 

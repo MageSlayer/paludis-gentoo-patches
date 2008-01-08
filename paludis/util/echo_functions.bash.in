@@ -171,24 +171,6 @@ ewend()
     return ${retval}
 }
 
-use_with()
-{
-    if useq "${1}" ; then
-        echo "--with-${2:-${1}}${3+=${3}}"
-    else
-        echo "--without-${2:-${1}}"
-    fi
-}
-
-use_enable()
-{
-    if useq "${1}" ; then
-        echo "--enable-${2:-${1}}${3+=${3}}"
-    else
-        echo "--disable-${2:-${1}}"
-    fi
-}
-
 ebuild_notice()
 {
     [[ -z "${PALUDIS_PIPE_COMMANDS_SUPPORTED}" ]] && return

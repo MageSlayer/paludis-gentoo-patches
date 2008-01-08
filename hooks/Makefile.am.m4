@@ -282,6 +282,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_COMMAND="$(top_builddir)/src/clients/paludis/paludis" \
 	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_ECHO_FUNCTIONS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \

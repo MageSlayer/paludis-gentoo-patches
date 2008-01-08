@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,14 @@ if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
     export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
 fi
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
+    export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
+done
+
+# Force a few more things into PATH, since some users have crazy setups.
+# See ticket:374.
+export PATH="${PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
+
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
     echo "${EBUILD_MODULES_DIR} is not a directory" 1>&2
@@ -35,13 +43,29 @@ if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
 fi
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
+for p in ${PALUDIS_EBUILD_MODULE_SUFFIXES}; do
+    EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}/${p}"
+done
+for p in ${PALUDIS_EXTRA_EBUILD_MODULES_DIRS} ; do
+    EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${p}"
+done
+EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}"
+
 ebuild_load_module()
 {
-    if ! source "${EBUILD_MODULES_DIR}/${1}.bash" ; then
-        type die && die "Error loading module ${1}"
-        echo "Error loading module ${1}" 1>&2
-        exit 123
-    fi
+    for d in ${EBUILD_MODULES_DIRS}; do
+        if [[ -f "${d}/${1}.bash" ]]; then
+            if ! source "${d}/${1}.bash"; then
+                type die &>/dev/null && eval die "\"Error loading module \${1}\""
+                echo "Error loading module ${1}" 1>&2
+                exit 123
+            fi
+            return
+        fi
+    done
+    type die &>/dev/null && eval die "\"Couldn't find module \${1}\""
+    echo "Couldn't find module ${1}" 1>&2
+    exit 123
 }
 
 ebuild_load_module die_functions

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006 Ciaran McCreesh
+# Copyright (c) 2006, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,7 +17,7 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
 
 echo
 einfo_unhooked "Regenerating cache for installed repositories..."

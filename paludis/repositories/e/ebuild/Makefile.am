@@ -19,9 +19,9 @@ libexecprog_SCRIPTS = \
 	builtin_tidyup.bash \
 	builtin_unpackbin.bash \
 	builtin_variable.bash \
+	conditional_functions.bash \
 	die_functions.bash \
 	ebuild.bash \
-	echo_functions.bash \
 	kernel_functions.bash \
 	eclass_functions.bash \
 	ever_functions.bash \
@@ -51,6 +51,7 @@ libexecprog_SCRIPTS = \
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
@@ -59,7 +60,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
-TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash
+TESTS = conditional_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS) $(check_SCRIPTS)
 
@@ -73,3 +74,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

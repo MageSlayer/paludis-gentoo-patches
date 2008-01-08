@@ -8,7 +8,7 @@ libexecprogexheres_SCRIPTS = \
 	builtin_fetch.bash \
 	pkg_nofetch.bash \
 	list_functions.bash \
-	echo_functions.bash \
+	conditional_functions.bash \
 	ever_functions.bash \
 	portage_stubs.bash
 

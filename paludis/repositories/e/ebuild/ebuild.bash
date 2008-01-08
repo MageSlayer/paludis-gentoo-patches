@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -75,6 +75,9 @@ export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 for p in ${PALUDIS_EBUILD_MODULE_SUFFIXES}; do
     EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}/${p}"
 done
+for p in ${PALUDIS_EXTRA_EBUILD_MODULES_DIRS} ; do
+    EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${p}"
+done
 EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}"
 
 ebuild_load_module()
@@ -131,6 +134,7 @@ paludis_pipe_command()
 
 ebuild_load_module die_functions
 ebuild_load_module echo_functions
+ebuild_load_module conditional_functions
 ebuild_load_module kernel_functions
 ebuild_load_module sandbox
 ebuild_load_module portage_stubs
