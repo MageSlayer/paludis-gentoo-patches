@@ -471,6 +471,36 @@ namespace
 
     /*
      * call-seq:
+     *     use_expand_separator(package_id) -> String or Nil
+     *
+     * Fetch the use expand separator (eg _ or :) for the specified
+     * package, or Nil if unknown.
+     */
+    VALUE
+    repository_use_expand_separator(VALUE self, VALUE package_id)
+    {
+        try
+        {
+            tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            if ((*self_ptr)->use_interface) {
+                tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
+                char sep((*self_ptr)->use_interface->use_expand_separator(*pid));
+                return sep ? rb_str_new(&sep, 1) : Qnil;
+            }
+            else
+            {
+                return Qnil;
+            }
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     describe_use_flag(flag_name, package_id) -> String or Nil
      *
      * Returns the description for a use flag name, or nil if the
@@ -900,6 +930,8 @@ namespace
         rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), 2);
         rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), 2);
         rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), 2);
+
+        rb_define_method(c_repository, "use_expand_separator", RUBY_FUNC_CAST(&repository_use_expand_separator), 1);
 
         rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag), 2);
 

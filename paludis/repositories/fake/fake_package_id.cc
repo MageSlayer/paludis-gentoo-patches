@@ -924,6 +924,12 @@ FakePackageID::size_of_all_distfiles_key() const
     return tr1::shared_ptr<const MetadataSizeKey>();
 }
 
+char
+FakePackageID::use_expand_separator() const
+{
+    return erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)->supported->ebuild_options->use_expand_separator;
+}
+
 std::string
 FakeMetadataIUseSetKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
 {

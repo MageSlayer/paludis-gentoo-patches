@@ -337,6 +337,12 @@ namespace paludis
             virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const = 0;
 
             /**
+             * Fetch the use expand separator (eg _ or :) for the
+             * specified package, or \0 if unknown.
+             */
+            virtual char use_expand_separator(const PackageID & pkg) const = 0;
+
+            /**
              * Describe a use flag.
              */
             virtual std::string describe_use_flag(const UseFlagName & n, const PackageID & pkg) const = 0;

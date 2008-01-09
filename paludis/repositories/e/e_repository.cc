@@ -923,6 +923,15 @@ ERepository::use_expand_hidden_prefixes() const
     return result;
 }
 
+char
+ERepository::use_expand_separator(const PackageID & id) const
+{
+    if (this != id.repository().get())
+        return '\0';
+    const tr1::shared_ptr<const erepository::EAPI> & eapi(static_cast<const erepository::ERepositoryID &>(id).eapi());
+    return eapi->supported ? eapi->supported->ebuild_options->use_expand_separator : '\0';
+}
+
 void
 ERepository::regenerate_cache() const
 {

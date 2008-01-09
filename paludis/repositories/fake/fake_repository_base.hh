@@ -130,6 +130,9 @@ namespace paludis
             virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual char use_expand_separator(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual std::string describe_use_flag(const UseFlagName &,
                     const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

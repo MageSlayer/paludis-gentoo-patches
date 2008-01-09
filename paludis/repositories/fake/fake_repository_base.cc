@@ -201,6 +201,14 @@ FakeRepositoryBase::use_expand_prefixes() const
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
+char
+FakeRepositoryBase::use_expand_separator(const PackageID & id) const
+{
+    if (this != id.repository().get())
+        return '\0';
+    return static_cast<const FakePackageID &>(id).use_expand_separator();
+}
+
 void
 FakeRepositoryBase::add_package_set(const SetName & n, tr1::shared_ptr<SetSpecTree::ConstItem> s)
 {

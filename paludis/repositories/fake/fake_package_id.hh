@@ -236,6 +236,8 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
 
+            char use_expand_separator() const;
+
             void set_slot(const SlotName &);
 
             virtual bool arbitrary_less_than_comparison(const PackageID &) const;

@@ -830,6 +830,15 @@ VDBRepository::use_expand_hidden_prefixes() const
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
+char
+VDBRepository::use_expand_separator(const PackageID & id) const
+{
+    if (this != id.repository().get())
+        return '\0';
+    const tr1::shared_ptr<const EAPI> & eapi(static_cast<const VDBID &>(id).eapi());
+    return eapi->supported ? eapi->supported->ebuild_options->use_expand_separator : '\0';
+}
+
 bool
 VDBRepository::load_provided_using_cache() const
 {
