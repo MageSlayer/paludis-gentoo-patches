@@ -415,8 +415,7 @@ namespace
      * Document-method: query_use
      *
      * call-seq:
-     *     query_use(use_flag) -> true or false or nil
-     *     query_use(use_flag, package_database_entry) -> true or false or nil
+     *     query_use(use_flag, package_id) -> true or false or nil
      *
      * Query the state of the specified use flag: true if set, false
      * if unset, nil if unspecified.  nil if the repository doesn't
@@ -426,8 +425,7 @@ namespace
      * Document-method: query_use_mask
      *
      * call-seq:
-     *     query_use_mask(use_flag) -> true or false or nil
-     *     query_use_mask(use_flag, package_database_entry) -> true or false or nil
+     *     query_use_mask(use_flag, package_id) -> true or false or nil
      *
      * Query whether the specified use flag is masked.  nil if the
      * repository doesn't implement use_interface.
@@ -436,21 +434,16 @@ namespace
      * Document-method: query_use_force
      *
      * call-seq:
-     *     query_use_force(use_flag) -> true or false or nil
-     *     query_use_force(use_flag, package_database_entry) -> true or false or nil
+     *     query_use_force(use_flag, package_id) -> true or false or nil
      *
      * Query whether the specified use flag is forced.  nil if the
      * repository doesn't implement use_interface.
      */
-
-
-    template <typename T_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageID &) const> struct QueryUseMessage;
-
     template <typename T_, T_ trueval_, T_ falseval_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageID &) const>
     struct QueryUse
     {
         static VALUE
-        query(int argc, VALUE * argv, VALUE self)
+        query(VALUE self, VALUE use_flag, VALUE package_id)
         {
             try
             {
@@ -460,12 +453,7 @@ namespace
 
                 if (use_interface)
                 {
-                    if (2 != argc)
-                    {
-                        rb_raise(rb_eArgError, QueryUseMessage<T_, m_>::message, argc);
-                    }
-
-                    T_ status(((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), *value_to_package_id(argv[1])));
+                    T_ status(((*use_interface).*m_)(UseFlagName(StringValuePtr(use_flag)), *value_to_package_id(package_id)));
 
                     return status == trueval_ ? Qtrue : status == falseval_ ? Qfalse : Qnil;
                 }
@@ -481,69 +469,34 @@ namespace
         }
     };
 
-    template<>
-    struct QueryUseMessage<UseFlagState, &RepositoryUseInterface::query_use>
-    {
-        static const char * message;
-    };
-    const char * QueryUseMessage<UseFlagState, &RepositoryUseInterface::query_use>::message =
-        "Repository.query_use expects two arguments, but got %d";
-
-    template<>
-    struct QueryUseMessage<bool, &RepositoryUseInterface::query_use_mask>
-    {
-        static const char * message;
-    };
-    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_mask>::message =
-        "Repository.query_use_mask expects two arguments, but got %d";
-
-    template<>
-    struct QueryUseMessage<bool, &RepositoryUseInterface::query_use_force>
-    {
-        static const char * message;
-    };
-    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_force>::message =
-        "Repository.query_use_force expects two arguments, but got %d";
-
     /*
      * call-seq:
-     *     describe_use_flag(flag_name) -> String or Nil
      *     describe_use_flag(flag_name, package_id) -> String or Nil
      *
-     * Returns the description for a use flag name, or nil if the repository does not include 
-     * the use_flag_interface.
+     * Returns the description for a use flag name, or nil if the
+     * repository does not include the use_flag_interface.
      */
-
     VALUE
-    repository_describe_use_flag(int argc, VALUE * argv, VALUE self)
+    repository_describe_use_flag(VALUE self, VALUE flag_name, VALUE package_id)
     {
         try
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
             if ((*self_ptr)->use_interface) {
-                if (1 == argc || 2 ==argc)
-                {
-                    UseFlagName ufn = UseFlagName(StringValuePtr(argv[0]));
-                    tr1::shared_ptr<const PackageID> pid(value_to_package_id(argv[1]));
-                    return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, *pid).c_str()));
-
-                }
-                else
-                {
-                    rb_raise(rb_eArgError, "describe_use_flag expects one or two arguments, but got %d", argc);
-                }
+                UseFlagName ufn = UseFlagName(StringValuePtr(flag_name));
+                tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
+                return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, *pid).c_str()));
             }
             else
             {
                 return Qnil;
             }
-
         }
-            catch (const std::exception & e)
-            {
-                exception_to_ruby_exception(e);
-            }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     /*
@@ -944,11 +897,11 @@ namespace
 
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
-        rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), -1);
-        rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), -1);
-        rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), -1);
+        rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), 2);
+        rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), 2);
+        rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), 2);
 
-        rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag),-1);
+        rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag), 2);
 
         rb_define_method(c_repository, "profiles", RUBY_FUNC_CAST(&repository_profiles),0);
         rb_define_method(c_repository, "find_profile", RUBY_FUNC_CAST(&repository_find_profile),1);
