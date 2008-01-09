@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
@@ -882,6 +883,8 @@ namespace test_cases
                 reference_manifest.insert(line);
 
             TEST_CHECK(made_manifest == reference_manifest);
+
+            TEST_CHECK_THROWS(repo->make_manifest(QualifiedPackageName("category/package-b")), ERepositoryConfigurationError);
         }
     } test_e_repository_manifest;
 
@@ -1025,6 +1028,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     UserPackageDepSpecOptions()))), qo_order_by_version)->last());
             TEST_CHECK(id);
+            repo->make_manifest(id->name());
             id->perform_action(action);
         }
     } test_e_repository_manifest_check;

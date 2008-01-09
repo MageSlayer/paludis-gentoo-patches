@@ -331,7 +331,7 @@ END
 cd ..
 
 mkdir -p repo11/{eclass,distfiles,profiles/profile} || exit 1
-mkdir -p repo11/category/package/files || exit 1
+mkdir -p repo11/category/package{,-b}/files || exit 1
 cd repo11 || exit 1
 echo "test-repo-11" >> profiles/repo_name || exit 1
 echo "category" >> profiles/categories || exit 1
@@ -377,6 +377,16 @@ EBUILD package-1.ebuild 134 RMD160 0a59df8f246cd5d9f83b89b36026701f1bfe235b SHA2
 EBUILD package-2.ebuild 134 RMD160 d8149a3828ea05849c7033c431d3df5c6eaab67d SHA256 3fb00f77d96c3e6576c2d424d31023958b507bdf20eb6555e89a135b37a54c07
 MISC ChangeLog 34 RMD160 64ae4731e1de8dc8d81f0504c22e586358a5b6f0 SHA256 a8dfbbc187c93c0731fa9722aff87c437a4b9f59b1786d62651fb104b0c3ed97
 MISC metadata.xml 37 RMD160 52a6de8e54eeea3b5e3e8357a400fbc6d3f4062b SHA256 ba3b181b832c002612fba7768c95e526e188658d8fc85b92c153940ad43169de
+END
+cat <<END > category/package-b/package-b-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="fooz"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
 END
 cd ..
 
