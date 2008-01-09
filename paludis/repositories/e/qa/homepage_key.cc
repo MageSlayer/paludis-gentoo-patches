@@ -68,7 +68,7 @@ namespace
             if (! found_one)
                 reporter.message(QAMessage(entry, qaml_normal, name, "Homepage specifies no URIs")
                         .with_associated_id(id)
-                        .with_associated_key(key));
+                        .with_associated_key(id, key));
         }
 
         void visit_leaf(const SimpleURIDepSpec & u)
@@ -81,7 +81,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Homepage uses no or unknown protocol in part '" + u.text() + "'")
                         .with_associated_id(id)
-                        .with_associated_key(key));
+                        .with_associated_key(id, key));
         }
     };
 }

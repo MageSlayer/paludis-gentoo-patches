@@ -167,7 +167,7 @@ paludis::erepository::metadata_keys_check(
                         "Caught exception '" + stringify(e.message()) + "' ("
                         + stringify(e.what()) + ") when handling key '" + (*it)->raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(*it));
+                            .with_associated_key(id, *it));
         }
     }
 

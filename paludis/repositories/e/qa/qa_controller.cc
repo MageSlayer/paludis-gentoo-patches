@@ -302,7 +302,7 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
                         QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "check_id",
                             "Couldn't get file contents for ID '" + stringify(*i) + ")")
                         .with_associated_id(i)
-                        .with_associated_key(i->fs_location_key()));
+                        .with_associated_key(i, i->fs_location_key()));
             else
                 std::find_if(
                         QAChecks::get_instance()->package_id_file_contents_checks_group()->begin(),

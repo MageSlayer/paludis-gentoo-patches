@@ -146,7 +146,7 @@ namespace
                                 + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
                                 + (unstable ? ".unstable" : ".stable") + ")")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
             else
             {
@@ -192,7 +192,7 @@ namespace
                                     + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
                                     + (unstable ? ".unstable" : ".stable") + ")")
                                 .with_associated_id(id)
-                                .with_associated_key(key));
+                                .with_associated_key(id, key));
             }
         }
 
@@ -239,7 +239,7 @@ namespace
                                 + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
                                 + (unstable ? ".unstable" : ".stable") + ")")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
                 }
             }
         }

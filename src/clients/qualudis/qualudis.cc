@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include <set>
 
 #include "qualudis_command_line.hh"
@@ -173,7 +174,7 @@ namespace
         std::string previous_name;
 
         bool show_keys, show_keys_once;
-        std::set<const MetadataKey *> printed_keys;
+        std::map<tr1::shared_ptr<const PackageID>, std::set<std::string>, PackageIDSetComparator> printed_keys;
 
         QualudisReporter(const std::string & show_associated_keys) :
             previous_entry("/NONE"),
@@ -241,17 +242,13 @@ namespace
                 for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys->begin()),
                         i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
                 {
-                    if (show_keys_once)
-                    {
-                        if (printed_keys.end() != printed_keys.find(&**i))
-                            continue;
-                        printed_keys.insert(&**i);
-                    }
+                    if (show_keys_once && ! printed_keys[i->first].insert(i->second->raw_name()).second)
+                        continue;
 
                     try
                     {
                         MetadataKeyPrettyPrinter pp;
-                        (*i)->accept(pp);
+                        i->second->accept(pp);
                         std::cout << "      " << pp.stream.str();
                     }
                     catch (const Exception &)

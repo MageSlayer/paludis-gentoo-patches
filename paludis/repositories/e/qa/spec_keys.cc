@@ -121,7 +121,7 @@ namespace
                     reporter.message(QAMessage(entry, qaml_normal, name, "Package '" + stringify(p)
                                 + "' blacklisted in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -131,7 +131,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '!"
                             + stringify(*b.blocked_spec()) + "' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
         }
 
         void visit_leaf(const SimpleURIDepSpec &)
@@ -171,14 +171,14 @@ namespace
                             "'|| ( )' with 'use? ( )' child in '"
                             + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
 
             if (uses.count(u.flag()))
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Recursive use of flag '" + stringify(u.flag()) + "' in '"
                             + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
 
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
@@ -188,7 +188,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty 'use? ( )' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             else
                 std::for_each(cur, end, accept_visitor(*this));
         }
@@ -205,7 +205,7 @@ namespace
                     reporter.message(QAMessage(entry, qaml_normal, name,
                                 "Empty '( )' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -221,14 +221,14 @@ namespace
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty '|| ( )' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             else if (next(cur) == end)
             {
                 cur->accept(*this);
                 reporter.message(QAMessage(entry, qaml_normal, name,
                         "'|| ( )' with only one child in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -333,7 +333,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -350,7 +350,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -367,7 +367,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -384,7 +384,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -401,7 +401,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
 
@@ -418,7 +418,7 @@ namespace
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
                             + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(key));
+                            .with_associated_key(id, key));
             }
         }
     };

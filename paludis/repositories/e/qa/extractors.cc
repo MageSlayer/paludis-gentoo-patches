@@ -274,7 +274,7 @@ paludis::erepository::extractors_check(
                     reporter.message(QAMessage(entry, qaml_maybe, name, "Too many flags to determine whether "
                                 "extractor dependency requirement '" + stringify(r->first) + "' is met")
                             .with_associated_id(id)
-                            .with_associated_key(id->fetches_key()));
+                            .with_associated_key(id, id->fetches_key()));
                     continue;
                 }
 
@@ -387,7 +387,7 @@ paludis::erepository::extractors_check(
                     reporter.message(QAMessage(entry, qaml_maybe, name, "Extractor '" + stringify(r->first)
                                 + "' may be required as a build dependency" + cond)
                             .with_associated_id(id)
-                            .with_associated_key(id->fetches_key()));
+                            .with_associated_key(id, id->fetches_key()));
                 }
             }
         }
@@ -397,7 +397,7 @@ paludis::erepository::extractors_check(
                         "Caught exception '" + stringify(e.message()) + "' ("
                         + stringify(e.what()) + ") when handling key '" + id->fetches_key()->raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(id->fetches_key()));
+                            .with_associated_key(id, id->fetches_key()));
         }
     }
 

@@ -54,9 +54,10 @@ QAMessage::with_associated_id(const tr1::shared_ptr<const PackageID> & id)
 }
 
 QAMessage &
-QAMessage::with_associated_key(const tr1::shared_ptr<const MetadataKey> & k)
+QAMessage::with_associated_key(const tr1::shared_ptr<const PackageID> & id,
+                               const tr1::shared_ptr<const MetadataKey> & k)
 {
-    associated_keys->push_back(k);
+    associated_keys->push_back(std::make_pair(id, k));
     return *this;
 }
 
