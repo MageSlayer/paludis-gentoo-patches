@@ -1149,12 +1149,12 @@ EDistSizeKey::pretty_print() const
     std::string suffix[] = {"Bytes", "kBytes", "MBytes", "GBytes"};
     std::ostringstream val;
 
-    while (size >= 1024.0 && i < 4)
+    while (size >= 1024.0 && i < 3)
     {
         size /= 1024.0;
         i++;
-        val << std::fixed << std::setprecision(2);
     }
+    if (i >= 1) val << std::fixed << std::setprecision(2);
 
     val << size << " " << suffix[i];
 

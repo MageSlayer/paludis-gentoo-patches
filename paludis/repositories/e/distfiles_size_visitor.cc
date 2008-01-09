@@ -132,7 +132,10 @@ DistfilesSizeVisitor::visit_leaf(const FetchableURIDepSpec & u)
 
     if (destination.exists() && ! _imp->everything)
         return;
-    long s((*_imp->m2r->find("DIST", u.filename())).size);
+    Manifest2Reader::ConstIterator m(_imp->m2r->find("DIST", u.filename()));
+    if (_imp->m2r->end() == m)
+        return;
+    long s(m->size);
     Log::get_instance()->message(ll_debug, lc_context) << "Adding " << s << " to size. Was "
         << _imp->size << ", is now " << (_imp->size + s);
     _imp->size += s;
