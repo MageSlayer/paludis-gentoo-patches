@@ -22,6 +22,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/qa.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/repository.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -87,9 +88,11 @@ namespace
         const FSEntry entry;
         QAReporter & reporter;
         const tr1::shared_ptr<const PackageID> & id;
+        const std::set<UseFlagName> & iuse_flags;
         const tr1::shared_ptr<const MetadataKey> & key;
         const std::string name;
         const tr1::shared_ptr<const QualifiedPackageNameSet> pds_blacklist;
+        bool forbid_arch_flags, forbid_inverse_arch_flags;
 
         unsigned level;
         bool child_of_any;
@@ -99,15 +102,20 @@ namespace
                 const FSEntry & f,
                 QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
+                const std::set<UseFlagName> & iuse,
                 const tr1::shared_ptr<const MetadataKey> & k,
                 const std::string & n,
-                const tr1::shared_ptr<const QualifiedPackageNameSet> p) :
+                const tr1::shared_ptr<const QualifiedPackageNameSet> p,
+                bool a, bool ia) :
             entry(f),
             reporter(r),
             id(i),
+            iuse_flags(iuse),
             key(k),
             name(n),
             pds_blacklist(p),
+            forbid_arch_flags(a),
+            forbid_inverse_arch_flags(ia),
             level(0),
             child_of_any(false)
         {
@@ -180,6 +188,51 @@ namespace
                             .with_associated_id(id)
                             .with_associated_key(id, key));
 
+            if (id->repository()->use_interface->arch_flags()->count(u.flag()))
+            {
+                if (forbid_arch_flags)
+                    reporter.message(QAMessage(entry, qaml_normal, name,
+                                "Arch flag '" + stringify(u.flag()) + "' in '" + stringify(key->raw_name()) + "'")
+                                .with_associated_id(id)
+                                .with_associated_key(id, key));
+                else if (u.inverse() && forbid_inverse_arch_flags)
+                    reporter.message(QAMessage(entry, qaml_maybe, name,
+                                "Inverse arch flag '" + stringify(u.flag()) + "' in '" + stringify(key->raw_name()) + "'")
+                                .with_associated_id(id)
+                                .with_associated_key(id, key));
+            }
+
+            else
+            {
+                if (iuse_flags.end() == iuse_flags.find(u.flag()))
+                {
+                    std::tr1::shared_ptr<const UseFlagNameSet> c(
+                        id->repository()->use_interface->use_expand_hidden_prefixes());
+                    std::string flag(stringify(u.flag()));
+                    bool is_hidden(false);
+
+                    for (UseFlagNameSet::ConstIterator i(c->begin()), i_end(c->end()) ;
+                            i != i_end ; ++i)
+                    {
+                        std::string prefix(stringify(*i) + id->repository()->use_interface->use_expand_separator(*id));
+                        if (0 == flag.compare(0, prefix.length(), prefix))
+                        {
+                            is_hidden = true;
+                            break;
+                        }
+                    }
+
+                    if (! is_hidden)
+                        reporter.message(QAMessage(entry, qaml_normal, name,
+                                    "Conditional flag '" + stringify(u.flag()) +
+                                    "' in '" + stringify(key->raw_name()) + "' not in '" +
+                                    stringify(id->iuse_key()->raw_name()) + "'")
+                                    .with_associated_id(id)
+                                    .with_associated_key(id, key)
+                                    .with_associated_key(id, id->iuse_key()));
+                }
+            }
+
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
             Save<std::set<UseFlagName> > save_uses(&uses, uses);
@@ -242,16 +295,19 @@ namespace
         QAReporter & reporter;
         tr1::shared_ptr<const MetadataKey> key;
         const tr1::shared_ptr<const PackageID> & id;
+        const std::set<UseFlagName> & iuse_flags;
         const std::string name;
 
         CheckForwarder(
                 const FSEntry & f,
                 QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
+                const std::set<UseFlagName> & iuse,
                 const std::string & n) :
             entry(f),
             reporter(r),
             id(i),
+            iuse_flags(iuse),
             name(n)
         {
         }
@@ -325,7 +381,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), false, false);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -342,7 +398,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -359,7 +415,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -376,7 +432,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                Checker c(entry, reporter, id, iuse_flags, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), false, true);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -393,7 +449,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                Checker c(entry, reporter, id, iuse_flags, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), true, true);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -410,7 +466,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const Exception & e)
@@ -437,7 +493,13 @@ paludis::erepository::spec_keys_check(
 
     using namespace tr1::placeholders;
 
-    CheckForwarder f(entry, reporter, id, name);
+    std::set<UseFlagName> iuse;
+    std::transform(id->iuse_key()->value()->begin(),
+                   id->iuse_key()->value()->end(),
+                   std::inserter(iuse, iuse.begin()),
+                   tr1::mem_fn(&IUseFlag::flag));
+
+    CheckForwarder f(entry, reporter, id, iuse, name);
     std::for_each(id->begin_metadata(), id->end_metadata(), tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
 
     return true;
