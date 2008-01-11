@@ -796,7 +796,7 @@ namespace
     {
         tr1::shared_ptr<DepListOptions> * p;
         Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
-        return dep_list_override_masks_functions_to_value((*p)->override_masks);
+        return (*p)->override_masks ? dep_list_override_masks_functions_to_value((*p)->override_masks) : Qnil;
     }
 
     /*

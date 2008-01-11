@@ -149,7 +149,7 @@ module Paludis
             default_options.each_pair do |method, value|
                 assert_respond_to options, method
                 if :override_masks == method
-                    assert_equal value.class, options.send(method).class
+                    assert_nil options.send(method)
                 else
                     assert_equal value, options.send(method)
                 end
