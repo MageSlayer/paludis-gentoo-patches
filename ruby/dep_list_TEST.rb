@@ -116,7 +116,7 @@ module Paludis
         end
 
         def pda
-            PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive)
+            Paludis::parse_user_package_dep_spec('foo/bar', [])
         end
 
         def dd
@@ -178,11 +178,11 @@ module Paludis
 ###            [:add, :clear, :already_installed?, :each, :options].each {|sym| assert_respond_to dep_list, sym}
 ###        end
 
-###        def test_add
-###            assert_nothing_raised do
-###                dl.add(pda, dd)
-###            end
-###        end
+        def test_add
+            assert_nothing_raised do
+                dl.add(pda, dd)
+            end
+        end
 
         def test_clear
             assert_nothing_raised do
@@ -229,34 +229,33 @@ module Paludis
         end
     end
 
-###    class TestCase_DepListEntry < Test::Unit::TestCase
-###        include Shared
-###
-###        def dle
-###            dl.add(pda, dd).entries.first
-###        end
-###
-###        def test_create
-###            assert_raise NoMethodError do
-###                DepListEntry.new
-###            end
-###        end
-###
-###        def test_methods
-###            dep_list_entry = dle
-###            {
-###                :package => PackageDatabaseEntry, :metadata => VersionMetadata,
-###                :state=> Integer, :tags => [String], :destinations => [Repository]
-###            }.each_pair do |method, returns|
-###                assert_respond_to dep_list_entry, method
-###                if returns.kind_of? Array
-###                    assert_kind_of Array, dep_list_entry.send(method)
-###                    dep_list_entry.send(method).each {|x| assert_kind_of returns.first, x}
-###                else
-###                    assert_kind_of returns, dep_list_entry.send(method)
-###                end
-###            end
-###        end
-###    end
+    class TestCase_DepListEntry < Test::Unit::TestCase
+        include Shared
+
+        def dle
+            dl.add(pda, dd).entries.first
+        end
+
+        def test_create
+            assert_raise NoMethodError do
+                DepListEntry.new
+            end
+        end
+
+        def test_methods
+            dep_list_entry = dle
+            {
+                :package_id => PackageID, :state=> Integer, :tags => [String]
+            }.each_pair do |method, returns|
+                assert_respond_to dep_list_entry, method
+                if returns.kind_of? Array
+                    assert_kind_of Array, dep_list_entry.send(method)
+                    dep_list_entry.send(method).each {|x| assert_kind_of returns.first, x}
+                else
+                    assert_kind_of returns, dep_list_entry.send(method)
+                end
+            end
+        end
+    end
 end
 

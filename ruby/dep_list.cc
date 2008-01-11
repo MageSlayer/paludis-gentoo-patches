@@ -757,7 +757,6 @@ namespace
         }
     }
 
-#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     add(dep_spec, destinations)
@@ -773,12 +772,13 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+            tr1::shared_ptr<DestinationsSet> destinations(new DestinationsSet);
 
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            p->add(value_to_dep_spec(da), destinations);
+            const PackageDepSpec pds = *value_to_package_dep_spec(da);
+            p->add(pds, destinations);
             return self;
         }
         catch (const std::exception & e)
@@ -786,7 +786,6 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-#endif
 
     /*
      * call-seq:
@@ -1234,8 +1233,8 @@ namespace
         rb_define_singleton_method(c_dep_list, "new", RUBY_FUNC_CAST(&dep_list_new), -1);
         rb_define_method(c_dep_list, "initialize", RUBY_FUNC_CAST(&dep_list_init), -1);
         rb_define_method(c_dep_list, "clear", RUBY_FUNC_CAST(&dep_list_clear), 0);
-#if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 2);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list, "already_installed?", RUBY_FUNC_CAST(&dep_list_already_installed), 2);
 #endif
         rb_define_method(c_dep_list, "each", RUBY_FUNC_CAST(&dep_list_each), 0);
