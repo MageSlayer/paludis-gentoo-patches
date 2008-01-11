@@ -46,7 +46,7 @@ module Paludis
                 DepListCircularOption::Error,
                 DepListUseOption::Standard,
                 DepListBlocksOption::Accumulate,
-                nil,
+                DepListOverrideMasksFunctions.new,
                 false
             )
         end
@@ -71,6 +71,7 @@ module Paludis
                 :circular => DepListCircularOption::Error,
                 :use => DepListUseOption::Standard,
                 :blocks => DepListBlocksOption::Accumulate,
+                :override_masks => DepListOverrideMasksFunctions.new,
                 :dependency_tags => false
             }
         end
@@ -99,6 +100,7 @@ module Paludis
                 :circular => DepListCircularOption::Discard,
                 :use => DepListUseOption::TakeAll,
                 :blocks => DepListBlocksOption::Error,
+                :override_masks => DepListOverrideMasksFunctions.new,
                 :dependency_tags => true
             }
         end
@@ -146,11 +148,19 @@ module Paludis
             #This will fail if the defaults change, please also update the rdoc.
             default_options.each_pair do |method, value|
                 assert_respond_to options, method
-                assert_equal value, options.send(method)
+                if :override_masks == method
+                    assert_equal value.class, options.send(method).class
+                else
+                    assert_equal value, options.send(method)
+                end
                 #check setters work
                 assert_nothing_raised do
                     options.send("#{method}=", options_hash[method])
-                    assert_equal options_hash[method], options.send(method)
+                    if :override_masks == method
+                        assert_equal options_hash[method].class, options.send(method).class
+                    else
+                        assert_equal options_hash[method], options.send(method)
+                    end
                 end
             end
         end
@@ -255,6 +265,24 @@ module Paludis
                     assert_kind_of returns, dep_list_entry.send(method)
                 end
             end
+        end
+    end
+
+    class TestCase_DepListOverrideMasksFunctions < Test::Unit::TestCase
+        include Shared
+
+        def test_create
+            assert_nothing_raised do
+                DepListOverrideMasksFunctions.new
+            end
+        end
+
+        def test_bind
+            dlo = DepListOverrideMasksFunctions.new
+            assert_equal dlo, dlo.bind(:tilde_keywords, env)
+            assert_equal dlo, dlo.bind(:unkeyworded, env)
+            assert_equal dlo, dlo.bind(:repository_masks)
+            assert_equal dlo, dlo.bind(:license)
         end
     end
 end
