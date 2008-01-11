@@ -106,7 +106,12 @@ namespace
     {
         try
         {
-            return dep_tree_to_value<SetSpecTree>(value_to_environment(self)->set(SetName(StringValuePtr(set_name))));
+            SetName s(StringValuePtr(set_name));
+            tr1::shared_ptr<SetSpecTree::ConstItem> set = (value_to_environment(self)->set(s));
+            if (set)
+                return dep_tree_to_value<SetSpecTree>(set);
+            else
+                return Qnil;
         }
         catch (const std::exception & e)
         {
