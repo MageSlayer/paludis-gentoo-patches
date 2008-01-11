@@ -42,6 +42,7 @@ paludis_repositories_e_include_HEADERS = \
 	visibility.hh \
 	whitespace.hh \
 	header.hh \
+	files_dir_size.hh \
 	repo_name.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
@@ -63,6 +64,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	visibility.cc \
 	whitespace.cc \
 	header.cc \
+	files_dir_size.cc \
 	repo_name.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
