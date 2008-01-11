@@ -43,8 +43,7 @@ namespace paludis
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
-                const FSEntry &
+                const tr1::shared_ptr<const ERepository> &
                 )> TreeCheckFunction;
 
         typedef tr1::function<bool (
@@ -52,8 +51,16 @@ namespace paludis
                 QAReporter &,
                 const Environment * const,
                 const tr1::shared_ptr<const ERepository> &,
-                const FSEntry &
+                const CategoryNamePart &
                 )> CategoryDirCheckFunction;
+
+        typedef tr1::function<bool (
+                const FSEntry &,
+                QAReporter &,
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
+                const QualifiedPackageName &
+                )> PackageDirCheckFunction;
 
         typedef tr1::function<bool (
                 const FSEntry &,
@@ -88,6 +95,9 @@ namespace paludis
 
                 const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
                     category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
+                    package_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
                     package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));

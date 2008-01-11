@@ -226,7 +226,7 @@ QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<co
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
                         _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
-                        _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+                        _imp->env, _imp->repo, c)));
     }
 
     bool done(false);
@@ -270,6 +270,14 @@ QAController::_check_package(const QualifiedPackageName p)
 
     if (_above_base_dir(p_dir) || _under_base_dir(p_dir))
     {
+        std::find_if(
+            QAChecks::get_instance()->package_dir_checks_group()->begin(),
+            QAChecks::get_instance()->package_dir_checks_group()->end(),
+            tr1::bind(std::equal_to<bool>(), false,
+                      tr1::bind<bool>(&PackageDirCheckFunction::operator(),
+                                      _1, _imp->repo->layout()->package_directory(p),
+                                      tr1::ref(_imp->reporter), _imp->env, _imp->repo, p)));
+
         tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
         std::for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_check_id, this, _1));
         _imp->reporter.flush(p_dir);
@@ -335,9 +343,9 @@ QAController::run()
                         QAChecks::get_instance()->tree_checks_group()->begin(),
                         QAChecks::get_instance()->tree_checks_group()->end(),
                         tr1::bind(std::equal_to<bool>(), false,
-                            tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                            tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
                                 _1, _imp->repo->params().location, tr1::ref(_imp->reporter),
-                                _imp->env, _imp->repo, _imp->repo->params().location))))
+                                _imp->env, _imp->repo))))
             {
                 QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
                         "Tree checks failed. Not continuing.");

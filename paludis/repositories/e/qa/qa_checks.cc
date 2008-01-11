@@ -47,12 +47,14 @@ namespace paludis
     {
         const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
         const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
+        const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> > package_dir_checks_group;
         const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
         const tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> > package_id_file_contents_checks_group;
 
         Implementation() :
             tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
             category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>),
+            package_dir_checks_group(new QAChecksGroup<PackageDirCheckFunction>),
             package_id_checks_group(new QAChecksGroup<PackageIDCheckFunction>),
             package_id_file_contents_checks_group(new QAChecksGroup<PackageIDFileContentsCheckFunction>)
         {
@@ -66,13 +68,13 @@ QAChecks::QAChecks() :
     using namespace tr1::placeholders;
 
     _imp->tree_checks_group->add_check("stray_tree_files",
-            tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_tree_dir, "stray_tree_files"));
+            tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_tree_dir, "stray_tree_files"));
 
     _imp->tree_checks_group->add_check("repo_name",
             tr1::bind(repo_name_check, _2, _1, "repo_name"));
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
-            tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_category_dir, "stray_category_dir_files"));
+            tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
 
     _imp->package_id_checks_group->add_check("eapi_supported",
             tr1::bind(eapi_supported_check, _1, _2, _5, "eapi_supported"));
@@ -124,10 +126,16 @@ QAChecks::tree_checks_group()
     return _imp->tree_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
+const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
 QAChecks::category_dir_checks_group()
 {
     return _imp->category_dir_checks_group;
+}
+
+const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
+QAChecks::package_dir_checks_group()
+{
+    return _imp->package_dir_checks_group;
 }
 
 const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
