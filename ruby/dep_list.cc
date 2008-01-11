@@ -215,7 +215,7 @@ namespace
                     value_for_target_type =
                         NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("target_type"))));
                     value_for_upgrade =
-                        NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("downgrade"))));
+                        NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("upgrade"))));
                     value_for_downgrade =
                         NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("downgrade"))));
                     value_for_new_slots =
