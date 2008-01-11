@@ -348,6 +348,21 @@ paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
     }
 }
 
+tr1::shared_ptr<const DepTag>
+paludis::ruby::value_to_dep_tag(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_dep_tag))
+    {
+        tr1::shared_ptr<const DepTag> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<const DepTag>, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into DepTag", rb_obj_classname(v));
+    }
+}
+
 RegisterRubyClass::Register paludis_ruby_register_dep_tag PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_tag);
 

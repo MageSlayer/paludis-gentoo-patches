@@ -142,6 +142,14 @@ module Paludis
         def test_tag
             assert_nil pda.tag
             assert_nil pdb.tag
+
+            my_pda = pda
+            my_pda.tag = TargetDepTag.new
+            assert_kind_of TargetDepTag, my_pda.tag
+
+            assert_raise TypeError do
+                pdb.tag = 42
+            end
         end
     end
 

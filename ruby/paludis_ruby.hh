@@ -96,6 +96,7 @@ namespace paludis
         tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
         tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
         tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
+        tr1::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         tr1::shared_ptr<Environment> value_to_environment(VALUE v);
         tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);

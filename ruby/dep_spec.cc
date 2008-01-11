@@ -118,11 +118,11 @@ namespace
         public ConstAcceptInterfaceVisitsThis<WrappedSpecVisitorTypes, WrappedSpec<T_> >
     {
         private:
-            tr1::shared_ptr<const T_> _spec;
+            tr1::shared_ptr<T_> _spec;
             tr1::shared_ptr<Children> _children;
 
         public:
-            WrappedSpec(const tr1::shared_ptr<const T_> & s) :
+            WrappedSpec(const tr1::shared_ptr<T_> & s) :
                 _spec(s),
                 _children(new Children)
             {
@@ -134,6 +134,11 @@ namespace
             }
 
             const tr1::shared_ptr<const T_> spec() const
+            {
+                return _spec;
+            }
+
+            const tr1::shared_ptr<T_> spec()
             {
                 return _spec;
             }
@@ -280,8 +285,8 @@ namespace
     VALUE
     uri_labels_dep_spec_labels(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         tr1::shared_ptr<const URILabelsDepSpec> real_ptr(tr1::static_pointer_cast<const WrappedSpec<URILabelsDepSpec> >(*ptr)->spec());
 
         if (rb_block_given_p())
@@ -332,8 +337,8 @@ namespace
     VALUE
     block_dep_spec_blocked_spec(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        tr1::shared_ptr<WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
         return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocked_spec());
     }
 
@@ -386,8 +391,8 @@ namespace
     VALUE
     use_dep_spec_flag(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        tr1::shared_ptr<WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
         return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->flag()).c_str());
     }
 
@@ -400,8 +405,8 @@ namespace
     VALUE
     use_dep_spec_inverse(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, p);
+        tr1::shared_ptr<WrappedSpecBase> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
         return tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->inverse() ? Qtrue : Qfalse;
     }
 
@@ -414,11 +419,26 @@ namespace
     VALUE
     package_dep_spec_tag(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag())
             return Qnil;
         return dep_tag_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag());
+    }
+
+    /*
+     * call-seq:
+     *     tag=(dep_tag) -> Qnil
+     *
+     * Set the dep tag.
+     */
+    VALUE
+    package_dep_spec_set_tag(VALUE self, VALUE dep_tag)
+    {
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
+        (tr1::static_pointer_cast<WrappedSpec<PackageDepSpec> >(*ptr))->spec()->set_tag(value_to_dep_tag(dep_tag));
+        return Qnil;
     }
 
     /*
@@ -430,8 +450,8 @@ namespace
     VALUE
     package_dep_spec_without_use_requirements(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->without_use_requirements());
     }
 
@@ -444,8 +464,8 @@ namespace
     VALUE
     package_dep_spec_package(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr())
             return Qnil;
         return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr()).c_str());
@@ -460,8 +480,8 @@ namespace
     VALUE
     package_dep_spec_package_name_part(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_ptr())
             return Qnil;
         return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
@@ -477,8 +497,8 @@ namespace
     VALUE
     package_dep_spec_category_name_part(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_ptr())
             return Qnil;
         return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
@@ -494,8 +514,8 @@ namespace
     VALUE
     string_dep_spec_text(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         return rb_str_new2(stringify(tr1::static_pointer_cast<const StringDepSpec>((*ptr)->base_spec())->text()).c_str());
     }
 
@@ -508,8 +528,8 @@ namespace
     template <typename T_>
     VALUE dep_spec_to_s(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<T_> >(*ptr)->spec()).c_str());
     }
 
@@ -522,8 +542,8 @@ namespace
     VALUE
     package_dep_spec_slot_ptr(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())
             return Qnil;
         return rb_str_new2(stringify((*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())).c_str());
@@ -538,8 +558,8 @@ namespace
     VALUE
     package_dep_spec_repository_ptr(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->repository_ptr())
             return Qnil;
         return rb_str_new2(stringify((*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->repository_ptr())).c_str());
@@ -554,8 +574,8 @@ namespace
     VALUE
     package_dep_spec_version_requirements_ptr(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
         if (tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_ptr())
@@ -584,8 +604,8 @@ namespace
     VALUE
     package_dep_spec_use_requirements(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
         if (tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->use_requirements_ptr())
@@ -609,8 +629,8 @@ namespace
     VALUE
     package_dep_spec_version_requirements_mode(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         return INT2FIX(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_mode());
     }
 
@@ -620,8 +640,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const WrappedSpecBase> * ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+            tr1::shared_ptr<WrappedSpecBase> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
             tr1::shared_ptr<const FetchableURIDepSpec> f_ptr(tr1::static_pointer_cast<const FetchableURIDepSpec>((*ptr)->base_spec()));
             return rb_str_new2(((f_ptr.get())->*(m_))().c_str());
         }
@@ -639,8 +659,8 @@ namespace
         static VALUE
         each(VALUE self)
         {
-            tr1::shared_ptr<const WrappedSpecBase> * ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+            tr1::shared_ptr<WrappedSpecBase> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
 
             if ((*ptr)->children())
                 for (WrappedSpecBase::Children::const_iterator i((*ptr)->children()->begin()), i_end((*ptr)->children()->end()) ;
@@ -659,8 +679,8 @@ namespace
     VALUE
     named_set_dep_spec_name(VALUE self)
     {
-        tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const WrappedSpecBase>, ptr);
+        tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<NamedSetDepSpec> >(*ptr)->spec()->text()).c_str());
     }
 
@@ -899,6 +919,7 @@ namespace
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
 #endif
         rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
+        rb_define_method(c_package_dep_spec, "tag=", RUBY_FUNC_CAST(&package_dep_spec_set_tag), 1);
         rb_define_method(c_package_dep_spec, "without_use_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_use_requirements), 0);
         VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(package_dep_spec_to_s), 0);
@@ -989,8 +1010,8 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_package_dep_spec))
     {
-        tr1::shared_ptr<const WrappedSpecBase> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const WrappedSpecBase>, v_ptr);
+        tr1::shared_ptr<WrappedSpecBase> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<WrappedSpecBase>, v_ptr);
         return tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*v_ptr)->spec();
     }
     else
@@ -1004,8 +1025,8 @@ paludis::ruby::value_to_dep_spec(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_dep_spec))
     {
-        tr1::shared_ptr<const WrappedSpecBase> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const WrappedSpecBase>, v_ptr);
+        tr1::shared_ptr<WrappedSpecBase> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<WrappedSpecBase>, v_ptr);
         return (*v_ptr)->base_spec();
     }
     else
