@@ -634,12 +634,17 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         throw MergerError("Could not set SELinux context on '"
                 + stringify(src) + "': " + stringify(::strerror(errno)));
 
+    uid_t dest_uid(src.owner());
+    gid_t dest_gid(src.group());
+
     if (! _options.no_chown)
     {
-        uid_t new_uid(src.owner() == _options.environment->reduced_uid() ? 0 : -1);
-        gid_t new_gid(src.group() == _options.environment->reduced_gid() ? 0 : -1);
-        if (0 == new_uid || 0 == new_gid)
+        uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
+        gid_t new_gid(dest_gid == _options.environment->reduced_gid() ? 0 : -1);
+        if (-1 != new_uid || -1 != new_gid)
             FSEntry(src).chown(new_uid, new_gid);
+        dest_uid = new_uid == 0 ? 0 : dest_uid;
+        dest_gid = new_gid == 0 ? 0 : dest_gid;
     }
 
     if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
@@ -660,6 +665,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                     src.permissions()), false);
         if (-1 == output_fd)
             throw MergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+
+        if (! _options.no_chown)
+            if (0 != ::fchown(output_fd, dest_uid, dest_gid))
+                throw MergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         /* set*id bits */
         if (0 != ::fchmod(output_fd, src.permissions()))
@@ -725,7 +734,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
         {
             uid_t new_uid(d->owner() == _options.environment->reduced_uid() ? 0 : -1);
             gid_t new_gid(d->group() == _options.environment->reduced_gid() ? 0 : -1);
-            if (0 == new_uid || 0 == new_gid)
+            if (-1 != new_uid || -1 != new_gid)
                 FSEntry(*d).chown(new_uid, new_gid);
         }
         EntryType m(entry_type(*d));
@@ -793,12 +802,17 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         throw MergerError("Could not set SELinux context on '"
                 + stringify(src) + "': " + stringify(::strerror(errno)));
 
+    uid_t dest_uid(src.owner());
+    gid_t dest_gid(src.group());
+
     if (! _options.no_chown)
     {
-        uid_t new_uid(src.owner() == _options.environment->reduced_uid() ? 0 : -1);
-        gid_t new_gid(src.group() == _options.environment->reduced_gid() ? 0 : -1);
-        if (0 == new_uid || 0 == new_gid)
+        uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
+        gid_t new_gid(dest_gid == _options.environment->reduced_gid() ? 0 : -1);
+        if (-1 != new_uid || -1 != new_gid)
             FSEntry(src).chown(new_uid, new_gid);
+        dest_uid = new_uid == 0 ? 0 : dest_uid;
+        dest_gid = new_gid == 0 ? 0 : dest_gid;
     }
 
     if (is_selinux_enabled())
@@ -813,6 +827,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     {
         Log::get_instance()->message(ll_debug, lc_context, "rename failed. Falling back to recursive copy.");
         dst.mkdir(mode);
+        if (! _options.no_chown)
+            dst.chown(dest_uid, dest_gid);
         /* pick up set*id bits */
         dst.chmod(src.permissions());
     }
