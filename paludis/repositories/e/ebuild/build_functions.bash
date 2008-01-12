@@ -30,9 +30,9 @@ econf()
     if [[ -x "${ECONF_SOURCE}/configure" ]] ; then
         if [[ -d /usr/share/gnuconfig ]] ; then
             local f
-            for f in $(find "${WORKDIR}" -type f -name config.guess -or -name config.sub ) ; do
+            find "${WORKDIR}" -type f -name config.guess -or -name config.sub | while read f; do
                 echo "econf: updating ${f} with /usr/share/gnuconfig/${f##*/}"
-                cp -f /usr/share/gnuconfig/${f##*/} ${f}
+                cp -f "/usr/share/gnuconfig/${f##*/}" "${f}"
             done
         fi
 
@@ -58,7 +58,7 @@ econf()
             fi
         fi
 
-        echo ${LOCAL_ECONF_WRAPPER} ${ECONF_SOURCE}/configure \
+        echo ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
             --prefix=/usr \
             --host=${CHOST} \
             --mandir=/usr/share/man \
@@ -68,7 +68,7 @@ econf()
             --localstatedir=/var/lib \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
-        ${LOCAL_ECONF_WRAPPER} ${ECONF_SOURCE}/configure \
+        ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
             --prefix=/usr \
             --host=${CHOST} \
             --mandir=/usr/share/man \
