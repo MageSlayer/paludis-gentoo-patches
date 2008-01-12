@@ -71,6 +71,8 @@ if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
     exit 123
 fi
 
+# Upgrade from back when 0/ wasn't its own dir.
+[[ -z "${PALUDIS_EBUILD_MODULE_SUFFIXES}" ]] && PALUDIS_EBUILD_MODULE_SUFFIXES=0
 for p in ${PALUDIS_EBUILD_MODULE_SUFFIXES}; do
     EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}/${p}"
 done
