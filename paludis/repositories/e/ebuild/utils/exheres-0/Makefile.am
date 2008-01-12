@@ -18,6 +18,8 @@ libexecprog_SCRIPTS = \
 	prepinfo \
 	prepdocs \
 	prepalldocs \
+	ecompress \
+	ecompressdir \
 	unpack \
 	emake \
 	banned_in_eapi_exheres-0
@@ -41,7 +43,8 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) \
 	banned_in_eapi_exheres-0 $(TESTS)
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
-		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml
+		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
+		ecompress ecompressdir
 
 CLEANFILES = *~ $(bannedscripts)
 

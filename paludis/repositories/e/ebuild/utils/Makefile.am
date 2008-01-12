@@ -25,6 +25,8 @@ libexecprog_SCRIPTS = \
 	dosbin \
 	dosed \
 	dosym \
+	ecompress \
+	ecompressdir \
 	emake \
 	fowners \
 	fperms \
