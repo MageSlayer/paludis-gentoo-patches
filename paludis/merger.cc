@@ -641,7 +641,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     {
         uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
         gid_t new_gid(dest_gid == _options.environment->reduced_gid() ? 0 : -1);
-        if (-1 != new_uid || -1 != new_gid)
+        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
             FSEntry(src).chown(new_uid, new_gid);
         dest_uid = new_uid == 0 ? 0 : dest_uid;
         dest_gid = new_gid == 0 ? 0 : dest_gid;
@@ -734,9 +734,23 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
         {
             uid_t new_uid(d->owner() == _options.environment->reduced_uid() ? 0 : -1);
             gid_t new_gid(d->group() == _options.environment->reduced_gid() ? 0 : -1);
-            if (-1 != new_uid || -1 != new_gid)
-                FSEntry(*d).chown(new_uid, new_gid);
+            if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
+            {
+                FSEntry f(*d);
+                f.chown(new_uid, new_gid);
+
+                if (et_dir == entry_type(*d))
+                {
+                    mode_t mode(f.permissions());
+                    if (uid_t(-1) != new_uid)
+                        mode &= ~S_ISUID;
+                    if (gid_t(-1) != new_gid)
+                        mode &= ~S_ISGID;
+                    f.chmod(mode);
+                }
+            }
         }
+
         EntryType m(entry_type(*d));
         switch (m)
         {
@@ -795,13 +809,6 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
     mode_t mode(src.permissions());
-    FSEntry dst(dst_dir / src.basename());
-    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
-    FSCreateCon createcon(secctx);
-    if (0 != paludis::setfilecon(src, secctx))
-        throw MergerError("Could not set SELinux context on '"
-                + stringify(src) + "': " + stringify(::strerror(errno)));
-
     uid_t dest_uid(src.owner());
     gid_t dest_gid(src.group());
 
@@ -809,11 +816,26 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     {
         uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
         gid_t new_gid(dest_gid == _options.environment->reduced_gid() ? 0 : -1);
-        if (-1 != new_uid || -1 != new_gid)
-            FSEntry(src).chown(new_uid, new_gid);
+        if (uid_t(-1) != new_uid)
+            mode &= ~S_ISUID;
+        if (gid_t(-1) != new_gid)
+            mode &= ~S_ISGID;
+        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
+        {
+            FSEntry f(src);
+            f.chown(new_uid, new_gid);
+            f.chmod(mode);
+        }
         dest_uid = new_uid == 0 ? 0 : dest_uid;
         dest_gid = new_gid == 0 ? 0 : dest_gid;
     }
+
+    FSEntry dst(dst_dir / src.basename());
+    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
+    FSCreateCon createcon(secctx);
+    if (0 != paludis::setfilecon(src, secctx))
+        throw MergerError("Could not set SELinux context on '"
+                + stringify(src) + "': " + stringify(::strerror(errno)));
 
     if (is_selinux_enabled())
         relabel_dir_recursive(src, dst);
@@ -830,7 +852,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         if (! _options.no_chown)
             dst.chown(dest_uid, dest_gid);
         /* pick up set*id bits */
-        dst.chmod(src.permissions());
+        dst.chmod(mode);
     }
 
     if (0 != _options.environment->perform_hook(extend_hook(
