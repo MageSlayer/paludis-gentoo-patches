@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.26.0_alpha6:
+    * Various merger bug fixes.
+
+    * Various Ruby updates.
+
+    * Various QA updates.
+
+    * Uninstalling packages installed with recent Portage no longer breaks.
+
 0.26.0_alpha5:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep list.
