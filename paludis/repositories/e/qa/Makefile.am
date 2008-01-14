@@ -39,6 +39,7 @@ paludis_repositories_e_include_HEADERS = \
 	stray_files.hh \
 	default_functions.hh \
 	kv_variables.hh \
+	restrict_key.hh \
 	visibility.hh \
 	whitespace.hh \
 	header.hh \
@@ -61,6 +62,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	stray_files.cc \
 	default_functions.cc \
 	kv_variables.cc \
+	restrict_key.cc \
 	visibility.cc \
 	whitespace.cc \
 	header.cc \

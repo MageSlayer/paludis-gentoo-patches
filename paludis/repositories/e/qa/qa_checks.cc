@@ -29,6 +29,7 @@
 #include <paludis/repositories/e/qa/homepage_key.hh>
 #include <paludis/repositories/e/qa/spec_keys.hh>
 #include <paludis/repositories/e/qa/extractors.hh>
+#include <paludis/repositories/e/qa/restrict_key.hh>
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
@@ -102,6 +103,10 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("extractors",
             tr1::bind(extractors_check, _1, _2, _5, "extractors"));
     _imp->package_id_checks_group->add_prerequirement("extractors", "metadata_keys");
+
+    _imp->package_id_checks_group->add_check("restrict_key",
+            tr1::bind(restrict_key_check, _1, _2, _5, "restrict_key"));
+    _imp->package_id_checks_group->add_prerequirement("restrict_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("visibility",
             tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
