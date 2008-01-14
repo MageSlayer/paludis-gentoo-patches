@@ -21,7 +21,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-source ${PALUDIS_EBUILD_DIR}/list_functions.bash
+source ${PALUDIS_EBUILD_DIR}/0/list_functions.bash
 
 if [[ ! -d ${D} ]]; then
     echo "${0}: \${D} not valid; aborting" >&2
