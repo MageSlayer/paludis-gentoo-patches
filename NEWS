@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+TRUNK:
+    * New demo hook, pretend_resume.bash, to print the resume command
+      at the end of the --install --pretend display.
+
 0.26.0_alpha6:
     * Various merger bug fixes.
 

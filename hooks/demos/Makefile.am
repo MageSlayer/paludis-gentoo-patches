@@ -3,12 +3,14 @@ SUBDIRS = .
 DEMOS = \
 	report.bash \
 	elog.bash \
-	new_packages.bash
+	new_packages.bash \
+	pretend_resume.bash
 
 EXTRA_DIST = \
 	report.bash.in \
 	elog.bash.in \
-	new_packages.bash.in
+	new_packages.bash.in \
+	pretend_resume.bash.in
 
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o *.so $(DEMOS)
@@ -24,6 +26,9 @@ report.bash : $(srcdir)/report.bash.in
 
 elog.bash : $(srcdir)/elog.bash.in
 	sed -e "s,@DATADIR@,$(datadir),g" < $(srcdir)/elog.bash.in > elog.bash
+
+pretend_resume.bash : $(srcdir)/pretend_resume.bash.in
+	sed -e "s,@DATADIR@,$(datadir),g" < $(srcdir)/pretend_resume.bash.in > pretend_resume.bash
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
