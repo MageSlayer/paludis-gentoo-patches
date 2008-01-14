@@ -46,7 +46,7 @@ that is executed when a particular well defined action occurs.</p>
     See <a href="#py-hooks">Python Hooks</a> for details.</li>
 
     <li><code>.so</code> hooks.  These are written in C++ and compiled into shared
-    libraries, and run inside the Paludis process. See <a href="#so-hooks">So Hooks</a>
+    libraries, and run inside the Paludis process. See <a href="#so-hooks">.so Hooks</a>
     for details.</li>
 
     <li>Repository hooks. These are implemented internally by <code>Repository</code>
@@ -400,7 +400,7 @@ def hook_after_install_all_post(hook_env):
     return ["check_for_rabbits", "check_for_squirrels"]
 </pre>
 
-<h3 id="so-hooks">So Hooks</h3>
+<h3 id="so-hooks">.so Hooks</h3>
 
 <p>A <code>.so</code> hook is written in C++ and has full access to the Paludis public API.
 The hook takes the form of a shared library with a filename ending in <code>.so.<i>N</i></code>,
