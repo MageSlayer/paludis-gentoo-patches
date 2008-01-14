@@ -24,8 +24,7 @@ if [[ -n ${template} ]]; then
         file=${template}
     fi
 
-    if echo "${RESUME_COMMAND}" >"${file}"; then
-        chmod 644 "${file}"
+    if touch "${file}" && chmod 644 "${file}" && echo "${RESUME_COMMAND}" >"${file}"; then
         echo "Resume command saved to file: ${file}"
     else
         echo "Resume command NOT saved to file: ${file}"
