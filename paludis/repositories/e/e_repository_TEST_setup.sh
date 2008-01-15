@@ -969,5 +969,21 @@ cp Manifest category/package-c/
 rm Manifest
 cd ..
 
+mkdir -p repo17/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo17/category/package || exit 1
+cd repo17 || exit 1
+echo "test-repo-17" >> profiles/repo_name || exit 1
+echo "category" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+EAPI="exheres-0"
+SLOT="0"
+PLATFORMS="test"
+DEPENDENCIES="cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: cat/pkg5"
+END
+cd ..
+
 cd ..
 

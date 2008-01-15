@@ -1388,5 +1388,46 @@ namespace test_cases
             TEST_CHECK_EQUAL(idc->size_of_all_distfiles_key()->value(), 22);
         }
     } test_e_repository_dist_size;
+
+    struct ERepositoryDependenciesRewriterTest : TestCase
+    {
+        ERepositoryDependenciesRewriterTest() : TestCase("dependencies_rewriter") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo17");
+            keys->insert("profiles", "e_repository_TEST_dir/repo17/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+                        &env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            const tr1::shared_ptr<const PackageID> id(*env.package_database()->
+                    query(query::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("category/package",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+
+            StringifyFormatter ff;
+
+            erepository::DepSpecPrettyPrinter pd(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            TEST_CHECK(id->build_dependencies_key());
+            id->build_dependencies_key()->value()->accept(pd);
+            TEST_CHECK_STRINGIFY_EQUAL(pd, "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post:");
+
+            erepository::DepSpecPrettyPrinter pr(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            TEST_CHECK(id->run_dependencies_key());
+            id->run_dependencies_key()->value()->accept(pr);
+            TEST_CHECK_STRINGIFY_EQUAL(pr, "cat/pkg1 build: build,run: cat/pkg3 suggested: cat/pkg4 post:");
+
+            erepository::DepSpecPrettyPrinter pp(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            TEST_CHECK(id->post_dependencies_key());
+            id->post_dependencies_key()->value()->accept(pp);
+            TEST_CHECK_STRINGIFY_EQUAL(pp, "build: build,run: suggested: post: cat/pkg5");
+        }
+    } test_e_repository_dependencies_rewriter;
 }
 

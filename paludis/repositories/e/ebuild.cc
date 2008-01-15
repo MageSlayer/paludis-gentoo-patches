@@ -370,8 +370,8 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
         DependenciesRewriter rewriter;
         parse_depend(get(keys, m.metadata_dependencies), *id->eapi(), id)->accept(rewriter);
         id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
-        id->load_build_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
-        id->load_build_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());
+        id->load_run_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
+        id->load_post_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());
     }
     else
     {
