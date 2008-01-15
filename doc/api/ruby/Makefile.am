@@ -38,7 +38,7 @@ examples = \
 EXTRA_DIST = $(examples) \
 	     ruby_syntax.css
 
-if ENABLE_RUBY
+if ENABLE_RUBY_DOC
 
 all-local : rdoc
 

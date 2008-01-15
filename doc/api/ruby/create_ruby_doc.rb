@@ -3,6 +3,10 @@
 
 require 'rdoc/rdoc'
 
+gps = Gem::GemPathSearcher.new;
+allison_spec = gps.find('allison.rb');
+allison = "#{Gem::dir}/gems/#{allison_spec.name}-#{allison_spec.version}/lib/allison.rb"
+
 module RDoc
 
     class C_Parser_Paludis < C_Parser
@@ -77,6 +81,7 @@ module RDoc
     end
 end
 begin
+  ARGV << '--template' << allison
   r = RDoc::RDoc.new
   r.document(ARGV)
 rescue RDoc::RDocError => e

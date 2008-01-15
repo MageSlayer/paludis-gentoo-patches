@@ -876,9 +876,33 @@ if test "x$enable_ruby" = "xyes" ; then
 	fi
 	AC_MSG_RESULT([$RUBY_INSTALL_DIR])
 	AC_SUBST([RUBY_INSTALL_DIR])
+
+	AC_MSG_CHECKING([whether to build the Ruby documentation])
+	AC_ARG_ENABLE([ruby-doc],
+				  AS_HELP_STRING([--enable-ruby-doc], [Enable Ruby documentation  (default: disable)]),
+	   enable_ruby_doc=$enableval,
+	   enable_ruby_doc=no)
+	AC_MSG_RESULT($enable_ruby_doc)
+
+	if test "x$enable_ruby_doc" = "xyes" ; then
+		AC_MSG_CHECKING([for allison])
+		if ruby -rubygems -e "require 'allison'" >/dev/null 2>/dev/null ; then
+			AC_MSG_RESULT([yes])
+		else
+			AC_MSG_ERROR([allison (http://blog.evanweaver.com/files/doc/fauna/allison/files/README.html) is needed to build Ruby documentation])
+		fi
+
+		AC_MSG_CHECKING([for syntax])
+		if ruby -rubygems -e "require 'syntax/convertors/html'" >/dev/null 2>/dev/null ; then
+			AC_MSG_RESULT([yes])
+		else
+			AC_MSG_ERROR([syntax (http://syntax.rubyforge.org) is needed to build Ruby documentation])
+		fi
+	fi
 fi
 
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
+AM_CONDITIONAL([ENABLE_RUBY_DOC], test "x$enable_ruby_doc" = "xyes")
 dnl }}}
 
 dnl {{{ python interface
