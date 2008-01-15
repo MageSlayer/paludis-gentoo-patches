@@ -22,6 +22,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 
 #include <paludis/repositories/e/qa/stray_files.hh>
+#include <paludis/repositories/e/qa/misc_files.hh>
 #include <paludis/repositories/e/qa/files_dir_size.hh>
 #include <paludis/repositories/e/qa/eapi_supported.hh>
 #include <paludis/repositories/e/qa/metadata_keys.hh>
@@ -77,6 +78,9 @@ QAChecks::QAChecks() :
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
             tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
+
+    _imp->package_dir_checks_group->add_check("misc_files",
+            tr1::bind(misc_files_check, _2, _1, "misc_files"));
 
     _imp->package_dir_checks_group->add_check("files_dir_size",
             tr1::bind(files_dir_size_check, _2, _1, "files_dir_size"));

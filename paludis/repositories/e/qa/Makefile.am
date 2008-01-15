@@ -43,6 +43,7 @@ paludis_repositories_e_include_HEADERS = \
 	visibility.hh \
 	whitespace.hh \
 	header.hh \
+	misc_files.hh \
 	files_dir_size.hh \
 	repo_name.hh
 
@@ -66,6 +67,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	visibility.cc \
 	whitespace.cc \
 	header.cc \
+	misc_files.cc \
 	files_dir_size.cc \
 	repo_name.cc \
 	$(paludis_repositories_e_include_HEADERS)
@@ -81,7 +83,9 @@ libpaludiserepositoryqa_la_LIBADD = \
 
 dist_check_SCRIPTS = \
 	visibility_TEST_setup.sh \
-	visibility_TEST_cleanup.sh
+	visibility_TEST_cleanup.sh \
+	misc_files_TEST_setup.sh \
+	misc_files_TEST_cleanup.sh
 
 endif
 
@@ -115,7 +119,8 @@ TESTS = \
 	stray_files_TEST \
 	default_functions_TEST \
 	kv_variables_TEST \
-	visibility_TEST
+	visibility_TEST \
+	misc_files_TEST
 
 check_PROGRAMS = $(TESTS)
 
@@ -193,6 +198,18 @@ default_functions_TEST_LDADD = \
 
 kv_variables_TEST_SOURCES = kv_variables_TEST.cc
 kv_variables_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+misc_files_TEST_SOURCES = misc_files_TEST.cc
+misc_files_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
