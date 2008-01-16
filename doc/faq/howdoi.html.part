@@ -20,6 +20,7 @@ configuration <code>bashrc</code>:</p>
 <pre>
 PATH="/usr/lib/ccache/bin/:${PATH}"
 CCACHE_DIR="/var/tmp/ccache"
+CCACHE_SIZE="2G"
 SANDBOX_WRITE="${SANDBOX_WRITE}:${CCACHE_DIR}"
 </pre>
 
