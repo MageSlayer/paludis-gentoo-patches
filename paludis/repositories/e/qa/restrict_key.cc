@@ -22,6 +22,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -33,6 +34,25 @@ using namespace paludis::erepository;
 
 namespace
 {
+    struct AllowedRestricts :
+        InstantiationPolicy<AllowedRestricts, instantiation_method::SingletonTag>
+    {
+        std::set<std::string> allowed_restricts;
+
+        AllowedRestricts()
+        {
+            allowed_restricts.insert("fetch");
+            allowed_restricts.insert("mirror");
+            allowed_restricts.insert("nomirror");
+            allowed_restricts.insert("primaryuri");
+            allowed_restricts.insert("nostrip");
+            allowed_restricts.insert("strip");
+            allowed_restricts.insert("sandbox");
+            allowed_restricts.insert("userpriv");
+            allowed_restricts.insert("test");
+        }
+    };
+
     struct RestrictChecker :
         ConstVisitor<RestrictSpecTree>,
         ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>,
@@ -40,6 +60,8 @@ namespace
     {
         using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, UseDepSpec>::visit_sequence;
         using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>::visit_sequence;
+
+        const std::set<std::string> & allowed_restricts;
 
         const tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
@@ -53,6 +75,7 @@ namespace
                 QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
                 const std::string & n) :
+            allowed_restricts(AllowedRestricts::get_instance()->allowed_restricts),
             key(k),
             entry(f),
             reporter(r),
@@ -63,20 +86,6 @@ namespace
 
         void visit_leaf(const PlainTextDepSpec & t)
         {
-            static std::set<std::string> allowed_restricts;
-            if (allowed_restricts.empty())
-            {
-                allowed_restricts.insert("fetch");
-                allowed_restricts.insert("mirror");
-                allowed_restricts.insert("nomirror");
-                allowed_restricts.insert("primaryuri");
-                allowed_restricts.insert("nostrip");
-                allowed_restricts.insert("strip");
-                allowed_restricts.insert("sandbox");
-                allowed_restricts.insert("userpriv");
-                allowed_restricts.insert("test");
-            }
-
             if (allowed_restricts.end() == allowed_restricts.find(t.text()))
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Unrecognised value '" + t.text() + "' in '" + key->raw_name() + "'")
