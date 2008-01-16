@@ -55,7 +55,7 @@ inherit()
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
 
-        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local c_v="current_${v}" u_v="unset_${v}"
             local ${c_v}="${!v}"
             local ${u_v}="${!v-unset}"
@@ -71,7 +71,12 @@ inherit()
             export ${e_v}="${!e_v} ${!v}"
         done
 
-        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+        for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+            local e_v="E_${v}"
+            export ${e_v}="${!e_v} ( ${!v} )"
+        done
+
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local c_v="current_${v}" u_v="unset_${v}"
             [[ "unset" == ${!u_v} ]] && unset ${v} || export ${v}="${!c_v}"
         done

@@ -31,7 +31,7 @@ eval unset LANG ${!LC_*}
 EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SRC_URI RESTRICT \
     LICENSE KEYWORDS INHERITED PROVIDE HOMEPAGE DESCRIPTION DEPENDENCIES \
     E_IUSE E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS PLATFORMS E_PLATFORMS \
-    MYOPTIONS E_MYOPTIONS"
+    MYOPTIONS E_MYOPTIONS E_DEPENDENCIES"
 unset -v ${EBUILD_METADATA_VARIABLES} ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES}
 # These can be set by C++
 EBUILD_METADATA_VARIABLES="${EBUILD_METADATA_VARIABLES} SLOT EAPI"
@@ -258,7 +258,8 @@ export REAL_CHOST="${CHOST}"
 ebuild_scrub_environment()
 {
     (
-        ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES || exit 1
+        ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
+            PALUDIS_BRACKET_MERGED_VARIABLES || exit 1
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
         unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
@@ -284,7 +285,7 @@ ebuild_scrub_environment()
 
         unset -v ebuild EBUILD
         unset -v $(
-            for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
                 echo E_${v}
             done )
 
@@ -350,7 +351,7 @@ ebuild_load_environment()
 ebuild_load_ebuild()
 {
     export EBUILD="${1}"
-    unset ${SOURCE_MERGED_VARIABLES}
+    unset ${SOURCE_MERGED_VARIABLES} ${BRACKET_MERGED_VARIABLES}
 
     local v e_v
     for v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
@@ -368,6 +369,11 @@ ebuild_load_ebuild()
     for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
         e_v=E_${v}
         export -n ${v}="${!v} ${!e_v}"
+    done
+
+    for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+        e_v=E_${v}
+        export -n ${v}="( ${!v} ) ${!e_v}"
     done
 
     [[ ${EAPI-unset} == "unset" ]] && EAPI="0"

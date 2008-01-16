@@ -127,6 +127,7 @@ make_class_EAPIEbuildOptions()
     key directory_if_exists_variables std::string
     key ebuild_must_not_set_variables std::string
     key source_merged_variables std::string
+    key bracket_merged_variables std::string
     key must_not_change_variables std::string
     key save_variables std::string
     key save_base_variables std::string

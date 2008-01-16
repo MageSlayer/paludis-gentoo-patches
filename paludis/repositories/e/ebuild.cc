@@ -160,6 +160,8 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->directory_if_exists_variables)
             .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES",
                     params.package_id->eapi()->supported->ebuild_options->source_merged_variables)
+            .with_setenv("PALUDIS_BRACKET_MERGED_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->bracket_merged_variables)
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
                     params.package_id->eapi()->supported->ebuild_options->must_not_change_variables)
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",

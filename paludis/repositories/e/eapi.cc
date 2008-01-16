@@ -116,6 +116,7 @@ namespace paludis
                                                 .vdb_from_env_variables(k.get("vdb_from_env_variables"))
                                                 .vdb_from_env_unless_empty_variables(k.get("vdb_from_env_unless_empty_variables"))
                                                 .source_merged_variables(k.get("source_merged_variables"))
+                                                .bracket_merged_variables(k.get("bracket_merged_variables"))
                                                 .must_not_change_variables(k.get("must_not_change_variables"))
                                                 .save_variables(k.get("save_variables"))
                                                 .save_base_variables(k.get("save_base_variables"))
