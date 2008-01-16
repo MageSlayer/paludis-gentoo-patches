@@ -19,6 +19,7 @@ paludis_qa_datadir = $(datadir)/paludis/qa/
 
 dist_paludis_qa_data_DATA = \
 	extractors.conf \
+	iuse_blacklist.conf \
 	spec_keys_pds_blacklist.DEPEND.conf \
 	spec_keys_pds_blacklist.RDEPEND.conf \
 	spec_keys_pds_blacklist.PDEPEND.conf \
@@ -31,6 +32,7 @@ paludis_repositories_e_include_HEADERS = \
 	metadata_keys.hh \
 	extractors.hh \
 	homepage_key.hh \
+	iuse_key.hh \
 	spec_keys.hh \
 	qa_checks.hh \
 	qa_checks_group.hh \
@@ -55,6 +57,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	metadata_keys.cc \
 	extractors.cc \
 	homepage_key.cc \
+	iuse_key.cc \
 	qa_checks.cc \
 	qa_checks_group.cc \
 	qa_controller.cc \

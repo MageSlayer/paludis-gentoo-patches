@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/qa/metadata_keys.hh>
 #include <paludis/repositories/e/qa/short_description_key.hh>
 #include <paludis/repositories/e/qa/homepage_key.hh>
+#include <paludis/repositories/e/qa/iuse_key.hh>
 #include <paludis/repositories/e/qa/spec_keys.hh>
 #include <paludis/repositories/e/qa/extractors.hh>
 #include <paludis/repositories/e/qa/restrict_key.hh>
@@ -99,6 +100,10 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("homepage_key",
             tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
     _imp->package_id_checks_group->add_prerequirement("homepage_key", "metadata_keys");
+
+    _imp->package_id_checks_group->add_check("iuse_key",
+            tr1::bind(iuse_key_check, _1, _2, _4, _5, "iuse_key"));
+    _imp->package_id_checks_group->add_prerequirement("iuse_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("spec_keys",
             tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
