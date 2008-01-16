@@ -351,11 +351,18 @@ namespace paludis
             bool utime(const struct ::utimbuf * buf = 0);
 
             /**
-             * Change our permissions.
+             * Change our ownership, following symlinks.
              *
              * \exception FSError If the chown failed.
              */
             void chown(const uid_t owner, const gid_t group = static_cast<gid_t>(-1));
+
+            /**
+             * Change our ownership, not following symlinks.
+             *
+             * \exception FSError If the lchown failed.
+             */
+            void lchown(const uid_t owner, const gid_t group = static_cast<gid_t>(-1));
 
             /**
              * Change our permissions.

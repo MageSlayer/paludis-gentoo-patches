@@ -506,8 +506,8 @@ Merger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
     if (is_check)
         return;
 
-    install_dir(src, dst);
     record_install_dir(src, dst);
+    install_dir(src, dst);
 }
 
 void
@@ -727,7 +727,6 @@ Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::record_renamed_dir_recursive(const FSEntry & dst)
 {
-    record_install_dir(dst, dst.dirname());
     for (DirIterator d(dst, false), d_end ; d != d_end ; ++d)
     {
         if (! _options.no_chown)
@@ -737,7 +736,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
             if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
             {
                 FSEntry f(*d);
-                f.chown(new_uid, new_gid);
+                f.lchown(new_uid, new_gid);
 
                 if (et_dir == entry_type(*d))
                 {
@@ -764,6 +763,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
                 continue;
 
             case et_dir:
+                record_install_dir(*d, d->dirname());
                 record_renamed_dir_recursive(*d);
                 continue;
 
@@ -875,6 +875,9 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
+    uid_t dest_uid(src.owner() == _options.environment->reduced_uid() ? 0 : src.owner());
+    gid_t dest_gid(src.group() == _options.environment->reduced_gid() ? 0 : src.group());
+
     if (symlink_needs_rewriting(src))
         rewrite_symlink_as_needed(src, dst_dir);
     else
@@ -884,6 +887,9 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
             throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "': "
                     + stringify(::strerror(errno)));
     }
+
+    if (! _options.no_chown)
+        FSEntry(dst_dir / src.basename()).lchown(dest_uid, dest_gid);
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")

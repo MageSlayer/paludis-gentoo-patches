@@ -608,6 +608,14 @@ FSEntry::chown(const uid_t new_owner, const gid_t new_group)
 }
 
 void
+FSEntry::lchown(const uid_t new_owner, const gid_t new_group)
+{
+    if (0 != ::lchown(_imp->path.c_str(), new_owner, new_group))
+        throw FSError("lchown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
+                + stringify(new_group) + "' failed: " + ::strerror(errno));
+}
+
+void
 FSEntry::chmod(const mode_t mode)
 {
     if (0 != ::chmod(_imp->path.c_str(), mode))
