@@ -80,6 +80,12 @@ QAChecks::QAChecks() :
     _imp->tree_checks_group->add_check("repo_name",
             tr1::bind(repo_name_check, _2, _1, "repo_name"));
 
+    _imp->eclass_file_contents_checks_group->add_check("header",
+            tr1::bind(header_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
+
+    _imp->eclass_file_contents_checks_group->add_check("whitespace",
+            tr1::bind(whitespace_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "whitespace"));
+
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
             tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
 

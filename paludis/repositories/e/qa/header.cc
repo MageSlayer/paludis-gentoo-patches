@@ -27,6 +27,15 @@
 
 using namespace paludis;
 
+namespace
+{
+    QAMessage
+    with_id(QAMessage m, const tr1::shared_ptr<const PackageID> & id)
+    {
+        return id ? m.with_associated_id(id) : m;
+    }
+}
+
 bool
 paludis::erepository::header_check(
         const FSEntry & entry,
@@ -35,7 +44,14 @@ paludis::erepository::header_check(
         const std::string & content,
         const std::string & name)
 {
-    Context context("When performing check '" + name + "' using default_functions on '" + stringify(*id) + "':");
+    Context context("When performing check '" + name + "' using default_functions on '" + (id ? stringify(*id) : stringify(entry)) + "':");
+
+    if (id)
+        Log::get_instance()->message(ll_debug, lc_context) << "header '"
+            << entry << "', '" << *id << "', '" << name << "'";
+    else
+        Log::get_instance()->message(ll_debug, lc_context) << "header '"
+            << entry << "', '" << name << "'";
 
     pcrepp::Pcre::Pcre r_licence("^# Distributed under the terms of the GNU General Public License v2$");
     // Match both CVS tag and extract year.[0]
@@ -48,8 +64,7 @@ paludis::erepository::header_check(
     do
     {
         if (! (lines.size() > 1 && r_licence.search(lines[1])))
-            reporter.message(QAMessage(entry, qaml_normal, name, "Wrong licence statement in line 2")
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong licence statement in line 2"), id));
 
         std::string year;
 
@@ -64,8 +79,7 @@ paludis::erepository::header_check(
             year = r_cvs_header[0];
         else
         {
-            reporter.message(QAMessage(entry, qaml_minor, name, "Unknown CVS tag in line 3")
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Unknown CVS tag in line 3"), id));
             break;
         }
 
@@ -73,8 +87,7 @@ paludis::erepository::header_check(
         pcrepp::Pcre::Pcre r_copyright("^# Copyright ((1999|200\\d)-)?" + year + " Gentoo Foundation$");
 
         if (! (lines.size() > 0 && r_copyright.search(lines[0])))
-            reporter.message(QAMessage(entry, qaml_normal, name, "Wrong copyright assignment in line 1, possibly date related")
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong copyright assignment in line 1, possibly date related"), id));
 
     } while (false);
 

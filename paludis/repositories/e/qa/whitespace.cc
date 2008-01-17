@@ -26,6 +26,15 @@
 
 using namespace paludis;
 
+namespace
+{
+    QAMessage
+    with_id(QAMessage m, const tr1::shared_ptr<const PackageID> & id)
+    {
+        return id ? m.with_associated_id(id) : m;
+    }
+}
+
 bool
 paludis::erepository::whitespace_check(
         const FSEntry & entry,
@@ -34,10 +43,14 @@ paludis::erepository::whitespace_check(
         const std::string & content,
         const std::string & name)
 {
-    Context context("When performing check '" + name + "' using whitespace_check on '" + stringify(*id) + "':");
+    Context context("When performing check '" + name + "' using whitespace_check on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
-    Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
-        << entry << "', '" << *id << "', '" << name << "'";
+    if (id)
+        Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
+            << entry << "', '" << *id << "', '" << name << "'";
+    else
+        Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
+            << entry << "', '" << name << "'";
 
     std::list<std::string> lines;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
@@ -53,16 +66,14 @@ paludis::erepository::whitespace_check(
 
         if (err_count >= 3)
         {
-            reporter.message(QAMessage(entry, qaml_minor, name, "Skipping further whitespace checks")
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Skipping further whitespace checks"), id));
             break;
         }
 
         if (' ' == l->at(0))
         {
-            reporter.message(QAMessage(entry, qaml_minor, name, "Spaces for indenting on line "
-                        + stringify(line) + ": " + strip_leading(*l, " \t"))
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Spaces for indenting on line "
+                        + stringify(line) + ": " + strip_leading(*l, " \t")), id));
             ++err_count;
             continue;
         }
@@ -71,25 +82,22 @@ paludis::erepository::whitespace_check(
             std::string::size_type p(l->find_first_of("\t"));
             if (std::string::npos == p)
             {
-                reporter.message(QAMessage(entry, qaml_minor, name, "Indent followed by no content on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t"))
-                        .with_associated_id(id));
+                reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Indent followed by no content on line "
+                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
                 ++err_count;
                 continue;
             }
             else if (' ' == l->at(p))
             {
-                reporter.message(QAMessage(entry, qaml_minor, name, "Mixed tabs and spaces for indenting on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t"))
-                        .with_associated_id(id));
+                reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Mixed tabs and spaces for indenting on line "
+                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
                 ++err_count;
                 continue;
             }
             else if (std::string::npos != l->find(p, '\t'))
             {
-                reporter.message(QAMessage(entry, qaml_minor, name, "Non-intent tab on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t"))
-                        .with_associated_id(id));
+                reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Non-intent tab on line "
+                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
                 ++err_count;
                 continue;
             }
@@ -97,9 +105,8 @@ paludis::erepository::whitespace_check(
 
         if (' ' == l->at(l->length() - 1) || '\t' == l->at(l->length() - 1))
         {
-            reporter.message(QAMessage(entry, qaml_minor, name, "Trailing space on line "
-                        + stringify(line) + ": " + strip_leading(*l, " \t"))
-                    .with_associated_id(id));
+            reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Trailing space on line "
+                        + stringify(line) + ": " + strip_leading(*l, " \t")), id));
             ++err_count;
             continue;
         }
