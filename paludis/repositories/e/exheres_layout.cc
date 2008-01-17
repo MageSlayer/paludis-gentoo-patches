@@ -453,15 +453,59 @@ ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
 {
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
+    tr1::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
+    std::copy(global->begin(), global->end(), result->back_inserter());
+
+    tr1::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category));
+    std::copy(category->begin(), category->end(), result->back_inserter());
+
+    tr1::shared_ptr<const FSEntrySequence> package(exlibsdirs_package(q));
+    std::copy(package->begin(), package->end(), result->back_inserter());
+
+    return result;
+}
+
+tr1::shared_ptr<const FSEntrySequence>
+ExheresLayout::exlibsdirs_global() const
+{
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+
     if (_imp->repository->params().master_repository)
-        result->push_back(_imp->repository->params().master_repository->params().location / "exlibs");
+    {
+        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_global());
+        std::copy(master->begin(), master->end(), result->back_inserter());
+    }
     result->push_back(_imp->tree_root / "exlibs");
+
+    return result;
+}
+
+tr1::shared_ptr<const FSEntrySequence>
+ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
+{
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+
     if (_imp->repository->params().master_repository)
-        result->push_back(_imp->repository->params().master_repository->layout()->category_directory(q.category) / "exlibs");
-    result->push_back(_imp->repository->layout()->category_directory(q.category) / "exlibs");
+    {
+        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_category(c));
+        std::copy(master->begin(), master->end(), result->back_inserter());
+    }
+    result->push_back(category_directory(c) / "exlibs");
+
+    return result;
+}
+
+tr1::shared_ptr<const FSEntrySequence>
+ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
+{
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+
     if (_imp->repository->params().master_repository)
-        result->push_back(_imp->repository->params().master_repository->layout()->package_directory(q));
-    result->push_back(_imp->repository->layout()->package_directory(q));
+    {
+        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_package(q));
+        std::copy(master->begin(), master->end(), result->back_inserter());
+    }
+    result->push_back(package_directory(q));
 
     return result;
 }
@@ -491,7 +535,7 @@ namespace
                     continue;
                 m->insert((*f), "AUX");
             }
-        }        
+        }
     }
 }
 

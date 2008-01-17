@@ -113,6 +113,15 @@ namespace paludis
                 virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
