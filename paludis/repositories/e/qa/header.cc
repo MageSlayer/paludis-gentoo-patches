@@ -37,10 +37,10 @@ paludis::erepository::header_check(
 {
     Context context("When performing check '" + name + "' using default_functions on '" + stringify(*id) + "':");
 
-    static pcrepp::Pcre::Pcre r_licence("^# Distributed under the terms of the GNU General Public License v2$");
+    pcrepp::Pcre::Pcre r_licence("^# Distributed under the terms of the GNU General Public License v2$");
     // Match both CVS tag and extract year.[0]
-    static pcrepp::Pcre::Pcre r_cvs_header("^#\\s*\\$Header.*\\s(\\d{4})/\\d{2}/\\d{2}\\s.*\\$$");
-    static pcrepp::Pcre::Pcre r_cvs_empty_header("^#\\s*\\$Header:\\s*\\$$");
+    pcrepp::Pcre::Pcre r_cvs_header("^#\\s*\\$Header.*\\s(\\d{4})/\\d{2}/\\d{2}\\s.*\\$$");
+    pcrepp::Pcre::Pcre r_cvs_empty_header("^#\\s*\\$Header:\\s*\\$$");
 
     std::vector<std::string> lines;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));

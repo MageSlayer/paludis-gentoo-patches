@@ -46,14 +46,14 @@ paludis::erepository::default_functions_check(
 {
     Context context("When performing check '" + name + "' using default_functions on '" + stringify(*id) + "':");
 
-    static pcrepp::Pcre::Pcre r_echo("^\\s*(echo|einfo|ewarn)[^|<>]*$");
-    static pcrepp::Pcre::Pcre r_colon("^\\s*:");
-    static pcrepp::Pcre::Pcre r_true("^\\s*true");
-    static pcrepp::Pcre::Pcre r_comment("^\\s*#");
-    static pcrepp::Pcre::Pcre r_econf("^\\s*econf( *\\|\\| *die.*)?$");
-    static pcrepp::Pcre::Pcre r_emake("^\\s*emake( *\\|\\| *die.*)?$");
-    static pcrepp::Pcre::Pcre r_unpack("^\\s*unpack *([$]A|[$][{]A[}]|\"[$][{]A[}]\"|[$][{]A[}])( *\\|\\| *die.*)?$");
-    static pcrepp::Pcre::Pcre r_cd_s("^\\s*cd *([$]S|[$][{]S[}]|\"[$][{]S[}]\"|[$][{]S[}])( *\\|\\| *die.*)?$");
+    pcrepp::Pcre::Pcre r_echo("^\\s*(echo|einfo|ewarn)[^|<>]*$");
+    pcrepp::Pcre::Pcre r_colon("^\\s*:");
+    pcrepp::Pcre::Pcre r_true("^\\s*true");
+    pcrepp::Pcre::Pcre r_comment("^\\s*#");
+    pcrepp::Pcre::Pcre r_econf("^\\s*econf( *\\|\\| *die.*)?$");
+    pcrepp::Pcre::Pcre r_emake("^\\s*emake( *\\|\\| *die.*)?$");
+    pcrepp::Pcre::Pcre r_unpack("^\\s*unpack *([$]A|[$][{]A[}]|\"[$][{]A[}]\"|[$][{]A[}])( *\\|\\| *die.*)?$");
+    pcrepp::Pcre::Pcre r_cd_s("^\\s*cd *([$]S|[$][{]S[}]|\"[$][{]S[}]\"|[$][{]S[}])( *\\|\\| *die.*)?$");
 
     Log::get_instance()->message(ll_debug, lc_context) << "default_functions '"
         << entry << "', '" << *id << "', '" << name << "'";
