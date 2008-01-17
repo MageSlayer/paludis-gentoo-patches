@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk:
+    * Playman is now an "official" ruby demo script.
+
 0.26.0_alpha7:
     * New demo hook, pretend_resume.bash, to print the resume command
       at the end of the --install --pretend display.
