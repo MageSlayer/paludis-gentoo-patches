@@ -34,6 +34,8 @@ while [[ $# -gt 0 ]]; do
                 echo "    URL syntax: git+ssh://[USERNAME[:PASSWORD]@]SERVER/PATH"
             elif [[ "${PROTO}" == git+http ]]; then
                 echo "    URL syntax: git+http://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == git+file ]]; then
+                echo "    URL syntax: git+file:///PATH"
             else
                 ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
             fi
@@ -72,6 +74,7 @@ elif [[ -z "${REMOTE}" ]]; then
 fi
 
 [[ "${REMOTE}" == git+http* ]] && REMOTE="${REMOTE#git+}"
+REMOTE="${REMOTE#git+file://}"
 
 if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
     eerror "'${LOCAL}' exists but it is not a Git repository"
@@ -79,7 +82,9 @@ if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
 fi
 
 if [[ -d "${LOCAL}/.git" ]]; then
-    cd "${LOCAL}" && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}" "${REMOTE}"
+    cd "${LOCAL}" \
+        && ${GIT_WRAPPER} git config remote.origin.url "${REMOTE}" \
+        && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}"
 else
     ${GIT_WRAPPER} git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
 fi
