@@ -114,12 +114,14 @@ QAChecksGroup<T_>::need_ordering() const
 }
 
 template class QAChecksGroup<TreeCheckFunction>;
+template class QAChecksGroup<EclassFileContentsCheckFunction>;
 template class QAChecksGroup<CategoryDirCheckFunction>;
 template class QAChecksGroup<PackageDirCheckFunction>;
 template class QAChecksGroup<PackageIDCheckFunction>;
 template class QAChecksGroup<PackageIDFileContentsCheckFunction>;
 
 template class WrappedForwardIterator<QAChecksGroup<TreeCheckFunction>::ConstIteratorTag, TreeCheckFunction>;
+template class WrappedForwardIterator<QAChecksGroup<EclassFileContentsCheckFunction>::ConstIteratorTag, EclassFileContentsCheckFunction>;
 template class WrappedForwardIterator<QAChecksGroup<CategoryDirCheckFunction>::ConstIteratorTag, CategoryDirCheckFunction>;
 template class WrappedForwardIterator<QAChecksGroup<PackageDirCheckFunction>::ConstIteratorTag, PackageDirCheckFunction>;
 template class WrappedForwardIterator<QAChecksGroup<PackageIDCheckFunction>::ConstIteratorTag, PackageIDCheckFunction>;

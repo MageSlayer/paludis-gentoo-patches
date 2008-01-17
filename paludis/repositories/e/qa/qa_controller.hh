@@ -40,6 +40,7 @@ namespace paludis
             private PrivateImplementationPattern<QAController>
         {
             private:
+                void _check_eclasses(const FSEntry &, const std::string &);
                 void _check_category(const CategoryNamePart, const tr1::shared_ptr<const QualifiedPackageNameSet>);
                 void _check_package(const QualifiedPackageName);
                 void _check_id(const tr1::shared_ptr<const PackageID> &);

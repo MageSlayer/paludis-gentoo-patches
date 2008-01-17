@@ -51,6 +51,7 @@ namespace paludis
     struct Implementation<QAChecks>
     {
         const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
+        const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> > eclass_file_contents_checks_group;
         const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
         const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> > package_dir_checks_group;
         const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
@@ -58,6 +59,7 @@ namespace paludis
 
         Implementation() :
             tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
+            eclass_file_contents_checks_group(new QAChecksGroup<EclassFileContentsCheckFunction>),
             category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>),
             package_dir_checks_group(new QAChecksGroup<PackageDirCheckFunction>),
             package_id_checks_group(new QAChecksGroup<PackageIDCheckFunction>),
@@ -146,6 +148,12 @@ const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
 QAChecks::tree_checks_group()
 {
     return _imp->tree_checks_group;
+}
+
+const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
+QAChecks::eclass_file_contents_checks_group()
+{
+    return _imp->eclass_file_contents_checks_group;
 }
 
 const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >

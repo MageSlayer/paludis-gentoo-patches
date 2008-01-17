@@ -51,6 +51,14 @@ namespace paludis
                 QAReporter &,
                 const Environment * const,
                 const tr1::shared_ptr<const ERepository> &,
+                const std::string &
+                )> EclassFileContentsCheckFunction;
+
+        typedef tr1::function<bool (
+                const FSEntry &,
+                QAReporter &,
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
                 const CategoryNamePart &
                 )> CategoryDirCheckFunction;
 
@@ -92,6 +100,9 @@ namespace paludis
             public:
                 const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
                     tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
+                    eclass_file_contents_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
                     category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));

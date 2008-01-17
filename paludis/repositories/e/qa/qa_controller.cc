@@ -30,6 +30,8 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/action_queue.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
 
@@ -213,8 +215,50 @@ QAController::_status_worker()
 }
 
 void
+QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
+{
+    using namespace tr1::placeholders;
+
+    if (! _under_base_dir(dir) || ! dir.exists())
+        return;
+
+    try
+    {
+        for (DirIterator it(dir), it_end; it_end != it; ++it)
+            if (is_file_with_extension(*it, type, IsFileWithOptions()))
+            {
+                std::ifstream f(stringify(*it).c_str());
+                std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+                if (! f)
+                    _imp->reporter.message(
+                            QAMessage(*it, qaml_severe, "check_" + type.substr(1),
+                                "Couldn't get file contents for " + type.substr(1) + " '" + stringify(*it) + ")"));
+                else
+                    std::find_if(
+                            QAChecks::get_instance()->eclass_file_contents_checks_group()->begin(),
+                            QAChecks::get_instance()->eclass_file_contents_checks_group()->end(),
+                            tr1::bind(std::equal_to<bool>(), false,
+                                tr1::bind<bool>(tr1::mem_fn(&EclassFileContentsCheckFunction::operator() ),
+                                    _1, *it, tr1::ref(_imp->reporter),
+                                    _imp->env, _imp->repo, content)));
+            }
+    }
+    catch (const Exception & e)
+    {
+        _imp->reporter.message(
+                QAMessage(dir, qaml_severe, "check_" + type.substr(1),
+                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
+    }
+
+    _imp->reporter.flush(dir);
+}
+
+void
 QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<const QualifiedPackageNameSet> qpns)
 {
+    using namespace tr1::placeholders;
+
     FSEntry c_dir(_imp->repo->layout()->category_directory(c));
 
     if (_under_base_dir(c_dir))
@@ -228,6 +272,9 @@ QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<co
                         _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
                         _imp->env, _imp->repo, c)));
     }
+
+    tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_category(c));
+    std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 
     bool done(false);
     while (! done)
@@ -282,6 +329,9 @@ QAController::_check_package(const QualifiedPackageName p)
         std::for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_check_id, this, _1));
         _imp->reporter.flush(p_dir);
     }
+
+    tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_package(p));
+    std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 }
 
 void
@@ -352,6 +402,13 @@ QAController::run()
                 return;
             }
         _imp->reporter.flush(_imp->repo->params().location);
+
+        std::for_each(_imp->repo->params().eclassdirs->begin(),
+                      _imp->repo->params().eclassdirs->end(),
+                      tr1::bind(&QAController::_check_eclasses, this, _1, ".eclass"));
+
+        tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_global());
+        std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 
         /* Create our workers and pools. Each worker starts by working on a
          * separate category. If there aren't any unclaimed categories, workers
