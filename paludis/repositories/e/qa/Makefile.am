@@ -45,6 +45,7 @@ paludis_repositories_e_include_HEADERS = \
 	visibility.hh \
 	whitespace.hh \
 	header.hh \
+	variable_assigns.hh \
 	gpg.hh \
 	misc_files.hh \
 	files_dir_size.hh \
@@ -71,6 +72,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	visibility.cc \
 	whitespace.cc \
 	header.cc \
+	variable_assigns.cc \
 	gpg.cc \
 	misc_files.cc \
 	files_dir_size.cc \

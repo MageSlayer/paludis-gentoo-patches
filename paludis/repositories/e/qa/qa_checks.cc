@@ -35,6 +35,7 @@
 #include <paludis/repositories/e/qa/restrict_key.hh>
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/qa/default_functions.hh>
+#include <paludis/repositories/e/qa/variable_assigns.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/header.hh>
@@ -79,6 +80,9 @@ QAChecks::QAChecks() :
 
     _imp->tree_checks_group->add_check("repo_name",
             tr1::bind(repo_name_check, _2, _1, "repo_name"));
+
+    _imp->eclass_file_contents_checks_group->add_check("variable_assigns",
+            tr1::bind(variable_assigns_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));
 
     _imp->eclass_file_contents_checks_group->add_check("header",
             tr1::bind(header_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
@@ -135,6 +139,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("default_functions",
             tr1::bind(default_functions_check, _1, _2, _5, _6, "default_functions"));
+
+    _imp->package_id_file_contents_checks_group->add_check("variable_assigns",
+            tr1::bind(variable_assigns_check, _1, _2, _5, _6, "variable_assigns"));
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
             tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));
