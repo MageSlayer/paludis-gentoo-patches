@@ -44,7 +44,7 @@ paludis::erepository::default_functions_check(
         const std::string & content,
         const std::string & name)
 {
-    Context context("When performing check '" + name + "' using default_functions on '" + stringify(*id) + "':");
+    Context context("When performing check '" + name + "' using default_functions_check on '" + stringify(*id) + "':");
 
     pcrepp::Pcre::Pcre r_echo("^\\s*(echo|einfo|ewarn)[^|<>]*$");
     pcrepp::Pcre::Pcre r_colon("^\\s*:");
