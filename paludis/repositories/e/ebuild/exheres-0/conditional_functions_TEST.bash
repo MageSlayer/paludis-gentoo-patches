@@ -18,10 +18,11 @@
 
 option_with_TEST()
 {
-    export OPTIONS="foo" MYOPTIONS="foo bar baz"
+    export OPTIONS="foo blah:moo" MYOPTIONS="foo bar baz blah:moo"
     test_equality "$(option_with foo )" "--with-foo"
     test_equality "$(option_with foo bar )" "--with-bar"
     test_equality "$(option_with foo bar baz )" "--with-bar=baz"
+    test_equality "$(option_with blah:moo )" "--with-moo"
 
     export OPTIONS="oink"
     test_equality "$(option_with foo )" "--without-foo"
@@ -32,13 +33,15 @@ option_with_TEST()
 
 option_enable_TEST()
 {
-    export OPTIONS="foo" MYOPTIONS="foo bar baz"
+    export OPTIONS="foo blah:moo" MYOPTIONS="foo bar baz blah:moo"
     test_equality "$(option_enable foo )" "--enable-foo"
     test_equality "$(option_enable foo bar )" "--enable-bar"
     test_equality "$(option_enable foo bar baz )" "--enable-bar=baz"
+    test_equality "$(option_enable blah:moo )" "--enable-moo"
 
     export OPTIONS="oink"
     test_equality "$(option_enable foo )" "--disable-foo"
     test_equality "$(option_enable foo bar )" "--disable-bar"
     test_equality "$(option_enable foo bar baz )" "--disable-bar"
 }
+

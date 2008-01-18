@@ -35,12 +35,18 @@ option_TEST()
 
 optionv_TEST()
 {
-    export OPTIONS="foo bar" MYOPTIONS="foo bar baz"
+    export OPTIONS="foo bar moo:oink" MYOPTIONS="foo bar baz moo:oink moo:baah"
     optionv foo 1>/dev/null ; test_return_code
     test_equality "$(optionv foo)" "foo"
 
     optionv bar 1>/dev/null ; test_return_code
     test_equality "$(optionv bar)" "bar"
+
+    optionv moo:oink 1>/dev/null ; test_return_code
+    test_equality "$(optionv moo:oink )" "oink"
+
+    ! optionv moo:baah 1>/dev/null ; test_return_code
+    test_equality "$(optionv moo:baah )" ""
 
     ! optionv baz 1>/dev/null ; test_return_code
     test_equality "$(optionv baz)" ""
@@ -71,3 +77,4 @@ optionq_TEST()
     optionq !foofoo ; test_return_code
     optionq !fo ; test_return_code
 }
+

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -35,6 +35,12 @@ useq()
     die "Function 'useq' banned in this EAPI"
 }
 
+optionfmt()
+{
+    local opt="${1#!}"
+    echo ${opt#*([^:]):}
+}
+
 option()
 {
     optionq "${1}"
@@ -43,7 +49,7 @@ option()
 optionv()
 {
     if optionq "${1}" ; then
-        echo "${1#!}"
+        optionfmt "${1}"
         return 0
     else
         return 1
@@ -87,3 +93,4 @@ hasq()
     done
     return 1
 }
+
