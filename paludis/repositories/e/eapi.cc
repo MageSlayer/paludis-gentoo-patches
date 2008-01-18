@@ -170,6 +170,7 @@ namespace paludis
                                                                 .metadata_provide(k.get("metadata_provide"))
                                                                 .metadata_eapi(k.get("metadata_eapi"))
                                                                 .metadata_dependencies(k.get("metadata_dependencies"))
+                                                                .metadata_use(k.get("metadata_use"))
                                                                 .description_build_depend(k.get("description_build_depend"))
                                                                 .description_run_depend(k.get("description_run_depend"))
                                                                 .description_slot(k.get("description_slot"))
@@ -186,6 +187,7 @@ namespace paludis
                                                                 .description_provide(k.get("description_provide"))
                                                                 .description_eapi(k.get("description_eapi"))
                                                                 .description_dependencies(k.get("description_dependencies"))
+                                                                .description_use(k.get("description_use"))
                                                                 )))
 
                                                                 .ebuild_environment_variables(make_shared_ptr(new EAPIEbuildEnvironmentVariables(

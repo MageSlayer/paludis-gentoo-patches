@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -88,6 +88,7 @@ namespace paludis
                 const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const;
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -109,6 +110,7 @@ namespace paludis
                 void load_license(const std::string &, const std::string &, const std::string &) const;
                 void load_provide(const std::string &, const std::string &, const std::string &) const;
                 void load_iuse(const std::string &, const std::string &, const std::string &) const;
+                void load_use(const std::string &, const std::string &, const std::string &) const;
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
                 void load_restrict(const std::string &, const std::string &, const std::string &) const;

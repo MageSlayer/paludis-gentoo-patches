@@ -431,6 +431,9 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
 
     if (! m.metadata_restrict.empty())
         id->load_restrict(m.metadata_restrict, m.description_restrict, get(keys, m.metadata_restrict));
+
+    if (! m.metadata_use.empty())
+        id->load_use(m.metadata_use, m.description_use, get(keys, m.metadata_use));
 }
 
 EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,

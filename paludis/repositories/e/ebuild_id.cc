@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -100,6 +100,7 @@ namespace paludis
         mutable tr1::shared_ptr<const EKeywordsKey> keywords;
         mutable tr1::shared_ptr<const EIUseKey> iuse;
         mutable tr1::shared_ptr<const EInheritedKey> inherited;
+        mutable tr1::shared_ptr<const EUseKey> use;
         mutable tr1::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
         mutable tr1::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
 
@@ -524,6 +525,13 @@ EbuildID::iuse_key() const
     return _imp->iuse;
 }
 
+const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
+EbuildID::use_key() const
+{
+    need_keys_added();
+    return _imp->use;
+}
+
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EbuildID::license_key() const
 {
@@ -771,6 +779,14 @@ EbuildID::load_iuse(const std::string & r, const std::string & h, const std::str
     Lock l(_imp->mutex);
     _imp->iuse.reset(new EIUseKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
     add_metadata_key(_imp->iuse);
+}
+
+void
+EbuildID::load_use(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->use.reset(new EUseKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->use);
 }
 
 void

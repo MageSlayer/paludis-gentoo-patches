@@ -47,6 +47,7 @@ make_class_EAPIEbuildMetadataVariables()
     key metadata_provide             std::string
     key metadata_eapi                std::string
     key metadata_dependencies        std::string
+    key metadata_use                 std::string
 
     key description_build_depend     std::string
     key description_run_depend       std::string
@@ -64,6 +65,7 @@ make_class_EAPIEbuildMetadataVariables()
     key description_provide          std::string
     key description_eapi             std::string
     key description_dependencies     std::string
+    key description_use              std::string
 
     doxygen_comment << "END"
         /**

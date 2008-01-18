@@ -595,29 +595,65 @@ ERepository::repository_masked(const PackageID & id) const
 UseFlagState
 ERepository::query_use(const UseFlagName & f, const PackageID & e) const
 {
-    _imp->need_profiles();
-    if (query_use_mask(f, e))
-        return use_disabled;
-    else if (query_use_force(f, e))
-        return use_enabled;
+    if (this != e.repository().get())
+        return use_unspecified;
+
+    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    if (id.use_key())
+    {
+        if (id.use_key()->value()->end() != id.use_key()->value()->find(f))
+            return use_enabled;
+        else
+            return use_disabled;
+    }
     else
-        return _imp->profile_ptr->use_state_ignoring_masks(f, e);
+    {
+        _imp->need_profiles();
+        if (query_use_mask(f, e))
+            return use_disabled;
+        else if (query_use_force(f, e))
+            return use_enabled;
+        else
+            return _imp->profile_ptr->use_state_ignoring_masks(f, e);
+    }
 }
 
 bool
 ERepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
-    _imp->need_profiles();
-    return _imp->profile_ptr->use_masked(u, e) ||
-        (arch_flags()->end() != arch_flags()->find(u) &&
-         use_enabled != _imp->profile_ptr->use_state_ignoring_masks(u, e));
+    if (this != e.repository().get())
+        return use_unspecified;
+
+    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    if (id.use_key())
+    {
+        return (id.use_key()->value()->end() == id.use_key()->value()->find(u));
+    }
+    else
+    {
+        _imp->need_profiles();
+        return _imp->profile_ptr->use_masked(u, e) ||
+            (arch_flags()->end() != arch_flags()->find(u) &&
+             use_enabled != _imp->profile_ptr->use_state_ignoring_masks(u, e));
+    }
 }
 
 bool
 ERepository::query_use_force(const UseFlagName & u, const PackageID & e) const
 {
-    _imp->need_profiles();
-    return _imp->profile_ptr->use_forced(u, e);
+    if (this != e.repository().get())
+        return use_unspecified;
+
+    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    if (id.use_key())
+    {
+        return (id.use_key()->value()->end() != id.use_key()->value()->find(u));
+    }
+    else
+    {
+        _imp->need_profiles();
+        return _imp->profile_ptr->use_forced(u, e);
+    }
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
