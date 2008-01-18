@@ -134,7 +134,7 @@ namespace
 
     /*
      * call-seq:
-     *     repoistory -> Repository
+     *     repository -> Repository
      *
      * Our Repository.
      */
