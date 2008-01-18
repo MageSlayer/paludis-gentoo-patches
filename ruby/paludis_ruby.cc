@@ -456,8 +456,7 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
     rb_define_module_function(c_paludis_module, "version_spec_comparator", RUBY_FUNC_CAST(&paludis_version_spec_comparator), 3);
 
-    rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
-                    + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
+    rb_define_const(c_paludis_module, "Version", INT2FIX(PALUDIS_VERSION));
     rb_define_const(c_paludis_module, "VersionMajor", INT2FIX(PALUDIS_VERSION_MAJOR));
     rb_define_const(c_paludis_module, "VersionMinor", INT2FIX(PALUDIS_VERSION_MINOR));
     rb_define_const(c_paludis_module, "VersionMicro", INT2FIX(PALUDIS_VERSION_MICRO));
