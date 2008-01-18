@@ -194,6 +194,21 @@ module Paludis
             end
         end
 
+        def test_add_set
+            assert_nothing_raised do
+                dl.add(env.set("world"), dd)
+            end
+        end
+
+        def test_add_bad_tree
+            assert_raise TypeError do
+                dl.add(env.package_database.
+                       query(Query::Matches.new(pda),
+                             QueryOrder::BestVersionOnly).
+                       last.build_dependencies_key.value, dd)
+            end
+        end
+
         def test_clear
             assert_nothing_raised do
                 dl.clear

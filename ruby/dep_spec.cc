@@ -28,8 +28,12 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/save.hh>
+#include <paludis/util/member_iterator-impl.hh>
 #include <list>
 #include <ruby.h>
+
+#include "nice_names-nn.hh"
 
 using namespace paludis;
 using namespace paludis::ruby;
@@ -263,6 +267,137 @@ namespace
 
         return this;
     }
+
+    template <typename H_>
+    struct ValueToTree :
+        ConstVisitor<WrappedSpecVisitorTypes>
+    {
+        tr1::shared_ptr<typename H_::ConstItem> result;
+        tr1::function<void (const tr1::shared_ptr<ConstAcceptInterface<H_> > &)> adder;
+
+        ValueToTree(VALUE val) :
+            adder(tr1::bind(&ValueToTree<H_>::set_result, this, tr1::placeholders::_1))
+        {
+            tr1::shared_ptr<WrappedSpecBase> * p;
+            Data_Get_Struct(val, tr1::shared_ptr<WrappedSpecBase>, p);
+            (*p)->accept(*this);
+        }
+
+        void set_result(const tr1::shared_ptr<ConstAcceptInterface<H_> > & res)
+        {
+            result = res;
+        }
+
+        template <typename T_>
+        void do_visit_sequence(const WrappedSpec<T_> & item, tr1::true_type)
+        {
+            using namespace tr1::placeholders;
+
+            tr1::shared_ptr<ConstTreeSequence<H_, T_> > a(
+                new ConstTreeSequence<H_, T_>(
+                    tr1::static_pointer_cast<T_>(item.spec()->clone())));
+            adder(a);
+
+            Save<tr1::function<void (const tr1::shared_ptr<ConstAcceptInterface<H_> > &)> > s(
+                &adder, tr1::bind(&ConstTreeSequence<H_, T_>::add, a, _1));
+            std::for_each(indirect_iterator(second_iterator(item.children()->begin())),
+                          indirect_iterator(second_iterator(item.children()->end())),
+                          accept_visitor(*this));
+        }
+
+        template <typename T_>
+        void do_visit_sequence(const WrappedSpec<T_> &, tr1::false_type)
+        {
+            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<T_>::name, NiceNames<H_>::name);
+        }
+
+        template <typename T_>
+        void do_visit_sequence(const WrappedSpec<T_> & s)
+        {
+            do_visit_sequence(s, tr1::is_convertible<ConstVisitor<H_> *, Visits<const ConstTreeSequence<H_, T_> > *>());
+        }
+
+        virtual void visit(const WrappedSpec<AllDepSpec> & s)
+        {
+            do_visit_sequence(s);
+        }
+
+        virtual void visit(const WrappedSpec<AnyDepSpec> & s)
+        {
+            do_visit_sequence(s);
+        }
+
+        virtual void visit(const WrappedSpec<UseDepSpec> & s)
+        {
+            do_visit_sequence(s);
+        }
+
+        template <typename T_>
+        void do_visit_leaf(const WrappedSpec<T_> & item, tr1::true_type)
+        {
+            tr1::shared_ptr<TreeLeaf<H_, T_> > a(
+                new TreeLeaf<H_, T_>(
+                    tr1::static_pointer_cast<T_>(item.spec()->clone())));
+            adder(a);
+        }
+
+        template <typename T_>
+        void do_visit_leaf(const WrappedSpec<T_> &, tr1::false_type)
+        {
+            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<T_>::name, NiceNames<H_>::name);
+        }
+
+        template <typename T_>
+        void do_visit_leaf(const WrappedSpec<T_> & s)
+        {
+            do_visit_leaf(s, tr1::is_convertible<ConstVisitor<H_> *, Visits<const TreeLeaf<H_, T_> > *>());
+        }
+
+        virtual void visit(const WrappedSpec<PlainTextDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<SimpleURIDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<FetchableURIDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<LicenseDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<PackageDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<BlockDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<URILabelsDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<DependencyLabelsDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<NamedSetDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+    };
 
     VALUE
     dep_spec_init_0(VALUE self)
@@ -1035,6 +1170,21 @@ paludis::ruby::value_to_dep_spec(VALUE v)
     }
 }
 
+template <typename H_>
+tr1::shared_ptr<const typename H_::ConstItem>
+paludis::ruby::value_to_dep_tree(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_dep_spec))
+    {
+        ValueToTree<H_> vtt(v);
+        return vtt.result;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into DepSpec", rb_obj_classname(v));
+    }
+}
+
 VALUE
 paludis::ruby::package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> & p)
 {
@@ -1081,6 +1231,8 @@ template VALUE dep_tree_to_value <SimpleURISpecTree> (const tr1::shared_ptr<cons
 template VALUE dep_tree_to_value <RestrictSpecTree> (const tr1::shared_ptr<const RestrictSpecTree::ConstItem> &);
 template VALUE dep_tree_to_value <ProvideSpecTree> (const tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
 template VALUE dep_tree_to_value <LicenseSpecTree> (const tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
+
+template tr1::shared_ptr<const SetSpecTree::ConstItem> value_to_dep_tree <SetSpecTree> (VALUE);
 
 RegisterRubyClass::Register paludis_ruby_register_dep_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_spec);

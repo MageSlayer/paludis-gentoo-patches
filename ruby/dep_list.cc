@@ -862,8 +862,10 @@ namespace
     /*
      * call-seq:
      *     add(dep_spec, destinations)
+     *     add(set_spec_tree, destinations)
      *
-     * Add the packages required to resolve an additional dependency spec.
+     * Add the packages required to resolve an additional dependency
+     * spec or set.
      */
     VALUE
     dep_list_add(VALUE self, VALUE da, VALUE d)
@@ -879,8 +881,8 @@ namespace
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            const PackageDepSpec pds = *value_to_package_dep_spec(da);
-            p->add(pds, destinations);
+            tr1::shared_ptr<const SetSpecTree::ConstItem> sst(value_to_dep_tree<SetSpecTree>(da));
+            p->add(*sst, destinations);
             return self;
         }
         catch (const std::exception & e)

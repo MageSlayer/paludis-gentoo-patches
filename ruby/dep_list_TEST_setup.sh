@@ -72,10 +72,13 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="~test"
+DEPEND="disabled? ( bar/foo )"
 END
 cd ..
 
 mkdir -p installed/cat-one/pkg-one-1 || exit 1
+
+echo foo/bar >installed/world
 
 for i in SLOT EAPI; do
     echo "0" >installed/cat-one/pkg-one-1/${i}

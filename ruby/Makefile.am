@@ -3,6 +3,7 @@ SUBDIRS = . demos
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      -I$(top_builddir)/ \
 	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
+	      @PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN@ \
 	      @PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS@ \
 	      @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ \
 	      @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -48,6 +49,7 @@ IF_RUBY_SOURCES = \
 	log.cc \
 	metadata_key.cc \
 	name.cc \
+	nice_names-nn.hh nice_names-nn.cc \
 	package_database.cc \
 	package_id.cc \
 	qualified_package_name.cc \
@@ -55,6 +57,9 @@ IF_RUBY_SOURCES = \
 	repository.cc \
 	version_spec.cc \
 	mask.cc
+
+BUILT_SOURCES = \
+	nice_names-nn.hh nice_names-nn.cc
 
 IF_RUBY_QA_SOURCES = \
 	qa.cc
@@ -67,6 +72,7 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh \
+	nice_names.nn \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
@@ -155,6 +161,12 @@ Paludis.so : libpaludisruby.la paludis_ruby_so.o
 	    -L$(top_builddir)/ruby/.libs -lpaludisruby
 
 endif
+
+nice_names-nn.hh : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --header $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
+
+nice_names-nn.cc : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --source $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

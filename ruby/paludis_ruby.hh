@@ -88,6 +88,7 @@ namespace paludis
         VALUE qa_message_to_value(const QAMessage &);
 #endif
         template <typename T_> VALUE dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstItem> &);
+        template <typename T_> tr1::shared_ptr<const typename T_::ConstItem> value_to_dep_tree(VALUE);
         VALUE package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> &);
         VALUE uri_label_to_value(const tr1::shared_ptr<const URILabel> &);
         VALUE mask_to_value(tr1::shared_ptr<const Mask>);
