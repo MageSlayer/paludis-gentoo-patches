@@ -33,6 +33,8 @@ namespace paludis
         using std::tr1::remove_reference;
         using std::tr1::is_same;
         using std::tr1::is_convertible;
+        using std::tr1::true_type;
+        using std::tr1::false_type;
     }
 }
 
@@ -49,6 +51,8 @@ namespace paludis
         using boost::remove_reference;
         using boost::is_same;
         using boost::is_convertible;
+        using boost::true_type;
+        using boost::false_type;
     }
 }
 
