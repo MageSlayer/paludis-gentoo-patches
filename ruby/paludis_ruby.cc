@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh
- * Copyright (c) 2006, 2007 Richard Brown
+ * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -92,6 +92,31 @@ namespace
             tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
             tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
             return match_package(*env, *spec, *target) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+    }
+
+    /*
+     * Document-method: match_package_in_set
+     *
+     * call-seq:
+     *     match_package_in_set(environment, set_spec_tree, package_id) -> true or false
+     *
+     * Return whether the specified PackageID matches the specified set.
+     *
+     */
+    VALUE paludis_match_package_in_set(VALUE, VALUE en, VALUE a, VALUE t)
+    {
+        try
+        {
+            tr1::shared_ptr<Environment> env = value_to_environment(en);
+            tr1::shared_ptr<const SetSpecTree::ConstItem> spec = value_to_dep_tree<SetSpecTree>(a);
+            tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
+            return match_package_in_set(*env, *spec, *target) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -454,6 +479,7 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_bad_version_operator_error = rb_define_class_under(c_paludis_module, "BadVersionOperatorError", rb_eRuntimeError);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
+    rb_define_module_function(c_paludis_module, "match_package_in_set", RUBY_FUNC_CAST(&paludis_match_package_in_set), 3);
     rb_define_module_function(c_paludis_module, "version_spec_comparator", RUBY_FUNC_CAST(&paludis_version_spec_comparator), 3);
 
     rb_define_const(c_paludis_module, "Version", INT2FIX(PALUDIS_VERSION));

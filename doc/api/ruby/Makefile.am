@@ -31,6 +31,7 @@ examples = \
 	example_dep_spec.rb \
 	example_dep_tree.rb \
 	example_mask.rb \
+	example_match_package.rb \
 	example_query.rb \
 	example_version_operator.rb \
 	example_version_spec.rb

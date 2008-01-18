@@ -14,6 +14,13 @@ cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
 
+cat <<END > home/.paludis/repositories/installed.conf
+location = `pwd`/installed
+format = vdb
+names_cache = /var/empty
+provides_cache = /var/empty
+END
+
 cat <<END > home/.paludis/keywords.conf
 */* test
 ~foo/bar-1 ~test
@@ -63,5 +70,9 @@ LICENSE="GPL-2"
 KEYWORDS="~test"
 END
 cd ..
+
+mkdir -p installed || exit 1
+
+echo "foo/bar" > installed/world
 
 

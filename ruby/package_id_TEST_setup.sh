@@ -55,7 +55,6 @@ cd ..
 
 mkdir -p installed/cat-one/pkg-{one,two}-1 || exit 1
 
-
 echo "cat-one" > installed/cat-one/pkg-one-1/CATEGORY
 touch installed/cat-one/pkg-one-1/CONTENTS
 echo "0" > installed/cat-one/pkg-one-1/EAPI

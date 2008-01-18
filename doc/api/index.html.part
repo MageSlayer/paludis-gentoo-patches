@@ -130,7 +130,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_match_package</td>
         <td><a href="cplusplus/example__match__package_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_match_package.html">Ruby</a></td>
         <td></td>
         <td>How to use paludis::match_package and paludis::match_package_in_set</td>
     </tr>
