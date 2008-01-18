@@ -28,6 +28,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -65,7 +66,9 @@ namespace paludis
 
                 Context cc("When loading EAPI file '" + stringify(*d) + "':");
 
-                KeyValueConfigFile k(*d, KeyValueConfigFileOptions());
+                tr1::shared_ptr<Map<std::string, std::string> > predefined(new Map<std::string, std::string>);
+                predefined->insert("PALUDIS_EAPIS_DIR", stringify(d->dirname()));
+                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), predefined);
 
                 PackageDepSpecParseOptions package_dep_spec_parse_options;
                 {
