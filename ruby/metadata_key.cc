@@ -239,7 +239,7 @@ namespace
 
     /*
      * call-seq:
-     *     value
+     *     value -> PackageID
      *
      * Our Value.
      * */
@@ -258,6 +258,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> String
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_string_key_value(VALUE self)
     {
@@ -273,6 +279,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> Numeric
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_size_key_value(VALUE self)
     {
@@ -288,6 +300,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> String
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_fsentry_key_value(VALUE self)
     {
@@ -303,6 +321,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> Time
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_time_key_value(VALUE self)
     {
@@ -318,6 +342,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> Contents
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_contents_key_value(VALUE self)
     {
@@ -335,6 +365,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> RepositoryMaskInfo
+     *
+     * Our Value.
+     * */
     VALUE
     metadata_repository_mask_info_key_value(VALUE self)
     {
@@ -352,6 +388,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     value -> Array
+     *
+     * Our Value.
+     * */
     template <typename T_>
     struct SetValue
     {
@@ -375,6 +417,12 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     value -> Array
+     *
+     * Our Value.
+     * */
     template <>
     struct SetValue<PackageIDSequence>
     {
@@ -399,6 +447,12 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     value -> Array
+     *
+     * Our Value.
+     * */
     template <typename T_>
     struct SpecTreeValue
     {
@@ -466,7 +520,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataKey
          *
-         * Base metadata class
+         * Base metadata class, subclasses contain a "value" to return the contents of the key.
          */
         c_metadata_key = rb_define_class_under(paludis_module(), "MetadataKey", rb_cObject);
         rb_funcall(c_metadata_key, rb_intern("private_class_method"), 1, rb_str_new2("new"));
@@ -475,9 +529,9 @@ namespace
         rb_define_method(c_metadata_key, "type", RUBY_FUNC_CAST(&metadata_key_type), 0);
 
         /*
-         * Document-class: Paludis::MetadataKey
+         * Document-class: Paludis::MetadataPackageIDKey
          *
-         * Base metadata class
+         * Metadata class for a PackageId.
          */
         c_metadata_package_id_key = rb_define_class_under(paludis_module(), "MetadataPackageIDKey", c_metadata_key);
         rb_define_method(c_metadata_package_id_key, "value", RUBY_FUNC_CAST(&metadata_package_id_key_value), 0);
@@ -485,7 +539,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataStringKey
          *
-         * Metadata class for Strings
+         * Metadata class for Strings.
          */
         c_metadata_string_key = rb_define_class_under(paludis_module(), "MetadataStringKey", c_metadata_key);
         rb_define_method(c_metadata_string_key, "value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
@@ -493,7 +547,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataSizeKey
          *
-         * Metadata class for file sizes
+         * Metadata class for file sizes.
          */
         c_metadata_size_key = rb_define_class_under(paludis_module(), "MetadataSizeKey", c_metadata_key);
         rb_define_method(c_metadata_size_key, "value", RUBY_FUNC_CAST(&metadata_size_key_value), 0);
@@ -501,7 +555,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataFSEntryKey
          *
-         * Metadata class for FSEntry
+         * Metadata class for FSEntry.
          */
         c_metadata_fsentry_key = rb_define_class_under(paludis_module(), "MetadataFSEntryKey", c_metadata_key);
         rb_define_method(c_metadata_fsentry_key, "value", RUBY_FUNC_CAST(&metadata_fsentry_key_value), 0);
@@ -509,7 +563,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataTimeKey
          *
-         * Metadata class for Time
+         * Metadata class for Time.
          */
         c_metadata_time_key = rb_define_class_under(paludis_module(), "MetadataTimeKey", c_metadata_key);
         rb_define_method(c_metadata_time_key, "value", RUBY_FUNC_CAST(&metadata_time_key_value), 0);
@@ -517,7 +571,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataContentsKey
          *
-         * Metadata class for Contents
+         * Metadata class for Contents.
          */
         c_metadata_contents_key = rb_define_class_under(paludis_module(), "MetadataContentsKey", c_metadata_key);
         rb_define_method(c_metadata_contents_key, "value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
@@ -525,7 +579,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataRepositoryMaskInfoKey
          *
-         * Metadata class for RepositoryMaskInfo
+         * Metadata class for RepositoryMaskInfo.
          */
         c_metadata_repository_mask_info_key = rb_define_class_under(paludis_module(), "MetadataRepositoryMaskInfoKey", c_metadata_key);
         rb_define_method(c_metadata_repository_mask_info_key, "value", RUBY_FUNC_CAST(&metadata_repository_mask_info_key_value), 0);
@@ -533,7 +587,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataKeywordNameSetKey
          *
-         * Metadata class for Use flag names
+         * Metadata class for keywords.
          */
         c_metadata_keyword_name_set_key = rb_define_class_under(paludis_module(), "MetadataKeywordNameSetKey", c_metadata_key);
         rb_define_method(c_metadata_keyword_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<KeywordNameSet>::fetch)), 0);
@@ -541,7 +595,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataUseFlagNameSetKey
          *
-         * Metadata class for Use flag names
+         * Metadata class for Use flag names.
          */
         c_metadata_use_flag_name_set_key = rb_define_class_under(paludis_module(), "MetadataUseFlagNameSetKey", c_metadata_key);
         rb_define_method(c_metadata_use_flag_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<UseFlagNameSet>::fetch)), 0);
@@ -549,7 +603,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataPackageIDSequenceKey
          *
-         * Metadata class for package IDs
+         * Metadata class for package IDs.
          */
         c_metadata_package_id_sequence_key = rb_define_class_under(paludis_module(), "MetadataPackageIDSequenceKey", c_metadata_key);
         rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
@@ -557,7 +611,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataFSEntrySequenceKey
          *
-         * Metadata class for filesystem sequences
+         * Metadata class for filesystem sequences.
          */
         c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSEntrySequenceKey", c_metadata_key);
         rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSEntrySequence>::fetch)), 0);
@@ -565,7 +619,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataIUseFlagSetKey
          *
-         * Metadata class for IUse flags
+         * Metadata class for IUse flags.
          */
         c_metadata_iuse_flag_set_key = rb_define_class_under(paludis_module(), "MetadataIUseFlagSetKey", c_metadata_key);
         rb_define_method(c_metadata_iuse_flag_set_key, "value", RUBY_FUNC_CAST((&SetValue<IUseFlagSet>::fetch)), 0);
@@ -573,7 +627,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataStringSetKey
          *
-         * Metadata class for String sets
+         * Metadata class for String sets.
          */
         c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
         rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
@@ -581,7 +635,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataLicenseSpecTreeKey
          *
-         * Metadata class for license specs
+         * Metadata class for license specs.
          */
         c_metadata_license_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataLicenseSpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_license_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<LicenseSpecTree>::fetch)), 0);
@@ -589,7 +643,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataProvideSpecTreeKey
          *
-         * Metadata class for provide specs
+         * Metadata class for provide specs.
          */
         c_metadata_provide_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataProvideSpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_provide_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
@@ -597,7 +651,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataRestrictSpecTreeKey
          *
-         * Metadata class for restrict specs
+         * Metadata class for restrict specs.
          */
         c_metadata_restrict_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataRestrictSpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_restrict_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<RestrictSpecTree>::fetch)), 0);
@@ -605,7 +659,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataDependencySpecTreeKey
          *
-         * Metadata class for dependency specs
+         * Metadata class for dependency specs.
          */
         c_metadata_dependency_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataDependencySpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_dependency_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<DependencySpecTree>::fetch)), 0);
@@ -613,7 +667,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataFetchableURISpecTreeKey
          *
-         * Metadata class for fetchable uri specs
+         * Metadata class for fetchable uri specs.
          */
         c_metadata_fetchable_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataFetchableURISpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<FetchableURISpecTree>::fetch)), 0);
@@ -622,7 +676,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataSimpleURISpecTreeKey
          *
-         * Metadata class for simple uri specs
+         * Metadata class for simple uri specs.
          */
         c_metadata_simple_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataSimpleURISpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_simple_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<SimpleURISpecTree>::fetch)), 0);
