@@ -495,6 +495,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     mask_file -> String
+     *
+     * Filename where the key was defined.
+     */
     VALUE
     repository_mask_info_mask_file(VALUE self)
     {
@@ -503,6 +509,12 @@ namespace
         return rb_str_new2(stringify((*ptr)->mask_file).c_str());
     }
 
+    /*
+     * call-seq:
+     *     comment -> Array
+     *
+     * Array of lines explaining the mask.
+     */
     VALUE
     repository_mask_info_comment(VALUE self)
     {
