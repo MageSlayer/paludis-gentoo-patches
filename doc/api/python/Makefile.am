@@ -34,7 +34,7 @@ python : $(top_builddir)/python/paludis.so epydoc.css python_syntax.css create_p
 	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs\`" \
 	    | tr -d ' '` \
 	    PYTHONPATH="./.libs" \
-	    epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
+	    epydoc --name Paludis -o python --url http://paludis.pioto.org --no-frames --css $(srcdir)/epydoc.css \
 	        $(top_builddir)/python/paludis.so
 	$(PYTHON) $(srcdir)/create_python_examples.py $(srcdir) $(examples)
 	find python/ -type f | xargs sed -i -e 's@http://###EX###@@'
