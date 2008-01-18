@@ -7,14 +7,12 @@ libexecprog0dir = $(libexecdir)/paludis/0/
 libexecprog0_SCRIPTS = \
 	builtin_infovars.bash \
 	builtin_init.bash \
-	builtin_initbin.bash \
 	builtin_loadenv.bash \
 	builtin_metadata.bash \
 	builtin_prepare.bash \
 	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
-	builtin_unpackbin.bash \
 	builtin_variable.bash \
 	conditional_functions.bash \
 	eclass_functions.bash \

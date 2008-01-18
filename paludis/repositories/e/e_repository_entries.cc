@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include "e_repository_entries.hh"
 #include "ebuild_entries.hh"
-#include "ebin_entries.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 
@@ -45,8 +44,5 @@ NoSuchERepositoryEntriesType::NoSuchERepositoryEntriesType(const std::string & f
 ERepositoryEntriesMaker::ERepositoryEntriesMaker()
 {
     register_maker("ebuild", &EbuildEntries::make_ebuild_entries);
-#if 0
-    register_maker("ebin", &EbinEntries::make_ebin_entries);
-#endif
 }
 

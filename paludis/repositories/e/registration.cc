@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/repository_maker.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
-#include <paludis/repositories/e/make_ebin_repository.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -59,7 +58,6 @@ void register_repositories(RepositoryMaker * maker)
 {
     maker->register_maker("ebuild", &make_ebuild_repository_wrapped);
     maker->register_maker("exheres", &make_ebuild_repository_wrapped);
-    maker->register_maker("ebin", &make_ebin_repository_wrapped);
     maker->register_maker("portage", &make_portage_repository);
     maker->register_maker("vdb", &VDBRepository::make_vdb_repository);
 }

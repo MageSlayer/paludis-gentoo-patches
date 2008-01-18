@@ -6,7 +6,6 @@ DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	ebuild-sr.hh ebuild-sr.cc \
-	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
 	vdb_merger-sr.hh vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh vdb_unmerger-sr.cc \
 	eapi-sr.hh eapi-sr.cc \
@@ -61,10 +60,6 @@ paludis_repositories_e_include_HEADERS = \
 	eapi-sr.hh \
 	eapi-fwd.hh \
 	eapi_phase.hh \
-	ebin-se.hh \
-	ebin-sr.hh \
-	ebin.hh \
-	ebin_entries.hh \
 	ebuild-sr.hh \
 	ebuild.hh \
 	ebuild_entries.hh \
@@ -76,7 +71,6 @@ paludis_repositories_e_include_HEADERS = \
 	glsa-sr.hh \
 	glsa.hh \
 	layout.hh \
-	make_ebin_repository.hh \
 	make_ebuild_repository.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
@@ -116,8 +110,6 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_sets.cc \
 	eapi.cc \
 	eapi_phase.cc \
-	ebin.cc \
-	ebin_entries.cc \
 	ebuild.cc \
 	ebuild_entries.cc \
 	ebuild_flat_metadata_cache.cc \
@@ -127,7 +119,6 @@ libpaludiserepository_la_SOURCES = \
 	fetch_visitor.cc \
 	glsa.cc \
 	layout.cc \
-	make_ebin_repository.cc \
 	make_ebuild_repository.cc \
 	manifest2_reader.cc \
 	distfiles_size_visitor.cc \
@@ -298,12 +289,6 @@ EXTRA_DIST = \
 	ebuild.sr \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
-	ebin.sr \
-	ebin-sr.hh \
-	ebin-sr.cc \
-	ebin.se \
-	ebin-se.hh \
-	ebin-se.cc \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
@@ -361,10 +346,6 @@ BUILT_SOURCES = \
 	vdb_repository-sr.cc \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
-	ebin-sr.hh \
-	ebin-sr.cc \
-	ebin-se.hh \
-	ebin-se.cc \
 	vdb_merger-sr.hh \
 	vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh \
@@ -431,12 +412,6 @@ ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 ebuild-sr.cc : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebuild.sr > $@
 
-ebin-sr.hh : ebin.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebin.sr > $@
-
-ebin-sr.cc : ebin.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebin.sr > $@
-
 eapi-sr.hh : eapi.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/eapi.sr > $@
 
@@ -454,12 +429,6 @@ vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 
 vdb_repository-sr.cc : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_repository.sr > $@
-
-ebin-se.hh : ebin.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ebin-se.cc : ebin.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
