@@ -592,7 +592,7 @@ namespace
 
     /*
      * call-seq:
-     *     package -> String or Nil
+     *     package -> QualifiedPackageName or Nil
      *
      * Fetch the package name.
      */
@@ -603,7 +603,7 @@ namespace
         Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
         if (0 == tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr())
             return Qnil;
-        return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr()).c_str());
+        return qualified_package_name_to_value(*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr());
     }
 
     /*

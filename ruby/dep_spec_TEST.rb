@@ -92,13 +92,13 @@ module Paludis
         end
 
         def test_package
-            assert_equal "foo/bar", pda.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pda.package
             assert_nil pdb.package
         end
 
         def test_repository
             assert_equal "testrepo", pda.repository
-            assert_nil pdb.package
+            assert_nil pdb.repository
         end
 
         def test_package_name_part
