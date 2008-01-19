@@ -41,6 +41,7 @@
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/header.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
+#include <paludis/repositories/e/qa/categories.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -81,6 +82,9 @@ QAChecks::QAChecks() :
 
     _imp->tree_checks_group->add_check("repo_name",
             tr1::bind(repo_name_check, _2, _1, "repo_name"));
+
+    _imp->tree_checks_group->add_check("categories",
+            tr1::bind(categories_check, _2, _4, "categories"));
 
     _imp->eclass_file_contents_checks_group->add_check("variable_assigns",
             tr1::bind(variable_assigns_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));

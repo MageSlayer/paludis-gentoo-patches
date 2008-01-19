@@ -50,7 +50,8 @@ paludis_repositories_e_include_HEADERS = \
 	ebuild_count.hh \
 	misc_files.hh \
 	files_dir_size.hh \
-	repo_name.hh
+	repo_name.hh \
+	categories.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
 
@@ -79,6 +80,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	misc_files.cc \
 	files_dir_size.cc \
 	repo_name.cc \
+	categories.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
 libpaludiserepositoryqa_la_LDFLAGS = \
