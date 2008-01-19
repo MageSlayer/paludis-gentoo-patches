@@ -102,7 +102,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_dep_tree</td>
         <td><a href="cplusplus/example__dep__tree_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_dep_tree.html">Ruby</a></td>
         <td></td>
         <td>How to handle dependency specs</td>
     </tr>
