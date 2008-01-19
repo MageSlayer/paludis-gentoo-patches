@@ -188,7 +188,8 @@ namespace
         {
             if (previous_entry != msg.entry)
             {
-                std::cout << colour(cl_package_name, strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"))
+                std::string filename(strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"));
+                std::cout << colour(cl_package_name, filename.length() > 0 ? filename : ".")
                     << ":" << std::endl;
                 previous_entry = msg.entry;
                 previous_name = "NONE";
