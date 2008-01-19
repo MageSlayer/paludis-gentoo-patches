@@ -23,13 +23,17 @@ make_class_ERepositoryParams()
     key sync_options std::string
     key builddir FSEntry
     key master_repository "tr1::shared_ptr<const ERepository>"
-    key enable_destinations bool
     key write_bin_uri_prefix std::string
     key eapi_when_unknown std::string
     key eapi_when_unspecified std::string
     key profile_eapi std::string
     key use_manifest "erepository::UseManifest"
     key ignore_deprecated_profiles bool
+
+    key binary_destination bool
+    key binary_uri_prefix std::string
+    key binary_distdir FSEntry
+    key binary_keywords std::string
 
     doxygen_comment << "END"
         /**

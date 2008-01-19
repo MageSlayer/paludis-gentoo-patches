@@ -31,10 +31,11 @@ eval unset LANG ${!LC_*}
 EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SRC_URI RESTRICT \
     LICENSE KEYWORDS INHERITED PROVIDE HOMEPAGE DESCRIPTION DEPENDENCIES \
     E_IUSE E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS PLATFORMS E_PLATFORMS \
-    MYOPTIONS E_MYOPTIONS E_DEPENDENCIES"
+    MYOPTIONS E_MYOPTIONS E_DEPENDENCIES BINARY_KEYWORDS BINARY_URI \
+    GENERATED_USING GENERATED_TIME BINARY_PLATFORMS"
 unset -v ${EBUILD_METADATA_VARIABLES} ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES}
 # These can be set by C++
-EBUILD_METADATA_VARIABLES="${EBUILD_METADATA_VARIABLES} SLOT EAPI"
+EBUILD_METADATA_VARIABLES="${EBUILD_METADATA_VARIABLES} SLOT EAPI OPTIONS USE"
 
 if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
@@ -264,6 +265,11 @@ ebuild_scrub_environment()
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
         unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
 
+        if [[ "${2}" == "--pivot" ]] ; then
+            unset -f ${PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS}
+            unset -v ${PALUDIS_IGNORE_PIVOT_ENV_VARIABLES}
+        fi
+
         unset -v ROOTPATH T HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
         unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR
         unset -v PALUDIS_EXTRA_DIE_MESSAGE PALUDIS_COMMAND SKIP_FUNCTIONS
@@ -333,8 +339,8 @@ ebuild_load_environment()
                 || die "Can't copy ${PALUDIS_LOAD_ENVIRONMENT}"
         fi
 
-        echo ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
-        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
+        echo ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" "$@" 1>&2
+        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" "$@" \
             || die "Can't load saved environment for cleaning"
 
         echo ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
@@ -436,7 +442,7 @@ ebuild_main()
     for action in $@ ; do
         case ${action} in
             metadata|variable|init|prepare|merge|unmerge|tidyup|\
-                    strip|loadenv|saveenv|initbin|unpackbin|infovars)
+                    strip|loadenv|saveenv|initbin|unpackbin|infovars|pivotbin|installbin)
                 ebuild_load_module builtin_${action}
             ;;
 

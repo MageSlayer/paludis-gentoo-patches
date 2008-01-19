@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:	Paludis repositories/*.conf files
 " Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007 Ciaran McCreesh
+" Copyright:	Copyright (c) 2007, 2008 Ciaran McCreesh
 " Licence:	You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for Paludis repositories/*.conf files.
@@ -43,6 +43,8 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ master_repository profiles pkgdir setsdir securitydir newsdir
 	    \ names_cache sync sync_options eclassdirs cache write_cache
 	    \ world provides_cache importance layout use_manifest
+	    \ binary_uri_prefix binary_keywords binary_destination
+	    \ eapi_when_unspecified eapi_when_unknown profile_eapi
 
 syn keyword PaludisRepositoriesConfKnownValue contained
 	    \ use require ignore

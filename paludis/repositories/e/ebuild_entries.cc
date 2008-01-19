@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -725,9 +725,35 @@ EbuildEntries::make_ebuild_entries(
 }
 
 void
-EbuildEntries::merge(const MergeOptions &)
+EbuildEntries::merge(const MergeOptions & m)
 {
-    throw InternalError(PALUDIS_HERE, "Cannot merge to ERepository with ebuild entries");
+    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+            + "' to E repository '" + stringify(_imp->e_repository->name()) + "':");
+
+    if (! _imp->e_repository->is_suitable_destination_for(*m.package_id))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+
+    FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
+                m.package_id->name(), m.package_id->version(),
+                "pbin-1+" + tr1::static_pointer_cast<const ERepositoryID>(m.package_id)->eapi()->name));
+
+    binary_ebuild_location.dirname().dirname().mkdir();
+    binary_ebuild_location.dirname().mkdir();
+
+    WriteBinaryEbuildCommand write_binary_ebuild_command(
+            WriteBinaryEbuildCommandParams::create()
+            .environment(_imp->params.environment)
+            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m.package_id))
+            .binary_ebuild_location(binary_ebuild_location)
+            .binary_distdir(_imp->params.binary_distdir)
+            .environment_file(m.environment_file)
+            .image(m.image_dir)
+            .destination_repository(_imp->e_repository)
+            .builddir(_imp->params.builddir)
+            .rewrite_symlinks(tr1::static_pointer_cast<const ERepositoryID>(m.package_id)
+                ->eapi()->supported->ebuild_options->merge_rewrite_symlinks));
+
+    write_binary_ebuild_command();
 }
 
 bool
@@ -819,5 +845,14 @@ EbuildEntries::get_package_file_manifest_key(const FSEntry & f, const QualifiedP
         return "EBUILD";
     else
         return "EXHERES";
+}
+
+std::string
+EbuildEntries::binary_ebuild_name(const QualifiedPackageName & q, const VersionSpec & v, const std::string & e) const
+{
+    if (_imp->e_repository->layout()->eapi_ebuild_suffix())
+        return stringify(q.package) + "-" + stringify(v) + "." + e;
+    else
+        return stringify(q.package) + "-" + stringify(v) + ".ebuild";
 }
 

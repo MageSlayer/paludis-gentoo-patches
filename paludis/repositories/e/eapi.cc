@@ -100,12 +100,16 @@ namespace paludis
                         iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
                 }
 
-                tr1::shared_ptr<EAPI> eapi(new EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
+                tr1::shared_ptr<EAPI> eapi(new EAPI(
+                            strip_trailing_string(d->basename(), ".conf"),
+                            k.get("exported_name"),
+                            make_shared_ptr(new SupportedEAPI(
                                     SupportedEAPI::create()
                                     .package_dep_spec_parse_options(package_dep_spec_parse_options)
                                     .dependency_spec_tree_parse_options(dependency_spec_tree_parse_options)
                                     .iuse_flag_parse_options(iuse_flag_parse_options)
                                     .breaks_portage(destringify<bool>(k.get("breaks_portage")))
+                                    .can_be_pbin(destringify<bool>(k.get("can_be_pbin")))
 
                                     .ebuild_options(make_shared_ptr(new EAPIEbuildOptions(
                                                 EAPIEbuildOptions::create()
@@ -118,6 +122,7 @@ namespace paludis
                                                 .ebuild_must_not_set_variables(k.get("ebuild_must_not_set_variables"))
                                                 .vdb_from_env_variables(k.get("vdb_from_env_variables"))
                                                 .vdb_from_env_unless_empty_variables(k.get("vdb_from_env_unless_empty_variables"))
+                                                .binary_from_env_variables(k.get("binary_from_env_variables"))
                                                 .source_merged_variables(k.get("source_merged_variables"))
                                                 .bracket_merged_variables(k.get("bracket_merged_variables"))
                                                 .must_not_change_variables(k.get("must_not_change_variables"))
@@ -134,6 +139,8 @@ namespace paludis
                                                 .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
                                                 .merge_rewrite_symlinks(destringify<bool>(k.get("merge_rewrite_symlinks")))
                                                 .f_function_prefix(k.get("f_function_prefix"))
+                                                .ignore_pivot_env_variables(k.get("ignore_pivot_env_variables"))
+                                                .ignore_pivot_env_functions(k.get("ignore_pivot_env_functions"))
                                                 )))
 
                                                 .pipe_commands(make_shared_ptr(new EAPIPipeCommands(
@@ -250,13 +257,13 @@ EAPIData::eapi_from_string(const std::string & s) const
     if (i != _imp->values.end())
         return i->second;
 
-    return make_shared_ptr(new EAPI(s, tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI(s, s, tr1::shared_ptr<SupportedEAPI>()));
 }
 
 tr1::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
-    return make_shared_ptr(new EAPI("UNKNOWN", tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI("UNKNOWN", "UNKNOWN", tr1::shared_ptr<SupportedEAPI>()));
 }
 
 namespace paludis

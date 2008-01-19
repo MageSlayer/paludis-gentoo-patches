@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -260,6 +260,9 @@ namespace paludis
         tr1::shared_ptr<const MetadataStringKey> profile_eapi_key;
         tr1::shared_ptr<const MetadataStringKey> use_manifest_key;
         tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
+        tr1::shared_ptr<const MetadataStringKey> binary_destination_key;
+        tr1::shared_ptr<const MetadataStringKey> binary_src_uri_prefix_key;
+        tr1::shared_ptr<const MetadataStringKey> binary_keywords;
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
@@ -329,7 +332,13 @@ namespace paludis
         info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
                 tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
                         params.environment, layout->info_packages_file(params.location / "profiles"), params.profile_eapi)) :
-                tr1::shared_ptr<MetadataSectionKey>())
+                tr1::shared_ptr<MetadataSectionKey>()),
+        binary_destination_key(new LiteralMetadataStringKey(
+                    "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination))),
+        binary_src_uri_prefix_key(new LiteralMetadataStringKey(
+                    "binary_uri_prefix", "binary_uri_prefix", mkt_normal, params.binary_uri_prefix)),
+        binary_keywords(new LiteralMetadataStringKey(
+                    "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords))
     {
     }
 
@@ -452,7 +461,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
                     p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
-            .destination_interface(p.enable_destinations ? this : 0)
+            .destination_interface(p.binary_destination ? this : 0)
             .make_virtuals_interface(0)
             .e_interface(this)
 #ifdef ENABLE_QA
@@ -501,6 +510,9 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->use_manifest_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
+    add_metadata_key(_imp->binary_destination_key);
+    add_metadata_key(_imp->binary_src_uri_prefix_key);
+    add_metadata_key(_imp->binary_keywords);
 }
 
 bool
@@ -1085,7 +1097,10 @@ bool
 ERepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
-    return f == "ebuild" || f == "ebin";
+    if (f == "ebuild")
+        return static_cast<const erepository::ERepositoryID &>(e).eapi()->supported->can_be_pbin;
+    else
+        return false;
 }
 
 bool

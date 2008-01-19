@@ -6,7 +6,11 @@ eapis = \
 	0.conf \
 	1.conf \
 	exheres-0.conf \
-	paludis-1.conf
+	paludis-1.conf \
+	pbin-1+0.conf \
+	pbin-1+1.conf \
+	pbin-1+paludis-1.conf \
+	pbin-1+exheres-0.conf
 
 eapidir = $(datadir)/paludis/eapis/
 

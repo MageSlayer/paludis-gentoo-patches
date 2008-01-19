@@ -115,6 +115,12 @@ namespace paludis
                  * example, "EBUILD").
                  */
                 virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const = 0;
+
+                /**
+                 * Generate the name for a binary ebuild.
+                 */
+                virtual std::string binary_ebuild_name(const QualifiedPackageName &, const VersionSpec &, const std::string &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         /**

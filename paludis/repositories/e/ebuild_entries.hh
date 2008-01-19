@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -64,7 +64,7 @@ namespace paludis
 
                 ///\}
 
-                virtual void merge(const MergeOptions &) PALUDIS_ATTRIBUTE((noreturn));
+                virtual void merge(const MergeOptions &);
 
                 virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -92,6 +92,9 @@ namespace paludis
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 
                 virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
+
+                virtual std::string binary_ebuild_name(const QualifiedPackageName &, const VersionSpec &, const std::string &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -249,6 +249,28 @@ paludis::make_ebuild_repository(
         use_manifest = destringify<erepository::UseManifest>(m->find("use_manifest")->second);
     }
 
+    bool binary_destination(false);
+    if (m->end() != m->find("binary_destination") && ! m->find("binary_destination")->second.empty())
+    {
+        Context item_context("When handling binary_destination key:");
+        binary_destination = destringify<bool>(m->find("binary_destination")->second);
+    }
+
+    std::string binary_uri_prefix;
+    if (m->end() != m->find("binary_uri_prefix"))
+        binary_uri_prefix = m->find("binary_uri_prefix")->second;
+
+    std::string binary_distdir;
+    if (m->end() == m->find("binary_distdir") || ((binary_distdir = m->find("binary_distdir")->second)).empty())
+        binary_distdir = distdir;
+
+    std::string binary_keywords;
+    if (m->end() == m->find("binary_keywords") || ((binary_keywords = m->find("binary_keywords")->second)).empty())
+    {
+        if (binary_destination)
+            throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords is unset or empty");
+    }
+
     return tr1::shared_ptr<ERepository>(new ERepository(ERepositoryParams::create()
                 .entry_format("ebuild")
                 .layout(layout)
@@ -266,7 +288,6 @@ paludis::make_ebuild_repository(
                 .sync(sync)
                 .sync_options(sync_options)
                 .master_repository(master_repository)
-                .enable_destinations(false)
                 .write_bin_uri_prefix("")
                 .eapi_when_unknown(eapi_when_unknown)
                 .eapi_when_unspecified(eapi_when_unspecified)
@@ -274,6 +295,10 @@ paludis::make_ebuild_repository(
                 .use_manifest(use_manifest)
                 .append_repository_name_to_write_cache(append_repository_name_to_write_cache)
                 .ignore_deprecated_profiles(ignore_deprecated_profiles)
+                .binary_destination(binary_destination)
+                .binary_uri_prefix(binary_uri_prefix)
+                .binary_distdir(binary_distdir)
+                .binary_keywords(binary_keywords)
                 .builddir(builddir)));
 }
 

@@ -136,7 +136,11 @@ make_class_EAPIEbuildOptions()
     key save_unmodifiable_variables std::string
     key vdb_from_env_variables std::string
     key vdb_from_env_unless_empty_variables std::string
+    key binary_from_env_variables std::string
     key f_function_prefix std::string
+
+    key ignore_pivot_env_variables std::string
+    key ignore_pivot_env_functions std::string
 
     key merge_rewrite_symlinks bool
 
@@ -175,6 +179,7 @@ make_class_SupportedEAPI()
     key iuse_flag_parse_options IUseFlagParseOptions
 
     key breaks_portage bool
+    key can_be_pbin bool
 
     key ebuild_options                "tr1::shared_ptr<const EAPIEbuildOptions>"
     key ebuild_phases                 "tr1::shared_ptr<const EAPIEbuildPhases>"
@@ -201,6 +206,7 @@ make_class_EAPI()
     visible
 
     key name std::string
+    key exported_name std::string
     key supported "tr1::shared_ptr<const SupportedEAPI>"
 
     allow_named_args

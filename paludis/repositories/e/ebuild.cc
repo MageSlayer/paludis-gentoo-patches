@@ -54,6 +54,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <list>
 
@@ -123,7 +124,7 @@ EbuildCommand::operator() ()
             .with_setenv("CATEGORY", stringify(params.package_id->name().category))
             .with_setenv("REPOSITORY", stringify(params.package_id->repository()->name()))
             .with_setenv("FILESDIR", stringify(params.files_dir))
-            .with_setenv("EAPI", stringify(params.package_id->eapi()->name))
+            .with_setenv("EAPI", stringify(params.package_id->eapi()->exported_name))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) + stringify(PALUDIS_VERSION_SUFFIX) +
@@ -167,7 +168,13 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
                     params.package_id->eapi()->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
-                params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
+                    params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
+                    params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_functions)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_variables)
+            .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
+                    params.package_id->eapi()->supported->ebuild_environment_variables->env_distdir)
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")
@@ -697,6 +704,7 @@ WriteVDBEntryCommand::operator() ()
                 stringify(PALUDIS_VERSION_MICRO) +
                 (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
                  std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+            .with_setenv("EAPI", stringify(params.package_id->eapi()->exported_name))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
@@ -711,6 +719,10 @@ WriteVDBEntryCommand::operator() ()
                 params.package_id->eapi()->supported->ebuild_options->vdb_from_env_unless_empty_variables)
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
                 params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
+                params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_functions)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_variables)
             .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params.environment, params.package_id, _1))
             );
 
@@ -844,5 +856,73 @@ EbuildInfoCommand::EbuildInfoCommand(const EbuildCommandParams & p,
     EbuildCommand(p),
     info_params(f)
 {
+}
+
+WriteBinaryEbuildCommand::WriteBinaryEbuildCommand(const WriteBinaryEbuildCommandParams & p) :
+    params(p)
+{
+}
+
+void
+WriteBinaryEbuildCommand::operator() ()
+{
+    using namespace tr1::placeholders;
+
+    if (! EAPIData::get_instance()->eapi_from_string("pbin-1+" + params.package_id->eapi()->exported_name)->supported)
+        throw InstallActionError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" + params.package_id->eapi()->exported_name);
+
+    std::string cookie("1." + stringify(getpid()) + "." + stringify(time(0)));
+
+    std::string bindistfile(stringify(params.destination_repository->name()) + "--" + stringify(params.package_id->name().category)
+            + "--" + stringify(params.package_id->name().package) + "-" + stringify(params.package_id->version())
+            + "--" + cookie);
+
+    std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+            "/write_binary_ebuild.bash '" +
+            stringify(params.binary_ebuild_location) + "' '" +
+            stringify(params.binary_distdir / bindistfile) + "' '" +
+            stringify(params.environment_file) + "' '" +
+            stringify(params.image) + "'");
+
+    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment->hook_dirs());
+
+    Command cmd(Command(ebuild_cmd)
+            .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
+                stringify(PALUDIS_VERSION_MINOR) + "." +
+                stringify(PALUDIS_VERSION_MICRO) +
+                (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
+                 std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+            .with_setenv("EAPI", stringify(params.package_id->eapi()->exported_name))
+            .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
+            .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir))
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+            .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
+            .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
+            .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
+            .with_setenv("PALUDIS_COMMAND", params.environment->paludis_command())
+            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .with_setenv("PALUDIS_BINARY_FROM_ENV_VARIABLES",
+                params.package_id->eapi()->supported->ebuild_options->binary_from_env_variables)
+            .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
+                params.package_id->eapi()->supported->ebuild_options->f_function_prefix)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
+                params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_functions)
+            .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_variables)
+            .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository->params().binary_uri_prefix)
+            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository->params().binary_keywords)
+            .with_setenv("PALUDIS_BINARY_KEYWORDS_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
+                        + params.package_id->eapi()->exported_name)->supported->ebuild_metadata_variables->metadata_keywords)
+            .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
+                        + params.package_id->eapi()->exported_name)->supported->ebuild_environment_variables->env_distdir)
+            .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params.environment, params.package_id, _1))
+            );
+
+    if (0 != (run_command(cmd)))
+        throw InstallActionError("Write binary command failed");
 }
 

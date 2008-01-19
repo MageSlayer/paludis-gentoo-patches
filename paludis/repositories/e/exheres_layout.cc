@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -575,3 +575,11 @@ ExheresLayout::invalidate_masks()
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }
+
+FSEntry
+ExheresLayout::binary_ebuild_location(const QualifiedPackageName & q, const VersionSpec & v,
+        const std::string & eapi) const
+{
+    return package_directory(q) / _imp->entries->binary_ebuild_name(q, v, eapi);
+}
+

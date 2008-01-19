@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@ namespace paludis
 {
     class Environment;
     class Command;
+    class ERepository;
 
     namespace erepository
     {
@@ -334,6 +335,32 @@ namespace paludis
                  * Constructor.
                  */
                 WriteVDBEntryCommand(const WriteVDBEntryParams &);
+
+                /**
+                 * Run the command.
+                 */
+                void operator() ();
+        };
+
+        /**
+         * Command for generating binary ebuild entries (not a regular EbuildCommand).
+         *
+         * \ingroup grpebuildinterface
+         */
+        class WriteBinaryEbuildCommand :
+            private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
+        {
+            protected:
+                /**
+                 * Our parameters.
+                 */
+                const WriteBinaryEbuildCommandParams params;
+
+            public:
+                /**
+                 * Constructor.
+                 */
+                WriteBinaryEbuildCommand(const WriteBinaryEbuildCommandParams &);
 
                 /**
                  * Run the command.

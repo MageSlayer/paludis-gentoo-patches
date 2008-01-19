@@ -185,6 +185,31 @@ END
     allow_named_args
 }
 
+make_class_WriteBinaryEbuildCommandParams()
+{
+    key environment "const Environment *"
+    key destination_repository "const ERepository *"
+    key package_id "tr1::shared_ptr<const erepository::ERepositoryID>"
+    key binary_ebuild_location "FSEntry"
+    key binary_distdir "FSEntry"
+    key environment_file "FSEntry"
+    key image "FSEntry"
+    key rewrite_symlinks "bool"
+    key builddir FSEntry
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for writing a binary ebuild.
+         *
+         * \see WriteBinaryEbuildCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}
+
 make_class_VDBPostMergeCommandParams()
 {
     key root "FSEntry"
