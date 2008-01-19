@@ -118,6 +118,12 @@ TraditionalLayout::~TraditionalLayout()
 {
 }
 
+FSEntry
+TraditionalLayout::categories_file() const
+{
+    return _imp->tree_root / "profiles" / "categories";
+}
+
 void
 TraditionalLayout::need_category_names() const
 {
@@ -133,9 +139,9 @@ TraditionalLayout::need_category_names() const
     bool found_one(false);
 
     std::list<FSEntry> cats_list;
-    if (master_repository_location())
-        cats_list.push_back(*master_repository_location() / "profiles" / "categories");
-    cats_list.push_back(_imp->tree_root / "profiles" / "categories");
+    if (_imp->repository->params().master_repository)
+        cats_list.push_back(_imp->repository->params().master_repository->layout()->categories_file());
+    cats_list.push_back(categories_file());
 
     for (std::list<FSEntry>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
             i != i_end ; ++i)

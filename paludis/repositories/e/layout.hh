@@ -82,6 +82,9 @@ namespace paludis
                 virtual bool has_package_named(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+                virtual FSEntry categories_file() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 

@@ -120,6 +120,12 @@ ExheresLayout::~ExheresLayout()
 {
 }
 
+FSEntry
+ExheresLayout::categories_file() const
+{
+    return _imp->tree_root / "metadata" / "categories.conf";
+}
+
 void
 ExheresLayout::need_category_names() const
 {
@@ -135,9 +141,9 @@ ExheresLayout::need_category_names() const
     bool found_one(false);
 
     std::list<FSEntry> cats_list;
-    if (master_repository_location())
-        cats_list.push_back(*master_repository_location() / "metadata" / "categories.conf");
-    cats_list.push_back(_imp->tree_root / "metadata" / "categories.conf");
+    if (_imp->repository->params().master_repository)
+        cats_list.push_back(_imp->repository->params().master_repository->layout()->categories_file());
+    cats_list.push_back(categories_file());
 
     for (std::list<FSEntry>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
             i != i_end ; ++i)
