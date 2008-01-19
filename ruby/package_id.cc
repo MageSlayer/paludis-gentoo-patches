@@ -53,6 +53,21 @@ namespace
 
     /*
      * call-seq:
+     *     name -> QualifiedPackageName
+     *
+     * Our name.
+     */
+    VALUE
+    package_id_name(VALUE self)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        return qualified_package_name_to_value((*self_ptr)->name());
+    }
+
+
+    /*
+     * call-seq:
      *     supports_action(action_test) -> true or false
      *
      * Returns whether we support an action.
@@ -97,14 +112,6 @@ namespace
      *     slot -> String
      *
      * Our slot
-     */
-    /*
-     * Document-method: name
-     *
-     * call-seq:
-     *     name -> String
-     *
-     * Our name
      */
     template <typename T_, typename S_, const T_ (S_::* m_) () const>
     struct BaseValue
@@ -424,7 +431,7 @@ namespace
         c_package_id = rb_define_class_under(paludis_module(), "PackageID", rb_cObject);
         rb_funcall(c_package_id, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_package_id, "canonical_form", RUBY_FUNC_CAST(&package_id_canonical_form), 1);
-        rb_define_method(c_package_id, "name", RUBY_FUNC_CAST((&BaseValue<QualifiedPackageName,PackageID,&PackageID::name>::fetch)), 0);
+        rb_define_method(c_package_id, "name", RUBY_FUNC_CAST(&package_id_name), 0);
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);

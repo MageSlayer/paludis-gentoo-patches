@@ -109,7 +109,7 @@ module Paludis
         end
 
         def test_members
-            { :name => String, :version => VersionSpec, :slot => String, :repository_name => String,
+            { :name => QualifiedPackageName, :version => VersionSpec, :slot => String, :repository_name => String,
                 :keywords_key => MetadataKeywordNameSetKey, :iuse_key => MetadataIUseFlagSetKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
@@ -188,8 +188,8 @@ module Paludis
     class TestCase_ERepo < Test::Unit::TestCase
         include TestStuff
         def test_name
-            assert_kind_of String, pid_testrepo.name
-            assert_equal 'foo/bar', pid_testrepo.name
+            assert_kind_of QualifiedPackageName, pid_testrepo.name
+            assert_equal QualifiedPackageName.new('foo/bar'), pid_testrepo.name
         end
 
         def test_version
@@ -281,8 +281,8 @@ module Paludis
         include TestStuff
 
         def test_name
-            assert_kind_of String, pid_installed.name
-            assert_equal 'cat-one/pkg-one', pid_installed.name
+            assert_kind_of QualifiedPackageName, pid_installed.name
+            assert_equal QualifiedPackageName.new('cat-one/pkg-one'), pid_installed.name
         end
 
         def test_version
