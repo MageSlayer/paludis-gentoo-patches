@@ -48,6 +48,7 @@ paludis_repositories_e_include_HEADERS = \
 	variable_assigns.hh \
 	gpg.hh \
 	ebuild_count.hh \
+	changelog.hh \
 	misc_files.hh \
 	files_dir_size.hh \
 	repo_name.hh \
@@ -77,6 +78,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	variable_assigns.cc \
 	gpg.cc \
 	ebuild_count.cc \
+	changelog.cc \
 	misc_files.cc \
 	files_dir_size.cc \
 	repo_name.cc \

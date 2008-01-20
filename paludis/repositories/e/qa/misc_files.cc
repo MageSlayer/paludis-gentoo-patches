@@ -37,9 +37,6 @@ paludis::erepository::misc_files_check(
     Log::get_instance()->message(ll_debug, lc_context) << "misc_files_check '"
         << dir << "', " << name << "'";
 
-    if (! (dir / "ChangeLog").is_regular_file())
-        reporter.message(QAMessage(dir / "ChangeLog", qaml_normal, name, "ChangeLog is missing or not a regular file"));
-
     if (! (dir / "metadata.xml").is_regular_file())
         reporter.message(QAMessage(dir / "metadata.xml", qaml_normal, name, "metadata.xml is missing or not a regular file"));
 

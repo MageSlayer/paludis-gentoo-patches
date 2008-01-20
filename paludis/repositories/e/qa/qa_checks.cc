@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/qa/stray_files.hh>
 #include <paludis/repositories/e/qa/gpg.hh>
 #include <paludis/repositories/e/qa/ebuild_count.hh>
+#include <paludis/repositories/e/qa/changelog.hh>
 #include <paludis/repositories/e/qa/misc_files.hh>
 #include <paludis/repositories/e/qa/files_dir_size.hh>
 #include <paludis/repositories/e/qa/eapi_supported.hh>
@@ -103,6 +104,9 @@ QAChecks::QAChecks() :
 
     _imp->package_dir_checks_group->add_check("ebuild_count",
             tr1::bind(ebuild_count_check, _2, _1, _4, _5, "ebuild_count"));
+
+    _imp->package_dir_checks_group->add_check("changelog",
+            tr1::bind(changelog_check, _2, _1, _5, "changelog"));
 
     _imp->package_dir_checks_group->add_check("misc_files",
             tr1::bind(misc_files_check, _2, _1, "misc_files"));

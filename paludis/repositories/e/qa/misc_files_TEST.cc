@@ -70,25 +70,6 @@ namespace test_cases
         }
     } test_has_misc_files_check;
 
-    struct HasMiscFilesCheckNoChangeLogTest : TestCase
-    {
-        HasMiscFilesCheckNoChangeLogTest() : TestCase("has misc files no ChangeLog") { }
-
-        void run()
-        {
-            FSEntry e("misc_files_TEST_dir");
-            TEST_CHECK(e.exists());
-            TEST_CHECK(e.is_directory());
-
-            FSEntry f1(e / "cat" / "no-changelog");
-            TEST_CHECK(f1.exists());
-
-            TestReporter r;
-            TEST_CHECK(misc_files_check(r, f1, "misc_files"));
-            TEST_CHECK_EQUAL(r.count, 1u);
-        }
-    } test_has_misc_files_check_no_changelog;
-
     struct HasMiscFilesCheckNoMetadataTest : TestCase
     {
         HasMiscFilesCheckNoMetadataTest() : TestCase("has misc files no metadata.xml") { }
