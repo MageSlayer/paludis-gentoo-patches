@@ -12,6 +12,7 @@
 # You should ensure that it has execute permissions.
 
 [[ ${RESUME_COMMAND} = *" '="* ]] || exit 0
+${DEPLIST_HAS_ERRORS} && exit 0
 echo
 
 template_var=$(tr '[[:lower:]]' '[[:upper:]]' <<<"${PALUDIS_CLIENT}")_CMDLINE_resume_command_template

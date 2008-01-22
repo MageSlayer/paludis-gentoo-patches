@@ -258,8 +258,11 @@ InstallTask::_display_task_list()
     Context context("When displaying task list:");
 
     if (_imp->pretend &&
-        0 != perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
-                             _imp->raw_targets.end(), " "))).max_exit_status)
+        0 != perform_hook(Hook("install_pretend_pre")
+                                    ("TARGETS", join(
+                                        _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
+                        ).max_exit_status)
         throw InstallActionError("Pretend install aborted by hook");
 
     on_display_merge_list_pre();
@@ -410,8 +413,11 @@ InstallTask::_pretend()
 
     if (_imp->pretend)
     {
-        if (0 != perform_hook(Hook("install_pretend_post")("TARGETS", join(
-                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))).max_exit_status)
+        if (0 != perform_hook(Hook("install_pretend_post")
+                                    ("TARGETS", join(
+                                        _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
+                        ).max_exit_status)
             throw InstallActionError("Pretend install aborted by hook");
     }
 
