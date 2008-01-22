@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
+#include <signal.h>
 #include <map>
 #include <iostream>
 #include <cstring>
@@ -284,6 +285,14 @@ Command::gid() const
     return _imp->gid;
 }
 
+namespace
+{
+    void wait_handler(int sig)
+    {
+        std::cerr << "Caught signal " << sig << " in run_command child process" << std::endl;
+    }
+}
+
 int
 paludis::run_command(const Command & cmd)
 {
@@ -325,6 +334,20 @@ paludis::run_command(const Command & cmd)
     if (cmd.captured_stdout_stream())
         captured_stdout.reset(new Pipe);
 
+    /* Why do we fork twice, rather than install a SIGCHLD handler that writes to a pipe that
+     * our pselect watches? Simple: Unix is retarded. APUE 12.8 says "Each thread has its own signal
+     * mask, but the signal disposition is shared by all threads in the process.", which means
+     * we have to do crazy things... */
+
+    /* Temporarily disable SIGINT and SIGTERM to this thread, so that we can set up signal
+     * handlers. */
+    sigset_t intandterm;
+    sigemptyset(&intandterm);
+    sigaddset(&intandterm, SIGINT);
+    sigaddset(&intandterm, SIGTERM);
+    if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
+        throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+
     pid_t child(fork());
     if (0 == child)
     {
@@ -332,6 +355,16 @@ paludis::run_command(const Command & cmd)
         if (0 == child_child)
         {
             /* The pid that does the exec */
+
+            /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
+            struct sigaction act;
+            act.sa_handler = SIG_DFL;
+            act.sa_flags = 0;
+            sigaction(SIGINT,  &act, 0);
+            sigaction(SIGTERM, &act, 0);
+            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+                std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+
             try
             {
                 if (cmd.pipe_command_handler())
@@ -431,7 +464,20 @@ paludis::run_command(const Command & cmd)
         }
         else
         {
-            /* The pid that waits for the exec pid and then writes to the done pipe */
+            /* The pid that waits for the exec pid and then writes to the done pipe. */
+
+            /* On SIGINT or SIGTERM, just output a notice. */
+            struct sigaction act;
+            act.sa_handler = &wait_handler;
+            act.sa_flags = 0;
+            sigemptyset(&act.sa_mask);
+            sigaddset(&act.sa_mask, SIGINT);
+            sigaddset(&act.sa_mask, SIGTERM);
+            sigaction(SIGINT, &act, 0);
+            sigaction(SIGTERM, &act, 0);
+            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+                std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+
             if (cmd.pipe_command_handler())
             {
                 close(pipe_command_reader->read_fd());
@@ -464,10 +510,28 @@ paludis::run_command(const Command & cmd)
             stderr_close_fd = -1;
 
             int ret(-1);
-            if (-1 == waitpid(child_child, &status, 0))
-                std::cerr << "wait failed: " + stringify(strerror(errno)) + "'" << std::endl;
-            else
-                ret = (WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status));
+            bool repeat(true);
+            while (repeat)
+            {
+                if (-1 == waitpid(child_child, &status, 0))
+                {
+                    if (errno == EINTR)
+                    {
+                        std::cerr << "wait failed: '" + stringify(strerror(errno)) + "', trying once more" << std::endl;
+                        repeat = false;
+                    }
+                    else
+                    {
+                        std::cerr << "wait failed: '" + stringify(strerror(errno)) + "'" << std::endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    ret = (WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status));
+                    break;
+                }
+            }
 
             {
                 FDOutputStream stream(internal_command_reader->write_fd());
@@ -482,6 +546,11 @@ paludis::run_command(const Command & cmd)
     else
     {
         /* Our original pid */
+
+        /* Restore SIGINT and SIGTERM handling */
+        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+            throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+
         if (cmd.pipe_command_handler())
         {
             close(pipe_command_reader->write_fd());
