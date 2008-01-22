@@ -39,6 +39,7 @@
 #include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/variable_assigns.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
+#include <paludis/repositories/e/qa/root_variable.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/header.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
@@ -157,6 +158,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
             tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));
+
+    _imp->package_id_file_contents_checks_group->add_check("root_variable",
+            tr1::bind(root_variable_check, _1, _2, _5, _6, "root_variable"));
 
     _imp->package_id_file_contents_checks_group->add_check("whitespace",
             tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
