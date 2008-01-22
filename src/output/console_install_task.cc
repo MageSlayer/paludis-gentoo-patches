@@ -51,6 +51,8 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <cstring>
+#include <cstdlib>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -88,7 +90,7 @@ namespace
         }
         cerr << endl;
         cerr << "Exiting with failure" << endl;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -1725,14 +1727,14 @@ ConsoleInstallTask::show_resume_command(const std::string & resume_command_templ
                 else
                 {
                     cerr << "Resume command NOT saved to file: " << file_name << " due to error "
-                        << strerror(errno) << endl;
+                        << std::strerror(errno) << endl;
                     cerr << "Resume command: " << file_name << endl;
                 }
             }
             else
             {
                 cerr << "Resume command NOT saved to file: " << file_name << " due to error "
-                    << strerror(errno) << endl;
+                    << std::strerror(errno) << endl;
                 cerr << "Resume command: " << resume_command << endl;
             }
         }

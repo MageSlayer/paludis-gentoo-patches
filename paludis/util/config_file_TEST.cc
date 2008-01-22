@@ -28,6 +28,7 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
+#include <cstdlib>
 #include <iomanip>
 #include <unistd.h>
 

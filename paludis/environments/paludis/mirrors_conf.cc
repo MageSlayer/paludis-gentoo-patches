@@ -31,6 +31,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <algorithm>
 #include <vector>
 
 using namespace paludis;

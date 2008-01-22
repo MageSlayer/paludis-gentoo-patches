@@ -40,6 +40,7 @@
 #include <pwd.h>
 #include <map>
 #include <iostream>
+#include <cstring>
 #include "config.h"
 
 using namespace paludis;
@@ -415,18 +416,18 @@ paludis::run_command(const Command & cmd)
             {
                 std::cerr << "exec of '" << command << "' failed due to exception '" << e.message()
                     << "' (" << e.what() << ")" << std::endl;
-                exit(123);
+                std::exit(123);
             }
             catch (...)
             {
                 std::cerr << "exec of '" << command << "' failed due to unknown exception" << std::endl;
-                exit(124);
+                std::exit(124);
             }
         }
         else if (-1 == child_child)
         {
             std::cerr << "fork failed: " + stringify(strerror(errno)) + "'" << std::endl;
-            exit(125);
+            std::exit(125);
         }
         else
         {

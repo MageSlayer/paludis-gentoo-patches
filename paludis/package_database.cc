@@ -39,6 +39,7 @@
 #include <paludis/util/member_iterator.hh>
 #include <paludis/query.hh>
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <set>

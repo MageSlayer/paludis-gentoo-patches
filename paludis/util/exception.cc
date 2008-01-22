@@ -22,6 +22,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <list>
+#include <cstdlib>
 
 #include "config.h"
 

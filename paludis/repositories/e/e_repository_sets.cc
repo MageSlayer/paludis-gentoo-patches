@@ -43,6 +43,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tr1_functional.hh>
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <set>

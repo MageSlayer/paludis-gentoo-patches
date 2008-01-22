@@ -21,6 +21,7 @@
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

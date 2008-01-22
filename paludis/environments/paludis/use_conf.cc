@@ -36,6 +36,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/mutex.hh>
+#include <algorithm>
 #include <list>
 #include <vector>
 

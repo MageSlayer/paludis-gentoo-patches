@@ -20,6 +20,7 @@
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/repositories/unpackaged/dep_parser.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 

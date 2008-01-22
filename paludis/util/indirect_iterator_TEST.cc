@@ -23,6 +23,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <algorithm>
 #include <vector>
 #include <list>
 

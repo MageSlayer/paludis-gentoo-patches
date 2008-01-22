@@ -32,6 +32,7 @@
 #include <src/output/colour.hh>
 
 #include <iostream>
+#include <cstdlib>
 
 using namespace paludis;
 

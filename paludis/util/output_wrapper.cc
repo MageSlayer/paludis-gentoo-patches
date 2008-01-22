@@ -18,6 +18,7 @@
  */
 
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
 #include <errno.h>
@@ -82,13 +83,13 @@ main(int argc, char *argv[])
 
     if (0 != pipe(stdout_pipes))
     {
-        std::cerr << argv[0] << ": pipe failed: " << strerror(errno) << std::endl;
+        std::cerr << argv[0] << ": pipe failed: " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
     if (0 != pipe(stderr_pipes))
     {
-        std::cerr << argv[0] << ": pipe failed: " << strerror(errno) << std::endl;
+        std::cerr << argv[0] << ": pipe failed: " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -98,25 +99,25 @@ main(int argc, char *argv[])
     {
         if (-1 == dup2(stdout_pipes[1], 1))
         {
-            std::cerr << argv[0] << ": dup2 failed: " << strerror(errno) << std::endl;
+            std::cerr << argv[0] << ": dup2 failed: " << std::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
         close(stdout_pipes[0]);
 
         if (-1 == dup2(stderr_pipes[1], 2))
         {
-            std::cerr << argv[0] << ": dup2 failed: " << strerror(errno) << std::endl;
+            std::cerr << argv[0] << ": dup2 failed: " << std::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
         close(stderr_pipes[0]);
 
         execvp(argv[argi], &argv[argi]);
-        std::cerr << argv[0] << ": execvp failed: " << strerror(errno) << std::endl;
+        std::cerr << argv[0] << ": execvp failed: " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
     else if (-1 == pid)
     {
-        std::cerr << argv[0] << ": fork failed: " << strerror(errno) << std::endl;
+        std::cerr << argv[0] << ": fork failed: " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
     else
@@ -139,7 +140,7 @@ main(int argc, char *argv[])
             ret = select(std::max(stdout_pipes[0], stderr_pipes[0]) + 1, &fds, 0, 0, 0);
             if (-1 == ret)
             {
-                std::cerr << argv[0] << ": select failed: " << strerror(errno) << std::endl;
+                std::cerr << argv[0] << ": select failed: " << std::strerror(errno) << std::endl;
                 return EXIT_FAILURE;
             }
             else if (ret)
@@ -254,7 +255,7 @@ main(int argc, char *argv[])
         int status(-1);
         if (-1 == wait(&status))
         {
-            std::cerr << argv[0] << ": wait failed: " << strerror(errno) << std::endl;
+            std::cerr << argv[0] << ": wait failed: " << std::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
         return WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status);

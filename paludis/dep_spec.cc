@@ -449,7 +449,7 @@ PackageDepSpec::version_requirements_ptr() const
     return _imp->data->version_requirements_ptr();
 }
 
-const VersionRequirementsMode
+VersionRequirementsMode
 PackageDepSpec::version_requirements_mode() const
 {
     return _imp->data->version_requirements_mode();

@@ -27,6 +27,7 @@
 #include <test/test_framework.hh>
 
 #include <unistd.h>
+#include <cstdlib>
 
 using namespace broken_linkage_finder;
 

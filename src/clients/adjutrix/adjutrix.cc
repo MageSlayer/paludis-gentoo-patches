@@ -35,6 +35,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <iostream>
+#include <cstdlib>
 #include <unistd.h>
 
 using namespace paludis;

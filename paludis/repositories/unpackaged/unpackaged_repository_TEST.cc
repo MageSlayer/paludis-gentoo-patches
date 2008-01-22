@@ -21,6 +21,7 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>

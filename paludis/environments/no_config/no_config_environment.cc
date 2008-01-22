@@ -35,6 +35,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <algorithm>
 #include <set>
 #include <list>
 

@@ -27,6 +27,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;

@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstring>
 #include <fstream>
 #include <map>
 #include <set>
@@ -152,7 +153,7 @@ ElfLinkageChecker::check_file(const FSEntry & file)
 
     std::ifstream stream(stringify(file).c_str());
     if (! stream)
-        throw FSError("Error opening file '" + stringify(file) + "': " + strerror(errno));
+        throw FSError("Error opening file '" + stringify(file) + "': " + std::strerror(errno));
 
     return _imp->check_elf<Elf32Type>(file, stream) || _imp->check_elf<Elf64Type>(file, stream);
 }
@@ -305,7 +306,7 @@ ElfLinkageChecker::need_breakage_added(
             std::ifstream stream(stringify(file).c_str());
             if (! stream)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Error opening '" + stringify(file) + "': " + strerror(errno));
+                Log::get_instance()->message(ll_warning, lc_no_context, "Error opening '" + stringify(file) + "': " + std::strerror(errno));
                 continue;
             }
 

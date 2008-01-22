@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <cerrno>
+#include <cstring>
 #include <glob.h>
 
 using namespace paludis;
@@ -98,7 +99,7 @@ namespace
 
             case GLOB_ABORTED:
                 globfree(&g);
-                throw WildcardExpansionError("Error running glob(): " + stringify(strerror(errno)));
+                throw WildcardExpansionError("Error running glob(): " + stringify(std::strerror(errno)));
 
             default:
                 globfree(&g);

@@ -18,12 +18,13 @@
  */
 
 #include <dirent.h>
-#include <errno.h>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <sys/types.h>
 #include <set>
+#include <cstring>
+#include <cerrno>
 
 using namespace paludis;
 
@@ -52,7 +53,7 @@ namespace paludis
 }
 
 DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) throw () :
-    FSError("Error opening directory '" + stringify(location) + "': " + strerror(errno_value))
+    FSError("Error opening directory '" + stringify(location) + "': " + std::strerror(errno_value))
 {
 }
 

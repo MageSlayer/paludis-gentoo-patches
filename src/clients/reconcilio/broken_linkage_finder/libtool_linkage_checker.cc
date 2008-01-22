@@ -31,6 +31,7 @@
 #include <paludis/util/tokeniser.hh>
 
 #include <algorithm>
+#include <cstring>
 #include <cerrno>
 #include <fstream>
 #include <functional>
@@ -91,7 +92,7 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
 
     std::ifstream stream(stringify(file).c_str());
     if (! stream)
-        throw FSError("Error opening file '" + stringify(file) + "': " + strerror(errno));
+        throw FSError("Error opening file '" + stringify(file) + "': " + std::strerror(errno));
 
     KeyValueConfigFileOptions opts;
     opts += kvcfo_disallow_space_around_equals;

@@ -28,6 +28,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <map>
+#include <algorithm>
 
 /** \file
  * Implementation for FakeRepositoryBase.

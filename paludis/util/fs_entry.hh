@@ -28,6 +28,7 @@
 #include <string>
 #include <iosfwd>
 #include <paludis/util/tr1_memory.hh>
+#include <sys/types.h>
 
 /** \file
  * Declarations for FSEntry.

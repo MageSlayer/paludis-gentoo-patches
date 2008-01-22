@@ -347,7 +347,7 @@ namespace paludis
             /**
              * Fetch the version requirements mode.
              */
-            const VersionRequirementsMode version_requirements_mode() const;
+            VersionRequirementsMode version_requirements_mode() const;
 
             /**
              * Fetch the slot name (may be a zero pointer).

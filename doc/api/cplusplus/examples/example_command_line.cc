@@ -63,7 +63,7 @@ examples::show_help_and_exit(const char * const argv[])
     cout << endl;
     cout << *CommandLine::get_instance();
 
-    exit(EXIT_SUCCESS);
+    std::exit(EXIT_SUCCESS);
 }
 
 void
@@ -75,7 +75,7 @@ examples::show_version_and_exit()
         cout << " svn " << PALUDIS_SUBVERSION_REVISION;
     cout << endl;
 
-    exit(EXIT_SUCCESS);
+    std::exit(EXIT_SUCCESS);
 }
 
 void
