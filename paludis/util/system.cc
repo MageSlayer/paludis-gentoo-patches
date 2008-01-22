@@ -345,8 +345,13 @@ paludis::run_command(const Command & cmd)
     sigemptyset(&intandterm);
     sigaddset(&intandterm, SIGINT);
     sigaddset(&intandterm, SIGTERM);
+#ifdef PALUDIS_ENABLE_THREADS
     if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
         throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+#else
+    if (0 != sigprocmask(SIG_BLOCK, &intandterm, 0))
+        throw InternalError(PALUDIS_HERE, "sigprocmask failed");
+#endif
 
     pid_t child(fork());
     if (0 == child)
@@ -362,9 +367,13 @@ paludis::run_command(const Command & cmd)
             act.sa_flags = 0;
             sigaction(SIGINT,  &act, 0);
             sigaction(SIGTERM, &act, 0);
+#ifdef PALUDIS_ENABLE_THREADS
             if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
                 std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
-
+#else
+            if (0 != sigprocmask(SIG_UNBLOCK, &intandterm, 0))
+                std::cerr << "sigprocmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+#endif
             try
             {
                 if (cmd.pipe_command_handler())
@@ -475,8 +484,13 @@ paludis::run_command(const Command & cmd)
             sigaddset(&act.sa_mask, SIGTERM);
             sigaction(SIGINT, &act, 0);
             sigaction(SIGTERM, &act, 0);
+#ifdef PALUDIS_ENABLE_THREADS
             if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
                 std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+#else
+            if (0 != sigprocmask(SIG_UNBLOCK, &intandterm, 0))
+                std::cerr << "sigprocmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+#endif
 
             if (cmd.pipe_command_handler())
             {
@@ -548,8 +562,13 @@ paludis::run_command(const Command & cmd)
         /* Our original pid */
 
         /* Restore SIGINT and SIGTERM handling */
+#ifdef PALUDIS_ENABLE_THREADS
         if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
             throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+#else
+        if (0 != sigprocmask(SIG_UNBLOCK, &intandterm, 0))
+            throw InternalError(PALUDIS_HERE, "sigprocmask failed");
+#endif
 
         if (cmd.pipe_command_handler())
         {
