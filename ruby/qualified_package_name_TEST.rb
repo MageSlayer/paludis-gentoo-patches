@@ -3,6 +3,7 @@
 
 #
 # Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,6 +98,18 @@ module Paludis
             assert_raise TypeError do
                 QualifiedPackageName.new('foo-bar/baz') <=> Paludis::parse_user_package_dep_spec('foo-bar/baz', [])
             end
+        end
+
+        def test_hash
+            qpn = QualifiedPackageName.new('a/b')
+            qpn2 = QualifiedPackageName.new('a','b')
+            assert_equal qpn.hash, qpn2.hash
+        end
+
+        def test_eql?
+            qpn = QualifiedPackageName.new('a/b')
+            qpn2 = QualifiedPackageName.new('a','b')
+            assert qpn.eql?(qpn2)
         end
     end
 end

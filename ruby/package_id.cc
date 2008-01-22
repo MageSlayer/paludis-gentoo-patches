@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Richard Brown
+ * Copyright (c) 2007, 2008 Richard Brown
  * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -413,14 +413,6 @@ namespace
         }
     };
 
-    VALUE
-    package_id_equal(VALUE self, VALUE other)
-    {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        return (**self_ptr == *value_to_package_id(other));
-    }
-
     void do_register_package_id()
     {
         /*
@@ -435,9 +427,11 @@ namespace
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
-        rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
+        rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
         rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
         rb_define_method(c_package_id, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::to_s_via_ptr), 0);
+        rb_define_method(c_package_id, "hash", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::hash_via_ptr), 0);
+        rb_define_method(c_package_id, "eql?", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
         rb_define_method(c_package_id, "supports_action", RUBY_FUNC_CAST(&package_id_supports_action), 1);
         rb_define_method(c_package_id, "perform_action", RUBY_FUNC_CAST(&package_id_perform_action), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);

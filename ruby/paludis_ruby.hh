@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh
- * Copyright (c) 2006, 2007 Richard Brown
+ * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,6 +37,7 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/hashed_containers.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa.hh>
@@ -165,13 +166,36 @@ namespace paludis
                 return (*left_ptr == *right_ptr) ? Qtrue : Qfalse;
             }
 
+            static VALUE equal_via_ptr(VALUE left, VALUE right)
+            {
+                T_ * left_ptr, * right_ptr;
+                Data_Get_Struct(left, T_, left_ptr);
+                Data_Get_Struct(right, T_, right_ptr);
+                return (**left_ptr == **right_ptr) ? Qtrue : Qfalse;
+            }
+
             static VALUE to_s(VALUE self)
             {
                 T_ * self_ptr;
                 Data_Get_Struct(self, T_, self_ptr);
-
                 return rb_str_new2(stringify(*self_ptr).c_str());
+
             }
+
+            static VALUE hash(VALUE self)
+            {
+                T_ * self_ptr;
+                Data_Get_Struct(self, T_, self_ptr);
+                return INT2FIX(CRCHash<T_>()(*self_ptr));
+            }
+
+            static VALUE hash_via_ptr(VALUE self)
+            {
+                T_ * self_ptr;
+                Data_Get_Struct(self, T_, self_ptr);
+                return INT2FIX(CRCHash<typename tr1::remove_const<typename T_::element_type>::type>()(**self_ptr));
+            }
+
 
             static VALUE to_s_via_ptr(VALUE self)
             {

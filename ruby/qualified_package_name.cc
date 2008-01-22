@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -162,10 +163,12 @@ namespace
         c_qualified_package_name = rb_define_class_under(paludis_module(), "QualifiedPackageName", rb_cObject);
         rb_define_singleton_method(c_qualified_package_name, "new", RUBY_FUNC_CAST(&qualified_package_name_new), -1);
         rb_define_method(c_qualified_package_name, "initialize", RUBY_FUNC_CAST(&qualified_package_name_init), -1);
-        rb_define_method(c_qualified_package_name, "<=>", RUBY_FUNC_CAST(qualified_package_name_compare), 1);
+        rb_define_method(c_qualified_package_name, "<=>", RUBY_FUNC_CAST(&qualified_package_name_compare), 1);
         rb_include_module(c_qualified_package_name, rb_mComparable);
         rb_define_method(c_qualified_package_name, "to_s", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::to_s), 0);
         rb_define_alias(c_qualified_package_name, "to_str", "to_s");
+        rb_define_method(c_qualified_package_name, "hash", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::hash), 0);
+        rb_define_method(c_qualified_package_name, "eql?", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::equal), 1);
         rb_define_method(c_qualified_package_name, "category",
                 RUBY_FUNC_CAST((&QPNMember<CategoryNamePart, &QualifiedPackageName::category>::fetch)), 0);
         rb_define_method(c_qualified_package_name, "category=",

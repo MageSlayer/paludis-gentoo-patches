@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2007 Richard Brown
+# Copyright (c) 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -182,6 +182,18 @@ module Paludis
             mask = masks.first
             assert_kind_of RepositoryMask, mask
             assert_equal "repository_mask", mask.mask_key.raw_name
+        end
+
+        def test_hash
+            a = pid_testrepo
+            b = pid_testrepo
+            assert_equal a.hash, b.hash
+        end
+
+        def test_eql
+            a = pid_testrepo
+            b = pid_testrepo
+            assert a.eql?(b)
         end
     end
 
