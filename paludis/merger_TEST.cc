@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -85,15 +85,15 @@ namespace
         {
         }
 
-        void record_install_file(const FSEntry &, const FSEntry &, const std::string &)
+        void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &)
         {
         }
 
-        void record_install_dir(const FSEntry &, const FSEntry &)
+        void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &)
         {
         }
 
-        void record_install_sym(const FSEntry &, const FSEntry &)
+        void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &)
         {
         }
 

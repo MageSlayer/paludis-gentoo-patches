@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/options-fwd.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 
@@ -42,7 +43,16 @@ namespace paludis
     class Environment;
     class Hook;
 
+#include <paludis/merger-se.hh>
 #include <paludis/merger-sr.hh>
+
+    /**
+     * Status flags for Merger.
+     *
+     * \ingroup g_repository
+     * \since 0.26
+     */
+    typedef Options<MergeStatusFlag> MergeStatusFlags;
 
     /**
      * Thrown if an error occurs during a Merger operation.
@@ -129,9 +139,9 @@ namespace paludis
             virtual void on_file_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual void install_file(const FSEntry &, const FSEntry &, const std::string &);
+            virtual MergeStatusFlags install_file(const FSEntry &, const FSEntry &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_file(FSEntry);
-            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &) = 0;
+            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &) = 0;
 
             virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
@@ -140,9 +150,9 @@ namespace paludis
             virtual void on_dir_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual void install_dir(const FSEntry &, const FSEntry &);
+            virtual MergeStatusFlags install_dir(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_dir(FSEntry);
-            virtual void record_install_dir(const FSEntry &, const FSEntry &) = 0;
+            virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &) = 0;
 
             virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
@@ -151,9 +161,9 @@ namespace paludis
             virtual void on_sym_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual void install_sym(const FSEntry &, const FSEntry &);
+            virtual MergeStatusFlags install_sym(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_sym(FSEntry);
-            virtual void record_install_sym(const FSEntry &, const FSEntry &) = 0;
+            virtual void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &) = 0;
 
             virtual void unlink_misc(FSEntry);
             virtual void on_misc(bool is_check, const FSEntry &, const FSEntry &);

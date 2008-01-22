@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/options.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -112,7 +113,7 @@ VDBMerger::extend_hook(const Hook & h)
 }
 
 void
-VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
+VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const MergeStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
@@ -124,7 +125,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 
     MD5 md5(infile);
 
-    std::string line(">>> [obj] " + tidy_real);
+    std::string line(make_arrows(flags) + " [obj] " + tidy_real);
     if (tidy_real != tidy)
         line.append(" (" + FSEntry(tidy).basename() + ")");
     display_override(line);
@@ -133,22 +134,22 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 }
 
 void
-VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
+VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    display_override(">>> [dir] " + tidy);
+    display_override(make_arrows(flags) + " [dir] " + tidy);
 
     *_imp->contents_file << "dir " << tidy << std::endl;
 }
 
 void
-VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir)
+VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
     time_t timestamp((dst_dir / src.basename()).mtime());
 
-    display_override(">>> [sym] " + tidy);
+    display_override(make_arrows(flags) + " [sym] " + tidy);
 
     *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp << std::endl;
 }
@@ -293,5 +294,50 @@ void
 VDBMerger::display_override(const std::string & message) const
 {
     std::cout << message << std::endl;
+}
+
+std::string
+VDBMerger::make_arrows(const MergeStatusFlags & flags) const
+{
+    std::string result(">>>");
+    for (MergeStatusFlag m(static_cast<MergeStatusFlag>(0)), m_end(last_msi) ; m != m_end ;
+            m = static_cast<MergeStatusFlag>(static_cast<long>(m) + 1))
+    {
+        if (! flags[m])
+            continue;
+
+        switch (m)
+        {
+            case msi_unlinked_first:
+                result[0] = '<';
+                continue;
+
+            case msi_used_existing:
+                result[0] = '=';
+                continue;
+
+            case msi_parent_rename:
+                result[1] = '^';
+                continue;
+
+            case msi_rename:
+                result[1] = '-';
+                continue;
+
+            case msi_fixed_ownership:
+                result[2] = '~';
+                continue;
+
+            case msi_setid_bits:
+                result[2] = '*';
+                continue;
+
+            case last_msi:
+                break;
+        }
+        throw InternalError(PALUDIS_HERE, "Unhandled MergeStatusFlag '" + stringify(static_cast<long>(m)) + "'");
+    }
+
+    return result;
 }
 

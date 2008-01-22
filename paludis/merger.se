@@ -1,0 +1,24 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_MergeStatusFlag()
+{
+    prefix msi
+
+    key msi_unlinked_first          "We unlinked before the merge"
+    key msi_rename                  "We renamed rather than copied"
+    key msi_parent_rename           "A parent directory was renamed, so we weren't copied"
+    key msi_used_existing           "We used the existing entry (e.g. dir over dir)"
+    key msi_fixed_ownership         "We fixed owner or group from the reduced id"
+    key msi_setid_bits              "The source file had set*id bits"
+
+    doxygen_comment << "END"
+        /**
+         * Status flags for Merger, used by MergeStatusFlags
+         *
+         * \ingroup g_repository
+         * \since 0.26
+         */
+END
+}
+

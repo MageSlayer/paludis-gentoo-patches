@@ -20,6 +20,7 @@ make_class_MergerOptions()
          * \see Merger
          * \ingroup g_repository
          * \nosubgrouping
+         * \since 0.26
          */
 END
 }

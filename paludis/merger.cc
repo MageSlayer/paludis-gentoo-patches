@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/options.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -447,8 +448,7 @@ Merger::on_file_over_nothing(bool is_check, const FSEntry & src, const FSEntry &
     if (is_check)
         return;
 
-    install_file(src, dst, src.basename());
-    record_install_file(src, dst, src.basename());
+    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()));
 }
 
 void
@@ -460,14 +460,12 @@ Merger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & ds
     if (config_protected(src, dst))
     {
         std::string cfgpro_name(make_config_protect_name(src, dst));
-        install_file(src, dst, cfgpro_name);
-        record_install_file(src, dst, cfgpro_name);
+        record_install_file(src, dst, cfgpro_name, install_file(src, dst, cfgpro_name));
     }
     else
     {
         unlink_file(dst / src.basename());
-        install_file(src, dst, src.basename());
-        record_install_file(src, dst, src.basename());
+        record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
     }
 }
 
@@ -485,8 +483,7 @@ Merger::on_file_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_sym(dst / src.basename());
-    install_file(src, dst, src.basename());
-    record_install_file(src, dst, src.basename());
+    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
 void
@@ -496,8 +493,7 @@ Merger::on_file_over_misc(bool is_check, const FSEntry & src, const FSEntry & ds
         return;
 
     unlink_misc(dst / src.basename());
-    install_file(src, dst, src.basename());
-    record_install_file(src, dst, src.basename());
+    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
 void
@@ -506,8 +502,7 @@ Merger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
     if (is_check)
         return;
 
-    record_install_dir(src, dst);
-    install_dir(src, dst);
+    record_install_dir(src, dst, install_dir(src, dst));
 }
 
 void
@@ -523,7 +518,7 @@ Merger::on_dir_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (is_check)
         return;
 
-    record_install_dir(src, dst);
+    record_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
 }
 
 void
@@ -544,7 +539,7 @@ Merger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
                 "' to be a directory but found a symlink to a directory");
         if (! is_check)
-            record_install_dir(src, dst);
+            record_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
     }
     else
         on_error(is_check, "Expected '" + stringify(dst / src.basename()) +
@@ -558,8 +553,7 @@ Merger::on_dir_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_misc(dst / src.basename());
-    install_dir(src, dst);
-    record_install_dir(src, dst);
+    record_install_dir(src, dst, install_dir(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -568,8 +562,7 @@ Merger::on_sym_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
     if (is_check)
         return;
 
-    install_sym(src, dst);
-    record_install_sym(src, dst);
+    record_install_sym(src, dst, install_sym(src, dst));
 }
 
 void
@@ -579,8 +572,7 @@ Merger::on_sym_over_file(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_file(dst / src.basename());
-    install_sym(src, dst);
-    record_install_sym(src, dst);
+    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -597,8 +589,7 @@ Merger::on_sym_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         return;
 
     unlink_sym(dst / src.basename());
-    install_sym(src, dst);
-    record_install_sym(src, dst);
+    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -608,15 +599,15 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_misc(dst / src.basename());
-    install_sym(src, dst);
-    record_install_sym(src, dst);
+    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
-void
+MergeStatusFlags
 Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
     Context context("When installing file '" + stringify(src) + "' to '" + stringify(dst_dir) + "' with protection '"
             + stringify(dst_name) + "':");
+    MergeStatusFlags result;
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_file_pre")
@@ -634,6 +625,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         throw MergerError("Could not set SELinux context on '"
                 + stringify(src) + "': " + stringify(::strerror(errno)));
 
+    mode_t src_perms(src.permissions());
+    if (0 != (src_perms & (S_ISVTX | S_ISUID | S_ISGID)))
+        result += msi_setid_bits;
+
     uid_t dest_uid(src.owner());
     gid_t dest_gid(src.group());
 
@@ -642,15 +637,22 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
         gid_t new_gid(dest_gid == _options.environment->reduced_gid() ? 0 : -1);
         if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
+        {
             FSEntry(src).chown(new_uid, new_gid);
+            result += msi_fixed_ownership;
+        }
         dest_uid = new_uid == 0 ? 0 : dest_uid;
         dest_gid = new_gid == 0 ? 0 : dest_gid;
     }
 
     if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
     {
+        result += msi_rename;
         if (! dst_real.utime())
             throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
+
+        /* set*id bits get partially clobbered on a rename on linux */
+        dst_real.chmod(src_perms);
     }
     else
     {
@@ -661,8 +663,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (-1 == input_fd)
             throw MergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
 
-        FDHolder output_fd(::open(stringify(dst).c_str(), O_WRONLY | O_CREAT,
-                    src.permissions()), false);
+        FDHolder output_fd(::open(stringify(dst).c_str(), O_WRONLY | O_CREAT, src_perms), false);
         if (-1 == output_fd)
             throw MergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
@@ -671,7 +672,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                 throw MergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         /* set*id bits */
-        if (0 != ::fchmod(output_fd, src.permissions()))
+        if (0 != ::fchmod(output_fd, src_perms))
             throw MergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         char buf[4096];
@@ -693,6 +694,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
+
+    return result;
 }
 
 bool
@@ -755,15 +758,15 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
         {
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
-                record_install_sym(*d, dst);
+                record_install_sym(*d, dst, MergeStatusFlags() + msi_parent_rename);
                 continue;
 
             case et_file:
-                record_install_file(*d, dst, stringify(d->basename()));
+                record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
                 continue;
 
             case et_dir:
-                record_install_dir(*d, d->dirname());
+                record_install_dir(*d, d->dirname(), MergeStatusFlags() + msi_parent_rename);
                 record_renamed_dir_recursive(*d);
                 continue;
 
@@ -796,10 +799,12 @@ Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
     }
 }
 
-void
+MergeStatusFlags
 Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
     Context context("When installing dir '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
+
+    MergeStatusFlags result;
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_dir_pre")
@@ -812,6 +817,9 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     uid_t dest_uid(src.owner());
     gid_t dest_gid(src.group());
 
+    if (0 != (mode & (S_ISVTX | S_ISUID | S_ISGID)))
+        result += msi_setid_bits;
+
     if (! _options.no_chown)
     {
         uid_t new_uid(dest_uid == _options.environment->reduced_uid() ? 0 : -1);
@@ -822,6 +830,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
             mode &= ~S_ISGID;
         if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
         {
+            result += msi_fixed_ownership;
             FSEntry f(src);
             f.chown(new_uid, new_gid);
             f.chmod(mode);
@@ -842,6 +851,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 
     if (0 == ::rename(stringify(src).c_str(), stringify(dst).c_str()))
     {
+        result += msi_rename;
         record_renamed_dir_recursive(dst);
         _skip_dir = true;
     }
@@ -861,12 +871,16 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
+
+    return result;
 }
 
-void
+MergeStatusFlags
 Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
     Context context("When installing sym '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
+
+    MergeStatusFlags result;
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_pre")
@@ -877,6 +891,9 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 
     uid_t dest_uid(src.owner() == _options.environment->reduced_uid() ? 0 : src.owner());
     gid_t dest_gid(src.group() == _options.environment->reduced_gid() ? 0 : src.group());
+
+    if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
+        result += msi_setid_bits;
 
     if (symlink_needs_rewriting(src))
         rewrite_symlink_as_needed(src, dst_dir);
@@ -889,7 +906,11 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
     }
 
     if (! _options.no_chown)
+    {
+        if (src.owner() != dest_uid || src.group() != dest_gid)
+            result += msi_fixed_ownership;
         FSEntry(dst_dir / src.basename()).lchown(dest_uid, dest_gid);
+    }
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")
@@ -897,6 +918,8 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
+
+    return result;
 }
 
 void

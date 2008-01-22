@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,7 @@ namespace paludis
         {
             private:
                 void display_override(const std::string &) const;
+                std::string make_arrows(const MergeStatusFlags &) const;
 
             public:
                 NDBAMMerger(const NDBAMMergerOptions &);
@@ -42,9 +43,9 @@ namespace paludis
 
                 virtual Hook extend_hook(const Hook &);
 
-                virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &);
-                virtual void record_install_dir(const FSEntry &, const FSEntry &);
-                virtual void record_install_sym(const FSEntry &, const FSEntry &);
+                virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &);
+                virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+                virtual void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
 
                 virtual void on_error(bool is_check, const std::string &);
                 virtual void on_warn(bool is_check, const std::string &);
