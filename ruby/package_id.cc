@@ -268,14 +268,6 @@ namespace
      * Our keywords
      */
     /*
-     * Document-method: use_key
-     *
-     * call-seq:
-     *     use_key -> MetadataCollectionKey
-     *
-     * Our use flags
-     */
-    /*
      * Document-method: iuse_key
      *
      * call-seq:
