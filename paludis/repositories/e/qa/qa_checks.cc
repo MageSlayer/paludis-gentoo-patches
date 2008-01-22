@@ -40,6 +40,7 @@
 #include <paludis/repositories/e/qa/variable_assigns.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/root_variable.hh>
+#include <paludis/repositories/e/qa/subshell_die.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/header.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
@@ -90,6 +91,9 @@ QAChecks::QAChecks() :
 
     _imp->eclass_file_contents_checks_group->add_check("variable_assigns",
             tr1::bind(variable_assigns_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));
+
+    _imp->eclass_file_contents_checks_group->add_check("subshell_die",
+            tr1::bind(subshell_die_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "subshell_die"));
 
     _imp->eclass_file_contents_checks_group->add_check("header",
             tr1::bind(header_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
@@ -161,6 +165,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("root_variable",
             tr1::bind(root_variable_check, _1, _2, _5, _6, "root_variable"));
+
+    _imp->package_id_file_contents_checks_group->add_check("subshell_die",
+            tr1::bind(subshell_die_check, _1, _2, _5, _6, "subshell_die"));
 
     _imp->package_id_file_contents_checks_group->add_check("whitespace",
             tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
