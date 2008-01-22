@@ -48,6 +48,8 @@ module RDoc
                     line.gsub!(/RUBY_FUNC_CAST\(*([^)]+)\)*/) {|match| $1}
                     #help rdoc recognise template methods
                     line.gsub!(/\w+<\s*\w+(::\w+)*(,\s*\w+)*(::\w+)?>::\w+/,'template_methods')
+                    #catch more templates
+                    line.gsub!(/\w+\s*<\s*\w+\s*<\s*\w+\s*>,\s*\w+::\w+>::\w+/, 'template_methods')
                 end
                 new_body+= line
             end
