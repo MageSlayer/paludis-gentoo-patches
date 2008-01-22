@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/cookie.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -253,13 +254,7 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
     }
 
     FSEntry target_ver_dir(uid_dir);
-    {
-        struct timeval t;
-        gettimeofday(&t, 0);
-        std::ostringstream magic;
-        magic << std::hex << t.tv_usec << "x" << t.tv_sec;
-        target_ver_dir /= (stringify(m.package_id->version()) + ":" + stringify(m.package_id->slot()) + ":" + magic.str());
-    }
+    target_ver_dir /= (stringify(m.package_id->version()) + ":" + stringify(m.package_id->slot()) + ":" + cookie());
 
     if (target_ver_dir.exists())
         throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
