@@ -3,7 +3,7 @@
 
 #
 # Copyright (c) 2006, 2007 Ciaran McCreesh
-# Copyright (c) 2006, 2007 Richard Brown
+# Copyright (c) 2006, 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -611,6 +611,20 @@ module Paludis
             assert_kind_of MetadataStringKey, repo['format']
             assert_equal 'ebuild', repo['format'].value
             assert_nil repo['monkey']
+        end
+    end
+
+    class TestCase_RepositoryEnvironmentVariables < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def text_repository_environment_interface
+            assert_not_nil repo.environment_variable_interface
+        end
+
+        def test_get_environment_variable
+            pid = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])), QueryOrder::BestVersionOnly).first;
+            assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
+            assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end
     end
 end

@@ -104,6 +104,7 @@ SLOT="0"
 IUSE="test1"
 LICENSE="GPL-2"
 KEYWORDS="test"
+TEST_ENV_VAR="hello"
 END
 
 cat <<"END" > foo/bar/bar-2.0.ebuild || exit 1
