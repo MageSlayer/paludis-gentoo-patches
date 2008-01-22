@@ -104,41 +104,7 @@ ebuild_load_module()
     exit 123
 }
 
-paludis_pipe_command()
-{
-    [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
-
-    if [[ -z "${PALUDIS_PIPE_COMMAND_WRITE_FD}" ]]; then
-        type die &>/dev/null && eval die "\"PALUDIS_PIPE_COMMAND_WRITE_FD unset\""
-        echo "PALUDIS_PIPE_COMMAND_WRITE_FD unset" 1>&2
-        exit 123
-    fi
-    if [[ -z "${PALUDIS_PIPE_COMMAND_READ_FD}" ]]; then
-        type die &>/dev/null && eval die "\"PALUDIS_PIPE_COMMAND_READ_FD unset\""
-        echo "PALUDIS_PIPE_COMMAND_READ_FD unset" 1>&2
-        exit 123
-    fi
-
-    local r r1 rest
-    r="$(echo "$@" | {
-        if ! locked_pipe_command "${PALUDIS_PIPE_COMMAND_WRITE_FD}" "${PALUDIS_PIPE_COMMAND_READ_FD}" ; then
-            type die &>/dev/null && eval die "\"locked_pipe_command failed\""
-            echo "locked_pipe_command failed" 1>&2
-            exit 123
-        fi
-    })"
-
-    r1="${r:0:1}"
-    rest="${r:1}"
-    if [[ "${r1}" != "O" ]] ; then
-        type die &>/dev/null && eval die "\"paludis_pipe_command returned error '\${r1}' with text '\${rest}'\""
-        echo "paludis_pipe_command returned error '${r1}' with text '${rest}'" 1>&2
-        exit 123
-    fi
-
-    echo "$rest"
-}
-
+ebuild_load_module pipe_functions
 ebuild_load_module die_functions
 ebuild_load_module output_functions
 ebuild_load_module echo_functions

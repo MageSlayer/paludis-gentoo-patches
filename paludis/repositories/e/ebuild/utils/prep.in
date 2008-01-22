@@ -18,7 +18,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
-source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+source ${PALUDIS_EBUILD_DIR}/pipe_functions.bash
+source ${PALUDIS_EBUILD_DIR}/output_functions.bash
 
 ebuild_notice "qa" "Ebuilds shouldn't be calling $0 manually."
 

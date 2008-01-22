@@ -15,6 +15,7 @@ libexecprog_SCRIPTS = \
 	install_functions.bash \
 	multilib_functions.bash \
 	output_functions.bash \
+	pipe_functions.bash \
 	sandbox.bash \
 	source_functions.bash \
 	usage_error.bash \
