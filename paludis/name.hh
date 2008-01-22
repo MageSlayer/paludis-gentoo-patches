@@ -298,6 +298,12 @@ namespace paludis
             KeywordNameError(const std::string & name) throw ();
     };
 
+    class PALUDIS_VISIBLE KeywordNameComparator
+    {
+        public:
+            bool operator() (const std::string &, const std::string &) const;
+    };
+
     /**
      * A SetNameValidator handles validation rules for the value of a
      * SetName.

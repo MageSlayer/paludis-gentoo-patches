@@ -165,13 +165,14 @@ namespace paludis
 
     class KeywordNameValidator;
     class KeywordNameError;
+    class KeywordNameComparator;
 
     /**
      * A KeywordName holds a std::string that is a valid name for a KEYWORD.
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, KeywordNameValidator> KeywordName;
+    typedef Validated<std::string, KeywordNameValidator, true, KeywordNameComparator> KeywordName;
 
     /**
      * Holds a collection of KeywordName instances.

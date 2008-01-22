@@ -30,12 +30,15 @@
 
 namespace paludis
 {
-    template <typename, typename, bool = true>
+    template <typename T_>
+    struct DefaultValidatedComparator;
+
+    template <typename D_, typename, bool = true, typename = DefaultValidatedComparator<D_> >
     class Validated;
 
-    template <typename D_, typename V_, bool c_>
+    template <typename D_, typename V_, bool c_, typename C_>
     std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_, c_> & v);
+    operator<< (std::ostream & s, const Validated<D_, V_, c_, C_> & v);
 }
 
 #endif

@@ -320,6 +320,26 @@ KeywordNameValidator::validate(const std::string & s)
     throw KeywordNameError(s);
 }
 
+bool
+KeywordNameComparator::operator() (const std::string & a, const std::string & b) const
+{
+    char a_prefix('~' == a[0] || '-' == a[0] ? a[0] : '\0');
+    char b_prefix('~' == b[0] || '-' == b[0] ? b[0] : '\0');
+    const std::string & a_keyword(a_prefix ? a.substr(1) : a);
+    const std::string & b_keyword(b_prefix ? b.substr(1) : b);
+
+    if (a_keyword == b_keyword)
+    {
+        if ('\0' == a_prefix && '\0' != b_prefix)
+            return true;
+        if ('~' == a_prefix && '-' == b_prefix)
+            return true;
+        return false;
+    }
+    else
+        return a_keyword < b_keyword;
+}
+
 namespace
 {
     CategoryNamePart

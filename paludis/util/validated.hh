@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_VALIDATED_HH 1
 
 #include <iosfwd>
+#include <functional>
 #include <paludis/util/validated-fwd.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/sr.hh>
@@ -38,13 +39,19 @@
 
 namespace paludis
 {
+    template <typename T_>
+    struct PALUDIS_VISIBLE DefaultValidatedComparator :
+        std::less<T_>
+    {
+    };
+
     /**
      * A Validated wraps a particular class instance, ensuring that it always
      * meets certain validation criteria.
      *
      * \ingroup g_data_structures
      */
-    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
     class Validated :
         public Select<full_comparison_,
             relational_operators::HasRelationalOperators,
@@ -60,7 +67,7 @@ namespace paludis
             /**
              * Copy constructor (no validation needed).
              */
-            Validated(const Validated<ValidatedDataType_, Validator_, full_comparison_> & other);
+            Validated(const Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> & other);
 
             /**
              * Constructor (validation needed).
@@ -89,35 +96,35 @@ namespace paludis
             }
     };
 
-    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
-    Validated<ValidatedDataType_, Validator_, full_comparison_>::Validated(
-            const Validated<ValidatedDataType_, Validator_, full_comparison_> & other) :
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
+    Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_>::Validated(
+            const Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> & other) :
         _value(other._value)
     {
     }
 
-    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
-    Validated<ValidatedDataType_, Validator_, full_comparison_>::Validated(
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
+    Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_>::Validated(
             const ValidatedDataType_ & value) :
         _value(value)
     {
         Validator_::validate(_value);
     }
 
-    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
     bool operator== (
-            const Validated<ValidatedDataType_, Validator_, full_comparison_> & a,
-            const Validated<ValidatedDataType_, Validator_, full_comparison_> & b)
+            const Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> & a,
+            const Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> & b)
     {
         return a.data() == b.data();
     }
 
-    template <typename ValidatedDataType_, typename Validator_>
+    template <typename ValidatedDataType_, typename Validator_, typename Comparator_>
     bool operator< (
-            const Validated<ValidatedDataType_, Validator_, true> & a,
-            const Validated<ValidatedDataType_, Validator_, true> & b)
+            const Validated<ValidatedDataType_, Validator_, true, Comparator_> & a,
+            const Validated<ValidatedDataType_, Validator_, true, Comparator_> & b)
     {
-        return a.data() < b.data();
+        return Comparator_()(a.data(), b.data());
     }
 
     /**
@@ -125,9 +132,9 @@ namespace paludis
      *
      * \ingroup g_data_structures
      */
-    template <typename D_, typename V_, bool c_>
+    template <typename D_, typename V_, bool c_, typename C_>
     std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_, c_> & v)
+    operator<< (std::ostream & s, const Validated<D_, V_, c_, C_> & v)
     {
         s << v.data();
         return s;

@@ -32,45 +32,45 @@ namespace paludis
         template <typename V_>
         class class_validated;
 
-        template <typename ValidatedDataType_, typename Validator_>
-        class class_validated<Validated<ValidatedDataType_, Validator_, true> > :
-            public boost::python::class_<Validated<ValidatedDataType_, Validator_, true> >
+        template <typename ValidatedDataType_, typename Validator_, typename Comparator_>
+        class class_validated<Validated<ValidatedDataType_, Validator_, true, Comparator_> > :
+            public boost::python::class_<Validated<ValidatedDataType_, Validator_, true, Comparator_> >
         {
             public:
                 class_validated(const std::string & name,
                         const std::string & class_doc, const std::string & init_arg="string") :
-                    boost::python::class_<Validated<ValidatedDataType_, Validator_, true> >(
+                    boost::python::class_<Validated<ValidatedDataType_, Validator_, true, Comparator_> >(
                             name.c_str(), class_doc.c_str(),
                             boost::python::init<const ValidatedDataType_ &>(("__init__("+init_arg+")").c_str())
                             )
                 {
                     this->def(boost::python::self_ns::str(boost::python::self));
                     this->def("__cmp__",
-                            &paludis::python::py_cmp<Validated<ValidatedDataType_, Validator_, true> >);
+                              &paludis::python::py_cmp<Validated<ValidatedDataType_, Validator_, true, Comparator_> >);
                     boost::python::implicitly_convertible<ValidatedDataType_,
-                            Validated<ValidatedDataType_, Validator_, true> >();
+                            Validated<ValidatedDataType_, Validator_, true, Comparator_> >();
                 }
         };
 
-        template <typename ValidatedDataType_, typename Validator_>
-        class class_validated<Validated<ValidatedDataType_, Validator_, false> > :
-            public boost::python::class_<Validated<ValidatedDataType_, Validator_, false> >
+        template <typename ValidatedDataType_, typename Validator_, typename Comparator_>
+        class class_validated<Validated<ValidatedDataType_, Validator_, false, Comparator_> > :
+            public boost::python::class_<Validated<ValidatedDataType_, Validator_, false, Comparator_> >
         {
             public:
                 class_validated(const std::string & name,
                         const std::string & class_doc, const std::string & init_arg="string") :
-                    boost::python::class_<Validated<ValidatedDataType_, Validator_, false> >(
+                    boost::python::class_<Validated<ValidatedDataType_, Validator_, false, Comparator_> >(
                             name.c_str(), class_doc.c_str(),
                             boost::python::init<const ValidatedDataType_ &>(("__init__("+init_arg+")").c_str())
                             )
                 {
                     this->def(boost::python::self_ns::str(boost::python::self));
                     this->def("__eq__",
-                            &paludis::python::py_eq<Validated<ValidatedDataType_, Validator_, false> >);
+                            &paludis::python::py_eq<Validated<ValidatedDataType_, Validator_, false, Comparator_> >);
                     this->def("__ne__",
-                            &paludis::python::py_ne<Validated<ValidatedDataType_, Validator_, false> >);
+                            &paludis::python::py_ne<Validated<ValidatedDataType_, Validator_, false, Comparator_> >);
                     boost::python::implicitly_convertible<ValidatedDataType_,
-                            Validated<ValidatedDataType_, Validator_, false> >();
+                            Validated<ValidatedDataType_, Validator_, false, Comparator_> >();
                 }
         };
 

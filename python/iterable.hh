@@ -38,8 +38,8 @@ namespace paludis
             static const bool value = tr1::is_convertible<From_, To_>::value;
         };
 
-        template <typename From_, typename ValidatedDataType_, typename Validator_, bool full_comparison_>
-        struct IsConvertible<From_, Validated<ValidatedDataType_, Validator_, full_comparison_> >
+        template <typename From_, typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
+        struct IsConvertible<From_, Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> >
         {
             static const bool value = tr1::is_convertible<From_, ValidatedDataType_>::value;
         };
