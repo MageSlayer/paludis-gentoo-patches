@@ -165,7 +165,7 @@ reasons:</p>
     <dt>eapi</dt>
 
     <dd>You cannot override this mask. It indicates either a broken ebuild (if
-    <code>EAPI=unknown</code> or an ebuild not supported by your current version
+    <code>EAPI=unknown</code>) or an ebuild not supported by your current version
     of Paludis.</dd>
 
     <dt>license</dt>
