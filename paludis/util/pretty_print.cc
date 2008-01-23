@@ -25,7 +25,7 @@
 using namespace paludis;
 
 std::string
-pretty_print_bytes(const long & bytes)
+paludis::pretty_print_bytes(const long & bytes)
 {
     double size(bytes);
     int i(0);
