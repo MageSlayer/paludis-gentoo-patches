@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 
+#include <paludis/util/pretty_print.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -46,7 +47,6 @@
 #include <vector>
 #include <fstream>
 #include <map>
-#include <iomanip>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -1144,19 +1144,5 @@ EDistSizeKey::value() const
 std::string
 EDistSizeKey::pretty_print() const
 {
-    double size(value());
-    int i(0);
-    std::string suffix[] = {"Bytes", "kBytes", "MBytes", "GBytes"};
-    std::ostringstream val;
-
-    while (size >= 1024.0 && i < 3)
-    {
-        size /= 1024.0;
-        i++;
-    }
-    if (i >= 1) val << std::fixed << std::setprecision(2);
-
-    val << size << " " << suffix[i];
-
-    return val.str();
+    return pretty_print_bytes(value());
 }

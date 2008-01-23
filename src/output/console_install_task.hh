@@ -113,6 +113,7 @@ namespace paludis
 
         private:
             int _counts[last_count];
+            long _download_size;
             tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
             tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
             tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
@@ -268,6 +269,16 @@ namespace paludis
             void set_count(const int value)
             {
                 _counts[count_] = value;
+            }
+
+            long get_download_size() const
+            {
+                return _download_size;
+            }
+
+            void set_download_size(const long value)
+            {
+                _download_size = value;
             }
 
             tr1::shared_ptr<Set<DepTagEntry> > all_tags()

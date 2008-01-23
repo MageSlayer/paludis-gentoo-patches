@@ -23,6 +23,7 @@
 #include "mask_displayer.hh"
 
 #include <paludis/util/log.hh>
+#include <paludis/util/pretty_print.h>
 #include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
@@ -122,6 +123,7 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
         tr1::shared_ptr<const DestinationsSet> d) :
     InstallTask(env, options, d),
+    _download_size(0),
     _all_tags(new Set<DepTagEntry>),
     _all_use_descriptions(new Set<UseDescription, UseDescriptionComparator>),
     _all_expand_prefixes(new UseFlagNameSet)
@@ -573,6 +575,11 @@ ConsoleInstallTask::display_merge_list_post_counts()
             need_comma = true;
         }
         s << ")";
+
+        if (get_download_size())
+        {
+            s << ", at most " << pretty_print_bytes(get_download_size()) << " to download";
+        }
     }
 
     if (count<max_count>() && count<error_count>())
@@ -1180,6 +1187,7 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
 
     output_stream() << d.package_id->size_of_download_required_key()->pretty_print()
         << " to download";
+    set_download_size(get_download_size() + d.package_id->size_of_download_required_key()->value());
 }
 
 void
