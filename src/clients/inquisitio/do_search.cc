@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -125,7 +125,7 @@ namespace
         {
             std::list<tr1::shared_ptr<const PackageID> > sids(ids->begin(), ids->end());
             PackageIDComparator c(env.package_database().get());
-            sids.sort(tr1::ref(c));
+            sids.sort(c);
 
             for (std::list<tr1::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
                     i != i_end ; ++i)

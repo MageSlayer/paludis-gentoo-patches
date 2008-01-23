@@ -42,8 +42,6 @@ namespace test_cases
 
         void run()
         {
-            FSEntry myroot(FSEntry::cwd() / "wildcard_expander_TEST_dir");
-
             TEST_CHECK_EQUAL(expand("/xyz*zy"), "/xyz1zy /xyz22zy /xyzzy");
             TEST_CHECK_EQUAL(expand("/plugh"), "/plugh");
             TEST_CHECK_EQUAL(expand("/quux"), "/quux");

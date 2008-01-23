@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,7 @@
 
 #include "masks.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;

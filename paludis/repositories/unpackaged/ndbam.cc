@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -264,6 +264,15 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
     return false;
 }
 
+namespace
+{
+    template <typename T_>
+    T_ * desptr(const tr1::shared_ptr<T_> & p)
+    {
+        return p.get();
+    }
+}
+
 tr1::shared_ptr<NDBAMEntrySequence>
 NDBAM::entries(const QualifiedPackageName & q)
 {
@@ -329,8 +338,8 @@ NDBAM::entries(const QualifiedPackageName & q)
         using namespace tr1::placeholders;
         pc.entries->sort(
                 tr1::bind(std::less<VersionSpec>(),
-                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), _1),
-                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), _2)
+                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), tr1::bind(&desptr<const NDBAMEntry>, _1)),
+                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), tr1::bind(&desptr<const NDBAMEntry>, _2))
                 ));
     }
 

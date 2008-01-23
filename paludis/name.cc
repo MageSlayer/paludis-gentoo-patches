@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -116,7 +116,7 @@ UseFlagNameValidator::validate(const std::string & s)
                 validate(s.substr(0, t));
                 validate(s.substr(t + 1));
             }
-            catch (const UseFlagNameError & e)
+            catch (const UseFlagNameError &)
             {
                 break;
             }

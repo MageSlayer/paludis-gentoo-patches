@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,9 @@ using namespace paludis::erepository;
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename T_>
     struct Implementation<QAChecksGroup<T_> >
     {

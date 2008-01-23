@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -228,9 +228,7 @@ main(int argc, char *argv[])
 
         tr1::shared_ptr<const PackageIDSequence> ids(
                 env.package_database()->query(query::Repository(env.main_repository()->name()), qo_order_by_version));
-        PackageIDComparator comparator(env.package_database().get());
-        std::multimap<tr1::shared_ptr<const PackageID>, std::string, tr1::reference_wrapper<const PackageIDComparator> >
-            results(tr1::cref(comparator));
+        std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(env.package_database().get());
         unsigned success(0), total(0);
 
         CategoryNamePart old_cat("OLDCAT");

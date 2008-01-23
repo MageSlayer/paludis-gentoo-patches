@@ -594,10 +594,12 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-wd383])
 	CHECK_CXXFLAG([-wd444])
 	CHECK_CXXFLAG([-wd488])
+	CHECK_CXXFLAG([-wd525])
 	CHECK_CXXFLAG([-wd810])
 	CHECK_CXXFLAG([-wd981])
 	CHECK_CXXFLAG([-wd1125])
 	CHECK_CXXFLAG([-wd1418])
+	CHECK_CXXFLAG([-wd1419])
 	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])

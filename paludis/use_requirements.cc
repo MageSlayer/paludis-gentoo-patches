@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -78,12 +78,22 @@ UseRequirements::end() const
     return ConstIterator(_imp->reqs.end());
 }
 
+namespace
+{
+    template <typename T_>
+    T_ * desptr(const tr1::shared_ptr<T_> & p)
+    {
+        return p.get();
+    }
+}
+
 UseRequirements::ConstIterator
 UseRequirements::find(const UseFlagName & u) const
 {
     using namespace tr1::placeholders;
     return ConstIterator(std::find_if(_imp->reqs.begin(), _imp->reqs.end(),
-                tr1::bind(std::equal_to<UseFlagName>(), u, tr1::bind(tr1::mem_fn(&UseRequirement::flag), _1))));
+                tr1::bind(std::equal_to<UseFlagName>(), u, tr1::bind(tr1::mem_fn(&UseRequirement::flag),
+                        tr1::bind(&desptr<const UseRequirement>, _1)))));
 }
 
 void

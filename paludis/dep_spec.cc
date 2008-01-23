@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -361,7 +361,7 @@ LabelsDepSpec<T_>::clone() const
 {
     using namespace tr1::placeholders;
     tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
-    std::for_each(begin(), end(), tr1::bind(&LabelsDepSpec<T_>::add_label, my_clone, _1));
+    std::for_each(begin(), end(), tr1::bind(tr1::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
 }
 

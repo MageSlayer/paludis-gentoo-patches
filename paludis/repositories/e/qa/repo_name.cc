@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,7 @@ paludis::erepository::repo_name_check(
                 {
                     RepositoryName n(line);
                 }
-                catch (const RepositoryNameError & e)
+                catch (const RepositoryNameError &)
                 {
                     reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name,
                                 "repo_name not a valid repository name"));

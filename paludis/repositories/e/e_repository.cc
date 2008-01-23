@@ -793,7 +793,7 @@ ERepository::sync() const
         {
             syncer.sync(opts);
         }
-        catch (const SyncFailedError & e)
+        catch (const SyncFailedError &)
         {
             continue;
         }

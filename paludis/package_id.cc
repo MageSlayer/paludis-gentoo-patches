@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,6 +44,8 @@ using namespace paludis;
 
 template class Sequence<tr1::shared_ptr<const PackageID> >;
 template class WrappedForwardIterator<Sequence<tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const tr1::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<tr1::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
          const tr1::shared_ptr<const PackageID> >;
 template class WrappedOutputIterator<Sequence<tr1::shared_ptr<const PackageID> >::InserterTag,
          tr1::shared_ptr<const PackageID> >;
@@ -210,6 +212,12 @@ PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
     for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
             r_end(db->end_repositories()) ; r != r_end ; ++r)
         _imp->m.insert(std::make_pair((*r)->name(), ++c));
+}
+
+PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :
+    PrivateImplementationPattern<PackageIDComparator>(new Implementation<PackageIDComparator>)
+{
+    _imp->m = other._imp->m;
 }
 
 PackageIDComparator::~PackageIDComparator()
