@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008  Richard Brown
  * Copyright (c) 2007 David Leverton
  *
@@ -896,10 +896,10 @@ namespace
         tr1::shared_ptr<Repository> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
         if ((*self_ptr)->environment_variable_interface)
-            return rb_str_new2((*self_ptr)->environment_variable_interface->get_environment_variable(value_to_package_id(pid),StringValuePtr(ev)).c_str());
-
+            return rb_str_new2((*self_ptr)->environment_variable_interface->get_environment_variable(
+                        value_to_package_id(pid),
+                        StringValuePtr(ev)).c_str());
         return Qnil;
-
     }
 
     void do_register_repository()
@@ -966,7 +966,7 @@ namespace
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataStringKey, &Repository::format_key>::fetch)), 0);
         rb_define_method(c_repository, "installed_root_key",
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataFSEntryKey, &Repository::installed_root_key>::fetch)), 0);
-        rb_define_method(c_repository, "get_environment_variable", RUBY_FUNC_CAST(&repository_get_environment_variable),2);
+        rb_define_method(c_repository, "get_environment_variable", RUBY_FUNC_CAST(&repository_get_environment_variable), 2);
 
         /*
          * Document-class: Paludis::ProfilesDescLine

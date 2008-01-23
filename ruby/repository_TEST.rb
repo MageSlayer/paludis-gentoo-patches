@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 # Copyright (c) 2006, 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -181,6 +181,16 @@ module Paludis
             assert_equal repo.name, repo.use_interface.name
             assert_equal installed_repo.name, installed_repo.provides_interface.name
             assert_nil installed_repo.syncable_interface
+        end
+
+        def text_repository_environment_interface
+            assert_not_nil repo.environment_variable_interface
+        end
+
+        def test_get_environment_variable
+            pid = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])), QueryOrder::BestVersionOnly).first;
+            assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
+            assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end
     end
 
@@ -586,6 +596,7 @@ module Paludis
             assert_raise BadVersionSpecError do f.add_version('foo', 'bar', 'abc') end
         end
     end
+
     class TestCase_Repository < Test::Unit::TestCase
         include RepositoryTestCase
 
@@ -611,20 +622,6 @@ module Paludis
             assert_kind_of MetadataStringKey, repo['format']
             assert_equal 'ebuild', repo['format'].value
             assert_nil repo['monkey']
-        end
-    end
-
-    class TestCase_RepositoryEnvironmentVariables < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def text_repository_environment_interface
-            assert_not_nil repo.environment_variable_interface
-        end
-
-        def test_get_environment_variable
-            pid = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])), QueryOrder::BestVersionOnly).first;
-            assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
-            assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end
     end
 end
