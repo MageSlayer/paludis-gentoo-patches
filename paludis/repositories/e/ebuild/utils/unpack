@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -88,6 +88,17 @@ unpack_one()
         *.a|*.deb)
             echo ar x "${1}" 1>&2
             ar x "${1}" 1>&2
+            ;;
+
+        *.tar.lzma)
+            echo lzma -dc "${1}" \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+            lzma -dc "${1}" | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+            assert "Couldn't unpack ${1}"
+            ;;
+
+        *.lzma)
+            echo lzma -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) 1>&2
+            lzma -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *)
