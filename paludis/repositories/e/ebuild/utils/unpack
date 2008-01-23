@@ -23,9 +23,14 @@
 
 die()
 {
-    echo "dounpack: error: $@" 1>&2
+    echo "unpack: error: $@" 1>&2
     kill -s SIGUSR1 "${EBUILD_KILL_PID}"
     exit 123
+}
+assert()
+{
+    local _pipestatus="${PIPESTATUS[*]}"
+    [[ -z "${_pipestatus//[ 0]/}" ]] || die "$@: $_pipestatus"
 }
 
 unpack_one()
