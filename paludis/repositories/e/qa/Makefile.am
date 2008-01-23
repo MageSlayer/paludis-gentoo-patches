@@ -31,6 +31,7 @@ paludis_repositories_e_include_HEADERS = \
 	eapi_supported.hh \
 	metadata_keys.hh \
 	extractors.hh \
+	fetches_key.hh \
 	homepage_key.hh \
 	iuse_key.hh \
 	spec_keys.hh \
@@ -63,6 +64,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	eapi_supported.cc \
 	metadata_keys.cc \
 	extractors.cc \
+	fetches_key.cc \
 	homepage_key.cc \
 	iuse_key.cc \
 	qa_checks.cc \
