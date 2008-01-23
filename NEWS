@@ -4,8 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk:
+0.26.0_alpha8:
     * Playman is now an "official" ruby demo script.
+
+    * Various Ruby updates.
+
+    * Various QA updates.
+
+    * Sending Paludis a SIGINT or SIGTERM whilst it has children active will no
+      longer lock.
+
+    * Linux appears to randomly nuke set*id bits when doing a rename(). We now
+      work around this.
 
 0.26.0_alpha7:
     * New demo hook, pretend_resume.bash, to print the resume command
