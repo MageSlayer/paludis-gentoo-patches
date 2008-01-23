@@ -101,6 +101,7 @@ namespace paludis
 
             void insert(const T_ &);
             void erase(const T_ &);
+            void clear();
 
             ///\}
     };

@@ -139,4 +139,11 @@ paludis::Set<T_, C_>::erase(const T_ & t)
     _imp->set.erase(t);
 }
 
+template <typename T_, typename C_>
+void
+paludis::Set<T_, C_>::clear()
+{
+    _imp->set.clear();
+}
+
 #endif
