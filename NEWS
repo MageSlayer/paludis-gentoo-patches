@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.26.0_alpha9:
+
+    * Recent Portage unpacks lzma files, in violation of PMS and without any way
+      of ebuilds being able to check for this behaviour. We now emulate this
+      stupidity.
+
+    * Work around tr1::shared_ptr<> not being usable with a tr1::mem_fn when
+      using boost.
+
+    * Work around various ICC oddities.
+
 0.26.0_alpha8:
     * Playman is now an "official" ruby demo script.
 
