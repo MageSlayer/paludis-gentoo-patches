@@ -194,22 +194,22 @@ paludis::erepository::fetches_key_check(
     Log::get_instance()->message(ll_debug, lc_context) << "fetches_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
-    try
+    if (id->fetches_key())
     {
-        if (id->fetches_key())
+        try
         {
             Checker c(reporter, LabelToFetchRestrict(*id->fetches_key()->initial_label()).value,
                       id, id->fetches_key(), entry, name);
             id->fetches_key()->value()->accept(c);
         }
-    }
-    catch (const Exception & e)
-    {
-        reporter.message(QAMessage(entry, qaml_severe, name,
-                    "Caught exception '" + stringify(e.message()) + "' ("
-                    + stringify(e.what()) + ") when handling key '" + id->fetches_key()->raw_name() + "'")
-                        .with_associated_id(id)
-                        .with_associated_key(id, id->fetches_key()));
+        catch (const Exception & e)
+        {
+            reporter.message(QAMessage(entry, qaml_severe, name,
+                        "Caught exception '" + stringify(e.message()) + "' ("
+                        + stringify(e.what()) + ") when handling key '" + id->fetches_key()->raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(id, id->fetches_key()));
+        }
     }
 
     return true;
