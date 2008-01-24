@@ -85,7 +85,7 @@ namespace
             return version_requirements_v;
         }
 
-        virtual const VersionRequirementsMode version_requirements_mode() const
+        virtual VersionRequirementsMode version_requirements_mode() const
         {
             return vr_and;
         }

@@ -963,7 +963,7 @@ namespace
             return version_requirements;
         }
 
-        virtual const VersionRequirementsMode version_requirements_mode() const
+        virtual VersionRequirementsMode version_requirements_mode() const
         {
             return version_requirements_mode_v;
         }
