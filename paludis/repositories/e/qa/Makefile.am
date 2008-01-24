@@ -19,6 +19,7 @@ paludis_qa_datadir = $(datadir)/paludis/qa/
 
 dist_paludis_qa_data_DATA = \
 	extractors.conf \
+	inherited_blacklist.conf \
 	iuse_blacklist.conf \
 	spec_keys_pds_blacklist.DEPEND.conf \
 	spec_keys_pds_blacklist.RDEPEND.conf \
@@ -45,6 +46,7 @@ paludis_repositories_e_include_HEADERS = \
 	root_variable.hh \
 	subshell_die.hh \
 	restrict_key.hh \
+	inherited_key.hh \
 	visibility.hh \
 	whitespace.hh \
 	header.hh \
@@ -78,6 +80,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	root_variable.cc \
 	subshell_die.cc \
 	restrict_key.cc \
+	inherited_key.cc \
 	visibility.cc \
 	whitespace.cc \
 	header.cc \

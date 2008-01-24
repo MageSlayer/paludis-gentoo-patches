@@ -36,6 +36,7 @@
 #include <paludis/repositories/e/qa/extractors.hh>
 #include <paludis/repositories/e/qa/fetches_key.hh>
 #include <paludis/repositories/e/qa/restrict_key.hh>
+#include <paludis/repositories/e/qa/inherited_key.hh>
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/variable_assigns.hh>
@@ -154,6 +155,10 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("restrict_key",
             tr1::bind(restrict_key_check, _1, _2, _5, "restrict_key"));
     _imp->package_id_checks_group->add_prerequirement("restrict_key", "metadata_keys");
+
+    _imp->package_id_checks_group->add_check("inherited_key",
+            tr1::bind(inherited_key_check, _1, _2, _5, "inherited_key"));
+    _imp->package_id_checks_group->add_prerequirement("inherited_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("visibility",
             tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
