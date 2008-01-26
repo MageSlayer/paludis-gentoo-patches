@@ -35,6 +35,7 @@ paludis_repositories_e_include_HEADERS = \
 	fetches_key.hh \
 	homepage_key.hh \
 	iuse_key.hh \
+	keywords_key.hh \
 	spec_keys.hh \
 	qa_checks.hh \
 	qa_checks_group.hh \
@@ -69,6 +70,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	fetches_key.cc \
 	homepage_key.cc \
 	iuse_key.cc \
+	keywords_key.cc \
 	qa_checks.cc \
 	qa_checks_group.cc \
 	qa_controller.cc \
