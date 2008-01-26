@@ -41,6 +41,7 @@
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/qa/default_functions.hh>
 #include <paludis/repositories/e/qa/variable_assigns.hh>
+#include <paludis/repositories/e/qa/deprecated_functions.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/root_variable.hh>
 #include <paludis/repositories/e/qa/subshell_die.hh>
@@ -95,6 +96,9 @@ QAChecks::QAChecks() :
 
     _imp->eclass_file_contents_checks_group->add_check("variable_assigns",
             tr1::bind(variable_assigns_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));
+
+    _imp->eclass_file_contents_checks_group->add_check("deprecated_functions",
+            tr1::bind(deprecated_functions_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "deprecated_functions"));
 
     _imp->eclass_file_contents_checks_group->add_check("subshell_die",
             tr1::bind(subshell_die_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "subshell_die"));
@@ -178,6 +182,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("variable_assigns",
             tr1::bind(variable_assigns_check, _1, _2, _5, _6, "variable_assigns"));
+
+    _imp->package_id_file_contents_checks_group->add_check("deprecated_functions",
+            tr1::bind(deprecated_functions_check, _1, _2, _5, _6, "deprecated_functions"));
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
             tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));

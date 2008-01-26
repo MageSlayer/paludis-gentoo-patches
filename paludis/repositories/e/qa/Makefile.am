@@ -18,6 +18,7 @@ if ENABLE_QA
 paludis_qa_datadir = $(datadir)/paludis/qa/
 
 dist_paludis_qa_data_DATA = \
+	deprecated_functions.conf \
 	extractors.conf \
 	inherited_blacklist.conf \
 	iuse_blacklist.conf \
@@ -53,6 +54,7 @@ paludis_repositories_e_include_HEADERS = \
 	whitespace.hh \
 	header.hh \
 	variable_assigns.hh \
+	deprecated_functions.hh \
 	gpg.hh \
 	ebuild_count.hh \
 	changelog.hh \
@@ -89,6 +91,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	whitespace.cc \
 	header.cc \
 	variable_assigns.cc \
+	deprecated_functions.cc \
 	gpg.cc \
 	ebuild_count.cc \
 	changelog.cc \
