@@ -33,6 +33,7 @@
 #include <paludis/repositories/e/qa/homepage_key.hh>
 #include <paludis/repositories/e/qa/iuse_key.hh>
 #include <paludis/repositories/e/qa/keywords_key.hh>
+#include <paludis/repositories/e/qa/license_key.hh>
 #include <paludis/repositories/e/qa/spec_keys.hh>
 #include <paludis/repositories/e/qa/extractors.hh>
 #include <paludis/repositories/e/qa/fetches_key.hh>
@@ -152,6 +153,10 @@ QAChecks::QAChecks() :
     _imp->package_id_checks_group->add_check("keywords_key",
             tr1::bind(keywords_key_check, _1, _2, _5, "keywords_key"));
     _imp->package_id_checks_group->add_prerequirement("keywords_key", "metadata_keys");
+
+    _imp->package_id_checks_group->add_check("license_key",
+            tr1::bind(license_key_check, _1, _2, _4, _5, "license_key"));
+    _imp->package_id_checks_group->add_prerequirement("license_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("spec_keys",
             tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
