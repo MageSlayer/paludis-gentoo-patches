@@ -20,9 +20,9 @@
 #include "variable_assigns.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -64,37 +64,35 @@ paludis::erepository::variable_assigns_check(
         Log::get_instance()->message(ll_debug, lc_context) << "variable_assigns '"
             << entry << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
+    std::string s;
     unsigned line_number(0);
     bool in_make_continuation(false);
-
-    for (std::list<std::string>::iterator it(lines.begin()),
-             it_end(lines.end()); it_end != it; ++it)
+    while (std::getline(ff, s))
     {
         ++line_number;
-        if (it->empty() || r_comment.search(*it))
+        if (s.empty() || r_comment.search(s))
             continue;
 
-        *it = r_strip_quotes.replace(*it, "");
+        s = r_strip_quotes.replace(s, "");
 
-        if (r_make_line.search(*it))
+        if (r_make_line.search(s))
         {
-            if (r_make_continuation_line.search(*it))
+            if (r_make_continuation_line.search(s))
                 in_make_continuation = true;
             continue;
         }
 
         if (in_make_continuation)
         {
-            in_make_continuation = r_make_continuation_line.search(*it);
+            in_make_continuation = r_make_continuation_line.search(s);
             continue;
         }
 
         for (std::map<std::string, pcrepp::Pcre::Pcre>::iterator r(r_vars.begin()),
                  r_end(r_vars.end()) ; r != r_end ; ++r)
-            if (r->second.search(*it))
+            if (r->second.search(s))
                 reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Attempting to assign to " +
                         r->first + " on line " + stringify(line_number)), id));
     }

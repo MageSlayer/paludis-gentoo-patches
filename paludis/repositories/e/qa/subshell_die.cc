@@ -20,9 +20,9 @@
 #include <paludis/repositories/e/qa/subshell_die.hh>
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -55,19 +55,18 @@ paludis::erepository::subshell_die_check(
         Log::get_instance()->message(ll_debug, lc_context) << "subshell_die '"
             << entry << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
+    std::string s;
     unsigned line(0);
-    for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;
-            l != l_end ; ++l)
+    while (std::getline(ff, s))
     {
         ++line;
 
-        if (l->empty() || r_comment.search(*l))
+        if (s.empty() || r_comment.search(s))
             continue;
 
-        if (r_subshell_die.search(*l))
+        if (r_subshell_die.search(s))
         {
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Invalid call of 'die' within subshell on line "
                     + stringify(line)), id));

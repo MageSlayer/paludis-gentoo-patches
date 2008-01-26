@@ -21,9 +21,9 @@
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -53,15 +53,13 @@ paludis::erepository::root_variable_check(
     Log::get_instance()->message(ll_debug, lc_context) << "root_variable '"
         << entry << "', '" << *id << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
     State state(st_default);
-    std::string func;
+    std::string line, func;
     unsigned line_number(0);
 
-    for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;
-            l != l_end ; ++l)
+    while (std::getline(ff, line))
     {
         ++line_number;
 
@@ -69,10 +67,10 @@ paludis::erepository::root_variable_check(
         {
             case st_default:
                 {
-                    if (r_start.search(*l))
+                    if (r_start.search(line))
                     {
                         state = st_in_src;
-                        func = *l;
+                        func = line;
                         if (std::string::npos != func.find('('))
                             func = func.substr(0, func.find('('));
                     }
@@ -81,11 +79,11 @@ paludis::erepository::root_variable_check(
 
             case st_in_src:
                 {
-                    if (r_end.search(*l))
+                    if (r_end.search(line))
                         state = st_default;
-                    else if (r_root.search(*l))
+                    else if (r_root.search(line))
                         reporter.message(QAMessage(entry, qaml_maybe, name, "ROOT abuse in " + func + " on line "
-                                + stringify(line_number) + ": " + strip_leading(*l, " \t"))
+                                + stringify(line_number) + ": " + strip_leading(line, " \t"))
                                 .with_associated_id(id));
                 }
                 continue;

@@ -20,9 +20,9 @@
 #include "function_keyword.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -54,19 +54,18 @@ paludis::erepository::function_keyword_check(
         Log::get_instance()->message(ll_debug, lc_context) << "function_keyword '"
             << entry << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
+    std::string s;
     unsigned line_number(0);
-    for (std::list<std::string>::iterator it(lines.begin()),
-             it_end(lines.end()); it_end != it; ++it)
+    while (std::getline(ff, s))
     {
         ++line_number;
 
-        if (it->empty())
+        if (s.empty())
             continue;
 
-        if (r_function.search(*it))
+        if (r_function.search(s))
             reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Use of the keyword 'function' on line " + stringify(line_number)), id));
     }
 

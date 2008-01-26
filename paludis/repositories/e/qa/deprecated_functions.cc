@@ -26,12 +26,12 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <list>
 #include <string>
+#include <sstream>
 #include <utility>
 #include <pcre++.h>
 
@@ -95,22 +95,21 @@ paludis::erepository::deprecated_functions_check(
         Log::get_instance()->message(ll_debug, lc_context) << "deprecated_functions '"
             << entry << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
+    std::string s;
     unsigned line_number(0);
-    for (std::list<std::string>::iterator it(lines.begin()),
-             it_end(lines.end()); it_end != it; ++it)
+    while (std::getline(ff, s))
     {
         ++line_number;
 
-        if (it->empty() || r_comment.search(*it))
+        if (s.empty() || r_comment.search(s))
             continue;
 
         for (std::list<std::pair<std::string, pcrepp::Pcre::Pcre> >::iterator
                 r(deprecated_functions.begin()), r_end(deprecated_functions.end()) ;
                 r != r_end ; ++r )
-            if (r->second.search(*it))
+            if (r->second.search(s))
                 reporter.message(with_id(QAMessage(entry, qaml_normal, name,
                             "Deprecated call to '" + r->first + "' on line " + stringify(line_number)), id));
     }

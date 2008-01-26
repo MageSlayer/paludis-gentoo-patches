@@ -20,9 +20,8 @@
 #include "default_functions.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
-#include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -58,49 +57,47 @@ paludis::erepository::default_functions_check(
     Log::get_instance()->message(ll_debug, lc_context) << "default_functions '"
         << entry << "', '" << *id << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::istringstream ff(content);
 
     State state(st_default);
     std::string line;
     bool src_compile_changed(false), src_unpack_changed(false);
 
-    for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;
-            l != l_end ; ++l)
+    while (std::getline(ff, line))
     {
         switch (state)
         {
             case st_default:
                 {
-                    if (*l == "src_compile() {")
+                    if (line == "src_compile() {")
                         state = st_src_compile;
-                    else if (*l == "src_unpack() {")
+                    else if (line == "src_unpack() {")
                         state = st_src_unpack;
                 }
                 continue;
 
             case st_src_compile:
                 {
-                    if (*l == "}")
+                    if (line == "}")
                     {
                         state = st_default;
                         if (! src_compile_changed)
                             reporter.message(QAMessage(entry, qaml_minor, name, "src_compile is redundant")
                                     .with_associated_id(id));
                     }
-                    else if (l->empty())
+                    else if (line.empty())
                         ;
-                    else if (r_econf.search(*l))
+                    else if (r_econf.search(line))
                         ;
-                    else if (r_emake.search(*l))
+                    else if (r_emake.search(line))
                         ;
-                    else if (r_echo.search(*l))
+                    else if (r_echo.search(line))
                         ;
-                    else if (r_colon.search(*l))
+                    else if (r_colon.search(line))
                         ;
-                    else if (r_true.search(*l))
+                    else if (r_true.search(line))
                         ;
-                    else if (r_comment.search(*l))
+                    else if (r_comment.search(line))
                         ;
                     else
                         src_compile_changed = true;
@@ -109,26 +106,26 @@ paludis::erepository::default_functions_check(
 
             case st_src_unpack:
                 {
-                    if (*l == "}")
+                    if (line == "}")
                     {
                         state = st_default;
                         if (! src_unpack_changed)
                             reporter.message(QAMessage(entry, qaml_minor, name, "src_unpack is redundant")
                                     .with_associated_id(id));
                     }
-                    else if (l->empty())
+                    else if (line.empty())
                         ;
-                    else if (r_unpack.search(*l))
+                    else if (r_unpack.search(line))
                         ;
-                    else if (r_cd_s.search(*l))
+                    else if (r_cd_s.search(line))
                         ;
-                    else if (r_echo.search(*l))
+                    else if (r_echo.search(line))
                         ;
-                    else if (r_colon.search(*l))
+                    else if (r_colon.search(line))
                         ;
-                    else if (r_true.search(*l))
+                    else if (r_true.search(line))
                         ;
-                    else if (r_comment.search(*l))
+                    else if (r_comment.search(line))
                         ;
                     else
                         src_unpack_changed = true;

@@ -21,8 +21,8 @@
 #include <paludis/qa.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -52,16 +52,15 @@ paludis::erepository::whitespace_check(
         Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
             << entry << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
+    std::string s;
     unsigned line(0), err_count(0);
-    for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;
-            l != l_end ; ++l)
+    while (std::getline(ff, s))
     {
         ++line;
 
-        if (l->empty())
+        if (s.empty())
             continue;
 
         if (err_count >= 3)
@@ -70,43 +69,43 @@ paludis::erepository::whitespace_check(
             break;
         }
 
-        if (' ' == l->at(0))
+        if (' ' == s.at(0))
         {
             reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Spaces for indenting on line "
-                        + stringify(line) + ": " + strip_leading(*l, " \t")), id));
+                        + stringify(line) + ": " + strip_leading(s, " \t")), id));
             ++err_count;
             continue;
         }
-        else if ('\t' == l->at(0))
+        else if ('\t' == s.at(0))
         {
-            std::string::size_type p(l->find_first_of("\t"));
+            std::string::size_type p(s.find_first_of("\t"));
             if (std::string::npos == p)
             {
                 reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Indent followed by no content on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
+                            + stringify(line) + ": " + strip_leading(s, " \t")), id));
                 ++err_count;
                 continue;
             }
-            else if (' ' == l->at(p))
+            else if (' ' == s.at(p))
             {
                 reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Mixed tabs and spaces for indenting on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
+                            + stringify(line) + ": " + strip_leading(s, " \t")), id));
                 ++err_count;
                 continue;
             }
-            else if (std::string::npos != l->find(p, '\t'))
+            else if (std::string::npos != s.find(p, '\t'))
             {
                 reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Non-intent tab on line "
-                            + stringify(line) + ": " + strip_leading(*l, " \t")), id));
+                            + stringify(line) + ": " + strip_leading(s, " \t")), id));
                 ++err_count;
                 continue;
             }
         }
 
-        if (' ' == l->at(l->length() - 1) || '\t' == l->at(l->length() - 1))
+        if (' ' == s.at(s.length() - 1) || '\t' == s.at(s.length() - 1))
         {
             reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Trailing space on line "
-                        + stringify(line) + ": " + strip_leading(*l, " \t")), id));
+                        + stringify(line) + ": " + strip_leading(s, " \t")), id));
             ++err_count;
             continue;
         }

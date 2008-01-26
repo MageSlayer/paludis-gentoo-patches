@@ -21,9 +21,9 @@
 #include <paludis/qa.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -43,21 +43,20 @@ paludis::erepository::kv_variables_check(
     Log::get_instance()->message(ll_debug, lc_context) << "kv_variables '"
         << entry << "', '" << *id << "', '" << name << "'";
 
-    std::list<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    std::stringstream ff(content);
 
-    unsigned line(0);
-    for (std::list<std::string>::const_iterator l(lines.begin()), l_end(lines.end()) ;
-            l != l_end ; ++l)
+    std::string line;
+    unsigned line_number(0);
+    while (std::getline(ff, line))
     {
-        ++line;
+        ++line_number;
 
-        if (r_detect_version.search(*l))
+        if (r_detect_version.search(line))
             break;
 
-        if (r_global.search(*l))
+        if (r_global.search(line))
             reporter.message(QAMessage(entry, qaml_normal, name, "KV variable with no detect_version on line "
-                        + stringify(line) + ": " + strip_leading(*l, " \t")));
+                        + stringify(line_number) + ": " + strip_leading(line, " \t")));
     }
 
     return true;

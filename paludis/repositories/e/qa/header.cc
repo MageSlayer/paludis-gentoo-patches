@@ -20,10 +20,10 @@
 #include "header.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <pcre++.h>
 #include <time.h>
 #include <vector>
+#include <sstream>
 
 using namespace paludis;
 
@@ -58,24 +58,31 @@ paludis::erepository::header_check(
     pcrepp::Pcre::Pcre r_cvs_header("^#\\s*\\$Header.*\\s(\\d{4})/\\d{2}/\\d{2}\\s.*\\$$");
     pcrepp::Pcre::Pcre r_cvs_empty_header("^#\\s*\\$Header:\\s*\\$$");
 
+    std::stringstream ff(content);
+
+    std::string s;
     std::vector<std::string> lines;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(content, "\n", "", std::back_inserter(lines));
+    for (unsigned line_number(0) ; line_number < 3 ; ++line_number)
+    {
+        std::getline(ff, s);
+        lines.push_back(s);
+    }
 
     do
     {
-        if (! (lines.size() > 1 && r_licence.search(lines[1])))
+        if (! r_licence.search(lines[1]))
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong licence statement in line 2"), id));
 
         std::string year;
 
         // Check line 3 before line 1 to extract date of last commit
-        if (lines.size() > 2 && r_cvs_empty_header.search(lines[2]))
+        if (r_cvs_empty_header.search(lines[2]))
         {
             time_t now(time(NULL));
             struct tm now_struct;
             year = stringify(localtime_r(&now, &now_struct)->tm_year + 1900);
         }
-        else if (lines.size() > 2 && r_cvs_header.search(lines[2]))
+        else if (r_cvs_header.search(lines[2]))
             year = r_cvs_header[0];
         else
         {
@@ -86,7 +93,7 @@ paludis::erepository::header_check(
         Log::get_instance()->message(ll_debug, lc_context, "Expected copyright year is " + year);
         pcrepp::Pcre::Pcre r_copyright("^# Copyright ((1999|200\\d)-)?" + year + " Gentoo Foundation$");
 
-        if (! (lines.size() > 0 && r_copyright.search(lines[0])))
+        if (! r_copyright.search(lines[0]))
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong copyright assignment in line 1, possibly date related"), id));
 
     } while (false);
