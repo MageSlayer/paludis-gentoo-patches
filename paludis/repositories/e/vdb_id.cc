@@ -506,6 +506,13 @@ VDBID::iuse_key() const
     return _imp->iuse;
 }
 
+const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
+VDBID::license_key() const
+{
+    need_keys_added();
+    return _imp->license;
+}
+
 const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 VDBID::inherited_key() const
 {

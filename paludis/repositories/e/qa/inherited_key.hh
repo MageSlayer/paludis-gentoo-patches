@@ -31,7 +31,7 @@ namespace paludis
         bool inherited_key_check(
                 const FSEntry &,
                 QAReporter &,
-                const tr1::shared_ptr<const PackageID> &,
+                const tr1::shared_ptr<const ERepositoryID> &,
                 const std::string &);
     }
 }

@@ -32,6 +32,8 @@ namespace paludis
         {
             public:
                 virtual const tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const = 0;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const = 0;
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const = 0;
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > eclass_keywords_key() const = 0;

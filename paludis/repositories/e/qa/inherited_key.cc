@@ -66,39 +66,33 @@ bool
 paludis::erepository::inherited_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using inherited_key_check on ID '" + stringify(*id) + "':");
     Log::get_instance()->message(ll_debug, lc_context) << "inherited_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
-    if (id->end_metadata() != id->find_metadata("INHERITED"))
+    if (id->inherited_key())
     {
         try
         {
-            tr1::shared_ptr<const MetadataKey> key_sptr(*id->find_metadata("INHERITED"));
-            const MetadataCollectionKey<Set<std::string> > * key(
-                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(*key_sptr));
-            if (! key)
-                throw InternalError(PALUDIS_HERE, "'" + key->raw_name() + "' key for '" + stringify(*id) + "' is of the wrong type");
-
             const std::set<std::string> & inherited_blacklist(InheritedBlacklist::get_instance()->inherited_blacklist);
 
-            for (Set<std::string>::ConstIterator it(key->value()->begin()),
-                     it_end(key->value()->end()); it_end != it; ++it)
+            for (Set<std::string>::ConstIterator it(id->inherited_key()->value()->begin()),
+                     it_end(id->inherited_key()->value()->end()); it_end != it; ++it)
                 if (inherited_blacklist.end() != inherited_blacklist.find(*it))
-                    reporter.message(QAMessage(entry, qaml_normal, name, "Deprecated inherit '" + *it + "' in '" + key->raw_name() + "'")
+                    reporter.message(QAMessage(entry, qaml_normal, name, "Deprecated inherit '" + *it + "' in '" + id->inherited_key()->raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(id, key_sptr));
+                            .with_associated_key(id, id->inherited_key()));
         }
         catch (const Exception & e)
         {
             reporter.message(QAMessage(entry, qaml_severe, name,
                         "Caught exception '" + stringify(e.message()) + "' ("
-                        + stringify(e.what()) + ") when handling key 'INHERITED'")
+                        + stringify(e.what()) + ") when handling key '" + id->inherited_key()->raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(id, *id->find_metadata("INHERITED")));
+                            .with_associated_key(id, id->inherited_key()));
         }
     }
 
