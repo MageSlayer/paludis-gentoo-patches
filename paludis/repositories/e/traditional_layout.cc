@@ -179,7 +179,7 @@ TraditionalLayout::need_category_names() const
                 continue;
 
             std::string n(d->basename());
-            if (n == "CVS" || n == "distfiles" || n == "scripts" || n == "eclass" || n == "licences"
+            if (n == "CVS" || n == "distfiles" || n == "scripts" || n == "eclass" || n == "licenses"
                     || n == "packages")
                 continue;
 
