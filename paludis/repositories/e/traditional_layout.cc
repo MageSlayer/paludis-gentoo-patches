@@ -533,6 +533,21 @@ TraditionalLayout::exlibsdirs_package(const QualifiedPackageName & q) const
     return result;
 }
 
+tr1::shared_ptr<const FSEntrySequence>
+TraditionalLayout::licenses_dirs() const
+{
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+
+    if (_imp->repository->params().master_repository)
+    {
+        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->licenses_dirs());
+        std::copy(master->begin(), master->end(), result->back_inserter());
+    }
+    result->push_back(_imp->tree_root / "licenses");
+
+    return result;
+}
+
 namespace
 {
     void aux_files_helper(const FSEntry & d,
