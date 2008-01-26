@@ -65,6 +65,7 @@ namespace paludis
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > eclass_keywords_key() const;
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
@@ -113,6 +114,7 @@ namespace paludis
                 void load_use(const std::string &, const std::string &, const std::string &) const;
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
+                void load_eclass_keywords(const std::string &, const std::string &, const std::string &) const;
                 void load_restrict(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));

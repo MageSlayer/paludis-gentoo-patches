@@ -486,6 +486,12 @@ VDBID::keywords_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+VDBID::eclass_keywords_key() const
+{
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+}
+
 const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
 VDBID::use_key() const
 {

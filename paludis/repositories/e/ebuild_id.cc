@@ -85,6 +85,7 @@ namespace paludis
         mutable tr1::shared_ptr<const ESimpleURIKey> homepage;
         mutable tr1::shared_ptr<const ELicenseKey> license;
         mutable tr1::shared_ptr<const EKeywordsKey> keywords;
+        mutable tr1::shared_ptr<const EKeywordsKey> eclass_keywords;
         mutable tr1::shared_ptr<const EIUseKey> iuse;
         mutable tr1::shared_ptr<const EInheritedKey> inherited;
         mutable tr1::shared_ptr<const EUseKey> use;
@@ -505,6 +506,13 @@ EbuildID::keywords_key() const
     return _imp->keywords;
 }
 
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+EbuildID::eclass_keywords_key() const
+{
+    need_keys_added();
+    return _imp->eclass_keywords;
+}
+
 const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 EbuildID::iuse_key() const
 {
@@ -782,6 +790,14 @@ EbuildID::load_keywords(const std::string & r, const std::string & h, const std:
     Lock l(_imp->mutex);
     _imp->keywords.reset(new EKeywordsKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->keywords);
+}
+
+void
+EbuildID::load_eclass_keywords(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->eclass_keywords.reset(new EKeywordsKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->eclass_keywords);
 }
 
 void

@@ -437,6 +437,9 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! m.metadata_keywords.empty())
         id->load_keywords(m.metadata_keywords, m.description_keywords, get(keys, m.metadata_keywords));
 
+    if (! m.metadata_eclass_keywords.empty())
+        id->load_eclass_keywords(m.metadata_eclass_keywords, m.description_eclass_keywords, get(keys, m.metadata_eclass_keywords));
+
     if (! m.metadata_restrict.empty())
         id->load_restrict(m.metadata_restrict, m.description_restrict, get(keys, m.metadata_restrict));
 
