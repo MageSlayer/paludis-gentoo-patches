@@ -49,6 +49,7 @@ paludis_repositories_e_include_HEADERS = \
 	restrict_key.hh \
 	inherited_key.hh \
 	visibility.hh \
+	function_keyword.hh \
 	whitespace.hh \
 	header.hh \
 	variable_assigns.hh \
@@ -84,6 +85,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	restrict_key.cc \
 	inherited_key.cc \
 	visibility.cc \
+	function_keyword.cc \
 	whitespace.cc \
 	header.cc \
 	variable_assigns.cc \
@@ -148,7 +150,8 @@ TESTS = \
 	visibility_TEST \
 	misc_files_TEST \
 	gpg_TEST \
-	subshell_die_TEST
+	subshell_die_TEST \
+	function_keyword_TEST
 
 check_PROGRAMS = $(TESTS)
 
@@ -262,6 +265,18 @@ gpg_TEST_LDADD = \
 
 subshell_die_TEST_SOURCES = subshell_die_TEST.cc
 subshell_die_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+function_keyword_TEST_SOURCES = function_keyword_TEST.cc
+function_keyword_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \

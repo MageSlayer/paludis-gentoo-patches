@@ -44,6 +44,7 @@
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/root_variable.hh>
 #include <paludis/repositories/e/qa/subshell_die.hh>
+#include <paludis/repositories/e/qa/function_keyword.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
 #include <paludis/repositories/e/qa/header.hh>
 #include <paludis/repositories/e/qa/repo_name.hh>
@@ -100,6 +101,9 @@ QAChecks::QAChecks() :
 
     _imp->eclass_file_contents_checks_group->add_check("header",
             tr1::bind(header_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
+
+    _imp->eclass_file_contents_checks_group->add_check("function_keyword",
+            tr1::bind(function_keyword_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "function_keyword"));
 
     _imp->eclass_file_contents_checks_group->add_check("whitespace",
             tr1::bind(whitespace_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "whitespace"));
@@ -183,6 +187,9 @@ QAChecks::QAChecks() :
 
     _imp->package_id_file_contents_checks_group->add_check("subshell_die",
             tr1::bind(subshell_die_check, _1, _2, _5, _6, "subshell_die"));
+
+    _imp->package_id_file_contents_checks_group->add_check("function_keyword",
+            tr1::bind(function_keyword_check, _1, _2, _5, _6, "function_keyword"));
 
     _imp->package_id_file_contents_checks_group->add_check("whitespace",
             tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
