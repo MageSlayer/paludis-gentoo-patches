@@ -225,6 +225,14 @@ VDBRepository::category_names() const
     return result;
 }
 
+tr1::shared_ptr<const CategoryNamePartSet>
+VDBRepository::unimportant_category_names() const
+{
+    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    result->insert(CategoryNamePart("virtual"));
+    return result;
+}
+
 tr1::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::package_names(const CategoryNamePart & c) const
 {

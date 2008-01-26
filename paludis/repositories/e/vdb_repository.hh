@@ -223,6 +223,8 @@ namespace paludis
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
             /* Keys */
