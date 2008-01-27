@@ -66,12 +66,7 @@ paludis::erepository::gpg_check(
 
     if (is_signed)
     {
-        FDHolder dev_null(::open("/dev/null", O_WRONLY));
-
-        set_run_command_stdout_fds(dev_null, -1);
-        set_run_command_stderr_fds(dev_null, -1);
-
-        int status(run_command("gpg --verify " + stringify(manifest)));
+        int status(run_command("gpg --verify " + stringify(manifest) + " >/dev/null 2>/dev/null"));
 
         if (1 == status)
             reporter.message(QAMessage(manifest, qaml_normal, name, "Broken Manifest signature"));
