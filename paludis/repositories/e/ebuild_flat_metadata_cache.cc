@@ -33,6 +33,8 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <cstring>
+#include <errno.h>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -176,9 +178,10 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
         _filename.dirname().dirname().mkdir();
         _filename.dirname().mkdir();
     }
-    catch (const FSError &)
+    catch (const FSError & e)
     {
-        // let the 'if (cache_file)' handle the error
+        Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't create cache directory: " << e.message();
+        return;
     }
 
     std::ostringstream cache;
@@ -265,7 +268,7 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
     else
     {
         Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't write cache file to '"
-            << _filename << "'";
+            << _filename << "': " << std::strerror(errno);
     }
 }
 
