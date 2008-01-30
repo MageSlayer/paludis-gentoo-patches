@@ -155,7 +155,7 @@ def collect_filenames(parts, id, label, spec)
         parts[spec.filename] = true unless $banned_labels[label[0]]
 
     when Paludis::URILabelsDepSpec
-        label[0] = spec.labels[0].class
+        label[0] = spec.labels.last.class
 
     else
         raise "Unexpected DepSpec class #{spec.class} in #{id}"
