@@ -40,7 +40,7 @@ unpack_one()
 
     if [[ -n "${UNPACKONLY}" ]] ; then
         case "${x}" in
-            *.tar.bz2|*.tbz2)
+            *.tar.bz2|*.tbz2|*.tbz)
             ;;
 
             *)
@@ -60,7 +60,7 @@ unpack_one()
             tar zxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" || die "Couldn't unpack ${1}"
             ;;
 
-        *.tar.bz2|*.tbz2)
+        *.tar.bz2|*.tbz2|*.tbz)
             echo tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" ${UNPACKONLY} 1>&2
             tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" ${UNPACKONLY} || die "Couldn't unpack ${1}"
             ;;
@@ -107,35 +107,32 @@ unpack_one()
             ;;
 
         *)
-            echo "Skipping unpack for ${1}"
+            if [[ -n "${PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL}" ]] ; then
+                die "Don't know how to unpack ${x}"
+            else
+                echo "Skipping unpack for ${1}"
+            fi
             ;;
     esac
-
 }
 
 export UNPACKFROMDIR="${DISTDIR}"
 export UNPACKTODIR="${PWD}"
-
-if [[ "${1}" == "--binary" ]] ; then
-    export UNPACKFROMDIR="${PKGDIR}"
-    export UNPACKTODIR="${IMAGE}"
-    IS_BINARY=yes
-    shift
-else
-    IS_BINARY=
-fi
-
 unset UNPACKONLY
-if [[ "${1}" == "--only" ]] ; then
-    shift
-    export UNPACKONLY="${1}"
-    shift
-fi
-
 TAR_OPTIONS=( )
-while [[ "${1}" == --tar-option=* ]] ; do
-    TAR_OPTIONS[${#TAR_OPTIONS[@]}]="${1#*=}"
-    shift
+
+while [[ "${1#--}" != "${1}" ]] ; do
+    if [[ "${1}" == "--only" ]] ; then
+        shift
+        export UNPACKONLY="${1}"
+        shift
+    elif [[ "${1}" == "--if-compressed" ]] ; then
+        export PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL=
+        shift
+    elif [[ "${1}" == --tar-option=* ]] ; then
+        TAR_OPTIONS[${#TAR_OPTIONS[@]}]="${1#*=}"
+        shift
+    fi
 done
 
 [[ -z "$@" ]] && die "No arguments given to unpack"
@@ -149,5 +146,5 @@ for x in "$@" ; do
     unpack_one "${x}"
 done
 
-[[ -z ${IS_BINARY} ]] && find ${UNPACKTODIR} -mindepth 1 ! -type l -print0 | xargs -0 chmod a+rX,u+w,go-w
+find ${UNPACKTODIR} -mindepth 1 ! -type l -print0 | xargs -0 chmod a+rX,u+w,go-w
 

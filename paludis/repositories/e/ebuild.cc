@@ -176,6 +176,8 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->ignore_pivot_env_variables)
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
                     params.package_id->eapi()->supported->ebuild_environment_variables->env_distdir)
+            .with_setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",
+                    params.package_id->eapi()->supported->tools_options->unpack_unrecognised_is_fatal ? "yes" : "")
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")

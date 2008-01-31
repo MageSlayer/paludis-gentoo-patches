@@ -108,6 +108,25 @@ make_class_EAPIEbuildEnvironmentVariables()
 END
 }
 
+make_class_EAPIToolsOptions()
+{
+    visible
+    allow_named_args cc
+
+    key unpack_unrecognised_is_fatal bool
+
+    doxygen_comment << "END"
+        /**
+         * Information about a supported EAPI's tool options.
+         *
+         * \see EAPIData
+         * \see EAPI
+         * \ingroup grpeapi
+         * \nosubgrouping
+         */
+END
+}
+
 make_class_EAPIEbuildOptions()
 {
     visible
@@ -188,6 +207,7 @@ make_class_SupportedEAPI()
     key uri_labels                    "tr1::shared_ptr<const EAPILabels>"
     key dependency_labels             "tr1::shared_ptr<const EAPILabels>"
     key pipe_commands                 "tr1::shared_ptr<const EAPIPipeCommands>"
+    key tools_options                 "tr1::shared_ptr<const EAPIToolsOptions>"
 
     doxygen_comment << "END"
         /**

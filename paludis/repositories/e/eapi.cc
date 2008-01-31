@@ -215,6 +215,11 @@ namespace paludis
 
                                                                 .dependency_labels(make_shared_ptr(new EAPILabels(k.get("dependency_labels"))))
 
+                                                                .tools_options(make_shared_ptr(new EAPIToolsOptions(
+                                                                                EAPIToolsOptions::create()
+                                                                                .unpack_unrecognised_is_fatal(destringify<bool>(
+                                                                                        k.get("unpack_unrecognised_is_fatal"))))))
+
                                                                 ))));
 
                 tokenise_whitespace(k.get("restrict_fetch"),
