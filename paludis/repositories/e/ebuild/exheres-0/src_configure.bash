@@ -22,7 +22,7 @@
 
 default_src_configure()
 {
-    [[ -x ./configure ]] && econf
+    [[ -x ${ECONF_SOURCE:-.}/configure ]] && econf
 }
 
 src_configure()
