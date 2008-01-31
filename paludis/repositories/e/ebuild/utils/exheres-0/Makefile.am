@@ -20,7 +20,6 @@ libexecprog_SCRIPTS = \
 	prepalldocs \
 	ecompress \
 	ecompressdir \
-	unpack \
 	emake \
 	banned_in_eapi_exheres-0
 

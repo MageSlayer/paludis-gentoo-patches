@@ -218,7 +218,10 @@ namespace paludis
                                                                 .tools_options(make_shared_ptr(new EAPIToolsOptions(
                                                                                 EAPIToolsOptions::create()
                                                                                 .unpack_unrecognised_is_fatal(destringify<bool>(
-                                                                                        k.get("unpack_unrecognised_is_fatal"))))))
+                                                                                        k.get("unpack_unrecognised_is_fatal")))
+                                                                                .unpack_fix_permissions(destringify<bool>(
+                                                                                        k.get("unpack_fix_permissions")))
+                                                                                )))
 
                                                                 ))));
 

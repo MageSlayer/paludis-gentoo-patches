@@ -178,6 +178,10 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_environment_variables->env_distdir)
             .with_setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",
                     params.package_id->eapi()->supported->tools_options->unpack_unrecognised_is_fatal ? "yes" : "")
+            .with_setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",
+                    params.package_id->eapi()->supported->tools_options->unpack_fix_permissions ? "yes" : "")
+            .with_setenv("PALUDIS_UNPACK_FROM_VAR",
+                    params.package_id->eapi()->supported->ebuild_environment_variables->env_distdir)
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")

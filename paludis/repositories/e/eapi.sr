@@ -114,6 +114,7 @@ make_class_EAPIToolsOptions()
     allow_named_args cc
 
     key unpack_unrecognised_is_fatal bool
+    key unpack_fix_permissions       bool
 
     doxygen_comment << "END"
         /**

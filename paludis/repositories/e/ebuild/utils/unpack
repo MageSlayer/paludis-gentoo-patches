@@ -116,7 +116,7 @@ unpack_one()
     esac
 }
 
-export UNPACKFROMDIR="${DISTDIR}"
+export UNPACKFROMDIR="${!PALUDIS_UNPACK_FROM_VAR}"
 export UNPACKTODIR="${PWD}"
 unset UNPACKONLY
 TAR_OPTIONS=( )
@@ -146,5 +146,7 @@ for x in "$@" ; do
     unpack_one "${x}"
 done
 
-find ${UNPACKTODIR} -mindepth 1 ! -type l -print0 | xargs -0 chmod a+rX,u+w,go-w
+if [[ -n "${PALUDIS_UNPACK_FIX_PERMISSIONS}" ]] ; then
+    find ${UNPACKTODIR} -mindepth 1 ! -type l -print0 | xargs -0 chmod a+rX,u+w,go-w
+fi
 
