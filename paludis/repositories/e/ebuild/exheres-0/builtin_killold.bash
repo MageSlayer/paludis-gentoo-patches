@@ -16,7 +16,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-builtin_prepare()
+builtin_killold()
 {
     export ROOT="${ROOT//+(\/)//}"
 
@@ -33,21 +33,21 @@ builtin_prepare()
     fi
 }
 
-exheres_internal_prepare()
+exheres_internal_killold()
 {
-    if hasq "prepare" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_prepare (RESTRICT)"
-    elif hasq "prepare" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping builtin_prepare (SKIP_FUNCTIONS)"
+    if hasq "killold" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_killold (RESTRICT)"
+    elif hasq "killold" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping builtin_killold (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting builtin_prepare"
-        builtin_prepare
-        ebuild_section "Done builtin_prepare"
+        ebuild_section "Starting builtin_killold"
+        builtin_killold
+        ebuild_section "Done builtin_killold"
     fi
 }
 
-ebuild_f_prepare()
+ebuild_f_killold()
 {
-    exheres_internal_prepare ""
+    exheres_internal_killold ""
 }
 

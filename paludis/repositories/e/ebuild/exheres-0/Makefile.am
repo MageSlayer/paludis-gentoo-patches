@@ -9,7 +9,7 @@ libexecprogexheres_SCRIPTS = \
 	builtin_init.bash \
 	builtin_loadenv.bash \
 	builtin_metadata.bash \
-	builtin_prepare.bash \
+	builtin_killold.bash \
 	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
@@ -31,8 +31,10 @@ libexecprogexheres_SCRIPTS = \
 	pkg_setup.bash \
 	portage_stubs.bash \
 	src_compile.bash \
+	src_configure.bash \
 	src_install.bash \
 	src_test.bash \
+	src_prepare.bash \
 	src_unpack.bash
 
 TESTS_ENVIRONMENT = env \

@@ -20,19 +20,17 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_src_compile()
+default_src_configure()
 {
-    if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        emake || die "emake failed"
-    fi
+    [[ -x ./configure ]] && econf
 }
 
-src_compile()
+src_configure()
 {
     default "$@"
 }
 
-exheres_internal_compile()
+exheres_internal_configure()
 {
     if [[ -d "${S}" ]] ; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
@@ -40,14 +38,14 @@ exheres_internal_compile()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "compile" ${RESTRICT} ; then
-        ebuild_section "Skipping src_compile (RESTRICT)"
-    elif hasq "compile" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
+    if hasq "configure" ${RESTRICT} ; then
+        ebuild_section "Skipping src_configure (RESTRICT)"
+    elif hasq "configure" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_configure (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting src_compile"
-        src_compile
-        ebuild_section "Done src_compile"
+        ebuild_section "Starting src_configure"
+        src_configure
+        ebuild_section "Done src_configure"
     fi
 }
 

@@ -407,12 +407,12 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|prepare|merge|unmerge|tidyup|\
+            metadata|variable|init|killold|merge|unmerge|tidyup|\
                     strip|loadenv|saveenv|initbin|unpackbin|infovars|pivotbin|installbin)
                 ebuild_load_module builtin_${action}
             ;;
 
-            unpack|compile|install|test)
+            unpack|prepare|configure|compile|install|test)
                 ebuild_load_module src_${action}
             ;;
 
