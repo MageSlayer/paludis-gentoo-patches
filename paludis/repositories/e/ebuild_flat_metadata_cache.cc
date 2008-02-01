@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -89,33 +91,73 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                     }
 
                     if (ok)
+                        ok = static_cast<int>(lines.size()) >= m.flat_cache_minimum_size;
+
+                    if (ok)
                     {
-                        if (! m.metadata_build_depend.empty())
-                            id->load_build_depend(m.metadata_build_depend, m.description_build_depend, lines[0]);
-                        if (! m.metadata_run_depend.empty())
-                            id->load_run_depend(m.metadata_run_depend, m.description_run_depend, lines[1]);
-                        id->set_slot(SlotName(lines[2]));
-                        if (! m.metadata_src_uri.empty())
-                            id->load_src_uri(m.metadata_src_uri, m.description_src_uri, lines[3]);
-                        if (! m.metadata_restrict.empty())
-                            id->load_restrict(m.metadata_restrict, m.description_restrict, lines[4]);
-                        if (! m.metadata_homepage.empty())
-                            id->load_homepage(m.metadata_homepage, m.description_homepage, lines[5]);
-                        if (! m.metadata_license.empty())
-                            id->load_license(m.metadata_license, m.description_license, lines[6]);
-                        if (! m.metadata_description.empty())
-                            id->load_short_description(m.metadata_description, m.description_description, lines[7]);
-                        if (! m.metadata_keywords.empty())
-                            id->load_keywords(m.metadata_keywords, m.description_keywords, lines[8]);
-                        if (! m.metadata_inherited.empty())
-                            id->load_inherited(m.metadata_inherited, m.description_inherited, lines[9]);
-                        if (! m.metadata_iuse.empty())
-                            id->load_iuse(m.metadata_iuse, m.description_iuse, lines[10]);
-                        /* 11 no longer used */
-                        if (! m.metadata_pdepend.empty())
-                            id->load_post_depend(m.metadata_pdepend, m.description_pdepend, lines[12]);
-                        if (! m.metadata_provide.empty())
-                            id->load_provide(m.metadata_provide, m.description_provide, lines[13]);
+                        if (-1 != m.flat_cache_dependencies)
+                            if (! m.metadata_dependencies.empty())
+                            {
+                                DependenciesRewriter rewriter;
+                                parse_depend(lines.at(m.flat_cache_dependencies), *id->eapi(), id)->accept(rewriter);
+                                id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
+                                id->load_run_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
+                                id->load_post_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());
+                            }
+
+                        if (-1 != m.flat_cache_build_depend)
+                            if (! m.metadata_build_depend.empty())
+                                id->load_build_depend(m.metadata_build_depend, m.description_build_depend, lines.at(m.flat_cache_build_depend));
+
+                        if (-1 != m.flat_cache_run_depend)
+                            if (! m.metadata_run_depend.empty())
+                                id->load_run_depend(m.metadata_run_depend, m.description_run_depend, lines.at(m.flat_cache_run_depend));
+
+                        id->set_slot(SlotName(lines.at(m.flat_cache_slot)));
+
+                        if (-1 != m.flat_cache_src_uri)
+                            if (! m.metadata_src_uri.empty())
+                                id->load_src_uri(m.metadata_src_uri, m.description_src_uri, lines.at(m.flat_cache_src_uri));
+
+                        if (-1 != m.flat_cache_restrict)
+                            if (! m.metadata_restrict.empty())
+                                id->load_restrict(m.metadata_restrict, m.description_restrict, lines.at(m.flat_cache_restrict));
+
+                        if (-1 != m.flat_cache_homepage)
+                            if (! m.metadata_homepage.empty())
+                                id->load_homepage(m.metadata_homepage, m.description_homepage, lines.at(m.flat_cache_homepage));
+
+                        if (-1 != m.flat_cache_license)
+                            if (! m.metadata_license.empty())
+                                id->load_license(m.metadata_license, m.description_license, lines.at(m.flat_cache_license));
+
+                        if (-1 != m.flat_cache_description)
+                            if (! m.metadata_description.empty())
+                                id->load_short_description(m.metadata_description, m.description_description, lines.at(m.flat_cache_description));
+
+                        if (-1 != m.flat_cache_keywords)
+                            if (! m.metadata_keywords.empty())
+                                id->load_keywords(m.metadata_keywords, m.description_keywords, lines.at(m.flat_cache_keywords));
+
+                        if (-1 != m.flat_cache_inherited)
+                            if (! m.metadata_inherited.empty())
+                                id->load_inherited(m.metadata_inherited, m.description_inherited, lines.at(m.flat_cache_inherited));
+
+                        if (-1 != m.flat_cache_iuse)
+                            if (! m.metadata_iuse.empty())
+                                id->load_iuse(m.metadata_iuse, m.description_iuse, lines.at(m.flat_cache_iuse));
+
+                        if (-1 != m.flat_cache_pdepend)
+                            if (! m.metadata_pdepend.empty())
+                                id->load_post_depend(m.metadata_pdepend, m.description_pdepend, lines.at(m.flat_cache_pdepend));
+
+                        if (-1 != m.flat_cache_provide)
+                            if (! m.metadata_provide.empty())
+                                id->load_provide(m.metadata_provide, m.description_provide, lines.at(m.flat_cache_provide));
+
+                        if (-1 != m.flat_cache_use)
+                            if (! m.metadata_use.empty())
+                                id->load_use(m.metadata_use, m.description_use, lines.at(m.flat_cache_use));
                     }
                 }
                 else
@@ -184,75 +226,142 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
         return;
     }
 
+    if (! id->eapi()->supported)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context) << "Not writing cache file to '"
+            << _filename << "' because EAPI '" << id->eapi()->name << "' is not supported";
+        return;
+    }
+
     std::ostringstream cache;
 
     try
     {
-        if (id->build_dependencies_key())
-            cache << flatten(id->build_dependencies_key()->value()) << std::endl;
-        else
-            cache << std::endl;
+        const EAPIEbuildMetadataVariables & m(*id->eapi()->supported->ebuild_metadata_variables);
+        for (int x(0), x_end(m.flat_cache_minimum_size) ; x != x_end ; ++x)
+        {
+            if (x == m.flat_cache_dependencies)
+            {
+                std::string s;
 
-        if (id->run_dependencies_key())
-            cache << flatten(id->run_dependencies_key()->value()) << std::endl;
-        else
-            cache << std::endl;
+                if (id->build_dependencies_key())
+                    s.append(flatten(id->build_dependencies_key()->value()) + " ");
+                if (id->run_dependencies_key())
+                    s.append(flatten(id->run_dependencies_key()->value()) + " ");
+                if (id->post_dependencies_key())
+                    s.append(flatten(id->post_dependencies_key()->value()) + " ");
 
-        cache << normalise(id->slot()) << std::endl;
-
-        if (id->fetches_key())
-            cache << flatten(id->fetches_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->restrict_key())
-            cache << flatten(id->restrict_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->homepage_key())
-            cache << flatten(id->homepage_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->license_key())
-            cache << flatten(id->license_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->short_description_key())
-            cache << normalise(id->short_description_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->keywords_key())
-            cache << join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " ") << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->inherited_key())
-            cache << join(id->inherited_key()->value()->begin(), id->inherited_key()->value()->end(), " ") << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->iuse_key())
-            cache << join(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(), " ") << std::endl;
-        else
-            cache << std::endl;
-
-        cache << std::endl;
-
-        if (id->post_dependencies_key())
-            cache << flatten(id->post_dependencies_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        if (id->provide_key())
-            cache << flatten(id->provide_key()->value()) << std::endl;
-        else
-            cache << std::endl;
-
-        cache << normalise(id->eapi()->name) << std::endl;
+                cache << s << std::endl;
+            }
+            else if (x == m.flat_cache_eclass_keywords)
+            {
+                if (id->eclass_keywords_key())
+                    cache << join(id->eclass_keywords_key()->value()->begin(), id->eclass_keywords_key()->value()->end(), " ") << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_use)
+            {
+                if (id->use_key())
+                    cache << join(id->use_key()->value()->begin(), id->use_key()->value()->end(), " ") << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_build_depend)
+            {
+                if (id->build_dependencies_key())
+                    cache << flatten(id->build_dependencies_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_run_depend)
+            {
+                if (id->run_dependencies_key())
+                    cache << flatten(id->run_dependencies_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_slot)
+            {
+                cache << normalise(id->slot()) << std::endl;
+            }
+            else if (x == m.flat_cache_src_uri)
+            {
+                if (id->fetches_key())
+                    cache << flatten(id->fetches_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_restrict)
+            {
+                if (id->restrict_key())
+                    cache << flatten(id->restrict_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_homepage)
+            {
+                if (id->homepage_key())
+                    cache << flatten(id->homepage_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_license)
+            {
+                if (id->license_key())
+                    cache << flatten(id->license_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_description)
+            {
+                if (id->short_description_key())
+                    cache << normalise(id->short_description_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_keywords)
+            {
+                if (id->keywords_key())
+                    cache << join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " ") << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_inherited)
+            {
+                if (id->inherited_key())
+                    cache << join(id->inherited_key()->value()->begin(), id->inherited_key()->value()->end(), " ") << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_iuse)
+            {
+                if (id->iuse_key())
+                    cache << join(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(), " ") << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_pdepend)
+            {
+                if (id->post_dependencies_key())
+                    cache << flatten(id->post_dependencies_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_provide)
+            {
+                if (id->provide_key())
+                    cache << flatten(id->provide_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.flat_cache_eapi)
+            {
+                cache << normalise(id->eapi()->name) << std::endl;
+            }
+            else
+                cache << std::endl;
+        }
     }
     catch (const Exception & e)
     {

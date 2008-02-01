@@ -67,6 +67,25 @@ make_class_EAPIEbuildMetadataVariables()
     key description_dependencies     std::string
     key description_use              std::string
 
+    key flat_cache_minimum_size      int
+    key flat_cache_build_depend      int
+    key flat_cache_run_depend        int
+    key flat_cache_slot              int
+    key flat_cache_src_uri           int
+    key flat_cache_restrict          int
+    key flat_cache_homepage          int
+    key flat_cache_license           int
+    key flat_cache_description       int
+    key flat_cache_keywords          int
+    key flat_cache_eclass_keywords   int
+    key flat_cache_inherited         int
+    key flat_cache_iuse              int
+    key flat_cache_pdepend           int
+    key flat_cache_provide           int
+    key flat_cache_eapi              int
+    key flat_cache_dependencies      int
+    key flat_cache_use               int
+
     doxygen_comment << "END"
         /**
          * Information about a supported EAPI's ebuild metadata variables.
