@@ -32,7 +32,11 @@ src_prepare()
 
 exheres_internal_prepare()
 {
-    cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    if [[ -d "${S}" ]] ; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -d "${WORKDIR}" ]] ; then
+        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    fi
 
     if hasq "prepare" ${RESTRICT} ; then
         ebuild_section "Skipping src_prepare (RESTRICT)"
