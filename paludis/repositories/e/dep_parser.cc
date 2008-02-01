@@ -645,6 +645,7 @@ namespace
             case dps_had_paren:
             case dps_had_text_arrow_text:
             case dps_had_text_arrow_space:
+            case dps_had_label:
                 break;
 
             case dps_had_double_bar_space:
@@ -652,7 +653,6 @@ namespace
             case dps_had_use_flag:
             case dps_had_use_flag_space:
             case dps_had_text_arrow:
-            case dps_had_label:
                 throw DepStringParseError(s, "Unexpected end of string");
         }
 
