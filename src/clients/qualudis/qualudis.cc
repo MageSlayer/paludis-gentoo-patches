@@ -55,6 +55,24 @@ namespace
     {
     };
 
+    FSEntry
+    get_location()
+    {
+        Context context("When determining tree location:");
+
+        if (QualudisCommandLine::get_instance()->a_repository_directory.specified())
+            return FSEntry(QualudisCommandLine::get_instance()->a_repository_directory.argument());
+
+        if ((FSEntry::cwd() / "profiles").is_directory())
+            return FSEntry::cwd();
+        if ((FSEntry::cwd().dirname() / "profiles").is_directory())
+            return FSEntry::cwd().dirname();
+        if ((FSEntry::cwd().dirname().dirname() / "profiles").is_directory())
+            return FSEntry::cwd().dirname().dirname();
+
+        throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
+    }
+
     struct MetadataKeyPrettyPrinter :
         ConstVisitor<MetadataKeyVisitorTypes>
     {
@@ -315,7 +333,7 @@ int main(int argc, char *argv[])
             QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
         tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
-                    .repository_dir(FSEntry::cwd())
+                    .repository_dir(get_location())
                     .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_ebuild)

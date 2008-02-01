@@ -62,6 +62,9 @@ class QualudisCommandLine :
         /// --show-associated-keys
         paludis::args::EnumArg a_show_associated_keys;
 
+        /// --repository-dir
+        paludis::args::StringArg a_repository_directory;
+
         ///\}
 
         ///\name Configuration options

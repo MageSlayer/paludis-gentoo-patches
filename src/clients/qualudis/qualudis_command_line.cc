@@ -54,6 +54,9 @@ QualudisCommandLine::QualudisCommandLine() :
             ("always", "Always show metadata keys"),
             "once"),
 
+    a_repository_directory(&check_options, "repository-dir", 'D',
+            "Where to find the repository (default: detected from ./ or ../ or ../..)"),
+
     configuration_options(this, "Configuration options",
             "Options that control general configuration."),
     a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
