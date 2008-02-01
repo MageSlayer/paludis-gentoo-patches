@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Richard Brown
+ * Copyright (c) 2007, 2008 Richard Brown
  * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -56,6 +56,7 @@ namespace
     static VALUE c_metadata_dependency_spec_tree_key;
     static VALUE c_metadata_restrict_spec_tree_key;
     static VALUE c_repository_mask_info;
+    static VALUE c_metadata_section_key;
 
     /*
      * Document-method: raw_name
@@ -141,7 +142,8 @@ namespace
 
         void visit(const MetadataSectionKey &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_section_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
         void visit(const MetadataRepositoryMaskInfoKey &)
@@ -527,6 +529,46 @@ namespace
         return result;
     }
 
+    /*
+     * call-seq:
+     *     each_metadata {|key| block } -> Nil
+     *
+     * Our metadata.
+     */
+    VALUE
+    metadata_section_key_each_metadata(VALUE self)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        tr1::shared_ptr<const MetadataSectionKey> c = tr1::static_pointer_cast<const MetadataSectionKey>(*self_ptr);
+        for (MetadataSectionKey::MetadataConstIterator it((c)->begin_metadata()),
+                it_end((c)->end_metadata()); it_end != it; ++it)
+        {
+            VALUE val(metadata_key_to_value(*it));
+            if (Qnil != val)
+                rb_yield(val);
+        }
+        return Qnil;
+    }
+
+    /*
+     * call-seq:
+     *     [String] -> MetadataKey or Nil
+     *
+     * The named metadata key
+     */
+    VALUE
+    metadata_section_key_subscript(VALUE self, VALUE raw_name)
+    {
+        tr1::shared_ptr<const MetadataKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataKey>, self_ptr);
+        tr1::shared_ptr<const MetadataSectionKey> c = tr1::static_pointer_cast<const MetadataSectionKey>(*self_ptr);
+        MetadataSectionKey::MetadataConstIterator it((c)->find_metadata(StringValuePtr(raw_name)));
+        if (c->end_metadata() == it)
+            return Qnil;
+        return metadata_key_to_value(*it);
+    }
+
     void do_register_metadata_key()
     {
         /*
@@ -692,6 +734,16 @@ namespace
          */
         c_metadata_simple_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataSimpleURISpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_simple_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<SimpleURISpecTree>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataSectionKey
+         *
+         * A MetadataSectionKey is a MetadataKey that holds a number of other
+         * MetadataKey instances.
+         */
+        c_metadata_section_key = rb_define_class_under(paludis_module(), "MetadataSectionKey", c_metadata_key);
+        rb_define_method(c_metadata_section_key, "each_metadata", RUBY_FUNC_CAST(&metadata_section_key_each_metadata), 0);
+        rb_define_method(c_metadata_section_key, "[]", RUBY_FUNC_CAST(&metadata_section_key_subscript), 1);
 
         /*
          * Document-module: Paludis::MetadataKeyType
