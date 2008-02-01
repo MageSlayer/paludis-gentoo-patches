@@ -27,13 +27,12 @@ export_exlib_phases()
                 eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
                 ;;
 
-            src_unpack|src_compile|src_install|src_test)
+            src_unpack|src_prepare|src_configure|src_compile|src_install|src_test)
                 eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
                 ;;
 
             *)
-                eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
-                ebuild_notice "qa" "$e should not be in export_exlib_phases for ${CURRENT_EXLIB}"
+                die "$e should not be in export_exlib_phases for ${CURRENT_EXLIB}"
                 ;;
         esac
     done

@@ -31,13 +31,12 @@ EXPORT_FUNCTIONS()
                 eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ;;
 
-            src_unpack|src_compile|src_install|src_test)
+            src_unpack|src_prepare|src_configure|src_compile|src_install|src_test)
                 eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ;;
 
             *)
-                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
-                ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
+                die "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
                 ;;
         esac
     done
