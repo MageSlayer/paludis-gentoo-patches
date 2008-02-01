@@ -1116,6 +1116,11 @@ namespace
         rb_define_method(c_uri_label, "text", RUBY_FUNC_CAST(&uri_label_text), 0);
         rb_define_method(c_uri_label, "to_s", RUBY_FUNC_CAST(&uri_label_text), 0);
 
+        /*
+         * Document-class: Paludis::URILabel
+         *
+         * URI label base class.
+         */
         c_uri_mirrors_then_listed_label = rb_define_class_under(paludis_module(), "URIMirrorsThenListedLabel", c_uri_label);
         c_uri_mirrors_only_label = rb_define_class_under(paludis_module(), "URIMirrorsOnlyLabel", c_uri_label);
         c_uri_listed_only_label = rb_define_class_under(paludis_module(), "URIListedOnlyLabel", c_uri_label);
