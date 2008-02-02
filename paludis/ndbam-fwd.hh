@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,12 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_FWD_HH 1
 
+#include <paludis/util/sequence-fwd.hh>
+
 namespace paludis
 {
-    namespace unpackaged_repositories
-    {
-        class NDBAM;
-    }
+    class NDBAM;
+    class NDBAMEntry;
+    typedef Sequence<tr1::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
 }
 
 #endif

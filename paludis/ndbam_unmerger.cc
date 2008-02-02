@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -18,8 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/ndbam_unmerger.hh>
-#include <paludis/repositories/unpackaged/ndbam.hh>
+#include <paludis/ndbam_unmerger.hh>
+#include <paludis/ndbam.hh>
 
 #include <paludis/util/destringify.hh>
 #include <paludis/util/md5.hh>
@@ -45,9 +45,8 @@
 #include <iostream>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/ndbam_unmerger-sr.cc>
+#include <paludis/ndbam_unmerger-sr.cc>
 
 namespace paludis
 {

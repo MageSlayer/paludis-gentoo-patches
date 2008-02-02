@@ -1,9 +1,6 @@
 SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
-	ndbam-sr.hh ndbam-sr.cc \
-	ndbam_merger-sr.hh ndbam_merger-sr.cc \
-	ndbam_unmerger-sr.hh ndbam_unmerger-sr.cc \
 	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
 	installed_repository-sr.hh installed_repository-sr.cc
 
@@ -26,13 +23,6 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	dep_parser.hh \
 	dep_printer.hh \
 	exceptions.hh \
-	ndbam.hh \
-	ndbam-fwd.hh \
-	ndbam-sr.hh \
-	ndbam_merger.hh \
-	ndbam_merger-sr.hh \
-	ndbam_unmerger.hh \
-	ndbam_unmerger-sr.hh \
 	unpackaged_id.hh \
 	unpackaged_repository.hh \
 	unpackaged_repository-sr.hh \
@@ -45,9 +35,6 @@ libpaludisunpackagedrepository_la_SOURCES = \
 	dep_parser.cc \
 	dep_printer.cc \
 	exceptions.cc \
-	ndbam.cc \
-	ndbam_merger.cc \
-	ndbam_unmerger.cc \
 	unpackaged_id.cc \
 	unpackaged_repository.cc \
 	unpackaged_key.cc \
@@ -95,15 +82,6 @@ dep_parser_TEST_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 EXTRA_DIST = \
-	ndbam.sr \
-	ndbam-sr.hh \
-	ndbam-sr.cc \
-	ndbam_merger.sr \
-	ndbam_merger-sr.hh \
-	ndbam_merger-sr.cc \
-	ndbam_unmerger.sr \
-	ndbam_unmerger-sr.hh \
-	ndbam_unmerger-sr.cc \
 	unpackaged_repository_TEST.cc \
 	unpackaged_repository_TEST_setup.sh \
 	unpackaged_repository_TEST_cleanup.sh \
@@ -120,9 +98,6 @@ EXTRA_DIST = \
 	dep_parser_TEST.cc
 
 BUILT_SOURCES = \
-	ndbam-sr.hh ndbam-sr.cc \
-	ndbam_merger-sr.hh ndbam_merger-sr.cc \
-	ndbam_unmerger-sr.hh ndbam_unmerger-sr.cc \
 	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
 	installed_repository-sr.hh installed_repository-sr.cc
 
@@ -155,24 +130,6 @@ check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-ndbam-sr.hh : ndbam.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ndbam.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ndbam-sr.cc : ndbam.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ndbam.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ndbam_merger-sr.hh : ndbam_merger.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ndbam_merger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ndbam_merger-sr.cc : ndbam_merger.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ndbam_merger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ndbam_unmerger-sr.hh : ndbam_unmerger.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ndbam_unmerger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ndbam_unmerger-sr.cc : ndbam_unmerger.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ndbam_unmerger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 unpackaged_repository-sr.hh : unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi

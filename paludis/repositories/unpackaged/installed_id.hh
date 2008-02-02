@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,7 +26,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/repositories/unpackaged/ndbam-fwd.hh>
+#include <paludis/ndbam-fwd.hh>
 
 namespace paludis
 {

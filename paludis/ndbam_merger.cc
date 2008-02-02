@@ -17,7 +17,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
@@ -33,15 +32,15 @@
 #include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/ndbam_merger.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <list>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/ndbam_merger-sr.cc>
+#include <paludis/ndbam_merger-sr.cc>
 
 namespace paludis
 {

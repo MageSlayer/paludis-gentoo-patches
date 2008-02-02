@@ -19,8 +19,8 @@
 
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/installed_id.hh>
-#include <paludis/repositories/unpackaged/ndbam.hh>
-#include <paludis/repositories/unpackaged/ndbam_merger.hh>
+#include <paludis/ndbam.hh>
+#include <paludis/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>

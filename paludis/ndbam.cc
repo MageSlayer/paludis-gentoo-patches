@@ -17,7 +17,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/ndbam.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
@@ -29,6 +28,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/ndbam.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -39,9 +39,8 @@
 #include <fstream>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/ndbam-sr.cc>
+#include <paludis/ndbam-sr.cc>
 
 template class Sequence<NDBAMEntry>;
 
