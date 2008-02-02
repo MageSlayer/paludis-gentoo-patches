@@ -23,11 +23,27 @@
 #include <paludis/action.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/repository.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    template <typename C_, typename T_, typename K_>
+    T_ kc_getter(const C_ & c)
+    {
+        return c[K_()];
+    }
+
+    template <typename C_, typename T_, typename K_>
+    void kc_setter(C_ & c, const T_ & t)
+    {
+        c[K_()] = t;
+    }
+}
 
 template <typename A_>
 class class_supports_action_test :
@@ -96,22 +112,27 @@ void expose_action()
                     "InstallActionChecksOption, Repository)"
                     )
         )
-        .def_readwrite("no_config_protect", &InstallActionOptions::no_config_protect,
+        .add_property("no_config_protect",
+                &kc_getter<InstallActionOptions, bool, k::no_config_protect>,
+                &kc_setter<InstallActionOptions, bool, k::no_config_protect>,
                 "[rw] bool"
                 )
 
-        .def_readwrite("debug_build", &InstallActionOptions::debug_build,
+        .add_property("debug_build",
+                &kc_getter<InstallActionOptions, InstallActionDebugOption, k::debug_build>,
+                &kc_setter<InstallActionOptions, InstallActionDebugOption, k::debug_build>,
                 "[rw] InstallActionDebugOption"
                 )
 
-        .def_readwrite("checks", &InstallActionOptions::checks,
+        .add_property("checks",
+                &kc_getter<InstallActionOptions, InstallActionChecksOption, k::checks>,
+                &kc_setter<InstallActionOptions, InstallActionChecksOption, k::checks>,
                 "[rw] InstallActionChecksOption"
                 )
 
         .add_property("destination",
-                bp::make_getter(&InstallActionOptions::destination,
-                    bp::return_value_policy<bp::return_by_value>()),
-                bp::make_setter(&InstallActionOptions::destination),
+                &kc_getter<InstallActionOptions, tr1::shared_ptr<Repository>, k::destination>,
+                &kc_setter<InstallActionOptions, tr1::shared_ptr<Repository>, k::destination>,
                 "[rw] Repository"
                 )
         ;
@@ -125,11 +146,15 @@ void expose_action()
          "Options for FetchAction.",
          bp::init<const bool &, const bool &>("__init__(fetch_unneeded_bool, safe_resume_bool)")
         )
-        .def_readwrite("fetch_unneeded", &FetchActionOptions::fetch_unneeded,
+        .add_property("fetch_unneeded",
+                &kc_getter<FetchActionOptions, bool, k::fetch_unneeded>,
+                &kc_setter<FetchActionOptions, bool, k::fetch_unneeded>,
                 "[rw] bool"
                 )
 
-        .def_readwrite("safe_resume", &FetchActionOptions::safe_resume,
+        .add_property("safe_resume",
+                &kc_getter<FetchActionOptions, bool, k::safe_resume>,
+                &kc_setter<FetchActionOptions, bool, k::safe_resume>,
                 "[rw] bool"
                 )
         ;
@@ -143,7 +168,9 @@ void expose_action()
          "Options for UninstallAction.",
          bp::init<const bool &>("__init__(no_config_protect_bool)")
         )
-        .def_readwrite("no_config_protect", &UninstallActionOptions::no_config_protect,
+        .add_property("no_config_protect",
+                &kc_getter<UninstallActionOptions, bool, k::no_config_protect>,
+                &kc_setter<UninstallActionOptions, bool, k::no_config_protect>,
                 "[rw] bool"
                 )
         ;

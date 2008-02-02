@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -21,6 +21,7 @@
 #include <paludis/paludis.hh>
 #include <paludis_ruby.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>

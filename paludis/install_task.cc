@@ -38,6 +38,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/handled_information.hh>
 #include <functional>
 #include <algorithm>
@@ -84,16 +85,16 @@ namespace paludis
             env(e),
             dep_list(e, o),
             fetch_options(
-                    FetchActionOptions::create()
-                    .safe_resume(false)
-                    .fetch_unneeded(false)
+                    FetchActionOptions::named_create()
+                    (k::safe_resume(), false)
+                    (k::fetch_unneeded(), false)
                     ),
             install_options(
-                    InstallActionOptions::create()
-                    .no_config_protect(false)
-                    .debug_build(iado_none)
-                    .checks(iaco_default)
-                    .destination(tr1::shared_ptr<Repository>())
+                    InstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::destination(), tr1::shared_ptr<Repository>())
                     ),
             uninstall_options(false),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
@@ -465,7 +466,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
         if (! _imp->fetch_only)
         {
-            _imp->install_options.destination = dep->destination;
+            _imp->install_options[k::destination()] = dep->destination;
             InstallAction install_action(_imp->install_options);
             dep->package_id->perform_action(install_action);
         }
@@ -844,8 +845,8 @@ InstallTask::dep_list() const
 void
 InstallTask::set_no_config_protect(const bool value)
 {
-    _imp->install_options.no_config_protect = value;
-    _imp->uninstall_options.no_config_protect = value;
+    _imp->install_options[k::no_config_protect()] = value;
+    _imp->uninstall_options[k::no_config_protect()] = value;
 }
 
 void
@@ -869,13 +870,13 @@ InstallTask::set_preserve_world(const bool value)
 void
 InstallTask::set_debug_mode(const InstallActionDebugOption value)
 {
-    _imp->install_options.debug_build = value;
+    _imp->install_options[k::debug_build()] = value;
 }
 
 void
 InstallTask::set_checks_mode(const InstallActionChecksOption value)
 {
-    _imp->install_options.checks = value;
+    _imp->install_options[k::checks()] = value;
 }
 
 void
@@ -928,7 +929,7 @@ InstallTask::had_package_targets() const
 void
 InstallTask::set_safe_resume(const bool value)
 {
-    _imp->fetch_options.safe_resume = value;
+    _imp->fetch_options[k::safe_resume()] = value;
 }
 
 HookResult

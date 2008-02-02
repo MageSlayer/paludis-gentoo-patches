@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/kc.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -203,11 +204,11 @@ namespace test_cases
             const tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
-            InstallAction action(InstallActionOptions::create()
-                    .no_config_protect(false)
-                    .debug_build(iado_none)
-                    .checks(iaco_default)
-                    .destination(installed_repo)
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::destination(), installed_repo)
                     );
             id->perform_action(action);
 

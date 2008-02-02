@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -299,12 +300,12 @@ UnpackagedID::perform_action(Action & action) const
     if (! install_action)
         throw UnsupportedActionError(*this, action);
 
-    if (! install_action->options.destination->destination_interface)
+    if (! install_action->options[k::destination()]->destination_interface)
         throw InstallActionError("Can't install '" + stringify(*this)
-                + "' to destination '" + stringify(install_action->options.destination->name())
+                + "' to destination '" + stringify(install_action->options[k::destination()]->name())
                 + "' because destination does not provide destination_interface");
 
-    install_action->options.destination->destination_interface->merge(
+    install_action->options[k::destination()]->destination_interface->merge(
             MergeOptions::create()
             .package_id(shared_from_this())
             .image_dir(fs_location_key()->value())

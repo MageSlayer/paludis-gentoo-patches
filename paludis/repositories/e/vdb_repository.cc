@@ -66,6 +66,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/kc.hh>
 
 #include <fstream>
 #include <functional>
@@ -451,7 +452,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
 
             EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
                     .root(stringify(_imp->params.root) + "/")
-                    .disable_cfgpro(o.no_config_protect)
+                    .disable_cfgpro(o[k::no_config_protect()])
                     .unmerge_only(false)
                     .loadsaveenv_dir(pkg_dir)
                     .load_environment(load_env.get()));

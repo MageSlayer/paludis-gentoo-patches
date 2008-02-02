@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/kc.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -252,8 +253,8 @@ namespace test_cases
             const tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
-            UninstallAction action(UninstallActionOptions::create()
-                    .no_config_protect(false)
+            UninstallAction action(UninstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
                     );
             id->perform_action(action);
 
@@ -305,8 +306,8 @@ namespace test_cases
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
-            UninstallAction action(UninstallActionOptions::create()
-                    .no_config_protect(false)
+            UninstallAction action(UninstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
                     );
             id->perform_action(action);
 
@@ -388,11 +389,11 @@ namespace test_cases
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").exists());
 
-                InstallAction action(InstallActionOptions::create()
-                        .destination(repo)
-                        .no_config_protect(false)
-                        .checks(iaco_default)
-                        .debug_build(iado_none));
+                InstallAction action(InstallActionOptions::named_create()
+                        (k::destination(), repo)
+                        (k::no_config_protect(), false)
+                        (k::checks(), iaco_default)
+                        (k::debug_build(), iado_none));
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
@@ -442,11 +443,11 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
                 }
 
-                InstallAction action(InstallActionOptions::create()
-                        .destination(repo)
-                        .no_config_protect(false)
-                        .checks(iaco_default)
-                        .debug_build(iado_none));
+                InstallAction action(InstallActionOptions::named_create()
+                        (k::destination(), repo)
+                        (k::no_config_protect(), false)
+                        (k::checks(), iaco_default)
+                        (k::debug_build(), iado_none));
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
@@ -499,11 +500,11 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                InstallAction action(InstallActionOptions::create()
-                        .destination(repo)
-                        .no_config_protect(false)
-                        .checks(iaco_default)
-                        .debug_build(iado_none));
+                InstallAction action(InstallActionOptions::named_create()
+                        (k::destination(), repo)
+                        (k::no_config_protect(), false)
+                        (k::checks(), iaco_default)
+                        (k::debug_build(), iado_none));
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
@@ -542,8 +543,8 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action(UninstallActionOptions::create()
-                        .no_config_protect(false));
+                UninstallAction action(UninstallActionOptions::named_create()
+                        (k::no_config_protect(), false));
                 (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4a", UserPackageDepSpecOptions())),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
@@ -582,8 +583,8 @@ namespace test_cases
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action(UninstallActionOptions::create()
-                        .no_config_protect(false));
+                UninstallAction action(UninstallActionOptions::named_create()
+                        (k::no_config_protect(), false));
                 (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4b", UserPackageDepSpecOptions())),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 

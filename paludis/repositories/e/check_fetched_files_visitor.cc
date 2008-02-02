@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
-
+#include <paludis/util/kc.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/sha256.hh>
 #include <paludis/util/md5.hh>
@@ -187,11 +187,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 
             case manifest_require:
             case last_manifest:
-                _imp->failures->push_back(FetchActionFailure::create()
-                        .target_file(stringify(distfile.basename()))
-                        .failed_integrity_checks("No Manifest available")
-                        .requires_manual_fetching(false)
-                        .failed_automatic_fetching(false)
+                _imp->failures->push_back(FetchActionFailure::named_create()
+                        (k::target_file(), stringify(distfile.basename()))
+                        (k::failed_integrity_checks(), "No Manifest available")
+                        (k::requires_manual_fetching(), false)
+                        (k::failed_automatic_fetching(), false)
                         );
                 return false;
 
@@ -218,11 +218,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             Log::get_instance()->message(ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
             std::cout << "incorrect size";
-            _imp->failures->push_back(FetchActionFailure::create()
-                    .target_file(stringify(distfile.basename()))
-                    .requires_manual_fetching(false)
-                    .failed_integrity_checks("Incorrect file size")
-                    .failed_automatic_fetching(false)
+            _imp->failures->push_back(FetchActionFailure::named_create()
+                    (k::target_file(), stringify(distfile.basename()))
+                    (k::requires_manual_fetching(), false)
+                    (k::failed_integrity_checks(), "Incorrect file size")
+                    (k::failed_automatic_fetching(), false)
                     );
             return false;
         }
@@ -231,11 +231,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         if (! file_stream)
         {
             std::cout << "unreadable file";
-            _imp->failures->push_back(FetchActionFailure::create()
-                    .target_file(stringify(distfile.basename()))
-                    .requires_manual_fetching(false)
-                    .failed_integrity_checks("Unreadable file")
-                    .failed_automatic_fetching(false)
+            _imp->failures->push_back(FetchActionFailure::named_create()
+                    (k::target_file(), stringify(distfile.basename()))
+                    (k::requires_manual_fetching(), false)
+                    (k::failed_integrity_checks(), "Unreadable file")
+                    (k::failed_automatic_fetching(), false)
                     );
             return false;
         }
@@ -248,11 +248,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                 Log::get_instance()->message(ll_debug, lc_context)
                     << "Malformed Manifest: failed RMD160 checksum";
                 std::cout << "failed RMD160";
-                _imp->failures->push_back(FetchActionFailure::create()
-                        .target_file(stringify(distfile.basename()))
-                        .requires_manual_fetching(false)
-                        .failed_integrity_checks("Failed RMD160 checksum")
-                        .failed_automatic_fetching(false)
+                _imp->failures->push_back(FetchActionFailure::named_create()
+                        (k::target_file(), stringify(distfile.basename()))
+                        (k::requires_manual_fetching(), false)
+                        (k::failed_integrity_checks(), "Failed RMD160 checksum")
+                        (k::failed_automatic_fetching(), false)
                         );
                 return false;
             }
@@ -270,11 +270,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                 Log::get_instance()->message(ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA256 checksum";
                 std::cout << "failed SHA256";
-                _imp->failures->push_back(FetchActionFailure::create()
-                        .target_file(stringify(distfile.basename()))
-                        .requires_manual_fetching(false)
-                        .failed_integrity_checks("Failed SHA256 checksum")
-                        .failed_automatic_fetching(false)
+                _imp->failures->push_back(FetchActionFailure::named_create()
+                        (k::target_file(), stringify(distfile.basename()))
+                        (k::requires_manual_fetching(), false)
+                        (k::failed_integrity_checks(), "Failed SHA256 checksum")
+                        (k::failed_automatic_fetching(), false)
                         );
                 return false;
             }
@@ -292,11 +292,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                 Log::get_instance()->message(ll_debug, lc_context)
                     << "Malformed Manifest: failed MD5 checksum";
                 std::cout << "failed MD5";
-                _imp->failures->push_back(FetchActionFailure::create()
-                        .target_file(stringify(distfile.basename()))
-                        .requires_manual_fetching(false)
-                        .failed_integrity_checks("Failed MD5 checksum")
-                        .failed_automatic_fetching(false)
+                _imp->failures->push_back(FetchActionFailure::named_create()
+                        (k::target_file(), stringify(distfile.basename()))
+                        (k::requires_manual_fetching(), false)
+                        (k::failed_integrity_checks(), "Failed MD5 checksum")
+                        (k::failed_automatic_fetching(), false)
                         );
                 return false;
             }
@@ -308,11 +308,11 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
     if (! found)
     {
         std::cout << "not in Manifest";
-        _imp->failures->push_back(FetchActionFailure::create()
-                .target_file(stringify(distfile.basename()))
-                .requires_manual_fetching(false)
-                .failed_integrity_checks("Not in Manifest")
-                .failed_automatic_fetching(false)
+        _imp->failures->push_back(FetchActionFailure::named_create()
+                (k::target_file(), stringify(distfile.basename()))
+                (k::requires_manual_fetching(), false)
+                (k::failed_integrity_checks(), "Not in Manifest")
+                (k::failed_automatic_fetching(), false)
                 );
         return false;
     }
@@ -341,22 +341,22 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
             Log::get_instance()->message(ll_debug, lc_context) << "Manual fetch required for '" << u.filename() << "'";
             std::cout << "requires manual fetch";
             _imp->need_nofetch = true;
-            _imp->failures->push_back(FetchActionFailure::create()
-                    .target_file(u.filename())
-                    .requires_manual_fetching(true)
-                    .failed_automatic_fetching(false)
-                    .failed_integrity_checks("")
+            _imp->failures->push_back(FetchActionFailure::named_create()
+                    (k::target_file(), u.filename())
+                    (k::requires_manual_fetching(), true)
+                    (k::failed_automatic_fetching(), false)
+                    (k::failed_integrity_checks(), "")
                     );
         }
         else
         {
             Log::get_instance()->message(ll_debug, lc_context) << "Automatic fetch failed for '" << u.filename() << "'";
             std::cout << "does not exist";
-            _imp->failures->push_back(FetchActionFailure::create()
-                    .target_file(u.filename())
-                    .requires_manual_fetching(false)
-                    .failed_automatic_fetching(true)
-                    .failed_integrity_checks("")
+            _imp->failures->push_back(FetchActionFailure::named_create()
+                    (k::target_file(), u.filename())
+                    (k::requires_manual_fetching(), false)
+                    (k::failed_automatic_fetching(), true)
+                    (k::failed_integrity_checks(), "")
                     );
         }
     }
@@ -364,11 +364,11 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     {
         Log::get_instance()->message(ll_debug, lc_context) << "Empty file for '" << u.filename() << "'";
         std::cout << "empty file";
-        _imp->failures->push_back(FetchActionFailure::create()
-                .target_file(u.filename())
-                .requires_manual_fetching(false)
-                .failed_integrity_checks("SIZE (empty file)")
-                .failed_automatic_fetching(false)
+        _imp->failures->push_back(FetchActionFailure::named_create()
+                (k::target_file(), u.filename())
+                (k::requires_manual_fetching(), false)
+                (k::failed_integrity_checks(), "SIZE (empty file)")
+                (k::failed_automatic_fetching(), false)
                 );
     }
     else if (! check_distfile_manifest(_imp->distdir / u.filename()))

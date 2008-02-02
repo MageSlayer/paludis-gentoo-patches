@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,10 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/repository-fwd.hh>
 
 /** \file
  * Forward declarations for paludis/action.hh .
@@ -54,13 +58,58 @@ namespace paludis
     class ConfigActionError;
     class InfoActionError;
 
-    class FetchActionFailure;
-
-    class InstallActionOptions;
-    class UninstallActionOptions;
-    class FetchActionOptions;
-
 #include <paludis/action-se.hh>
+
+    /**
+     * Options for a FetchAction.
+     *
+     * \see FetchAction
+     * \ingroup g_actions
+     * \since 0.26
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::fetch_unneeded, bool>,
+        kc::Field<k::safe_resume, bool>
+            > FetchActionOptions;
+
+    /**
+     * Options for an InstallAction.
+     *
+     * \see InstallAction
+     * \ingroup g_actions
+     * \since 0.26
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::no_config_protect, bool>,
+        kc::Field<k::debug_build, InstallActionDebugOption>,
+        kc::Field<k::checks, InstallActionChecksOption>,
+        kc::Field<k::destination, tr1::shared_ptr<Repository> >
+            > InstallActionOptions;
+
+    /**
+     * Options for an UninstallAction.
+     *
+     * \see UninstallAction
+     * \ingroup g_actions
+     * \since 0.26
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::no_config_protect, bool>
+            > UninstallActionOptions;
+
+    /**
+     * A failed fetch action part.
+     *
+     * \see FetchActionError
+     * \ingroup g_actions
+     * \since 0.26
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::target_file, std::string>,
+        kc::Field<k::requires_manual_fetching, bool>,
+        kc::Field<k::failed_automatic_fetching, bool>,
+        kc::Field<k::failed_integrity_checks, std::string>
+            > FetchActionFailure;
 
 }
 

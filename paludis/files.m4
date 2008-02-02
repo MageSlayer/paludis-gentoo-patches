@@ -9,7 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`about',                             `hh', `test')
-add(`action',                            `hh', `cc', `fwd', `se', `sr')
+add(`action',                            `hh', `cc', `fwd', `se')
 add(`condition_tracker',                 `hh', `cc')
 add(`contents',                          `hh', `cc', `fwd')
 add(`dep_label',                         `hh', `cc', `fwd')

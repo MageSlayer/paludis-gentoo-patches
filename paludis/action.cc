@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,11 +23,11 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/kc.hh>
 
 using namespace paludis;
 
 #include <paludis/action-se.cc>
-#include <paludis/action-sr.cc>
 
 template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
 template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
@@ -182,8 +182,8 @@ namespace
         void visit(const InstallAction & a)
         {
             s << "install to ";
-            if (a.options.destination)
-                s << a.options.destination->name();
+            if (a.options[k::destination()])
+                s << a.options[k::destination()]->name();
             else
                 s << "nowhere";
         }

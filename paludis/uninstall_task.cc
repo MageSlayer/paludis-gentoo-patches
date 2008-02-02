@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -133,7 +134,7 @@ UninstallTask::set_pretend(const bool v)
 void
 UninstallTask::set_no_config_protect(const bool v)
 {
-    _imp->uninstall_options.no_config_protect = v;
+    _imp->uninstall_options[k::no_config_protect()] = v;
 }
 
 void

@@ -48,6 +48,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/kc.hh>
 
 #include <fstream>
 #include <list>
@@ -363,10 +364,10 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                 stringify(_imp->e_repository->params().master_repository->name()) :
                 stringify(_imp->e_repository->name()));
         FetchVisitor f(_imp->params.environment, id, *id->eapi(),
-                _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_userpriv_ok, mirrors_name,
-                id->fetches_key()->initial_label(), o.safe_resume);
+                _imp->e_repository->params().distdir, o[k::fetch_unneeded()], fetch_userpriv_ok, mirrors_name,
+                id->fetches_key()->initial_label(), o[k::safe_resume()]);
         id->fetches_key()->value()->accept(f);
-        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_restrict,
+        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o[k::fetch_unneeded()], fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest);
         id->fetches_key()->value()->accept(c);
@@ -534,12 +535,12 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     {
         if (phase->option("merge"))
         {
-            if (! o.destination->destination_interface)
+            if (! o[k::destination()]->destination_interface)
                 throw InstallActionError("Can't install '" + stringify(*id)
-                        + "' to destination '" + stringify(o.destination->name())
+                        + "' to destination '" + stringify(o[k::destination()]->name())
                         + "' because destination does not provide destination_interface");
 
-                o.destination->destination_interface->merge(
+                o[k::destination()]->destination_interface->merge(
                         MergeOptions::create()
                         .package_id(id)
                         .image_dir(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
@@ -550,11 +551,11 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                         );
         }
         else if ((! phase->option("prepost")) ||
-                (o.destination->destination_interface && o.destination->destination_interface->want_pre_post_phases()))
+                (o[k::destination()]->destination_interface && o[k::destination()]->destination_interface->want_pre_post_phases()))
         {
             if (phase->option("checkphase"))
             {
-                switch (o.checks)
+                switch (o[k::checks()])
                 {
                     case iaco_none:
                         if (! phase->option("checks=none"))
@@ -599,10 +600,10 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                             .aa(all_archives)
                             .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                             .expand_vars(expand_vars)
-                            .root(o.destination->installed_root_key() ? stringify(o.destination->installed_root_key()->value()) : "/")
+                            .root(o[k::destination()]->installed_root_key() ? stringify(o[k::destination()]->installed_root_key()->value()) : "/")
                             .profiles(_imp->params.profiles)
-                            .disable_cfgpro(o.no_config_protect)
-                            .debug_build(o.debug_build)
+                            .disable_cfgpro(o[k::no_config_protect()])
+                            .debug_build(o[k::debug_build()])
                             .config_protect(_imp->e_repository->profile_variable("CONFIG_PROTECT"))
                             .config_protect_mask(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
                             .loadsaveenv_dir(_imp->params.builddir / stringify(id->name().category) / (

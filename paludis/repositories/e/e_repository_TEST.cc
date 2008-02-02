@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
@@ -913,9 +914,9 @@ namespace test_cases
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            FetchAction action(FetchActionOptions::create()
-                    .fetch_unneeded(false)
-                    .safe_resume(true)
+            FetchAction action(FetchActionOptions::named_create()
+                    (k::fetch_unneeded(), false)
+                    (k::safe_resume(), true)
                     );
 
             {
@@ -1019,9 +1020,9 @@ namespace test_cases
                         &env, keys));
             env.package_database()->add_repository(1, repo);
 
-            FetchAction action(FetchActionOptions::create()
-                    .fetch_unneeded(false)
-                    .safe_resume(true)
+            FetchAction action(FetchActionOptions::named_create()
+                    (k::fetch_unneeded(), false)
+                    (k::safe_resume(), true)
                     );
 
             const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
@@ -1071,11 +1072,11 @@ namespace test_cases
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
                         tr1::shared_ptr<Map<std::string, std::string> >()));
 
-            InstallAction action(InstallActionOptions::create()
-                    .debug_build(iado_none)
-                    .checks(iaco_default)
-                    .no_config_protect(false)
-                    .destination(installed_repo)
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), installed_repo)
                     );
 
             {
@@ -1198,11 +1199,11 @@ namespace test_cases
             tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
-            InstallAction action(InstallActionOptions::create()
-                    .debug_build(iado_none)
-                    .checks(iaco_default)
-                    .no_config_protect(false)
-                    .destination(installed_repo)
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), installed_repo)
                     );
 
             {
@@ -1254,11 +1255,11 @@ namespace test_cases
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
                         tr1::shared_ptr<Map<std::string, std::string> >()));
 
-            InstallAction action(InstallActionOptions::create()
-                    .debug_build(iado_none)
-                    .checks(iaco_default)
-                    .no_config_protect(false)
-                    .destination(installed_repo)
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), installed_repo)
                     );
 
             {

@@ -30,6 +30,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -318,8 +319,8 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
 
     if (if_overwritten_id)
     {
-        tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(UninstallActionOptions::create()
-                .no_config_protect(false),
+        tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(UninstallActionOptions::named_create()
+                (k::no_config_protect(), false),
                 true);
     }
 }
