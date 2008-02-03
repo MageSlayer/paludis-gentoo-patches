@@ -132,6 +132,8 @@ while [[ "${1#--}" != "${1}" ]] ; do
     elif [[ "${1}" == --tar-option=* ]] ; then
         TAR_OPTIONS[${#TAR_OPTIONS[@]}]="${1#*=}"
         shift
+    else
+        die "Unrecognised option: ${1}"
     fi
 done
 
