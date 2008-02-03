@@ -551,6 +551,18 @@ Hooker::perform_hook(const Hook & hook) const
                                                     e->basename(), ".py")))->second->file_name()) + "'");
                     }
                 }
+#elif ENABLE_PYTHON
+                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                        << " Paludis was built using a dev-libs/boost version older than 1.34.0.";
+                }
+#else
+                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                        << " Paludis was built without Python support (also needs >=dev-libs/boost-1.34.0).";
+                }
 #endif
             }
         }
