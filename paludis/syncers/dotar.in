@@ -23,6 +23,11 @@ while [[ $# -gt 0 ]]; do
             UNPACK_OPTIONS[${#UNPACK_OPTIONS[@]}]=--tar-option="${1}"
             ;;
 
+        --exclude=*)
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
+            ;;
+
         --exclude-from=*)
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude-from
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
@@ -56,6 +61,7 @@ while [[ $# -gt 0 ]]; do
             fi
 
             echo "    Options:"
+            echo "        --exclude=PATTERN               Use PATTERN as an exclude pattern"
             echo "        --exclude-from=FILE             Use FILE as a list of exclude patterns"
             echo "        --strip-components=N            Ignore the first N components of the"
             echo "                                          paths from the tarball"

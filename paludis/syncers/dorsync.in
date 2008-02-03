@@ -17,6 +17,11 @@ RSYNC_OPTIONS=( )
 while [[ $# -gt 0 ]]; do
     case "${1}" in
 
+        --exclude=*)
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
+            ;;
+
         --exclude-from=*)
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude-from
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
@@ -37,6 +42,7 @@ while [[ $# -gt 0 ]]; do
             fi
 
             echo "    Options:"
+            echo "        --exclude=PATTERN               Use PATTERN as an exclude pattern"
             echo "        --exclude-from=FILE             Use FILE as a list of exclude patterns"
             echo "        --rsync-option=OPTION           Pass OPTION to rsync"
             exit 0

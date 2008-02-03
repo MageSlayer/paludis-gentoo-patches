@@ -4,8 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-0.26.0_alpha9:
+TRUNK:
+    * rsync based syncers (rsync://, file://, tar+http:// and tar+ftp://) now
+      support --exclude in sync_options, as well as --exclude-from.
 
+0.26.0_alpha9:
     * Recent Portage unpacks lzma files, in violation of PMS and without any way
       of ebuilds being able to check for this behaviour. We now emulate this
       stupidity.
