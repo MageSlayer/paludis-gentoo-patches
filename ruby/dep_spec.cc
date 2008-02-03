@@ -1040,7 +1040,7 @@ namespace
          *
          * A PackageDepSpec represents a package name (for example, 'app-editors/vim'),
          * possibly with associated version and SLOT restrictions. To create a PackageDepSpec,
-         * use Paludis::parse_user_package_dep_spec or Paludis::make_package_dep_spec.
+         * use Paludis::parse_user_package_dep_spec.
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
