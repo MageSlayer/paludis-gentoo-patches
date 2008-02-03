@@ -1,0 +1,17 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_ExndbamRepositoryParams()
+{
+    visible
+
+    key environment "Environment *"
+    key location FSEntry
+    key root FSEntry
+    key world FSEntry
+    key builddir FSEntry
+
+    allow_named_args
+}
+
+

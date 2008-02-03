@@ -45,6 +45,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ world provides_cache importance layout use_manifest
 	    \ binary_uri_prefix binary_keywords binary_destination
 	    \ eapi_when_unspecified eapi_when_unknown profile_eapi
+	    \ name
 
 syn keyword PaludisRepositoriesConfKnownValue contained
 	    \ use require ignore

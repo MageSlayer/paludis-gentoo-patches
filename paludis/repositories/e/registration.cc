@@ -20,6 +20,7 @@
 #include <paludis/repository_maker.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
+#include <paludis/repositories/e/exndbam_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
@@ -60,6 +61,7 @@ void register_repositories(RepositoryMaker * maker)
     maker->register_maker("exheres", &make_ebuild_repository_wrapped);
     maker->register_maker("portage", &make_portage_repository);
     maker->register_maker("vdb", &VDBRepository::make_vdb_repository);
+    maker->register_maker("exndbam", &ExndbamRepository::make_exndbam_repository);
 }
 
 #endif

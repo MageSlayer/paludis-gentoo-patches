@@ -2,6 +2,7 @@ SUBDIRS = eapis ebuild . qa
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
+	e_installed_repository-sr.hh e_installed_repository-sr.cc \
 	e_repository_params-sr.hh e_repository_params-sr.cc \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
@@ -42,6 +43,9 @@ paludis_repositories_e_include_HEADERS = \
 	dep_parser-fwd.hh \
 	dep_spec_pretty_printer.hh \
 	dependencies_rewriter.hh \
+	e_installed_repository.hh \
+	e_installed_repository-sr.hh \
+	e_installed_repository_id.hh \
 	e_key.hh \
 	e_mask.hh \
 	e_repository.hh \
@@ -67,6 +71,9 @@ paludis_repositories_e_include_HEADERS = \
 	ebuild_id.hh \
 	eclass_mtimes.hh \
 	exheres_layout.hh \
+	exndbam_id.hh \
+	exndbam_repository.hh \
+	exndbam_repository-sr.hh \
 	fetch_visitor.hh \
 	glsa-sr.hh \
 	glsa.hh \
@@ -96,6 +103,8 @@ libpaludiserepository_la_SOURCES = \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
+	e_installed_repository.cc \
+	e_installed_repository_id.cc \
 	e_key.cc \
 	e_mask.cc \
 	e_repository.cc \
@@ -115,6 +124,8 @@ libpaludiserepository_la_SOURCES = \
 	ebuild_flat_metadata_cache.cc \
 	ebuild_id.cc \
 	eclass_mtimes.cc \
+	exndbam_id.cc \
+	exndbam_repository.cc \
 	exheres_layout.cc \
 	fetch_visitor.cc \
 	glsa.cc \
@@ -166,6 +177,20 @@ vdb_repository_TEST_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
+exndbam_repository_TEST_SOURCES = exndbam_repository_TEST.cc
+
+exndbam_repository_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+exndbam_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
 vdb_merger_TEST_SOURCES = vdb_merger_TEST.cc
 
@@ -295,6 +320,9 @@ EXTRA_DIST = \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
+	e_installed_repository-sr.hh \
+	e_installed_repository-sr.cc \
+	e_installed_repository.sr \
 	e_repository_params-sr.hh \
 	e_repository_params-sr.cc \
 	e_repository_params.sr \
@@ -304,6 +332,12 @@ EXTRA_DIST = \
 	e_repository_sets_TEST.cc \
 	e_repository_sets_TEST_setup.sh \
 	e_repository_sets_TEST_cleanup.sh \
+	exndbam_repository_TEST.cc \
+	exndbam_repository_TEST_setup.sh \
+	exndbam_repository_TEST_cleanup.sh \
+	exndbam_repository-sr.hh \
+	exndbam_repository-sr.cc \
+	exndbam_repository.sr \
 	fetch_visitor_TEST.cc \
 	fetch_visitor_TEST_setup.sh \
 	fetch_visitor_TEST_cleanup.sh \
@@ -336,12 +370,16 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	dep_parser-se.hh \
 	dep_parser-se.cc \
+	e_installed_repository-sr.hh \
+	e_installed_repository-sr.cc \
 	e_repository_params-sr.hh \
 	e_repository_params-sr.cc \
 	e_repository_params-se.hh \
 	e_repository_params-se.cc \
 	glsa-sr.hh \
 	glsa-sr.cc \
+	exndbam_repository-sr.hh \
+	exndbam_repository-sr.cc \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
 	ebuild-sr.hh \
@@ -359,6 +397,7 @@ check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
 	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
+	exndbam_repository_TEST_setup.sh exndbam_repository_TEST_cleanup.sh \
 	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh \
 	fetch_visitor_TEST_setup.sh fetch_visitor_TEST_cleanup.sh
 
@@ -381,6 +420,12 @@ TESTS_ENVIRONMENT = env \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
+
+e_installed_repository-sr.hh : e_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/e_installed_repository.sr > $@
+
+e_installed_repository-sr.cc : e_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_installed_repository.sr > $@
 
 e_repository_params-sr.hh : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/e_repository_params.sr > $@
@@ -423,6 +468,12 @@ glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 
 glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
+
+exndbam_repository-sr.hh : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/exndbam_repository.sr > $@
+
+exndbam_repository-sr.cc : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/exndbam_repository.sr > $@
 
 vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_repository.sr > $@
@@ -486,6 +537,7 @@ TESTS = \
 	aa_visitor_TEST \
 	fetch_visitor_TEST \
 	source_uri_finder_TEST \
+	exndbam_repository_TEST \
 	vdb_repository_TEST
 
 check_PROGRAMS = $(TESTS)
@@ -500,3 +552,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,23 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_ID_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_ID_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_EXNDBAM_ID_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_EXNDBAM_ID_HH 1
 
 #include <paludis/repositories/e/e_installed_repository_id.hh>
+#include <paludis/ndbam-fwd.hh>
 
 namespace paludis
 {
     namespace erepository
     {
-        class VDBID :
+        class ExndbamID :
             public EInstalledRepositoryID
         {
+            private:
+                const NDBAM * const _ndbam;
+
             public:
-                VDBID(const QualifiedPackageName &, const VersionSpec &,
+                ExndbamID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
                         const tr1::shared_ptr<const Repository> &,
-                        const FSEntry & file);
+                        const FSEntry & file,
+                        const NDBAM * const);
 
                 virtual std::string fs_location_raw_name() const;
                 virtual std::string fs_location_human_name() const;

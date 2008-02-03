@@ -139,7 +139,13 @@ namespace paludis
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
-    Repository(RepositoryName("installed"),
+    EInstalledRepository(
+            EInstalledRepositoryParams::create()
+            .environment(p.environment)
+            .root(p.root)
+            .builddir(p.builddir)
+            .world(p.world),
+            p.name,
             RepositoryCapabilities::create()
             .sets_interface(this)
             .syncable_interface(0)
@@ -226,14 +232,6 @@ VDBRepository::category_names() const
     return result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
-VDBRepository::unimportant_category_names() const
-{
-    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
-    result->insert(CategoryNamePart("virtual"));
-    return result;
-}
-
 tr1::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::package_names(const CategoryNamePart & c) const
 {
@@ -271,35 +269,6 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
         return make_shared_ptr(new PackageIDSequence);
 
     return _imp->ids.find(n)->second;
-}
-
-UseFlagState
-VDBRepository::query_use(const UseFlagName & f, const PackageID & e) const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    if (this != e.repository().get())
-        return use_unspecified;
-
-    if (! static_cast<const VDBID *>(&e)->use_key())
-        return use_unspecified;
-
-    if (static_cast<const VDBID *>(&e)->use_key()->value()->end() != static_cast<const VDBID *>(&e)->use_key()->value()->find(f))
-        return use_enabled;
-    else
-        return use_disabled;
-}
-
-bool
-VDBRepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
-{
-    return use_disabled == query_use(u, e);
-}
-
-bool
-VDBRepository::query_use_force(const UseFlagName & u, const PackageID & e) const
-{
-    return use_enabled == query_use(u, e);
 }
 
 tr1::shared_ptr<Repository>
@@ -360,6 +329,10 @@ VDBRepository::make_vdb_repository(
             Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
+    std::string name;
+    if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
+        name = "installed";
+
     return tr1::shared_ptr<Repository>(new VDBRepository(VDBRepositoryParams::create()
                 .environment(env)
                 .location(location)
@@ -367,6 +340,7 @@ VDBRepository::make_vdb_repository(
                 .world(world)
                 .builddir(builddir)
                 .provides_cache(provides_cache)
+                .name(RepositoryName(name))
                 .names_cache(names_cache)));
 }
 
@@ -469,208 +443,6 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
 }
 
 void
-VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) const
-{
-    Context context("When configuring '" + stringify(*id) + "':");
-
-    if (! _imp->params.root.is_directory())
-        throw InstallActionError("Couldn't configure '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
-
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
-    eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
-                (stringify(id->name().package) + "-" + stringify(id->version()))));
-
-    FSEntry pkg_dir(_imp->params.location / stringify(id->name().category) /
-            (stringify(id->name().package) + "-" + stringify(id->version())));
-
-    tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_config);
-
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-            phase != phase_end ; ++phase)
-    {
-        EbuildConfigCommand config_cmd(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(pkg_dir)
-                .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                .files_dir(pkg_dir)
-                .eclassdirs(eclassdirs)
-                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                .portdir(_imp->params.location)
-                .distdir(pkg_dir)
-                .sandbox(phase->option("sandbox"))
-                .userpriv(phase->option("userpriv"))
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .builddir(_imp->params.builddir),
-
-                EbuildConfigCommandParams::create()
-                .root(stringify(_imp->params.root) + "/")
-                .load_environment(load_env.get()));
-
-        config_cmd();
-    }
-}
-
-void
-VDBRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) const
-{
-    Context context("When infoing '" + stringify(*id) + "':");
-
-    if (! _imp->params.root.is_directory())
-        throw InstallActionError("Couldn't info '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
-
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
-    eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
-                (stringify(id->name().package) + "-" + stringify(id->version()))));
-
-    FSEntry pkg_dir(_imp->params.location / stringify(id->name().category) /
-            (stringify(id->name().package) + "-" + stringify(id->version())));
-    tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
-
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
-
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-            phase != phase_end ; ++phase)
-    {
-        if (phase->option("installed=false"))
-            continue;
-
-        /* try to find an info_vars file from the original repo */
-        FSEntry i("/dev/null");
-        if (id->source_origin_key())
-        {
-            RepositoryName rn(id->source_origin_key()->value());
-            if (_imp->params.environment->package_database()->has_repository_named(rn))
-            {
-                const tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
-                if (r->e_interface)
-                {
-                    i = r->e_interface->info_variables_file(r->e_interface->params().location / "profiles");
-
-                    /* also try its master, if it has one */
-                    if ((! i.exists()) && r->e_interface->params().master_repository)
-                        i = r->e_interface->info_variables_file(r->e_interface->params().master_repository->params().location / "profiles");
-                }
-            }
-        }
-
-        /* try to find an info_vars file from any repo */
-        if (i == FSEntry("/dev/null"))
-        {
-            for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment->package_database()->begin_repositories()),
-                    r_end(_imp->params.environment->package_database()->end_repositories()) ;
-                    r != r_end ; ++r)
-            {
-                if (! (*r)->e_interface)
-                    continue;
-
-                i = (*r)->e_interface->info_variables_file((*r)->e_interface->params().location / "profiles");
-                if (i.exists())
-                    break;
-            }
-        }
-
-        EbuildInfoCommand info_cmd(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(pkg_dir)
-                .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                .files_dir(pkg_dir)
-                .eclassdirs(eclassdirs)
-                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                .portdir(_imp->params.location)
-                .distdir(pkg_dir)
-                .sandbox(phase->option("sandbox"))
-                .userpriv(phase->option("userpriv"))
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .builddir(_imp->params.builddir),
-
-                EbuildInfoCommandParams::create()
-                .root(stringify(_imp->params.root) + "/")
-                .use("")
-                .use_expand("")
-                .expand_vars(make_shared_ptr(new Map<std::string, std::string>))
-                .profiles(make_shared_ptr(new FSEntrySequence))
-                .info_vars(i)
-                .load_environment(load_env.get()));
-
-        info_cmd();
-    }
-}
-
-tr1::shared_ptr<SetSpecTree::ConstItem>
-VDBRepository::package_set(const SetName & s) const
-{
-    using namespace tr1::placeholders;
-
-    Context context("When fetching package set '" + stringify(s) + "' from '" +
-            stringify(name()) + "':");
-
-    if ("everything" == s.data())
-    {
-        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
-
-        need_category_names();
-        std::for_each(_imp->categories.begin(), _imp->categories.end(),
-                tr1::bind(tr1::mem_fn(&VDBRepository::need_package_ids), this,
-                    tr1::bind<CategoryNamePart>(tr1::mem_fn(
-                            &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
-
-        for (CategoryMap::const_iterator i(_imp->categories.begin()), i_end(_imp->categories.end()) ;
-                i != i_end ; ++i)
-            for (QualifiedPackageNameSet::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
-                    e != e_end ; ++e)
-            {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(*e)));
-                spec->set_tag(tag);
-                result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
-            }
-
-        return result;
-    }
-    else if ("world" == s.data())
-    {
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
-
-        if (_imp->params.world.exists())
-        {
-            SetFile world(SetFileParams::create()
-                    .file_name(_imp->params.world)
-                    .type(sft_simple)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                    .tag(tag)
-                    .environment(_imp->params.environment));
-            return world.contents();
-        }
-        else
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "World file '" + stringify(_imp->params.world) +
-                    "' doesn't exist");
-
-        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-    }
-    else
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
-}
-
-tr1::shared_ptr<const SetNameSet>
-VDBRepository::sets_list() const
-{
-    Context context("While generating the list of sets:");
-
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    result->insert(SetName("everything"));
-    result->insert(SetName("world"));
-    return result;
-}
-
-void
 VDBRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -681,124 +453,6 @@ VDBRepository::invalidate()
 void
 VDBRepository::invalidate_masks()
 {
-}
-
-void
-VDBRepository::add_string_to_world(const std::string & n) const
-{
-    using namespace tr1::placeholders;
-
-    Lock l(*_imp->big_nasty_mutex);
-
-    Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
-
-    if (! _imp->params.world.exists())
-    {
-        std::ofstream f(stringify(_imp->params.world).c_str());
-        if (! f)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
-                    + stringify(_imp->params.world) + "'");
-            return;
-        }
-    }
-
-    SetFile world(SetFileParams::create()
-            .file_name(_imp->params.world)
-            .type(sft_simple)
-            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-            .tag(tr1::shared_ptr<DepTag>())
-            .environment(_imp->params.environment));
-    world.add(n);
-    world.rewrite();
-}
-
-void
-VDBRepository::remove_string_from_world(const std::string & n) const
-{
-    using namespace tr1::placeholders;
-
-    Lock l(*_imp->big_nasty_mutex);
-
-    Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
-
-    if (_imp->params.world.exists())
-    {
-        SetFile world(SetFileParams::create()
-                .file_name(_imp->params.world)
-                .type(sft_simple)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                .tag(tr1::shared_ptr<DepTag>())
-                .environment(_imp->params.environment));
-
-        world.remove(n);
-        world.rewrite();
-    }
-}
-
-void
-VDBRepository::add_to_world(const QualifiedPackageName & n) const
-{
-    add_string_to_world(stringify(n));
-}
-
-void
-VDBRepository::add_to_world(const SetName & n) const
-{
-    add_string_to_world(stringify(n));
-}
-
-void
-VDBRepository::remove_from_world(const QualifiedPackageName & n) const
-{
-    remove_string_from_world(stringify(n));
-}
-
-void
-VDBRepository::remove_from_world(const SetName & n) const
-{
-    remove_string_from_world(stringify(n));
-}
-
-std::string
-VDBRepository::get_environment_variable(
-        const tr1::shared_ptr<const PackageID> & id,
-        const std::string & var) const
-{
-    Context context("When fetching environment variable '" + var + "' for '" +
-            stringify(*id) + "':");
-
-    FSEntry vdb_dir(_imp->params.location / stringify(id->name().category)
-            / (stringify(id->name().package) + "-" +
-                stringify(id->version())));
-
-    if (! vdb_dir.is_directory_or_symlink_to_directory())
-        throw ActionError("Could not find VDB entry for '" + stringify(*id) + "'");
-
-    if ((vdb_dir / var).is_regular_file_or_symlink_to_regular_file())
-    {
-        std::ifstream f(stringify(vdb_dir / var).c_str());
-        if (! f)
-            throw ActionError("Could not read '" + stringify(vdb_dir / var) + "'");
-        return strip_trailing_string(
-                std::string((std::istreambuf_iterator<char>(f)),
-                    std::istreambuf_iterator<char>()), "\n");
-    }
-    else if ((vdb_dir / "environment.bz2").is_regular_file_or_symlink_to_regular_file())
-    {
-        std::stringstream p;
-        Command cmd(Command("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash 2>/dev/null'").with_captured_stdout_stream(&p));
-        int exit_status(run_command(cmd));
-        std::string result(strip_trailing_string(std::string(
-                        (std::istreambuf_iterator<char>(p)),
-                        std::istreambuf_iterator<char>()), "\n"));
-        if (0 != exit_status)
-            throw ActionError("Could not load environment.bz2");
-        return result;
-    }
-    else
-        throw ActionError("Could not get variable '" + var + "' for '" + stringify(*id) + "'");
 }
 
 tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
@@ -813,39 +467,6 @@ VDBRepository::provided_packages() const
         load_provided_the_slow_way();
 
     return _imp->provides;
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::arch_flags() const
-{
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::use_expand_flags() const
-{
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::use_expand_prefixes() const
-{
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::use_expand_hidden_prefixes() const
-{
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-char
-VDBRepository::use_expand_separator(const PackageID & id) const
-{
-    if (this != id.repository().get())
-        return '\0';
-    const tr1::shared_ptr<const EAPI> & eapi(static_cast<const VDBID &>(id).eapi());
-    return eapi->supported ? eapi->supported->ebuild_options->use_expand_separator : '\0';
 }
 
 bool
@@ -1070,31 +691,6 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
     return result ? result : Repository::category_names_containing_package(p);
 }
 
-bool
-VDBRepository::is_suitable_destination_for(const PackageID & e) const
-{
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
-    return f == "ebuild";
-}
-
-bool
-VDBRepository::is_default_destination() const
-{
-    return _imp->params.environment->root() == installed_root_key()->value();
-}
-
-std::string
-VDBRepository::describe_use_flag(const UseFlagName &, const PackageID &) const
-{
-    return "";
-}
-
-bool
-VDBRepository::want_pre_post_phases() const
-{
-    return true;
-}
-
 void
 VDBRepository::merge(const MergeOptions & m)
 {
@@ -1104,7 +700,7 @@ VDBRepository::merge(const MergeOptions & m)
     if (! is_suitable_destination_for(*m.package_id))
         throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
 
-    bool is_replace(package_id_if_exists(m.package_id->name(), m.package_id->version()));
+    tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id->name(), m.package_id->version()));
 
     FSEntry tmp_vdb_dir(_imp->params.location);
     if (! tmp_vdb_dir.exists())
@@ -1174,7 +770,7 @@ VDBRepository::merge(const MergeOptions & m)
     if (is_replace)
     {
         UninstallActionOptions uninstall_options(false);
-        perform_uninstall(tr1::static_pointer_cast<const ERepositoryID>(m.package_id), uninstall_options, true);
+        perform_uninstall(is_replace, uninstall_options, true);
     }
 
     VDBPostMergeCommand post_merge_command(
@@ -1182,15 +778,6 @@ VDBRepository::merge(const MergeOptions & m)
             .root(installed_root_key()->value()));
 
     post_merge_command();
-}
-
-HookResult
-VDBRepository::perform_hook(const Hook & hook) const
-{
-    Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
-            + stringify(name()) + "':");
-
-    return HookResult(0, "");
 }
 
 void
@@ -1286,60 +873,6 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
         if (v == (*i)->version())
             return tr1::static_pointer_cast<const ERepositoryID>(*i);
     return tr1::shared_ptr<const ERepositoryID>();
-}
-
-namespace
-{
-    struct SupportsActionQuery :
-        ConstVisitor<SupportsActionTestVisitorTypes>
-    {
-        bool result;
-
-        SupportsActionQuery() :
-            result(false)
-        {
-        }
-
-        void visit(const SupportsActionTest<InstalledAction> &)
-        {
-            result = true;
-        }
-
-        void visit(const SupportsActionTest<InstallAction> &)
-        {
-        }
-
-        void visit(const SupportsActionTest<ConfigAction> &)
-        {
-            result = true;
-        }
-
-        void visit(const SupportsActionTest<PretendAction> &)
-        {
-        }
-
-        void visit(const SupportsActionTest<FetchAction> &)
-        {
-        }
-
-        void visit(const SupportsActionTest<InfoAction> &)
-        {
-            result = true;
-        }
-
-        void visit(const SupportsActionTest<UninstallAction> &)
-        {
-            result = true;
-        }
-    };
-}
-
-bool
-VDBRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
-{
-    SupportsActionQuery q;
-    a.accept(q);
-    return q.result;
 }
 
 void

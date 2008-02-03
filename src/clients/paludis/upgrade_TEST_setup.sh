@@ -5,31 +5,39 @@ mkdir upgrade_TEST_dir || exit 1
 cd upgrade_TEST_dir || exit 1
 mkdir -p build
 
-mkdir -p config/.paludis-upgrade-test
-cat <<END > config/.paludis-upgrade-test/specpath.conf
+mkdir -p vdb_config/.paludis-upgrade-test
+cat <<END > vdb_config/.paludis-upgrade-test/specpath.conf
 root = `pwd`/root
-config-suffix =
+config-suffix = vdb
 END
 
-mkdir -p root/${SYSCONFDIR}/paludis/repositories
-cat <<END > root/${SYSCONFDIR}/paludis/use.conf
+mkdir -p exndbam_config/.paludis-upgrade-test
+cat <<END > exndbam_config/.paludis-upgrade-test/specpath.conf
+root = `pwd`/root
+config-suffix = exndbam
+END
+
+for a in vdb exndbam ; do
+
+    mkdir -p root/${SYSCONFDIR}/paludis${a}/repositories
+    cat <<END > root/${SYSCONFDIR}/paludis${a}/use.conf
 */* foo
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/licenses.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${a}/licenses.conf
 */* *
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${a}/keywords.conf
 */* test
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/bashrc
+    cat <<END > root/${SYSCONFDIR}/paludis${a}/bashrc
 export CHOST="my-chost"
 export USER_BASHRC_WAS_USED=yes
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/repositories/repo1.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${a}/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = ebuild
@@ -38,7 +46,9 @@ profiles = \${location}/profiles/testprofile
 buildroot = `pwd`/build
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/repositories/installed.conf
+done
+
+cat <<END > root/${SYSCONFDIR}/paludisvdb/repositories/installed.conf
 location = \${ROOT}/var/db/pkg
 format = vdb
 names_cache = /var/empty
@@ -46,9 +56,17 @@ provides_cache = /var/empty
 buildroot = `pwd`/build
 END
 
+cat <<END > root/${SYSCONFDIR}/paludisexndbam/repositories/installed.conf
+location = \${ROOT}/var/db/exndbam
+format = exndbam
+buildroot = `pwd`/build
+END
+
 mkdir -p root/tmp
 touch root/${SYSCONFDIR}/ld.so.conf
 mkdir -p root/var/db/pkg
+
+mkdir -p root/var/db/exndbam
 
 mkdir -p repo1/{eclass,distfiles,profiles/testprofile,test-category/target/files} || exit 1
 

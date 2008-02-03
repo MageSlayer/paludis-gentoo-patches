@@ -5,31 +5,39 @@ mkdir install_TEST_dir || exit 1
 cd install_TEST_dir || exit 1
 mkdir -p build
 
-mkdir -p config/.paludis-install-test
-cat <<END > config/.paludis-install-test/specpath.conf
+mkdir -p config/.paludis-install-test-vdb_config
+cat <<END > config/.paludis-install-test-vdb_config/specpath.conf
 root = `pwd`/root
-config-suffix =
+config-suffix = vdb
 END
 
-mkdir -p root/${SYSCONFDIR}/paludis/repositories
-cat <<END > root/${SYSCONFDIR}/paludis/use.conf
+mkdir -p config/.paludis-install-test-exndbam_config
+cat <<END > config/.paludis-install-test-exndbam_config/specpath.conf
+root = `pwd`/root
+config-suffix = exndbam
+END
+
+for c in vdb exndbam ; do
+
+    mkdir -p root/${SYSCONFDIR}/paludis${c}/repositories
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/use.conf
 */* foo
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/licenses.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/licenses.conf
 */* *
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/keywords.conf
 */* test
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/bashrc
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/bashrc
 export CHOST="my-chost"
 export USER_BASHRC_WAS_USED=yes
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/repositories/repo1.conf
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = ebuild
@@ -38,7 +46,9 @@ profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestpr
 buildroot = `pwd`/build
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/repositories/installed.conf
+done
+
+cat <<END > root/${SYSCONFDIR}/paludisvdb/repositories/installed.conf
 location = `pwd`/root/var/db/pkg
 format = vdb
 names_cache = /var/empty
@@ -46,8 +56,15 @@ provides_cache = /var/empty
 buildroot = `pwd`/build
 END
 
+cat <<END > root/${SYSCONFDIR}/paludisexndbam/repositories/installed.conf
+location = `pwd`/root/var/db/exndbam
+format = exndbam
+buildroot = `pwd`/build
+END
+
 mkdir -p root/tmp
 mkdir -p root/var/db/pkg
+mkdir -p root/var/db/exndbam
 touch root/${SYSCONFDIR}/ld.so.conf
 
 mkdir -p repo1/{eclass,distfiles,profiles/{testprofile,anothertestprofile},test-category/target/files} || exit 1

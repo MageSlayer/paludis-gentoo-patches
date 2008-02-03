@@ -12,6 +12,7 @@ make_class_VDBRepositoryParams()
     key provides_cache FSEntry
     key names_cache FSEntry
     key builddir FSEntry
+    key name RepositoryName
 
     doxygen_comment << "END"
         /**

@@ -42,7 +42,7 @@ using namespace paludis;
 
 #include <paludis/ndbam-sr.cc>
 
-template class Sequence<NDBAMEntry>;
+template class Sequence<tr1::shared_ptr<NDBAMEntry> >;
 
 namespace
 {
