@@ -56,7 +56,22 @@ namespace paludis
             typename T2_ = NoField<2>,
             typename T3_ = NoField<3>,
             typename T4_ = NoField<4>,
-            typename T5_ = NoField<5>
+            typename T5_ = NoField<5>,
+            typename T6_ = NoField<6>,
+            typename T7_ = NoField<7>,
+            typename T8_ = NoField<8>,
+            typename T9_ = NoField<9>,
+            typename T10_ = NoField<10>,
+            typename T11_ = NoField<11>,
+            typename T12_ = NoField<12>,
+            typename T13_ = NoField<13>,
+            typename T14_ = NoField<14>,
+            typename T15_ = NoField<15>,
+            typename T16_ = NoField<16>,
+            typename T17_ = NoField<17>,
+            typename T18_ = NoField<18>,
+            typename T19_ = NoField<19>,
+            typename T20_ = NoField<20>
                 > class KeyedClass;
 
     }
