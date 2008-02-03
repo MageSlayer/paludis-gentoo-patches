@@ -894,6 +894,27 @@ pkg_setup() {
     ever at_least 1.4 1.2 && die "at_least 1.4 1.2"
 }
 END
+mkdir -p "packages/cat/econf-phase"
+cat <<'END' > packages/cat/econf-phase/econf-phase-0.ebuild || exit 1
+DESCRIPTION="The Description"
+
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORM="test"
+
+src_unpack() {
+    mkdir ${S}
+    echo "#!/bin/bash" > ${S}/configure
+    chmod +x ${S}/configure
+}
+
+src_compile() {
+    econf
+}
+END
 cd ..
 
 mkdir -p repo15/{eclass,distfiles,profiles/profile/subprofile} || exit 1

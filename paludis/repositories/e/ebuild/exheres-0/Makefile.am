@@ -5,6 +5,7 @@ SUBDIRS = .
 libexecprogexheresdir = $(libexecdir)/paludis/exheres-0
 
 libexecprogexheres_SCRIPTS = \
+	build_functions.bash \
 	builtin_infovars.bash \
 	builtin_init.bash \
 	builtin_loadenv.bash \

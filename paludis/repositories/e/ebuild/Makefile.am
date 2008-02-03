@@ -8,7 +8,6 @@ libexecprogdir = $(libexecdir)/paludis/
 
 libexecprog_SCRIPTS = \
 	binary_functions.bash \
-	build_functions.bash \
 	die_functions.bash \
 	ebuild.bash \
 	kernel_functions.bash \
