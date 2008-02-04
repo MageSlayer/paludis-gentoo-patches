@@ -89,7 +89,7 @@ econf()
 
 einstall()
 {
-    if [[ "${EBUILD_PHASE}" != "einstall" ]] ; then
+    if [[ "${EBUILD_PHASE}" != "install" ]] ; then
         die "einstall called in EBUILD_PHASE ${EBUILD_PHASE}"
     fi
 
