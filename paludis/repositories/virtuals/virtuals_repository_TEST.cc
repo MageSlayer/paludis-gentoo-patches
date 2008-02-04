@@ -112,5 +112,38 @@ namespace test_cases
                     "virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo1)");
         }
     } test_virtuals_repository_duplicates;
+
+    struct VirtualsRepositoryRecursionTest : TestCase
+    {
+        VirtualsRepositoryRecursionTest() : TestCase("virtuals repository recursion") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
+            tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
+            tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
+
+            env.package_database()->add_repository(2, repo1);
+            env.package_database()->add_repository(3, repo2);
+            env.package_database()->add_repository(4, virtuals);
+
+            repo1->add_version("virtual", "gkp", "1")->provide_key()->set_from_string("virtual/pkg");
+            repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(
+                        new PackageDepSpec(parse_user_package_dep_spec("virtual/gkp", UserPackageDepSpecOptions()))));
+
+            repo2->add_version("virtual", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
+            repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
+                            parse_user_package_dep_spec("virtual/pkg", UserPackageDepSpecOptions()))));
+
+            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
+            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
+
+            tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
+                    "virtual/gkp-1:0::repo1 | virtual/pkg-1::virtuals (virtual for virtual/gkp-1:0::repo1) | "
+                    "virtual/pkg-2:0::repo2 | virtual/pkg-2::virtuals (virtual for virtual/pkg-2:0::repo2)");
+        }
+    } test_virtuals_repository_recursion;
 }
 

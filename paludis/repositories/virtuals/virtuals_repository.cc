@@ -209,10 +209,14 @@ VirtualsRepository::need_ids() const
     if (_imp->has_ids)
         return;
 
+    _imp->has_ids = true;
+
     Context context("When loading entries for virtuals repository:");
     need_names();
 
     Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_entries");
+
+    IDMap my_ids;
 
     /* Populate our _imp->entries. */
     for (std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator
@@ -231,9 +235,9 @@ VirtualsRepository::need_ids() const
         for (PackageIDSequence::ConstIterator m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
-            IDMap::iterator i(_imp->ids.find(v->first));
-            if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence))).first;
+            IDMap::iterator i(my_ids.find(v->first));
+            if (my_ids.end() == i)
+                i = my_ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence))).first;
 
             tr1::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
             if (stringify(id->name().category) != "virtual")
@@ -242,7 +246,8 @@ VirtualsRepository::need_ids() const
         }
     }
 
-    _imp->has_ids = true;
+    using std::swap;
+    swap(my_ids, _imp->ids);
 }
 
 tr1::shared_ptr<Repository>
