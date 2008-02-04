@@ -39,18 +39,17 @@ paludis::erepository::ebuild_count_check(
     Log::get_instance()->message(ll_debug, lc_context) << "ebuild_count_check '"
         << dir << "', " << name << "'";
 
-    PackageIDSequence::ConstIterator::difference_type count(
-        std::distance(repo->package_ids(q)->begin(), repo->package_ids(q)->end()));
+    tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
+    PackageIDSequence::ConstIterator::difference_type count(std::distance(ids->begin(), ids->end()));
 
-    if (count > 20)
-        reporter.message(QAMessage(dir, qaml_minor, name, "Found " + stringify(count) +
-                " ebuilds, which is too many to count on both hands and both feet"));
-    else if (count > 15)
-        reporter.message(QAMessage(dir, qaml_minor, name, "Found " + stringify(count) +
-                " ebuilds, which is too many to count on both hands and one foot"));
-    else if (count > 10)
-        reporter.message(QAMessage(dir, qaml_minor, name, "Found " + stringify(count) +
-                " ebuilds, which is too many to count on my fingers"));
+    if (count > 10)
+    {
+        QAMessage m(dir, qaml_minor, name, "Found " + stringify(count) + " ebuilds, which is too many to count on " + (count > 20 ? "both hands and both feet" : count > 15 ? "both hands and one foot" : "my fingers"));
+        for (PackageIDSequence::ConstIterator it(ids->begin()),
+                 it_end(ids->end()); it_end != it; ++it)
+            m = m.with_associated_id(*it);
+        reporter.message(m);
+    }
 
     return true;
 }
