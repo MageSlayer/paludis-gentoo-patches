@@ -37,6 +37,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/rmd160.hh>
+#include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
 #include <paludis/util/md5.hh>
 
@@ -258,6 +259,28 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             }
             Log::get_instance()->message(ll_debug, lc_context)
                 << "Actual RMD160 = " << rmd160sum.hexsum();
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+        }
+
+        if (! m->sha1.empty())
+        {
+            SHA1 sha1sum(file_stream);
+            if (sha1sum.hexsum() != m->sha1)
+            {
+                Log::get_instance()->message(ll_debug, lc_context)
+                    << "Malformed Manifest: failed SHA1 checksum";
+                std::cout << "failed SHA1";
+                _imp->failures->push_back(FetchActionFailure::named_create()
+                        (k::target_file(), stringify(distfile.basename()))
+                        (k::requires_manual_fetching(), false)
+                        (k::failed_integrity_checks(), "Failed SHA1 checksum")
+                        (k::failed_automatic_fetching(), false)
+                        );
+                return false;
+            }
+            Log::get_instance()->message(ll_debug, lc_context)
+                << "Actual SHA1 = " << sha1sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
         }

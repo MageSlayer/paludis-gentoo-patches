@@ -74,6 +74,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/rmd160.hh>
+#include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
 
 #include <map>
@@ -1316,6 +1317,11 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
         file_stream.clear();
         file_stream.seekg(0, std::ios::beg);
+        SHA1 sha1sum(file_stream);
+        manifest << " SHA1 " << sha1sum.hexsum();
+
+        file_stream.clear();
+        file_stream.seekg(0, std::ios::beg);
         SHA256 sha256sum(file_stream);
         manifest << " SHA256 " << sha256sum.hexsum() << std::endl;
     }
@@ -1353,6 +1359,11 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             manifest << "DIST " << f.basename() << " "
                 << f.file_size()
                 << " RMD160 " << rmd160sum.hexsum();
+
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+            SHA1 sha1sum(file_stream);
+            manifest << " SHA1 " << sha1sum.hexsum();
 
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
