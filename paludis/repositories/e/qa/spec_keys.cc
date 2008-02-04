@@ -126,7 +126,7 @@ namespace
             if (pds_blacklist && p.package_ptr())
             {
                 if (pds_blacklist->end() != pds_blacklist->find(*p.package_ptr()))
-                    reporter.message(QAMessage(entry, qaml_normal, name, "Package '" + stringify(p)
+                    reporter.message(QAMessage(entry, qaml_maybe, name, "Package '" + stringify(p)
                                 + "' blacklisted in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
