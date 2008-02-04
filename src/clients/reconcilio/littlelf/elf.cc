@@ -26,8 +26,7 @@
 #include "elf_symbol_section.hh"
 #include "elf_types.hh"
 
-#include <src/clients/reconcilio/util/byte_swap.hh>
-
+#include <paludis/util/byte_swap.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>

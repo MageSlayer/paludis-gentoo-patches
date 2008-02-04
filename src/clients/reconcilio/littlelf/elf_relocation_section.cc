@@ -22,8 +22,7 @@
 #include "elf_types.hh"
 #include "elf.hh"
 
-#include <src/clients/reconcilio/util/byte_swap.hh>
-
+#include <paludis/util/byte_swap.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>

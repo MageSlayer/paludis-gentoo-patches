@@ -22,8 +22,7 @@
 #include "elf_types.hh"
 #include "elf.hh"
 
-#include <src/clients/reconcilio/util/byte_swap.hh>
-
+#include <paludis/util/byte_swap.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
