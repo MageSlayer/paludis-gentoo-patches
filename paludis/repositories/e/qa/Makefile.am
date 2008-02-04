@@ -56,7 +56,7 @@ paludis_repositories_e_include_HEADERS = \
 	header.hh \
 	variable_assigns.hh \
 	deprecated_functions.hh \
-	gpg.hh \
+	manifest.hh \
 	ebuild_count.hh \
 	changelog.hh \
 	misc_files.hh \
@@ -94,7 +94,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	header.cc \
 	variable_assigns.cc \
 	deprecated_functions.cc \
-	gpg.cc \
+	manifest.cc \
 	ebuild_count.cc \
 	changelog.cc \
 	misc_files.cc \
@@ -117,8 +117,8 @@ dist_check_SCRIPTS = \
 	visibility_TEST_cleanup.sh \
 	misc_files_TEST_setup.sh \
 	misc_files_TEST_cleanup.sh \
-	gpg_TEST_setup.sh \
-	gpg_TEST_cleanup.sh
+	manifest_TEST_setup.sh \
+	manifest_TEST_cleanup.sh
 
 endif
 
@@ -154,7 +154,7 @@ TESTS = \
 	kv_variables_TEST \
 	visibility_TEST \
 	misc_files_TEST \
-	gpg_TEST \
+	manifest_TEST \
 	subshell_die_TEST \
 	function_keyword_TEST
 
@@ -256,8 +256,8 @@ misc_files_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
-gpg_TEST_SOURCES = gpg_TEST.cc
-gpg_TEST_LDADD = \
+manifest_TEST_SOURCES = manifest_TEST.cc
+manifest_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_GPG_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_GPG_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_MANIFEST_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_MANIFEST_HH 1
 
 #include <paludis/repositories/e/qa/qa_controller.hh>
 
@@ -26,9 +26,11 @@ namespace paludis
 {
     namespace erepository
     {
-        bool gpg_check(
+        bool manifest_check(
                 QAReporter &,
                 const FSEntry & dir,
+                const tr1::shared_ptr<const ERepository> &,
+                const QualifiedPackageName &,
                 const std::string & s
                 ) PALUDIS_VISIBLE;
     }

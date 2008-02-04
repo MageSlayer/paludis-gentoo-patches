@@ -22,7 +22,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 
 #include <paludis/repositories/e/qa/stray_files.hh>
-#include <paludis/repositories/e/qa/gpg.hh>
+#include <paludis/repositories/e/qa/manifest.hh>
 #include <paludis/repositories/e/qa/ebuild_count.hh>
 #include <paludis/repositories/e/qa/changelog.hh>
 #include <paludis/repositories/e/qa/misc_files.hh>
@@ -116,8 +116,8 @@ QAChecks::QAChecks() :
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
             tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
 
-    _imp->package_dir_checks_group->add_check("gpg",
-            tr1::bind(gpg_check, _2, _1, "gpg"));
+    _imp->package_dir_checks_group->add_check("manifest",
+            tr1::bind(manifest_check, _2, _1, _4, _5, "manifest"));
 
     _imp->package_dir_checks_group->add_check("ebuild_count",
             tr1::bind(ebuild_count_check, _2, _1, _4, _5, "ebuild_count"));
