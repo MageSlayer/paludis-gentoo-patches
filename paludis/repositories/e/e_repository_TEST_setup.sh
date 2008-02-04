@@ -915,6 +915,34 @@ src_compile() {
     econf
 }
 END
+mkdir -p "packages/cat/econf-vars"
+cat <<'END' > packages/cat/econf-vars/econf-vars-0.ebuild || exit 1
+DESCRIPTION="The Description"
+
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="enabled-hamster gerbil dormouse"
+LICENSE="GPL-2"
+PLATFORM="test"
+
+DEFAULT_SRC_CONFIGURE_PARAMS="--nice-juicy-steak"
+DEFAULT_SRC_CONFIGURE_OPTION_ENABLES="enabled-hamster gerbil"
+DEFAULT_SRC_CONFIGURE_OPTION_WITHS="dormouse"
+
+src_unpack() {
+    mkdir ${S}
+    cat <<'END2' > ${S}/configure
+#!/bin/bash
+echo "${@}" | grep -q -- '--enable-enabled-hamster' || exit 1
+echo "${@}" | grep -q -- '--disable-gerbil' || exit 2
+echo "${@}" | grep -q -- '--nice-juicy-steak' || exit 3
+echo "${@}" | grep -q -- '--without-dormouse' || exit 4
+true
+END2
+    chmod +x ${S}/configure
+}
+END
 cd ..
 
 mkdir -p repo15/{eclass,distfiles,profiles/profile/subprofile} || exit 1
