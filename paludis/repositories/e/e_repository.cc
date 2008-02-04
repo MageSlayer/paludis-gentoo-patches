@@ -72,7 +72,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
-
+#include <paludis/util/kc.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/sha256.hh>
 
@@ -458,8 +458,8 @@ ERepository::ERepository(const ERepositoryParams & p) :
             .world_interface(0)
             .environment_variable_interface(this)
             .mirrors_interface(this)
-            .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
-                    p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
+            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+                    p.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
             .provides_interface(0)
             .destination_interface(p.binary_destination ? this : 0)
             .make_virtuals_interface(0)
@@ -820,7 +820,8 @@ ERepository::invalidate_masks()
 {
     _imp->layout->invalidate_masks();
 
-    if (DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution())->support_old_style_virtuals)
+    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
+            [k::support_old_style_virtuals()])
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate_masks();
@@ -1030,7 +1031,8 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 
     _imp->profile_ptr = iter->profile;
 
-    if (DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution())->support_old_style_virtuals)
+    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
+            [k::support_old_style_virtuals()])
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate();

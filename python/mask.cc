@@ -22,6 +22,7 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/kc.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -287,14 +288,16 @@ void expose_mask()
              "__init__(path_str, list of string)"
              )
         )
-        .add_property("mask_file", bp::make_getter(&RepositoryMaskInfo::mask_file,
-                    bp::return_value_policy<bp::return_by_value>()),
+        .add_property("mask_file",
+                &kc_getter<RepositoryMaskInfo, FSEntry, k::mask_file>,
+                &kc_setter<RepositoryMaskInfo, FSEntry, k::mask_file>,
                 "[ro] str\n"
                 "Holds the file whence the mask originates."
                 )
 
-        .add_property("comment", bp::make_getter(&RepositoryMaskInfo::comment,
-                    bp::return_value_policy<bp::return_by_value>()),
+        .add_property("comment",
+                &kc_getter<RepositoryMaskInfo, tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
+                &kc_setter<RepositoryMaskInfo, tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
                 "[ro] Iterable of str\n"
                 "Sequence of lines explaining the mask."
                 )

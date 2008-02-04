@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -589,15 +590,15 @@ namespace
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(stringify(k.value()->mask_file) + ": " +
-                                join(k.value()->comment->begin(), k.value()->comment->end(), " "));
+                        task->output_right_column(stringify((*k.value())[k::mask_file()]) + ": " +
+                                join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " "));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(stringify(k.value()->mask_file) + ":");
-                        for (Sequence<std::string>::ConstIterator it(k.value()->comment->begin()),
-                                it_end(k.value()->comment->end()); it_end != it; ++it)
+                        task->output_right_column(stringify((*k.value())[k::mask_file()]) + ":");
+                        for (Sequence<std::string>::ConstIterator it((*k.value())[k::comment()]->begin()),
+                                it_end((*k.value())[k::comment()]->end()); it_end != it; ++it)
                         {
                             task->output_left_column("", in);
                             task->output_right_column(*it);

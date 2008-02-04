@@ -12,6 +12,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -194,8 +195,8 @@ namespace gtkpaludis
             if (! k.value())
                 return;
 
-            got_key(k, markup_escape(stringify(k.value()->mask_file) + ": " +
-                        join(k.value()->comment->begin(), k.value()->comment->end(), " ")));
+            got_key(k, markup_escape(stringify((*k.value())[k::mask_file()]) + ": " +
+                        join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ")));
         }
 
         void visit(const MetadataFSEntryKey & k)

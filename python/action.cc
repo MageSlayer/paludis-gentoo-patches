@@ -30,21 +30,6 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-namespace
-{
-    template <typename C_, typename T_, typename K_>
-    T_ kc_getter(const C_ & c)
-    {
-        return c[K_()];
-    }
-
-    template <typename C_, typename T_, typename K_>
-    void kc_setter(C_ & c, const T_ & t)
-    {
-        c[K_()] = t;
-    }
-}
-
 template <typename A_>
 class class_supports_action_test :
     public bp::class_<SupportsActionTest<A_>, bp::bases<SupportsActionTestBase> >

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,6 +50,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/kc.hh>
 
 #include <algorithm>
 #include <functional>
@@ -1028,8 +1029,8 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, *_imp->current_package_id());
         p->provide_key()->value()->accept(f);
 
-        if (f.begin() != f.end() && ! DistributionData::get_instance()->distribution_from_string(
-                    _imp->env->default_distribution())->support_old_style_virtuals)
+        if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
+                    _imp->env->default_distribution()))[k::support_old_style_virtuals()])
             throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 

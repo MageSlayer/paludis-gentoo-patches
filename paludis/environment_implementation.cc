@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <algorithm>
@@ -177,6 +178,6 @@ EnvironmentImplementation::set_names() const
 bool
 EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) const
 {
-    return stringify(n) == DistributionData::get_instance()->distribution_from_string(default_distribution())->paludis_package;
+    return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(default_distribution()))[k::paludis_package()];
 }
 

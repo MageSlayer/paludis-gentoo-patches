@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_MASK_FWD_HH 1
 
 #include <paludis/util/visitor-fwd.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Forward declarations for paludis/mask.hh .
@@ -37,9 +41,23 @@ namespace paludis
     class UnsupportedMask;
     class AssociationMask;
 
-    class RepositoryMaskInfo;
-
     class MaskVisitorTypes;
+
+    /**
+     * Information about a RepositoryMask.
+     *
+     * The mask_file key holds the file whence the mask originates.
+     *
+     * The comment key is a sequence of lines explaining the mask.
+     *
+     * \ingroup g_package_id
+     * \since 0.26
+     * \nosubgrouping
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::mask_file, FSEntry>,
+        kc::Field<k::comment, tr1::shared_ptr<const Sequence<std::string> > >
+            > RepositoryMaskInfo;
 }
 
 #endif

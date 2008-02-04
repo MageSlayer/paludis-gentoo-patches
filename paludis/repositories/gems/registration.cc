@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 
@@ -55,7 +56,7 @@ namespace
 
         std::string builddir;
         if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
-            builddir = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_builddir;
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::default_ebuild_builddir()];
 
         return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
                     .location(location)
@@ -77,7 +78,7 @@ namespace
 
         std::string builddir;
         if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
-            builddir = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_builddir;
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::default_ebuild_builddir()];
 
         std::string root;
         if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 
@@ -168,8 +169,8 @@ namespace
         void visit(const MetadataRepositoryMaskInfoKey & k)
         {
             if (k.value())
-                stream << k.raw_name() << ": " << k.value()->mask_file << ": "
-                    << join(k.value()->comment->begin(), k.value()->comment->end(), " ") << "\n";
+                stream << k.raw_name() << ": " << (*k.value())[k::mask_file()] << ": "
+                    << join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ") << "\n";
             else
                 stream << k.raw_name() << "\n";
         }

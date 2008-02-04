@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
@@ -196,7 +197,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
 
-        if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
+        if ((*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                         tr1::shared_ptr<Map<std::string, std::string> >()));
     }
@@ -219,7 +220,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
 
-        if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
+        if ((*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                         iv_keys));
     }

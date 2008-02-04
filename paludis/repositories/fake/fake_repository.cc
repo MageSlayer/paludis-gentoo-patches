@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -67,8 +68,8 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .mirrors_interface(this)
             .environment_variable_interface(0)
             .provides_interface(0)
-            .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
-                    e->default_distribution())->support_old_style_virtuals ? this : 0)
+            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+                    e->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
             .destination_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
@@ -91,8 +92,8 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
             .mirrors_interface(this)
             .environment_variable_interface(0)
             .provides_interface(0)
-            .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
-                    params.environment->default_distribution())->support_old_style_virtuals ? this : 0)
+            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+                    params.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
             .destination_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)

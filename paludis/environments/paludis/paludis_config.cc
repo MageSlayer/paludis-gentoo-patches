@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/kc.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <fstream>
@@ -280,7 +281,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         /* add virtuals repositories */
 
-        if (DistributionData::get_instance()->distribution_from_string(distribution())->support_old_style_virtuals)
+        if ((*DistributionData::get_instance()->distribution_from_string(distribution()))[k::support_old_style_virtuals()])
         {
             tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                     new Map<std::string, std::string>);

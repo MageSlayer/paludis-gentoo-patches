@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -243,7 +244,7 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
     load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
-    if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
+    if ((*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::support_old_style_virtuals()])
         virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
 }
@@ -455,8 +456,8 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
     }
 
-    if (DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->support_old_style_virtuals)
+    if ((*DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution()))[k::support_old_style_virtuals()])
         try
         {
             for (erepository::ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;

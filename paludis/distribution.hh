@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/distribution-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/tr1_memory.hh>
@@ -41,8 +40,6 @@
 
 namespace paludis
 {
-#include <paludis/distribution-sr.hh>
-
     /**
      * Thrown if an invalid distribution file is encountered.
      *

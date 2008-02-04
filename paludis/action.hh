@@ -26,7 +26,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sequence-fwd.hh>
 

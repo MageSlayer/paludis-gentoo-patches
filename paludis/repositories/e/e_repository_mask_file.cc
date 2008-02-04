@@ -25,6 +25,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/mask.hh>
 
 #include <list>

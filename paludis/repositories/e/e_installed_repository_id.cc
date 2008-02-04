@@ -38,6 +38,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <iterator>
 #include <fstream>
@@ -467,8 +468,8 @@ EInstalledRepositoryID::eapi() const
         Log::get_instance()->message(ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
             << _imp->environment->default_distribution() << "'";
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(
-                DistributionData::get_instance()->distribution_from_string(
-                    _imp->environment->default_distribution())->default_ebuild_eapi_when_unspecified);
+                (*DistributionData::get_instance()->distribution_from_string(
+                    _imp->environment->default_distribution()))[k::default_ebuild_eapi_when_unspecified()]);
     }
 
     return _imp->eapi;

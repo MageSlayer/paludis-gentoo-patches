@@ -37,6 +37,28 @@ namespace paludis
         typedef kc::Key<9> requires_manual_fetching;
         typedef kc::Key<10> failed_automatic_fetching;
         typedef kc::Key<11> failed_integrity_checks;
+        typedef kc::Key<12> default_environment;
+        typedef kc::Key<13> fallback_environment;
+        typedef kc::Key<14> support_old_style_virtuals;
+        typedef kc::Key<15> default_ebuild_distdir;
+        typedef kc::Key<16> default_ebuild_write_cache;
+        typedef kc::Key<17> default_ebuild_names_cache;
+        typedef kc::Key<18> default_ebuild_builddir;
+        typedef kc::Key<19> default_ebuild_layout;
+        typedef kc::Key<20> default_ebuild_eapi_when_unknown;
+        typedef kc::Key<21> default_ebuild_eapi_when_unspecified;
+        typedef kc::Key<22> default_ebuild_profile_eapi;
+        typedef kc::Key<23> default_vdb_provides_cache;
+        typedef kc::Key<24> default_vdb_names_cache;
+        typedef kc::Key<25> paludis_environment_use_conf_filename;
+        typedef kc::Key<26> paludis_environment_keywords_conf_filename;
+        typedef kc::Key<27> concept_use;
+        typedef kc::Key<28> concept_keyword;
+        typedef kc::Key<29> paludis_package;
+        typedef kc::Key<30> kind;
+        typedef kc::Key<31> value;
+        typedef kc::Key<32> mask_file;
+        typedef kc::Key<33> comment;
     }
 }
 

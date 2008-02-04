@@ -154,6 +154,20 @@ namespace paludis
                 return boost::python::incref(boost::python::make_tuple(x.first, x.second).ptr());
             }
         };
+
+        // helper for kc getters
+        template <typename C_, typename T_, typename K_>
+        T_ kc_getter(const C_ & c)
+        {
+            return c[K_()];
+        }
+
+        // helper for kc setters
+        template <typename C_, typename T_, typename K_>
+        void kc_setter(C_ & c, const T_ & t)
+        {
+            c[K_()] = t;
+        }
     } // namespace paludis::python
 } // namespace paludis
 

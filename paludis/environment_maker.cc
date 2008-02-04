@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
 #include <list>
@@ -151,8 +152,8 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
 
     if (key.empty())
-        key = DistributionData::get_instance()->distribution_from_string(
-                getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))->default_environment;
+        key = (*DistributionData::get_instance()->distribution_from_string(
+                getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION)))[k::default_environment()];
 
     try
     {
@@ -160,8 +161,8 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
     catch (const FallBackToAnotherMakerError &)
     {
-        std::string f(DistributionData::get_instance()->distribution_from_string(
-                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))->fallback_environment);
+        std::string f((*DistributionData::get_instance()->distribution_from_string(
+                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION)))[k::fallback_environment()]);
         if (s.empty() && ! f.empty())
         {
             std::set<std::string> keys;

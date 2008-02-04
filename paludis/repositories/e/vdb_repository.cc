@@ -294,8 +294,8 @@ VDBRepository::make_vdb_repository(
     std::string provides_cache;
     if (m->end() == m->find("provides_cache") || ((provides_cache = m->find("provides_cache")->second)).empty())
     {
-        provides_cache = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_vdb_provides_cache;
+        provides_cache = (*DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution()))[k::default_vdb_provides_cache()];
         if (provides_cache.empty())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
@@ -308,8 +308,8 @@ VDBRepository::make_vdb_repository(
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
-        names_cache = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_vdb_names_cache;
+        names_cache = (*DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution()))[k::default_vdb_names_cache()];
         if (names_cache.empty())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
@@ -323,8 +323,8 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
     {
         if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
-            builddir = DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution())->default_ebuild_builddir;
+            builddir = (*DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution()))[k::default_ebuild_builddir()];
         else
             Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }

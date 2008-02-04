@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/metadata_key.hh>
 #include <sstream>
 
@@ -110,8 +111,8 @@ namespace
 
         void visit(const MetadataRepositoryMaskInfoKey & k)
         {
-            s << k.value()->mask_file << ": " <<
-                join(k.value()->comment->begin(), k.value()->comment->end(), " ");
+            s << (*k.value())[k::mask_file()] << ": " <<
+                join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ");
         }
 
         void visit(const MetadataFSEntryKey & k)
