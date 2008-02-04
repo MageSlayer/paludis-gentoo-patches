@@ -27,6 +27,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sha1.hh>
@@ -55,13 +56,13 @@ namespace
         ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, UseDepSpec>
     {
         tr1::shared_ptr<const PackageID> id;
-        std::multimap<std::string, tr1::shared_ptr<const PackageID> > & distfiles;
+        std::map<std::string, tr1::shared_ptr<PackageIDSet> > & distfiles;
 
         using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>::visit_sequence;
         using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, UseDepSpec>::visit_sequence;
 
         DistfilesCollector(const tr1::shared_ptr<const PackageID> & i,
-                           std::multimap<std::string, tr1::shared_ptr<const PackageID> > & d) :
+                           std::map<std::string, tr1::shared_ptr<PackageIDSet> > & d) :
             id(i),
             distfiles(d)
         {
@@ -73,7 +74,14 @@ namespace
 
         void visit_leaf(const FetchableURIDepSpec & u)
         {
-            distfiles.insert(std::make_pair(u.filename(), id));
+            std::map<std::string, tr1::shared_ptr<PackageIDSet> >::iterator it(
+                distfiles.find(u.filename()));
+            if (distfiles.end() == it)
+            {
+                tr1::shared_ptr<PackageIDSet> set(new PackageIDSet);
+                it = distfiles.insert(std::make_pair(u.filename(), set)).first;
+            }
+            it->second->insert(id);
         }
     };
 
@@ -88,7 +96,7 @@ namespace
         tr1::shared_ptr<const PackageIDSequence> packages;
 
         std::set<FSEntry> accounted_files;
-        std::multimap<std::string, tr1::shared_ptr<const PackageID> > distfiles;
+        std::map<std::string, tr1::shared_ptr<PackageIDSet> > distfiles;
         std::set<std::string> accounted_distfiles;
 
         Manifest2Checker(QAReporter & r, const FSEntry & d, const std::string & n,
@@ -187,11 +195,8 @@ namespace
                      it_end(stray_files.end()); it_end != it; ++it)
                 reporter.message(QAMessage(*it, qaml_normal, name, "File is not listed in the Manifest"));
 
-            std::set<std::string> unique_distfiles;
-            std::unique_copy(first_iterator(distfiles.begin()), first_iterator(distfiles.end()),
-                             std::inserter(unique_distfiles, unique_distfiles.end()));
             std::set<std::string> stray_distfiles;
-            std::set_difference(unique_distfiles.begin(), unique_distfiles.end(),
+            std::set_difference(first_iterator(distfiles.begin()), first_iterator(distfiles.end()),
                                 accounted_distfiles.begin(), accounted_distfiles.end(),
                                 std::inserter(stray_distfiles, stray_distfiles.end()));
 
@@ -199,10 +204,11 @@ namespace
                      it_end(stray_distfiles.end()); it_end != it; ++it)
             {
                 QAMessage m(manifest, qaml_normal, name, "DIST file '" + *it + "' is not listed in the Manifest");
-                for (std::multimap<std::string, tr1::shared_ptr<const PackageID> >::const_iterator it2(distfiles.lower_bound(*it)),
-                         it2_end(distfiles.upper_bound(*it)); it2_end != it2; ++it2)
-                    m = m.with_associated_id(it2->second)
-                         .with_associated_key(it2->second, it2->second->fetches_key());
+                tr1::shared_ptr<const PackageIDSet> set(distfiles.find(*it)->second);
+                for (PackageIDSet::ConstIterator it2(set->begin()),
+                         it2_end(set->end()); it2_end != it2; ++it2)
+                    m = m.with_associated_id(*it2)
+                         .with_associated_key(*it2, (*it2)->fetches_key());
                 reporter.message(m);
             }
         }
