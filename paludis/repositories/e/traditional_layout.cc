@@ -554,6 +554,9 @@ namespace
             tr1::shared_ptr<Map<FSEntry, std::string> > & m,
             const QualifiedPackageName & qpn)
     {
+        if (! d.exists())
+            return;
+
         std::list<FSEntry> files((DirIterator(d)),
                 DirIterator());
         for (std::list<FSEntry>::iterator f(files.begin()) ;
