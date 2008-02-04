@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -143,6 +143,11 @@ namespace paludis
             virtual void on_display_merge_list_post();
             virtual void on_not_continuing_due_to_errors();
             virtual void on_display_merge_list_entry(const DepListEntry &);
+
+            virtual void on_pretend_all_pre();
+            virtual void on_pretend_pre(const DepListEntry &);
+            virtual void on_pretend_post(const DepListEntry &);
+            virtual void on_pretend_all_post();
 
             virtual void on_fetch_all_pre();
             virtual void on_fetch_pre(const DepListEntry &, const int x, const int y, const int s, const int f);

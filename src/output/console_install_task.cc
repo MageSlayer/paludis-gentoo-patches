@@ -214,6 +214,7 @@ void
 ConsoleInstallTask::on_build_deplist_pre()
 {
     output_activity_start_message("Building dependency list");
+    output_xterm_title("Building dependency list");
 }
 
 void
@@ -382,6 +383,28 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     if (d.kind == dlk_masked)
         display_merge_list_entry_mask_reasons(d);
+}
+
+void
+ConsoleInstallTask::on_pretend_all_pre()
+{
+}
+
+void
+ConsoleInstallTask::on_pretend_pre(const DepListEntry & d)
+{
+    std::string m("Pretending for " + stringify(*d.package_id));
+    output_xterm_title(m);
+}
+
+void
+ConsoleInstallTask::on_pretend_post(const DepListEntry &)
+{
+}
+
+void
+ConsoleInstallTask::on_pretend_all_post()
+{
 }
 
 void

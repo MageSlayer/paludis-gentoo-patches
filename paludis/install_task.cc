@@ -402,15 +402,23 @@ InstallTask::_pretend()
 
     bool pretend_failed(false);
 
+    on_pretend_all_pre();
+
     SupportsActionTest<PretendAction> pretend_action_query;
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
         if (dep->package_id->supports_action(pretend_action_query))
         {
+            on_pretend_pre(*dep);
+
             PretendAction pretend_action;
             dep->package_id->perform_action(pretend_action);
             pretend_failed |= pretend_action.failed();
+
+            on_pretend_post(*dep);
         }
+
+    on_pretend_all_post();
 
     if (_imp->pretend)
     {

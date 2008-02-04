@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -141,6 +141,11 @@ namespace paludis
             virtual void on_display_failure_no_summary() = 0;
 
             virtual void on_not_continuing_due_to_errors() = 0;
+
+            virtual void on_pretend_all_pre() = 0;
+            virtual void on_pretend_pre(const DepListEntry &) = 0;
+            virtual void on_pretend_post(const DepListEntry &) = 0;
+            virtual void on_pretend_all_post() = 0;
 
             virtual void on_fetch_all_pre() = 0;
             virtual void on_fetch_pre(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
