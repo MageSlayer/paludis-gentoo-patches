@@ -140,10 +140,13 @@ CommandLine::CommandLine() :
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
+    add_usage_line("--uninstall [uninstall options] target ...");
+    add_usage_line("--uninstall-unused");
     add_usage_line("--sync [target (leave blank for all)]");
     add_usage_line("--report");
     add_usage_line("--contents target ...");
     add_usage_line("--owner [owner options] files ...");
+    add_usage_line("--config target ...");
     add_usage_line("--version");
     add_usage_line("--info [target ...]");
     add_usage_line("--help");
@@ -159,6 +162,8 @@ CommandLine::CommandLine() :
     add_usage_line("--list-sync-protocols");
     add_usage_line("--list-repository-formats");
     add_usage_line("--list-dep-tag-categories");
+    add_usage_line("--regenerate-installed-cache [target (leave blank for all)]");
+    add_usage_line("--regenerate-installable-cache [target (leave blank for all)]");
 
     add_environment_variable("PALUDIS_OPTIONS", "Default command-line options.");
 
