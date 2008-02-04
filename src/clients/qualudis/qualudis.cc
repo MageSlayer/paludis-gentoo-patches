@@ -190,14 +190,12 @@ namespace
         QAReporter
     {
         FSEntry previous_entry;
-        std::string previous_name;
 
         bool show_keys, show_keys_once;
         std::map<tr1::shared_ptr<const PackageID>, std::set<std::string>, PackageIDSetComparator> printed_keys;
 
         QualudisReporter(const std::string & show_associated_keys) :
             previous_entry("/NONE"),
-            previous_name("NONE"),
             show_keys("never" != show_associated_keys),
             show_keys_once("once" == show_associated_keys)
         {
@@ -207,20 +205,16 @@ namespace
         {
             if (previous_entry != msg.entry)
             {
+                if (FSEntry("/NONE") != previous_entry)
+                    std::cout << std::endl;
+
                 std::string filename(strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"));
                 std::cout << colour(cl_package_name, filename.length() > 0 ? filename : ".")
                     << ":" << std::endl;
                 previous_entry = msg.entry;
-                previous_name = "NONE";
             }
 
-            if (previous_name != msg.name)
-            {
-                std::cout << "  " << msg.name << ":" << std::endl;
-                previous_name = msg.name;
-            }
-
-            std::cout << "    [";
+            std::cout << "  [";
             switch (msg.level)
             {
                 case qaml_maybe:
@@ -247,14 +241,14 @@ namespace
                     break;
             }
 
-            std::cout << "]: " << msg.message << std::endl;
+            std::cout << "] " + msg.name + ": " << msg.message << std::endl;
 
             if (! msg.associated_ids->empty())
             {
                 for (PackageIDSet::ConstIterator i(msg.associated_ids->begin()),
                         i_end(msg.associated_ids->end()) ; i != i_end ; ++i)
                     if (! (*i)->fs_location_key() || (*i)->fs_location_key()->value() != msg.entry)
-                        std::cout << "      " << stringify(**i) << std::endl;
+                        std::cout << "    " << stringify(**i) << std::endl;
             }
 
             if (show_keys && ! msg.associated_keys->empty())
@@ -269,7 +263,7 @@ namespace
                     {
                         MetadataKeyPrettyPrinter pp;
                         i->second->accept(pp);
-                        std::cout << "      " << pp.stream.str();
+                        std::cout << "    " << pp.stream.str();
                     }
                     catch (const Exception &)
                     {
