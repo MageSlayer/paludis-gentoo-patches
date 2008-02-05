@@ -99,20 +99,20 @@ namespace
     {
         return 0xCA62C1D6U;
     }
-}
 
-template <int t_>
-inline void
-SHA1::process_chunk(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
-{
-    for (int t = t_; t < t_ + 20; ++t)
+    template <int t_>
+    inline void
+    process_chunk(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
     {
-        uint32_t temp = s<5>(a) + f<t_>(b, c, d) + e + w[t] + k<t_>();
-        e = d;
-        d = c;
-        c = s<30>(b);
-        b = a;
-        a = temp;
+        for (int t = t_; t < t_ + 20; ++t)
+        {
+            uint32_t temp = s<5>(a) + f<t_>(b, c, d) + e + w[t] + k<t_>();
+            e = d;
+            d = c;
+            c = s<30>(b);
+            b = a;
+            a = temp;
+        }
     }
 }
 
