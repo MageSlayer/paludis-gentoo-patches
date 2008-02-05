@@ -55,46 +55,76 @@ namespace
     }
 #endif
 
-    inline uint32_t s(int n, uint32_t x)
+    template <int n_>
+    inline uint32_t s(uint32_t x)
     {
-        return (x << n) | (x >> (32 - n));
+        return (x << n_) | (x >> (32 - n_));
     }
 
-    inline uint32_t f_0_19(uint32_t b, uint32_t c, uint32_t d)
+    template <int> uint32_t f(uint32_t, uint32_t, uint32_t);
+    template <int> uint32_t k();
+
+    template<> inline uint32_t f<0>(uint32_t b, uint32_t c, uint32_t d)
     {
         return (b & c) | (~b & d);
     }
+    template<> inline uint32_t k<0>()
+    {
+        return 0x5A827999U;
+    }
 
-    inline uint32_t f_20_39(uint32_t b, uint32_t c, uint32_t d)
+    template<> inline uint32_t f<20>(uint32_t b, uint32_t c, uint32_t d)
     {
         return b ^ c ^ d;
     }
+    template<> inline uint32_t k<20>()
+    {
+        return 0x6ED9EBA1U;
+    }
 
-    inline uint32_t f_40_59(uint32_t b, uint32_t c, uint32_t d)
+    template<> inline uint32_t f<40>(uint32_t b, uint32_t c, uint32_t d)
     {
         return (b & c) | (b & d) | (c & d);
     }
+    template<> inline uint32_t k<40>()
+    {
+        return 0x8F1BBCDCU;
+    }
 
-    inline uint32_t f_60_79(uint32_t b, uint32_t c, uint32_t d)
+    template<> inline uint32_t f<60>(uint32_t b, uint32_t c, uint32_t d)
     {
         return b ^ c ^ d;
     }
+    template<> inline uint32_t k<60>()
+    {
+        return 0xCA62C1D6U;
+    }
+}
 
-    const uint32_t k_0_19 = 0x5A827999U;
-    const uint32_t k_20_39 = 0x6ED9EBA1U;
-    const uint32_t k_40_59 = 0x8F1BBCDCU;
-    const uint32_t k_60_79 = 0xCA62C1D6U;
+template <int t_>
+inline void
+SHA1::process_chunk(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
+{
+    for (int t = t_; t < t_ + 20; ++t)
+    {
+        uint32_t temp = s<5>(a) + f<t_>(b, c, d) + e + w[t] + k<t_>();
+        e = d;
+        d = c;
+        c = s<30>(b);
+        b = a;
+        a = temp;
+    }
 }
 
 void
 SHA1::process_block(uint32_t * w)
 {
-    uint32_t a, b, c, d, e, temp;
+    uint32_t a, b, c, d, e;
 
     std::transform(&w[0], &w[16], &w[0], from_bigendian);
 
     for (int t = 16; t < 80; ++t)
-        w[t] = s(1, w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16]);
+        w[t] = s<1>(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16]);
 
     a = h0;
     b = h1;
@@ -102,45 +132,10 @@ SHA1::process_block(uint32_t * w)
     d = h3;
     e = h4;
 
-    for (int t = 0; t < 20; ++t)
-    {
-        temp = s(5, a) + f_0_19(b, c, d) + e + w[t] + k_0_19;
-        e = d;
-        d = c;
-        c = s(30, b);
-        b = a;
-        a = temp;
-    }
-
-    for (int t = 20; t < 40; ++t)
-    {
-        temp = s(5, a) + f_20_39(b, c, d) + e + w[t] + k_20_39;
-        e = d;
-        d = c;
-        c = s(30, b);
-        b = a;
-        a = temp;
-    }
-
-    for (int t = 40; t < 60; ++t)
-    {
-        temp = s(5, a) + f_40_59(b, c, d) + e + w[t] + k_40_59;
-        e = d;
-        d = c;
-        c = s(30, b);
-        b = a;
-        a = temp;
-    }
-
-    for (int t = 60; t < 80; ++t)
-    {
-        temp = s(5, a) + f_60_79(b, c, d) + e + w[t] + k_60_79;
-        e = d;
-        d = c;
-        c = s(30, b);
-        b = a;
-        a = temp;
-    }
+    process_chunk<0>(w, a, b, c, d, e);
+    process_chunk<20>(w, a, b, c, d, e);
+    process_chunk<40>(w, a, b, c, d, e);
+    process_chunk<60>(w, a, b, c, d, e);
 
     h0 += a;
     h1 += b;

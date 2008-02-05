@@ -49,6 +49,9 @@ namespace paludis
             uint32_t h0, h1, h2, h3, h4;
 
             void PALUDIS_HIDDEN process_block(uint32_t *);
+            template <int>
+            inline void PALUDIS_HIDDEN process_chunk(
+                uint32_t *, uint32_t &, uint32_t &, uint32_t &, uint32_t &, uint32_t &);
 
         public:
             /**
