@@ -166,31 +166,31 @@ namespace
 
             void visit(const MetadataCollectionKey<KeywordNameSet> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<KeywordNameSet>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<KeywordNameSet>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataCollectionKey<UseFlagNameSet> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<UseFlagNameSet>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<UseFlagNameSet>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<Set<std::string> >" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Set<std::string> >" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
             void visit(const MetadataCollectionKey<FSEntrySequence> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<FSEntrySequence>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<FSEntrySequence>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PackageIDSequence>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<PackageIDSequence>" << endl;
                 /* Slight trickery: a PackageIDSequence stores shared pointers
                  * to PackageID instances, so we need indirect_iterator to get
                  * an extra level of dereferencing. */
