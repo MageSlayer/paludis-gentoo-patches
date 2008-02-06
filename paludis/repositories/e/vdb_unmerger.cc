@@ -312,7 +312,7 @@ VDBUnmerger::check_dir(const FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (! (_imp->options.root / f).is_directory())
         display("--- [!type] " + stringify(f));
-    else if (DirIterator(_imp->options.root / f, false) != DirIterator())
+    else if (DirIterator(_imp->options.root / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
         display("--- [!empt] " + stringify(f));
     else
         return true;

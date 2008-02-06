@@ -680,7 +680,7 @@ InstalledUnpackagedID::uninstall(const UninstallActionOptions &, const bool repl
 
     unmerger.unmerge();
 
-    for (DirIterator d(ver_dir, false), d_end ; d != d_end ; ++d)
+    for (DirIterator d(ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     ver_dir.rmdir();
 

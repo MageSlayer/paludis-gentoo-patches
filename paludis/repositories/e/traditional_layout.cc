@@ -173,7 +173,7 @@ TraditionalLayout::need_category_names() const
     {
         Log::get_instance()->message(ll_qa, lc_context, "No categories file for repository at '"
                 + stringify(_imp->tree_root) + "', faking it");
-        for (DirIterator d(_imp->tree_root), d_end ; d != d_end ; ++d)
+        for (DirIterator d(_imp->tree_root, DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         {
             if (! d->is_directory_or_symlink_to_directory())
                 continue;
@@ -213,7 +213,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 
     FSEntry path(_imp->tree_root / stringify(n.category) / stringify(n.package));
 
-    for (DirIterator e(path), e_end ; e != e_end ; ++e)
+    for (DirIterator e(path, DirIteratorOptions() + dio_inode_sort), e_end ; e != e_end ; ++e)
     {
         if (! _imp->entries->is_package_file(n, *e))
             continue;
@@ -334,14 +334,14 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
         return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
-        for (DirIterator d(_imp->tree_root / stringify(c)), d_end ; d != d_end ; ++d)
+        for (DirIterator d(_imp->tree_root / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         {
             try
             {
                 if (! d->is_directory_or_symlink_to_directory())
                     continue;
 
-                if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
+                if (DirIterator() == std::find_if(DirIterator(*d, DirIteratorOptions() + dio_inode_sort), DirIterator(),
                             tr1::bind(&ERepositoryEntries::is_package_file, _imp->entries.get(),
                                 c + PackageNamePart(d->basename()), _1)))
                     continue;
@@ -447,7 +447,7 @@ TraditionalLayout::eapi_ebuild_suffix() const
 FSEntry
 TraditionalLayout::package_file(const PackageID & id) const
 {
-    for (DirIterator d(package_directory(id.name())), d_end ; d != d_end ; ++d)
+    for (DirIterator d(package_directory(id.name()), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         std::string::size_type p(d->basename().rfind('.'));
         if (std::string::npos == p)
@@ -557,7 +557,7 @@ namespace
         if (! d.exists())
             return;
 
-        std::list<FSEntry> files((DirIterator(d)),
+        std::list<FSEntry> files((DirIterator(d, DirIteratorOptions() + dio_inode_sort)),
                 DirIterator());
         for (std::list<FSEntry>::iterator f(files.begin()) ;
                 f != files.end() ; ++f)
@@ -586,7 +586,7 @@ TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
     tr1::shared_ptr<Map<FSEntry, std::string> > result(new Map<FSEntry, std::string>);
     FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
 
-    std::list<FSEntry> package_files((DirIterator(package_dir)),
+    std::list<FSEntry> package_files((DirIterator(package_dir, DirIteratorOptions() + dio_inode_sort)),
             DirIterator());
     for (std::list<FSEntry>::iterator f(package_files.begin()) ;
             f != package_files.end() ; ++f)

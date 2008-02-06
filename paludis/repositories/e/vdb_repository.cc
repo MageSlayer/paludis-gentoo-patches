@@ -437,7 +437,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
     }
 
     /* remove vdb entry */
-    for (DirIterator d(pkg_dir, false), d_end ; d != d_end ; ++d)
+    for (DirIterator d(pkg_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     pkg_dir.rmdir();
 }
@@ -747,7 +747,7 @@ VDBRepository::merge(const MergeOptions & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(tmp_vdb_dir, false), d_end ; d != d_end ; ++d)
+        for (DirIterator d(tmp_vdb_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         tmp_vdb_dir.rmdir();
         throw InstallActionError("Not proceeding with install due to merge sanity check failing");
@@ -790,7 +790,7 @@ VDBRepository::need_category_names() const
 
     Context context("When loading category names from '" + stringify(_imp->params.location) + "':");
 
-    for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location, DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())
@@ -819,7 +819,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 
     tr1::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
 
-    for (DirIterator d(_imp->params.location / stringify(c)), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())

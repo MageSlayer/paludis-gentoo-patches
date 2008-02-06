@@ -307,7 +307,7 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(target_ver_dir, false), d_end ; d != d_end ; ++d)
+        for (DirIterator d(target_ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         target_ver_dir.rmdir();
         throw InstallActionError("Not proceeding with install due to merge sanity check failing");

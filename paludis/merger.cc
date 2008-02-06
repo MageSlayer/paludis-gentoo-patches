@@ -154,7 +154,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     on_enter_dir(is_check, src);
 
-    DirIterator d(src, false), d_end;
+    DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end;
 
     if (! is_check && d == d_end && dst != _options.root.realpath())
         Log::get_instance()->message(ll_warning, lc_context) << "Installing empty directory '"
@@ -730,7 +730,7 @@ Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::record_renamed_dir_recursive(const FSEntry & dst)
 {
-    for (DirIterator d(dst, false), d_end ; d != d_end ; ++d)
+    for (DirIterator d(dst, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         if (! _options.no_chown)
         {
@@ -786,7 +786,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
 void
 Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
 {
-    for (DirIterator d(src, false), d_end ; d != d_end ; ++d)
+    for (DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         mode_t mode(d->permissions());
         tr1::shared_ptr<const SecurityContext> secctx(

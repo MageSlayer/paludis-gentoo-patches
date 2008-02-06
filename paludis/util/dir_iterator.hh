@@ -22,6 +22,7 @@
 
 #include <iterator>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 #ifdef PALUDIS_HAVE_CONCEPTS
@@ -59,6 +60,16 @@ namespace paludis
             ///\}
     };
 
+#include <paludis/util/dir_iterator-se.hh>
+
+    /**
+     * Options for a DirIterator.
+     *
+     * \see DirIteratorOption
+     * \see DirIterator
+     */
+    typedef Options<DirIteratorOption> DirIteratorOptions;
+
     /**
      * An iterator that iterates over the contents of a directory.
      *
@@ -85,11 +96,11 @@ namespace paludis
 
             /**
              * Constructor, to an FSEntry which must be a directory, with an
-             * option to not ignore dotfiles.
+             * option to not ignore dotfiles and an option to do inodesort.
              */
-            explicit DirIterator(const FSEntry & base, bool ignore_dotfiles = true);
+            explicit DirIterator(const FSEntry &, const DirIteratorOptions & = DirIteratorOptions());
 
-            DirIterator(const DirIterator & other);
+            DirIterator(const DirIterator &);
 
             /**
              * Constructor, creates an end() iterator.
@@ -98,7 +109,7 @@ namespace paludis
 
             ~DirIterator();
 
-            DirIterator & operator= (const DirIterator & other);
+            DirIterator & operator= (const DirIterator &);
 
             ///\}
 
@@ -124,9 +135,9 @@ namespace paludis
             ///\name Comparison operators
             ///\{
 
-            bool operator== (const DirIterator & other) const
+            bool operator== (const DirIterator &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-            bool operator!= (const DirIterator & other) const
+            bool operator!= (const DirIterator &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

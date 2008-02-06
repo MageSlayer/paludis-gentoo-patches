@@ -65,7 +65,7 @@ namespace test_cases
         {
             DirIterator iter(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter1(FSEntry("dir_iterator_TEST_dir"));
-            DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), false);
+            DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), DirIteratorOptions() + dio_include_dotfiles);
 
             TEST_CHECK(iter != DirIterator());
             TEST_CHECK(DirIterator() != iter);

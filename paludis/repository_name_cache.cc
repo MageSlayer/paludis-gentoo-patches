@@ -167,7 +167,7 @@ RepositoryNameCache::regenerate_cache() const
             + stringify(_imp->location) + "':");
 
     if (_imp->location.is_directory())
-        for (DirIterator i(_imp->location, true), i_end ; i != i_end ; ++i)
+        for (DirIterator i(_imp->location, DirIteratorOptions() + dio_inode_sort), i_end ; i != i_end ; ++i)
             FSEntry(*i).unlink();
 
     _imp->location.dirname().mkdir();
