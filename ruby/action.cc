@@ -485,7 +485,7 @@ namespace
      * Document-method: debug_build
      *
      * call-seq:
-     *     debug_build -> FixNum
+     *     debug_build -> InstallActionDebugOption
      *
      * Our InstallActionDebugOption
      */
@@ -493,7 +493,7 @@ namespace
      * Document-method: checks
      *
      * call-seq:
-     *     checks -> FixNum
+     *     checks -> InstallActionChecksOption
      *
      * Our InstallActionChecksOption
      *
@@ -634,7 +634,9 @@ namespace
 
     /*
      * call-seq:
-     *     InstallAction.new -> InstallAction
+     *     InstallAction.new(install_action_options) -> InstallAction
+     *
+     * Create a new InstallAction.
      */
     VALUE
     install_action_new(VALUE self, VALUE opts)
