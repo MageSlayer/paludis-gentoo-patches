@@ -968,9 +968,9 @@ namespace
 
     /*
      * call-seq:
-     *     entry_state -> DepListEntryState
+     *     entry_kind -> DepListEntryKind
      *
-     * Our DepListEntryState.
+     * Our DepListEntryKind.
      */
     VALUE
     dep_list_entry_kind(VALUE self)
