@@ -32,7 +32,7 @@ for c in vdb_config exndbam_config ; do
     PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test-$c \
         -qMD test-category/target || exit 11
 
-    rm -fr install_TEST_dir/root/usr
+    rm -fr install_TEST_dir/root/usr/{share/doc,bin}
 done
 
 true
