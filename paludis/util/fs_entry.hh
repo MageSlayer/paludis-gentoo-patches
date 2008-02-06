@@ -75,6 +75,7 @@ namespace paludis
         private PrivateImplementationPattern<FSEntry>
     {
         friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
+        friend class DirIterator;
 
         private:
             void _normalise();
@@ -85,6 +86,8 @@ namespace paludis
              * the link points to, which is how stat() works.
              */
             void _stat() const;
+
+            FSEntry(const std::string & path, unsigned char d_type);
 
         public:
             ///\name Basic operations

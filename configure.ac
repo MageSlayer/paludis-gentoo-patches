@@ -481,6 +481,25 @@ if test "x$ac_cv_func_canonicalize_file_name" = "xyes"; then
 fi
 dnl }}}
 
+dnl {{{ check for dirent.d_type
+AC_MSG_CHECKING([for dirent.d_type])
+AC_COMPILE_IFELSE([
+#include <sys/types.h>
+#include <dirent.h>
+int main(int, char **)
+{
+	struct dirent dent;
+	dent.d_type = DT_LNK;
+}
+],
+	[have_dirent_dtype=yes],
+	[have_dirent_dtype=no])
+AC_MSG_RESULT([$have_dirent_dtype])
+if test "x$have_dirent_dtype" = "xyes"; then
+    AC_DEFINE([HAVE_DIRENT_DTYPE], [1], [Use dirent.d_type])
+fi
+dnl }}}
+
 dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then

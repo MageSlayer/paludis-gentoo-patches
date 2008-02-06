@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
+ * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +35,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <utime.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
@@ -63,6 +65,15 @@ FSError::FSError(const std::string & our_message) throw () :
 
 namespace paludis
 {
+    enum CheckedInfo
+    {
+        ifse_none,
+        ifse_exists,
+        ifse_type,
+        ifse_full,
+        ifse_max
+    };
+
     template <>
     struct Implementation<FSEntry>
     {
@@ -71,14 +82,30 @@ namespace paludis
         mutable Mutex mutex;
         mutable tr1::shared_ptr<struct ::stat> stat_info;
         mutable bool exists;
-        mutable bool checked;
+        mutable CheckedInfo checked;
 
         Implementation(const std::string & p) :
             path(p),
             exists(false),
-            checked(false)
+            checked(ifse_none)
         {
         }
+
+        Implementation(const std::string & p, unsigned char d_type) :
+            path(p),
+            exists(true),
+            checked(ifse_exists)
+        {
+#ifdef HAVE_DIRENT_DTYPE
+            if (DT_UNKNOWN != d_type)
+            {
+                stat_info.reset(new struct ::stat);
+                stat_info->st_mode = DTTOIF(d_type);
+                checked = ifse_type;
+            }
+#endif
+        }
+
     };
 }
 
@@ -95,6 +122,12 @@ FSEntry::FSEntry(const FSEntry & other) :
     _imp->stat_info = other._imp->stat_info;
     _imp->exists = other._imp->exists;
     _imp->checked = other._imp->checked;
+}
+
+FSEntry::FSEntry(const std::string & path, unsigned char d_type) :
+    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(path, d_type))
+{
+    _normalise();
 }
 
 FSEntry::~FSEntry()
@@ -127,7 +160,7 @@ FSEntry::operator/= (const FSEntry & rhs)
             _imp->path.append(rhs._imp->path);
     }
 
-    _imp->checked = false;
+    _imp->checked = ifse_none;
     _imp->exists = false;
     _imp->stat_info.reset();
 
@@ -155,7 +188,8 @@ FSEntry::operator== (const FSEntry & other) const
 bool
 FSEntry::exists() const
 {
-    _stat();
+    if (_imp->checked < ifse_exists)
+        _stat();
 
     return _imp->exists;
 }
@@ -163,7 +197,8 @@ FSEntry::exists() const
 bool
 FSEntry::is_directory() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISDIR((*_imp->stat_info).st_mode);
@@ -174,7 +209,8 @@ FSEntry::is_directory() const
 bool
 FSEntry::is_directory_or_symlink_to_directory() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISDIR((*_imp->stat_info).st_mode) ||
@@ -186,7 +222,8 @@ FSEntry::is_directory_or_symlink_to_directory() const
 bool
 FSEntry::is_fifo() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISFIFO((*_imp->stat_info).st_mode);
@@ -197,7 +234,8 @@ FSEntry::is_fifo() const
 bool
 FSEntry::is_device() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISBLK((*_imp->stat_info).st_mode) || S_ISCHR((*_imp->stat_info).st_mode);
@@ -208,7 +246,8 @@ FSEntry::is_device() const
 bool
 FSEntry::is_regular_file() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISREG((*_imp->stat_info).st_mode);
@@ -219,7 +258,8 @@ FSEntry::is_regular_file() const
 bool
 FSEntry::is_regular_file_or_symlink_to_regular_file() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISREG((*_imp->stat_info).st_mode) ||
@@ -231,7 +271,8 @@ FSEntry::is_regular_file_or_symlink_to_regular_file() const
 bool
 FSEntry::is_symbolic_link() const
 {
-    _stat();
+    if (_imp->checked < ifse_type)
+        _stat();
 
     if (_imp->exists)
         return S_ISLNK((*_imp->stat_info).st_mode);
@@ -351,7 +392,7 @@ void
 FSEntry::_stat() const
 {
     Lock l(_imp->mutex);
-    if (_imp->checked)
+    if (_imp->checked == ifse_full)
         return;
 
     Context context("When calling stat() on '" + stringify(_imp->path) + "':");
@@ -369,7 +410,7 @@ FSEntry::_stat() const
     else
         _imp->exists = true;
 
-    _imp->checked = true;
+    _imp->checked = ifse_full;
 }
 
 std::string

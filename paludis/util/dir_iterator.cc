@@ -29,6 +29,8 @@
 #include <cstring>
 #include <cerrno>
 
+#include "config.h"
+
 using namespace paludis;
 
 #include <paludis/util/dir_iterator-se.cc>
@@ -88,7 +90,12 @@ DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & option
         {
             if ('.' != de->d_name[0])
             {
-                _imp->items->insert(std::make_pair(de->d_ino, base / std::string(de->d_name)));
+#ifdef HAVE_DIRENT_DTYPE
+                FSEntry f(stringify(base / std::string(de->d_name)), de->d_type);
+#else
+                FSEntry f(stringify(base / std::string(de->d_name)), 0);
+#endif
+                _imp->items->insert(std::make_pair(de->d_ino, f));
                 if (options[dio_first_only])
                     break;
             }
@@ -96,7 +103,12 @@ DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & option
         else if (! (de->d_name[0] == '.' &&
                     (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))))
         {
-            _imp->items->insert(std::make_pair(de->d_ino, base / std::string(de->d_name)));
+#ifdef HAVE_DIRENT_DTYPE
+            FSEntry f(stringify(base / std::string(de->d_name)), de->d_type);
+#else
+            FSEntry f(stringify(base / std::string(de->d_name)), 0);
+#endif
+            _imp->items->insert(std::make_pair(de->d_ino, f));
             if (options[dio_first_only])
                 break;
         }
