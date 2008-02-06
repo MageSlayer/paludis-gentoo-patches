@@ -968,7 +968,7 @@ namespace
 
     /*
      * call-seq:
-     *     entry_kind -> DepListEntryKind
+     *     kind -> DepListEntryKind
      *
      * Our DepListEntryKind.
      */
@@ -1038,7 +1038,7 @@ namespace
 
     /*
      * call-seq:
-     *     entry_state -> DepListEntryState
+     *     state -> DepListEntryState
      *
      * Our DepListEntryState.
      */
