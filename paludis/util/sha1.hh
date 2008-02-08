@@ -27,7 +27,7 @@
 #include <paludis/util/attributes.hh>
 
 /** \file
- * Declarations for the SHA1 digest class.
+ * Declarations for the SHA-1 digest class.
  *
  * \ingroup g_digests
  *
@@ -39,7 +39,7 @@
 namespace paludis
 {
     /**
-     * SHA1 digest class.
+     * SHA-1 digest class.
      *
      * \ingroup g_digests
      */

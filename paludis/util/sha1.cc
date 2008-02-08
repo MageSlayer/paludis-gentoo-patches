@@ -61,81 +61,83 @@ namespace
         return (x << n_) | (x >> (32 - n_));
     }
 
-    template <int> uint32_t f(uint32_t, uint32_t, uint32_t);
-    template <int> uint32_t k();
+    template <int, int> struct ChunkParams;
 
-    template<> inline uint32_t f<0>(uint32_t b, uint32_t c, uint32_t d)
+    template<>
+    struct ChunkParams<0, 20>
     {
-        return (b & c) | (~b & d);
-    }
-    template<> inline uint32_t k<0>()
-    {
-        return 0x5A827999U;
-    }
-
-    template<> inline uint32_t f<20>(uint32_t b, uint32_t c, uint32_t d)
-    {
-        return b ^ c ^ d;
-    }
-    template<> inline uint32_t k<20>()
-    {
-        return 0x6ED9EBA1U;
-    }
-
-    template<> inline uint32_t f<40>(uint32_t b, uint32_t c, uint32_t d)
-    {
-        return (b & c) | (b & d) | (c & d);
-    }
-    template<> inline uint32_t k<40>()
-    {
-        return 0x8F1BBCDCU;
-    }
-
-    template<> inline uint32_t f<60>(uint32_t b, uint32_t c, uint32_t d)
-    {
-        return b ^ c ^ d;
-    }
-    template<> inline uint32_t k<60>()
-    {
-        return 0xCA62C1D6U;
-    }
-
-    template <int t_>
-    inline void
-    process_chunk(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
-    {
-        for (int t = t_; t < t_ + 20; ++t)
+        static uint32_t f(uint32_t b, uint32_t c, uint32_t d)
         {
-            uint32_t temp = s<5>(a) + f<t_>(b, c, d) + e + w[t] + k<t_>();
-            e = d;
-            d = c;
-            c = s<30>(b);
-            b = a;
-            a = temp;
+            return (b & c) | (~b & d);
         }
-    }
+        static const uint32_t k = 0x5A827999U;
+    };
+
+    template<>
+    struct ChunkParams<20, 40>
+    {
+        static uint32_t f(uint32_t b, uint32_t c, uint32_t d)
+        {
+            return b ^ c ^ d;
+        }
+        static const uint32_t k = 0x6ED9EBA1U;
+    };
+
+    template<>
+    struct ChunkParams<40, 60>
+    {
+        static uint32_t f(uint32_t b, uint32_t c, uint32_t d)
+        {
+            return (b & c) | (b & d) | (c & d);
+        }
+        static const uint32_t k = 0x8F1BBCDCU;
+    };
+
+    template<>
+    struct ChunkParams<60, 80>
+    {
+        static uint32_t f(uint32_t b, uint32_t c, uint32_t d)
+        {
+            return b ^ c ^ d;
+        }
+        static const uint32_t k = 0xCA62C1D6U;
+    };
+
+    template <int t_, int u_>
+    struct ProcessChunk : ChunkParams<t_, u_>
+    {
+        using ChunkParams<t_, u_>::f;
+        using ChunkParams<t_, u_>::k;
+
+        static void process(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
+        {
+            for (int t = t_; t < u_; ++t)
+            {
+                uint32_t temp(s<5>(a) + f(b, c, d) + e + w[t] + k);
+                e = d;
+                d = c;
+                c = s<30>(b);
+                b = a;
+                a = temp;
+            }
+        }
+    };
 }
 
 void
 SHA1::process_block(uint32_t * w)
 {
-    uint32_t a, b, c, d, e;
+    uint32_t a(h0), b(h1), c(h2), d(h3), e(h4);
 
     std::transform(&w[0], &w[16], &w[0], from_bigendian);
 
     for (int t = 16; t < 80; ++t)
         w[t] = s<1>(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16]);
 
-    a = h0;
-    b = h1;
-    c = h2;
-    d = h3;
-    e = h4;
-
-    process_chunk<0>(w, a, b, c, d, e);
-    process_chunk<20>(w, a, b, c, d, e);
-    process_chunk<40>(w, a, b, c, d, e);
-    process_chunk<60>(w, a, b, c, d, e);
+    ProcessChunk< 0, 20>::process(w, a, b, c, d, e);
+    ProcessChunk<20, 40>::process(w, a, b, c, d, e);
+    ProcessChunk<40, 60>::process(w, a, b, c, d, e);
+    ProcessChunk<60, 80>::process(w, a, b, c, d, e);
 
     h0 += a;
     h1 += b;
@@ -164,7 +166,7 @@ SHA1::SHA1(std::istream & s) :
 
     do
     {
-        block_size = buf->sgetn(reinterpret_cast<char *>(&block.m[0]), 64);
+        block_size = buf->sgetn(reinterpret_cast<char *>(block.m), 64);
         size += block_size * 8;
 
         if (64 != block_size)
