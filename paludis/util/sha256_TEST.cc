@@ -25,7 +25,7 @@ using namespace test;
 using namespace paludis;
 
 /** \file
- * Test cases for paludis::digests::SHA256.
+ * Test cases for paludis::SHA256.
  *
  */
 
