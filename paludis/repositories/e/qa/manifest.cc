@@ -191,25 +191,24 @@ namespace
                                 accounted_files.begin(), accounted_files.end(),
                                 std::inserter(stray_files, stray_files.end()));
 
-            for (std::set<FSEntry>::const_iterator it(stray_files.begin()),
-                     it_end(stray_files.end()); it_end != it; ++it)
-                reporter.message(QAMessage(*it, qaml_normal, name, "File is not listed in the Manifest"));
+            for (std::set<FSEntry>::const_iterator file_it(stray_files.begin()),
+                     file_it_end(stray_files.end()); file_it_end != file_it; ++file_it)
+                reporter.message(QAMessage(*file_it, qaml_normal, name, "File is not listed in the Manifest"));
 
             std::set<std::string> stray_distfiles;
             std::set_difference(first_iterator(distfiles.begin()), first_iterator(distfiles.end()),
                                 accounted_distfiles.begin(), accounted_distfiles.end(),
                                 std::inserter(stray_distfiles, stray_distfiles.end()));
 
-            for (std::set<std::string>::const_iterator it(stray_distfiles.begin()),
-                     it_end(stray_distfiles.end()); it_end != it; ++it)
+            for (std::set<std::string>::const_iterator dist_it(stray_distfiles.begin()),
+                     dist_it_end(stray_distfiles.end()); dist_it_end != dist_it; ++dist_it)
             {
-                QAMessage m(manifest, qaml_normal, name, "DIST file '" + *it + "' is not listed in the Manifest");
-                tr1::shared_ptr<const PackageIDSet> set(distfiles.find(*it)->second);
-                for (PackageIDSet::ConstIterator it2(set->begin()),
-                         it2_end(set->end()); it2_end != it2; ++it2)
-                    m = m.with_associated_id(*it2)
-                         .with_associated_key(*it2, (*it2)->fetches_key());
-                reporter.message(m);
+                tr1::shared_ptr<const PackageIDSet> set(distfiles.find(*dist_it)->second);
+                for (PackageIDSet::ConstIterator pkg_it(set->begin()),
+                         pkg_it_end(set->end()); pkg_it_end != pkg_it; ++pkg_it)
+                    reporter.message(QAMessage((*pkg_it)->fs_location_key()->value(), qaml_normal, name, "DIST file '" + *dist_it + "' is not listed in the Manifest")
+                            .with_associated_id(*pkg_it)
+                            .with_associated_key(*pkg_it, (*pkg_it)->fetches_key()));
             }
         }
     };
