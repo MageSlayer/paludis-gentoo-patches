@@ -564,7 +564,8 @@ namespace
         {
             if (f->is_directory())
             {
-                aux_files_helper((*f), m, qpn);
+                if ("CVS" != f->basename())
+                    aux_files_helper((*f), m, qpn);
             }
             else
             {
