@@ -33,8 +33,10 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/merger-fwd.hh>
 #include <string>
 
 /** \file
@@ -616,7 +618,7 @@ namespace paludis
             /**
              * Merge a package.
              */
-            virtual void merge(const MergeOptions &) = 0;
+            virtual void merge(const MergeParams &) = 0;
 
             ///\}
 

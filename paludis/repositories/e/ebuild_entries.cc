@@ -541,13 +541,13 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                         + "' because destination does not provide destination_interface");
 
                 o[k::destination()]->destination_interface->merge(
-                        MergeOptions::create()
+                        MergeParams::create()
                         .package_id(id)
                         .image_dir(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image")
                         .environment_file(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
-                        .rewrite_symlinks(id->eapi()->supported->ebuild_options->merge_rewrite_symlinks)
+                        .options(id->eapi()->supported->merger_options)
                         );
         }
         else if ((! phase->option("prepost")) ||
@@ -726,7 +726,7 @@ EbuildEntries::make_ebuild_entries(
 }
 
 void
-EbuildEntries::merge(const MergeOptions & m)
+EbuildEntries::merge(const MergeParams & m)
 {
     Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to E repository '" + stringify(_imp->e_repository->name()) + "':");
@@ -751,8 +751,8 @@ EbuildEntries::merge(const MergeOptions & m)
             .image(m.image_dir)
             .destination_repository(_imp->e_repository)
             .builddir(_imp->params.builddir)
-            .rewrite_symlinks(tr1::static_pointer_cast<const ERepositoryID>(m.package_id)
-                ->eapi()->supported->ebuild_options->merge_rewrite_symlinks));
+            .merger_options(tr1::static_pointer_cast<const ERepositoryID>(m.package_id)
+                ->eapi()->supported->merger_options));
 
     write_binary_ebuild_command();
 }

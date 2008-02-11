@@ -17,13 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MERGER_MERGER_HH
-#define PALUDIS_GUARD_PALUDIS_MERGER_MERGER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_MERGER_HH
+#define PALUDIS_GUARD_PALUDIS_MERGER_HH 1
 
+#include "merger-fwd.hh"
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/options-fwd.hh>
+#include <paludis/util/options.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 
@@ -43,16 +44,7 @@ namespace paludis
     class Environment;
     class Hook;
 
-#include <paludis/merger-se.hh>
 #include <paludis/merger-sr.hh>
-
-    /**
-     * Status flags for Merger.
-     *
-     * \ingroup g_repository
-     * \since 0.26
-     */
-    typedef Options<MergeStatusFlag> MergeStatusFlags;
 
     /**
      * Thrown if an error occurs during a Merger operation.
@@ -83,7 +75,7 @@ namespace paludis
     class PALUDIS_VISIBLE Merger
     {
         private:
-            MergerOptions _options;
+            MergerParams _params;
             bool _result;
             bool _skip_dir;
             void record_renamed_dir_recursive(const FSEntry &);
@@ -95,7 +87,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Merger(const MergerOptions &);
+            Merger(const MergerParams &);
 
             ///\}
 

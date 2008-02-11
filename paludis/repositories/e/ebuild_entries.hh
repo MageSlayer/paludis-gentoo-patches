@@ -64,7 +64,7 @@ namespace paludis
 
                 ///\}
 
-                virtual void merge(const MergeOptions &);
+                virtual void merge(const MergeParams &);
 
                 virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

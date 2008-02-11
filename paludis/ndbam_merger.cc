@@ -47,31 +47,31 @@ namespace paludis
     template<>
     struct Implementation<NDBAMMerger>
     {
-        NDBAMMergerOptions options;
+        NDBAMMergerParams params;
         FSEntry realroot;
         tr1::shared_ptr<std::ofstream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        Implementation(const NDBAMMergerOptions & o) :
-            options(o),
-            realroot(options.root.realpath())
+        Implementation(const NDBAMMergerParams & p) :
+            params(p),
+            realroot(params.root.realpath())
         {
-            tokenise_whitespace(o.config_protect, std::back_inserter(config_protect));
-            tokenise_whitespace(o.config_protect_mask, std::back_inserter(config_protect_mask));
+            tokenise_whitespace(p.config_protect, std::back_inserter(config_protect));
+            tokenise_whitespace(p.config_protect_mask, std::back_inserter(config_protect_mask));
         }
     };
 }
 
-NDBAMMerger::NDBAMMerger(const NDBAMMergerOptions & o) :
-    Merger(MergerOptions::create()
-            .environment(o.environment)
-            .image(o.image)
-            .root(o.root)
+NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
+    Merger(MergerParams::create()
+            .environment(p.environment)
+            .image(p.image)
+            .root(p.root)
             .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
-            .rewrite_symlinks(true)),
-    PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(o))
+            .options(p.options)),
+    PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p))
 {
 }
 
@@ -82,33 +82,33 @@ NDBAMMerger::~NDBAMMerger()
 Hook
 NDBAMMerger::extend_hook(const Hook & h)
 {
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment->bashrc_files());
 
-    if (_imp->options.package_id)
+    if (_imp->params.package_id)
     {
-        std::string cat(stringify(_imp->options.package_id->name().category));
-        std::string pn(stringify(_imp->options.package_id->name().package));
-        std::string pvr(stringify(_imp->options.package_id->version()));
-        std::string pv(stringify(_imp->options.package_id->version().remove_revision()));
-        std::string slot(stringify(_imp->options.package_id->slot()));
+        std::string cat(stringify(_imp->params.package_id->name().category));
+        std::string pn(stringify(_imp->params.package_id->name().package));
+        std::string pvr(stringify(_imp->params.package_id->version()));
+        std::string pv(stringify(_imp->params.package_id->version().remove_revision()));
+        std::string slot(stringify(_imp->params.package_id->slot()));
 
         return Merger::extend_hook(h)
             ("P", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
-            ("PR", _imp->options.package_id->version().revision_only())
+            ("PR", _imp->params.package_id->version().revision_only())
             ("PV", pv)
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
             ("SLOT", slot)
-            ("CONFIG_PROTECT", _imp->options.config_protect)
-            ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
+            ("CONFIG_PROTECT", _imp->params.config_protect)
+            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask)
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
     }
     else
         return Merger::extend_hook(h)
-            ("CONFIG_PROTECT", _imp->options.config_protect)
-            ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
+            ("CONFIG_PROTECT", _imp->params.config_protect)
+            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask)
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
@@ -312,15 +312,15 @@ NDBAMMerger::make_arrows(const MergeStatusFlags & flags) const
 void
 NDBAMMerger::merge()
 {
-    display_override(">>> Merging to " + stringify(_imp->options.root));
-    _imp->contents_file.reset(new std::ofstream(stringify(_imp->options.contents_file).c_str()));
+    display_override(">>> Merging to " + stringify(_imp->params.root));
+    _imp->contents_file.reset(new std::ofstream(stringify(_imp->params.contents_file).c_str()));
     Merger::merge();
 }
 
 bool
 NDBAMMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->options.root << " ";
+    std::cout << ">>> Checking whether we can merge to " << _imp->params.root << " ";
     bool result(Merger::check());
     std::cout << std::endl;
     return result;

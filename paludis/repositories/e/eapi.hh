@@ -30,6 +30,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/merger-fwd.hh>
 
 namespace paludis
 {

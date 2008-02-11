@@ -595,7 +595,7 @@ CRANInstalledRepository::want_pre_post_phases() const
 }
 
 void
-CRANInstalledRepository::merge(const MergeOptions & m)
+CRANInstalledRepository::merge(const MergeParams & m)
 {
     Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to repository '" + stringify(name()) + "':");

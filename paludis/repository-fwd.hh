@@ -56,7 +56,7 @@ namespace paludis
     class RepositoryQAInterface;
     class RepositoryManifestInterface;
 
-    class MergeOptions;
+    class MergeParams;
 
     /**
      * A set of destinations, used to decide whether a PackageID can be

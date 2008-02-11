@@ -74,7 +74,7 @@ namespace paludis
 
             /* RepositoryDestinationInterface */
 
-            virtual void merge(const MergeOptions &);
+            virtual void merge(const MergeParams &);
 
             /* Repository */
 

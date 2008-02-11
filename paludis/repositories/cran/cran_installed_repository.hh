@@ -106,7 +106,7 @@ namespace paludis
             virtual bool want_pre_post_phases() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void merge(const MergeOptions &);
+            virtual void merge(const MergeParams &);
 
             /* Repository */
 

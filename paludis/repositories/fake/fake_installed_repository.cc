@@ -133,7 +133,7 @@ FakeInstalledRepository::want_pre_post_phases() const
 }
 
 void
-FakeInstalledRepository::merge(const MergeOptions &)
+FakeInstalledRepository::merge(const MergeParams &)
 {
 }
 

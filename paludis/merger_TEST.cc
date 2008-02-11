@@ -21,6 +21,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/hooker.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/dir_iterator.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -80,8 +81,8 @@ namespace
     struct TestMerger :
         Merger
     {
-        TestMerger(const MergerOptions & opts) :
-            Merger(opts)
+        TestMerger(const MergerParams & p) :
+            Merger(p)
         {
         }
 
@@ -147,29 +148,28 @@ namespace
                 root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerOptions::create()
+                merger(MergerParams::create()
                         .image(image_dir)
                         .root(root_dir)
                         .environment(&env)
                         .no_chown(true)
-                        .rewrite_symlinks(true))
+                        .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
             {
             }
 
-            MergerTest(const std::string & custom_test) :
+            MergerTest(const std::string & custom_test, const MergerOptions & o = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs) :
                 TestCase("merge " + custom_test + " test"),
                 image_dir("merger_TEST_dir/" + custom_test + "/image"),
                 root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerOptions::create()
+                merger(MergerParams::create()
                         .image(image_dir)
                         .root(root_dir)
                         .environment(&env)
                         .no_chown(true)
-                        .rewrite_symlinks(true))
+                        .options(o))
             {
             }
- 
     };
 }
 
@@ -458,5 +458,55 @@ namespace test_cases
             TEST_CHECK((root_dir / "sym_install_me").is_symbolic_link());
         }
     } test_merger_override;
+
+    struct MergerEmptyDirAllowedTest : MergerTest
+    {
+        MergerEmptyDirAllowedTest() : MergerTest("empty_dir_allowed", MergerOptions() + mo_allow_empty_dirs) { }
+
+        void run()
+        {
+            TEST_CHECK((image_dir / "empty").is_directory());
+            TEST_CHECK(DirIterator(image_dir / "empty", DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+
+            TEST_CHECK(merger.check());
+        }
+    } test_merger_empty_dir_allowed;
+
+    struct MergerEmptyDirDisallowedTest : MergerTest
+    {
+        MergerEmptyDirDisallowedTest() : MergerTest("empty_dir_disallowed", MergerOptions()) { }
+
+        void run()
+        {
+            TEST_CHECK((image_dir / "empty").is_directory());
+            TEST_CHECK(DirIterator(image_dir / "empty", DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+
+            TEST_CHECK(! merger.check());
+        }
+    } test_merger_empty_dir_disallowed;
+
+    struct MergerEmptyRootAllowedTest : MergerTest
+    {
+        MergerEmptyRootAllowedTest() : MergerTest("empty_root_allowed", MergerOptions() + mo_allow_empty_dirs) { }
+
+        void run()
+        {
+            TEST_CHECK(DirIterator(image_dir, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+
+            TEST_CHECK(merger.check());
+        }
+    } test_merger_empty_root_allowed;
+
+    struct MergerEmptyRootDisallowedTest : MergerTest
+    {
+        MergerEmptyRootDisallowedTest() : MergerTest("empty_root_disallowed", MergerOptions()) { }
+
+        void run()
+        {
+            TEST_CHECK(DirIterator(image_dir, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+
+            TEST_CHECK(! merger.check());
+        }
+    } test_merger_empty_root_disallowed;
 }
 

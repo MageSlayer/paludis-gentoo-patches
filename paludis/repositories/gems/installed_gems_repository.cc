@@ -276,7 +276,7 @@ InstalledGemsRepository::want_pre_post_phases() const
 }
 
 void
-InstalledGemsRepository::merge(const MergeOptions &)
+InstalledGemsRepository::merge(const MergeParams &)
 {
     throw InternalError(PALUDIS_HERE, "Invalid target for merge");
 }

@@ -219,7 +219,7 @@ InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActio
 }
 
 void
-InstalledUnpackagedRepository::merge(const MergeOptions & m)
+InstalledUnpackagedRepository::merge(const MergeParams & m)
 {
     Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
@@ -296,14 +296,15 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
     }
 
     NDBAMMerger merger(
-            NDBAMMergerOptions::create()
+            NDBAMMergerParams::create()
             .environment(_imp->params.environment)
             .image(m.image_dir)
             .root(installed_root_key()->value())
             .contents_file(target_ver_dir / "contents")
             .config_protect(getenv_with_default("CONFIG_PROTECT", ""))
             .config_protect_mask(getenv_with_default("CONFIG_PROTECT_MASK", ""))
-            .package_id(m.package_id));
+            .package_id(m.package_id)
+            .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs));
 
     if (! merger.check())
     {

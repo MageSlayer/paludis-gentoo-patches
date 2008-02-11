@@ -39,8 +39,8 @@ namespace
             }
 
         public:
-            VDBMergerNoDisplay(const VDBMergerOptions & o) :
-                VDBMerger(o)
+            VDBMergerNoDisplay(const VDBMergerParams & p) :
+                VDBMerger(p)
             {
             }
 
@@ -75,7 +75,7 @@ namespace
                 TestCase("merge '" + what + "' test"),
                 root_dir(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "root"),
                 target(what),
-                merger(VDBMergerOptions::create()
+                merger(VDBMergerParams::create()
                         .environment(&env)
                         .image(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image")
                         .root(root_dir)
@@ -83,7 +83,7 @@ namespace
                         .config_protect("/protected_file /protected_dir")
                         .config_protect_mask("/protected_dir/unprotected_file /protected_dir/unprotected_dir")
                         .package_id(tr1::shared_ptr<PackageID>())
-                        .rewrite_symlinks(true))
+                        .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
             {
             }
     };

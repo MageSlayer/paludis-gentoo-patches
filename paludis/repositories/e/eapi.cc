@@ -100,6 +100,16 @@ namespace paludis
                         iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
                 }
 
+                MergerOptions merger_options;
+                {
+                    std::list<std::string> merger_options_tokens;
+                    tokenise_whitespace(k.get("merger_options"), std::back_inserter(merger_options_tokens));
+                    for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
+                            t_end(merger_options_tokens.end()) ;
+                            t != t_end ; ++t)
+                        merger_options += destringify<MergerOption>(*t);
+                }
+
                 tr1::shared_ptr<EAPI> eapi(new EAPI(
                             strip_trailing_string(d->basename(), ".conf"),
                             k.get("exported_name"),
@@ -108,6 +118,7 @@ namespace paludis
                                     .package_dep_spec_parse_options(package_dep_spec_parse_options)
                                     .dependency_spec_tree_parse_options(dependency_spec_tree_parse_options)
                                     .iuse_flag_parse_options(iuse_flag_parse_options)
+                                    .merger_options(merger_options)
                                     .breaks_portage(destringify<bool>(k.get("breaks_portage")))
                                     .can_be_pbin(destringify<bool>(k.get("can_be_pbin")))
 
@@ -137,7 +148,6 @@ namespace paludis
                                                 .restrict_fetch(make_shared_ptr(new Set<std::string>))
                                                 .restrict_mirror(make_shared_ptr(new Set<std::string>))
                                                 .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
-                                                .merge_rewrite_symlinks(destringify<bool>(k.get("merge_rewrite_symlinks")))
                                                 .f_function_prefix(k.get("f_function_prefix"))
                                                 .ignore_pivot_env_variables(k.get("ignore_pivot_env_variables"))
                                                 .ignore_pivot_env_functions(k.get("ignore_pivot_env_functions"))

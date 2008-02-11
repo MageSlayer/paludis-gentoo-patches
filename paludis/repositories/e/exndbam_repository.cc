@@ -264,7 +264,7 @@ ExndbamRepository::need_keys_added() const
 }
 
 void
-ExndbamRepository::merge(const MergeOptions & m)
+ExndbamRepository::merge(const MergeParams & m)
 {
     Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to Exndbam repository '" + stringify(name()) + "':");
@@ -327,14 +327,15 @@ ExndbamRepository::merge(const MergeOptions & m)
     }
 
     NDBAMMerger merger(
-            NDBAMMergerOptions::create()
+            NDBAMMergerParams::create()
             .environment(_imp->params.environment)
             .image(m.image_dir)
             .root(installed_root_key()->value())
             .contents_file(target_ver_dir / "contents")
             .config_protect(config_protect)
             .config_protect_mask(config_protect_mask)
-            .package_id(m.package_id));
+            .package_id(m.package_id)
+            .options(m.options));
 
     if (! merger.check())
     {

@@ -692,7 +692,7 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
 }
 
 void
-VDBRepository::merge(const MergeOptions & m)
+VDBRepository::merge(const MergeParams & m)
 {
     Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to VDB repository '" + stringify(name()) + "':");
@@ -735,7 +735,7 @@ VDBRepository::merge(const MergeOptions & m)
     vdb_dir /= (stringify(m.package_id->name().package) + "-" + stringify(m.package_id->version()));
 
     VDBMerger merger(
-            VDBMergerOptions::create()
+            VDBMergerParams::create()
             .environment(_imp->params.environment)
             .image(m.image_dir)
             .root(installed_root_key()->value())
@@ -743,7 +743,7 @@ VDBRepository::merge(const MergeOptions & m)
             .config_protect(config_protect)
             .config_protect_mask(config_protect_mask)
             .package_id(m.package_id)
-            .rewrite_symlinks(m.rewrite_symlinks));
+            .options(m.options));
 
     if (! merger.check())
     {

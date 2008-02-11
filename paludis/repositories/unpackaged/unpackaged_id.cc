@@ -306,11 +306,11 @@ UnpackagedID::perform_action(Action & action) const
                 + "' because destination does not provide destination_interface");
 
     install_action->options[k::destination()]->destination_interface->merge(
-            MergeOptions::create()
+            MergeParams::create()
             .package_id(shared_from_this())
             .image_dir(fs_location_key()->value())
             .environment_file(FSEntry("/dev/null"))
-            .rewrite_symlinks(true)
+            .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
             );
 }
 

@@ -22,3 +22,21 @@ make_enum_MergeStatusFlag()
 END
 }
 
+make_enum_MergerOption()
+{
+    prefix mo
+    want_destringify
+
+    key mo_rewrite_symlinks            "Fix symlinks that point into the image directory (otherwise throw an error)"
+    key mo_allow_empty_dirs            "Allow merging empty directories"
+
+    doxygen_comment << "END"
+        /**
+         * Boolean options for Merger, used by MergerOptions
+         *
+         * \ingroup g_repository
+         * \since 0.26
+         */
+END
+}
+

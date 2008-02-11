@@ -26,6 +26,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action-fwd.hh>
+#include <paludis/merger-fwd.hh>
 #include <string>
 
 /** \file

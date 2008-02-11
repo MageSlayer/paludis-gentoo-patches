@@ -1119,9 +1119,9 @@ ERepository::want_pre_post_phases() const
 }
 
 void
-ERepository::merge(const MergeOptions & o)
+ERepository::merge(const MergeParams & p)
 {
-    _imp->entries_ptr->merge(o);
+    _imp->entries_ptr->merge(p);
 }
 
 HookResult

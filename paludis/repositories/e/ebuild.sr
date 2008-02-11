@@ -194,7 +194,7 @@ make_class_WriteBinaryEbuildCommandParams()
     key binary_distdir "FSEntry"
     key environment_file "FSEntry"
     key image "FSEntry"
-    key rewrite_symlinks "bool"
+    key merger_options "MergerOptions"
     key builddir FSEntry
 
     doxygen_comment << "END"

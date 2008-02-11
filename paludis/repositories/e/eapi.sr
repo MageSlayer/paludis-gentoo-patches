@@ -181,8 +181,6 @@ make_class_EAPIEbuildOptions()
     key ignore_pivot_env_variables std::string
     key ignore_pivot_env_functions std::string
 
-    key merge_rewrite_symlinks bool
-
     key restrict_fetch "tr1::shared_ptr<Set<std::string> >"
     key restrict_mirror "tr1::shared_ptr<Set<std::string> >"
     key restrict_primaryuri "tr1::shared_ptr<Set<std::string> >"
@@ -216,6 +214,7 @@ make_class_SupportedEAPI()
     key package_dep_spec_parse_options "erepository::PackageDepSpecParseOptions"
     key dependency_spec_tree_parse_options "erepository::DependencySpecTreeParseOptions"
     key iuse_flag_parse_options IUseFlagParseOptions
+    key merger_options "MergerOptions"
 
     key breaks_portage bool
     key can_be_pbin bool

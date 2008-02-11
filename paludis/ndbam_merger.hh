@@ -36,7 +36,7 @@ namespace paludis
             std::string make_arrows(const MergeStatusFlags &) const;
 
         public:
-            NDBAMMerger(const NDBAMMergerOptions &);
+            NDBAMMerger(const NDBAMMergerParams &);
             ~NDBAMMerger();
 
             virtual Hook extend_hook(const Hook &);

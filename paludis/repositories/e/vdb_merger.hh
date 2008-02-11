@@ -48,7 +48,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            VDBMerger(const VDBMergerOptions &);
+            VDBMerger(const VDBMergerParams &);
             ~VDBMerger();
 
             ///\}

@@ -108,7 +108,7 @@ namespace paludis
                 /**
                  * Handle a merge.
                  */
-                virtual void merge(const MergeOptions &) = 0;
+                virtual void merge(const MergeParams &) = 0;
 
                 /**
                  * Gives the Manifest key for a given package file (for

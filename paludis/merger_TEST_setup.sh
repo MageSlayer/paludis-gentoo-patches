@@ -84,6 +84,8 @@ mkdir override_dir/image/dir_install_me/
 ln -s override_dir/image/file_skip_me override_dir/image/sym_skip_me
 ln -s override_dir/image/file_install_me override_dir/image/sym_install_me
 
+mkdir -p empty_{dir,root}_{allowed,disallowed}_dir/{image,root}
+mkdir -p empty_dir_{allowed,disallowed}_dir/image/empty
 
 for d in *_dir; do
     ln -s ${d} ${d%_dir}

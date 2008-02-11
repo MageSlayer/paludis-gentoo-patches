@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-make_class_NDBAMMergerOptions()
+make_class_NDBAMMergerParams()
 {
     visible
 
@@ -12,6 +12,7 @@ make_class_NDBAMMergerOptions()
     key config_protect std::string
     key config_protect_mask std::string
     key package_id "tr1::shared_ptr<const PackageID>"
+    key options "MergerOptions"
 
     allow_named_args
 }
