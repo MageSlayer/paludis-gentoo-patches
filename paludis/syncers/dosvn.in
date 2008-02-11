@@ -68,5 +68,16 @@ fi
 
 [[ "${REMOTE}" == svn+http* || "${REMOTE}" == svn+file://* ]] && REMOTE="${REMOTE#svn+}"
 
+if [[ -d "${LOCAL}/.svn" ]]; then
+    cd "${LOCAL}"
+    OLD_REMOTE="$(${SVN_WRAPPER} svn info | sed -ne 's/^URL: //p')"
+    if [[ "${OLD_REMOTE}" != "${REMOTE}" ]]; then
+        if ! ${SVN_WRAPPER} svn switch --relocate "${OLD_REMOTE}" "${REMOTE}"; then
+            eerror "${0}: could not switch from '${OLD_REMOTE}' to '${REMOTE}'"
+            exit 1
+        fi
+    fi
+fi
+
 ${SVN_WRAPPER} svn checkout "${SVN_CHECKOUT_OPTIONS[@]}" "${REMOTE}" "${LOCAL}/"
 
