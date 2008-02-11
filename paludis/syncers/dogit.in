@@ -81,10 +81,20 @@ if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
     exit 1
 fi
 
+if [[ -d "${LOCAL}" ]]; then
+    cd "${LOCAL}"
+    OLD_REMOTE="$(${GIT_WRAPPER} git config remote.origin.url)"
+    if [[ "${OLD_REMOTE}" != "${REMOTE}" ]]; then
+        if ! ${GIT_WRAPPER} git config remote.origin.url "${REMOTE}"; then
+            eerror "${0}: could not switch from '${OLD_REMOTE}' to '${REMOTE}'"
+            exit 1
+        fi
+    fi
+    cd - >/dev/null
+fi
+
 if [[ -d "${LOCAL}/.git" ]]; then
-    cd "${LOCAL}" \
-        && ${GIT_WRAPPER} git config remote.origin.url "${REMOTE}" \
-        && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}"
+    cd "${LOCAL}" && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}" origin
 else
     ${GIT_WRAPPER} git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
 fi
