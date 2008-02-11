@@ -29,6 +29,8 @@ while [[ $# -gt 0 ]]; do
                 echo "    URL syntax: svn+ssh://[USERNAME[:PASSWORD]@]SERVER:/PATH"
             elif [[ "${PROTO}" == svn+http || "${PROTO}" == svn+https ]]; then
                 echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == svn+file ]]; then
+                echo "    URL syntax: svn+file:///PATH"
             else
                 ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
             fi
@@ -64,7 +66,7 @@ elif [[ -z "${REMOTE}" ]]; then
     exit 1
 fi
 
-[[ "${REMOTE}" == svn+http* ]] && REMOTE="${REMOTE#svn+}"
+[[ "${REMOTE}" == svn+http* || "${REMOTE}" == svn+file://* ]] && REMOTE="${REMOTE#svn+}"
 
 ${SVN_WRAPPER} svn checkout "${SVN_CHECKOUT_OPTIONS[@]}" "${REMOTE}" "${LOCAL}/"
 
