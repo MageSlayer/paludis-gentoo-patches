@@ -177,6 +177,10 @@ do_search(const Environment & env)
 {
     using namespace tr1::placeholders;
 
+    if (CommandLine::get_instance()->a_repository.specified() &&
+        ! CommandLine::get_instance()->a_kind.specified())
+        CommandLine::get_instance()->a_kind.set_argument("all");
+
     std::list<tr1::shared_ptr<Matcher> > matchers;
     for (CommandLine::ParametersConstIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)

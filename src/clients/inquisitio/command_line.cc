@@ -71,7 +71,7 @@ CommandLine::CommandLine() :
             paludis::args::EnumArg::EnumArgOptions
             ("installable",        "Installable packages")
             ("installed",          "Installed packages")
-            ("all",                "All packages"),
+            ("all",                "All packages (default if --repository specified)"),
             "installable"),
 
     output_args(this, "Output options",
