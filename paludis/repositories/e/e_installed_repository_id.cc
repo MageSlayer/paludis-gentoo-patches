@@ -312,6 +312,12 @@ EInstalledRepositoryID::need_keys_added() const
                     mkt_normal, file_contents(_imp->dir / "REPOSITORY")));
         add_metadata_key(_imp->source_origin);
     }
+    else if ((_imp->dir / "repository").exists())
+    {
+        _imp->source_origin.reset(new LiteralMetadataStringKey("repository", "Source repository",
+                    mkt_normal, file_contents(_imp->dir / "repository")));
+        add_metadata_key(_imp->source_origin);
+    }
 
     if ((_imp->dir / "BINARY_REPOSITORY").exists())
     {
