@@ -20,7 +20,6 @@ IF_RUBY_DEMOS = \
 	latest_stable.rb \
 	qualudis.rb \
 	find_unmanaged_files.rb \
-	check_linkage.rb \
 	playman.rb
 
 EXTRA_DIST = $(IF_RUBY_DEMOS)
