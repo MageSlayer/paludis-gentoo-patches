@@ -23,7 +23,6 @@
 #include <paludis/package_id-fwd.hh>
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
@@ -34,6 +33,7 @@
 #include <paludis/dep_tree-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/metadata_key_holder.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
@@ -86,28 +86,18 @@ namespace paludis
      * via an Action subclass instance.
      */
     class PALUDIS_VISIBLE PackageID :
-        private InstantiationPolicy<PackageID, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<PackageID>,
-        public equality_operators::HasEqualityOperators
+        public equality_operators::HasEqualityOperators,
+        public MetadataKeyHolder
     {
-        protected:
-            /**
-             * Add a new MetadataKey, which must not use the same raw name as
-             * any previous MetadataKey added to this ID.
-             */
-            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
+        private:
+            PrivateImplementationPattern<PackageID>::ImpPtr & _imp;
 
+        protected:
             /**
              * Add a new Mask.
              */
             virtual void add_mask(const tr1::shared_ptr<const Mask> &) const;
-
-            /**
-             * This method will be called before any of the metadata key
-             * iteration methods does its work. It can be used by subclasses to
-             * implement as-needed loading of keys.
-             */
-            virtual void need_keys_added() const = 0;
 
             /**
              * This method will be called before any of the mask iteration
@@ -294,18 +284,6 @@ namespace paludis
              * package with the current USE settings.
              */
             virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_all_distfiles_key() const = 0;
-
-            ///\}
-
-            ///\name Finding and iterating over metadata keys
-            ///\{
-
-            struct MetadataConstIteratorTag;
-            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
-
-            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

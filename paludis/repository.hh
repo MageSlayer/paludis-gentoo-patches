@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/metadata_key_holder.hh>
 #include <paludis/merger-fwd.hh>
 #include <string>
 
@@ -132,8 +133,12 @@ namespace paludis
     class PALUDIS_VISIBLE Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<Repository>,
-        public RepositoryCapabilities
+        public RepositoryCapabilities,
+        public MetadataKeyHolder
     {
+        private:
+            PrivateImplementationPattern<Repository>::ImpPtr & _imp;
+
         protected:
             ///\name Basic operations
             ///\{
@@ -141,24 +146,6 @@ namespace paludis
             Repository(const RepositoryName &, const RepositoryCapabilities &);
 
             ///\}
-
-            /**
-             * Add a new MetadataKey, which must not use the same raw name as
-             * any previous MetadataKey added to this repository.
-             */
-            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
-
-            /**
-             * Clear all MetadataKey instances added using add_metadata_key.
-             */
-            virtual void clear_metadata_keys() const;
-
-            /**
-             * This method will be called before any of the metadata key
-             * iteration methods does its work. It can be used by subclasses to
-             * implement as-needed loading of keys.
-             */
-            virtual void need_keys_added() const = 0;
 
         public:
             ///\name Basic operations
@@ -202,18 +189,6 @@ namespace paludis
              * an 'installed' repository or not.
              */
             virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const = 0;
-
-            ///\}
-
-            ///\name Finding and iterating over metadata keys
-            ///\{
-
-            struct MetadataConstIteratorTag;
-            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
-
-            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

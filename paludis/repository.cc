@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -100,7 +100,6 @@ namespace paludis
     template <>
     struct Implementation<Repository>
     {
-        mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
         const RepositoryName name;
 
         Implementation(const RepositoryName & n) :
@@ -114,7 +113,8 @@ Repository::Repository(
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
     PrivateImplementationPattern<Repository>(new Implementation<Repository>(our_name)),
-    RepositoryCapabilities(caps)
+    RepositoryCapabilities(caps),
+    _imp(PrivateImplementationPattern<Repository>::_imp)
 {
     std::map<std::string, std::string>::const_iterator i(
             RepositoryBlacklist::get_instance()->items.find(stringify(name())));
@@ -131,56 +131,6 @@ const RepositoryName
 Repository::name() const
 {
     return _imp->name;
-}
-
-void
-Repository::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
-{
-    using namespace tr1::placeholders;
-
-    if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
-        throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "' to Repository '" + stringify(name()) + "'");
-
-    _imp->keys.push_back(k);
-}
-
-void
-Repository::clear_metadata_keys() const
-{
-    _imp->keys.clear();
-}
-
-Repository::MetadataConstIterator
-Repository::begin_metadata() const
-{
-    need_keys_added();
-    return MetadataConstIterator(_imp->keys.begin());
-}
-
-Repository::MetadataConstIterator
-Repository::end_metadata() const
-{
-    need_keys_added();
-    return MetadataConstIterator(_imp->keys.end());
-}
-
-Repository::MetadataConstIterator
-Repository::find_metadata(const std::string & s) const
-{
-    using namespace tr1::placeholders;
-
-    need_keys_added();
-
-    // tr1::mem_fn on a sptr doesn't work with boost
-    // return std::find_if(begin_metadata(), end_metadata(),
-    //        tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
-
-    for (MetadataConstIterator i(begin_metadata()), i_end(end_metadata()) ;
-            i != i_end ; ++i)
-        if ((*i)->raw_name() == s)
-            return i;
-    return end_metadata();
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
