@@ -66,6 +66,7 @@ namespace test_cases
             DirIterator iter(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter1(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), DirIteratorOptions() + dio_include_dotfiles);
+            DirIterator iter3(FSEntry("dir_iterator_TEST_dir"), DirIteratorOptions() + dio_inode_sort);
 
             TEST_CHECK(iter != DirIterator());
             TEST_CHECK(DirIterator() != iter);
@@ -73,6 +74,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(iter->basename(), "file1");
             TEST_CHECK(++iter != DirIterator());
             TEST_CHECK_EQUAL(iter->basename(), "file2");
+            TEST_CHECK(++iter != DirIterator());
+            TEST_CHECK_EQUAL(iter->basename(), "file4");
             TEST_CHECK(++iter == DirIterator());
             TEST_CHECK(DirIterator() == iter);
 
@@ -86,12 +89,16 @@ namespace test_cases
             TEST_CHECK_EQUAL(iter2->basename(), "file1");
             TEST_CHECK(++iter2 != DirIterator());
             TEST_CHECK_EQUAL(iter2->basename(), "file2");
+            TEST_CHECK(++iter2 != DirIterator());
+            TEST_CHECK_EQUAL(iter2->basename(), "file4");
             TEST_CHECK(++iter2 == DirIterator());
             TEST_CHECK(DirIterator() == iter2);
             TEST_CHECK(iter2 == DirIterator());
 
             TEST_CHECK(iter1 == iter2);
             TEST_CHECK(iter2 == iter1);
+
+            TEST_CHECK_EQUAL(std::distance(iter3, DirIterator()), 3);
         }
     } test_dir_iterator_iterate;
 }

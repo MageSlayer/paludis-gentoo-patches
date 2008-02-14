@@ -35,7 +35,7 @@ using namespace paludis;
 
 #include <paludis/util/dir_iterator-se.cc>
 
-typedef std::set<std::pair<ino_t, FSEntry>, tr1::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
+typedef std::multiset<std::pair<ino_t, FSEntry>, tr1::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
 
 namespace paludis
 {
