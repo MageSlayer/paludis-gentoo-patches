@@ -5,7 +5,7 @@ make_enum_UserPackageDepSpecOption()
 {
     prefix updso
 
-    key updso_allow_wildcards      "Allow wildcards for category, package"
+    key updso_allow_wildcards                   "Allow wildcards for category, package"
 
     doxygen_comment << "END"
         /**

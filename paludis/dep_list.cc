@@ -476,16 +476,16 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
         if (already_installed->empty() || ! can_fall_back)
         {
-            if (! a.use_requirements_ptr())
+            if (! a.additional_requirements_ptr())
                 throw AllMaskedError(a);
 
             tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
-                        query::Matches(*a.without_use_requirements()), qo_whatever));
+                        query::Matches(*a.without_additional_requirements()), qo_whatever));
 
             for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
                 if (! (*i)->masked())
-                    throw UseRequirementsNotMetError(stringify(a));
+                    throw AdditionalRequirementsNotMetError(a);
 
             throw AllMaskedError(a);
         }
@@ -810,7 +810,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
-                    || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
+                    || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                 && d->_imp->current_package_id())
         {
             if ((*aa)->name() == d->_imp->current_package_id()->name())
@@ -851,7 +851,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
-                    || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
+                    || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                 && d->_imp->current_package_id())
         {
             if ((*r)->package_id->name() == d->_imp->current_package_id()->name())
@@ -876,7 +876,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
             if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
-                        || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
+                        || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                     && d->_imp->current_package_id())
             {
                 if (r->package_id->name() == d->_imp->current_package_id()->name())

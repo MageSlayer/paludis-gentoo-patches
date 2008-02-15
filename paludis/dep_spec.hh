@@ -25,6 +25,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/dep_label.hh>
@@ -35,7 +36,8 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <paludis/use_requirements-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -262,6 +264,34 @@ namespace paludis
     };
 
     /**
+     * An additional requirement for a PackageDepSpec.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE AdditionalPackageDepSpecRequirement :
+        private InstantiationPolicy<AdditionalPackageDepSpecRequirement, instantiation_method::NonCopyableTag>
+    {
+        public:
+            virtual ~AdditionalPackageDepSpecRequirement();
+
+            /**
+             * Is our requirement met for a given PackageID?
+             */
+            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a human readable string representation of ourself.
+             */
+            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a raw string representation of ourself.
+             */
+            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
      * A PartiallyMadePackageDepSpec is returned by make_package_dep_spec()
      * and is used to incrementally build a PackageDepSpec.
      *
@@ -317,9 +347,10 @@ namespace paludis
             PartiallyMadePackageDepSpec & version_requirements_mode(const VersionRequirementsMode &);
 
             /**
-             * Add a use requirement, return ourself.
+             * Add an additional requirement, return ourself.
              */
-            PartiallyMadePackageDepSpec & use_requirement(const tr1::shared_ptr<const UseRequirement> &);
+            PartiallyMadePackageDepSpec & additional_requirement(
+                    const tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
 
             /**
              * Turn ourselves into a PackageDepSpec.
@@ -418,9 +449,9 @@ namespace paludis
             tr1::shared_ptr<const RepositoryName> repository_ptr() const;
 
             /**
-             * Fetch the use requirements (may be a zero pointer).
+             * Fetch any additional requirements (may be a zero pointer).
              */
-            tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const;
+            tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
 
             /**
              * Fetch our tag.
@@ -433,9 +464,9 @@ namespace paludis
             void set_tag(const tr1::shared_ptr<const DepTag> & s);
 
             /**
-             * Fetch a copy of ourself without the USE requirements.
+             * Fetch a copy of ourself without additional requirements.
              */
-            tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
+            tr1::shared_ptr<PackageDepSpec> without_additional_requirements() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
     };
@@ -497,9 +528,9 @@ namespace paludis
             virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const = 0;
 
             /**
-             * Fetch the use requirements (may be a zero pointer).
+             * Fetch the additional requirements (may be a zero pointer).
              */
-            virtual tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const = 0;
+            virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
     };
 
     /**

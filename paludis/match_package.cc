@@ -22,7 +22,6 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/use_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -84,11 +83,11 @@ paludis::match_package(
         if (*spec.slot_ptr() != entry.slot())
             return false;
 
-    if (spec.use_requirements_ptr())
+    if (spec.additional_requirements_ptr())
     {
-        for (UseRequirements::ConstIterator u(spec.use_requirements_ptr()->begin()),
-                u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
-            if (! (*u)->satisfied_by(&env, entry))
+        for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
+                u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+            if (! (*u)->requirement_met(&env, entry))
                 return false;
     }
 

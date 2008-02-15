@@ -176,10 +176,10 @@ namespace paludis
                 void set_version_requirements_mode(const VersionRequirementsMode m);
                 tr1::shared_ptr<const SlotName> slot_ptr() const;
                 tr1::shared_ptr<const RepositoryName> repository_ptr() const;
-                tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const;
+                tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
                 tr1::shared_ptr<const DepTag> tag() const;
                 void set_tag(const tr1::shared_ptr<const DepTag> & s);
-                const tr1::shared_ptr<const PythonPackageDepSpec> without_use_requirements() const;
+                const tr1::shared_ptr<const PythonPackageDepSpec> without_additional_requirements() const;
 
                 std::string py_str() const;
 

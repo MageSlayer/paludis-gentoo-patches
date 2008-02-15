@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -133,7 +133,7 @@ UseConf::add(const FSEntry & filename)
             tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), UserPackageDepSpecOptions() + updso_allow_wildcards)));
 
-            if (d->use_requirements_ptr())
+            if (d->additional_requirements_ptr())
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Dependency specification '" << stringify(*d)
                     << "' includes use requirements, which cannot be used in use.conf";

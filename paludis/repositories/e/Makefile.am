@@ -88,6 +88,7 @@ paludis_repositories_e_include_HEADERS = \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
+	use_requirements.hh \
 	vdb_contents_tokeniser.hh \
 	vdb_id.hh \
 	vdb_merger-sr.hh \
@@ -141,6 +142,7 @@ libpaludiserepository_la_SOURCES = \
 	source_uri_finder.cc \
 	traditional_layout.cc \
 	use_desc.cc \
+	use_requirements.cc \
 	vdb_id.cc \
 	vdb_merger.cc \
 	vdb_repository.cc \

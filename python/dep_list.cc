@@ -57,10 +57,10 @@ void expose_dep_list()
     ExceptionRegister::get_instance()->add_exception<AllMaskedError>
         ("AllMaskedError", "DepListError",
          "Thrown if all versions of a particular spec are masked.");
-    ExceptionRegister::get_instance()->add_exception<UseRequirementsNotMetError>
-        ("UseRequirementsNotMetError", "DepListError",
+    ExceptionRegister::get_instance()->add_exception<AdditionalRequirementsNotMetError>
+        ("AdditionalRequirementsNotMetError", "DepListError",
          "Thrown if all versions of a particular spec are masked, "
-         "but would not be if use requirements were not in effect.");
+         "but would not be if additional requirements were not in effect.");
     ExceptionRegister::get_instance()->add_exception<DowngradeNotAllowedError>
         ("DowngradeNotAllowedError", "DepListError",
          "Thrown if a downgrade is forced and we're not allowed to downgrade.");

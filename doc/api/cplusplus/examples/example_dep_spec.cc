@@ -33,56 +33,6 @@ using std::endl;
 using std::setw;
 using std::left;
 
-namespace
-{
-    /* Used to print out more information about a UseRequirement. */
-    struct UseRequirementPrinter :
-        ConstVisitor<UseRequirementVisitorTypes>
-    {
-        std::ostringstream s;
-
-        void visit(const EnabledUseRequirement & r)
-        {
-            s << "[" << r.flag() << "]";
-        }
-
-        void visit(const DisabledUseRequirement & r)
-        {
-            s << "[!" << r.flag() << "]";
-        }
-
-        void visit(const IfMineThenUseRequirement & r)
-        {
-            s << "[" << r.flag() << "?] (using '" << *r.package_id() << "')";
-        }
-
-        void visit(const IfNotMineThenUseRequirement & r)
-        {
-            s << "[" << r.flag() << "!?] (using '" << *r.package_id() << "')";
-        }
-
-        void visit(const IfMineThenNotUseRequirement & r)
-        {
-            s << "[-" << r.flag() << "?] (using '" << *r.package_id() << "')";
-        }
-
-        void visit(const IfNotMineThenNotUseRequirement & r)
-        {
-            s << "[-" << r.flag() << "!?] (using '" << *r.package_id() << "')";
-        }
-
-        void visit(const EqualUseRequirement & r)
-        {
-            s << "[" << r.flag() << "=] (using '" << *r.package_id() << "')";
-        }
-
-        void visit(const NotEqualUseRequirement & r)
-        {
-            s << "[" << r.flag() << "!=] (using '" << *r.package_id() << "')";
-        }
-    };
-}
-
 int main(int argc, char * argv[])
 {
     try
@@ -154,21 +104,17 @@ int main(int argc, char * argv[])
             if (spec.repository_ptr())
                 cout << "    " << left << setw(24) << "Repository:" << " " << *spec.repository_ptr() << endl;
 
-            if (spec.use_requirements_ptr() && ! spec.use_requirements_ptr()->empty())
+            if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
             {
-                cout << "    " << left << setw(24) << "Use requirements:" << " ";
+                cout << "    " << left << setw(24) << "Additional requirements:" << " ";
                 bool need_join(false);
-                for (UseRequirements::ConstIterator u(spec.use_requirements_ptr()->begin()),
-                        u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
+                for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
+                        u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
                 {
                     if (need_join)
                         cout << " and ";
 
-                    /* A UseRequirement could be one of various subclasses. We
-                     * use a visitor to do the right thing. */
-                    UseRequirementPrinter p;
-                    (*u)->accept(p);
-                    cout << p.s.str();
+                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string() + ")";
                     need_join = true;
                 }
                 cout << endl;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,33 +89,31 @@ namespace paludis
 
     /**
      * Thrown if all versions of a particular spec are masked,
-     * but would not be if use requirements were not in effect.
+     * but would not be if additional requirements were not in effect.
      *
      * \ingroup g_dep_list
      * \ingroup g_exceptions
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE UseRequirementsNotMetError : public DepListError
+    class PALUDIS_VISIBLE AdditionalRequirementsNotMetError : public DepListError
     {
         private:
-            std::string _query;
+            PackageDepSpec _query;
 
         public:
             ///\name Basic operations
             ///\{
 
-            UseRequirementsNotMetError(const std::string & query) throw ();
+            AdditionalRequirementsNotMetError(const PackageDepSpec & query) throw ();
 
-            virtual ~UseRequirementsNotMetError() throw ()
-            {
-            }
+            virtual ~AdditionalRequirementsNotMetError() throw ();
 
             ///\}
 
             /**
              * Our query.
              */
-            const std::string & query() const
+            const PackageDepSpec query() const
             {
                 return _query;
             }

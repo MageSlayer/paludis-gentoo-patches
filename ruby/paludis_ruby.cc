@@ -65,7 +65,7 @@ namespace
     static VALUE c_all_masked_error;
     static VALUE c_block_error;
     static VALUE c_circular_dependency_error;
-    static VALUE c_use_requirements_not_met_error;
+    static VALUE c_additional_requirements_not_met_error;
     static VALUE c_downgrade_not_allowed_error;
     static VALUE c_no_destination_error;
     static VALUE c_fetch_action_error;
@@ -222,8 +222,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_block_error, dynamic_cast<const paludis::BlockError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::CircularDependencyError *>(&ee))
         rb_raise(c_circular_dependency_error, dynamic_cast<const paludis::CircularDependencyError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee))
-        rb_raise(c_use_requirements_not_met_error, dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::AdditionalRequirementsNotMetError *>(&ee))
+        rb_raise(c_additional_requirements_not_met_error, dynamic_cast<const paludis::AdditionalRequirementsNotMetError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee))
         rb_raise(c_downgrade_not_allowed_error, dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NoDestinationError *>(&ee))
@@ -413,9 +413,9 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      *
      * Thrown if all versions of a particular spec are masked, but would not be if use requirements were not in effect.
      */
-    c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
-    rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
-    rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
+    c_additional_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
+    rb_define_method(c_additional_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
+    rb_define_method(c_additional_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
     c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
     c_no_destination_error = rb_define_class_under(c_paludis_module, "NoDestinationError", c_dep_list_error);
 

@@ -27,7 +27,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/use_requirements.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -119,12 +118,7 @@ namespace test_cases
             TEST_CHECK(! i.version_requirements_ptr());
             TEST_CHECK(! i.repository_ptr());
             TEST_CHECK(! i.slot_ptr());
-            TEST_CHECK(i.use_requirements_ptr());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("one")) != i.use_requirements_ptr()->end());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("two")) != i.use_requirements_ptr()->end());
-            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("three")) == i.use_requirements_ptr()->end());
-            TEST_CHECK(visitor_cast<const EnabledUseRequirement>(**i.use_requirements_ptr()->find(UseFlagName("one"))));
-            TEST_CHECK(visitor_cast<const DisabledUseRequirement>(**i.use_requirements_ptr()->find(UseFlagName("two"))));
+            TEST_CHECK(i.additional_requirements_ptr());
 
             PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(j, "=foo/bar-scm-r3");
@@ -150,12 +144,6 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(next(l.version_requirements_ptr()->begin())->version_spec, "2.0");
             TEST_CHECK_EQUAL(next(l.version_requirements_ptr()->begin())->version_operator, vo_less);
             TEST_CHECK(! l.slot_ptr());
-            TEST_CHECK(l.use_requirements_ptr());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("one")) != l.use_requirements_ptr()->end());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("two")) != l.use_requirements_ptr()->end());
-            TEST_CHECK(l.use_requirements_ptr()->find(UseFlagName("three")) == l.use_requirements_ptr()->end());
-            TEST_CHECK(visitor_cast<const EnabledUseRequirement>(**l.use_requirements_ptr()->find(UseFlagName("one"))));
-            TEST_CHECK(visitor_cast<const DisabledUseRequirement>(**l.use_requirements_ptr()->find(UseFlagName("two"))));
 
             PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(m, "foo/bar[=1.2|=1.3*|~1.4]");
@@ -169,15 +157,6 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_spec, "1.4");
             TEST_CHECK_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_operator, vo_tilde);
             TEST_CHECK(! m.slot_ptr());
-
-            PackageDepSpec n(make_package_dep_spec()
-                    .use_requirement(make_shared_ptr(new IfMineThenUseRequirement(UseFlagName("if-mine-then"), tr1::shared_ptr<const PackageID>())))
-                    .use_requirement(make_shared_ptr(new IfNotMineThenUseRequirement(UseFlagName("if-not-mine-then"), tr1::shared_ptr<const PackageID>())))
-                    .use_requirement(make_shared_ptr(new IfMineThenNotUseRequirement(UseFlagName("if-mine-then-not"), tr1::shared_ptr<const PackageID>())))
-                    .use_requirement(make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName("if-not-mine-then-not"), tr1::shared_ptr<const PackageID>())))
-                    .use_requirement(make_shared_ptr(new EqualUseRequirement(UseFlagName("equal"), tr1::shared_ptr<const PackageID>())))
-                    .use_requirement(make_shared_ptr(new NotEqualUseRequirement(UseFlagName("not-equal"), tr1::shared_ptr<const PackageID>()))));
-            TEST_CHECK_STRINGIFY_EQUAL(n, "*/*[if-mine-then?][if-not-mine-then!?][-if-mine-then-not?][-if-not-mine-then-not!?][equal=][not-equal!=]");
         }
     } test_package_dep_spec;
 

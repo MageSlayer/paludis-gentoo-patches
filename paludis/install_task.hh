@@ -191,7 +191,7 @@ namespace paludis
             virtual void on_ambiguous_package_name_error(const AmbiguousPackageNameError &) = 0;
             virtual void on_no_such_package_error(const NoSuchPackageError &) = 0;
             virtual void on_all_masked_error(const AllMaskedError &) = 0;
-            virtual void on_use_requirements_not_met_error(const UseRequirementsNotMetError &) = 0;
+            virtual void on_additional_requirements_not_met_error(const AdditionalRequirementsNotMetError &) = 0;
             virtual void on_dep_list_error(const DepListError &) = 0;
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &) = 0;
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &) = 0;

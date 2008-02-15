@@ -822,10 +822,10 @@ InstallTask::execute()
         _imp->had_resolution_failures = true;
         on_all_masked_error(e);
     }
-    catch (const UseRequirementsNotMetError & e)
+    catch (const AdditionalRequirementsNotMetError & e)
     {
         _imp->had_resolution_failures = true;
-        on_use_requirements_not_met_error(e);
+        on_additional_requirements_not_met_error(e);
     }
     catch (const DepListError & e)
     {

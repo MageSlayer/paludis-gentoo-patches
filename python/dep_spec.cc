@@ -25,7 +25,6 @@
 
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/use_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -111,7 +110,7 @@ namespace paludis
         VersionRequirementsMode version_requirements_mode;
         tr1::shared_ptr<const SlotName> slot;
         tr1::shared_ptr<const RepositoryName> repository;
-        tr1::shared_ptr<const UseRequirements> use_requirements;
+        tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
         tr1::shared_ptr<const DepTag> tag;
         const std::string str;
 
@@ -123,7 +122,7 @@ namespace paludis
                 const VersionRequirementsMode m,
                 const tr1::shared_ptr<const SlotName> & s,
                 const tr1::shared_ptr<const RepositoryName> & r,
-                const tr1::shared_ptr<const UseRequirements> & u,
+                const tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const tr1::shared_ptr<const DepTag> & t,
                 const std::string & st) :
             package_ptr(q),
@@ -133,7 +132,7 @@ namespace paludis
             version_requirements_mode(m),
             slot(s),
             repository(r),
-            use_requirements(u),
+            additional_requirements(u),
             tag(t),
             str(st)
         {
@@ -259,7 +258,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
-                deep_copy(p.use_requirements_ptr()),
+                p.additional_requirements_ptr(),
                 p.tag(),
                 stringify(p)))
 {
@@ -280,7 +279,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
-                deep_copy(p.use_requirements_ptr()),
+                p.additional_requirements_ptr(),
                 p.tag(),
                 p.py_str()))
 {
@@ -313,11 +312,11 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (repository_ptr())
         p.repository(*repository_ptr());
 
-    if (use_requirements_ptr())
+    if (additional_requirements_ptr())
     {
-        for (UseRequirements::ConstIterator i(use_requirements_ptr()->begin()),
-                i_end(use_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.use_requirement(*i);
+        for (AdditionalPackageDepSpecRequirements::ConstIterator i(additional_requirements_ptr()->begin()),
+                i_end(additional_requirements_ptr()->end()) ; i != i_end ; ++i)
+            p.additional_requirement(*i);
     }
 
     if (version_requirements_ptr())
@@ -343,11 +342,11 @@ PythonPackageDepSpec::as_package_dep_spec() const
 }
 
 const tr1::shared_ptr<const PythonPackageDepSpec>
-PythonPackageDepSpec::without_use_requirements() const
+PythonPackageDepSpec::without_additional_requirements() const
 {
     PackageDepSpec p(*this);
 
-    return make_shared_ptr(new PythonPackageDepSpec(*p.without_use_requirements()));
+    return make_shared_ptr(new PythonPackageDepSpec(*p.without_additional_requirements()));
 }
 
 tr1::shared_ptr<const QualifiedPackageName>
@@ -398,10 +397,10 @@ PythonPackageDepSpec::repository_ptr() const
     return _imp->repository;
 }
 
-tr1::shared_ptr<const UseRequirements>
-PythonPackageDepSpec::use_requirements_ptr() const
+tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
+PythonPackageDepSpec::additional_requirements_ptr() const
 {
-    return _imp->use_requirements;
+    return _imp->additional_requirements;
 }
 
 tr1::shared_ptr<const DepTag>
@@ -1230,14 +1229,16 @@ void expose_dep_spec()
                 "Repository name (may be None)."
                 )
 
+#if 0
         .add_property("use_requirements", &PythonPackageDepSpec::use_requirements_ptr,
                 "[ro] UseRequirements\n"
                 "Use requirements (may be None)."
                 )
+#endif
 
-        .def("without_use_requirements", &PythonPackageDepSpec::without_use_requirements,
-                "without_use_requirements() -> PackageDepSpec\n"
-                "Fetch a copy of ourself without the USE requirements."
+        .def("without_additional_requirements", &PythonPackageDepSpec::without_additional_requirements,
+                "without_additional_requirements() -> PackageDepSpec\n"
+                "Fetch a copy of ourself without additional requirements."
             )
 
         .def("__str__", &PythonPackageDepSpec::py_str)

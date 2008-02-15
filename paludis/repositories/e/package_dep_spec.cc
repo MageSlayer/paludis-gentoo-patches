@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,13 +19,13 @@
 
 #include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/use_requirements.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/use_requirements.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -134,7 +134,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
 
             default:
                 {
-                    tr1::shared_ptr<const UseRequirement> req;
+                    std::string raw_flag(flag);
+
+                    tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req;
                     if ('=' == flag.at(flag.length() - 1))
                     {
                         if (! id)
@@ -148,10 +150,10 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
                             flag.erase(flag.length() - 1);
                             if (flag.empty())
                                 throw PackageDepSpecError("Invalid [] contents");
-                            req.reset(new NotEqualUseRequirement(UseFlagName(flag), id));
+                            req.reset(new NotEqualUseRequirement(raw_flag, UseFlagName(flag), id));
                         }
                         else
-                            req.reset(new EqualUseRequirement(UseFlagName(flag), id));
+                            req.reset(new EqualUseRequirement(raw_flag, UseFlagName(flag), id));
                     }
                     else if ('?' == flag.at(flag.length() - 1))
                     {
@@ -172,10 +174,10 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
                                 if (flag.empty())
                                     throw PackageDepSpecError("Invalid [] contents");
 
-                                req.reset(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
+                                req.reset(new IfNotMineThenNotUseRequirement(raw_flag, UseFlagName(flag), id));
                             }
                             else
-                                req.reset(new IfNotMineThenUseRequirement(UseFlagName(flag), id));
+                                req.reset(new IfNotMineThenUseRequirement(raw_flag, UseFlagName(flag), id));
                         }
                         else
                         {
@@ -185,10 +187,10 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
                                 if (flag.empty())
                                     throw PackageDepSpecError("Invalid [] contents");
 
-                                req.reset(new IfMineThenNotUseRequirement(UseFlagName(flag), id));
+                                req.reset(new IfMineThenNotUseRequirement(raw_flag, UseFlagName(flag), id));
                             }
                             else
-                                req.reset(new IfMineThenUseRequirement(UseFlagName(flag), id));
+                                req.reset(new IfMineThenUseRequirement(raw_flag, UseFlagName(flag), id));
                         }
                     }
                     else if ('-' == flag.at(0))
@@ -196,11 +198,11 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
                         flag.erase(0, 1);
                         if (flag.empty())
                             throw PackageDepSpecError("Invalid [] contents");
-                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
+                        req.reset(new DisabledUseRequirement(raw_flag, UseFlagName(flag)));
                     }
                     else
-                        req.reset(new EnabledUseRequirement(UseFlagName(flag)));
-                    result.use_requirement(req);
+                        req.reset(new EnabledUseRequirement(raw_flag, UseFlagName(flag)));
+                    result.additional_requirement(req);
                 }
                 break;
         };

@@ -79,16 +79,16 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.get_depspecs()
         self.assertEquals(self.pds.version_requirements_mode, VersionRequirementsMode.AND)
 
-    def test_09_use_requirements(self):
-        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
-        ur = iter(spec.use_requirements).next()
-        self.assert_(isinstance(ur, EnabledUseRequirement))
+###    def test_09_additional_requirements(self):
+###        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
+###        ur = iter(spec.additional_requirements).next()
+###        self.assert_(isinstance(ur, EnabledUseRequirement))
 
-    def test_10_without_use_requirements(self):
+    def test_10_without_additional_requirements(self):
         spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
-        pds = spec.without_use_requirements()
-        self.assertEquals(pds.use_requirements, None)
-        self.assertEquals(str(pds), "foo/monkey")
+        pds = spec.without_additional_requirements()
+###        self.assertEquals(pds.additional_requirements, None)
+###        self.assertEquals(str(pds), "foo/monkey")
 
     def test_11_name(self):
         self.get_depspecs()

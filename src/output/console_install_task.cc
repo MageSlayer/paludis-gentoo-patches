@@ -1595,12 +1595,21 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
 }
 
 void
-ConsoleInstallTask::on_use_requirements_not_met_error(const UseRequirementsNotMetError & e)
+ConsoleInstallTask::on_additional_requirements_not_met_error(const AdditionalRequirementsNotMetError & e)
 {
     output_stream() << endl;
-    output_stream() << "DepList USE requirements not met error:" << endl;
+    output_stream() << "DepList additional requirements not met error:" << endl;
     output_stream() << "  * " << e.backtrace("\n  * ") << e.message() << endl;
     output_stream() << endl;
+    if (e.query().additional_requirements_ptr())
+    {
+        output_stream() << "Additional requirements are as follows:" << endl;
+        for (AdditionalPackageDepSpecRequirements::ConstIterator i(e.query().additional_requirements_ptr()->begin()),
+                i_end(e.query().additional_requirements_ptr()->end()) ;
+                i != i_end ; ++i)
+            output_stream() << "    * " << (*i)->as_human_string() << endl;
+        output_stream() << endl;
+    }
     output_stream() << "This error usually indicates that one of the packages you are trying to" << endl;
     output_stream() << "install requires that another package be built with particular USE flags" << endl;
     output_stream() << "enabled or disabled. You may be able to work around this restriction by" << endl;

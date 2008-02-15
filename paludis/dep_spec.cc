@@ -18,17 +18,17 @@
  */
 
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/use_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -538,14 +538,14 @@ PackageDepSpec::repository_ptr() const
     return _imp->data->repository_ptr();
 }
 
-tr1::shared_ptr<const UseRequirements>
-PackageDepSpec::use_requirements_ptr() const
+tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
+PackageDepSpec::additional_requirements_ptr() const
 {
-    return _imp->data->use_requirements_ptr();
+    return _imp->data->additional_requirements_ptr();
 }
 
 tr1::shared_ptr<PackageDepSpec>
-PackageDepSpec::without_use_requirements() const
+PackageDepSpec::without_additional_requirements() const
 {
     using namespace tr1::placeholders;
 
@@ -591,6 +591,41 @@ std::string
 PackageDepSpec::_as_string() const
 {
     return _imp->data->as_string();
+}
+
+AdditionalPackageDepSpecRequirement::~AdditionalPackageDepSpecRequirement()
+{
+}
+
+namespace
+{
+    struct UserUseRequirement :
+        AdditionalPackageDepSpecRequirement
+    {
+        bool inverse;
+        UseFlagName f;
+
+        UserUseRequirement(const std::string & s) :
+            inverse((! s.empty()) && ('-' == s.at(0))),
+            f(inverse ? UseFlagName(s.substr(1)) : UseFlagName(s))
+        {
+        }
+
+        virtual bool requirement_met(const Environment * const env, const PackageID & id) const
+        {
+            return env->query_use(f, id) ^ inverse;
+        }
+
+        virtual const std::string as_human_string() const
+        {
+            return "Use flag '" + stringify(f) + "' " + (inverse ? "enabled" : "disabled");
+        }
+
+        virtual const std::string as_raw_string() const
+        {
+            return "[" + std::string(inverse ? "-" : "") + stringify(f) + "]";
+        }
+    };
 }
 
 PackageDepSpec
@@ -686,18 +721,8 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
 
             default:
                 {
-                    tr1::shared_ptr<UseRequirement> req;
-                    if ('-' == flag.at(0))
-                    {
-                        flag.erase(0, 1);
-                        if (flag.empty())
-                            throw PackageDepSpecError("Invalid [] contents");
-                        req.reset(new DisabledUseRequirement(UseFlagName(flag)));
-                    }
-                    else
-                        req.reset(new EnabledUseRequirement(UseFlagName(flag)));
-
-                    result.use_requirement(req);
+                    tr1::shared_ptr<UserUseRequirement> req(new UserUseRequirement(flag));
+                    result.additional_requirement(req);
                 }
                 break;
         };
@@ -818,52 +843,6 @@ paludis::make_package_dep_spec()
 
 namespace
 {
-    struct UseRequirementPrinter :
-        ConstVisitor<UseRequirementVisitorTypes>
-    {
-        std::ostringstream s;
-
-        void visit(const EnabledUseRequirement & r)
-        {
-            s << "[" << r.flag() << "]";
-        }
-
-        void visit(const DisabledUseRequirement & r)
-        {
-            s << "[-" << r.flag() << "]";
-        }
-
-        void visit(const IfMineThenUseRequirement & r)
-        {
-            s << "[" << r.flag() << "?]";
-        }
-
-        void visit(const IfNotMineThenUseRequirement & r)
-        {
-            s << "[" << r.flag() << "!?]";
-        }
-
-        void visit(const IfMineThenNotUseRequirement & r)
-        {
-            s << "[-" << r.flag() << "?]";
-        }
-
-        void visit(const IfNotMineThenNotUseRequirement & r)
-        {
-            s << "[-" << r.flag() << "!?]";
-        }
-
-        void visit(const EqualUseRequirement & r)
-        {
-            s << "[" << r.flag() << "=]";
-        }
-
-        void visit(const NotEqualUseRequirement & r)
-        {
-            s << "[" << r.flag() << "!=]";
-        }
-    };
-
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
@@ -874,7 +853,7 @@ namespace
         VersionRequirementsMode version_requirements_mode_v;
         tr1::shared_ptr<SlotName> slot;
         tr1::shared_ptr<RepositoryName> repository;
-        tr1::shared_ptr<UseRequirements> use_requirements;
+        tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
 
         PartiallyMadePackageDepSpecData() :
             PackageDepSpecData(),
@@ -891,7 +870,7 @@ namespace
             version_requirements_mode_v(other.version_requirements_mode_v),
             slot(other.slot),
             repository(other.repository),
-            use_requirements(other.use_requirements)
+            additional_requirements(other.additional_requirements)
         {
         }
 
@@ -1000,16 +979,10 @@ namespace
                 }
             }
 
-            if (use_requirements_ptr())
-            {
-                for (UseRequirements::ConstIterator u(use_requirements_ptr()->begin()),
-                        u_end(use_requirements_ptr()->end()) ; u != u_end ; ++u)
-                {
-                    UseRequirementPrinter p;
-                    (*u)->accept(p);
-                    s << p.s.str();
-                }
-            }
+            if (additional_requirements_ptr())
+                for (AdditionalPackageDepSpecRequirements::ConstIterator u(additional_requirements_ptr()->begin()),
+                        u_end(additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                    s << (*u)->as_raw_string();
 
             return s.str();
         }
@@ -1049,9 +1022,9 @@ namespace
             return repository;
         }
 
-        virtual tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const
+        virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
-            return use_requirements;
+            return additional_requirements;
         }
     };
 }
@@ -1141,11 +1114,11 @@ PartiallyMadePackageDepSpec::version_requirements_mode(const VersionRequirements
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::use_requirement(const tr1::shared_ptr<const UseRequirement> & req)
+PartiallyMadePackageDepSpec::additional_requirement(const tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
 {
-    if (! _imp->data->use_requirements)
-        _imp->data->use_requirements.reset(new UseRequirements);
-    _imp->data->use_requirements->insert(req);
+    if (! _imp->data->additional_requirements)
+        _imp->data->additional_requirements.reset(new AdditionalPackageDepSpecRequirements);
+    _imp->data->additional_requirements->push_back(req);
     return *this;
 }
 
@@ -1160,8 +1133,6 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
     return operator const PackageDepSpec();
 }
 
-template class WrappedForwardIterator<UseRequirements::ConstIteratorTag, const std::pair<const UseFlagName, UseFlagState> >;
-
 template class LabelsDepSpec<URILabelVisitorTypes>;
 template class WrappedForwardIterator<LabelsDepSpec<URILabelVisitorTypes>::ConstIteratorTag,
          const tr1::shared_ptr<const URILabelVisitorTypes::BasicNode> >;
@@ -1169,4 +1140,6 @@ template class WrappedForwardIterator<LabelsDepSpec<URILabelVisitorTypes>::Const
 template class LabelsDepSpec<DependencyLabelVisitorTypes>;
 template class WrappedForwardIterator<LabelsDepSpec<DependencyLabelVisitorTypes>::ConstIteratorTag,
          const tr1::shared_ptr<const DependencyLabelVisitorTypes::BasicNode> >;
+
+template class Sequence<tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 

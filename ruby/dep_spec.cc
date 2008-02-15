@@ -22,7 +22,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/use_requirements.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -573,16 +572,17 @@ namespace
 
     /*
      * call-seq:
-     *     without_use_requirements -> PackageDepSpec
+     *     without_additional_requirements -> PackageDepSpec
      *
      * Fetch us without our use requirements.
      */
     VALUE
-    package_dep_spec_without_use_requirements(VALUE self)
+    package_dep_spec_without_additional_requirements(VALUE self)
     {
         tr1::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, ptr);
-        return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->without_use_requirements());
+        return package_dep_spec_to_value(tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(
+                    *ptr)->spec()->without_additional_requirements());
     }
 
     /*
@@ -1052,7 +1052,7 @@ namespace
 #endif
         rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
         rb_define_method(c_package_dep_spec, "tag=", RUBY_FUNC_CAST(&package_dep_spec_set_tag), 1);
-        rb_define_method(c_package_dep_spec, "without_use_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_use_requirements), 0);
+        rb_define_method(c_package_dep_spec, "without_additional_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_additional_requirements), 0);
         VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(package_dep_spec_to_s), 0);
 

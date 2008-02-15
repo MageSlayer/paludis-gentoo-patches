@@ -36,7 +36,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_version_requirements();
     expose_fs_entry();
     expose_contents();
-    expose_use_requirements();
     expose_dep_spec();
     expose_dep_tag();
     expose_dep_label();

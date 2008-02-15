@@ -27,6 +27,7 @@
 #include <paludis/formatter-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
 /** \file
@@ -70,6 +71,23 @@ namespace paludis
     class PackageDepSpecData;
     class PartiallyMadePackageDepSpec;
     class ConditionalDepSpecData;
+
+    class AdditionalPackageDepSpecRequirement;
+
+    /**
+     * An AdditionalPackageDepSpecRequirement can be written to an ostream.
+     *
+     * \ingroup g_dep_spec
+     */
+    std::ostream & operator<< (std::ostream &, const AdditionalPackageDepSpecRequirement &) PALUDIS_VISIBLE;
+
+    /**
+     * A collection of additional requirements for a PackageDepSpec.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    typedef Sequence<tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
 
 #include <paludis/dep_spec-se.hh>
 

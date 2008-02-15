@@ -126,9 +126,9 @@ namespace
             return tr1::shared_ptr<const RepositoryName>();
         }
 
-        virtual tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const
+        virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
-            return tr1::shared_ptr<const UseRequirements>();
+            return tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
         }
 
         void add_spec(const PackageDepSpec & spec)
@@ -206,7 +206,7 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
     if (_imp->invalid)
         return;
 
-    if (a.use_requirements_ptr() || a.slot_ptr() || a.repository_ptr() || a.package_name_part_ptr()
+    if (a.additional_requirements_ptr() || a.slot_ptr() || a.repository_ptr() || a.package_name_part_ptr()
             || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr())
     {
         _imp->invalid = true;

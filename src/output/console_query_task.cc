@@ -107,7 +107,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID
 void
 ConsoleQueryTask::display_header(const PackageDepSpec & a, const tr1::shared_ptr<const PackageID> & e) const
 {
-    if (a.version_requirements_ptr() || a.slot_ptr() || a.use_requirements_ptr() ||
+    if (a.version_requirements_ptr() || a.slot_ptr() || a.additional_requirements_ptr() ||
             a.repository_ptr())
         output_starred_item(render_as_package_name(stringify(a)));
     else
@@ -117,7 +117,7 @@ ConsoleQueryTask::display_header(const PackageDepSpec & a, const tr1::shared_ptr
 void
 ConsoleQueryTask::display_compact(const PackageDepSpec & a, const tr1::shared_ptr<const PackageID> & e) const
 {
-    if (a.version_requirements_ptr() || a.slot_ptr() || a.use_requirements_ptr() ||
+    if (a.version_requirements_ptr() || a.slot_ptr() || a.additional_requirements_ptr() ||
             a.repository_ptr())
     {
         std::string pad(std::max<long>(1, 30 - stringify(a).length()), ' ');
