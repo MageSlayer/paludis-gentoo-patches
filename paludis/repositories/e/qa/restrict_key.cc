@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -56,9 +56,9 @@ namespace
     struct RestrictChecker :
         ConstVisitor<RestrictSpecTree>,
         ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>,
-        ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, UseDepSpec>
+        ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>
     {
-        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>::visit_sequence;
         using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>::visit_sequence;
 
         const std::set<std::string> & allowed_restricts;

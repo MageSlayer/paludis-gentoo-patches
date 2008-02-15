@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
 #include <paludis/name.hh>
+#include <paludis/metadata_key_holder.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
@@ -76,15 +77,15 @@ namespace paludis
             ///\{
 
             /**
-             * Return us as a UseDepSpec, or 0 if we are not a
-             * UseDepSpec.
+             * Return us as a ConditionalDepSpec, or 0 if we are not a
+             * ConditionalDepSpec.
              */
-            virtual const UseDepSpec * as_use_dep_spec() const
+            virtual const ConditionalDepSpec * as_conditional_dep_spec() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return us as a PackageDepSpec, or 0 if we are not a
-             * UseDepSpec.
+             * ConditionalDepSpec.
              */
             virtual const PackageDepSpec * as_package_dep_spec() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -134,39 +135,96 @@ namespace paludis
     };
 
     /**
-     * Represents a use? ( ) dependency spec.
+     * Represents a dependency spec whose children should only be considered
+     * upon a certain condition (for example, a use dependency block).
      *
      * \ingroup g_dep_spec
+     * \since 0.26
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE UseDepSpec :
-        public DepSpec
+    class PALUDIS_VISIBLE ConditionalDepSpec :
+        public DepSpec,
+        private PrivateImplementationPattern<ConditionalDepSpec>,
+        public MetadataKeyHolder,
+        public CloneUsingThis<DepSpec, ConditionalDepSpec>
     {
+        friend std::ostream & operator<< (std::ostream &, const ConditionalDepSpec &);
+
         private:
-            const UseFlagName _flag;
-            const bool _inverse;
+            PrivateImplementationPattern<ConditionalDepSpec>::ImpPtr & _imp;
+
+            std::string _as_string() const;
+
+        protected:
+            virtual void need_keys_added() const;
+            virtual void clear_metadata_keys() const;
 
         public:
             ///\name Basic operations
             ///\{
 
-            UseDepSpec(const UseFlagName &, bool);
+            ConditionalDepSpec(const tr1::shared_ptr<const ConditionalDepSpecData> &);
+            ConditionalDepSpec(const ConditionalDepSpec &);
+            ~ConditionalDepSpec();
+
+            ///\}
+
+            virtual const ConditionalDepSpec * as_conditional_dep_spec() const;
+
+            /**
+             * Is our condition met?
+             *
+             * This takes into account inverses etc.
+             */
+            bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Is our condition meetable?
+             *
+             * This takes into account inverses, masks, forces etc.
+             */
+            bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Fetch our data.
+             *
+             * This shouldn't generally be used by clients, but some repositories use it
+             * to gain access to additional data stored in the ConditionalDepSpecData.
+             */
+            const tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * Data for a ConditionalDepSpec.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE ConditionalDepSpecData :
+        public MetadataKeyHolder
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            virtual ~ConditionalDepSpecData();
 
             ///\}
 
             /**
-             * Fetch our use flag name.
+             * Fetch ourself as a string.
              */
-            UseFlagName flag() const;
+            virtual std::string as_string() const = 0;
 
             /**
-             * Fetch whether we are a ! flag.
+             * Fetch the result for condition_met.
              */
-            bool inverse() const;
+            virtual bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual const UseDepSpec * as_use_dep_spec() const;
-
-            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            /**
+             * Fetch the result for condition_meetable.
+             */
+            virtual bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**

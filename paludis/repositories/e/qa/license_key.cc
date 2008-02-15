@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ namespace
         ConstVisitor<LicenseSpecTree>,
         ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>,
         ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, UseDepSpec>
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, ConditionalDepSpec>
     {
         const FSEntry & entry;
         QAReporter & reporter;
@@ -59,7 +59,7 @@ namespace
 
         using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
         using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, ConditionalDepSpec>::visit_sequence;
 
         void visit_leaf(const LicenseDepSpec & l)
         {

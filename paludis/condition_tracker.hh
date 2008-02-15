@@ -77,7 +77,7 @@ namespace paludis
             ///\{
 
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const AnyDepSpec &);
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const UseDepSpec &);
+            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const ConditionalDepSpec &);
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const PackageDepSpec &);
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const BlockDepSpec &);
 
@@ -89,7 +89,7 @@ namespace paludis
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>::visit_sequence;
 
             void visit_sequence(const AnyDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
-            void visit_sequence(const UseDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
+            void visit_sequence(const ConditionalDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
 
             void visit_leaf(const PackageDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
             void visit_leaf(const BlockDepSpec &) PALUDIS_ATTRIBUTE((noreturn));

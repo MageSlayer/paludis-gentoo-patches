@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -47,7 +48,7 @@ namespace test_cases
             TestEnvironment env;
             const tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "pkg", "1");
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/in/input1").exists());
             TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
@@ -57,7 +58,7 @@ namespace test_cases
                         qo_require_exactly_one)->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);
-            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), *eapi)->accept(v);
+            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());
             std::ifstream f(stringify(FSEntry("fetch_visitor_TEST_dir/out/input1")).c_str());

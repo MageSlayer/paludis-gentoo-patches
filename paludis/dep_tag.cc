@@ -185,11 +185,11 @@ namespace
         }
 
         void
-        visit_sequence(const UseDepSpec & a,
+        visit_sequence(const ConditionalDepSpec & a,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
-            s << (a.inverse() ? "!" : "") << a.flag() << "? ( ";
+            s << stringify(a) << " ( ";
             std::for_each(cur, end, accept_visitor(*this));
             s << ") ";
         }

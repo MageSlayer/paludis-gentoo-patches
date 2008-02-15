@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/repositories/e/conditional_dep_spec.hh>
 #include <algorithm>
 #include <map>
 #include <set>
@@ -107,12 +108,12 @@ namespace
         {
         }
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
             Save<std::set<UseFlagName> > save_current(&current);
-            current.insert(u.flag());
+            current.insert(conditional_dep_spec_flag(u));
             std::for_each(cur, end, accept_visitor(*this));
         }
 
@@ -224,13 +225,14 @@ namespace
 
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<Requirements, AllDepSpec>::visit_sequence;
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
             Save<std::map<UseFlagName, bool> > save_current(&current);
-            std::pair<std::map<UseFlagName, bool>::const_iterator, bool> p(current.insert(std::make_pair(u.flag(), !u.inverse())));
-            if (p.second || (p.first->second == !u.inverse()))
+            std::pair<std::map<UseFlagName, bool>::const_iterator, bool> p(current.insert(std::make_pair(
+                            conditional_dep_spec_flag(u), ! conditional_dep_spec_is_inverse(u))));
+            if (p.second || (p.first->second == ! conditional_dep_spec_is_inverse(u)))
                 std::for_each(cur, end, accept_visitor(*this));
         }
 

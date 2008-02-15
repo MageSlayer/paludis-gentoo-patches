@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -130,7 +130,7 @@ EDependenciesKey::value() const
     }
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi(), _imp->id);
+    _imp->value = parse_depend(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -209,7 +209,7 @@ ELicenseKey::value() const
     }
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_license(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_license(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -274,7 +274,7 @@ EFetchableURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_fetchable_uri(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -303,7 +303,7 @@ EFetchableURIKey::initial_label() const
 
     if (! _imp->initial_label)
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> f(_imp->env, *_imp->id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> f(_imp->env);
         if (_imp->id->restrict_key())
             _imp->id->restrict_key()->value()->accept(f);
         for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
@@ -374,7 +374,7 @@ ESimpleURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_simple_uri(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -438,7 +438,7 @@ ERestrictKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_restrict(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_restrict(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -501,7 +501,7 @@ EProvideKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_provide(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_provide(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 

@@ -51,7 +51,7 @@ namespace paludis
                         DependencySpecTree::ConstSequenceIterator,
                         DependencySpecTree::ConstSequenceIterator);
 
-                void visit_sequence(const UseDepSpec &,
+                void visit_sequence(const ConditionalDepSpec &,
                         DependencySpecTree::ConstSequenceIterator,
                         DependencySpecTree::ConstSequenceIterator);
 

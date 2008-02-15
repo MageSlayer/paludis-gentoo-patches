@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -285,7 +285,7 @@ StringifyFormatter::format(const PlainTextDepSpec & s, const format::Plain & k) 
 }
 
 std::string
-StringifyFormatter::format(const UseDepSpec & s, const format::Enabled & k) const
+StringifyFormatter::format(const ConditionalDepSpec & s, const format::Enabled & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
@@ -293,7 +293,7 @@ StringifyFormatter::format(const UseDepSpec & s, const format::Enabled & k) cons
 }
 
 std::string
-StringifyFormatter::format(const UseDepSpec & s, const format::Disabled & k) const
+StringifyFormatter::format(const ConditionalDepSpec & s, const format::Disabled & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
@@ -301,7 +301,7 @@ StringifyFormatter::format(const UseDepSpec & s, const format::Disabled & k) con
 }
 
 std::string
-StringifyFormatter::format(const UseDepSpec & s, const format::Forced & k) const
+StringifyFormatter::format(const ConditionalDepSpec & s, const format::Forced & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
@@ -309,7 +309,7 @@ StringifyFormatter::format(const UseDepSpec & s, const format::Forced & k) const
 }
 
 std::string
-StringifyFormatter::format(const UseDepSpec & s, const format::Masked & k) const
+StringifyFormatter::format(const ConditionalDepSpec & s, const format::Masked & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
@@ -325,7 +325,7 @@ StringifyFormatter::format(const FSEntry & s, const format::Plain & k) const
 }
 
 std::string
-StringifyFormatter::format(const UseDepSpec & s, const format::Plain & k) const
+StringifyFormatter::format(const ConditionalDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);

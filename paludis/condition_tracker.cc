@@ -66,7 +66,7 @@ ConditionTracker::add_condition(const AnyDepSpec & any)
 }
 
 tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
-ConditionTracker::add_condition(const UseDepSpec & use)
+ConditionTracker::add_condition(const ConditionalDepSpec & use)
 {
     return do_add_sequence(use);
 }
@@ -111,7 +111,7 @@ ConditionTracker::visit_sequence(const AnyDepSpec & node,
 }
 
 void
-ConditionTracker::visit_sequence(const UseDepSpec & node,
+ConditionTracker::visit_sequence(const ConditionalDepSpec & node,
             DependencySpecTree::ConstSequenceIterator begin,
             DependencySpecTree::ConstSequenceIterator end)
 {

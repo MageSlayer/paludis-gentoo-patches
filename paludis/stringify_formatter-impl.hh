@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -54,7 +54,7 @@ namespace paludis
         const CanFormat<DependencyLabelsDepSpec> * const f_dep_label;
         const CanFormat<URILabelsDepSpec> * const f_uri_label;
         const CanFormat<PlainTextDepSpec> * const f_plain;
-        const CanFormat<UseDepSpec> * const f_use_dep;
+        const CanFormat<ConditionalDepSpec> * const f_use_dep;
         const CanFormat<NamedSetDepSpec> * const f_named;
         const CanFormat<FSEntry> * const f_fsentry;
         const CanFormat<PackageID> * const f_package_id;
@@ -73,7 +73,7 @@ namespace paludis
                 const CanFormat<DependencyLabelsDepSpec> * const f_dep_label_v,
                 const CanFormat<URILabelsDepSpec> * const f_uri_label_v,
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
-                const CanFormat<UseDepSpec> * const f_use_dep_v,
+                const CanFormat<ConditionalDepSpec> * const f_use_dep_v,
                 const CanFormat<NamedSetDepSpec> * const f_named_v,
                 const CanFormat<FSEntry> * const f_fsentry_v,
                 const CanFormat<PackageID> * const f_package_id_v,
@@ -207,7 +207,7 @@ namespace paludis
                     StringifyFormatterGetForwarder<
                         tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
                         PlainTextDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseDepSpec> *>::value, UseDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<ConditionalDepSpec> *>::value, ConditionalDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
                     StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),

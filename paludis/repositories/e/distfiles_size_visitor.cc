@@ -93,11 +93,11 @@ DistfilesSizeVisitor::~DistfilesSizeVisitor()
 }
 
 void
-DistfilesSizeVisitor::visit_sequence(const UseDepSpec & u,
+DistfilesSizeVisitor::visit_sequence(const ConditionalDepSpec & u,
         FetchableURISpecTree::ConstSequenceIterator cur,
         FetchableURISpecTree::ConstSequenceIterator end)
 {
-    if (_imp->env->query_use(u.flag(), *_imp->id) ^ u.inverse())
+    if (u.condition_met())
     {
         _imp->labels.push_front(* _imp->labels.begin());
         std::for_each(cur, end, accept_visitor(*this));

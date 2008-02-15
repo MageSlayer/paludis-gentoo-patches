@@ -86,7 +86,7 @@ namespace
 
     /* This visitor class collects src_uri entries and stores the result in
      * a provided map. Label statuses are handled by a stack. When we enter
-     * a block (an AllDepSpec or a UseDepSpec), we duplicate the top item
+     * a block (an AllDepSpec or a ConditionalDepSpec), we duplicate the top item
      * of the stack, since labels recurse into subblocks. When we encounter
      * a label, we replace the top item of the stack. */
     class DistfilesCollector :
@@ -115,13 +115,12 @@ namespace
                 _restricted.pop_back();
             }
 
-            void visit_sequence(const UseDepSpec &,
+            void visit_sequence(const ConditionalDepSpec &,
                     FetchableURISpecTree::ConstSequenceIterator cur,
                     FetchableURISpecTree::ConstSequenceIterator end)
             {
-                /* Always recurse over a UseDepSpec's children. In real world
-                 * code, we would more likely check whether the use flag is
-                 * accepted. */
+                /* Always recurse over a ConditionalDepSpec's children. In real world
+                 * code, we would more likely check whether condition is met. */
                 _restricted.push_back(_restricted.back());
                 std::for_each(cur, end, accept_visitor(*this));
                 _restricted.pop_back();

@@ -70,7 +70,7 @@ namespace
         public CanSpace,
         public CanFormat<PackageDepSpec>,
         public CanFormat<DependencyLabelsDepSpec>,
-        public CanFormat<UseDepSpec>,
+        public CanFormat<ConditionalDepSpec>,
         public CanFormat<NamedSetDepSpec>,
         public CanFormat<BlockDepSpec>
     {
@@ -97,27 +97,27 @@ namespace
                 return span_colour(escape_html(stringify(s)), "#666666");
             }
 
-            std::string format(const UseDepSpec & s, const format::Plain &) const
+            std::string format(const ConditionalDepSpec & s, const format::Plain &) const
             {
                 return span_colour(escape_html(stringify(s)), "#666666");
             }
 
-            std::string format(const UseDepSpec & s, const format::Enabled &) const
+            std::string format(const ConditionalDepSpec & s, const format::Enabled &) const
             {
                 return span_colour(escape_html(stringify(s)), "#66ff66");
             }
 
-            std::string format(const UseDepSpec & s, const format::Disabled &) const
+            std::string format(const ConditionalDepSpec & s, const format::Disabled &) const
             {
                 return span_colour(escape_html(stringify(s)), "#ff6666");
             }
 
-            std::string format(const UseDepSpec & s, const format::Forced &) const
+            std::string format(const ConditionalDepSpec & s, const format::Forced &) const
             {
                 return span_colour(escape_html("(" + stringify(s) + ")"), "#66ff66");
             }
 
-            std::string format(const UseDepSpec & s, const format::Masked &) const
+            std::string format(const ConditionalDepSpec & s, const format::Masked &) const
             {
                 return span_colour(escape_html("(" + stringify(s) + ")"), "#ff6666");
             }

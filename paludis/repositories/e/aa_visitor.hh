@@ -44,7 +44,7 @@ namespace paludis
         class PALUDIS_VISIBLE AAVisitor :
             public ConstVisitor<FetchableURISpecTree>,
             public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<AAVisitor, AllDepSpec>,
-            public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<AAVisitor, UseDepSpec>,
+            public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<AAVisitor, ConditionalDepSpec>,
             private PrivateImplementationPattern<AAVisitor>
         {
             public:

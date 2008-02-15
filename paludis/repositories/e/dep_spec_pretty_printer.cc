@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -168,7 +168,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const UseDepSpec & a,
+DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -179,15 +179,10 @@ DepSpecPrettyPrinter::visit_sequence(const UseDepSpec & a,
     else if (_imp->need_space)
         _imp->s << " ";
 
-    if (_imp->env && _imp->id)
-    {
-        if (_imp->env->query_use(a.flag(), *_imp->id))
-            _imp->s << _imp->formatter.format(a, format::Enabled()) << " (";
-        else
-            _imp->s << _imp->formatter.format(a, format::Disabled()) << " (";
-    }
+    if (a.condition_met())
+        _imp->s << _imp->formatter.format(a, format::Enabled()) << " (";
     else
-        _imp->s << _imp->formatter.format(a, format::Plain()) << " (";
+        _imp->s << _imp->formatter.format(a, format::Disabled()) << " (";
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -65,7 +65,7 @@ namespace paludis
             TreeLeaf<GenericSpecTree, NamedSetDepSpec>,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
             ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
-            ConstTreeSequence<GenericSpecTree, UseDepSpec>
+            ConstTreeSequence<GenericSpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -77,7 +77,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             PlainTextDepSpec,
             SimpleURIDepSpec,
             FetchableURIDepSpec,
@@ -104,7 +104,7 @@ namespace paludis
             TreeLeaf<LicenseSpecTree, LicenseDepSpec>,
             ConstTreeSequence<LicenseSpecTree, AllDepSpec>,
             ConstTreeSequence<LicenseSpecTree, AnyDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, UseDepSpec>
+            ConstTreeSequence<LicenseSpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -116,7 +116,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             LicenseDepSpec
                 > ItemFormatter;
     };
@@ -135,7 +135,7 @@ namespace paludis
             TreeLeaf<FetchableURISpecTree, FetchableURIDepSpec>,
             TreeLeaf<FetchableURISpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
             ConstTreeSequence<FetchableURISpecTree, AllDepSpec>,
-            ConstTreeSequence<FetchableURISpecTree, UseDepSpec>
+            ConstTreeSequence<FetchableURISpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -147,7 +147,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             FetchableURIDepSpec,
             URILabelsDepSpec
                 > ItemFormatter;
@@ -166,7 +166,7 @@ namespace paludis
             DepSpec,
             TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>,
             ConstTreeSequence<SimpleURISpecTree, AllDepSpec>,
-            ConstTreeSequence<SimpleURISpecTree, UseDepSpec>
+            ConstTreeSequence<SimpleURISpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -178,7 +178,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             SimpleURIDepSpec
                 > ItemFormatter;
     };
@@ -196,7 +196,7 @@ namespace paludis
             DepSpec,
             TreeLeaf<ProvideSpecTree, PackageDepSpec>,
             ConstTreeSequence<ProvideSpecTree, AllDepSpec>,
-            ConstTreeSequence<ProvideSpecTree, UseDepSpec>
+            ConstTreeSequence<ProvideSpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -208,7 +208,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             PackageDepSpec
                 > ItemFormatter;
     };
@@ -226,7 +226,7 @@ namespace paludis
             DepSpec,
             TreeLeaf<RestrictSpecTree, PlainTextDepSpec>,
             ConstTreeSequence<RestrictSpecTree, AllDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, UseDepSpec>
+            ConstTreeSequence<RestrictSpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -238,7 +238,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             PlainTextDepSpec
                 > ItemFormatter;
     };
@@ -260,7 +260,7 @@ namespace paludis
             TreeLeaf<DependencySpecTree, NamedSetDepSpec>,
             ConstTreeSequence<DependencySpecTree, AllDepSpec>,
             ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
-            ConstTreeSequence<DependencySpecTree, UseDepSpec>
+            ConstTreeSequence<DependencySpecTree, ConditionalDepSpec>
         >
     {
         /**
@@ -272,7 +272,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            UseDepSpec,
+            ConditionalDepSpec,
             PackageDepSpec,
             BlockDepSpec,
             NamedSetDepSpec,

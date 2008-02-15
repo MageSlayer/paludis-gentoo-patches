@@ -222,7 +222,7 @@ namespace
                 _is_complex = true;
             }
 
-            void visit_sequence(const UseDepSpec &,
+            void visit_sequence(const ConditionalDepSpec &,
                     LicenseSpecTree::ConstSequenceIterator,
                     LicenseSpecTree::ConstSequenceIterator)
             {
@@ -697,11 +697,11 @@ namespace
         ConstVisitor<GenericSpecTree>,
         ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>,
         ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, UseDepSpec>
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, ConditionalDepSpec>
     {
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>::visit_sequence;
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>::visit_sequence;
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, UseDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, ConditionalDepSpec>::visit_sequence;
 
         bool empty;
 

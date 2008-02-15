@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,11 +43,7 @@ namespace test_cases
         void run()
         {
             tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec(parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions())));
-            TEST_CHECK(0 == x->as_use_dep_spec());
-
-            tr1::shared_ptr<UseDepSpec> y(new UseDepSpec(UseFlagName("foo"), x));
-            TEST_CHECK(0 != y->as_use_dep_spec());
-            TEST_CHECK(y.get() == y->as_use_dep_spec());
+            TEST_CHECK(0 == x->as_conditional_dep_spec());
         }
     } test_dep_spec_as;
 

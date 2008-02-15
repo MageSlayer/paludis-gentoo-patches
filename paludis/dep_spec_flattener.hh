@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -90,31 +90,31 @@ namespace paludis
         };
 
         /**
-         * Implement visit for UseDepSpec, if necessary.
+         * Implement visit for ConditionalDepSpec, if necessary.
          *
          * \ingroup g_dep_spec
          * \since 0.26
          * \nosubgrouping
          */
         template <typename H_, typename I_, bool b_>
-        struct VisitUseDepSpec
+        struct VisitConditionalDepSpec
         {
             void visit_sequence(const NoType<0u> &);
         };
 
         /**
-         * Implement visit for UseDepSpec, if necessary.
+         * Implement visit for ConditionalDepSpec, if necessary.
          *
          * \ingroup g_dep_spec
          * \since 0.26
          * \nosubgrouping
          */
         template <typename H_, typename I_>
-        struct VisitUseDepSpec<H_, I_, true> :
-            virtual visitor_internals::Visits<const ConstTreeSequence<H_, UseDepSpec> >
+        struct VisitConditionalDepSpec<H_, I_, true> :
+            virtual visitor_internals::Visits<const ConstTreeSequence<H_, ConditionalDepSpec> >
         {
             void visit_sequence(
-                    const UseDepSpec &,
+                    const ConditionalDepSpec &,
                     typename H_::ConstSequenceIterator,
                     typename H_::ConstSequenceIterator);
         };
@@ -146,13 +146,13 @@ namespace paludis
         public ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>,
         public dep_spec_flattener_internals::VisitNamedSetDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>,
-        public dep_spec_flattener_internals::VisitUseDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, UseDepSpec> >::value>
+        public dep_spec_flattener_internals::VisitConditionalDepSpec<
+            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>
     {
         friend class dep_spec_flattener_internals::VisitNamedSetDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>;
-        friend class dep_spec_flattener_internals::VisitUseDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, UseDepSpec> >::value>;
+        friend class dep_spec_flattener_internals::VisitConditionalDepSpec<
+            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>;
 
         private:
             typename PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
@@ -163,8 +163,8 @@ namespace paludis
 
             using ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>::visit_sequence;
 
-            using dep_spec_flattener_internals::VisitUseDepSpec<Heirarchy_, Item_,
-                  ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, UseDepSpec> >::value>::visit_sequence;
+            using dep_spec_flattener_internals::VisitConditionalDepSpec<Heirarchy_, Item_,
+                  ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>::visit_sequence;
 
             using dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_,
                 ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>::visit_leaf;
@@ -176,16 +176,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            /**
-             * This constructor only works if we can't contain a UseDepSpec. The second
-             * parameter is ignored.
-             */
-            DepSpecFlattener(const Environment * const,
-                    const typename Select<ConstVisitor<Heirarchy_>::template
-                    Contains<const ConstTreeSequence<Heirarchy_, UseDepSpec> >::value,
-                    NoType<0u>, Empty>::Type & t = Empty::instance);
-
-            DepSpecFlattener(const Environment * const, const PackageID &);
+            DepSpecFlattener(const Environment * const);
 
             ~DepSpecFlattener();
 

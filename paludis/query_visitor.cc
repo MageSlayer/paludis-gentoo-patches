@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -128,13 +128,13 @@ QueryVisitor::visit_leaf(const NamedSetDepSpec & s)
 }
 
 void
-QueryVisitor::visit_sequence(const UseDepSpec & a,
+QueryVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
     /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
-    if ((_imp->id ? _imp->environment->query_use(a.flag(), *_imp->id) : false) ^ a.inverse())
+    if (a.condition_met())
     {
         _imp->result = true;
         for ( ; cur != end ; ++cur)
@@ -164,7 +164,7 @@ QueryVisitor::visit_sequence(const AnyDepSpec &,
     else
         for ( ; cur != end ; ++cur)
         {
-            if (! is_viable_any_child(*_imp->environment, _imp->id, *cur))
+            if (! is_viable_any_child(*cur))
                 continue;
 
             cur->accept(*this);

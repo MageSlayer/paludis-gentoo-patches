@@ -22,6 +22,10 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/environments/test/test_environment.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/package_database.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 
@@ -37,8 +41,13 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
             AAVisitor p1;
-            parse_fetchable_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_EQUAL(join(p1.begin(), p1.end(), " "), "b c d e");
         }
     } test_aa_visitor;

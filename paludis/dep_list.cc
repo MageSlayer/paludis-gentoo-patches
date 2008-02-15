@@ -306,7 +306,7 @@ struct DepList::AddVisitor :
             DependencySpecTree::ConstSequenceIterator,
             DependencySpecTree::ConstSequenceIterator);
 
-    void visit_sequence(const UseDepSpec &,
+    void visit_sequence(const ConditionalDepSpec &,
             DependencySpecTree::ConstSequenceIterator,
             DependencySpecTree::ConstSequenceIterator);
 
@@ -606,7 +606,7 @@ DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
 }
 
 void
-DepList::AddVisitor::visit_sequence(const UseDepSpec & a,
+DepList::AddVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
@@ -615,24 +615,13 @@ DepList::AddVisitor::visit_sequence(const UseDepSpec & a,
 
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
-        if ((d->_imp->current_package_id() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_package_id()) : false) ^ a.inverse())
+        if (a.condition_met())
             std::for_each(cur, end, accept_visitor(*this));
     }
     else
     {
-        RepositoryUseInterface * u(0);
-        if ((! d->_imp->current_package_id()) || (! ((u = d->_imp->current_package_id()->repository()->use_interface))))
+        if (a.condition_meetable())
             std::for_each(cur, end, accept_visitor(*this));
-        else if (a.inverse())
-        {
-            if ((! d->_imp->current_package_id()) || (! u->query_use_force(a.flag(), *d->_imp->current_package_id())))
-                std::for_each(cur, end, accept_visitor(*this));
-        }
-        else
-        {
-            if ((! d->_imp->current_package_id()) || (! u->query_use_mask(a.flag(), *d->_imp->current_package_id())))
-                std::for_each(cur, end, accept_visitor(*this));
-        }
     }
 }
 
@@ -644,8 +633,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
     using namespace tr1::placeholders;
 
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
-    if (end == std::find_if(cur, end,
-                tr1::bind(&is_viable_any_child, tr1::cref(*d->_imp->env), d->_imp->current_package_id(), _1)))
+    if (end == std::find_if(cur, end, &is_viable_any_child))
         return;
 
     {
@@ -667,7 +655,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
      * any upgrades kick in */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
+        if (! is_viable_any_child(*c))
             continue;
 
         if (d->already_installed(*c, destinations))
@@ -682,7 +670,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
      * the b-2 bit first */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
+        if (! is_viable_any_child(*c))
             continue;
         if (! is_interesting_any_child(*d->_imp->env, *c))
             continue;
@@ -706,7 +694,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
     /* install first available viable option */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
+        if (! is_viable_any_child(*c))
             continue;
 
         try
@@ -731,7 +719,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         Context block_context("Inside || ( ) block with other options:");
         for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
         {
-            if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
+            if (! is_viable_any_child(*c))
                 continue;
 
             d->add_not_top_level(*c, destinations, conditions);
@@ -1026,7 +1014,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
     /* add provides */
     if (p->provide_key())
     {
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, *_imp->current_package_id());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
         p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
@@ -1538,12 +1526,11 @@ DepList::match_on_list(const PackageDepSpec & a) const
 }
 
 bool
-paludis::is_viable_any_child(const Environment & env, const tr1::shared_ptr<const PackageID> & id,
-        const DependencySpecTree::ConstItem & i)
+paludis::is_viable_any_child(const DependencySpecTree::ConstItem & i)
 {
-    const UseDepSpec * const u(get_const_item(i)->as_use_dep_spec());
+    const ConditionalDepSpec * const u(get_const_item(i)->as_conditional_dep_spec());
     if (0 != u)
-        return (id ? env.query_use(u->flag(), *id) : false) ^ u->inverse();
+        return u->condition_met();
     else
         return true;
 }

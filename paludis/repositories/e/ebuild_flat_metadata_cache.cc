@@ -41,8 +41,9 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
+EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSEntry & f,
         const FSEntry & e, time_t t, tr1::shared_ptr<const EclassMtimes> m, bool s) :
+    _env(v),
     _filename(f),
     _ebuild(e),
     _master_mtime(t),
@@ -99,7 +100,7 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                             if (! m.metadata_dependencies.empty())
                             {
                                 DependenciesRewriter rewriter;
-                                parse_depend(lines.at(m.flat_cache_dependencies), *id->eapi(), id)->accept(rewriter);
+                                parse_depend(lines.at(m.flat_cache_dependencies), _env, id, *id->eapi())->accept(rewriter);
                                 id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
                                 id->load_run_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
                                 id->load_post_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());

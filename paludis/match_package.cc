@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -103,7 +103,7 @@ paludis::match_package_in_set(
 {
     using namespace tr1::placeholders;
 
-    DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env, entry);
+    DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env);
     target.accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),

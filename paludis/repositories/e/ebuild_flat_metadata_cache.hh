@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,6 +41,7 @@ namespace paludis
         class EbuildFlatMetadataCache
         {
             private:
+                const Environment * const _env;
                 const FSEntry & _filename;
                 const FSEntry & _ebuild;
                 time_t _master_mtime;
@@ -51,7 +52,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                EbuildFlatMetadataCache(const FSEntry & filename, const FSEntry & ebuild,
+                EbuildFlatMetadataCache(const Environment * const, const FSEntry & filename, const FSEntry & ebuild,
                         time_t master_mtime, tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
 
                 ///\}

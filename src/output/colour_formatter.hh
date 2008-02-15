@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +30,7 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::UseFlagName>,
     public paludis::CanFormat<paludis::IUseFlag>,
     public paludis::CanFormat<paludis::KeywordName>,
-    public paludis::CanFormat<paludis::UseDepSpec>,
+    public paludis::CanFormat<paludis::ConditionalDepSpec>,
     public paludis::CanFormat<paludis::PackageDepSpec>,
     public paludis::CanFormat<paludis::BlockDepSpec>,
     public paludis::CanFormat<paludis::DependencyLabelsDepSpec>,
@@ -69,11 +69,11 @@ class ColourFormatter :
         std::string format(const paludis::UseFlagName &, const paludis::format::Forced &) const;
         std::string format(const paludis::UseFlagName &, const paludis::format::Masked &) const;
 
-        std::string format(const paludis::UseDepSpec &, const paludis::format::Plain &) const;
-        std::string format(const paludis::UseDepSpec &, const paludis::format::Enabled &) const;
-        std::string format(const paludis::UseDepSpec &, const paludis::format::Disabled &) const;
-        std::string format(const paludis::UseDepSpec &, const paludis::format::Forced &) const;
-        std::string format(const paludis::UseDepSpec &, const paludis::format::Masked &) const;
+        std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Plain &) const;
+        std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Enabled &) const;
+        std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Disabled &) const;
+        std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Forced &) const;
+        std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Masked &) const;
 
         std::string format(const paludis::PackageDepSpec &, const paludis::format::Plain &) const;
         std::string format(const paludis::PackageDepSpec &, const paludis::format::Installed &) const;

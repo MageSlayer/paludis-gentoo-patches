@@ -37,6 +37,7 @@ libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_
 paludis_repositories_e_include_HEADERS = \
 	aa_visitor.hh \
 	check_fetched_files_visitor.hh \
+	conditional_dep_spec.hh \
 	dep_lexer.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
@@ -100,6 +101,7 @@ libpaludiserepository_la_SOURCES = \
 	aa_visitor.cc \
 	dep_lexer.cc \
 	check_fetched_files_visitor.cc \
+	conditional_dep_spec.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
@@ -222,6 +224,7 @@ e_repository_sets_TEST_SOURCES = e_repository_sets_TEST.cc
 
 e_repository_sets_TEST_LDADD = \
 	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -236,6 +239,7 @@ dep_spec_pretty_printer_TEST_SOURCES = dep_spec_pretty_printer_TEST.cc
 
 dep_spec_pretty_printer_TEST_LDADD = \
 	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -258,6 +262,7 @@ dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
 	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -269,6 +274,7 @@ aa_visitor_TEST_SOURCES = aa_visitor_TEST.cc
 
 aa_visitor_TEST_LDADD = \
 	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \

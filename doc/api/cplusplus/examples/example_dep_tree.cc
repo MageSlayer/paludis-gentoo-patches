@@ -71,13 +71,13 @@ namespace
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<DependenciesCollector, AllDepSpec>::visit_sequence;
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<DependenciesCollector, AnyDepSpec>::visit_sequence;
 
-            void visit_sequence(const UseDepSpec & u,
+            void visit_sequence(const ConditionalDepSpec & u,
                     DependencySpecTree::ConstSequenceIterator cur,
                     DependencySpecTree::ConstSequenceIterator end)
             {
                 /* Was this use flag enabled (or, if we're inverse, disabled)
                  * when we built this package? */
-                if (_env->query_use(u.flag(), *_id) ^ u.inverse())
+                if (u.condition_met())
                     std::for_each(cur, end, accept_visitor(*this));
             }
 
@@ -155,13 +155,12 @@ namespace
 
             using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<FileExtensionsCollector, AllDepSpec>::visit_sequence;
 
-            void visit_sequence(const UseDepSpec & u,
+            void visit_sequence(const ConditionalDepSpec & u,
                     FetchableURISpecTree::ConstSequenceIterator cur,
                     FetchableURISpecTree::ConstSequenceIterator end)
             {
-                /* Was this use flag enabled (or, if we're inverse, disabled)
-                 * when we built this package? */
-                if (_env->query_use(u.flag(), *_id) ^ u.inverse())
+                /* Was the condition met when we built this package? */
+                if (u.condition_met())
                     std::for_each(cur, end, accept_visitor(*this));
             }
 

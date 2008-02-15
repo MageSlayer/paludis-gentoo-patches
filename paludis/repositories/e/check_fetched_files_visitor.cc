@@ -108,12 +108,12 @@ CheckFetchedFilesVisitor::~CheckFetchedFilesVisitor()
 }
 
 void
-CheckFetchedFilesVisitor::visit_sequence(const UseDepSpec & u,
+CheckFetchedFilesVisitor::visit_sequence(const ConditionalDepSpec & u,
         FetchableURISpecTree::ConstSequenceIterator cur,
         FetchableURISpecTree::ConstSequenceIterator end)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
-    if ((_imp->check_unneeded) || (_imp->env->query_use(u.flag(), *_imp->id) ^ u.inverse()))
+    if ((_imp->check_unneeded) || (u.condition_met()))
         std::for_each(cur, end, accept_visitor(*this));
 }
 

@@ -27,7 +27,7 @@ make_nn_NiceNames() {
     name "SimpleURIDepSpec"
     name "AllDepSpec"
     name "AnyDepSpec"
-    name "UseDepSpec"
+    name "ConditionalDepSpec"
     name "BlockDepSpec"
     name "StringDepSpec"
     name "NamedSetDepSpec"
@@ -82,7 +82,7 @@ make_nn_LowercaseNiceNames() {
     name "URILabelsDepSpec" "uri_labels_dep_spec"
     name "PlainTextDepSpec" "plain_text_dep_spec"
     name "LicenseDepSpec" "license_dep_spec"
-    name "UseDepSpec" "use_dep_spec"
+    name "ConditionalDepSpec" "conditional_dep_spec"
     name "NamedSetDepSpec" "named_set_dep_spec"
 
     name "format::Plain" "plain"

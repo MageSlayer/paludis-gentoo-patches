@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -285,14 +285,14 @@ namespace paludis
         };
 
         /**
-         * UseDepSpec supports UseRoles.
+         * ConditionalDepSpec supports UseRoles.
          *
          * \ingroup g_formatters
          * \since 0.26
          * \nosubgrouping
          */
         template <>
-        struct CategorySelector<UseDepSpec>
+        struct CategorySelector<ConditionalDepSpec>
         {
             /// The roles this type supports.
             typedef UseRoles Category;

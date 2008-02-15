@@ -355,7 +355,7 @@ class PythonFormatterWrapper :
     public PythonCanFormat<URILabelsDepSpec>,
     public PythonCanFormat<PlainTextDepSpec>,
     public PythonCanFormat<LicenseDepSpec>,
-    public PythonCanFormat<UseDepSpec>,
+    public PythonCanFormat<ConditionalDepSpec>,
     public PythonCanFormat<NamedSetDepSpec>,
     public PythonCanSpace,
     public bp::wrapper<PythonFormatterWrapper>
@@ -531,19 +531,19 @@ void expose_formatter()
         ;
 
     /**
-     * CanFormatUseDepSpec
+     * CanFormatConditionalDepSpec
      */
-    bp::class_<PythonCanFormatWrapper<UseDepSpec>, boost::noncopyable>
+    bp::class_<PythonCanFormatWrapper<ConditionalDepSpec>, boost::noncopyable>
         (
-         "CanFormatUseDepSpec",
-         "Descendents of this class implement the necessary methods to format a UseDepSpec.",
+         "CanFormatConditionalDepSpec",
+         "Descendents of this class implement the necessary methods to format a ConditionalDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_use_dep_spec_plain", &PythonCanFormatWrapper<UseDepSpec>::format_plain)
-        .def("format_use_dep_spec_enabled", &PythonCanFormatWrapper<UseDepSpec>::format_enabled)
-        .def("format_use_dep_spec_disabled", &PythonCanFormatWrapper<UseDepSpec>::format_disabled)
-        .def("format_use_dep_spec_forced", &PythonCanFormatWrapper<UseDepSpec>::format_forced)
-        .def("format_use_dep_spec_masked", &PythonCanFormatWrapper<UseDepSpec>::format_masked)
+        .def("format_conditional_dep_spec_plain", &PythonCanFormatWrapper<ConditionalDepSpec>::format_plain)
+        .def("format_conditional_dep_spec_enabled", &PythonCanFormatWrapper<ConditionalDepSpec>::format_enabled)
+        .def("format_conditional_dep_spec_disabled", &PythonCanFormatWrapper<ConditionalDepSpec>::format_disabled)
+        .def("format_conditional_dep_spec_forced", &PythonCanFormatWrapper<ConditionalDepSpec>::format_forced)
+        .def("format_conditional_dep_spec_masked", &PythonCanFormatWrapper<ConditionalDepSpec>::format_masked)
         ;
 
     /**
@@ -623,7 +623,7 @@ void expose_formatter()
      */
     bp::class_<LicenseSpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<LicenseDepSpec> >,
             boost::noncopyable>
         (
@@ -638,7 +638,7 @@ void expose_formatter()
      */
     bp::class_<ProvideSpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<PackageDepSpec> >,
             boost::noncopyable>
         (
@@ -653,7 +653,7 @@ void expose_formatter()
      */
     bp::class_<DependencySpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<PackageDepSpec>,
                 CanFormat<NamedSetDepSpec>,
                 CanFormat<DependencyLabelsDepSpec> >,
@@ -670,7 +670,7 @@ void expose_formatter()
      */
     bp::class_<RestrictSpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<PlainTextDepSpec> >,
             boost::noncopyable>
         (
@@ -685,7 +685,7 @@ void expose_formatter()
      */
     bp::class_<SimpleURISpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<SimpleURIDepSpec> >,
             boost::noncopyable>
         (
@@ -700,7 +700,7 @@ void expose_formatter()
      */
     bp::class_<FetchableURISpecTree::ItemFormatter,
             bp::bases<
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<FetchableURIDepSpec>,
                 CanFormat<URILabelsDepSpec> >,
             boost::noncopyable>
@@ -738,7 +738,7 @@ void expose_formatter()
                 CanFormat<URILabelsDepSpec>,
                 CanFormat<PlainTextDepSpec>,
                 CanFormat<LicenseDepSpec>,
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<NamedSetDepSpec>,
                 CanSpace>,
             boost::noncopyable>
@@ -782,7 +782,7 @@ void expose_formatter()
                 CanFormat<URILabelsDepSpec>,
                 CanFormat<PlainTextDepSpec>,
                 CanFormat<LicenseDepSpec>,
-                CanFormat<UseDepSpec>,
+                CanFormat<ConditionalDepSpec>,
                 CanFormat<NamedSetDepSpec>,
                 CanSpace>,
             boost::noncopyable>

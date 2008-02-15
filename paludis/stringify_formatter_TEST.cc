@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,10 +38,10 @@ namespace
         return f.format(k, format::Accepted()) + " " + f.format(n, format::Enabled());
     }
 
-    std::string format_three(const PackageDepSpec & k, const BlockDepSpec & d, const UseDepSpec & u,
+    std::string format_three(const PackageDepSpec & k, const BlockDepSpec & d, const NamedSetDepSpec & u,
             const GenericSpecTree::ItemFormatter & f)
     {
-        return f.format(k, format::Plain()) + " " + f.format(d, format::Plain()) + " " + f.format(u, format::Enabled());
+        return f.format(k, format::Plain()) + " " + f.format(d, format::Plain()) + " " + f.format(u, format::Plain());
     }
 
     class PartialFormatter :
@@ -111,12 +111,12 @@ namespace test_cases
             PartialFormatter f;
             StringifyFormatter ff(f);
             BlockDepSpec b(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()))));
-            UseDepSpec u(UseFlagName("foo"), true);
+            NamedSetDepSpec u(SetName("foo"));
             std::string s(format_three(
                         parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()),
                         b, u,
                         ff));
-            TEST_CHECK_EQUAL(s, "<cat/pkg> !cat/pkg !foo?");
+            TEST_CHECK_EQUAL(s, "<cat/pkg> !cat/pkg foo");
         }
     } test_stringify_formatter_partial;
 }

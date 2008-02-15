@@ -1072,11 +1072,11 @@ namespace
                     failure.reset(new PackageDepSpec(a));
         }
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(u.flag(), id) ^ u.inverse())
+            if (u.condition_met())
                 std::for_each(cur, end, accept_visitor(*this));
         }
 
@@ -1300,11 +1300,11 @@ namespace
             }
         }
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(u.flag(), *id) ^ u.inverse())
+            if (u.condition_met())
                 std::for_each(cur, end, accept_visitor(*this));
         }
 

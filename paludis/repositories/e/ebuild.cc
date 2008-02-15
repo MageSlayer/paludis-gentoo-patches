@@ -384,7 +384,7 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! m.metadata_dependencies.empty())
     {
         DependenciesRewriter rewriter;
-        parse_depend(get(keys, m.metadata_dependencies), *id->eapi(), id)->accept(rewriter);
+        parse_depend(get(keys, m.metadata_dependencies), params.environment, id, *id->eapi())->accept(rewriter);
         id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
         id->load_run_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
         id->load_post_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());

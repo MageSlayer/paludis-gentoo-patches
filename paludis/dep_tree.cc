@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,45 +32,45 @@ template class TreeLeaf<GenericSpecTree, FetchableURIDepSpec>;
 template class TreeLeaf<GenericSpecTree, LicenseDepSpec>;
 template class ConstTreeSequence<GenericSpecTree, AllDepSpec>;
 template class ConstTreeSequence<GenericSpecTree, AnyDepSpec>;
-template class ConstTreeSequence<GenericSpecTree, UseDepSpec>;
+template class ConstTreeSequence<GenericSpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<LicenseSpecTree>;
 template class ConstAcceptInterface<LicenseSpecTree>;
 template class TreeLeaf<LicenseSpecTree, LicenseDepSpec>;
 template class ConstTreeSequence<LicenseSpecTree, AllDepSpec>;
 template class ConstTreeSequence<LicenseSpecTree, AnyDepSpec>;
-template class ConstTreeSequence<LicenseSpecTree, UseDepSpec>;
+template class ConstTreeSequence<LicenseSpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<FetchableURISpecTree>;
 template class ConstAcceptInterface<FetchableURISpecTree>;
 template class TreeLeaf<FetchableURISpecTree, FetchableURIDepSpec>;
 template class ConstTreeSequence<FetchableURISpecTree, AllDepSpec>;
-template class ConstTreeSequence<FetchableURISpecTree, UseDepSpec>;
+template class ConstTreeSequence<FetchableURISpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<SimpleURISpecTree>;
 template class ConstAcceptInterface<SimpleURISpecTree>;
 template class TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>;
 template class ConstTreeSequence<SimpleURISpecTree, AllDepSpec>;
-template class ConstTreeSequence<SimpleURISpecTree, UseDepSpec>;
+template class ConstTreeSequence<SimpleURISpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<ProvideSpecTree>;
 template class ConstAcceptInterface<ProvideSpecTree>;
 template class TreeLeaf<ProvideSpecTree, PackageDepSpec>;
 template class ConstTreeSequence<ProvideSpecTree, AllDepSpec>;
-template class ConstTreeSequence<ProvideSpecTree, UseDepSpec>;
+template class ConstTreeSequence<ProvideSpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<RestrictSpecTree>;
 template class ConstAcceptInterface<RestrictSpecTree>;
 template class TreeLeaf<RestrictSpecTree, PlainTextDepSpec>;
 template class ConstTreeSequence<RestrictSpecTree, AllDepSpec>;
-template class ConstTreeSequence<RestrictSpecTree, UseDepSpec>;
+template class ConstTreeSequence<RestrictSpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<DependencySpecTree>;
 template class TreeLeaf<DependencySpecTree, PackageDepSpec>;
 template class TreeLeaf<DependencySpecTree, BlockDepSpec>;
 template class ConstTreeSequence<DependencySpecTree, AllDepSpec>;
 template class ConstTreeSequence<DependencySpecTree, AnyDepSpec>;
-template class ConstTreeSequence<DependencySpecTree, UseDepSpec>;
+template class ConstTreeSequence<DependencySpecTree, ConditionalDepSpec>;
 template class ConstAcceptInterface<DependencySpecTree>;
 
 template class ConstVisitor<SetSpecTree>;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -255,31 +255,31 @@ ColourFormatter::format(const UseFlagName & f, const format::Masked &) const
 }
 
 std::string
-ColourFormatter::format(const UseDepSpec & f, const format::Plain &) const
+ColourFormatter::format(const ConditionalDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }
 
 std::string
-ColourFormatter::format(const UseDepSpec & f, const format::Enabled &) const
+ColourFormatter::format(const ConditionalDepSpec & f, const format::Enabled &) const
 {
     return colour(cl_flag_on, f);
 }
 
 std::string
-ColourFormatter::format(const UseDepSpec & f, const format::Disabled &) const
+ColourFormatter::format(const ConditionalDepSpec & f, const format::Disabled &) const
 {
     return colour(cl_flag_off, f);
 }
 
 std::string
-ColourFormatter::format(const UseDepSpec & f, const format::Forced &) const
+ColourFormatter::format(const ConditionalDepSpec & f, const format::Forced &) const
 {
     return colour(cl_flag_on, "(" + stringify(f) + ")");
 }
 
 std::string
-ColourFormatter::format(const UseDepSpec & f, const format::Masked &) const
+ColourFormatter::format(const ConditionalDepSpec & f, const format::Masked &) const
 {
     return colour(cl_flag_off, "(" + stringify(f) + ")");
 }

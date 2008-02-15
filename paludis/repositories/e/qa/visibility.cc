@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/conditional_dep_spec.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -40,6 +41,7 @@
 #include <algorithm>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 namespace
 {
@@ -196,13 +198,13 @@ namespace
             }
         }
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
             viable =
-                ((! u.inverse()) && (! repo->query_use_mask(u.flag(), *id))) ||
-                ((u.inverse()) && (! repo->query_use_force(u.flag(), *id)));
+                ((! conditional_dep_spec_is_inverse(u)) && (! repo->query_use_mask(conditional_dep_spec_flag(u), *id))) ||
+                ((conditional_dep_spec_is_inverse(u)) && (! repo->query_use_force(conditional_dep_spec_flag(u), *id)));
 
             if (viable)
                 std::for_each(cur, end, accept_visitor(*this));
@@ -232,7 +234,7 @@ namespace
                 if (reporter)
                 {
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     std::for_each(begin, end, accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"

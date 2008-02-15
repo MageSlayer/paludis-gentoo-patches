@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/environment-fwd.hh>
 #include <string>
 
 /** \file
@@ -76,49 +77,47 @@ namespace paludis
          * Parse a dependency heirarchy.
          */
         tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
-                const EAPI &, const tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a dep spec label.
          */
-        tr1::shared_ptr<DependencyLabelsDepSpec> parse_dependency_label(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+        tr1::shared_ptr<DependencyLabelsDepSpec> parse_dependency_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a provide heirarchy.
          */
         tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a restrict.
          */
         tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a fetchable uri heirarchy.
          */
         tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a simple uri heirarchy.
          */
         tr1::shared_ptr<SimpleURISpecTree::ConstItem> parse_simple_uri(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a license heirarchy.
          */
         tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a URI label.
          */
-        tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
+        tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
     }
 }
 

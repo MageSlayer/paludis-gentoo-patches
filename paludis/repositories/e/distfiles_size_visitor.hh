@@ -55,7 +55,7 @@ namespace paludis
                         FetchableURISpecTree::ConstSequenceIterator,
                         FetchableURISpecTree::ConstSequenceIterator);
 
-                void visit_sequence(const UseDepSpec &,
+                void visit_sequence(const ConditionalDepSpec &,
                         FetchableURISpecTree::ConstSequenceIterator,
                         FetchableURISpecTree::ConstSequenceIterator);
 

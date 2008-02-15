@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,7 +45,7 @@ namespace paludis
     class SimpleURIDepSpec;
     class AllDepSpec;
     class AnyDepSpec;
-    class UseDepSpec;
+    class ConditionalDepSpec;
     class BlockDepSpec;
     class StringDepSpec;
     class NamedSetDepSpec;
@@ -69,6 +69,7 @@ namespace paludis
 
     class PackageDepSpecData;
     class PartiallyMadePackageDepSpec;
+    class ConditionalDepSpecData;
 
 #include <paludis/dep_spec-se.hh>
 
@@ -164,12 +165,12 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const LicenseDepSpec &) PALUDIS_VISIBLE;
 
     /**
-     * A UseDepSpec can be written to an ostream.
+     * A ConditionalDepSpec can be written to an ostream.
      *
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    std::ostream & operator<< (std::ostream &, const UseDepSpec &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const ConditionalDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A NamedSetDepSpec can be written to an ostream.

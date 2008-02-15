@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,10 @@
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/environments/test/test_environment.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/stringify_formatter.hh>
 #include <sstream>
@@ -47,11 +51,15 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_empty;
@@ -66,11 +74,15 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("   \n   \t",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_blank;
@@ -85,11 +97,15 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
             StringifyFormatter ff;
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("app-editors/vim",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
         }
     } test_dep_spec_parser_package;
@@ -105,23 +121,24 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d1(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(">=app-editors/vim-6.4_alpha",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d1);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
 
             DepSpecPrettyPrinter d2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("=app-editors/vim-6.4_alpha-r1",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d2);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
 
             DepSpecPrettyPrinter d3(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(">=app-editors/vim-6.4_alpha:one",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d3);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
         }
     } test_dep_spec_parser_decorated_package;
@@ -137,11 +154,14 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
         }
     } test_dep_spec_parser_packages;
@@ -153,11 +173,14 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one two/two )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
@@ -169,21 +192,22 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one foo? ( two/two ) )",
-                    *EAPIData::get_instance()->eapi_from_string("0"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
 
             TEST_CHECK_THROWS(parse_depend("|| ( one/one foo? ( two/two ) )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
 
             DepSpecPrettyPrinter e(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(e);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
         }
     } test_dep_spec_parser_any_use;
@@ -199,11 +223,14 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend(" ( one/one two/two )    ",
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
         }
     } test_dep_spec_parser_all;
@@ -219,10 +246,13 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+            parse_depend("foo? ( one/one )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
         }
     } test_dep_spec_parser_use;
@@ -238,10 +268,13 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            parse_depend("!foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+            parse_depend("!foo? ( one/one )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
         }
     } test_dep_spec_parser_inv_use;
@@ -253,17 +286,21 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, true);
-            parse_fetchable_uri("a\n->\tb", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            parse_fetchable_uri("a\n->\tb", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "a -> b\n");
 
             DepSpecPrettyPrinter e(0, tr1::shared_ptr<const PackageID>(), ff, 0, true);
-            parse_fetchable_uri("a-> b", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+            parse_fetchable_uri("a-> b", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
 
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> b",
-                        *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_uri;
 
@@ -278,23 +315,22 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) ) ) )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend(")",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_nesting;
 
@@ -309,48 +345,47 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("||",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("|| ",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("foo?",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(parse_depend("!? ( )",
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("!foo? ||",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("(((",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend(")",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_depend("(foo/bar)",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_license("a -> b",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
 
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("foo? -> bar",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("a ->",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> ( )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> || ( )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> foo? ( )",
-                        *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_values;
 
@@ -364,15 +399,17 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("build: one/one",
-                    *EAPIData::get_instance()->eapi_from_string("exheres-0"),
-                    tr1::shared_ptr<const PackageID>())->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "build: one/one");
             TEST_CHECK_THROWS(parse_depend("build: one/one",
-                        *EAPIData::get_instance()->eapi_from_string("0"),
-                        tr1::shared_ptr<const PackageID>())->accept(d), DepStringParseError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringParseError);
         }
     } test_dep_spec_parser_labels;
 }

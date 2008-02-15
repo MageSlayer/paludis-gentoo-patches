@@ -32,7 +32,7 @@ namespace paludis
         class PythonCompositeDepSpec;
         class PythonAllDepSpec;
         class PythonAnyDepSpec;
-        class PythonUseDepSpec;
+        class PythonConditionalDepSpec;
         class PythonStringDepSpec;
         class PythonPlainTextDepSpec;
         class PythonLicenseDepSpec;
@@ -50,7 +50,7 @@ namespace paludis
                 PythonDepSpec,
                 PythonAnyDepSpec,
                 PythonAllDepSpec,
-                PythonUseDepSpec,
+                PythonConditionalDepSpec,
                 PythonBlockDepSpec,
                 PythonPlainTextDepSpec,
                 PythonLicenseDepSpec,
@@ -74,7 +74,7 @@ namespace paludis
             public:
                 virtual ~PythonDepSpec();
 
-                virtual const PythonUseDepSpec * as_use_dep_spec() const
+                virtual const PythonConditionalDepSpec * as_conditional_dep_spec() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const PythonPackageDepSpec * as_package_dep_spec() const
@@ -120,21 +120,22 @@ namespace paludis
                 PythonAllDepSpec(const AllDepSpec &);
         };
 
-        class PALUDIS_VISIBLE PythonUseDepSpec :
+        class PALUDIS_VISIBLE PythonConditionalDepSpec :
             public PythonCompositeDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonUseDepSpec>
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonConditionalDepSpec>
         {
             private:
-                const UseFlagName _flag;
-                const bool _inverse;
+                const tr1::shared_ptr<const ConditionalDepSpecData> _data;
 
             public:
-                PythonUseDepSpec(const UseFlagName &, bool);
-                PythonUseDepSpec(const UseDepSpec &);
+                PythonConditionalDepSpec(const ConditionalDepSpec &);
 
-                UseFlagName flag() const;
-                bool inverse() const;
-                virtual const PythonUseDepSpec * as_use_dep_spec() const;
+                virtual const PythonConditionalDepSpec * as_conditional_dep_spec() const;
+
+                bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE PythonStringDepSpec :
@@ -296,7 +297,7 @@ namespace paludis
                         GenericSpecTree::ConstSequenceIterator,
                         GenericSpecTree::ConstSequenceIterator);
 
-                void visit_sequence(const UseDepSpec &,
+                void visit_sequence(const ConditionalDepSpec &,
                         GenericSpecTree::ConstSequenceIterator,
                         GenericSpecTree::ConstSequenceIterator);
 
@@ -340,7 +341,7 @@ namespace paludis
 
                 void visit(const PythonAllDepSpec &);
                 void visit(const PythonAnyDepSpec &);
-                void visit(const PythonUseDepSpec &);
+                void visit(const PythonConditionalDepSpec &);
                 void visit(const PythonPackageDepSpec &);
                 void visit(const PythonPlainTextDepSpec &);
                 void visit(const PythonBlockDepSpec &);
@@ -353,7 +354,7 @@ namespace paludis
 
                 void real_visit(const PythonAllDepSpec &);
                 void real_visit(const PythonAnyDepSpec &);
-                void real_visit(const PythonUseDepSpec &);
+                void real_visit(const PythonConditionalDepSpec &);
                 void real_visit(const PythonPackageDepSpec &);
                 void real_visit(const PythonPlainTextDepSpec &);
                 void real_visit(const PythonBlockDepSpec &);

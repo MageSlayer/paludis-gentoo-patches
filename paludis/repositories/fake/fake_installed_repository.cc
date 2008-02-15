@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -106,7 +106,7 @@ FakeInstalledRepository::provided_packages() const
                 if (! (*v)->provide_key())
                     continue;
 
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment(), **v);
+                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment());
                 (*v)->provide_key()->value()->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)

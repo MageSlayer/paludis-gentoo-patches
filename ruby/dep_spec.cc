@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006, 2007 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -57,7 +57,7 @@ namespace
 
     static VALUE c_all_dep_spec;
     static VALUE c_any_dep_spec;
-    static VALUE c_use_dep_spec;
+    static VALUE c_conditional_dep_spec;
 
     static VALUE c_version_requirements_mode;
 
@@ -87,7 +87,7 @@ namespace
             WrappedSpec<NamedSetDepSpec>,
             WrappedSpec<AllDepSpec>,
             WrappedSpec<AnyDepSpec>,
-            WrappedSpec<UseDepSpec>
+            WrappedSpec<ConditionalDepSpec>
         >
     {
     };
@@ -225,13 +225,13 @@ namespace
             value = Data_Wrap_Struct(c_license_dep_spec, 0, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
 
-        void visit_sequence(const UseDepSpec & spec,
+        void visit_sequence(const ConditionalDepSpec & spec,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
             ptr = new tr1::shared_ptr<const WrappedSpecBase>(
-                    (new WrappedSpec<UseDepSpec>(tr1::static_pointer_cast<UseDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_use_dep_spec, &WrappedSpecBase::mark, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+                    (new WrappedSpec<ConditionalDepSpec>(tr1::static_pointer_cast<ConditionalDepSpec>(spec.clone())))->add_children(cur, end));
+            value = Data_Wrap_Struct(c_conditional_dep_spec, &WrappedSpecBase::mark, &Common<tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
 
         void visit_sequence(const AllDepSpec & spec,
@@ -327,7 +327,7 @@ namespace
             do_visit_sequence(s);
         }
 
-        virtual void visit(const WrappedSpec<UseDepSpec> & s)
+        virtual void visit(const WrappedSpec<ConditionalDepSpec> & s)
         {
             do_visit_sequence(s);
         }
@@ -519,31 +519,26 @@ namespace
 
     /*
      * call-seq:
-     *     flag -> String
+     *     condition_met? -> true or false
      *
-     * Fetch our use flag name.
+     * Whether our condition is met.
      */
-    VALUE
-    use_dep_spec_flag(VALUE self)
-    {
-        tr1::shared_ptr<WrappedSpecBase> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
-        return rb_str_new2(stringify(tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->flag()).c_str());
-    }
-
     /*
      * call-seq:
-     *     inverse? -> true or false
+     *     condition_meetable? -> true or false
      *
-     * Fetch whether we are a ! flag.
+     * Whether our condition is meetable.
      */
-    VALUE
-    use_dep_spec_inverse(VALUE self)
+    template <bool (ConditionalDepSpec::* f_) () const>
+    struct ConditionalDepSpecBoolFunc
     {
-        tr1::shared_ptr<WrappedSpecBase> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
-        return tr1::static_pointer_cast<const WrappedSpec<UseDepSpec> >(*p)->spec()->inverse() ? Qtrue : Qfalse;
-    }
+        static VALUE func(VALUE self)
+        {
+            tr1::shared_ptr<WrappedSpecBase> * p;
+            Data_Get_Struct(self, tr1::shared_ptr<WrappedSpecBase>, p);
+            return ((*tr1::static_pointer_cast<const WrappedSpec<ConditionalDepSpec> >(*p)->spec().get()).*f_)() ? Qtrue : Qfalse;
+        }
+    };
 
     /*
      * call-seq:
@@ -966,17 +961,19 @@ namespace
         rb_define_method(c_any_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
-         * Document-class: Paludis::UseDepSpec
+         * Document-class: Paludis::ConditionalDepSpec
          *
          * Represents a use? ( ) dependency spec. Includes
          * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
          */
-        c_use_dep_spec = rb_define_class_under(paludis_module(), "UseDepSpec", c_dep_spec);
-        rb_funcall(c_use_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_include_module(c_use_dep_spec, rb_mEnumerable);
-        rb_define_method(c_use_dep_spec, "flag", RUBY_FUNC_CAST(&use_dep_spec_flag), 0);
-        rb_define_method(c_use_dep_spec, "inverse?", RUBY_FUNC_CAST(&use_dep_spec_inverse), 0);
-        rb_define_method(c_use_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
+        c_conditional_dep_spec = rb_define_class_under(paludis_module(), "ConditionalDepSpec", c_dep_spec);
+        rb_funcall(c_conditional_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_conditional_dep_spec, rb_mEnumerable);
+        rb_define_method(c_conditional_dep_spec, "condition_met?", RUBY_FUNC_CAST(
+                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_met>::func), 0);
+        rb_define_method(c_conditional_dep_spec, "condition_meetable?", RUBY_FUNC_CAST(
+                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_meetable>::func), 0);
+        rb_define_method(c_conditional_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::StringDepSpec

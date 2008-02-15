@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -293,14 +293,14 @@ namespace
             std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit_sequence(const UseDepSpec & u,
+        void visit_sequence(const ConditionalDepSpec & u,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
             Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
                 &conditions, ConditionTracker(conditions).add_condition(u));
 
-            if (env->query_use(UseFlagName(u.flag()), *pkg) ^ u.inverse())
+            if (u.condition_met())
                 std::for_each(cur, end, accept_visitor(*this));
         }
 

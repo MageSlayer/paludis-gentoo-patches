@@ -154,11 +154,11 @@ namespace
                 _labels.pop_front();
             }
 
-            void visit_sequence(const UseDepSpec & u,
+            void visit_sequence(const ConditionalDepSpec & u,
                     FetchableURISpecTree::ConstSequenceIterator cur,
                     FetchableURISpecTree::ConstSequenceIterator e)
             {
-                if (env->query_use(u.flag(), *id) ^ u.inverse())
+                if (u.condition_met())
                 {
                     _labels.push_front(*_labels.begin());
                     std::for_each(cur, e, accept_visitor(*this));
@@ -269,7 +269,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
     bool fetch_restrict(false);
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, *id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -431,7 +431,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, *id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 

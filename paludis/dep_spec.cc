@@ -37,6 +37,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <algorithm>
 #include <list>
 #include <map>
 
@@ -52,8 +53,8 @@ DepSpec::~DepSpec()
 {
 }
 
-const UseDepSpec *
-DepSpec::as_use_dep_spec() const
+const ConditionalDepSpec *
+DepSpec::as_conditional_dep_spec() const
 {
     return 0;
 }
@@ -84,34 +85,106 @@ AllDepSpec::clone() const
     return tr1::shared_ptr<AllDepSpec>(new AllDepSpec());
 }
 
-UseDepSpec::UseDepSpec(const UseFlagName & our_flag, bool is_inverse) :
-    _flag(our_flag),
-    _inverse(is_inverse)
+namespace paludis
+{
+    template <>
+    struct Implementation<ConditionalDepSpec>
+    {
+        const tr1::shared_ptr<const ConditionalDepSpecData> data;
+        Mutex mutex;
+        bool added_keys;
+
+        Implementation(const tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+            data(d),
+            added_keys(false)
+        {
+        }
+    };
+}
+
+ConditionalDepSpec::ConditionalDepSpec(const tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+    PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(d)),
+    _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
 }
 
-const UseDepSpec *
-UseDepSpec::as_use_dep_spec() const
+namespace
+{
+    template <void (ConditionalDepSpec::* f_) () const>
+    const ConditionalDepSpec & horrible_hack_to_force_key_copy(const ConditionalDepSpec & spec)
+    {
+        (spec.*f_)();
+        return spec;
+    }
+}
+
+ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
+    Cloneable<DepSpec>(),
+    DepSpec(),
+    PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(other._imp->data)),
+    MetadataKeyHolder(),
+    CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
+    _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
+{
+}
+
+ConditionalDepSpec::~ConditionalDepSpec()
+{
+}
+
+void
+ConditionalDepSpec::need_keys_added() const
+{
+    Lock l(_imp->mutex);
+    if (! _imp->added_keys)
+    {
+        _imp->added_keys = true;
+        using namespace tr1::placeholders;
+        std::for_each(_imp->data->begin_metadata(), _imp->data->end_metadata(),
+                tr1::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
+    }
+}
+
+void
+ConditionalDepSpec::clear_metadata_keys() const
+{
+    Lock l(_imp->mutex);
+    _imp->added_keys = false;
+    MetadataKeyHolder::clear_metadata_keys();
+}
+
+bool
+ConditionalDepSpec::condition_met() const
+{
+    return _imp->data->condition_met();
+}
+
+bool
+ConditionalDepSpec::condition_meetable() const
+{
+    return _imp->data->condition_meetable();
+}
+
+const tr1::shared_ptr<const ConditionalDepSpecData>
+ConditionalDepSpec::data() const
+{
+    return _imp->data;
+}
+
+const ConditionalDepSpec *
+ConditionalDepSpec::as_conditional_dep_spec() const
 {
     return this;
 }
 
-UseFlagName
-UseDepSpec::flag() const
+std::string
+ConditionalDepSpec::_as_string() const
 {
-    return _flag;
+    return _imp->data->as_string();
 }
 
-bool
-UseDepSpec::inverse() const
+ConditionalDepSpecData::~ConditionalDepSpecData()
 {
-    return _inverse;
-}
-
-tr1::shared_ptr<DepSpec>
-UseDepSpec::clone() const
-{
-    return tr1::shared_ptr<UseDepSpec>(new UseDepSpec(_flag, _inverse));
 }
 
 std::string
@@ -179,15 +252,6 @@ paludis::operator<< (std::ostream & s, const BlockDepSpec & a)
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const UseDepSpec & a)
-{
-    if (a.inverse())
-        s << "!";
-    s << a.flag() << "?";
-    return s;
-}
-
-std::ostream &
 paludis::operator<< (std::ostream & s, const FetchableURIDepSpec & p)
 {
     if (! p.renamed_url_suffix().empty())
@@ -207,6 +271,13 @@ paludis::operator<< (std::ostream & s, const SimpleURIDepSpec & p)
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
+{
+    s << a._as_string();
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const ConditionalDepSpec & a)
 {
     s << a._as_string();
     return s;

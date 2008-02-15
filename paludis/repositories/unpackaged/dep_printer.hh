@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,7 +34,7 @@ namespace paludis
             public ConstVisitor<DependencySpecTree>,
             public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AllDepSpec>,
             public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AnyDepSpec>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, UseDepSpec>,
+            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, ConditionalDepSpec>,
             private PrivateImplementationPattern<DepPrinter>
         {
             public:
@@ -50,7 +50,7 @@ namespace paludis
 
                 using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AllDepSpec>::visit_sequence;
                 using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AnyDepSpec>::visit_sequence;
-                using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, UseDepSpec>::visit_sequence;
+                using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, ConditionalDepSpec>::visit_sequence;
         };
     }
 }

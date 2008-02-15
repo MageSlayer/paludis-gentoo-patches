@@ -170,14 +170,15 @@ EbuildID::need_keys_added() const
     bool ok(false);
     if (_imp->repository->params().cache.basename() != "empty")
     {
-        EbuildFlatMetadataCache metadata_cache(cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
+        EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
         if (metadata_cache.load(shared_from_this()))
             ok = true;
     }
 
     if ((! ok) && _imp->repository->params().write_cache.basename() != "empty")
     {
-        EbuildFlatMetadataCache write_metadata_cache(write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
+        EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
+                write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
         if (write_metadata_cache.load(shared_from_this()))
             ok = true;
         else if (write_cache_file.exists())
@@ -243,7 +244,7 @@ EbuildID::need_keys_added() const
 
             if (_imp->repository->params().write_cache.basename() != "empty" && _imp->eapi->supported)
             {
-                EbuildFlatMetadataCache metadata_cache(write_cache_file, _imp->ebuild, _imp->master_mtime,
+                EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->ebuild, _imp->master_mtime,
                         _imp->eclass_mtimes, false);
                 metadata_cache.save(shared_from_this());
             }
@@ -336,11 +337,11 @@ namespace
             ok &= local_ok;
         }
 
-        void visit_sequence(const UseDepSpec & spec,
+        void visit_sequence(const ConditionalDepSpec & spec,
                 LicenseSpecTree::ConstSequenceIterator begin,
                 LicenseSpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(spec.flag(), *id))
+            if (spec.condition_met())
                 std::for_each(begin, end, accept_visitor(*this));
         }
 

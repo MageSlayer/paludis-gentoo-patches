@@ -222,7 +222,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->metadata_dependencies).exists())
         {
             DependenciesRewriter rewriter;
-            parse_depend(file_contents(_imp->dir / vars->metadata_dependencies), *eapi(), shared_from_this())->accept(rewriter);
+            parse_depend(file_contents(_imp->dir / vars->metadata_dependencies), _imp->environment, shared_from_this(), *eapi())->accept(rewriter);
 
             _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_dependencies + ".DEPEND",
                         vars->description_dependencies + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));

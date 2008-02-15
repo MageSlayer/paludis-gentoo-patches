@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/dep_lexer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/package_dep_spec.hh>
+#include <paludis/repositories/e/conditional_dep_spec.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -222,28 +223,16 @@ namespace
     template <typename H_, bool>
     struct HandleUse
     {
-        static void handle(const std::string & s, const std::string & i,
-                std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
+        static void handle(const std::string &, const std::string & i,
+                const tr1::shared_ptr<const PackageID> & id, const Environment * const env,
+                const EAPI & eapi, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
         {
-            std::string f(i);
-            bool inv(f.length() && ('!' == f.at(0)));
-            if (inv)
-                f.erase(0, 1);
-
-            if (f.empty())
-                throw DepStringParseError(s,
-                        "Bad use flag name '" + i + "'");
-            if ('?' != f.at(f.length() - 1))
-                throw DepStringParseError(s,
-                        "Use flag name '" + i + "' missing '?'");
-
-            f.erase(f.length() - 1);
-            tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > a(
-                    new ConstTreeSequence<H_, UseDepSpec>(tr1::shared_ptr<UseDepSpec>(
-                            new UseDepSpec(UseFlagName(f), inv))));
+            tr1::shared_ptr<ConstTreeSequence<H_, ConditionalDepSpec> > a(
+                    new ConstTreeSequence<H_, ConditionalDepSpec>(tr1::shared_ptr<ConditionalDepSpec>(
+                            new ConditionalDepSpec(parse_e_conditional_dep_spec(i, env, id, eapi)))));
             stack.top().first(a);
             stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                    tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, a.get(), _1)), false));
+                    tr1::bind(&ConstTreeSequence<H_, ConditionalDepSpec>::add, a.get(), _1)), false));
         }
     };
 
@@ -251,7 +240,8 @@ namespace
     struct HandleUse<H_, false>
     {
         static void handle(const std::string & s, const std::string &,
-                std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
+                const tr1::shared_ptr<const PackageID> &, const Environment * const,
+                const EAPI &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
         {
             throw DepStringParseError(s, "use? group is not allowed here");
         }
@@ -323,9 +313,13 @@ namespace
 {
     template <typename H_, typename I_, bool any_, bool use_, typename Label_>
     tr1::shared_ptr<typename H_::ConstItem>
-    parse(const std::string & s, bool disallow_any_use, const I_ & p, const EAPI & e, const tr1::shared_ptr<const PackageID> &)
+    parse(const std::string & s, bool disallow_any_use, const I_ & p, const Environment * const env,
+            const EAPI & e, const tr1::shared_ptr<const PackageID> & id)
     {
         Context context("When parsing dependency string '" + s + "':");
+
+        if (! id)
+            throw InternalError(PALUDIS_HERE, "! id");
 
         tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
             new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
@@ -403,7 +397,7 @@ namespace
                                 case dpl_use_flag:
                                      if (use_ && disallow_any_use && stack.top().second)
                                          throw DepStringParseError(s, "use? group is not allowed immediately under a || ( )");
-                                     HandleUse<H_, use_>::handle(s, i->second, stack);
+                                     HandleUse<H_, use_>::handle(s, i->second, id, env, e, stack);
                                      state = dps_had_use_flag;
                                      continue;
 
@@ -664,7 +658,8 @@ namespace
 }
 
 tr1::shared_ptr<DependencySpecTree::ConstItem>
-paludis::erepository::parse_depend(const std::string & s, const EAPI & e, const tr1::shared_ptr<const PackageID> & id)
+paludis::erepository::parse_depend(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing dependency string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -673,11 +668,12 @@ paludis::erepository::parse_depend(const std::string & s, const EAPI & e, const 
 
     return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, LabelsAreDependency>(s,
             e.supported->dependency_spec_tree_parse_options[dstpo_disallow_any_use],
-            ParsePackageOrBlockDepSpec(e, id), e, id);
+            ParsePackageOrBlockDepSpec(e, id), env, e, id);
 }
 
 tr1::shared_ptr<ProvideSpecTree::ConstItem>
-paludis::erepository::parse_provide(const std::string & s, const EAPI & e)
+paludis::erepository::parse_provide(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing provide string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -685,11 +681,12 @@ paludis::erepository::parse_provide(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' provides");
 
     return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false,
-            ParsePackageDepSpec(e, tr1::shared_ptr<const PackageID>()), e, tr1::shared_ptr<const PackageID>());
+            ParsePackageDepSpec(e, tr1::shared_ptr<const PackageID>()), env, e, id);
 }
 
 tr1::shared_ptr<RestrictSpecTree::ConstItem>
-paludis::erepository::parse_restrict(const std::string & s, const EAPI & e)
+paludis::erepository::parse_restrict(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing restrict string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -697,11 +694,12 @@ paludis::erepository::parse_restrict(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' restrictions");
 
     return parse<RestrictSpecTree, ParseTextDepSpec, false, true, void>(s, false,
-            ParseTextDepSpec(), e, tr1::shared_ptr<const PackageID>());
+            ParseTextDepSpec(), env, e, id);
 }
 
 tr1::shared_ptr<FetchableURISpecTree::ConstItem>
-paludis::erepository::parse_fetchable_uri(const std::string & s, const EAPI & e)
+paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing fetchable URI string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -710,11 +708,12 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const EAPI & e)
 
     return parse<FetchableURISpecTree, ParseFetchableURIDepSpec, false, true, LabelsAreURI>(s, false,
             ParseFetchableURIDepSpec(e.supported->dependency_spec_tree_parse_options[dstpo_uri_supports_arrow]),
-            e, tr1::shared_ptr<const PackageID>());
+            env, e, id);
 }
 
 tr1::shared_ptr<SimpleURISpecTree::ConstItem>
-paludis::erepository::parse_simple_uri(const std::string & s, const EAPI & e)
+paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing simple URI string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -722,11 +721,12 @@ paludis::erepository::parse_simple_uri(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
     return parse<SimpleURISpecTree, ParseSimpleURIDepSpec, false, true, void>(s, false,
-            ParseSimpleURIDepSpec(), e, tr1::shared_ptr<const PackageID>());
+            ParseSimpleURIDepSpec(), env, e, id);
 }
 
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
-paludis::erepository::parse_license(const std::string & s, const EAPI & e)
+paludis::erepository::parse_license(const std::string & s, const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing license string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -734,7 +734,7 @@ paludis::erepository::parse_license(const std::string & s, const EAPI & e)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' licenses");
 
     return parse<LicenseSpecTree, ParseLicenseDepSpec, true, true, void>(s,
-            true, ParseLicenseDepSpec(), e, tr1::shared_ptr<const PackageID>());
+            true, ParseLicenseDepSpec(), env, e, id);
 }
 
 tr1::shared_ptr<URILabelsDepSpec>

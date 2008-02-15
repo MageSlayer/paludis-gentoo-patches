@@ -529,9 +529,11 @@ VDBRepository::load_provided_using_cache() const
             continue;
         }
 
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment, *id);
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
         tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(parse_provide(
-                    join(next(next(tokens.begin())), tokens.end(), " "), *EAPIData::get_instance()->eapi_from_string("paludis-1")));
+                    join(next(next(tokens.begin())), tokens.end(), " "),
+                    _imp->params.environment, id,
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -578,7 +580,7 @@ VDBRepository::load_provided_the_slow_way() const
                     continue;
 
                 tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());;
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment, **e);
+                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
                 provide->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator

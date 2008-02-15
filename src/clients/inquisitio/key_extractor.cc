@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -98,7 +98,7 @@ namespace
             using ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AllDepSpec>::visit_sequence;
             using ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AnyDepSpec>::visit_sequence;
 
-            void visit_sequence(const UseDepSpec & u,
+            void visit_sequence(const ConditionalDepSpec & u,
                     GenericSpecTree::ConstSequenceIterator cur,
                     GenericSpecTree::ConstSequenceIterator end)
             {
@@ -110,7 +110,7 @@ namespace
                     {
                         if (! _visible_only)
                             std::for_each(cur, end, accept_visitor(*this));
-                        else if (u.inverse() ^ _env.query_use(u.flag(), _id))
+                        else if (u.condition_met())
                             std::for_each(cur, end, accept_visitor(*this));
                     }
                 }

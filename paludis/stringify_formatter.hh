@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -71,7 +71,7 @@ namespace paludis
         public CanFormat<URILabelsDepSpec>,
         public CanFormat<PlainTextDepSpec>,
         public CanFormat<LicenseDepSpec>,
-        public CanFormat<UseDepSpec>,
+        public CanFormat<ConditionalDepSpec>,
         public CanFormat<NamedSetDepSpec>,
         public CanFormat<FSEntry>,
         public CanFormat<PackageID>,
@@ -138,11 +138,11 @@ namespace paludis
             virtual std::string format(const LicenseDepSpec &, const format::Accepted &) const;
             virtual std::string format(const LicenseDepSpec &, const format::Unaccepted &) const;
 
-            virtual std::string format(const UseDepSpec &, const format::Enabled &) const;
-            virtual std::string format(const UseDepSpec &, const format::Disabled &) const;
-            virtual std::string format(const UseDepSpec &, const format::Forced &) const;
-            virtual std::string format(const UseDepSpec &, const format::Masked &) const;
-            virtual std::string format(const UseDepSpec &, const format::Plain &) const;
+            virtual std::string format(const ConditionalDepSpec &, const format::Enabled &) const;
+            virtual std::string format(const ConditionalDepSpec &, const format::Disabled &) const;
+            virtual std::string format(const ConditionalDepSpec &, const format::Forced &) const;
+            virtual std::string format(const ConditionalDepSpec &, const format::Masked &) const;
+            virtual std::string format(const ConditionalDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const FSEntry &, const format::Plain &) const;
 

@@ -149,7 +149,7 @@ DependenciesRewriter::visit_sequence(const AnyDepSpec &,
 }
 
 void
-DependenciesRewriter::visit_sequence(const UseDepSpec & spec,
+DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {

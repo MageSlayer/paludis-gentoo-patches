@@ -46,7 +46,7 @@ template class ConstAcceptInterface<PythonDepSpecVisitorTypes>;
 
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAllDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAnyDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonUseDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonConditionalDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
@@ -59,7 +59,7 @@ template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonN
 
 template class Visits<const PythonAllDepSpec>;
 template class Visits<const PythonAnyDepSpec>;
-template class Visits<const PythonUseDepSpec>;
+template class Visits<const PythonConditionalDepSpec>;
 template class Visits<const PythonPackageDepSpec>;
 template class Visits<const PythonBlockDepSpec>;
 template class Visits<const PythonPlainTextDepSpec>;
@@ -81,8 +81,8 @@ PythonDepSpec::~PythonDepSpec()
 {
 }
 
-const PythonUseDepSpec *
-PythonDepSpec::as_use_dep_spec() const
+const PythonConditionalDepSpec *
+PythonDepSpec::as_conditional_dep_spec() const
 {
     return 0;
 }
@@ -184,34 +184,33 @@ PythonAllDepSpec::PythonAllDepSpec(const AllDepSpec &)
 {
 }
 
-PythonUseDepSpec::PythonUseDepSpec(const UseFlagName & our_flag, bool is_inverse) :
-    _flag(our_flag),
-    _inverse(is_inverse)
+PythonConditionalDepSpec::PythonConditionalDepSpec(const ConditionalDepSpec & d) :
+    _data(d.data())
 {
 }
 
-PythonUseDepSpec::PythonUseDepSpec(const UseDepSpec & d) :
-    _flag(d.flag()),
-    _inverse(d.inverse())
-{
-}
-
-const PythonUseDepSpec *
-PythonUseDepSpec::as_use_dep_spec() const
+const PythonConditionalDepSpec *
+PythonConditionalDepSpec::as_conditional_dep_spec() const
 {
     return this;
 }
 
-UseFlagName
-PythonUseDepSpec::flag() const
+bool
+PythonConditionalDepSpec::condition_met() const
 {
-    return _flag;
+    return _data->condition_met();
 }
 
 bool
-PythonUseDepSpec::inverse() const
+PythonConditionalDepSpec::condition_meetable() const
 {
-    return _inverse;
+    return _data->condition_meetable();
+}
+
+const tr1::shared_ptr<const ConditionalDepSpecData>
+PythonConditionalDepSpec::data() const
+{
+    return _data;
 }
 
 PythonStringDepSpec::PythonStringDepSpec(const std::string & s) :
@@ -572,11 +571,11 @@ SpecTreeToPython::visit_sequence(const AnyDepSpec & d,
 }
 
 void
-SpecTreeToPython::visit_sequence(const UseDepSpec & d,
+SpecTreeToPython::visit_sequence(const ConditionalDepSpec & d,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
-    tr1::shared_ptr<PythonUseDepSpec> py_cds(new PythonUseDepSpec(d));
+    tr1::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(d));
     _current_parent->add_child(py_cds);
     Save<tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(cur, end, accept_visitor(*this));
@@ -650,7 +649,7 @@ struct AllowedTypes<LicenseSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const AnyDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const LicenseDepSpec &) {};
 };
 
@@ -658,7 +657,7 @@ template<>
 struct AllowedTypes<FetchableURISpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const FetchableURISpecTree &) {};
     AllowedTypes(const URILabelsDepSpec &) {};
 };
@@ -667,7 +666,7 @@ template<>
 struct AllowedTypes<SimpleURISpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const SimpleURIDepSpec &) {};
 };
 
@@ -675,7 +674,7 @@ template<>
 struct AllowedTypes<ProvideSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
 };
 
@@ -683,7 +682,7 @@ template<>
 struct AllowedTypes<RestrictSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PlainTextDepSpec &) {};
 };
 
@@ -692,7 +691,7 @@ struct AllowedTypes<DependencySpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const AnyDepSpec &) {};
-    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
     AllowedTypes(const DependencyLabelsDepSpec &) {};
@@ -777,9 +776,9 @@ SpecTreeFromPython<H_>::visit(const PythonAnyDepSpec & d)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::visit(const PythonUseDepSpec & d)
+SpecTreeFromPython<H_>::visit(const PythonConditionalDepSpec & d)
 {
-    dispatch<H_, UseDepSpec>(this, d);
+    dispatch<H_, ConditionalDepSpec>(this, d);
 }
 
 template <typename H_>
@@ -879,16 +878,16 @@ SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::real_visit(const PythonUseDepSpec & d)
+SpecTreeFromPython<H_>::real_visit(const PythonConditionalDepSpec & d)
 {
-    tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > cds(
-                new ConstTreeSequence<H_, UseDepSpec>(make_shared_ptr(
-                        new UseDepSpec(d.flag(), d.inverse()))));
+    tr1::shared_ptr<ConstTreeSequence<H_, ConditionalDepSpec> > cds(
+                new ConstTreeSequence<H_, ConditionalDepSpec>(make_shared_ptr(
+                        new ConditionalDepSpec(d.data()))));
 
     _add(cds);
 
     Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
-            tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, cds, tr1::placeholders::_1));
+            tr1::bind(&ConstTreeSequence<H_, ConditionalDepSpec>::add, cds, tr1::placeholders::_1));
     std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
             IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
             accept_visitor(*this));
@@ -1092,10 +1091,10 @@ void expose_dep_spec()
          "Base class for a dependency spec.",
          bp::no_init
         )
-        .def("as_use_dep_spec", &PythonDepSpec::as_use_dep_spec,
+        .def("as_conditional_dep_spec", &PythonDepSpec::as_conditional_dep_spec,
                 bp::return_value_policy<bp::reference_existing_object>(),
-                "as_use_dep_spec() -> UseDepSpec\n"
-                "Return us as a UseDepSpec, or None if we are not a UseDepSpec."
+                "as_conditional_dep_spec() -> ConditionalDepSpec\n"
+                "Return us as a ConditionalDepSpec, or None if we are not a ConditionalDepSpec."
             )
 
         .def("as_package_dep_spec", &PythonDepSpec::as_package_dep_spec,
@@ -1141,23 +1140,22 @@ void expose_dep_spec()
         );
 
     /**
-     * UseDepSpec
+     * ConditionalDepSpec
      */
-    bp::class_<PythonUseDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
+    bp::class_<PythonConditionalDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
         (
-         "UseDepSpec",
+         "ConditionalDepSpec",
          "Represents a use? ( ) dependency spec.",
-         bp::init<const UseFlagName &, bool>("__init__(UseFlagName, inverse_bool)")
+         bp::no_init
         )
-        .add_property("flag", &UseDepSpec::flag,
-                "[ro] UseFlagName\n"
-                "Our use flag name."
-                )
-
-        .add_property("inverse", &UseDepSpec::inverse,
-                "[ro] bool\n"
-                "Are we a ! flag?"
-                )
+        .def("condition_met", &PythonConditionalDepSpec::condition_met,
+                "condition_met() -> bool\n"
+                "Is our condition met?"
+            )
+        .def("condition_meetable", &PythonConditionalDepSpec::condition_meetable,
+                "condition_met() -> bool\n"
+                "Is our condition meetable?"
+            )
         ;
 
     /**

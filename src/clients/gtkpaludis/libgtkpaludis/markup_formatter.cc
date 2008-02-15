@@ -83,31 +83,31 @@ MarkupFormatter::format(const UseFlagName & f, const format::Masked &) const
 }
 
 std::string
-MarkupFormatter::format(const UseDepSpec & f, const format::Plain &) const
+MarkupFormatter::format(const ConditionalDepSpec & f, const format::Plain &) const
 {
     return markup_escape(stringify(f));
 }
 
 std::string
-MarkupFormatter::format(const UseDepSpec & f, const format::Enabled &) const
+MarkupFormatter::format(const ConditionalDepSpec & f, const format::Enabled &) const
 {
     return markup_foreground("green", markup_escape(stringify(f)));
 }
 
 std::string
-MarkupFormatter::format(const UseDepSpec & f, const format::Disabled &) const
+MarkupFormatter::format(const ConditionalDepSpec & f, const format::Disabled &) const
 {
     return markup_foreground("red", markup_escape(stringify(f)));
 }
 
 std::string
-MarkupFormatter::format(const UseDepSpec & f, const format::Forced &) const
+MarkupFormatter::format(const ConditionalDepSpec & f, const format::Forced &) const
 {
     return markup_foreground("green", markup_escape("(" + stringify(f) + ")"));
 }
 
 std::string
-MarkupFormatter::format(const UseDepSpec & f, const format::Masked &) const
+MarkupFormatter::format(const ConditionalDepSpec & f, const format::Masked &) const
 {
     return markup_foreground("red", markup_escape("(" + stringify(f) + ")"));
 }

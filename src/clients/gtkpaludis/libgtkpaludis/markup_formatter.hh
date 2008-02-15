@@ -14,7 +14,7 @@ namespace gtkpaludis
         public paludis::CanFormat<paludis::UseFlagName>,
         public paludis::CanFormat<paludis::IUseFlag>,
         public paludis::CanFormat<paludis::KeywordName>,
-        public paludis::CanFormat<paludis::UseDepSpec>,
+        public paludis::CanFormat<paludis::ConditionalDepSpec>,
         public paludis::CanFormat<paludis::PackageDepSpec>,
         public paludis::CanFormat<paludis::BlockDepSpec>,
         public paludis::CanFormat<paludis::DependencyLabelsDepSpec>,
@@ -44,11 +44,11 @@ namespace gtkpaludis
             std::string format(const paludis::UseFlagName &, const paludis::format::Forced &) const;
             std::string format(const paludis::UseFlagName &, const paludis::format::Masked &) const;
 
-            std::string format(const paludis::UseDepSpec &, const paludis::format::Plain &) const;
-            std::string format(const paludis::UseDepSpec &, const paludis::format::Enabled &) const;
-            std::string format(const paludis::UseDepSpec &, const paludis::format::Disabled &) const;
-            std::string format(const paludis::UseDepSpec &, const paludis::format::Forced &) const;
-            std::string format(const paludis::UseDepSpec &, const paludis::format::Masked &) const;
+            std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Enabled &) const;
+            std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Disabled &) const;
+            std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Forced &) const;
+            std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Masked &) const;
 
             std::string format(const paludis::PackageDepSpec &, const paludis::format::Plain &) const;
             std::string format(const paludis::PackageDepSpec &, const paludis::format::Installed &) const;

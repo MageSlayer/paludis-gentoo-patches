@@ -96,7 +96,7 @@ namespace
                     DependencySpecTree::ConstSequenceIterator,
                     DependencySpecTree::ConstSequenceIterator);
 
-            void visit_sequence(const UseDepSpec &,
+            void visit_sequence(const ConditionalDepSpec &,
                     DependencySpecTree::ConstSequenceIterator,
                     DependencySpecTree::ConstSequenceIterator);
 
@@ -144,7 +144,7 @@ namespace
     }
 
     void
-    ReverseDepChecker::visit_sequence(const UseDepSpec & a,
+    ReverseDepChecker::visit_sequence(const ConditionalDepSpec & a,
             DependencySpecTree::ConstSequenceIterator cur,
             DependencySpecTree::ConstSequenceIterator end)
     {
@@ -153,7 +153,7 @@ namespace
 
         if (! _flags.empty())
             _flags += " ";
-        _flags += (a.inverse() ? "!" : "") + stringify(a.flag());
+        _flags += stringify(a);
 
         std::for_each(cur, end, accept_visitor(*this));
     }

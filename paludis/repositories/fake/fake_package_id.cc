@@ -403,18 +403,6 @@ namespace paludis
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "",
                             erepository::EAPIData::get_instance()->eapi_from_string(eapi)->supported->iuse_flag_parse_options, mkt_normal, id, env)),
-            license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
-                        "", tr1::bind(&erepository::parse_license, _1,
-                            *erepository::EAPIData::get_instance()->eapi_from_string(eapi)), mkt_normal)),
-            provide(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provided packages",
-                        "", tr1::bind(&erepository::parse_provide, _1,
-                            *erepository::EAPIData::get_instance()->eapi_from_string(eapi)), mkt_normal)),
-            src_uri(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URIs",
-                        "", tr1::bind(&erepository::parse_fetchable_uri, _1,
-                            *erepository::EAPIData::get_instance()->eapi_from_string(eapi)), mkt_dependencies)),
-            homepage(new FakeMetadataSpecTreeKey<SimpleURISpecTree>("HOMEPAGE", "Homepage",
-                        "", tr1::bind(&erepository::parse_simple_uri, _1,
-                            *erepository::EAPIData::get_instance()->eapi_from_string(eapi)), mkt_dependencies)),
             has_masks(false)
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
@@ -433,8 +421,6 @@ FakePackageID::FakePackageID(const Environment * const e, const tr1::shared_ptr<
 {
     add_metadata_key(_imp->keywords);
     add_metadata_key(_imp->iuse);
-    add_metadata_key(_imp->license);
-    add_metadata_key(_imp->provide);
 }
 
 FakePackageID::~FakePackageID()
@@ -489,30 +475,35 @@ FakePackageID::repository() const
 const tr1::shared_ptr<const MetadataPackageIDKey>
 FakePackageID::virtual_for_key() const
 {
+    need_keys_added();
     return _imp->virtual_for;
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 FakePackageID::keywords_key() const
 {
+    need_keys_added();
     return _imp->keywords;
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 FakePackageID::iuse_key() const
 {
+    need_keys_added();
     return _imp->iuse;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 FakePackageID::license_key() const
 {
+    need_keys_added();
     return _imp->license;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 FakePackageID::provide_key() const
 {
+    need_keys_added();
     return _imp->provide;
 }
 
@@ -547,18 +538,21 @@ FakePackageID::suggested_dependencies_key() const
 const tr1::shared_ptr<FakeMetadataKeywordSetKey>
 FakePackageID::keywords_key()
 {
+    need_keys_added();
     return _imp->keywords;
 }
 
 const tr1::shared_ptr<FakeMetadataIUseSetKey>
 FakePackageID::iuse_key()
 {
+    need_keys_added();
     return _imp->iuse;
 }
 
 const tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> >
 FakePackageID::provide_key()
 {
+    need_keys_added();
     return _imp->provide;
 }
 
@@ -593,60 +587,70 @@ FakePackageID::suggested_dependencies_key()
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::fetches_key() const
 {
+    need_keys_added();
     return _imp->src_uri;
 }
 
 const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::fetches_key()
 {
+    need_keys_added();
     return _imp->src_uri;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 FakePackageID::homepage_key() const
 {
+    need_keys_added();
     return _imp->homepage;
 }
 
 const tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> >
 FakePackageID::homepage_key()
 {
+    need_keys_added();
     return _imp->homepage;
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
 FakePackageID::short_description_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
 FakePackageID::long_description_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
 const tr1::shared_ptr<const MetadataContentsKey>
 FakePackageID::contents_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataContentsKey>();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
 FakePackageID::installed_time_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
 FakePackageID::source_origin_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
 FakePackageID::binary_origin_key() const
 {
+    need_keys_added();
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
@@ -672,29 +676,49 @@ FakePackageID::need_keys_added() const
         using namespace tr1::placeholders;
 
         _imp->build_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                    "", tr1::bind(&erepository::parse_depend, _1,
-                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi), shared_from_this()),
+                    "", tr1::bind(&erepository::parse_depend, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
                     _imp->build_dependencies_labels, mkt_dependencies));
 
         _imp->run_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                    "", tr1::bind(&erepository::parse_depend, _1,
-                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi), shared_from_this()),
+                    "", tr1::bind(&erepository::parse_depend, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
                     _imp->run_dependencies_labels, mkt_dependencies)),
 
         _imp->post_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                    "", tr1::bind(&erepository::parse_depend, _1,
-                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi), shared_from_this()),
+                    "", tr1::bind(&erepository::parse_depend, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
                     _imp->post_dependencies_labels, mkt_dependencies)),
 
         _imp->suggested_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                    "", tr1::bind(&erepository::parse_depend, _1,
-                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi), shared_from_this()),
+                    "", tr1::bind(&erepository::parse_depend, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
                     _imp->suggested_dependencies_labels, mkt_dependencies)),
+
+        _imp->src_uri.reset(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URI",
+                    "", tr1::bind(&erepository::parse_fetchable_uri, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+
+        _imp->homepage.reset(new FakeMetadataSpecTreeKey<SimpleURISpecTree>("HOMEPAGE", "Homepage",
+                    "", tr1::bind(&erepository::parse_simple_uri, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+
+        _imp->license.reset(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "License",
+                    "", tr1::bind(&erepository::parse_license, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+
+        _imp->provide.reset(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provide",
+                    "", tr1::bind(&erepository::parse_provide, _1, _imp->env,
+                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
 
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
         add_metadata_key(_imp->post_dependencies);
         add_metadata_key(_imp->suggested_dependencies);
+        add_metadata_key(_imp->src_uri);
+        add_metadata_key(_imp->homepage);
+        add_metadata_key(_imp->provide);
+        add_metadata_key(_imp->license);
     }
 }
 
@@ -754,11 +778,11 @@ namespace
             ok &= local_ok;
         }
 
-        void visit_sequence(const UseDepSpec & spec,
+        void visit_sequence(const ConditionalDepSpec & spec,
                 LicenseSpecTree::ConstSequenceIterator begin,
                 LicenseSpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(spec.flag(), *id))
+            if (spec.condition_met())
                 std::for_each(begin, end, accept_visitor(*this));
         }
 

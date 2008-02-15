@@ -53,13 +53,13 @@ namespace
     struct DistfilesCollector :
         ConstVisitor<FetchableURISpecTree>,
         ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>,
-        ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, UseDepSpec>
+        ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>
     {
         tr1::shared_ptr<const PackageID> id;
         std::map<std::string, tr1::shared_ptr<PackageIDSet> > & distfiles;
 
         using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>::visit_sequence;
-        using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, UseDepSpec>::visit_sequence;
+        using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>::visit_sequence;
 
         DistfilesCollector(const tr1::shared_ptr<const PackageID> & i,
                            std::map<std::string, tr1::shared_ptr<PackageIDSet> > & d) :
