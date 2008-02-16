@@ -618,7 +618,7 @@ namespace
 
         virtual const std::string as_human_string() const
         {
-            return "Use flag '" + stringify(f) + "' " + (inverse ? "enabled" : "disabled");
+            return "Use flag '" + stringify(f) + "' " + (inverse ? "disabled" : "enabled");
         }
 
         virtual const std::string as_raw_string() const
