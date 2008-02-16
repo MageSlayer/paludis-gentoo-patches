@@ -85,7 +85,10 @@ fi
 
 if [[ -d "${LOCAL}" ]]; then
     cd "${LOCAL}"
-    OLD_REMOTE="$(${GIT_WRAPPER} git remote show -n origin | sed -ne 's/^ *URL: //p')"
+    OLD_REMOTE="$(${GIT_WRAPPER} git config remote.origin.url)"
+    if [[ -z "${OLD_REMOTE}" && -f .git/remotes/origin ]]; then
+        OLD_REMOTE="$(sed -ne '/^URL: */{s/^URL: *//p;q}' .git/remotes/origin)"
+    fi
     if [[ "${OLD_REMOTE}" != "${REMOTE}" ]]; then
         if ! ${GIT_WRAPPER} git config remote.origin.url "${REMOTE}"; then
             eerror "${0}: could not switch from '${OLD_REMOTE}' to '${REMOTE}'"
