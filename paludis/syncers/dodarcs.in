@@ -30,8 +30,8 @@ while [[ $# -gt 0 ]]; do
             PROTO="${0##*/do}"
             if [[ "${PROTO}" == darcs+ssh ]]; then
                 echo "    URL syntax: darcs+ssh://[USERNAME[:PASSWORD]@]SERVER:/PATH"
-            elif [[ "${PROTO}" == darcs+http ]]; then
-                echo "    URL syntax: darcs+http://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == darcs+http || "${PROTO}" == darcs+https ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
             elif [[ "${PROTO}" == darcs+file ]]; then
                 echo "    URL syntax: darcs+file:///PATH"
             else

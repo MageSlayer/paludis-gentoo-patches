@@ -32,10 +32,12 @@ while [[ $# -gt 0 ]]; do
                 echo "    URL syntax: git://SERVER/PATH"
             elif [[ "${PROTO}" == git+ssh ]]; then
                 echo "    URL syntax: git+ssh://[USERNAME[:PASSWORD]@]SERVER/PATH"
-            elif [[ "${PROTO}" == git+http ]]; then
-                echo "    URL syntax: git+http://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == git+http || "${PROTO}" == git+https ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
             elif [[ "${PROTO}" == git+file ]]; then
                 echo "    URL syntax: git+file:///PATH"
+            elif [[ "${PROTO}" == git+rsync ]]; then
+                echo "    URL syntax: git+rsync://[USERNAME@]SERVER[:PORT]/PATH"
             else
                 ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
             fi
@@ -73,7 +75,7 @@ elif [[ -z "${REMOTE}" ]]; then
     exit 1
 fi
 
-[[ "${REMOTE}" == git+http* ]] && REMOTE="${REMOTE#git+}"
+[[ "${REMOTE}" == git+http* || "${REMOTE}" == git+rsync* ]] && REMOTE="${REMOTE#git+}"
 REMOTE="${REMOTE#git+file://}"
 
 if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
@@ -83,7 +85,7 @@ fi
 
 if [[ -d "${LOCAL}" ]]; then
     cd "${LOCAL}"
-    OLD_REMOTE="$(${GIT_WRAPPER} git config remote.origin.url)"
+    OLD_REMOTE="$(${GIT_WRAPPER} git remote show -n origin | sed -ne 's/^ *URL: //p')"
     if [[ "${OLD_REMOTE}" != "${REMOTE}" ]]; then
         if ! ${GIT_WRAPPER} git config remote.origin.url "${REMOTE}"; then
             eerror "${0}: could not switch from '${OLD_REMOTE}' to '${REMOTE}'"

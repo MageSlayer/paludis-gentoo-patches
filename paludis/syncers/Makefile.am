@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+ssh dofile dogit dogit+file dogit+http dogit+ssh dorsync dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http
+CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dorsync dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
 SUBDIRS = .
 
 .keep :
@@ -13,11 +13,14 @@ libexecprog_SCRIPTS = \
 	docvs+ssh \
 	dodarcs+file \
 	dodarcs+http \
+	dodarcs+https \
 	dodarcs+ssh \
 	dofile \
 	dogit \
 	dogit+file \
 	dogit+http \
+	dogit+https \
+	dogit+rsync \
 	dogit+ssh \
 	dorsync \
 	dosvn \
@@ -28,6 +31,7 @@ libexecprog_SCRIPTS = \
 	dotar+file \
 	dotar+ftp \
 	dotar+http \
+	dotar+https \
 	dodummy
 
 TESTS_ENVIRONMENT = env \
@@ -49,15 +53,15 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 docvs+ext docvs+pserver docvs+ssh : docvs.in
 	cat $? > $@
-dodarcs+file dodarcs+http dodarcs+ssh : dodarcs.in
+dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh : dodarcs.in
 	cat $? > $@
-dogit dogit+file dogit+http dogit+ssh : dogit.in
+dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh : dogit.in
 	cat $? > $@
 dofile dorsync : dorsync.in
 	cat $? > $@
 dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh : dosvn.in
 	cat $? > $@
-dotar+file dotar+ftp dotar+http : dotar.in
+dotar+file dotar+ftp dotar+http dotar+https : dotar.in
 	cat $? > $@
 
 built-sources : $(BUILT_SOURCES)
