@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -68,18 +68,18 @@ namespace paludis
         Implementation(const CRANInstalledRepositoryParams &);
         ~Implementation();
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
     };
 }
 
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
     params(p),
     has_ids(false),
-    location_key(new LiteralMetadataFSEntryKey("location", "location", mkt_significant, params.location)),
-    installed_root_key(new LiteralMetadataFSEntryKey("root", "root", mkt_normal, params.root)),
-    format_key(new LiteralMetadataStringKey("format", "format", mkt_significant, "installed_cran"))
+    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location)),
+    installed_root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root", mkt_normal, params.root)),
+    format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed_cran"))
 {
 }
 
@@ -667,13 +667,13 @@ CRANInstalledRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANInstalledRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

@@ -62,18 +62,18 @@ namespace paludis
         const InstalledUnpackagedRepositoryParams params;
         mutable NDBAM ndbam;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
             ndbam(p.location, &supported_installed_unpackaged, "installed_unpackaged-1"),
-            location_key(new LiteralMetadataFSEntryKey("location", "location",
+            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location)),
-            root_key(new LiteralMetadataFSEntryKey("root", "root",
+            root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
                         mkt_normal, params.root)),
-            format_key(new LiteralMetadataStringKey(
+            format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_unpackaged"))
         {
         }
@@ -413,16 +413,15 @@ InstalledUnpackagedRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedRepository::installed_root_key() const
 {
     return _imp->root_key;
 }
-
 

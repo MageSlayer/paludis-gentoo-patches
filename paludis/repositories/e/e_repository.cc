@@ -150,7 +150,7 @@ namespace
                                     query::InstalledAtRoot(_env->root()),
                                     qo_order_by_version));
                         if (q->empty())
-                            key.reset(new LiteralMetadataStringKey(*i, *i, mkt_normal, "(none)"));
+                            key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
                         else
                         {
                             using namespace tr1::placeholders;
@@ -238,32 +238,32 @@ namespace paludis
         void need_profiles() const;
         void need_profiles_desc() const;
 
-        tr1::shared_ptr<const MetadataStringKey> format_key;
-        tr1::shared_ptr<const MetadataStringKey> layout_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > layout_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> cache_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> write_cache_key;
-        tr1::shared_ptr<const MetadataStringKey> append_repository_name_to_write_cache_key;
-        tr1::shared_ptr<const MetadataStringKey> ignore_deprecated_profiles;
-        tr1::shared_ptr<const MetadataFSEntryKey> names_cache_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> distdir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > cache_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > write_cache_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > append_repository_name_to_write_cache_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > ignore_deprecated_profiles;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
         tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > eclassdirs_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> securitydir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> setsdir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> newsdir_key;
-        tr1::shared_ptr<const MetadataStringKey> sync_key;
-        tr1::shared_ptr<const MetadataStringKey> sync_options_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
-        tr1::shared_ptr<const MetadataStringKey> master_repository_key;
-        tr1::shared_ptr<const MetadataStringKey> eapi_when_unknown_key;
-        tr1::shared_ptr<const MetadataStringKey> eapi_when_unspecified_key;
-        tr1::shared_ptr<const MetadataStringKey> profile_eapi_key;
-        tr1::shared_ptr<const MetadataStringKey> use_manifest_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > securitydir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > setsdir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > newsdir_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > master_repository_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
         tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
-        tr1::shared_ptr<const MetadataStringKey> binary_destination_key;
-        tr1::shared_ptr<const MetadataStringKey> binary_src_uri_prefix_key;
-        tr1::shared_ptr<const MetadataStringKey> binary_keywords;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
@@ -282,63 +282,63 @@ namespace paludis
                     params.layout)(r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
                         tr1::shared_ptr<FSEntry>())),
-        format_key(new LiteralMetadataStringKey("format", "format",
+        format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, params.entry_format)),
-        layout_key(new LiteralMetadataStringKey("layout", "layout",
+        layout_key(new LiteralMetadataValueKey<std::string> ("layout", "layout",
                     mkt_normal, params.layout)),
-        location_key(new LiteralMetadataFSEntryKey("location", "location",
+        location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                     mkt_significant, params.location)),
         profiles_key(new LiteralMetadataFSEntrySequenceKey(
                     "profiles", "profiles", mkt_normal, params.profiles)),
-        cache_key(new LiteralMetadataFSEntryKey("cache", "cache",
+        cache_key(new LiteralMetadataValueKey<FSEntry> ("cache", "cache",
                     mkt_normal, params.cache)),
-        write_cache_key(new LiteralMetadataFSEntryKey("write_cache", "write_cache",
+        write_cache_key(new LiteralMetadataValueKey<FSEntry> ("write_cache", "write_cache",
                     mkt_normal, params.write_cache)),
-        append_repository_name_to_write_cache_key(new LiteralMetadataStringKey(
+        append_repository_name_to_write_cache_key(new LiteralMetadataValueKey<std::string> (
                     "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
                     mkt_normal, stringify(params.append_repository_name_to_write_cache))),
-        ignore_deprecated_profiles(new LiteralMetadataStringKey(
+        ignore_deprecated_profiles(new LiteralMetadataValueKey<std::string> (
                     "ignore_deprecated_profiles", "ignore_deprecated_profiles",
                     mkt_normal, stringify(params.ignore_deprecated_profiles))),
-        names_cache_key(new LiteralMetadataFSEntryKey(
+        names_cache_key(new LiteralMetadataValueKey<FSEntry> (
                     "names_cache", "names_cache", mkt_normal, params.names_cache)),
-        distdir_key(new LiteralMetadataFSEntryKey(
+        distdir_key(new LiteralMetadataValueKey<FSEntry> (
                     "distdir", "distdir", mkt_normal, params.distdir)),
         eclassdirs_key(new LiteralMetadataFSEntrySequenceKey(
                     "eclassdirs", "eclassdirs", mkt_normal, params.eclassdirs)),
-        securitydir_key(new LiteralMetadataFSEntryKey(
+        securitydir_key(new LiteralMetadataValueKey<FSEntry> (
                     "securitydir", "securitydir", mkt_normal, params.securitydir)),
-        setsdir_key(new LiteralMetadataFSEntryKey(
+        setsdir_key(new LiteralMetadataValueKey<FSEntry> (
                     "setsdir", "setsdir", mkt_normal, params.setsdir)),
-        newsdir_key(new LiteralMetadataFSEntryKey(
+        newsdir_key(new LiteralMetadataValueKey<FSEntry> (
                     "newsdir", "newsdir", mkt_normal, params.newsdir)),
-        sync_key(new LiteralMetadataStringKey(
+        sync_key(new LiteralMetadataValueKey<std::string> (
                     "sync", "sync", mkt_normal, params.sync)),
-        sync_options_key(new LiteralMetadataStringKey(
+        sync_options_key(new LiteralMetadataValueKey<std::string> (
                     "sync_options", "sync_options", mkt_normal, params.sync_options)),
-        builddir_key(new LiteralMetadataFSEntryKey(
+        builddir_key(new LiteralMetadataValueKey<FSEntry> (
                     "builddir", "builddir", mkt_normal, params.builddir)),
         master_repository_key(params.master_repository ?
-                tr1::shared_ptr<MetadataStringKey>(new LiteralMetadataStringKey(
+                tr1::shared_ptr<MetadataValueKey<std::string> >(new LiteralMetadataValueKey<std::string> (
                         "master_repository", "master_repository", mkt_normal, stringify(params.master_repository->name()))) :
-                tr1::shared_ptr<MetadataStringKey>()),
-        eapi_when_unknown_key(new LiteralMetadataStringKey(
+                tr1::shared_ptr<MetadataValueKey<std::string> >()),
+        eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown)),
-        eapi_when_unspecified_key(new LiteralMetadataStringKey(
+        eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
                     "eapi_when_unspecified", "eapi_when_unspecified", mkt_normal, params.eapi_when_unspecified)),
-        profile_eapi_key(new LiteralMetadataStringKey(
+        profile_eapi_key(new LiteralMetadataValueKey<std::string> (
                     "profile_eapi", "profile_eapi", mkt_normal, params.profile_eapi)),
-        use_manifest_key(new LiteralMetadataStringKey(
+        use_manifest_key(new LiteralMetadataValueKey<std::string> (
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest))),
         info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
                 tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
                         params.environment, layout->info_packages_file(params.location / "profiles"), params.profile_eapi)) :
                 tr1::shared_ptr<MetadataSectionKey>()),
-        binary_destination_key(new LiteralMetadataStringKey(
+        binary_destination_key(new LiteralMetadataValueKey<std::string> (
                     "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination))),
-        binary_src_uri_prefix_key(new LiteralMetadataStringKey(
+        binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
                     "binary_uri_prefix", "binary_uri_prefix", mkt_normal, params.binary_uri_prefix)),
-        binary_keywords(new LiteralMetadataStringKey(
+        binary_keywords(new LiteralMetadataValueKey<std::string> (
                     "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords))
     {
     }
@@ -1399,15 +1399,15 @@ ERepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 ERepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 ERepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

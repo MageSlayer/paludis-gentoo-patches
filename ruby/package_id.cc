@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -433,7 +433,7 @@ namespace
         rb_define_method(c_package_id, "invalidate_masks", RUBY_FUNC_CAST(&package_id_invalidate_masks), 0);
         rb_define_method(c_package_id, "breaks_portage?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::breaks_portage>::fetch)), 0);
 
-        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataPackageIDKey, &PackageID::virtual_for_key>::fetch)), 0);
+        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<tr1::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
         rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
@@ -448,14 +448,19 @@ namespace
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::suggested_dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "homepage_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<SimpleURISpecTree>, &PackageID::homepage_key>::fetch)), 0);
-        rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::short_description_key>::fetch)), 0);
-        rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::long_description_key>::fetch)), 0);
-        rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataContentsKey,&PackageID::contents_key>::fetch)), 0);
+        rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
+                        &PackageID::short_description_key>::fetch)), 0);
+        rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
+                        &PackageID::long_description_key>::fetch)), 0);
+        rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<tr1::shared_ptr<const Contents> >,
+                        &PackageID::contents_key>::fetch)), 0);
         rb_define_method(c_package_id, "installed_time_key", RUBY_FUNC_CAST((&KeyValue<MetadataTimeKey,&PackageID::installed_time_key>::fetch)), 0);
-        rb_define_method(c_package_id, "source_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::source_origin_key>::fetch)), 0);
-        rb_define_method(c_package_id, "binary_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::binary_origin_key>::fetch)), 0);
+        rb_define_method(c_package_id, "source_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
+                        &PackageID::source_origin_key>::fetch)), 0);
+        rb_define_method(c_package_id, "binary_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
+                        &PackageID::binary_origin_key>::fetch)), 0);
         rb_define_method(c_package_id, "fs_location_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataFSEntryKey, &PackageID::fs_location_key>::fetch)), 0);
+                        &KeyValue<MetadataValueKey<FSEntry>, &PackageID::fs_location_key>::fetch)), 0);
         rb_define_method(c_package_id, "fetches_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<FetchableURISpecTree>, &PackageID::fetches_key>::fetch)), 0);
 

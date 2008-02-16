@@ -319,11 +319,11 @@ namespace
             k->accept(*this);
         }
 
-        void visit(const MetadataStringKey &)
+        void visit(const MetadataValueKey<std::string> &)
         {
         }
 
-        void visit(const MetadataSizeKey &)
+        void visit(const MetadataValueKey<long> &)
         {
         }
 
@@ -331,15 +331,15 @@ namespace
         {
         }
 
-        void visit(const MetadataContentsKey &)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataPackageIDKey &)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > &)
         {
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey &)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > &)
         {
         }
 
@@ -367,7 +367,7 @@ namespace
         {
         }
 
-        void visit(const MetadataFSEntryKey &)
+        void visit(const MetadataValueKey<FSEntry> &)
         {
         }
 

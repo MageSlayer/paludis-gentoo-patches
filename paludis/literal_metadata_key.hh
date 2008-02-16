@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,84 +40,60 @@
 namespace paludis
 {
     /**
-     * A LiteralMetadataStringKey is a MetadataStringKey whose value is a
-     * literal string that is known at construction time.
+     * Implement extra methods for LiteralMetadataValueKey.
      *
-     * \ingroup g_literal_metadata_key
+     * \ingroup g_metadata_key
      * \since 0.26
      */
-    class PALUDIS_VISIBLE LiteralMetadataStringKey :
-        public MetadataStringKey,
-        private PrivateImplementationPattern<LiteralMetadataStringKey>
+    template <typename T_>
+    class ExtraLiteralMetadataValueKeyMethods
     {
-        private:
-            PrivateImplementationPattern<LiteralMetadataStringKey>::ImpPtr & _imp;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            LiteralMetadataStringKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const std::string &);
-            ~LiteralMetadataStringKey();
-
-            ///\}
-
-            virtual const std::string value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
-     * A LiteralMetadataFSEntryKey is a MetadataFSEntryKey whose value is a
-     * literal FSEntry that is known at construction time.
+     * Implement extra methods for LiteralMetadataValueKey for PackageID.
      *
-     * \ingroup g_literal_metadata_key
+     * \ingroup g_metadata_key
      * \since 0.26
      */
-    class PALUDIS_VISIBLE LiteralMetadataFSEntryKey :
-        public MetadataFSEntryKey,
-        private PrivateImplementationPattern<LiteralMetadataFSEntryKey>
+    template <>
+    class ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> > :
+        public virtual ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >
     {
-        private:
-            PrivateImplementationPattern<LiteralMetadataFSEntryKey>::ImpPtr & _imp;
-
         public:
-            ///\name Basic operations
-            ///\{
+            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
 
-            LiteralMetadataFSEntryKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const FSEntry &);
-            ~LiteralMetadataFSEntryKey();
-
-            ///\}
-
-            virtual const FSEntry value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::string pretty_print(const Formatter<PackageID> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
-     * A LiteralMetadataPackageIDKey is a MetadataPackageIDKey whose value is
-     * known at construction time.
+     * A LiteralMetadataValueKey is a MetadataValueKey whose value is a
+     * copyable literal that is known at construction time.
      *
      * \ingroup g_literal_metadata_key
      * \since 0.26
      */
-    class PALUDIS_VISIBLE LiteralMetadataPackageIDKey :
-        public MetadataPackageIDKey,
-        private PrivateImplementationPattern<LiteralMetadataPackageIDKey>
+    template <typename T_>
+    class PALUDIS_VISIBLE LiteralMetadataValueKey :
+        public MetadataValueKey<T_>,
+        private PrivateImplementationPattern<LiteralMetadataValueKey<T_> >,
+        public ExtraLiteralMetadataValueKeyMethods<T_>
     {
         private:
-            PrivateImplementationPattern<LiteralMetadataPackageIDKey>::ImpPtr & _imp;
+            typename PrivateImplementationPattern<LiteralMetadataValueKey<T_> >::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
             ///\{
 
-            LiteralMetadataPackageIDKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const tr1::shared_ptr<const PackageID> &);
-            ~LiteralMetadataPackageIDKey();
+            LiteralMetadataValueKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const T_ &);
+            ~LiteralMetadataValueKey();
 
             ///\}
 
-            virtual const tr1::shared_ptr<const PackageID> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const T_ value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

@@ -36,6 +36,7 @@
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/contents-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 
 /** \file
@@ -158,7 +159,7 @@ namespace paludis
              * (old-style) virtual for another package. This affects dependency
              * resolution.
              */
-            virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > virtual_for_key() const = 0;
 
             /**
              * The keywords_key, if non-zero, is used by FindUnusedPackagesTask
@@ -188,7 +189,7 @@ namespace paludis
              * The contained_in_key, if non-zero, indicates that a package is
              * contained in another package. This affects dependency resolution.
              */
-            virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > contained_in_key() const = 0;
 
             /**
              * The build_dependencies_key, if non-zero, indicates a package's
@@ -229,13 +230,13 @@ namespace paludis
              * The short_description_key, if non-zero, provides a short (no more
              * than a few hundred characters) description of a package.
              */
-            virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const = 0;
 
             /**
              * The long_description_key, if non-zero, provides a long
              * description of a package.
              */
-            virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const = 0;
 
             /**
              * The contents_key, if non-zero, contains the contents of a
@@ -243,7 +244,7 @@ namespace paludis
              * for installable packages, this means the files that will be
              * installed (if known, which it may be for some binary packages).
              */
-            virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > contents_key() const = 0;
 
             /**
              * The installed_time_key, if non-zero, contains the time a package
@@ -256,34 +257,34 @@ namespace paludis
              * The source_origin_key, if non-zero, contains a string describing
              * the source repository whence a package originated.
              */
-            virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > source_origin_key() const = 0;
 
             /**
              * The binary_origin_key, if non-zero, contains a string describing
              * the binary repository whence a package originated.
              */
-            virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > binary_origin_key() const = 0;
 
             /**
              * The fs_location_key, if non-zero, indicates the filesystem
              * location (for example, the ebuild file or VDB directory) that
              * best describes the location of a PackageID.
              */
-            virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const = 0;
 
             /**
              * The size_of_download_required_key, if non-zero, contains a
              * long integer representing the size of distfiles that still need
              * to be downloaded.
              */
-            virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_download_required_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const = 0;
 
             /**
              * The size_of_all_distfiles_key, if non-zero, contains a long
              * integer representing the size of all distfiles used by the
              * package with the current USE settings.
              */
-            virtual const tr1::shared_ptr<const MetadataSizeKey> size_of_all_distfiles_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const = 0;
 
             ///\}
 

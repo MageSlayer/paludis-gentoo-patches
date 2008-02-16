@@ -48,11 +48,11 @@ namespace paludis
         std::string platform;
         std::string homepage;
 
-        tr1::shared_ptr<LiteralMetadataStringKey> description_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> summary_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> authors_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> rubyforge_project_key;
-        tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > description_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > summary_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > rubyforge_project_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
 
         tr1::shared_ptr<const FSEntry> load_from_file;
 
@@ -205,19 +205,19 @@ namespace
         {
             std::string summary(required_text_only_key(n, "summary"));
             if (! summary.empty())
-                _imp->summary_key.reset(new LiteralMetadataStringKey("summary", "Summary", mkt_significant, summary));
+                _imp->summary_key.reset(new LiteralMetadataValueKey<std::string> ("summary", "Summary", mkt_significant, summary));
 
             std::string description(optional_text_only_key(n, "description"));
             if (! description.empty())
-                _imp->description_key.reset(new LiteralMetadataStringKey("description", "Description", mkt_normal, description));
+                _imp->description_key.reset(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_normal, description));
 
             std::string authors(optional_text_sequence_key(n, "authors"));
             if (! authors.empty())
-                _imp->authors_key.reset(new LiteralMetadataStringKey("authors", "Authors", mkt_normal, authors));
+                _imp->authors_key.reset(new LiteralMetadataValueKey<std::string> ("authors", "Authors", mkt_normal, authors));
 
             std::string rubyforge_project(optional_text_sequence_key(n, "rubyforge_project"));
             if (! rubyforge_project.empty())
-                _imp->rubyforge_project_key.reset(new LiteralMetadataStringKey("rubyforge_project", "Rubyforge Project",
+                _imp->rubyforge_project_key.reset(new LiteralMetadataValueKey<std::string> ("rubyforge_project", "Rubyforge Project",
                             mkt_normal, rubyforge_project));
 
             _imp->date = required_text_only_key(n, "date");
@@ -272,7 +272,7 @@ GemSpecification::GemSpecification(const Environment * const e, const tr1::share
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);
     _imp->load_from_file.reset(new FSEntry(f));
-    _imp->fs_location_key.reset(new LiteralMetadataFSEntryKey("GEM", "Gem Location", mkt_internal, f));
+    _imp->fs_location_key.reset(new LiteralMetadataValueKey<FSEntry> ("GEM", "Gem Location", mkt_internal, f));
     add_metadata_key(_imp->fs_location_key);
 }
 
@@ -330,10 +330,10 @@ GemSpecification::repository() const
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 GemSpecification::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -390,28 +390,28 @@ GemSpecification::suggested_dependencies_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::short_description_key() const
 {
     return _imp->summary_key;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::long_description_key() const
 {
     return _imp->description_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemSpecification::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 GemSpecification::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataContentsKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
@@ -420,16 +420,16 @@ GemSpecification::installed_time_key() const
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
@@ -438,22 +438,22 @@ GemSpecification::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 GemSpecification::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 GemSpecification::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 GemSpecification::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 bool

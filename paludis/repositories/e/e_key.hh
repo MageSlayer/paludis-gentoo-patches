@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@ namespace paludis
         class ERepositoryID;
 
         class EMutableRepositoryMaskInfoKey :
-            public MetadataRepositoryMaskInfoKey
+            public MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >
         {
             private:
                 tr1::shared_ptr<const RepositoryMaskInfo> _value;
@@ -287,7 +287,7 @@ namespace paludis
         };
 
         class EContentsKey :
-            public MetadataContentsKey,
+            public MetadataValueKey<tr1::shared_ptr<const Contents> >,
             private PrivateImplementationPattern<EContentsKey>
         {
             private:
@@ -320,7 +320,7 @@ namespace paludis
         };
 
         class EDistSizeKey:
-            public MetadataSizeKey,
+            public MetadataValueKey<long>,
             private PrivateImplementationPattern<EDistSizeKey>
         {
             private:
@@ -333,7 +333,7 @@ namespace paludis
 
                 ~EDistSizeKey();
 
-                long value() const
+                const long value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 std::string pretty_print() const

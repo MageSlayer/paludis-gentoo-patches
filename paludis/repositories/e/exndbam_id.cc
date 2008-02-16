@@ -46,7 +46,7 @@ namespace
     }
 
     class ExndbamContentsKey :
-        public MetadataContentsKey
+        public MetadataValueKey<tr1::shared_ptr<const Contents> > 
     {
         private:
             const PackageID * const _id;
@@ -56,7 +56,7 @@ namespace
 
         public:
             ExndbamContentsKey(const PackageID * const i, const NDBAM * const d) :
-                MetadataContentsKey("contents", "Contents", mkt_internal),
+                MetadataValueKey<tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
                 _id(i),
                 _db(d)
             {
@@ -107,7 +107,7 @@ ExndbamID::contents_filename() const
     return "contents";
 }
 
-tr1::shared_ptr<MetadataContentsKey>
+tr1::shared_ptr<MetadataValueKey<tr1::shared_ptr<const Contents> > >
 ExndbamID::make_contents_key() const
 {
     return make_shared_ptr(new ExndbamContentsKey(this, _ndbam));

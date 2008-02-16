@@ -72,8 +72,8 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
-        mutable tr1::shared_ptr<const LiteralMetadataFSEntryKey> fs_location;
-        mutable tr1::shared_ptr<const LiteralMetadataStringKey> short_description;
+        mutable tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
+        mutable tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> post_dependencies;
@@ -150,7 +150,7 @@ EbuildID::need_keys_added() const
     // fs_location key could have been loaded by the ::fs_location_key() already.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("EBUILD", "Ebuild Location",
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> ("EBUILD", "Ebuild Location",
                     mkt_internal, _imp->ebuild));
         add_metadata_key(_imp->fs_location);
     }
@@ -256,7 +256,7 @@ EbuildID::need_keys_added() const
         }
     }
 
-    add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("EAPI", "EAPI", mkt_internal, _imp->eapi->name)));
+    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string> ("EAPI", "EAPI", mkt_internal, _imp->eapi->name)));
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
         tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
@@ -494,10 +494,10 @@ EbuildID::eapi() const
     return _imp->eapi;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 EbuildID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -590,23 +590,23 @@ EbuildID::homepage_key() const
     return _imp->homepage;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::short_description_key() const
 {
     need_keys_added();
     return _imp->short_description;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 EbuildID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataContentsKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
@@ -615,16 +615,16 @@ EbuildID::installed_time_key() const
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -633,7 +633,7 @@ EbuildID::inherited_key() const
     return _imp->inherited;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EbuildID::fs_location_key() const
 {
     // Avoid loading whole metadata
@@ -641,21 +641,21 @@ EbuildID::fs_location_key() const
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild));
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> ("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild));
         add_metadata_key(_imp->fs_location);
     }
 
     return _imp->fs_location;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 EbuildID::size_of_download_required_key() const
 {
     need_keys_added();
     return _imp->size_of_download_required;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 EbuildID::size_of_all_distfiles_key() const
 {
     need_keys_added();
@@ -698,7 +698,7 @@ void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->short_description.reset(new LiteralMetadataStringKey(r, h, mkt_significant, v));
+    _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (r, h, mkt_significant, v));
     add_metadata_key(_imp->short_description);
 }
 
@@ -943,9 +943,9 @@ EbuildID::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 EbuildID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 

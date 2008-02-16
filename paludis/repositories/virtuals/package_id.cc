@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -147,7 +147,7 @@ namespace paludis
         const VersionSpec version;
         tr1::shared_ptr<DependencyLabelSequence> bdep_labels;
         tr1::shared_ptr<DependencyLabelSequence> rdep_labels;
-        const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for;
+        const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > virtual_for;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
         mutable bool has_masks;
@@ -165,7 +165,7 @@ namespace paludis
             version(p->version()),
             bdep_labels(new DependencyLabelSequence),
             rdep_labels(new DependencyLabelSequence),
-            virtual_for(new LiteralMetadataPackageIDKey("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
+            virtual_for(new LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > ("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
             bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
@@ -242,7 +242,7 @@ VirtualsPackageID::repository() const
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 VirtualsPackageID::virtual_for_key() const
 {
     return _imp->virtual_for;
@@ -290,16 +290,16 @@ VirtualsPackageID::suggested_dependencies_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::short_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
@@ -314,10 +314,10 @@ VirtualsPackageID::homepage_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 VirtualsPackageID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataContentsKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
@@ -326,16 +326,16 @@ VirtualsPackageID::installed_time_key() const
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 bool
@@ -502,27 +502,27 @@ VirtualsPackageID::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 VirtualsPackageID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsPackageID::fs_location_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 VirtualsPackageID::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 VirtualsPackageID::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 

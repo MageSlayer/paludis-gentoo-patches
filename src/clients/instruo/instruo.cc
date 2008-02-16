@@ -51,17 +51,17 @@ namespace
     struct KeyValidator :
         ConstVisitor<MetadataKeyVisitorTypes>
     {
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
             const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
             long PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
         }
@@ -71,17 +71,17 @@ namespace
             time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataContentsKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
         {
             const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry> & k)
         {
             const FSEntry & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
         }
@@ -254,13 +254,13 @@ main(int argc, char *argv[])
                     continue;
                 }
 
-                if (! visitor_cast<const MetadataStringKey>(**eapi_i))
+                if (! visitor_cast<const MetadataValueKey<std::string> >(**eapi_i))
                 {
                     results.insert(std::make_pair(*i, "EAPI metadata key is not a string key"));
                     continue;
                 }
 
-                if (visitor_cast<const MetadataStringKey>(**eapi_i)->value() == "UNKNOWN")
+                if (visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
                 {
                     results.insert(std::make_pair(*i, "EAPI is 'UNKNOWN'"));
                     continue;

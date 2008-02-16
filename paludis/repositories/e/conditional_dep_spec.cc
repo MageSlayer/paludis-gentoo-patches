@@ -67,8 +67,8 @@ namespace
 
             flag = UseFlagName(s.substr(inverse ? 1 : 0, s.length() - (inverse ? 2 : 1)));
 
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Flag", "Flag", mkt_normal, stringify(flag))));
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Inverse", "Inverse", mkt_normal, stringify(inverse))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string> ("Flag", "Flag", mkt_normal, stringify(flag))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string> ("Inverse", "Inverse", mkt_normal, stringify(inverse))));
         }
 
         virtual std::string as_string() const
@@ -118,7 +118,7 @@ paludis::erepository::conditional_dep_spec_flag(const ConditionalDepSpec & spec)
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Flag"));
     if (i == spec.end_metadata())
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Flag metadata");
-    const MetadataStringKey * key(visitor_cast<const MetadataStringKey>(**i));
+    const MetadataValueKey<std::string>  * key(visitor_cast<const MetadataValueKey<std::string> >(**i));
     if (! key)
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Flag metadata which is not a string");
     return UseFlagName(key->value());
@@ -130,7 +130,7 @@ paludis::erepository::conditional_dep_spec_is_inverse(const ConditionalDepSpec &
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Inverse"));
     if (i == spec.end_metadata())
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Inverse metadata");
-    const MetadataStringKey * key(visitor_cast<const MetadataStringKey>(**i));
+    const MetadataValueKey<std::string>  * key(visitor_cast<const MetadataValueKey<std::string> >(**i));
     if (! key)
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Inverse metadata which is not a string");
     return destringify<bool>(key->value());

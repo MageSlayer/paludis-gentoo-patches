@@ -76,7 +76,7 @@ namespace paludis
         tr1::shared_ptr<const SlotName> slot;
         tr1::shared_ptr<const EAPI> eapi;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> fs_location;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
         tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use;
         tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
         tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse;
@@ -88,21 +88,21 @@ namespace paludis
         tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrictions;
         tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
-        tr1::shared_ptr<const MetadataStringKey> short_description;
-        tr1::shared_ptr<const MetadataContentsKey> contents;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > short_description;
+        tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > contents;
         tr1::shared_ptr<const MetadataTimeKey> installed_time;
-        tr1::shared_ptr<const MetadataStringKey> source_origin;
-        tr1::shared_ptr<const MetadataStringKey> binary_origin;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > source_origin;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_origin;
 
-        tr1::shared_ptr<const MetadataStringKey> asflags;
-        tr1::shared_ptr<const MetadataStringKey> cbuild;
-        tr1::shared_ptr<const MetadataStringKey> cflags;
-        tr1::shared_ptr<const MetadataStringKey> chost;
-        tr1::shared_ptr<const MetadataStringKey> ctarget;
-        tr1::shared_ptr<const MetadataStringKey> cxxflags;
-        tr1::shared_ptr<const MetadataStringKey> ldflags;
-        tr1::shared_ptr<const MetadataStringKey> pkgmanager;
-        tr1::shared_ptr<const MetadataStringKey> vdb_format;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > asflags;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > cbuild;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > cflags;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > chost;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > ctarget;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > cxxflags;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > ldflags;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
 
         tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
@@ -155,7 +155,7 @@ EInstalledRepositoryID::need_keys_added() const
     // at the top, other keys use it.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataFSEntryKey(fs_location_raw_name(), fs_location_human_name(),
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
                     mkt_internal, _imp->dir));
         add_metadata_key(_imp->fs_location);
     }
@@ -286,7 +286,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->metadata_description.empty())
         if ((_imp->dir / vars->metadata_description).exists())
         {
-            _imp->short_description.reset(new LiteralMetadataStringKey(vars->metadata_description,
+            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->metadata_description,
                         vars->description_description, mkt_significant, file_contents(_imp->dir / vars->metadata_description)));
             add_metadata_key(_imp->short_description);
         }
@@ -308,76 +308,76 @@ EInstalledRepositoryID::need_keys_added() const
 
     if ((_imp->dir / "REPOSITORY").exists())
     {
-        _imp->source_origin.reset(new LiteralMetadataStringKey("REPOSITORY", "Source repository",
+        _imp->source_origin.reset(new LiteralMetadataValueKey<std::string> ("REPOSITORY", "Source repository",
                     mkt_normal, file_contents(_imp->dir / "REPOSITORY")));
         add_metadata_key(_imp->source_origin);
     }
     else if ((_imp->dir / "repository").exists())
     {
-        _imp->source_origin.reset(new LiteralMetadataStringKey("repository", "Source repository",
+        _imp->source_origin.reset(new LiteralMetadataValueKey<std::string> ("repository", "Source repository",
                     mkt_normal, file_contents(_imp->dir / "repository")));
         add_metadata_key(_imp->source_origin);
     }
 
     if ((_imp->dir / "BINARY_REPOSITORY").exists())
     {
-        _imp->binary_origin.reset(new LiteralMetadataStringKey("BINARY_REPOSITORY", "Binary repository",
+        _imp->binary_origin.reset(new LiteralMetadataValueKey<std::string> ("BINARY_REPOSITORY", "Binary repository",
                     mkt_normal, file_contents(_imp->dir / "BINARY_REPOSITORY")));
         add_metadata_key(_imp->binary_origin);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
     {
-        _imp->asflags.reset(new LiteralMetadataStringKey("ASFLAGS", "ASFLAGS",
+        _imp->asflags.reset(new LiteralMetadataValueKey<std::string> ("ASFLAGS", "ASFLAGS",
                     mkt_internal, file_contents(_imp->dir / "ASFLAGS")));
         add_metadata_key(_imp->asflags);
     }
 
     if ((_imp->dir / "CBUILD").exists())
     {
-        _imp->cbuild.reset(new LiteralMetadataStringKey("CBUILD", "CBUILD",
+        _imp->cbuild.reset(new LiteralMetadataValueKey<std::string> ("CBUILD", "CBUILD",
                     mkt_internal, file_contents(_imp->dir / "CBUILD")));
         add_metadata_key(_imp->cbuild);
     }
 
     if ((_imp->dir / "CFLAGS").exists())
     {
-        _imp->cflags.reset(new LiteralMetadataStringKey("CFLAGS", "CFLAGS",
+        _imp->cflags.reset(new LiteralMetadataValueKey<std::string> ("CFLAGS", "CFLAGS",
                     mkt_internal, file_contents(_imp->dir / "CFLAGS")));
         add_metadata_key(_imp->cflags);
     }
 
     if ((_imp->dir / "CHOST").exists())
     {
-        _imp->chost.reset(new LiteralMetadataStringKey("CHOST", "CHOST",
+        _imp->chost.reset(new LiteralMetadataValueKey<std::string> ("CHOST", "CHOST",
                     mkt_internal, file_contents(_imp->dir / "CHOST")));
         add_metadata_key(_imp->chost);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
     {
-        _imp->cxxflags.reset(new LiteralMetadataStringKey("CXXFLAGS", "CXXFLAGS",
+        _imp->cxxflags.reset(new LiteralMetadataValueKey<std::string> ("CXXFLAGS", "CXXFLAGS",
                     mkt_internal, file_contents(_imp->dir / "CXXFLAGS")));
         add_metadata_key(_imp->cxxflags);
     }
 
     if ((_imp->dir / "LDFLAGS").exists())
     {
-        _imp->ldflags.reset(new LiteralMetadataStringKey("LDFLAGS", "LDFLAGS",
+        _imp->ldflags.reset(new LiteralMetadataValueKey<std::string> ("LDFLAGS", "LDFLAGS",
                     mkt_internal, file_contents(_imp->dir / "LDFLAGS")));
         add_metadata_key(_imp->ldflags);
     }
 
     if ((_imp->dir / "PKGMANAGER").exists())
     {
-        _imp->pkgmanager.reset(new LiteralMetadataStringKey("PKGMANAGER", "Installed using",
+        _imp->pkgmanager.reset(new LiteralMetadataValueKey<std::string> ("PKGMANAGER", "Installed using",
                     mkt_normal, file_contents(_imp->dir / "PKGMANAGER")));
         add_metadata_key(_imp->pkgmanager);
     }
 
     if ((_imp->dir / "VDB_FORMAT").exists())
     {
-        _imp->vdb_format.reset(new LiteralMetadataStringKey("VDB_FORMAT", "VDB Format",
+        _imp->vdb_format.reset(new LiteralMetadataValueKey<std::string> ("VDB_FORMAT", "VDB Format",
                     mkt_internal, file_contents(_imp->dir / "VDB_FORMAT")));
         add_metadata_key(_imp->vdb_format);
     }
@@ -481,10 +481,10 @@ EInstalledRepositoryID::eapi() const
     return _imp->eapi;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 EInstalledRepositoryID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -582,20 +582,20 @@ EInstalledRepositoryID::homepage_key() const
     return _imp->homepage;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::short_description_key() const
 {
     need_keys_added();
     return _imp->short_description;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 EInstalledRepositoryID::contents_key() const
 {
     need_keys_added();
@@ -609,21 +609,21 @@ EInstalledRepositoryID::installed_time_key() const
     return _imp->installed_time;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::source_origin_key() const
 {
     need_keys_added();
     return _imp->source_origin;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::binary_origin_key() const
 {
     need_keys_added();
     return _imp->binary_origin;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EInstalledRepositoryID::fs_location_key() const
 {
     // Avoid loading whole metadata
@@ -631,7 +631,7 @@ EInstalledRepositoryID::fs_location_key() const
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new LiteralMetadataFSEntryKey(fs_location_raw_name(),
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
                     fs_location_human_name(), mkt_internal, _imp->dir));
         add_metadata_key(_imp->fs_location);
     }
@@ -639,16 +639,16 @@ EInstalledRepositoryID::fs_location_key() const
     return _imp->fs_location;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 EInstalledRepositoryID::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 EInstalledRepositoryID::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 
@@ -784,10 +784,10 @@ EInstalledRepositoryID::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 EInstalledRepositoryID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 

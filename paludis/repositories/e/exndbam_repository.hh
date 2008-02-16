@@ -101,8 +101,8 @@ namespace paludis
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
-            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
 
             ///\name For use by ExndbamID
             ///\{

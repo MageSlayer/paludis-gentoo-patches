@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,17 +35,12 @@ namespace paludis
     class MetadataKeyVisitorTypes;
 
     class MetadataKey;
-    class MetadataPackageIDKey;
-    class MetadataStringKey;
-    class MetadataSizeKey;
-    class MetadataContentsKey;
-    class MetadataTimeKey;
-    class MetadataRepositoryMaskInfoKey;
-    class MetadataFSEntryKey;
     class MetadataSectionKey;
+    class MetadataTimeKey;
     template <typename C_> class MetadataCollectionKey;
     template <> class MetadataCollectionKey<IUseFlagSet>;
     template <typename C_> class MetadataSpecTreeKey;
+    template <typename V_> class MetadataValueKey;
 
 #include <paludis/metadata_key-se.hh>
 

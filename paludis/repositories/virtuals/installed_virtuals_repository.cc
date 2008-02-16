@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,17 +55,17 @@ namespace paludis
         mutable IDMap ids;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const Environment * const e, const FSEntry & r, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             root(r),
             ids_mutex(m),
             has_ids(false),
-            root_key(new LiteralMetadataFSEntryKey(
+            root_key(new LiteralMetadataValueKey<FSEntry> (
                         "root", "root", mkt_normal, root)),
-            format_key(new LiteralMetadataStringKey(
+            format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_virtuals"))
         {
         }
@@ -325,13 +325,13 @@ InstalledVirtualsRepository::unimportant_category_names() const
     return result;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledVirtualsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledVirtualsRepository::installed_root_key() const
 {
     return _imp->root_key;

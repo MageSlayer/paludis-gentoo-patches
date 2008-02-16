@@ -1137,7 +1137,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**id->find_metadata("EAPI"))->value(), "0");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1212,7 +1212,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
         }

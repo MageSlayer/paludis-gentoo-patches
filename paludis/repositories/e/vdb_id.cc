@@ -50,7 +50,7 @@ VDBID::contents_filename() const
     return "CONTENTS";
 }
 
-tr1::shared_ptr<MetadataContentsKey>
+tr1::shared_ptr<MetadataValueKey<tr1::shared_ptr<const Contents> > >
 VDBID::make_contents_key() const
 {
     return make_shared_ptr(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",

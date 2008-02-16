@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,11 +63,11 @@ namespace paludis
         QualifiedPackageName name;
         VersionSpec version;
 
-        tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> url_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> short_description_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> long_description_key;
-        tr1::shared_ptr<LiteralMetadataStringKey> license_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > url_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > short_description_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > long_description_key;
+        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > license_key;
         tr1::shared_ptr<PackageIDKey> contained_in_key;
         tr1::shared_ptr<PackageIDSequenceKey> contains_key;
         tr1::shared_ptr<DepKey> depends_key;
@@ -122,7 +122,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         return;
     }
 
-    _imp->fs_location_key.reset(new LiteralMetadataFSEntryKey("DescriptionFileLocation", "Description File Location",
+    _imp->fs_location_key.reset(new LiteralMetadataValueKey<FSEntry> ("DescriptionFileLocation", "Description File Location",
                 mkt_internal, f));
     add_metadata_key(_imp->fs_location_key);
 
@@ -168,7 +168,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         {
             /* License often isn't in the format the spec requires, so we can't parse it. */
             Context local_context("When handling License: key:");
-            _imp->license_key.reset(new LiteralMetadataStringKey("License", "License", mkt_dependencies, file.get("License")));
+            _imp->license_key.reset(new LiteralMetadataValueKey<std::string>("License", "License", mkt_dependencies, file.get("License")));
             add_metadata_key(_imp->license_key);
         }
 
@@ -176,27 +176,27 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         {
             /* URL is also in stupid formats */
             Context local_context("When handling URL: key:");
-            _imp->url_key.reset(new LiteralMetadataStringKey("URL", "URL", mkt_significant, file.get("URL")));
+            _imp->url_key.reset(new LiteralMetadataValueKey<std::string>("URL", "URL", mkt_significant, file.get("URL")));
             add_metadata_key(_imp->url_key);
         }
 
         if (! file.get("Title").empty())
         {
             Context local_context("When handling Title: key:");
-            _imp->short_description_key.reset(new LiteralMetadataStringKey("Title", "Title", mkt_significant, file.get("Title")));
+            _imp->short_description_key.reset(new LiteralMetadataValueKey<std::string>("Title", "Title", mkt_significant, file.get("Title")));
             add_metadata_key(_imp->short_description_key);
         }
 
         if (! file.get("Description").empty())
         {
             Context local_context("When handling Description: key:");
-            _imp->long_description_key.reset(new LiteralMetadataStringKey("Description", "Description", mkt_normal, file.get("Description")));
+            _imp->long_description_key.reset(new LiteralMetadataValueKey<std::string>("Description", "Description", mkt_normal, file.get("Description")));
             add_metadata_key(_imp->long_description_key);
         }
         else if (! file.get("BundleDescription").empty())
         {
             Context local_context("When handling BundleDescription: key:");
-            _imp->long_description_key.reset(new LiteralMetadataStringKey("BundleDescription", "Bundle Description",
+            _imp->long_description_key.reset(new LiteralMetadataValueKey<std::string>("BundleDescription", "Bundle Description",
                         mkt_normal, file.get("BundleDescription")));
         }
 
@@ -204,19 +204,19 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         {
             Context local_context("When handling Date: key:");
             /* no guarantee on the format */
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Date", "Date", mkt_normal, file.get("Date"))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Date", "Date", mkt_normal, file.get("Date"))));
         }
 
         if (! file.get("Author").empty())
         {
             Context local_context("When handling Author: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Author", "Author", mkt_author, file.get("Author"))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Author", "Author", mkt_author, file.get("Author"))));
         }
 
         if (! file.get("Maintainer").empty())
         {
             Context local_context("When handling Maintainer: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Maintainer", "Maintainer", mkt_author, file.get("Maintainer"))));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Maintainer", "Maintainer", mkt_author, file.get("Maintainer"))));
         }
 
         if (! file.get("Contains").empty())
@@ -251,7 +251,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (! file.get("SystemRequirements").empty())
         {
             Context local_context("When handling SystemRequirements: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("SystemRequirements", "System Requirements", mkt_normal,
+            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("SystemRequirements", "System Requirements", mkt_normal,
                             file.get("SystemRequirements"))));
         }
 
@@ -322,10 +322,10 @@ CRANPackageID::repository() const
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 CRANPackageID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -382,22 +382,22 @@ CRANPackageID::homepage_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::short_description_key() const
 {
     return _imp->short_description_key;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::long_description_key() const
 {
     return _imp->long_description_key;
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 CRANPackageID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataContentsKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
@@ -406,16 +406,16 @@ CRANPackageID::installed_time_key() const
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 std::size_t
@@ -525,26 +525,26 @@ CRANPackageID::contains_key() const
     return _imp->contains_key;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 CRANPackageID::contained_in_key() const
 {
     return _imp->contained_in_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANPackageID::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 CRANPackageID::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 CRANPackageID::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }

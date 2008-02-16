@@ -101,13 +101,13 @@ namespace paludis
         Implementation(const VDBRepository * const, const VDBRepositoryParams &, tr1::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
         ~Implementation();
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> world_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> provides_cache_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> names_cache_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > world_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
     };
 
     Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
@@ -116,19 +116,19 @@ namespace paludis
         big_nasty_mutex(m),
         has_category_names(false),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
-        location_key(new LiteralMetadataFSEntryKey("location", "location",
+        location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                     mkt_significant, params.location)),
-        root_key(new LiteralMetadataFSEntryKey("root", "root",
+        root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
                     mkt_normal, params.root)),
-        format_key(new LiteralMetadataStringKey("format", "format",
+        format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, "vdb")),
-        world_key(new LiteralMetadataFSEntryKey("world", "world",
+        world_key(new LiteralMetadataValueKey<FSEntry> ("world", "world",
                     mkt_normal, params.world)),
-        provides_cache_key(new LiteralMetadataFSEntryKey("provides_cache", "provides_cache",
+        provides_cache_key(new LiteralMetadataValueKey<FSEntry> ("provides_cache", "provides_cache",
                     mkt_normal, params.provides_cache)),
-        names_cache_key(new LiteralMetadataFSEntryKey("names_cache", "names_cache",
+        names_cache_key(new LiteralMetadataValueKey<FSEntry> ("names_cache", "names_cache",
                     mkt_normal, params.names_cache)),
-        builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+        builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
                     mkt_normal, params.builddir))
     {
     }
@@ -882,13 +882,13 @@ VDBRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 VDBRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VDBRepository::installed_root_key() const
 {
     return _imp->root_key;

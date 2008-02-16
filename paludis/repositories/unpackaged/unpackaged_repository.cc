@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,13 +45,13 @@ namespace paludis
         tr1::shared_ptr<QualifiedPackageNameSet> package_names;
         tr1::shared_ptr<CategoryNamePartSet> category_names;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataStringKey> name_key;
-        tr1::shared_ptr<const MetadataStringKey> slot_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
-        tr1::shared_ptr<const MetadataStringKey> build_dependencies_key;
-        tr1::shared_ptr<const MetadataStringKey> run_dependencies_key;
-        tr1::shared_ptr<const MetadataStringKey> description_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > name_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > slot_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
@@ -61,19 +61,19 @@ namespace paludis
             ids(new PackageIDSequence),
             package_names(new QualifiedPackageNameSet),
             category_names(new CategoryNamePartSet),
-            location_key(new LiteralMetadataFSEntryKey("location", "location",
+            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location)),
-            name_key(new LiteralMetadataStringKey("name", "name",
+            name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
                         mkt_normal, stringify(params.name))),
-            slot_key(new LiteralMetadataStringKey("slot", "slot",
+            slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
                         mkt_normal, stringify(params.slot))),
-            format_key(new LiteralMetadataStringKey(
+            format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "unpackaged")),
-            build_dependencies_key(new LiteralMetadataStringKey(
+            build_dependencies_key(new LiteralMetadataValueKey<std::string> (
                         "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies)),
-            run_dependencies_key(new LiteralMetadataStringKey(
+            run_dependencies_key(new LiteralMetadataValueKey<std::string> (
                         "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies)),
-            description_key(new LiteralMetadataStringKey(
+            description_key(new LiteralMetadataValueKey<std::string> (
                         "description", "description", mkt_normal, params.description))
         {
             ids->push_back(id);
@@ -182,15 +182,15 @@ UnpackagedRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 UnpackagedRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

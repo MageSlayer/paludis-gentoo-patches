@@ -371,8 +371,8 @@ namespace paludis
         mutable tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
         mutable tr1::shared_ptr<DependencyLabelSequence> suggested_dependencies_labels;
 
-        tr1::shared_ptr<LiteralMetadataPackageIDKey> package_id;
-        tr1::shared_ptr<LiteralMetadataPackageIDKey> virtual_for;
+        tr1::shared_ptr<LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > > package_id;
+        tr1::shared_ptr<LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > > virtual_for;
         tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
         tr1::shared_ptr<FakeMetadataIUseSetKey> iuse;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
@@ -472,7 +472,7 @@ FakePackageID::repository() const
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 FakePackageID::virtual_for_key() const
 {
     need_keys_added();
@@ -612,25 +612,25 @@ FakePackageID::homepage_key()
     return _imp->homepage;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::short_description_key() const
 {
     need_keys_added();
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::long_description_key() const
 {
     need_keys_added();
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 FakePackageID::contents_key() const
 {
     need_keys_added();
-    return tr1::shared_ptr<const MetadataContentsKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
 }
 
 const tr1::shared_ptr<const MetadataTimeKey>
@@ -640,18 +640,18 @@ FakePackageID::installed_time_key() const
     return tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::source_origin_key() const
 {
     need_keys_added();
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::binary_origin_key() const
 {
     need_keys_added();
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 void
@@ -924,28 +924,28 @@ FakePackageID::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 FakePackageID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakePackageID::fs_location_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 char

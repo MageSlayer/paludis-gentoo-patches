@@ -53,7 +53,7 @@ using namespace paludis::erepository;
 
 EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const tr1::shared_ptr<const ERepositoryID> &,
         const std::string & r, const std::string & h, tr1::shared_ptr<const RepositoryMaskInfo> v, const MetadataKeyType t) :
-    MetadataRepositoryMaskInfoKey(r, h, t),
+    MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > (r, h, t),
     _value(v)
 {
 }
@@ -972,7 +972,7 @@ namespace paludis
 
 EContentsKey::EContentsKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    MetadataContentsKey(r, h, t),
+    MetadataValueKey<tr1::shared_ptr<const Contents> > (r, h, t),
     PrivateImplementationPattern<EContentsKey>(new Implementation<EContentsKey>(id, v)),
     _imp(PrivateImplementationPattern<EContentsKey>::_imp)
 {
@@ -1113,7 +1113,7 @@ namespace paludis
 EDistSizeKey::EDistSizeKey(const std::string & r, const std::string & h, const MetadataKeyType t,
         const tr1::shared_ptr<const EFetchableURIKey> & s,
         const tr1::shared_ptr<DistfilesSizeVisitor> & d) :
-    MetadataSizeKey(r, h, t),
+    MetadataValueKey<long> (r, h, t),
     PrivateImplementationPattern<EDistSizeKey>(new Implementation<EDistSizeKey>(s, d)),
     _imp(PrivateImplementationPattern<EDistSizeKey>::_imp)
 {
@@ -1123,7 +1123,7 @@ EDistSizeKey::~EDistSizeKey()
 {
 }
 
-long
+const long
 EDistSizeKey::value() const
 {
     Lock l(_imp->value_mutex);

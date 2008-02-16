@@ -49,14 +49,14 @@ using namespace paludis::unpackaged_repositories;
 namespace
 {
     class InstalledUnpackagedFSEntryKey :
-        public MetadataFSEntryKey
+        public MetadataValueKey<FSEntry>
     {
         private:
             const FSEntry _location;
 
         public:
             InstalledUnpackagedFSEntryKey(const FSEntry & l) :
-                MetadataFSEntryKey("location", "Location", mkt_internal),
+                MetadataValueKey<FSEntry> ("location", "Location", mkt_internal),
                 _location(l)
             {
             }
@@ -83,7 +83,7 @@ namespace
     }
 
     class InstalledUnpackagedContentsKey :
-        public MetadataContentsKey
+        public MetadataValueKey<tr1::shared_ptr<const Contents> >
     {
         private:
             const PackageID * const _id;
@@ -93,7 +93,7 @@ namespace
 
         public:
             InstalledUnpackagedContentsKey(const PackageID * const i, const NDBAM * const d) :
-                MetadataContentsKey("contents", "Contents", mkt_internal),
+                MetadataValueKey<tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
                 _id(i),
                 _db(d)
             {
@@ -136,7 +136,7 @@ namespace
     };
 
     class InstalledUnpackagedStringKey :
-        public MetadataStringKey
+        public MetadataValueKey<std::string>
     {
         private:
             mutable tr1::shared_ptr<const std::string> _v;
@@ -145,7 +145,7 @@ namespace
 
         public:
             InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
-                MetadataStringKey(r, h, t),
+                MetadataValueKey<std::string> (r, h, t),
                 _f(f)
             {
             }
@@ -391,10 +391,10 @@ InstalledUnpackagedID::repository() const
     return _imp->env->package_database()->fetch_repository(_imp->repository_name);
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 InstalledUnpackagedID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -421,10 +421,10 @@ InstalledUnpackagedID::contains_key() const
     return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataPackageIDKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 InstalledUnpackagedID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataPackageIDKey>();
+    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -463,19 +463,19 @@ InstalledUnpackagedID::homepage_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::short_description_key() const
 {
     return _imp->description_key;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataContentsKey>
+const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
 InstalledUnpackagedID::contents_key() const
 {
     return _imp->contents_key;
@@ -487,34 +487,34 @@ InstalledUnpackagedID::installed_time_key() const
     return _imp->installed_time_key;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::source_origin_key() const
 {
     return _imp->source_origin_key;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::binary_origin_key() const
 {
     return _imp->binary_origin_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedID::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 InstalledUnpackagedID::size_of_download_required_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const tr1::shared_ptr<const MetadataSizeKey>
+const tr1::shared_ptr<const MetadataValueKey<long> >
 InstalledUnpackagedID::size_of_all_distfiles_key() const
 {
-    return tr1::shared_ptr<const MetadataSizeKey>();
+    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 namespace

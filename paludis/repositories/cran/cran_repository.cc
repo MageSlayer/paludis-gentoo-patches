@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -70,12 +70,12 @@ namespace paludis
         Implementation(const CRANRepositoryParams &, const tr1::shared_ptr<Mutex> &);
         ~Implementation();
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> distdir_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> library_key;
-        tr1::shared_ptr<const MetadataStringKey> sync_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > library_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
     };
 }
 
@@ -83,12 +83,12 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, c
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
-    location_key(new LiteralMetadataFSEntryKey("location", "location", mkt_significant, params.location)),
-    distdir_key(new LiteralMetadataFSEntryKey("distdir", "distdir", mkt_normal, params.distdir)),
-    format_key(new LiteralMetadataStringKey("format", "format", mkt_significant, "cran")),
-    builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir", mkt_normal, params.builddir)),
-    library_key(new LiteralMetadataFSEntryKey("library", "library", mkt_normal, params.library)),
-    sync_key(new LiteralMetadataStringKey("sync", "sync", mkt_normal, params.sync))
+    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location)),
+    distdir_key(new LiteralMetadataValueKey<FSEntry> ("distdir", "distdir", mkt_normal, params.distdir)),
+    format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "cran")),
+    builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir", mkt_normal, params.builddir)),
+    library_key(new LiteralMetadataValueKey<FSEntry> ("library", "library", mkt_normal, params.library)),
+    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync))
 {
 }
 
@@ -515,15 +515,15 @@ CRANRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

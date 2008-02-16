@@ -165,17 +165,17 @@ namespace gtkpaludis
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             got_key(k, markup_escape(stringify(*k.value())));
         }
 
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
             got_key(k, markup_escape(stringify(k.value())));
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
             got_key(k, markup_escape(stringify(k.value())));
         }
@@ -190,7 +190,7 @@ namespace gtkpaludis
             got_key(k, markup_escape(stringify(buf)));
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             if (! k.value())
                 return;
@@ -199,12 +199,12 @@ namespace gtkpaludis
                         join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ")));
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry> & k)
         {
             got_key(k, markup_escape(stringify(k.value())));
         }
 
-        void visit(const MetadataContentsKey &)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
         {
         }
 

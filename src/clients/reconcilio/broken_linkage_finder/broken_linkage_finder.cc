@@ -327,7 +327,7 @@ Implementation<BrokenLinkageFinder>::gather_package(const tr1::shared_ptr<const 
 
     Context ctx("When gathering the contents of " + stringify(*pkg) + ":");
 
-    tr1::shared_ptr<const MetadataContentsKey> key(pkg->contents_key());
+    tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > key(pkg->contents_key());
     if (! key)
         return;
     tr1::shared_ptr<const Contents> contents(key->value());

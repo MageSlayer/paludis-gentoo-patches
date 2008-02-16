@@ -45,11 +45,11 @@ namespace paludis
         tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
         std::map<std::string, std::string> mirrors;
 
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation() :
             virtual_packages(new FakeRepository::VirtualsSequence),
-            format_key(new LiteralMetadataStringKey(
+            format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "fake"))
         {
             mirrors.insert(std::make_pair("example", "http://fake-example/fake-example/"));
@@ -199,15 +199,15 @@ FakeRepository::end_mirrors(const std::string & s) const
     return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

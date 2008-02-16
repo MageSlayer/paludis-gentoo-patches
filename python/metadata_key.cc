@@ -49,19 +49,19 @@ class MetadataKeySptrToPythonVisitor :
         {
         }
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataPackageIDKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >(_m_ptr));
         }
 
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataStringKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSizeKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
         }
 
         void visit(const MetadataTimeKey & k)
@@ -69,19 +69,19 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
         }
 
-        void visit(const MetadataContentsKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataContentsKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const Contents> > >(_m_ptr));
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataFSEntryKey>(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<FSEntry> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
@@ -167,11 +167,11 @@ struct MetadataKeySptrToPython
 };
 
 struct MetadataPackageIDKeyWrapper :
-    MetadataPackageIDKey,
-    bp::wrapper<MetadataPackageIDKey>
+    MetadataValueKey<tr1::shared_ptr<const PackageID> > ,
+    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const PackageID> > >
 {
     MetadataPackageIDKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataPackageIDKey(r, h, t)
+        MetadataValueKey<tr1::shared_ptr<const PackageID> > (r, h, t)
     {
     }
 
@@ -185,14 +185,24 @@ struct MetadataPackageIDKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "value");
     }
+
+    virtual std::string pretty_print(const Formatter<PackageID> &) const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("pretty_print"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "pretty_print");
+    }
 };
 
 struct MetadataStringKeyWrapper :
-    MetadataStringKey,
-    bp::wrapper<MetadataStringKey>
+    MetadataValueKey<std::string> ,
+    bp::wrapper<MetadataValueKey<std::string> >
 {
     MetadataStringKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataStringKey(r, h, t)
+        MetadataValueKey<std::string> (r, h, t)
     {
     }
 
@@ -237,7 +247,7 @@ struct MetadataSectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSectionKey", "need_keys_added");
     }
 
-    virtual const tr1::shared_ptr<const MetadataStringKey> title_key() const
+    virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > title_key() const
     {
         Lock l(get_mutex());
 
@@ -270,11 +280,11 @@ struct MetadataTimeKeyWrapper :
 };
 
 struct MetadataContentsKeyWrapper :
-    MetadataContentsKey,
-    bp::wrapper<MetadataContentsKey>
+    MetadataValueKey<tr1::shared_ptr<const Contents> > ,
+    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const Contents> > >
 {
     MetadataContentsKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataContentsKey(r, h, t)
+        MetadataValueKey<tr1::shared_ptr<const Contents> > (r, h, t)
     {
     }
 
@@ -291,11 +301,11 @@ struct MetadataContentsKeyWrapper :
 };
 
 struct MetadataFSEntryKeyWrapper :
-    MetadataFSEntryKey,
-    bp::wrapper<MetadataFSEntryKey>
+    MetadataValueKey<FSEntry> ,
+    bp::wrapper<MetadataValueKey<FSEntry> >
 {
     MetadataFSEntryKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataFSEntryKey(r, h, t)
+        MetadataValueKey<FSEntry> (r, h, t)
     {
     }
 
@@ -307,16 +317,16 @@ struct MetadataFSEntryKeyWrapper :
         if (bp::override f = get_override("value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataFSEntryKey", "value");
+            throw PythonMethodNotImplemented("MetadataValueKey<FSEntry> ", "value");
     }
 };
 
 struct MetadataRepositoryMaskInfoKeyWrapper :
-    MetadataRepositoryMaskInfoKey,
-    bp::wrapper<MetadataRepositoryMaskInfoKey>
+    MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > ,
+    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > >
 {
     MetadataRepositoryMaskInfoKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataRepositoryMaskInfoKey(r, h, t)
+        MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > (r, h, t)
     {
     }
 
@@ -842,7 +852,7 @@ void expose_metadata_key()
     /**
      * MetadataPackageIDKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataPackageIDKey> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > >();
     bp::implicitly_convertible<tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
             tr1::shared_ptr<MetadataKey> >();
     bp::class_<MetadataPackageIDKeyWrapper, tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
@@ -857,7 +867,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataPackageIDKey::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const PackageID> > ::value),
                 "value() -> PackageID\n"
                 "Fetch our value."
                 )
@@ -866,7 +876,7 @@ void expose_metadata_key()
     /**
      * MetadataStringKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataStringKey> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<std::string> > >();
     bp::implicitly_convertible<tr1::shared_ptr<MetadataStringKeyWrapper>,
             tr1::shared_ptr<MetadataKey> >();
     bp::class_<MetadataStringKeyWrapper, tr1::shared_ptr<MetadataStringKeyWrapper>,
@@ -881,7 +891,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataStringKey::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<std::string> ::value),
                 "value() -> string\n"
                 "Fetch our value."
                 )
@@ -942,7 +952,7 @@ void expose_metadata_key()
     /**
      * MetadataFSEntryKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataFSEntryKey> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<FSEntry> > >();
     bp::implicitly_convertible<tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
             tr1::shared_ptr<MetadataKey> >();
     bp::class_<MetadataFSEntryKeyWrapper, tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
@@ -956,7 +966,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataFSEntryKey::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<FSEntry> ::value),
                 "value() -> FSEntry\n"
                 "Fetch our value."
                 )
@@ -965,7 +975,7 @@ void expose_metadata_key()
     /**
      * MetadataContentsKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataContentsKey> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > >();
     bp::implicitly_convertible<tr1::shared_ptr<MetadataContentsKeyWrapper>,
             tr1::shared_ptr<MetadataKey> >();
     bp::class_<MetadataContentsKeyWrapper, tr1::shared_ptr<MetadataContentsKeyWrapper>,
@@ -979,7 +989,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataContentsKey::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const Contents> > ::value),
                 "value() -> Contents\n"
                 "Fetch our value."
                 )
@@ -1006,7 +1016,7 @@ void expose_metadata_key()
     /**
      * MetadataRepositoryMaskInfoKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataRepositoryMaskInfoKey> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > > >();
     bp::implicitly_convertible<tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
             tr1::shared_ptr<MetadataKey> >();
     bp::class_<MetadataRepositoryMaskInfoKeyWrapper, tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
@@ -1021,7 +1031,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataRepositoryMaskInfoKey::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > ::value),
                 "value() -> RepositoryMaskInfo\n"
                 "Fetch our value."
                 )

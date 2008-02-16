@@ -60,17 +60,17 @@ namespace
     {
         std::ostringstream s;
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             s << *k.value();
         }
 
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
             s << k.value();
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
             s << k.value();
         }
@@ -105,17 +105,17 @@ namespace
             s << stringify(buf);
         }
 
-        void visit(const MetadataContentsKey &)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             s << (*k.value())[k::mask_file()] << ": " <<
                 join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ");
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry> & k)
         {
             s << k.value();
         }

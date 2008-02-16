@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -36,17 +36,17 @@ namespace
     struct KeyValidator :
         ConstVisitor<MetadataKeyVisitorTypes>
     {
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
             const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
             long PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
         }
@@ -56,17 +56,17 @@ namespace
             time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataContentsKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
         {
             const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry>& k)
         {
             const FSEntry & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
         }

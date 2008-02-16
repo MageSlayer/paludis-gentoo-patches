@@ -141,17 +141,17 @@ namespace
                 << join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), " ") << "\n";
         }
 
-        void visit(const MetadataPackageIDKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             stream << k.raw_name() << ": " << stringify(*k.value()) << "\n";
         }
 
-        void visit(const MetadataStringKey & k)
+        void visit(const MetadataValueKey<std::string> & k)
         {
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
-        void visit(const MetadataSizeKey & k)
+        void visit(const MetadataValueKey<long> & k)
         {
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
@@ -161,12 +161,12 @@ namespace
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
-        void visit(const MetadataFSEntryKey & k)
+        void visit(const MetadataValueKey<FSEntry> & k)
         {
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
-        void visit(const MetadataRepositoryMaskInfoKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             if (k.value())
                 stream << k.raw_name() << ": " << (*k.value())[k::mask_file()] << ": "
@@ -175,7 +175,7 @@ namespace
                 stream << k.raw_name() << "\n";
         }
 
-        void visit(const MetadataContentsKey & k)
+        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
         {
             stream << k.raw_name() << "\n";
         }

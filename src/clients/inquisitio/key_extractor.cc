@@ -197,12 +197,12 @@ namespace
             {
             }
 
-            void visit(const MetadataStringKey & s)
+            void visit(const MetadataValueKey<std::string> & s)
             {
                 result = _m(s.value());
             }
 
-            void visit(const MetadataSizeKey & s)
+            void visit(const MetadataValueKey<long> & s)
             {
                 result = _m(stringify(s.value()));
             }
@@ -212,20 +212,20 @@ namespace
                 result = _m(stringify(s.value()));
             }
 
-            void visit(const MetadataContentsKey &)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
             {
             }
 
-            void visit(const MetadataRepositoryMaskInfoKey &)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > &)
             {
             }
 
-            void visit(const MetadataFSEntryKey & s)
+            void visit(const MetadataValueKey<FSEntry> & s)
             {
                 result = _m(stringify(s.value()));
             }
 
-            void visit(const MetadataPackageIDKey & s)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & s)
             {
                 result = _m(stringify(*s.value()));
             }

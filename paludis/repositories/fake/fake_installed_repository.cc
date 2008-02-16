@@ -39,13 +39,13 @@ namespace paludis
     template <>
     struct Implementation<FakeInstalledRepository>
     {
-        tr1::shared_ptr<const MetadataStringKey> format_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
 
         Implementation() :
-            format_key(new LiteralMetadataStringKey(
+            format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_fake")),
-            installed_root_key(new LiteralMetadataFSEntryKey(
+            installed_root_key(new LiteralMetadataValueKey<FSEntry> (
                         "installed_root", "installed_root", mkt_normal, FSEntry("/")))
         {
         }
@@ -188,13 +188,13 @@ FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     return q.result;
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,10 +59,10 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> install_dir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const gems::InstalledRepositoryParams p,
                        tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
@@ -70,13 +70,13 @@ namespace paludis
             params(p),
             has_category_names(false),
             has_ids(false),
-            install_dir_key(new LiteralMetadataFSEntryKey("install_dir", "install_dir",
+            install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
                         mkt_normal, params.install_dir)),
-            builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+            builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
                         mkt_normal, params.builddir)),
-            root_key(new LiteralMetadataFSEntryKey(
+            root_key(new LiteralMetadataValueKey<FSEntry> (
                         "root", "root", mkt_normal, params.root)),
-            format_key(new LiteralMetadataStringKey("format", "format",
+            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "gems"))
         {
         }
@@ -353,13 +353,13 @@ InstalledGemsRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledGemsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;

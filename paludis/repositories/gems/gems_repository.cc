@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -54,29 +54,29 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> install_dir_key;
-        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
-        tr1::shared_ptr<const MetadataStringKey> sync_key;
-        tr1::shared_ptr<const MetadataStringKey> sync_options_key;
-        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
+        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const gems::RepositoryParams p, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             params(p),
             big_nasty_mutex(m),
             has_category_names(false),
             has_ids(false),
-            location_key(new LiteralMetadataFSEntryKey("location", "location",
+            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location)),
-            install_dir_key(new LiteralMetadataFSEntryKey("install_dir", "install_dir",
+            install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
                         mkt_normal, params.install_dir)),
-            builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+            builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
                         mkt_normal, params.builddir)),
-            sync_key(new LiteralMetadataStringKey("sync", "sync",
+            sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync",
                         mkt_normal, params.sync)),
-            sync_options_key(new LiteralMetadataStringKey(
+            sync_options_key(new LiteralMetadataValueKey<std::string> (
                         "sync_options", "sync_options", mkt_normal, params.sync_options)),
-            format_key(new LiteralMetadataStringKey("format", "format",
+            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "gems"))
         {
         }
@@ -334,15 +334,15 @@ GemsRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataStringKey>
+const tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataFSEntryKey>
+const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemsRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataFSEntryKey>();
+    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

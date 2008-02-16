@@ -79,18 +79,12 @@ MetadataKey::type() const
     return _imp->type;
 }
 
-MetadataStringKey::MetadataStringKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+MetadataSectionKey::MetadataSectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
 }
 
-MetadataSizeKey::MetadataSizeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
-MetadataFSEntryKey::MetadataFSEntryKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
+MetadataSectionKey::~MetadataSectionKey()
 {
 }
 
@@ -99,88 +93,23 @@ MetadataTimeKey::MetadataTimeKey(const std::string & r, const std::string & h, c
 {
 }
 
-MetadataContentsKey::MetadataContentsKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+template <typename C_>
+MetadataValueKey<C_>::MetadataValueKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
-}
-
-MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
-MetadataRepositoryMaskInfoKey::MetadataRepositoryMaskInfoKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
-namespace paludis
-{
-    template <>
-    struct Implementation<MetadataSectionKey>
-    {
-        mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
-    };
-}
-
-MetadataSectionKey::MetadataSectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t),
-    PrivateImplementationPattern<MetadataSectionKey>(new Implementation<MetadataSectionKey>),
-    _imp(PrivateImplementationPattern<MetadataSectionKey>::_imp)
-{
-}
-
-MetadataSectionKey::~MetadataSectionKey()
-{
-}
-
-void
-MetadataSectionKey::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
-{
-    using namespace tr1::placeholders;
-
-    if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
-        throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
-
-    _imp->keys.push_back(k);
-}
-
-MetadataSectionKey::MetadataConstIterator
-MetadataSectionKey::begin_metadata() const
-{
-    need_keys_added();
-    return MetadataConstIterator(_imp->keys.begin());
-}
-
-MetadataSectionKey::MetadataConstIterator
-MetadataSectionKey::end_metadata() const
-{
-    need_keys_added();
-    return MetadataConstIterator(_imp->keys.end());
-}
-
-MetadataSectionKey::MetadataConstIterator
-MetadataSectionKey::find_metadata(const std::string & s) const
-{
-    using namespace tr1::placeholders;
-
-    need_keys_added();
-
-    // tr1::mem_fn on a sptr doesn't work with boost
-    // return std::find_if(begin_metadata(), end_metadata(),
-    //        tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
-
-    for (MetadataConstIterator i(begin_metadata()), i_end(end_metadata()) ;
-            i != i_end ; ++i)
-        if ((*i)->raw_name() == s)
-            return i;
-    return end_metadata();
 }
 
 template <typename C_>
 MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
+{
+}
+
+ExtraMetadataValueKeyMethods<long>::~ExtraMetadataValueKeyMethods()
+{
+}
+
+ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
 {
 }
 
@@ -222,4 +151,11 @@ template class MetadataSpecTreeKey<FetchableURISpecTree>;
 template class MetadataSpecTreeKey<DependencySpecTree>;
 #endif
 template class MetadataSpecTreeKey<SimpleURISpecTree>;
+
+template class MetadataValueKey<std::string>;
+template class MetadataValueKey<long>;
+template class MetadataValueKey<FSEntry>;
+template class MetadataValueKey<tr1::shared_ptr<const PackageID> >;
+template class MetadataValueKey<tr1::shared_ptr<const Contents> >;
+template class MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >;
 

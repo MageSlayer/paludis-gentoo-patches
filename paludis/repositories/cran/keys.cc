@@ -32,6 +32,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/formatter.hh>
+#include <paludis/action.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;
@@ -68,7 +69,7 @@ PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
 
 PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
         const CRANPackageID * const v, const MetadataKeyType t) :
-    MetadataPackageIDKey(r, h, t),
+    MetadataValueKey<tr1::shared_ptr<const PackageID> >(r, h, t),
     _v(v)
 {
 }
@@ -77,6 +78,22 @@ const tr1::shared_ptr<const PackageID>
 PackageIDKey::value() const
 {
     return _v->shared_from_this();
+}
+
+std::string
+PackageIDKey::pretty_print(const Formatter<PackageID> & f) const
+{
+    if (_v->supports_action(SupportsActionTest<InstalledAction>()))
+        return f.format(*_v, format::Installed());
+    else if (_v->supports_action(SupportsActionTest<InstallAction>()))
+    {
+        if (_v->masked())
+            return f.format(*_v, format::Plain());
+        else
+            return f.format(*_v, format::Installable());
+    }
+    else
+        return f.format(*_v, format::Plain());
 }
 
 namespace paludis

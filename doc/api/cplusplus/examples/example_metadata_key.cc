@@ -52,27 +52,28 @@ namespace
             {
             }
 
-            void visit(const MetadataStringKey & key)
+            void visit(const MetadataValueKey<std::string> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataStringKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<std::string>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
-            void visit(const MetadataSizeKey & key)
+            void visit(const MetadataValueKey<long> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSizeKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<long>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
-            void visit(const MetadataFSEntryKey & key)
+            void visit(const MetadataValueKey<FSEntry> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataFSEntryKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<FSEntry>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
-            void visit(const MetadataPackageIDKey & key)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataPackageIDKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " <<
+                    "MetadataValueKey<tr1::shared_ptr<const PackageID> >" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << *key.value() << endl;
             }
 
@@ -88,20 +89,22 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << buf << endl;
             }
 
-            void visit(const MetadataContentsKey &)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataContentsKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " <<
+                    "MetadataValueKey<tr1::shared_ptr<const Contents> > " << endl;
                 /* We won't display the contents of the contents key here, since
                  * it involves creating another visitor. See \ref
                  * example_contents.cc "example_contents.cc" for that. */
             }
 
-            void visit(const MetadataRepositoryMaskInfoKey & key)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataRepositoryMaskInfoKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " <<
+                    "MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >" << endl;
 
-                /* MetadataRepositoryMaskInfoKey::value() can return a zero
-                 * pointer. Other keys can't. */
+                /* MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >::value()
+                 * can return a zero pointer. Other keys can't. */
                 if (key.value())
                 {
                     cout << indent << left << setw(30) << "    Mask file:" << " " << (*key.value())[k::mask_file()] << endl;

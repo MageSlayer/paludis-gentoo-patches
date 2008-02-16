@@ -179,7 +179,7 @@ namespace paludis
              * implementations should not return zero here, but clients should still
              * check.
              */
-            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
 
             /**
              * The installed_root_key, if non-zero, specifies that we contain installed
@@ -188,7 +188,7 @@ namespace paludis
              * This key is currently used in various places to determine whether a repository is
              * an 'installed' repository or not.
              */
-            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
 
             ///\}
 

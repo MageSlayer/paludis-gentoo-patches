@@ -486,7 +486,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataPackageIDKey & k)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
             {
                 if (k.type() == type)
                 {
@@ -503,7 +503,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataStringKey & k)
+            void visit(const MetadataValueKey<std::string> & k)
             {
                 if (k.type() == type)
                 {
@@ -520,7 +520,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataSizeKey & k)
+            void visit(const MetadataValueKey<long> & k)
             {
                 if (k.type() == type)
                 {
@@ -583,7 +583,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataRepositoryMaskInfoKey & k)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
             {
                 if (k.type() == type && k.value())
                 {
@@ -607,7 +607,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataFSEntryKey & k)
+            void visit(const MetadataValueKey<FSEntry> & k)
             {
                 if (k.type() == type)
                 {
@@ -624,7 +624,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataContentsKey &)
+            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
             {
             }
     };

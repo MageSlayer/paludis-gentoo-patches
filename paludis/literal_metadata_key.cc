@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,44 +27,12 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
+#include <paludis/action.hh>
 
 using namespace paludis;
 
 namespace paludis
 {
-    template <>
-    struct Implementation<LiteralMetadataStringKey>
-    {
-        const std::string value;
-
-        Implementation(const std::string & v) :
-            value(v)
-        {
-        }
-    };
-
-    template <>
-    struct Implementation<LiteralMetadataFSEntryKey>
-    {
-        const FSEntry value;
-
-        Implementation(const FSEntry & v) :
-            value(v)
-        {
-        }
-    };
-
-    template <>
-    struct Implementation<LiteralMetadataPackageIDKey>
-    {
-        const tr1::shared_ptr<const PackageID> value;
-
-        Implementation(const tr1::shared_ptr<const PackageID> & v) :
-            value(v)
-        {
-        }
-    };
-
     template <>
     struct Implementation<LiteralMetadataFSEntrySequenceKey>
     {
@@ -86,60 +54,20 @@ namespace paludis
         {
         }
     };
-}
 
-LiteralMetadataStringKey::LiteralMetadataStringKey(const std::string & h, const std::string & r,
-        const MetadataKeyType t, const std::string & v) :
-    MetadataStringKey(h, r, t),
-    PrivateImplementationPattern<LiteralMetadataStringKey>(new Implementation<LiteralMetadataStringKey>(v)),
-    _imp(PrivateImplementationPattern<LiteralMetadataStringKey>::_imp)
-{
-}
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
+    template <>
+#endif
+    template <typename T_>
+    struct Implementation<LiteralMetadataValueKey<T_> >
+    {
+        const T_ value;
 
-LiteralMetadataStringKey::~LiteralMetadataStringKey()
-{
-}
-
-const std::string
-LiteralMetadataStringKey::value() const
-{
-    return _imp->value;
-}
-
-LiteralMetadataFSEntryKey::LiteralMetadataFSEntryKey(const std::string & h, const std::string & r,
-        const MetadataKeyType t, const FSEntry & v) :
-    MetadataFSEntryKey(h, r, t),
-    PrivateImplementationPattern<LiteralMetadataFSEntryKey>(new Implementation<LiteralMetadataFSEntryKey>(v)),
-    _imp(PrivateImplementationPattern<LiteralMetadataFSEntryKey>::_imp)
-{
-}
-
-LiteralMetadataFSEntryKey::~LiteralMetadataFSEntryKey()
-{
-}
-
-const FSEntry
-LiteralMetadataFSEntryKey::value() const
-{
-    return _imp->value;
-}
-
-LiteralMetadataPackageIDKey::LiteralMetadataPackageIDKey(const std::string & h, const std::string & r,
-        const MetadataKeyType t, const tr1::shared_ptr<const PackageID> & v) :
-    MetadataPackageIDKey(h, r, t),
-    PrivateImplementationPattern<LiteralMetadataPackageIDKey>(new Implementation<LiteralMetadataPackageIDKey>(v)),
-    _imp(PrivateImplementationPattern<LiteralMetadataPackageIDKey>::_imp)
-{
-}
-
-LiteralMetadataPackageIDKey::~LiteralMetadataPackageIDKey()
-{
-}
-
-const tr1::shared_ptr<const PackageID>
-LiteralMetadataPackageIDKey::value() const
-{
-    return _imp->value;
+        Implementation(const T_ & v) :
+            value(v)
+        {
+        }
+    };
 }
 
 LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & h, const std::string & r,
@@ -207,4 +135,50 @@ LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f)
     using namespace tr1::placeholders;
     return join(value()->begin(), value()->end(), " ", tr1::bind(&format_string, _1, f));
 }
+
+ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
+{
+}
+
+std::string
+ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
+{
+    tr1::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > *>(this)->value());
+    if (v->supports_action(SupportsActionTest<InstalledAction>()))
+        return f.format(*v, format::Installed());
+    else if (v->supports_action(SupportsActionTest<InstallAction>()))
+    {
+        if (v->masked())
+            return f.format(*v, format::Plain());
+        else
+            return f.format(*v, format::Installable());
+    }
+    else
+        return f.format(*v, format::Plain());
+}
+
+template <typename T_>
+LiteralMetadataValueKey<T_>::LiteralMetadataValueKey(const std::string & r, const std::string & h,
+        const MetadataKeyType t, const T_ & v) :
+    MetadataValueKey<T_>(r, h, t),
+    PrivateImplementationPattern<LiteralMetadataValueKey<T_> >(new Implementation<LiteralMetadataValueKey<T_> >(v)),
+    _imp(PrivateImplementationPattern<LiteralMetadataValueKey<T_ > >::_imp)
+{
+}
+
+template <typename T_>
+LiteralMetadataValueKey<T_>::~LiteralMetadataValueKey()
+{
+}
+
+template <typename T_>
+const T_
+LiteralMetadataValueKey<T_>::value() const
+{
+    return _imp->value;
+}
+
+template class LiteralMetadataValueKey<FSEntry>;
+template class LiteralMetadataValueKey<std::string>;
+template class LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> >;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/formatter-fwd.hh>
+#include <paludis/metadata_key_holder.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -61,7 +62,6 @@ namespace paludis
         VisitorTypes<
             MetadataKeyVisitorTypes,
             MetadataKey,
-            MetadataPackageIDKey,
             MetadataCollectionKey<UseFlagNameSet>,
             MetadataCollectionKey<IUseFlagSet>,
             MetadataCollectionKey<KeywordNameSet>,
@@ -74,12 +74,13 @@ namespace paludis
             MetadataSpecTreeKey<SimpleURISpecTree>,
             MetadataSpecTreeKey<ProvideSpecTree>,
             MetadataSpecTreeKey<RestrictSpecTree>,
-            MetadataStringKey,
-            MetadataSizeKey,
-            MetadataContentsKey,
+            MetadataValueKey<std::string>,
+            MetadataValueKey<long>,
+            MetadataValueKey<FSEntry>,
+            MetadataValueKey<tr1::shared_ptr<const PackageID> >,
+            MetadataValueKey<tr1::shared_ptr<const Contents> >,
+            MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >,
             MetadataTimeKey,
-            MetadataRepositoryMaskInfoKey,
-            MetadataFSEntryKey,
             MetadataSectionKey
             >
     {
@@ -148,111 +149,104 @@ namespace paludis
     };
 
     /**
-     * A MetadataPackageIDKey is a MetadataKey that has a PackageID as its
-     * value.
+     * A MetadataSectionKey is a MetadataKey that holds a number of other
+     * MetadataKey instances.
      *
      * \ingroup g_metadata_key
      * \since 0.26
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE MetadataPackageIDKey :
+    class PALUDIS_VISIBLE MetadataSectionKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataPackageIDKey>
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSectionKey>,
+        public MetadataKeyHolder
     {
         protected:
             ///\name Basic operations
             ///\{
 
-            MetadataPackageIDKey(const std::string &, const std::string &, const MetadataKeyType);
+            MetadataSectionKey(const std::string &, const std::string &, const MetadataKeyType);
 
             ///\}
 
         public:
-            /**
-             * Fetch our value.
-             */
-            virtual const tr1::shared_ptr<const PackageID> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            ///\name Basic operations
+            ///\{
+
+            virtual ~MetadataSectionKey();
+
+            ///\}
     };
 
     /**
-     * A MetadataStringKey is a MetadataKey that has a std::string as its
-     * value.
+     * Extra methods for MetadataValueKey with certain item types.
      *
      * \ingroup g_metadata_key
      * \since 0.26
-     * \nosubgrouping
      */
-    class PALUDIS_VISIBLE MetadataStringKey :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataStringKey>
+    template <typename C_>
+    class ExtraMetadataValueKeyMethods
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataStringKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
-        public:
-            /**
-             * Fetch our value.
-             */
-            virtual const std::string value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
-     * A MetadataSizeKey is a MetadataKey that represents the size of a file or
-     * some files on disk in bytes.
+     * Extra methods for MetadataValueKey with long value type.
      *
      * \ingroup g_metadata_key
      * \since 0.26
-     * \nosubgrouping
      */
-    class PALUDIS_VISIBLE MetadataSizeKey :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSizeKey>
+    template <>
+    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<long>
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSizeKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
-            /**
-             * Fetch our raw value.
-             */
-            virtual long value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual ~ExtraMetadataValueKeyMethods() = 0;
 
             /**
-             * Get a pretty string version of our value.
+             * Return a formatted version of our value.
              */
             virtual std::string pretty_print() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
-     * A MetadataFSEntryKey is a MetadataKey that has an FSEntry as its value.
+     * Extra methods for MetadataValueKey with PackageID value type.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     */
+    template <>
+    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >
+    {
+        public:
+            virtual ~ExtraMetadataValueKeyMethods() = 0;
+
+            /**
+             * Return a formatted version of our value, using the supplied Formatter to
+             * format the item.
+             */
+            virtual std::string pretty_print(const Formatter<PackageID> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * A MetadataValueKey is a MetadataKey that holds some simple type
+     * as its value.
      *
      * \ingroup g_metadata_key
      * \since 0.26
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE MetadataFSEntryKey :
+    template <typename C_>
+    class PALUDIS_VISIBLE MetadataValueKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataFSEntryKey>
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataValueKey<C_> >,
+        public virtual ExtraMetadataValueKeyMethods<C_>
     {
         protected:
             ///\name Basic operations
             ///\{
 
-            MetadataFSEntryKey(const std::string &, const std::string &, const MetadataKeyType);
+            MetadataValueKey(const std::string &, const std::string &, const MetadataKeyType);
 
             ///\}
 
@@ -260,7 +254,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const FSEntry value() const
+            virtual const C_ value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -289,119 +283,6 @@ namespace paludis
              */
             virtual time_t value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * A MetadataContentsKey is a MetadataKey that holds a Contents heirarchy.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE MetadataContentsKey :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataContentsKey>
-    {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataContentsKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
-        public:
-            /**
-             * Fetch our value.
-             */
-            virtual const tr1::shared_ptr<const Contents> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * A MetadataRepositoryMaskInfoKey is a MetadataKey that holds
-     * RepositoryMaskInfo as its value.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE MetadataRepositoryMaskInfoKey :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataRepositoryMaskInfoKey>
-    {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataRepositoryMaskInfoKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
-        public:
-            /**
-             * Fetch our value.
-             */
-            virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * A MetadataSectionKey is a MetadataKey that holds a number of other
-     * MetadataKey instances.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE MetadataSectionKey :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSectionKey>,
-        private PrivateImplementationPattern<MetadataSectionKey>
-    {
-        private:
-            PrivateImplementationPattern<MetadataSectionKey>::ImpPtr & _imp;
-
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSectionKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
-            /**
-             * Add a new MetadataKey, which must not use the same raw name as
-             * any previous MetadataKey added to this key.
-             */
-            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
-
-            /**
-             * This method will be called before any of the metadata key
-             * iteration methods does its work. It can be used by subclasses to
-             * implement as-needed loading of keys.
-             */
-            virtual void need_keys_added() const = 0;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            virtual ~MetadataSectionKey();
-
-            ///\}
-
-            ///\name Finding and iterating over metadata keys
-            ///\{
-
-            struct MetadataConstIteratorTag;
-            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
-
-            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
     };
 
     /**

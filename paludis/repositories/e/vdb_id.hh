@@ -38,7 +38,7 @@ namespace paludis
                 virtual std::string fs_location_raw_name() const;
                 virtual std::string fs_location_human_name() const;
                 virtual std::string contents_filename() const;
-                virtual tr1::shared_ptr<MetadataContentsKey> make_contents_key() const;
+                virtual tr1::shared_ptr<MetadataValueKey<tr1::shared_ptr<const Contents> > > make_contents_key() const;
         };
     }
 }

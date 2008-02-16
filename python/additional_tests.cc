@@ -146,13 +146,13 @@ namespace metadata_key
         MetadataKeyType foo(m.type());
     }
 
-    void test_metadata_package_id_key(const MetadataPackageIDKey & m)
+    void test_metadata_package_id_key(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_string_key(const MetadataStringKey & m)
+    void test_metadata_string_key(const MetadataValueKey<std::string> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -171,13 +171,13 @@ namespace metadata_key
         time_t PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
-    void test_metadata_contents_key(const MetadataContentsKey & m)
+    void test_metadata_contents_key(const MetadataValueKey<tr1::shared_ptr<const Contents> > & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_repository_mask_info_key(const MetadataRepositoryMaskInfoKey & m)
+    void test_metadata_repository_mask_info_key(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & m)
     {
         test_metadata_key(m);
         m.value();
