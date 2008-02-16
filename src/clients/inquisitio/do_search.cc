@@ -102,8 +102,8 @@ namespace
                     e != e_end ; ++e)
                 for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
                         m != m_end ; ++m)
-                if ((**e)(**m, id))
-                    return true;
+                    if ((**e)(**m, id))
+                        return true;
 
             return false;
         }
@@ -129,13 +129,23 @@ namespace
 
             for (std::list<tr1::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
                     i != i_end ; ++i)
-                if (e(**i))
+            {
+                try
                 {
-                    if (invert_match ^ m(**i))
-                        return *i;
-                    else if (! all_versions)
-                        return tr1::shared_ptr<const PackageID>();
+                    if (e(**i))
+                    {
+                        if (invert_match ^ m(**i))
+                            return *i;
+                        else if (! all_versions)
+                            return tr1::shared_ptr<const PackageID>();
+                    }
                 }
+                catch (const Exception & ex)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context,
+                            "Caught exception while handling '" + stringify(**i) + "': '" + ex.message() + "' (" + ex.what() + ")");
+                }
+            }
 
             return tr1::shared_ptr<const PackageID>();
         }
