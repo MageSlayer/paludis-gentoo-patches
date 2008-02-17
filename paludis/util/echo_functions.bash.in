@@ -49,8 +49,8 @@ paludis_ecmd()
 {
     local cmd="$1" hook="$2" prefix="$3" message="$4" newline="$5"
 
-    echo -n "${prefix}${message}"
-    [[ -z "${newline}" ]] && echo
+    echo -n "${prefix}${message}" >&2
+    [[ -z "${newline}" ]] && echo >&2
 
     if type perform_hook &>/dev/null ; then
         if [[ -n "${hook}" ]] ; then
@@ -150,7 +150,7 @@ _eend()
         msg="${COLOUR_BRACKET}[ ${COLOUR_BAD}!!${COLOUR_BRACKET} ]${COLOUR_NORMAL}"
     fi
 
-    echo -e "${PALUDIS_ENDCOL} ${msg}"
+    echo -e "${PALUDIS_ENDCOL} ${msg}" >&2
 
     return ${retval}
 }
