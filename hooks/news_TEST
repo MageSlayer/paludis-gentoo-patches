@@ -23,8 +23,8 @@ news_none_TEST()
     export HOOK=sync_all_post
     export PALUDIS_HOME=`pwd`/news_TEST_dir/one
 
-    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post >/dev/null ; test_return_code
-    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post \
+    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post 2>/dev/null ; test_return_code
+    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post 2>&1 \
         | grep "No unread news items found" >/dev/null ; test_return_code
 }
 
@@ -35,8 +35,8 @@ news_one_TEST()
     export HOOK=sync_all_post
     export PALUDIS_HOME=`pwd`/news_TEST_dir/two
 
-    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post >/dev/null ; test_return_code
-    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post \
+    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post 2>/dev/null ; test_return_code
+    bash ${PALUDIS_HOOKER_DIR}/hooker.bash ${TOP_SRCDIR}/hooks/news.hook hook_run_sync_all_post 2>&1 \
         | grep "You have 1 unread news item" >/dev/null ; test_return_code
 }
 
