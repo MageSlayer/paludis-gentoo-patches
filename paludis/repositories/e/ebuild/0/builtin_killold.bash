@@ -18,8 +18,6 @@
 
 builtin_killold()
 {
-    export ROOT="${ROOT//+(\/)//}"
-
     local a
     for a in PF CATEGORY PALUDIS_TMPDIR  ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"

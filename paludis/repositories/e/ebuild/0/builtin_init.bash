@@ -18,8 +18,6 @@
 
 builtin_init()
 {
-    export ROOT="${ROOT//+(\/)//}"
-
     local a
     for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"

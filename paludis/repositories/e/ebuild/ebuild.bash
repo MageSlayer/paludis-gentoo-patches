@@ -52,6 +52,8 @@ fi
 shopt -s expand_aliases
 shopt -s extglob
 
+export ROOT="${ROOT//+(\/)//}"
+
 export EBUILD_PROGRAM_NAME="$0"
 
 if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
