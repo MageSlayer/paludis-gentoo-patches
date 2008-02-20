@@ -37,6 +37,8 @@ while [[ $# -gt 0 ]]; do
                 echo "    URL syntax: ${PROTO}://[USERNAME@]SERVER[:PORT]/PATH"
             elif [[ "${PROTO}" == file ]]; then
                 echo "    URL syntax: file:///PATH"
+            elif [[ "${PROTO}" == 'rsync+ssh' ]]; then
+                echo "    URL syntax: rsync+ssh://[USERNAME@]SERVER:/PATH"
             else
                 ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
             fi
@@ -76,6 +78,7 @@ elif [[ -z "${REMOTE}" ]]; then
 fi
 
 REMOTE="${REMOTE#file://}"
+REMOTE="${REMOTE#rsync+ssh://}"
 
 ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
     --compress --force --whole-file --delete --delete-after --stats --timeout=180 \

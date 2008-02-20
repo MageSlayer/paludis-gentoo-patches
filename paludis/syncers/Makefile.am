@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dorsync dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
+CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dorsync dorsync+ssh dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
 SUBDIRS = .
 
 .keep :
@@ -23,6 +23,7 @@ libexecprog_SCRIPTS = \
 	dogit+rsync \
 	dogit+ssh \
 	dorsync \
+	dorsync+ssh \
 	dosvn \
 	dosvn+file \
 	dosvn+http \
@@ -57,7 +58,7 @@ dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh : dodarcs.in
 	cat $? > $@
 dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh : dogit.in
 	cat $? > $@
-dofile dorsync : dorsync.in
+dofile dorsync dorsync+ssh : dorsync.in
 	cat $? > $@
 dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh : dosvn.in
 	cat $? > $@
