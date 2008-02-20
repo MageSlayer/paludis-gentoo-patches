@@ -301,7 +301,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' does not group write permission," +
+                        stringify(f) + "' does not have group write permission," +
                         "cannot enable userpriv");
                 fetch_userpriv_ok = false;
             }
@@ -522,7 +522,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' does not group write permission," +
+                        stringify(f) + "' does not have group write permission," +
                         "cannot enable userpriv");
                 userpriv_ok = false;
             }
