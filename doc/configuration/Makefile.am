@@ -126,10 +126,10 @@ synclist :
 		else \
 			echo "<strong>$$a</strong>" | sed -e 's/>do/>/' ; \
 			if test -f $(top_builddir)/paludis/syncers/$$a ; then \
-				env PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild" \
+				env PALUDIS_EBUILD_DIR="$(top_builddir)/paludis/util" \
 					bash $(top_builddir)/paludis/syncers/$$a --help || exit 1 ; \
 			else \
-				env PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild" \
+				env PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/util" \
 					bash $(top_srcdir)/paludis/syncers/$$a --help || exit 1 ; \
 			fi ; \
 			echo ; \
