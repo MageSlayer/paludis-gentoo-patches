@@ -148,12 +148,12 @@ namespace
                 root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerParams::create()
-                        .image(image_dir)
-                        .root(root_dir)
-                        .environment(&env)
-                        .no_chown(true)
-                        .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
+                merger(MergerParams::named_create()
+                        (k::image(), image_dir)
+                        (k::root(), root_dir)
+                        (k::environment(), &env)
+                        (k::no_chown(), true)
+                        (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
             {
             }
 
@@ -162,12 +162,12 @@ namespace
                 image_dir("merger_TEST_dir/" + custom_test + "/image"),
                 root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerParams::create()
-                        .image(image_dir)
-                        .root(root_dir)
-                        .environment(&env)
-                        .no_chown(true)
-                        .options(o))
+                merger(MergerParams::named_create()
+                        (k::image(), image_dir)
+                        (k::root(), root_dir)
+                        (k::environment(), &env)
+                        (k::no_chown(), true)
+                        (k::options(), o))
             {
             }
     };

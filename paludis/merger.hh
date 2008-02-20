@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_MERGER_HH
 #define PALUDIS_GUARD_PALUDIS_MERGER_HH 1
 
-#include "merger-fwd.hh"
-#include <paludis/util/sr.hh>
+#include <paludis/merger-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 
@@ -43,8 +43,6 @@ namespace paludis
 {
     class Environment;
     class Hook;
-
-#include <paludis/merger-sr.hh>
 
     /**
      * Thrown if an error occurs during a Merger operation.

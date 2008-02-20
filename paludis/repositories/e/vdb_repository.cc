@@ -397,13 +397,13 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
 
             /* unmerge */
             VDBUnmerger unmerger(
-                    VDBUnmergerOptions::create()
-                    .environment(_imp->params.environment)
-                    .root(installed_root_key()->value())
-                    .contents_file(pkg_dir / "CONTENTS")
-                    .config_protect(config_protect)
-                    .config_protect_mask(config_protect_mask)
-                    .package_id(id));
+                    VDBUnmergerOptions::named_create()
+                    (k::environment(), _imp->params.environment)
+                    (k::root(), installed_root_key()->value())
+                    (k::contents_file(), pkg_dir / "CONTENTS")
+                    (k::config_protect(), config_protect)
+                    (k::config_protect_mask(), config_protect_mask)
+                    (k::package_id(), id));
 
             unmerger.unmerge();
         }
@@ -737,15 +737,15 @@ VDBRepository::merge(const MergeParams & m)
     vdb_dir /= (stringify(m.package_id->name().package) + "-" + stringify(m.package_id->version()));
 
     VDBMerger merger(
-            VDBMergerParams::create()
-            .environment(_imp->params.environment)
-            .image(m.image_dir)
-            .root(installed_root_key()->value())
-            .contents_file(vdb_dir / "CONTENTS")
-            .config_protect(config_protect)
-            .config_protect_mask(config_protect_mask)
-            .package_id(m.package_id)
-            .options(m.options));
+            VDBMergerParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::image(), m.image_dir)
+            (k::root(), installed_root_key()->value())
+            (k::contents_file(), vdb_dir / "CONTENTS")
+            (k::config_protect(), config_protect)
+            (k::config_protect_mask(), config_protect_mask)
+            (k::package_id(), m.package_id)
+            (k::options(), m.options));
 
     if (! merger.check())
     {

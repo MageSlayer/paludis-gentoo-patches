@@ -65,12 +65,12 @@ namespace paludis
 }
 
 NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
-    Merger(MergerParams::create()
-            .environment(p.environment)
-            .image(p.image)
-            .root(p.root)
-            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
-            .options(p.options)),
+    Merger(MergerParams::named_create()
+            (k::environment(), p.environment)
+            (k::image(), p.image)
+            (k::root(), p.root)
+            (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
+            (k::options(), p.options)),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p))
 {
 }

@@ -66,13 +66,13 @@ namespace
                 TestCase("unmerge '" + what + "' test"),
                 root_dir("vdb_unmerger_TEST_dir/root"),
                 target(what),
-                unmerger(VDBUnmergerOptions::create()
-                        .environment(&env)
-                        .root(root_dir)
-                        .contents_file("vdb_unmerger_TEST_dir/CONTENTS/" + what)
-                        .config_protect("/protected_file /protected_dir")
-                        .config_protect_mask("/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        .package_id(tr1::shared_ptr<PackageID>()))
+                unmerger(VDBUnmergerOptions::named_create()
+                        (k::environment(), &env)
+                        (k::root(), root_dir)
+                        (k::contents_file(), "vdb_unmerger_TEST_dir/CONTENTS/" + what)
+                        (k::config_protect(), "/protected_file /protected_dir")
+                        (k::config_protect_mask(), "/protected_dir/unprotected_file /protected_dir/unprotected_dir")
+                        (k::package_id(), tr1::shared_ptr<PackageID>()))
             {
             }
     };

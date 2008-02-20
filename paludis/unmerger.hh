@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -23,8 +23,9 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/keys.hh>
 #include <paludis/merger_entry_type.hh>
 
 /** \file
@@ -43,7 +44,17 @@ namespace paludis
     class Hook;
     class Environment;
 
-#include <paludis/unmerger-sr.hh>
+    /**
+     * Options for a basic Unmerger.
+     *
+     * \see Unmerger
+     * \ingroup g_repository
+     * \nosubgrouping
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::environment, const Environment *>,
+        kc::Field<k::root, FSEntry>
+            > UnmergerOptions;
 
     /**
      * Thrown if an error occurs during an unmerge.

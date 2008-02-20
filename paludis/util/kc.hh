@@ -83,7 +83,7 @@ namespace paludis
         template <unsigned id_, typename T_>
         struct NamedField<true, Field<Key<id_>, T_> >
         {
-            const T_ & value;
+            T_ value;
 
             NamedField(const T_ & v) :
                 value(v)

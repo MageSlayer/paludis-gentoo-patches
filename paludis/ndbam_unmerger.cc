@@ -104,9 +104,9 @@ class NDBAMUnmerger::SymlinkExtraInfo :
 };
 
 NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
-    Unmerger(UnmergerOptions::create()
-            .environment(o.environment)
-            .root(o.root)),
+    Unmerger(UnmergerOptions::named_create()
+            (k::environment(), o.environment)
+            (k::root(), o.root)),
     PrivateImplementationPattern<NDBAMUnmerger>(new Implementation<NDBAMUnmerger>(o)),
     _imp(PrivateImplementationPattern<NDBAMUnmerger>::_imp.get())
 {

@@ -75,15 +75,15 @@ namespace
                 TestCase("merge '" + what + "' test"),
                 root_dir(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "root"),
                 target(what),
-                merger(VDBMergerParams::create()
-                        .environment(&env)
-                        .image(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image")
-                        .root(root_dir)
-                        .contents_file(FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what)
-                        .config_protect("/protected_file /protected_dir")
-                        .config_protect_mask("/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        .package_id(tr1::shared_ptr<PackageID>())
-                        .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
+                merger(VDBMergerParams::named_create()
+                        (k::environment(), &env)
+                        (k::image(), FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image")
+                        (k::root(), root_dir)
+                        (k::contents_file(), FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what)
+                        (k::config_protect(), "/protected_file /protected_dir")
+                        (k::config_protect_mask(), "/protected_dir/unprotected_file /protected_dir/unprotected_dir")
+                        (k::package_id(), tr1::shared_ptr<PackageID>())
+                        (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
             {
             }
     };

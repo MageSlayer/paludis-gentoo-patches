@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -22,8 +22,9 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/keys.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/unmerger.hh>
 
@@ -31,7 +32,21 @@ namespace paludis
 {
     class Environment;
 
-#include <paludis/repositories/e/vdb_unmerger-sr.hh>
+    /**
+     * Options for a VDBUnmerger.
+     *
+     * \see VDBUnmerger
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::environment, Environment *>,
+        kc::Field<k::root, FSEntry>,
+        kc::Field<k::contents_file, FSEntry>,
+        kc::Field<k::config_protect, std::string>,
+        kc::Field<k::config_protect_mask, std::string>,
+        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >
+            > VDBUnmergerOptions;
 
     /**
      * Thrown if an unmerge from a VDBRepository using VDBUnmerger fails.

@@ -59,6 +59,15 @@ namespace paludis
         typedef kc::Key<31> value;
         typedef kc::Key<32> mask_file;
         typedef kc::Key<33> comment;
+        typedef kc::Key<34> environment;
+        typedef kc::Key<35> image;
+        typedef kc::Key<36> root;
+        typedef kc::Key<37> no_chown;
+        typedef kc::Key<38> options;
+        typedef kc::Key<39> contents_file;
+        typedef kc::Key<40> config_protect;
+        typedef kc::Key<41> config_protect_mask;
+        typedef kc::Key<42> package_id;
     }
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -29,8 +29,6 @@
 #include <map>
 
 using namespace paludis;
-
-#include <paludis/unmerger-sr.cc>
 
 namespace paludis
 {
@@ -79,10 +77,10 @@ Unmerger::unmerge()
 {
     populate_unmerge_set();
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                               Hook("unmerger_unlink_pre")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
-        throw UnmergerError("Unmerge from '" + stringify(_imp->options.root) + "' aborted by hook");
+                              ("UNLINK_TARGET", stringify(_imp->options[k::root()])))).max_exit_status)
+        throw UnmergerError("Unmerge from '" + stringify(_imp->options[k::root()]) + "' aborted by hook");
 
     for (UnmergeEntriesIterator  i(_imp->unmerge_entries.rbegin()), i_end(_imp->unmerge_entries.rend()) ; i != i_end ; ++i)
     {
@@ -113,18 +111,18 @@ Unmerger::unmerge()
         throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify((*i).second.first) + "'");
     }
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                               Hook("unmerger_unlink_post")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
-        throw UnmergerError("Unmerge from '" + stringify(_imp->options.root) + "' aborted by hook");
+                              ("UNLINK_TARGET", stringify(_imp->options[k::root()])))).max_exit_status)
+        throw UnmergerError("Unmerge from '" + stringify(_imp->options[k::root()]) + "' aborted by hook");
 }
 
 void
 Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    FSEntry f_real(_imp->options.root / f);
+    FSEntry f_real(_imp->options[k::root()] / f);
 
-    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+    HookResult hr(_imp->options[k::environment()]->perform_hook(extend_hook(
                     Hook("unmerger_unlink_file_override")
                     ("UNLINK_TARGET", stringify(f_real))
                     .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
@@ -148,9 +146,9 @@ Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 void
 Unmerger::unmerge_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    FSEntry f_real(_imp->options.root / f);
+    FSEntry f_real(_imp->options[k::root()] / f);
 
-    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+    HookResult hr(_imp->options[k::environment()]->perform_hook(extend_hook(
                     Hook("unmerger_unlink_sym_override")
                     ("UNLINK_TARGET", stringify(f_real))
                     .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
@@ -174,9 +172,9 @@ Unmerger::unmerge_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 void
 Unmerger::unmerge_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    FSEntry f_real(_imp->options.root / f);
+    FSEntry f_real(_imp->options[k::root()] / f);
 
-    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+    HookResult hr(_imp->options[k::environment()]->perform_hook(extend_hook(
                     Hook("unmerger_unlink_dir_override")
                     ("UNLINK_TARGET", stringify(f_real))
                     .grab_output(Hook::AllowedOutputValues()("skip")))));
@@ -195,9 +193,9 @@ Unmerger::unmerge_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 void
 Unmerger::unmerge_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    FSEntry f_real(_imp->options.root / f);
+    FSEntry f_real(_imp->options[k::root()] / f);
 
-    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+    HookResult hr(_imp->options[k::environment()]->perform_hook(extend_hook(
                     Hook("unmerger_unlink_misc_override")
                     ("UNLINK_TARGET", stringify(f_real))
                     .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
@@ -221,7 +219,7 @@ Unmerger::unmerge_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 void
 Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
@@ -238,7 +236,7 @@ Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 
     f.unlink();
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_post")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
@@ -247,14 +245,14 @@ Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 void
 Unmerger::unlink_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
     f.unlink();
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_post")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
@@ -263,14 +261,14 @@ Unmerger::unlink_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 void
 Unmerger::unlink_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
     f.rmdir();
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_post")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
@@ -279,14 +277,14 @@ Unmerger::unlink_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 void
 Unmerger::unlink_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
     f.unlink();
 
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_post")
                          ("UNLINK_TARGET", stringify(f)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
@@ -296,6 +294,6 @@ Hook
 Unmerger::extend_hook(const Hook & h) const
 {
     return h
-        ("ROOT", stringify(_imp->options.root));
+        ("ROOT", stringify(_imp->options[k::root()]));
 }
 

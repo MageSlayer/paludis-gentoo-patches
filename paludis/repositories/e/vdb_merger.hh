@@ -23,12 +23,32 @@
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/keys.hh>
 
 namespace paludis
 {
     class Hook;
 
-#include <paludis/repositories/e/vdb_merger-sr.hh>
+    /**
+     * Parameters for a VDBMerger.
+     *
+     * \see VDBMerger
+     * \ingroup grpmerger
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     * \since 0.26
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::environment, Environment *>,
+        kc::Field<k::image, FSEntry>,
+        kc::Field<k::root, FSEntry>,
+        kc::Field<k::contents_file, FSEntry>,
+        kc::Field<k::config_protect, std::string>,
+        kc::Field<k::config_protect_mask, std::string>,
+        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::options, MergerOptions>
+            > VDBMergerParams;
 
     /**
      * Merger for VDBRepository.

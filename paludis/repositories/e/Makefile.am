@@ -7,8 +7,6 @@ DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	ebuild-sr.hh ebuild-sr.cc \
-	vdb_merger-sr.hh vdb_merger-sr.cc \
-	vdb_unmerger-sr.hh vdb_unmerger-sr.cc \
 	eapi-sr.hh eapi-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
 	manifest2_entry-sr.hh manifest2_entry-sr.cc
@@ -91,11 +89,9 @@ paludis_repositories_e_include_HEADERS = \
 	use_requirements.hh \
 	vdb_contents_tokeniser.hh \
 	vdb_id.hh \
-	vdb_merger-sr.hh \
 	vdb_merger.hh \
 	vdb_repository-sr.hh \
 	vdb_repository.hh \
-	vdb_unmerger-sr.hh \
 	vdb_unmerger.hh
 
 libpaludiserepository_la_SOURCES = \
@@ -362,12 +358,6 @@ EXTRA_DIST = \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
 	vdb_repository.sr \
-	vdb_merger.sr \
-	vdb_merger-sr.hh \
-	vdb_merger-sr.cc \
-	vdb_unmerger.sr \
-	vdb_unmerger-sr.hh \
-	vdb_unmerger-sr.cc \
 	vdb_merger_TEST.cc \
 	vdb_merger_TEST_setup.sh \
 	vdb_merger_TEST_cleanup.sh \
@@ -392,10 +382,6 @@ BUILT_SOURCES = \
 	vdb_repository-sr.cc \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
-	vdb_merger-sr.hh \
-	vdb_merger-sr.cc \
-	vdb_unmerger-sr.hh \
-	vdb_unmerger-sr.cc \
 	eapi-sr.hh \
 	eapi-sr.cc \
 	manifest2_entry-sr.hh \
@@ -446,18 +432,6 @@ manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 
 manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
-
-vdb_merger-sr.hh : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_merger.sr > $@
-
-vdb_merger-sr.cc : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_merger.sr > $@
-
-vdb_unmerger-sr.hh : vdb_unmerger.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_unmerger.sr > $@
-
-vdb_unmerger-sr.cc : vdb_unmerger.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_unmerger.sr > $@
 
 ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebuild.sr > $@
