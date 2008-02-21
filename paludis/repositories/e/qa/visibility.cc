@@ -114,8 +114,8 @@ namespace
             /* rewrite virtuals to avoid problems later on */
             if (p->package_ptr())
             {
-                ERepositoryProfile::VirtualsConstIterator v(profile->profile->find_virtual(*p->package_ptr()));
-                if (profile->profile->end_virtuals() != v)
+                ERepositoryProfile::VirtualsConstIterator v((*profile)[k::profile()]->find_virtual(*p->package_ptr()));
+                if ((*profile)[k::profile()]->end_virtuals() != v)
                 {
                     PartiallyMadePackageDepSpec pp;
 
@@ -145,7 +145,8 @@ namespace
                 if (reporter)
                     reporter->message(QAMessage(entry, qaml_normal, name, "No packages matching '"
                                 + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
-                                + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
+                                + stringify((*profile)[k::path()]) + "' (" + stringify((*profile)[k::arch()]) + "."
+                                + stringify((*profile)[k::status()])
                                 + (unstable ? ".unstable" : ".stable") + ")")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
@@ -158,13 +159,13 @@ namespace
                     /* can't use the usual masked rules here, so this gets a bit complicated... */
                     if ((*i)->repository() == repo)
                     {
-                        if (repo->repository_masked(**i) || profile->profile->profile_masked(**i) || ! (*i)->keywords_key())
+                        if (repo->repository_masked(**i) || (*profile)[k::profile()]->profile_masked(**i) || ! (*i)->keywords_key())
                             continue;
                     }
                     else if ((*i)->repository() == repo->params().master_repository)
                     {
                         if (repo->params().master_repository->repository_masked(**i) ||
-                                profile->profile->profile_masked(**i) || ! (*i)->keywords_key())
+                                (*profile)[k::profile()]->profile_masked(**i) || ! (*i)->keywords_key())
                             continue;
                     }
                     else
@@ -191,7 +192,7 @@ namespace
                     if (reporter)
                         reporter->message(QAMessage(entry, qaml_normal, name, "No visible packages matching '"
                                     + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
-                                    + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
+                                    + stringify((*profile)[k::path()]) + "' (" + stringify((*profile)[k::arch()]) + "." + stringify((*profile)[k::status()])
                                     + (unstable ? ".unstable" : ".stable") + ")")
                                 .with_associated_id(id)
                                 .with_associated_key(id, key));
@@ -238,7 +239,7 @@ namespace
                     std::for_each(begin, end, accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"
-                                + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
+                                + stringify((*profile)[k::path()]) + "' (" + stringify((*profile)[k::arch()]) + "." + stringify((*profile)[k::status()])
                                 + (unstable ? ".unstable" : ".stable") + ")")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
@@ -276,11 +277,11 @@ paludis::erepository::visibility_check(
     for (ERepository::ProfilesConstIterator p(repo->begin_profiles()), p_end(repo->end_profiles()) ;
             p != p_end ; ++p)
     {
-        if (p->profile->profile_masked(*id))
+        if ((*p)[k::profile()]->profile_masked(*id))
             continue;
 
         std::set<KeywordName> accepted_keywords, overlap;
-        tokenise_whitespace(p->profile->environment_variable(
+        tokenise_whitespace((*p)[k::profile()]->environment_variable(
                     repo->accept_keywords_variable()), create_inserter<KeywordName>(std::inserter(accepted_keywords, accepted_keywords.begin())));
 
         std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),

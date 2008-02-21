@@ -300,17 +300,17 @@ UnpackagedID::perform_action(Action & action) const
     if (! install_action)
         throw UnsupportedActionError(*this, action);
 
-    if (! install_action->options[k::destination()]->destination_interface)
+    if (! (*install_action->options[k::destination()])[k::destination_interface()])
         throw InstallActionError("Can't install '" + stringify(*this)
                 + "' to destination '" + stringify(install_action->options[k::destination()]->name())
                 + "' because destination does not provide destination_interface");
 
-    install_action->options[k::destination()]->destination_interface->merge(
-            MergeParams::create()
-            .package_id(shared_from_this())
-            .image_dir(fs_location_key()->value())
-            .environment_file(FSEntry("/dev/null"))
-            .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
+    (*install_action->options[k::destination()])[k::destination_interface()]->merge(
+            MergeParams::named_create()
+            (k::package_id(), shared_from_this())
+            (k::image_dir(), fs_location_key()->value())
+            (k::environment_file(), FSEntry("/dev/null"))
+            (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
             );
 }
 

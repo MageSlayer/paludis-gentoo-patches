@@ -97,21 +97,21 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
             .world(p.world)
             .builddir(p.builddir)
             .root(p.root),
-            n, RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(this)
-            .world_interface(this)
-            .environment_variable_interface(this)
-            .mirrors_interface(0)
-            .provides_interface(0)
-            .virtuals_interface(0)
-            .destination_interface(this)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(this)
-            .manifest_interface(0)),
+            n, RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), this)
+            (k::world_interface(), this)
+            (k::environment_variable_interface(), this)
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::destination_interface(), this)
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), this)
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<ExndbamRepository>(new Implementation<ExndbamRepository>(p)),
     _imp(PrivateImplementationPattern<ExndbamRepository>::_imp)
 {
@@ -266,20 +266,20 @@ ExndbamRepository::need_keys_added() const
 void
 ExndbamRepository::merge(const MergeParams & m)
 {
-    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
             + "' to Exndbam repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+    if (! is_suitable_destination_for(*m[k::package_id()]))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
     tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id->name()));
+        tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m[k::package_id()]->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
             if_same_name_id = *v;
-            if ((*v)->version() == m.package_id->version() && (*v)->slot() == m.package_id->slot())
+            if ((*v)->version() == m[k::package_id()]->version() && (*v)->slot() == m[k::package_id()]->slot())
             {
                 if_overwritten_id = *v;
                 break;
@@ -292,7 +292,7 @@ ExndbamRepository::merge(const MergeParams & m)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
-        std::string uid(stringify(m.package_id->name().category) + "---" + stringify(m.package_id->name().package));
+        std::string uid(stringify(m[k::package_id()]->name().category) + "---" + stringify(m[k::package_id()]->name().package));
         uid_dir /= "data";
         uid_dir.mkdir();
         uid_dir /= uid;
@@ -300,7 +300,7 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     FSEntry target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id->version()) + ":" + stringify(m.package_id->slot()) + ":" + cookie());
+    target_ver_dir /= (stringify(m[k::package_id()]->version()) + ":" + stringify(m[k::package_id()]->slot()) + ":" + cookie());
 
     if (target_ver_dir.exists())
         throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -310,9 +310,9 @@ ExndbamRepository::merge(const MergeParams & m)
     WriteVDBEntryCommand write_vdb_entry_command(
             WriteVDBEntryParams::create()
             .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m.package_id))
+            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
             .output_directory(target_ver_dir)
-            .environment_file(m.environment_file));
+            .environment_file(m[k::environment_file()]));
 
     write_vdb_entry_command();
 
@@ -329,13 +329,13 @@ ExndbamRepository::merge(const MergeParams & m)
     NDBAMMerger merger(
             NDBAMMergerParams::create()
             .environment(_imp->params.environment)
-            .image(m.image_dir)
+            .image(m[k::image_dir()])
             .root(installed_root_key()->value())
             .contents_file(target_ver_dir / "contents")
             .config_protect(config_protect)
             .config_protect_mask(config_protect_mask)
-            .package_id(m.package_id)
-            .options(m.options));
+            .package_id(m[k::package_id()])
+            .options(m[k::options()]));
 
     if (! merger.check())
     {
@@ -348,7 +348,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     merger.merge();
 
-    _imp->ndbam.index(m.package_id->name(), uid_dir.basename());
+    _imp->ndbam.index(m[k::package_id()]->name(), uid_dir.basename());
 
     if (if_overwritten_id)
     {

@@ -65,7 +65,7 @@ RepositoryButtons::set_repository_in_paludis_thread(const RepositoryName & name)
 {
     _imp->main_window->gui_thread_action(
             sigc::bind(sigc::mem_fun(this, &RepositoryButtons::set_repository_in_gui_thread),
-                0 != _imp->main_window->environment()->package_database()->fetch_repository(name)->syncable_interface));
+                0 != (*_imp->main_window->environment()->package_database()->fetch_repository(name))[k::syncable_interface()]));
 }
 
 void

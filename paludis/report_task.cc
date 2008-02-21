@@ -140,12 +140,12 @@ ReportTask::execute()
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
-        if (! rr->sets_interface)
+        if (! (*rr)[k::sets_interface()])
             continue;
 
         try
         {
-            tr1::shared_ptr<const SetSpecTree::ConstItem> insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            tr1::shared_ptr<const SetSpecTree::ConstItem> insecure((*rr)[k::sets_interface()]->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
             insecure->accept(vuln);

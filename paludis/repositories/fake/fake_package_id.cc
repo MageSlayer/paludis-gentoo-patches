@@ -964,9 +964,9 @@ FakeMetadataIUseSetKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
         if (! result.empty())
             result.append(" ");
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(i->flag, *_imp->id))
             result.append(f.format(*i, format::Masked()));
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(i->flag, *_imp->id))
             result.append(f.format(*i, format::Forced()));
         else if (_imp->env->query_use(i->flag, *_imp->id))
             result.append(f.format(*i, format::Enabled()));
@@ -993,12 +993,12 @@ FakeMetadataIUseSetKey::pretty_print_flat_with_comparison(
         std::string l;
         bool n;
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(i->flag, *_imp->id))
         {
             l = f.format(*i, format::Masked());
             n = false;
         }
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(i->flag, *_imp->id))
         {
             l = f.format(*i, format::Forced());
             n = true;

@@ -42,67 +42,67 @@ struct RepositoryWrapper :
     static RepositorySetsInterface *
     get_sets_interface(const Repository & self)
     {
-        return self.sets_interface;
+        return self[k::sets_interface()];
     }
 
     static RepositorySyncableInterface *
     get_syncable_interface(const Repository & self)
     {
-        return self.syncable_interface;
+        return self[k::syncable_interface()];
     }
 
     static RepositoryUseInterface *
     get_use_interface(const Repository & self)
     {
-        return self.use_interface;
+        return self[k::use_interface()];
     }
 
     static RepositoryWorldInterface *
     get_world_interface(const Repository & self)
     {
-        return self.world_interface;
+        return self[k::world_interface()];
     }
 
     static RepositoryMirrorsInterface *
     get_mirrors_interface(const Repository & self)
     {
-        return self.mirrors_interface;
+        return self[k::mirrors_interface()];
     }
 
     static RepositoryEnvironmentVariableInterface *
     get_environment_variable_interface(const Repository & self)
     {
-        return self.environment_variable_interface;
+        return self[k::environment_variable_interface()];
     }
 
     static RepositoryProvidesInterface *
     get_provides_interface(const Repository & self)
     {
-        return self.provides_interface;
+        return self[k::provides_interface()];
     }
 
     static RepositoryVirtualsInterface *
     get_virtuals_interface(const Repository & self)
     {
-        return self.virtuals_interface;
+        return self[k::virtuals_interface()];
     }
 
     static RepositoryDestinationInterface *
     get_destination_interface(const Repository & self)
     {
-        return self.destination_interface;
+        return self[k::destination_interface()];
     }
 
     static RepositoryEInterface *
     get_e_interface(const Repository & self)
     {
-        return self.e_interface;
+        return self[k::e_interface()];
     }
 
     static RepositoryQAInterface *
     get_qa_interface(const Repository & self)
     {
-        return self.qa_interface;
+        return self[k::qa_interface()];
     }
 };
 
@@ -129,7 +129,7 @@ struct RepositoryEInterfaceWrapper
     static void
     my_set_profile(RepositoryEInterface & self, const RepositoryEInterface::ProfilesDescLine & pdl)
     {
-        self.set_profile(self.find_profile(pdl.path));
+        self.set_profile(self.find_profile(pdl[k::path()]));
     }
 };
 
@@ -284,13 +284,15 @@ void expose_repository()
          "A profiles.desc line in a Repository implementing RepositoryEInterface.",
          bp::no_init
         )
-        .add_property("path", bp::make_getter(&RepositoryEInterfaceProfilesDescLine::path,
-                    bp::return_value_policy<bp::return_by_value>())
+        .add_property("path",
+                &kc_getter<RepositoryEInterfaceProfilesDescLine, FSEntry, k::path>
                 )
-
-        .def_readonly("arch", &RepositoryEInterfaceProfilesDescLine::arch)
-
-        .def_readonly("status", &RepositoryEInterfaceProfilesDescLine::status)
+        .add_property("arch",
+                &kc_getter<RepositoryEInterfaceProfilesDescLine, std::string, k::arch>
+                )
+        .add_property("status",
+                &kc_getter<RepositoryEInterfaceProfilesDescLine, std::string, k::status>
+                )
         ;
 
     /**

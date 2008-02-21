@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -156,9 +156,9 @@ SourceURIFinder::add_mirrors()
 
     {
         Context local_context("When adding repository mirrors '" + _imp->mirrors_name + "':");
-        if (_imp->repo->mirrors_interface)
-            for (RepositoryMirrorsInterface::MirrorsConstIterator m(_imp->repo->mirrors_interface->begin_mirrors(_imp->mirrors_name)),
-                    m_end(_imp->repo->mirrors_interface->end_mirrors(_imp->mirrors_name)) ;
+        if ((*_imp->repo)[k::mirrors_interface()])
+            for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo)[k::mirrors_interface()]->begin_mirrors(_imp->mirrors_name)),
+                    m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(_imp->mirrors_name)) ;
                     m != m_end ; ++m)
             {
                 Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/") << "/" << _imp->filename;
@@ -195,9 +195,9 @@ SourceURIFinder::add_listed()
 
         {
             Context local_context("When adding from repository for listed mirror '" + mirror + "':");
-            if (_imp->repo->mirrors_interface)
-                for (RepositoryMirrorsInterface::MirrorsConstIterator m(_imp->repo->mirrors_interface->begin_mirrors(mirror)),
-                        m_end(_imp->repo->mirrors_interface->end_mirrors(mirror)) ;
+            if ((*_imp->repo)[k::mirrors_interface()])
+                for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo)[k::mirrors_interface()]->begin_mirrors(mirror)),
+                        m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(mirror)) ;
                         m != m_end ; ++m)
                 {
                     Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/")

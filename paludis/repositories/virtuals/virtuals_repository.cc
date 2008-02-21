@@ -113,21 +113,21 @@ namespace
 }
 
 VirtualsRepository::VirtualsRepository(const Environment * const env) :
-    Repository(RepositoryName("virtuals"), RepositoryCapabilities::create()
-            .use_interface(0)
-            .sets_interface(0)
-            .syncable_interface(0)
-            .mirrors_interface(0)
-            .environment_variable_interface(0)
-            .world_interface(0)
-            .provides_interface(0)
-            .virtuals_interface(0)
-            .destination_interface(0)
-            .e_interface(0)
-            .make_virtuals_interface(this)
-            .qa_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0)),
+    Repository(RepositoryName("virtuals"), RepositoryCapabilities::named_create()
+            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
+            (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), this)
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<VirtualsRepository>(
             new Implementation<VirtualsRepository>(env)),
     _imp(PrivateImplementationPattern<VirtualsRepository>::_imp)
@@ -155,15 +155,15 @@ VirtualsRepository::need_names() const
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (! (*r)->provides_interface)
+        if (! (**r)[k::provides_interface()])
             continue;
 
         tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> provides(
-                (*r)->provides_interface->provided_packages());
+                (**r)[k::provides_interface()]->provided_packages());
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
-            _imp->names.push_back(std::make_pair(p->virtual_name, tr1::shared_ptr<const PackageDepSpec>(
-                            new PackageDepSpec(make_package_dep_spec().package(p->provided_by->name())))));
+            _imp->names.push_back(std::make_pair((*p)[k::virtual_name()], tr1::shared_ptr<const PackageDepSpec>(
+                            new PackageDepSpec(make_package_dep_spec().package((*p)[k::provided_by()]->name())))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
@@ -174,11 +174,11 @@ VirtualsRepository::need_names() const
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (! (*r)->virtuals_interface)
+        if (! (**r)[k::virtuals_interface()])
             continue;
 
         tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> virtuals(
-                (*r)->virtuals_interface->virtual_packages());
+                (**r)[k::virtuals_interface()]->virtual_packages());
         for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator v(virtuals->begin()),
                 v_end(virtuals->end()) ; v != v_end ; ++v)
         {
@@ -186,11 +186,11 @@ VirtualsRepository::need_names() const
                 std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator,
                 std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
                         std::equal_range(_imp->names.begin(), _imp->names.end(),
-                            std::make_pair(v->virtual_name, tr1::shared_ptr<const PackageDepSpec>()),
+                            std::make_pair((*v)[k::virtual_name()], tr1::shared_ptr<const PackageDepSpec>()),
                             NamesNameComparator()));
 
             if (p.first == p.second)
-                new_names.push_back(std::make_pair(v->virtual_name, v->provided_by_spec));
+                new_names.push_back(std::make_pair((*v)[k::virtual_name()], (*v)[k::provided_by_spec()]));
         }
     }
 

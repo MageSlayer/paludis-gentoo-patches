@@ -68,6 +68,33 @@ namespace paludis
         typedef kc::Key<40> config_protect;
         typedef kc::Key<41> config_protect_mask;
         typedef kc::Key<42> package_id;
+        typedef kc::Key<43> sets_interface;
+        typedef kc::Key<44> syncable_interface;
+        typedef kc::Key<45> use_interface;
+        typedef kc::Key<46> world_interface;
+        typedef kc::Key<47> mirrors_interface;
+        typedef kc::Key<48> environment_variable_interface;
+        typedef kc::Key<49> provides_interface;
+        typedef kc::Key<50> virtuals_interface;
+        typedef kc::Key<51> make_virtuals_interface;
+        typedef kc::Key<52> destination_interface;
+        typedef kc::Key<53> e_interface;
+        typedef kc::Key<54> hook_interface;
+        typedef kc::Key<55> qa_interface;
+        typedef kc::Key<56> manifest_interface;
+        typedef kc::Key<57> path;
+        typedef kc::Key<58> arch;
+        typedef kc::Key<59> status;
+        typedef kc::Key<60> profile;
+        typedef kc::Key<61> virtual_name;
+        typedef kc::Key<62> provided_by;
+        typedef kc::Key<63> provided_by_spec;
+        typedef kc::Key<64> image_dir;
+        typedef kc::Key<65> environment_file;
+        typedef kc::Key<66> filter_file;
+        typedef kc::Key<67> output_prefix;
+        typedef kc::Key<68> local;
+        typedef kc::Key<69> remote;
     }
 }
 

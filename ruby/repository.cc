@@ -385,14 +385,14 @@ namespace
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
-    template <typename T_, T_ * RepositoryCapabilities::* m_>
+    template <typename T_>
     struct Interface
     {
         static VALUE fetch(VALUE self)
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            return ((**self_ptr).*m_) ? self : Qnil;
+            return ((**self_ptr)[T_()]) ? self : Qnil;
         }
     };
 
@@ -449,7 +449,7 @@ namespace
             {
                 tr1::shared_ptr<Repository> * self_ptr;
                 Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-                RepositoryUseInterface * const use_interface ((**self_ptr).use_interface);
+                RepositoryUseInterface * const use_interface ((**self_ptr)[k::use_interface()]);
 
                 if (use_interface)
                 {
@@ -483,9 +483,10 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->use_interface) {
+            if ((**self_ptr)[k::use_interface()])
+            {
                 tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
-                char sep((*self_ptr)->use_interface->use_expand_separator(*pid));
+                char sep((**self_ptr)[k::use_interface()]->use_expand_separator(*pid));
                 return sep ? rb_str_new(&sep, 1) : Qnil;
             }
             else
@@ -513,10 +514,11 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->use_interface) {
+            if ((**self_ptr)[k::use_interface()])
+            {
                 UseFlagName ufn = UseFlagName(StringValuePtr(flag_name));
                 tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
-                return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, *pid).c_str()));
+                return rb_str_new2(((**self_ptr)[k::use_interface()]->describe_use_flag(ufn, *pid).c_str()));
             }
             else
             {
@@ -542,10 +544,11 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->e_interface) {
+            if ((**self_ptr)[k::e_interface()])
+            {
                 VALUE result(rb_ary_new());
-                for (RepositoryEInterface::ProfilesConstIterator i((*self_ptr)->e_interface->begin_profiles()),
-                        i_end((*self_ptr)->e_interface->end_profiles()) ; i != i_end ; ++i)
+                for (RepositoryEInterface::ProfilesConstIterator i((**self_ptr)[k::e_interface()]->begin_profiles()),
+                        i_end((**self_ptr)[k::e_interface()]->end_profiles()) ; i != i_end ; ++i)
                 {
                     rb_ary_push(result, profiles_desc_line_to_value(*i));
                 }
@@ -576,11 +579,11 @@ namespace
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
 
-            if ((*self_ptr)->e_interface)
+            if ((**self_ptr)[k::e_interface()])
             {
-                RepositoryEInterface::ProfilesConstIterator p((*self_ptr)->e_interface->find_profile(FSEntry(StringValuePtr(profile))));
+                RepositoryEInterface::ProfilesConstIterator p((**self_ptr)[k::e_interface()]->find_profile(FSEntry(StringValuePtr(profile))));
 
-                if (p == (*self_ptr)->e_interface->end_profiles())
+                if (p == (**self_ptr)[k::e_interface()]->end_profiles())
                     return Qnil;
 
                 return profiles_desc_line_to_value(*p);
@@ -609,10 +612,10 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->e_interface)
-                (*self_ptr)->e_interface->set_profile(
-                    (*self_ptr)->e_interface->find_profile(
-                        value_to_profiles_desc_line(profile).path));
+            if ((**self_ptr)[k::e_interface()])
+                (**self_ptr)[k::e_interface()]->set_profile(
+                    (**self_ptr)[k::e_interface()]->find_profile(
+                        value_to_profiles_desc_line(profile)[k::path()]));
             return Qnil;
         }
         catch (const std::exception & e)
@@ -634,8 +637,8 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->e_interface)
-                return rb_str_new2(((*self_ptr)->e_interface->profile_variable(StringValuePtr(var))).c_str());
+            if ((**self_ptr)[k::e_interface()])
+                return rb_str_new2(((**self_ptr)[k::e_interface()]->profile_variable(StringValuePtr(var))).c_str());
             return Qnil;
         }
         catch (const std::exception & e)
@@ -668,7 +671,7 @@ namespace
      *
      * Fetch path to this ProfilesDescLine.
      */
-    template <typename T_, T_ RepositoryEInterface::ProfilesDescLine::* m_>
+    template <typename, typename V_>
     struct DescLineValue
     {
         static VALUE
@@ -676,7 +679,7 @@ namespace
         {
             RepositoryEInterface::ProfilesDescLine * ptr;
             Data_Get_Struct(self, RepositoryEInterface::ProfilesDescLine, ptr);
-            return rb_str_new2(stringify((*ptr).*m_).c_str());
+            return rb_str_new2(stringify((*ptr)[V_()]).c_str());
         }
     };
 
@@ -695,10 +698,10 @@ namespace
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
 #ifdef ENABLE_RUBY_QA
-            if ((*self_ptr)->qa_interface)
+            if ((**self_ptr)[k::qa_interface()])
             {
                 RubyQAReporter* qar = new RubyQAReporter(&reporter);
-                (*self_ptr)->qa_interface->check_qa(*qar,
+                (**self_ptr)[k::qa_interface()]->check_qa(*qar,
                         value_to_qa_check_properties((ignore_if)),
                         value_to_qa_check_properties((ignore_unless)),
                         static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
@@ -895,8 +898,8 @@ namespace
     {
         tr1::shared_ptr<Repository> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-        if ((*self_ptr)->environment_variable_interface)
-            return rb_str_new2((*self_ptr)->environment_variable_interface->get_environment_variable(
+        if ((**self_ptr)[k::environment_variable_interface()])
+            return rb_str_new2((**self_ptr)[k::environment_variable_interface()]->get_environment_variable(
                         value_to_package_id(pid),
                         StringValuePtr(ev)).c_str());
         return Qnil;
@@ -922,26 +925,17 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<RepositorySetsInterface,
-                        &Repository::sets_interface>::fetch)), 0);
-        rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,
-                        &Repository::syncable_interface>::fetch)), 0);
-        rb_define_method(c_repository, "use_interface", RUBY_FUNC_CAST((&Interface<RepositoryUseInterface,
-                        &Repository::use_interface>::fetch)), 0);
-        rb_define_method(c_repository, "world_interface", RUBY_FUNC_CAST((&Interface<RepositoryWorldInterface,
-                        &Repository::world_interface>::fetch)), 0);
-        rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface<RepositoryMirrorsInterface,
-                        &Repository::mirrors_interface>::fetch)), 0);
-        rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<RepositoryEnvironmentVariableInterface,
-                        &Repository::environment_variable_interface>::fetch)), 0);
-        rb_define_method(c_repository, "provides_interface", RUBY_FUNC_CAST((&Interface<RepositoryProvidesInterface,
-                        &Repository::provides_interface>::fetch)), 0);
-        rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<RepositoryVirtualsInterface,
-                        &Repository::virtuals_interface>::fetch)), 0);
-        rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface<RepositoryEInterface,
-                        &Repository::e_interface>::fetch)), 0);
-        rb_define_method(c_repository, "qa_interface", RUBY_FUNC_CAST((&Interface<RepositoryQAInterface,
-                        &Repository::qa_interface>::fetch)), 0);
+        rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface< k::sets_interface>::fetch)), 0);
+        rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface< k::syncable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "use_interface", RUBY_FUNC_CAST((&Interface< k::use_interface>::fetch)), 0);
+        rb_define_method(c_repository, "world_interface", RUBY_FUNC_CAST((&Interface< k::world_interface>::fetch)), 0);
+        rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface< k::mirrors_interface>::fetch)), 0);
+        rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<
+                        k::environment_variable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "provides_interface", RUBY_FUNC_CAST((&Interface< k::provides_interface>::fetch)), 0);
+        rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface< k::virtuals_interface>::fetch)), 0);
+        rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface< k::e_interface>::fetch)), 0);
+        rb_define_method(c_repository, "qa_interface", RUBY_FUNC_CAST((&Interface< k::qa_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
@@ -976,11 +970,11 @@ namespace
         c_profiles_desc_line = rb_define_class_under(paludis_module(), "ProfilesDescLine", rb_cObject);
         rb_funcall(c_profiles_desc_line, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_profiles_desc_line, "path",
-                RUBY_FUNC_CAST((&DescLineValue<FSEntry,&RepositoryEInterface::ProfilesDescLine::path>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<FSEntry, k::path>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "arch",
-                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::arch>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<std::string, k::arch>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "status",
-                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::status>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<std::string, k::status>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FakeRepositoryBase

@@ -578,8 +578,8 @@ EIUseKey::value() const
     tokenise_whitespace(_imp->string_value, std::back_inserter(tokens));
 
     tr1::shared_ptr<const UseFlagNameSet> prefixes;
-    if (_imp->id->repository()->use_interface)
-        prefixes = _imp->id->repository()->use_interface->use_expand_prefixes();
+    if ((*_imp->id->repository())[k::use_interface()])
+        prefixes = (*_imp->id->repository())[k::use_interface()]->use_expand_prefixes();
     else
         prefixes.reset(new UseFlagNameSet);
 
@@ -614,9 +614,9 @@ EIUseKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
         if (! result.empty())
             result.append(" ");
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(i->flag, *_imp->id))
             result.append(f.format(*i, format::Masked()));
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(i->flag, *_imp->id))
             result.append(f.format(*i, format::Forced()));
         else if (_imp->env->query_use(i->flag, *_imp->id))
             result.append(f.format(*i, format::Enabled()));
@@ -630,9 +630,9 @@ EIUseKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
         if (! result.empty())
             result.append(" ");
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(j->second.flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(j->second.flag, *_imp->id))
             result.append(f.format(j->second, format::Masked()));
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(j->second.flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(j->second.flag, *_imp->id))
             result.append(f.format(j->second, format::Forced()));
         else if (_imp->env->query_use(j->second.flag, *_imp->id))
             result.append(f.format(j->second, format::Enabled()));
@@ -666,12 +666,12 @@ EIUseKey::pretty_print_flat_with_comparison(
         std::string l;
         bool n;
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(i->flag, *_imp->id))
         {
             l = f.format(*i, format::Masked());
             n = false;
         }
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(i->flag, *_imp->id))
         {
             l = f.format(*i, format::Forced());
             n = true;
@@ -713,12 +713,12 @@ EIUseKey::pretty_print_flat_with_comparison(
         std::string l;
         bool n;
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(j->second.flag, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(j->second.flag, *_imp->id))
         {
             l = f.format(j->second, format::Masked());
             n = false;
         }
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(j->second.flag, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(j->second.flag, *_imp->id))
         {
             l = f.format(j->second, format::Forced());
             n = true;
@@ -889,9 +889,9 @@ EUseKey::pretty_print_flat(const Formatter<UseFlagName> & f) const
         if (! result.empty())
             result.append(" ");
 
-        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(*i, *_imp->id))
+        if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_mask(*i, *_imp->id))
             result.append(f.format(*i, format::Masked()));
-        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(*i, *_imp->id))
+        else if ((*_imp->id->repository())[k::use_interface()] && (*_imp->id->repository())[k::use_interface()]->query_use_force(*i, *_imp->id))
             result.append(f.format(*i, format::Forced()));
         else if (_imp->env->query_use(*i, *_imp->id))
             result.append(f.format(*i, format::Enabled()));

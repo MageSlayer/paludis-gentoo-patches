@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_SYNCER_HH 1
 
 #include <paludis/util/exception.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
 #include <paludis/repository.hh>
 #include <string>
 
@@ -37,8 +39,31 @@
 
 namespace paludis
 {
+    /**
+     * Options used by Syncer.
+     *
+     * \see Syncer
+     * \ingroup g_repository
+     * \nosubgrouping
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::options, std::string>,
+        kc::Field<k::filter_file, FSEntry>,
+        kc::Field<k::output_prefix, std::string>
+        > SyncOptions;
 
-#include <paludis/syncer-sr.hh>
+    /**
+     * Parameters for a Syncer.
+     *
+     * \see Syncer
+     * \ingroup g_repository
+     * \nosubgrouping
+     */
+    typedef kc::KeyedClass<
+        kc::Field<k::local, std::string>,
+        kc::Field<k::remote, std::string>,
+        kc::Field<k::environment, const Environment *>
+            > SyncerParams;
 
     /**
      * A Syncer subclass handles syncing Repository instances.
@@ -52,17 +77,13 @@ namespace paludis
             /**
              * Constructor.
              */
-            Syncer()
-            {
-            }
+            Syncer();
 
         public:
             /**
              * Destructor.
              */
-            virtual ~Syncer()
-            {
-            }
+            virtual ~Syncer();
 
             /**
              * Perform the sync.
@@ -93,9 +114,7 @@ namespace paludis
             /**
              * Destructor.
              */
-            virtual ~DefaultSyncer()
-            {
-            }
+            virtual ~DefaultSyncer();
 
             /**
              * Perform the sync.

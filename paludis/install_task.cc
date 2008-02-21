@@ -440,7 +440,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     bool live_destination(false);
     if (dep->destination)
-        if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
+        if ((*dep->destination)[k::destination_interface()] && (*dep->destination)[k::destination_interface()]->want_pre_post_phases())
             live_destination = true;
 
     /* we're about to fetch / install one item */
@@ -623,7 +623,7 @@ InstallTask::_main_actions()
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
             if (dlk_package == dep->kind && dep->destination)
-                if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
+                if ((*dep->destination)[k::destination_interface()] && (*dep->destination)[k::destination_interface()]->want_pre_post_phases())
                     any_live_destination = true;
 
         if (0 != perform_hook(Hook("install_all_pre")
@@ -966,8 +966,8 @@ InstallTask::world_update_set(const SetName & s)
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((*r)->world_interface)
-            (*r)->world_interface->add_to_world(s);
+        if ((**r)[k::world_interface()])
+            (**r)[k::world_interface()]->add_to_world(s);
 
     on_update_world(s);
 }
@@ -1000,8 +1000,8 @@ namespace
                 for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                         r_end(env->package_database()->end_repositories()) ;
                         r != r_end ; ++r)
-                    if ((*r)->world_interface && a.package_ptr())
-                        (*r)->world_interface->add_to_world(*a.package_ptr());
+                    if ((**r)[k::world_interface()] && a.package_ptr())
+                        (**r)[k::world_interface()]->add_to_world(*a.package_ptr());
                 task->on_update_world(a);
             }
         }

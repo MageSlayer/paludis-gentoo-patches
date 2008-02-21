@@ -233,14 +233,14 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
     _imp->initialise(this);
 
     if (_imp->main_repo)
-        if (_imp->main_repo->e_interface->end_profiles() != _imp->main_repo->e_interface->begin_profiles())
-            _imp->main_repo->e_interface->set_profile(_imp->main_repo->e_interface->begin_profiles());
+        if ((*_imp->main_repo)[k::e_interface()]->end_profiles() != (*_imp->main_repo)[k::e_interface()]->begin_profiles())
+            (*_imp->main_repo)[k::e_interface()]->set_profile((*_imp->main_repo)[k::e_interface()]->begin_profiles());
 
     if (_imp->master_repo)
-        if (_imp->master_repo->e_interface->end_profiles() !=
-                _imp->master_repo->e_interface->begin_profiles())
-            _imp->master_repo->e_interface->set_profile(
-                    _imp->master_repo->e_interface->begin_profiles());
+        if ((*_imp->master_repo)[k::e_interface()]->end_profiles() !=
+                (*_imp->master_repo)[k::e_interface()]->begin_profiles())
+            (*_imp->master_repo)[k::e_interface()]->set_profile(
+                    (*_imp->master_repo)[k::e_interface()]->begin_profiles());
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -318,19 +318,19 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
     if (_imp->is_vdb)
         return true;
 
-    std::string accept_keywords_var(_imp->main_repo->e_interface->accept_keywords_variable());
+    std::string accept_keywords_var((*_imp->main_repo)[k::e_interface()]->accept_keywords_variable());
     std::string ak;
     if (! accept_keywords_var.empty())
-        ak = _imp->main_repo->e_interface->profile_variable(accept_keywords_var);
+        ak = (*_imp->main_repo)[k::e_interface()]->profile_variable(accept_keywords_var);
 
     if (ak.empty())
     {
-        std::string arch_var(_imp->main_repo->e_interface->arch_variable());
+        std::string arch_var((*_imp->main_repo)[k::e_interface()]->arch_variable());
 
         if (arch_var.empty())
             throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
 
-        std::string arch(_imp->main_repo->e_interface->profile_variable(arch_var));
+        std::string arch((*_imp->main_repo)[k::e_interface()]->profile_variable(arch_var));
 
         if (keywords->end() != keywords->find(KeywordName(arch)))
             return true;

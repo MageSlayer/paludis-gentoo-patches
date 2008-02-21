@@ -394,11 +394,11 @@ namespace paludis
 
                 FSEntrySequence profiles;
                 profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
-                profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::create()
-                        .arch(tokens.at(0))
-                        .path(*profiles.begin())
-                        .status(tokens.at(2))
-                        .profile(tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
+                profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::named_create()
+                        (k::arch(), tokens.at(0))
+                        (k::path(), *profiles.begin())
+                        (k::status(), tokens.at(2))
+                        (k::profile(), tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
                                     erepository::EAPIData::get_instance()->eapi_from_string(
                                         params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch))));
@@ -452,26 +452,26 @@ namespace
 
 ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
-            RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(this)
-            .use_interface(this)
-            .world_interface(0)
-            .environment_variable_interface(this)
-            .mirrors_interface(this)
-            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+            RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), this)
+            (k::use_interface(), this)
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::environment_variable_interface(), this)
+            (k::mirrors_interface(), this)
+            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
                     p.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            .provides_interface(0)
-            .destination_interface(p.binary_destination ? this : 0)
-            .make_virtuals_interface(0)
-            .e_interface(this)
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::destination_interface(), p.binary_destination ? this : 0)
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::e_interface(), this)
 #ifdef ENABLE_QA
-            .qa_interface(this)
+            (k::qa_interface(), this)
 #else
-            .qa_interface(0)
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
 #endif
-            .hook_interface(this)
-            .manifest_interface(this)),
+            (k::hook_interface(), this)
+            (k::manifest_interface(), this)),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
     _imp(PrivateImplementationPattern<ERepository>::_imp)
 {
@@ -780,10 +780,10 @@ ERepository::sync() const
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
-        DefaultSyncer syncer(SyncerParams::create()
-                .environment(_imp->params.environment)
-                .local(stringify(_imp->params.location))
-                .remote(*s)
+        DefaultSyncer syncer(SyncerParams::named_create()
+                (k::environment(), _imp->params.environment)
+                (k::local(), stringify(_imp->params.location))
+                (k::remote(), *s)
                 );
         SyncOptions opts(
                 _imp->params.sync_options,
@@ -906,9 +906,9 @@ ERepository::virtual_packages() const
 
     for (ERepositoryProfile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
-        result->push_back(RepositoryVirtualsEntry::create()
-                .provided_by_spec(i->second)
-                .virtual_name(i->first));
+        result->push_back(RepositoryVirtualsEntry::named_create()
+                (k::provided_by_spec(), i->second)
+                (k::virtual_name(), i->first));
 
     return result;
 }
@@ -1020,7 +1020,7 @@ ERepository::find_profile(const FSEntry & location) const
     _imp->need_profiles_desc();
     for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
             i_end(_imp->profiles_desc.end()) ; i != i_end ; ++i)
-        if (i->path == location)
+        if ((*i)[k::path()] == location)
             return ProfilesConstIterator(i);
     return ProfilesConstIterator(_imp->profiles_desc.end());
 }
@@ -1030,7 +1030,7 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 {
     Context context("When setting profile by iterator:");
 
-    _imp->profile_ptr = iter->profile;
+    _imp->profile_ptr = (*iter)[k::profile()];
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
             [k::support_old_style_virtuals()])
@@ -1047,14 +1047,14 @@ ERepository::set_profile_by_arch(const UseFlagName & arch)
     Context context("When setting profile by arch '" + stringify(arch) + "':");
 
     for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if (p->arch == stringify(arch) && p->status == "stable")
+        if ((*p)[k::arch()] == stringify(arch) && (*p)[k::status()] == "stable")
         {
             set_profile(p);
             return;
         }
 
     for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if (p->arch == stringify(arch))
+        if ((*p)[k::arch()] == stringify(arch))
         {
             set_profile(p);
             return;

@@ -1127,7 +1127,7 @@ ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
             f != f_end ; ++f)
     {
         std::string d;
-        const RepositoryUseInterface * const i(p->repository()->use_interface);
+        const RepositoryUseInterface * const i((*p->repository())[k::use_interface()]);
 
         if (i)
             d = i->describe_use_flag(*f, *p);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,7 +49,7 @@ namespace test_cases
             tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
-            TEST_CHECK(repo->virtuals_interface);
+            TEST_CHECK((*repo)[k::virtuals_interface()]);
 
             env.package_database()->add_repository(2, virtuals);
             env.package_database()->add_repository(3, repo);

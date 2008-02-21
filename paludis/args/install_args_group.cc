@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -94,7 +94,7 @@ InstallArgsGroup::destinations(Environment * env) const
         {
             tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
                         RepositoryName(*i)));
-            if (repo->destination_interface)
+            if ((*repo)[k::destination_interface()])
                 d->insert(repo);
             else
                 throw args::DoHelp("--destinations argument '" + *i + "' does not provide a destinations interface");

@@ -106,21 +106,21 @@ namespace
 
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
-    Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
-            .use_interface(0)
-            .sets_interface(0)
-            .syncable_interface(0)
-            .mirrors_interface(0)
-            .environment_variable_interface(0)
-            .world_interface(0)
-            .provides_interface(0)
-            .virtuals_interface(0)
-            .destination_interface(0)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(this)
-            .manifest_interface(0)),
+    Repository(RepositoryName(make_name(r)), RepositoryCapabilities::named_create()
+            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
+            (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), this)
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r)),
     _imp(PrivateImplementationPattern<InstalledVirtualsRepository>::_imp)
@@ -147,21 +147,21 @@ InstalledVirtualsRepository::need_ids() const
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (! (*r)->provides_interface)
+        if (! (**r)[k::provides_interface()])
             continue;
 
         tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
-                (*r)->provides_interface->provided_packages());
+                (**r)[k::provides_interface()]->provided_packages());
 
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
                     pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
         {
-            IDMap::iterator i(_imp->ids.find(p->virtual_name));
+            IDMap::iterator i(_imp->ids.find((*p)[k::virtual_name()]));
             if (i == _imp->ids.end())
-                i = _imp->ids.insert(std::make_pair(p->virtual_name, make_shared_ptr(new PackageIDSequence))).first;
+                i = _imp->ids.insert(std::make_pair((*p)[k::virtual_name()], make_shared_ptr(new PackageIDSequence))).first;
 
             tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
-                        _imp->env, shared_from_this(), p->virtual_name, p->provided_by, false));
+                        _imp->env, shared_from_this(), (*p)[k::virtual_name()], (*p)[k::provided_by()], false));
             i->second->push_back(id);
         }
     }

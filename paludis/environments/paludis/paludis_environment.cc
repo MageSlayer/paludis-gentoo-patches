@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -181,11 +181,11 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     Save<bool> save_recursive(&recursive, true);
 
     /* first check package database use masks... */
-    if (e.repository()->use_interface)
+    if ((*e.repository())[k::use_interface()])
     {
-        if (e.repository()->use_interface->query_use_mask(f, e))
+        if ((*e.repository())[k::use_interface()]->query_use_mask(f, e))
             return false;
-        if (e.repository()->use_interface->query_use_force(f, e))
+        if ((*e.repository())[k::use_interface()]->query_use_force(f, e))
             return true;
     }
 
@@ -210,9 +210,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     } while (false);
 
     /* check use: package database config */
-    if (e.repository()->use_interface)
+    if ((*e.repository())[k::use_interface()])
     {
-        switch (e.repository()->use_interface->query_use(f, e))
+        switch ((*e.repository())[k::use_interface()]->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

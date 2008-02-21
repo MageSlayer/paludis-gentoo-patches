@@ -287,7 +287,7 @@ int do_environment_variable(tr1::shared_ptr<Environment> env)
     if (entries->empty())
         throw NoSuchPackageError(spec_str);
 
-    RepositoryEnvironmentVariableInterface * env_if((*entries->last())->repository()->environment_variable_interface);
+    RepositoryEnvironmentVariableInterface * env_if((*(*entries->last())->repository())[k::environment_variable_interface()]);
 
     if (! env_if)
     {

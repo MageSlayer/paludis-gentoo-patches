@@ -34,6 +34,7 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
@@ -120,8 +121,6 @@ namespace paludis
                 return _name;
             }
     };
-
-#include <paludis/repository-sr.hh>
 
     /**
      * A Repository provides a representation of a physical repository to a

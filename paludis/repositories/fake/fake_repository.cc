@@ -60,22 +60,22 @@ namespace paludis
 
 FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(this)
-            .world_interface(0)
-            .mirrors_interface(this)
-            .environment_variable_interface(0)
-            .provides_interface(0)
-            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+    FakeRepositoryBase(e, our_name, RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), this)
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::mirrors_interface(), this)
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
                     e->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            .destination_interface(0)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0),
+            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
             "0"),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
@@ -84,22 +84,22 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(params.environment, params.name, RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(this)
-            .world_interface(0)
-            .mirrors_interface(this)
-            .environment_variable_interface(0)
-            .provides_interface(0)
-            .virtuals_interface((*DistributionData::get_instance()->distribution_from_string(
+    FakeRepositoryBase(params.environment, params.name, RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), this)
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::mirrors_interface(), this)
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
                     params.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            .destination_interface(0)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0),
+            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
             params.eapi),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {

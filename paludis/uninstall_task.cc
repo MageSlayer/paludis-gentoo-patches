@@ -411,8 +411,8 @@ UninstallTask::world_remove_set(const SetName & s)
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((*r)->world_interface)
-            (*r)->world_interface->remove_from_world(s);
+        if ((**r)[k::world_interface()])
+            (**r)[k::world_interface()]->remove_from_world(s);
 
     on_update_world(s);
 }
@@ -441,8 +441,8 @@ namespace
                 for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                         r_end(env->package_database()->end_repositories()) ;
                         r != r_end ; ++r)
-                    if ((*r)->world_interface && a.package_ptr())
-                        (*r)->world_interface->remove_from_world(*a.package_ptr());
+                    if ((**r)[k::world_interface()] && a.package_ptr())
+                        (**r)[k::world_interface()]->remove_from_world(*a.package_ptr());
 
                 task->on_update_world(a);
             }

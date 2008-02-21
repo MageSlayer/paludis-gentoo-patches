@@ -89,7 +89,7 @@ namespace
             if (! id)
                 throw InternalError(PALUDIS_HERE, "! id");
 
-            RepositoryUseInterface * const u(id->repository()->use_interface);
+            RepositoryUseInterface * const u((*id->repository())[k::use_interface()]);
             if (! u)
                 return true;
 

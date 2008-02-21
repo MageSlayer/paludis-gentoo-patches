@@ -78,8 +78,8 @@ EnvironmentImplementation::default_destinations() const
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((*r)->destination_interface)
-            if ((*r)->destination_interface->is_default_destination())
+        if ((**r)[k::destination_interface()])
+            if ((**r)[k::destination_interface()]->is_default_destination())
                 result->insert(*r);
 
     return result;
@@ -111,10 +111,10 @@ EnvironmentImplementation::set(const SetName & s) const
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-        if (! (*r)->sets_interface)
+        if (! (**r)[k::sets_interface()])
             continue;
 
-        tr1::shared_ptr<SetSpecTree::ConstItem> add((*r)->sets_interface->package_set(s));
+        tr1::shared_ptr<SetSpecTree::ConstItem> add((**r)[k::sets_interface()]->package_set(s));
         if (add)
         {
             Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' found in '" << (*r)->name() << "'";
@@ -136,14 +136,14 @@ EnvironmentImplementation::set(const SetName & s) const
 bool
 EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e) const
 {
-    if (e.repository()->use_interface)
+    if ((*e.repository())[k::use_interface()])
     {
-        if (e.repository()->use_interface->query_use_mask(f, e))
+        if ((*e.repository())[k::use_interface()]->query_use_mask(f, e))
             return false;
-        if (e.repository()->use_interface->query_use_force(f, e))
+        if ((*e.repository())[k::use_interface()]->query_use_force(f, e))
             return true;
 
-        switch (e.repository()->use_interface->query_use(f, e))
+        switch ((*e.repository())[k::use_interface()]->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

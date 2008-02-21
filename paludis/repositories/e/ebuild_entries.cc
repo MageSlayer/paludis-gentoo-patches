@@ -535,23 +535,24 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     {
         if (phase->option("merge"))
         {
-            if (! o[k::destination()]->destination_interface)
+            if (! (*o[k::destination()])[k::destination_interface()])
                 throw InstallActionError("Can't install '" + stringify(*id)
                         + "' to destination '" + stringify(o[k::destination()]->name())
                         + "' because destination does not provide destination_interface");
 
-                o[k::destination()]->destination_interface->merge(
-                        MergeParams::create()
-                        .package_id(id)
-                        .image_dir(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                (*o[k::destination()])[k::destination_interface()]->merge(
+                        MergeParams::named_create()
+                        (k::package_id(), id)
+                        (k::image_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image")
-                        .environment_file(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        (k::environment_file(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
-                        .options(id->eapi()->supported->merger_options)
+                        (k::options(), id->eapi()->supported->merger_options)
                         );
         }
         else if ((! phase->option("prepost")) ||
-                (o[k::destination()]->destination_interface && o[k::destination()]->destination_interface->want_pre_post_phases()))
+                ((*o[k::destination()])[k::destination_interface()] &&
+                 (*o[k::destination()])[k::destination_interface()]->want_pre_post_phases()))
         {
             if (phase->option("checkphase"))
             {
@@ -728,15 +729,15 @@ EbuildEntries::make_ebuild_entries(
 void
 EbuildEntries::merge(const MergeParams & m)
 {
-    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
             + "' to E repository '" + stringify(_imp->e_repository->name()) + "':");
 
-    if (! _imp->e_repository->is_suitable_destination_for(*m.package_id))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+    if (! _imp->e_repository->is_suitable_destination_for(*m[k::package_id()]))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
     FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
-                m.package_id->name(), m.package_id->version(),
-                "pbin-1+" + tr1::static_pointer_cast<const ERepositoryID>(m.package_id)->eapi()->name));
+                m[k::package_id()]->name(), m[k::package_id()]->version(),
+                "pbin-1+" + tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi()->name));
 
     binary_ebuild_location.dirname().dirname().mkdir();
     binary_ebuild_location.dirname().mkdir();
@@ -744,14 +745,14 @@ EbuildEntries::merge(const MergeParams & m)
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             WriteBinaryEbuildCommandParams::create()
             .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m.package_id))
+            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
             .binary_ebuild_location(binary_ebuild_location)
             .binary_distdir(_imp->params.binary_distdir)
-            .environment_file(m.environment_file)
-            .image(m.image_dir)
+            .environment_file(m[k::environment_file()])
+            .image(m[k::image_dir()])
             .destination_repository(_imp->e_repository)
             .builddir(_imp->params.builddir)
-            .merger_options(tr1::static_pointer_cast<const ERepositoryID>(m.package_id)
+            .merger_options(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])
                 ->eapi()->supported->merger_options));
 
     write_binary_ebuild_command();

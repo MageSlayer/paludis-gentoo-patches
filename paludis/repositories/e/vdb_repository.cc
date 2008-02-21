@@ -146,21 +146,21 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .builddir(p.builddir)
             .world(p.world),
             p.name,
-            RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(this)
-            .world_interface(this)
-            .environment_variable_interface(this)
-            .mirrors_interface(0)
-            .provides_interface(this)
-            .virtuals_interface(0)
-            .destination_interface(this)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(this)
-            .manifest_interface(0)),
+            RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), this)
+            (k::world_interface(), this)
+            (k::environment_variable_interface(), this)
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::provides_interface(), this)
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::destination_interface(), this)
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), this)
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p)),
     _imp(PrivateImplementationPattern<VDBRepository>::_imp)
 {
@@ -537,9 +537,9 @@ VDBRepository::load_provided_using_cache() const
         pp->accept(f);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
-            result->push_back(RepositoryProvidesEntry::create()
-                    .virtual_name(QualifiedPackageName((*p)->text()))
-                    .provided_by(id));
+            result->push_back(RepositoryProvidesEntry::named_create()
+                    (k::virtual_name(), QualifiedPackageName((*p)->text()))
+                    (k::provided_by(), id));
     }
 
     _imp->provides = result;
@@ -592,9 +592,9 @@ VDBRepository::load_provided_the_slow_way() const
                         Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
                                 + stringify(pp) + "' from '" + stringify(**e) + "' will not work as expected");
 
-                    result->push_back(RepositoryProvidesEntry::create()
-                            .virtual_name(pp)
-                            .provided_by(*e));
+                    result->push_back(RepositoryProvidesEntry::named_create()
+                            (k::virtual_name(), pp)
+                            (k::provided_by(), *e));
                 }
             }
             catch (const InternalError &)
@@ -696,29 +696,29 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
 void
 VDBRepository::merge(const MergeParams & m)
 {
-    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
             + "' to VDB repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+    if (! is_suitable_destination_for(*m[k::package_id()]))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
-    tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id->name(), m.package_id->version()));
+    tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m[k::package_id()]->name(), m[k::package_id()]->version()));
 
     FSEntry tmp_vdb_dir(_imp->params.location);
     if (! tmp_vdb_dir.exists())
         tmp_vdb_dir.mkdir();
-    tmp_vdb_dir /= stringify(m.package_id->name().category);
+    tmp_vdb_dir /= stringify(m[k::package_id()]->name().category);
     if (! tmp_vdb_dir.exists())
         tmp_vdb_dir.mkdir();
-    tmp_vdb_dir /= ("-checking-" + stringify(m.package_id->name().package) + "-" + stringify(m.package_id->version()));
+    tmp_vdb_dir /= ("-checking-" + stringify(m[k::package_id()]->name().package) + "-" + stringify(m[k::package_id()]->version()));
     tmp_vdb_dir.mkdir();
 
     WriteVDBEntryCommand write_vdb_entry_command(
             WriteVDBEntryParams::create()
             .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m.package_id))
+            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
             .output_directory(tmp_vdb_dir)
-            .environment_file(m.environment_file));
+            .environment_file(m[k::environment_file()]));
 
     write_vdb_entry_command();
 
@@ -733,19 +733,19 @@ VDBRepository::merge(const MergeParams & m)
     }
 
     FSEntry vdb_dir(_imp->params.location);
-    vdb_dir /= stringify(m.package_id->name().category);
-    vdb_dir /= (stringify(m.package_id->name().package) + "-" + stringify(m.package_id->version()));
+    vdb_dir /= stringify(m[k::package_id()]->name().category);
+    vdb_dir /= (stringify(m[k::package_id()]->name().package) + "-" + stringify(m[k::package_id()]->version()));
 
     VDBMerger merger(
             VDBMergerParams::named_create()
             (k::environment(), _imp->params.environment)
-            (k::image(), m.image_dir)
+            (k::image(), m[k::image_dir()])
             (k::root(), installed_root_key()->value())
             (k::contents_file(), vdb_dir / "CONTENTS")
             (k::config_protect(), config_protect)
             (k::config_protect_mask(), config_protect_mask)
-            (k::package_id(), m.package_id)
-            (k::options(), m.options));
+            (k::package_id(), m[k::package_id()])
+            (k::options(), m[k::options()]));
 
     if (! merger.check())
     {

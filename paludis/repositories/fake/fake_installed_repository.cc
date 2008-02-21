@@ -53,21 +53,21 @@ namespace paludis
 }
 
 FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name) :
-    FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(this)
-            .world_interface(0)
-            .mirrors_interface(0)
-            .environment_variable_interface(0)
-            .provides_interface(this)
-            .virtuals_interface(0)
-            .destination_interface(this)
-            .e_interface(0)
-            .make_virtuals_interface(0)
-            .qa_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0),
+    FakeRepositoryBase(e, our_name, RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), this)
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::provides_interface(), this)
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::destination_interface(), this)
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
             "0"),
     PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
@@ -110,9 +110,9 @@ FakeInstalledRepository::provided_packages() const
                 (*v)->provide_key()->value()->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
-                    result->push_back(RepositoryProvidesEntry::create()
-                            .virtual_name(QualifiedPackageName((*q)->text()))
-                            .provided_by(*v));
+                    result->push_back(RepositoryProvidesEntry::named_create()
+                            (k::virtual_name(), QualifiedPackageName((*q)->text()))
+                            (k::provided_by(), *v));
             }
         }
     }

@@ -41,8 +41,6 @@
 
 using namespace paludis;
 
-#include <paludis/repository-sr.cc>
-
 template class Set<tr1::shared_ptr<Repository> >;
 template class WrappedForwardIterator<Set<tr1::shared_ptr<Repository> >::ConstIteratorTag, const tr1::shared_ptr<Repository> >;
 template class WrappedOutputIterator<Set<tr1::shared_ptr<Repository> >::InserterTag, tr1::shared_ptr<Repository> >;

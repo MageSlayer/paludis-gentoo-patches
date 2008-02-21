@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -80,10 +80,10 @@ namespace
         if (packages->empty())
             return;
 
-        if (! repo.use_interface)
+        if (! repo[k::use_interface()])
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo.use_interface->arch_flags());
+        tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo[k::use_interface()]->arch_flags());
         if (arch_flags->empty())
             return;
 

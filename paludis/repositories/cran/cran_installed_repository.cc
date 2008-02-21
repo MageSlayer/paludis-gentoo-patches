@@ -153,21 +153,21 @@ Implementation<CRANInstalledRepository>::need_ids() const
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("installed-cran"),
-            RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(0)
-            .use_interface(0)
-            .world_interface(this)
-            .environment_variable_interface(0)
-            .mirrors_interface(0)
-            .virtuals_interface(0)
-            .provides_interface(0)
-            .destination_interface(this)
-            .e_interface(0)
-            .qa_interface(0)
-            .make_virtuals_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0)),
+            RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
+            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
+            (k::world_interface(), this)
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::destination_interface(), this)
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
 {
@@ -597,11 +597,11 @@ CRANInstalledRepository::want_pre_post_phases() const
 void
 CRANInstalledRepository::merge(const MergeParams & m)
 {
-    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
             + "' to repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+    if (! is_suitable_destination_for(*m[k::package_id()]))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
 }
 

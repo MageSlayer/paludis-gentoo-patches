@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -114,9 +114,9 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))),
                         qo_require_exactly_one)->begin());
 
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag1"), *e1) == use_enabled);
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag2"), *e1) == use_enabled);
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag3"), *e1) == use_disabled);
+            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag1"), *e1) == use_enabled);
+            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag2"), *e1) == use_enabled);
+            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag3"), *e1) == use_disabled);
         }
     } test_vdb_repository_query_use;
 
@@ -139,7 +139,7 @@ namespace test_cases
             keys->insert("world", "vdb_repository_TEST_dir/world-new-file");
             tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
-            repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            (*repo)[k::world_interface()]->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-new-file");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(world_content, "cat-one/foofoo\n");
@@ -165,7 +165,7 @@ namespace test_cases
             keys->insert("world", "vdb_repository_TEST_dir/world-empty");
             tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
-            repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            (*repo)[k::world_interface()]->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-empty");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(world_content, "cat-one/foofoo\n");
@@ -191,7 +191,7 @@ namespace test_cases
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match");
             tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
-            repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            (*repo)[k::world_interface()]->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/bar\ncat-one/oink\ncat-one/foofoo\n");
@@ -217,7 +217,7 @@ namespace test_cases
             keys->insert("world", "vdb_repository_TEST_dir/world-match");
             tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
-            repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            (*repo)[k::world_interface()]->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-match");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/foofoo\ncat-one/bar\n");
@@ -242,7 +242,7 @@ namespace test_cases
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
             tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
-            repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            (*repo)[k::world_interface()]->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match-no-eol");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/bar\ncat-one/oink\ncat-one/foofoo\n");

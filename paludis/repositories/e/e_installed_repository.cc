@@ -486,13 +486,14 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
             if (_imp->params.environment->package_database()->has_repository_named(rn))
             {
                 const tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
-                if (r->e_interface)
+                if ((*r)[k::e_interface()])
                 {
-                    i = r->e_interface->info_variables_file(r->e_interface->params().location / "profiles");
+                    i = (*r)[k::e_interface()]->info_variables_file((*r)[k::e_interface()]->params().location / "profiles");
 
                     /* also try its master, if it has one */
-                    if ((! i.exists()) && r->e_interface->params().master_repository)
-                        i = r->e_interface->info_variables_file(r->e_interface->params().master_repository->params().location / "profiles");
+                    if ((! i.exists()) && (*r)[k::e_interface()]->params().master_repository)
+                        i = (*r)[k::e_interface()]->info_variables_file(
+                                (*r)[k::e_interface()]->params().master_repository->params().location / "profiles");
                 }
             }
         }
@@ -504,10 +505,10 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
                     r_end(_imp->params.environment->package_database()->end_repositories()) ;
                     r != r_end ; ++r)
             {
-                if (! (*r)->e_interface)
+                if (! (**r)[k::e_interface()])
                     continue;
 
-                i = (*r)->e_interface->info_variables_file((*r)->e_interface->params().location / "profiles");
+                i = (**r)[k::e_interface()]->info_variables_file((**r)[k::e_interface()]->params().location / "profiles");
                 if (i.exists())
                     break;
             }

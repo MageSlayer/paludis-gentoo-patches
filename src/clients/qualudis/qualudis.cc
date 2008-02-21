@@ -337,13 +337,13 @@ int main(int argc, char *argv[])
                     .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                     ));
 
-        if (! env->main_repository()->qa_interface)
+        if (! (*env->main_repository())[k::qa_interface()])
             throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");
 
         QualudisReporter r(QualudisCommandLine::get_instance()->a_show_associated_keys.argument());
         if (QualudisCommandLine::get_instance()->empty())
         {
-            env->main_repository()->qa_interface->check_qa(
+            (*env->main_repository())[k::qa_interface()]->check_qa(
                     r,
                     QACheckProperties(),
                     QACheckProperties(),
@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
             for (QualudisCommandLine::ParametersConstIterator c(QualudisCommandLine::get_instance()->begin_parameters()),
                     c_end(QualudisCommandLine::get_instance()->end_parameters()) ;
                     c != c_end ; ++c)
-                env->main_repository()->qa_interface->check_qa(
+                (*env->main_repository())[k::qa_interface()]->check_qa(
                         r,
                         QACheckProperties(),
                         QACheckProperties(),

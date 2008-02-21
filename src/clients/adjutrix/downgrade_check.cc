@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,7 +74,7 @@ namespace
     make_filename(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
     {
         std::string result;
-        FSEntry f(p->path);
+        FSEntry f((*p)[k::path()]);
         while (f.basename() != "profiles" && f != FSEntry("/"))
         {
             result = f.basename() + (result.empty() ? "" : "_" + result);
@@ -90,7 +90,7 @@ namespace
     make_desc(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
     {
         std::string result;
-        FSEntry f(p->path);
+        FSEntry f((*p)[k::path()]);
         while (f.basename() != "profiles" && f != FSEntry("/"))
         {
             result = f.basename() + (result.empty() ? "" : "/" + result);
@@ -167,13 +167,13 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
         throw ConfigurationError("Output directory already exists");
 
     for (RepositoryEInterface::ProfilesConstIterator
-            p(env.main_repository()->e_interface->begin_profiles()),
-            p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
+            p((*env.main_repository())[k::e_interface()]->begin_profiles()),
+            p_end((*env.main_repository())[k::e_interface()]->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.main_repository()->e_interface->set_profile(p);
+            (*env.main_repository())[k::e_interface()]->set_profile(p);
             std::string n(make_filename(p, i));
             std::cerr << "Generating " << n << "..." << std::endl;
             std::ofstream f(stringify(output_dir / n).c_str());
@@ -200,13 +200,13 @@ do_downgrade_check(NoConfigEnvironment & env)
     std::multimap<QPNS, std::string> results;
 
     for (RepositoryEInterface::ProfilesConstIterator
-            p(env.main_repository()->e_interface->begin_profiles()),
-            p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
+            p((*env.main_repository())[k::e_interface()]->begin_profiles()),
+            p_end((*env.main_repository())[k::e_interface()]->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.main_repository()->e_interface->set_profile(p);
+            (*env.main_repository())[k::e_interface()]->set_profile(p);
             std::string n(make_filename(p, i)), desc(make_desc(p, i));
 
             if ((before_dir / n).exists() && (after_dir / n).exists())

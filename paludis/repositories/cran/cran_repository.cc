@@ -99,21 +99,21 @@ Implementation<CRANRepository>::~Implementation()
 
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     Repository(CRANRepository::fetch_repo_name(stringify(p.location)),
-            RepositoryCapabilities::create()
-            .sets_interface(this)
-            .syncable_interface(this)
-            .use_interface(0)
-            .world_interface(0)
-            .environment_variable_interface(0)
-            .make_virtuals_interface(0)
-            .mirrors_interface(0)
-            .provides_interface(0)
-            .destination_interface(0)
-            .virtuals_interface(0)
-            .e_interface(0)
-            .qa_interface(0)
-            .hook_interface(0)
-            .manifest_interface(0)),
+            RepositoryCapabilities::named_create()
+            (k::sets_interface(), this)
+            (k::syncable_interface(), this)
+            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
+            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
+            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
+            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
+            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
+            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
+            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
+            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
+            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
+            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex))),
     _imp(PrivateImplementationPattern<CRANRepository>::_imp)
 {
