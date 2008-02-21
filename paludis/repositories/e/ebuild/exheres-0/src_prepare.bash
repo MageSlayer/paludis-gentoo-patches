@@ -22,7 +22,9 @@
 
 default_src_prepare()
 {
-    :
+    if [[ -n "${DEFAULT_SRC_PREPARE_PATCHES[@]}" ]]; then
+        expatch "${DEFAULT_SRC_PREPARE_PATCHES[@]}"
+    fi
 }
 
 src_prepare()

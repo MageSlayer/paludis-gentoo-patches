@@ -20,6 +20,57 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+expatch()
+{
+    if [[ "${EBUILD_PHASE}" != "prepare" ]] ; then
+        die "epatch called in EBUILD_PHASE ${EBUILD_PHASE}"
+    fi
+
+    local recognise= patchlevel= options=() cmd=
+
+    if [[ ${1} == "--recognised-suffixes" ]]; then
+        recognise=true
+        shift
+    fi
+
+    while [[ $# -gt 0 ]]; do
+        if [[ ${1} == -p[0-9]* ]]; then
+            patchlevel="${1}"
+        elif [[ ${1} == -* ]]; then
+            options+=("${1}")
+        elif [[ -d ${1} ]]; then
+            expatch --recognised-suffixes ${patchlevel} "${options[@]}" "${1}"/*
+        else
+            case "${1}" in
+                *.bz2)
+                cmd="bzip2 -dc"
+                ;;
+                *.gz|*.Z|*.z)
+                cmd="gzip -dc"
+                ;;
+                *.zip|*.ZIP|*.jar)
+                cmd="unzip -p"
+                ;;
+                *.diff|*.patch)
+                cmd="cat"
+                ;;
+                *)
+                if [[ -n ${recognise} ]]; then
+                    continue
+                else
+                    cmd="cat"
+                fi
+                ;;
+            esac
+
+            echo "${cmd} ${1} | patch -s ${patchlevel:--p1} ${options[@]}" 1>&2
+            ${cmd} "${1}" | patch -s ${patchlevel:--p1} "${options[@]}" || \
+                die "patch -s ${patchlevel:--p1} ${options[@]} ${1} failed"
+        fi
+        shift
+    done
+}
+
 econf()
 {
     if [[ "${EBUILD_PHASE}" != "configure" ]] ; then
