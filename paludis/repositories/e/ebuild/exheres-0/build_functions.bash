@@ -23,7 +23,7 @@
 expatch()
 {
     if [[ "${EBUILD_PHASE}" != "prepare" ]] ; then
-        die "epatch called in EBUILD_PHASE ${EBUILD_PHASE}"
+        die "expatch called in EBUILD_PHASE ${EBUILD_PHASE}"
     fi
 
     local recognise= patchlevel= options=() cmd=
