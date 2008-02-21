@@ -62,6 +62,11 @@ namespace
             std::cout << k.value() << std::endl;
         }
 
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            std::cout << k.value() << std::endl;
+        }
+
         void visit(const MetadataValueKey<FSEntry> & k)
         {
             std::cout << k.value() << std::endl;

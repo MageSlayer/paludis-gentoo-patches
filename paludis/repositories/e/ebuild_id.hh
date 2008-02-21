@@ -91,6 +91,8 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
                 virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const;
 
+                virtual const tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
+
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 

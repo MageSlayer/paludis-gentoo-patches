@@ -327,6 +327,10 @@ namespace
         {
         }
 
+        void visit(const MetadataValueKey<bool> &)
+        {
+        }
+
         void visit(const MetadataTimeKey &)
         {
         }

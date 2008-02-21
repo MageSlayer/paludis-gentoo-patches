@@ -76,6 +76,7 @@ namespace paludis
             MetadataSpecTreeKey<RestrictSpecTree>,
             MetadataValueKey<std::string>,
             MetadataValueKey<long>,
+            MetadataValueKey<bool>,
             MetadataValueKey<FSEntry>,
             MetadataValueKey<tr1::shared_ptr<const PackageID> >,
             MetadataValueKey<tr1::shared_ptr<const Contents> >,
@@ -197,6 +198,25 @@ namespace paludis
      */
     template <>
     class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<long>
+    {
+        public:
+            virtual ~ExtraMetadataValueKeyMethods() = 0;
+
+            /**
+             * Return a formatted version of our value.
+             */
+            virtual std::string pretty_print() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * Extra methods for MetadataValueKey with bool value type.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     */
+    template <>
+    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<bool>
     {
         public:
             virtual ~ExtraMetadataValueKeyMethods() = 0;

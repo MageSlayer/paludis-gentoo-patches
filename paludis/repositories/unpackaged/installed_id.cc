@@ -39,6 +39,7 @@
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/hashed_containers.hh>
 #include <fstream>
@@ -515,6 +516,41 @@ const tr1::shared_ptr<const MetadataValueKey<long> >
 InstalledUnpackagedID::size_of_all_distfiles_key() const
 {
     return tr1::shared_ptr<const MetadataValueKey<long> >();
+}
+
+namespace paludis
+{
+    class InstalledUnpackagedTransientKey :
+        public LiteralMetadataValueKey<bool>
+    {
+        public:
+            InstalledUnpackagedTransientKey(
+                    const std::string &,
+                    const std::string &,
+                    const MetadataKeyType,
+                    bool v);
+
+            virtual std::string pretty_print() const;
+    };
+}
+
+InstalledUnpackagedTransientKey::InstalledUnpackagedTransientKey(
+        const std::string & r, const std::string & h, const MetadataKeyType t, bool v) :
+    LiteralMetadataValueKey<bool>(r, h, t, v)
+{
+}
+
+std::string
+InstalledUnpackagedTransientKey::pretty_print() const
+{
+    return stringify(value());
+}
+
+const tr1::shared_ptr<const MetadataValueKey<bool> >
+InstalledUnpackagedID::transient_key() const
+{
+    return tr1::shared_ptr<const MetadataValueKey<bool> >(
+            new InstalledUnpackagedTransientKey("transient", "Transient", mkt_internal, true));
 }
 
 namespace

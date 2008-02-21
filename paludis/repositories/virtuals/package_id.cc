@@ -526,3 +526,9 @@ VirtualsPackageID::size_of_all_distfiles_key() const
     return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
+const tr1::shared_ptr<const MetadataValueKey<bool> >
+VirtualsPackageID::transient_key() const
+{
+    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+

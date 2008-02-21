@@ -286,6 +286,12 @@ namespace paludis
              */
             virtual const tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const = 0;
 
+            /**
+             * The transient_key, if non-zero, indicates whether this
+             * PackageID's originating repository is volatile.
+             */
+            virtual const tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const = 0;
+
             ///\}
 
             ///\name Actions

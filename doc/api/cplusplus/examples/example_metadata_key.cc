@@ -64,6 +64,12 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
+            void visit(const MetadataValueKey<bool> & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<bool>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+            }
+
             void visit(const MetadataValueKey<FSEntry> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<FSEntry>" << endl;

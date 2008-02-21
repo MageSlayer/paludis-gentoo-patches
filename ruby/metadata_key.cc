@@ -123,6 +123,12 @@ namespace
                     new tr1::shared_ptr<const MetadataKey>(mm));
         }
 
+        void visit(const MetadataValueKey<bool> &)
+        {
+            value = Data_Wrap_Struct(c_metadata_size_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,
+                    new tr1::shared_ptr<const MetadataKey>(mm));
+        }
+
         void visit(const MetadataTimeKey &)
         {
             value = Data_Wrap_Struct(c_metadata_time_key, 0, &Common<tr1::shared_ptr<const MetadataKey> >::free,

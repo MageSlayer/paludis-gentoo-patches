@@ -61,6 +61,11 @@ namespace
             long PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            bool PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
         void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
         {
             const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());

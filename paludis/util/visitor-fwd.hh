@@ -144,7 +144,17 @@ namespace paludis
             typename ContainedItem17_ = NoType<17>,
             typename ContainedItem18_ = NoType<18>,
             typename ContainedItem19_ = NoType<19>,
-            typename ContainedItem20_ = NoType<20> >
+            typename ContainedItem20_ = NoType<20>,
+            typename ContainedItem21_ = NoType<21>,
+            typename ContainedItem22_ = NoType<22>,
+            typename ContainedItem23_ = NoType<23>,
+            typename ContainedItem24_ = NoType<24>,
+            typename ContainedItem25_ = NoType<25>,
+            typename ContainedItem26_ = NoType<26>,
+            typename ContainedItem27_ = NoType<27>,
+            typename ContainedItem28_ = NoType<28>,
+            typename ContainedItem29_ = NoType<29>,
+            typename ContainedItem30_ = NoType<30> >
         class VisitorTypes;
 
         template <typename I_>

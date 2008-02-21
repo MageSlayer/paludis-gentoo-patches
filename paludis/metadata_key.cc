@@ -109,6 +109,10 @@ ExtraMetadataValueKeyMethods<long>::~ExtraMetadataValueKeyMethods()
 {
 }
 
+ExtraMetadataValueKeyMethods<bool>::~ExtraMetadataValueKeyMethods()
+{
+}
+
 ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
 {
 }
@@ -154,6 +158,7 @@ template class MetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class MetadataValueKey<std::string>;
 template class MetadataValueKey<long>;
+template class MetadataValueKey<bool>;
 template class MetadataValueKey<FSEntry>;
 template class MetadataValueKey<tr1::shared_ptr<const PackageID> >;
 template class MetadataValueKey<tr1::shared_ptr<const Contents> >;

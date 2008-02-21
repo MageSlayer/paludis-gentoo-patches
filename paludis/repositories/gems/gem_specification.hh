@@ -113,6 +113,7 @@ namespace paludis
 
                 virtual const tr1::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
                 virtual const tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
+                virtual const tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

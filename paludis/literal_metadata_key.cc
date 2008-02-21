@@ -180,5 +180,6 @@ LiteralMetadataValueKey<T_>::value() const
 
 template class LiteralMetadataValueKey<FSEntry>;
 template class LiteralMetadataValueKey<std::string>;
+template class LiteralMetadataValueKey<bool>;
 template class LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> >;
 

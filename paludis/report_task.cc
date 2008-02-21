@@ -208,7 +208,7 @@ ReportTask::execute()
                                 qo_best_version_only));
 
                         if (installable->empty())
-                            is_missing = true;
+                            is_missing = ! ((*v)->transient_key() && (*v)->transient_key()->value());
                         else
                             origin = *installable->last();
                     }

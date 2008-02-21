@@ -520,6 +520,12 @@ EInstalledRepositoryID::license_key() const
     return _imp->license;
 }
 
+const tr1::shared_ptr<const MetadataValueKey<bool> >
+EInstalledRepositoryID::transient_key() const
+{
+    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
 const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::inherited_key() const
 {

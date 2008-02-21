@@ -156,6 +156,11 @@ namespace
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            stream << k.raw_name() << ": " << k.value() << "\n";
+        }
+
         void visit(const MetadataTimeKey & k)
         {
             stream << k.raw_name() << ": " << k.value() << "\n";

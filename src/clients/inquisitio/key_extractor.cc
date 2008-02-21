@@ -207,6 +207,11 @@ namespace
                 result = _m(stringify(s.value()));
             }
 
+            void visit(const MetadataValueKey<bool> & s)
+            {
+                result = _m(stringify(s.value()));
+            }
+
             void visit(const MetadataTimeKey & s)
             {
                 result = _m(stringify(s.value()));

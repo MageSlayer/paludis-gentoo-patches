@@ -287,6 +287,12 @@ UnpackagedID::size_of_all_distfiles_key() const
     return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
+const tr1::shared_ptr<const MetadataValueKey<bool> >
+UnpackagedID::transient_key() const
+{
+    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
 bool
 UnpackagedID::supports_action(const SupportsActionTestBase & test) const
 {

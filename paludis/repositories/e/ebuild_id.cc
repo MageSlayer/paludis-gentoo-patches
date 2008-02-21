@@ -528,6 +528,12 @@ EbuildID::use_key() const
     return _imp->use;
 }
 
+const tr1::shared_ptr<const MetadataValueKey<bool> >
+EbuildID::transient_key() const
+{
+    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EbuildID::license_key() const
 {

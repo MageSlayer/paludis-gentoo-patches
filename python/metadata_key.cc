@@ -64,6 +64,11 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
         }
 
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<bool> >(_m_ptr));
+        }
+
         void visit(const MetadataTimeKey & k)
         {
             obj = bp::object(tr1::static_pointer_cast<const MetadataTimeKey>(_m_ptr));

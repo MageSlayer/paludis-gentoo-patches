@@ -216,7 +216,17 @@ namespace paludis
             VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem17>,
             VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem18>,
             VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem19>,
-            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem20>
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem20>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem21>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem22>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem23>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem24>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem25>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem26>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem27>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem28>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem29>,
+            VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem30>
         {
             Result_ * result;
 
@@ -241,6 +251,16 @@ namespace paludis
                 VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem18>(result),
                 VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem19>(result),
                 VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem20>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem21>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem22>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem23>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem24>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem25>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem26>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem27>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem28>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem29>(result),
+                VisitorCastVisitorVisits<Result_, Heirarchy_, const typename Heirarchy_::ContainedItem30>(result),
                 result(0)
             {
             }

@@ -87,6 +87,11 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
 
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
+        }
+
         void visit(const MetadataValueKey<FSEntry> & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
