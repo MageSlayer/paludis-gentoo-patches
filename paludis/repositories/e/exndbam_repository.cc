@@ -441,7 +441,7 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
                     .builddir(_imp->params.builddir));
 
             EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
-                    .root(stringify(_imp->params.root) + "/")
+                    .root(stringify(_imp->params.root))
                     .disable_cfgpro(o[k::no_config_protect()])
                     .unmerge_only(false)
                     .loadsaveenv_dir(ver_dir)

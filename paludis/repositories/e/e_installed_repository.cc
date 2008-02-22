@@ -447,7 +447,7 @@ EInstalledRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> 
                 .builddir(_imp->params.builddir),
 
                 EbuildConfigCommandParams::create()
-                .root(stringify(_imp->params.root) + "/")
+                .root(stringify(_imp->params.root))
                 .load_environment(load_env.get()));
 
         config_cmd();
@@ -530,7 +530,7 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
                 .builddir(_imp->params.builddir),
 
                 EbuildInfoCommandParams::create()
-                .root(stringify(_imp->params.root) + "/")
+                .root(stringify(_imp->params.root))
                 .use("")
                 .use_expand("")
                 .expand_vars(make_shared_ptr(new Map<std::string, std::string>))

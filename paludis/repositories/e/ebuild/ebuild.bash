@@ -52,7 +52,7 @@ fi
 shopt -s expand_aliases
 shopt -s extglob
 
-export ROOT="${ROOT//+(\/)//}"
+export ROOT="${ROOT%+(/)}/"
 
 export EBUILD_PROGRAM_NAME="$0"
 
