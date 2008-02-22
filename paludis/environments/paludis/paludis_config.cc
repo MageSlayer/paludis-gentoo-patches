@@ -253,7 +253,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    _imp->root = root_prefix;
+    _imp->root = root_prefix.empty() ? "/" : root_prefix;
     _imp->config_dir = stringify(local_config_dir);
     /* check that we can safely use userpriv */
     {
