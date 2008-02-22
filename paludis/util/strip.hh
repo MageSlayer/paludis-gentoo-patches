@@ -37,30 +37,21 @@
 namespace paludis
 {
     /**
-     * Return a string equal to s minus any leading characters that are
-     * contained in prefix.
-     *
-     * \ingroup g_strings
-     */
-    std::string strip_leading_string(const std::string & s, const std::string & prefix) PALUDIS_VISIBLE
-        PALUDIS_ATTRIBUTE((warn_unused_result));
-
-    /**
      * Return a string equal to s, minus the string remove if remove occurs at
      * the start of s.
      *
      * \ingroup g_strings
      */
-    std::string strip_leading(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
+    std::string strip_leading_string(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
         PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
-     * Return a string equal to s minus any trailing characters that are
-     * contained in suffix.
+     * Return a string equal to s minus any leading characters that are
+     * contained in prefix.
      *
      * \ingroup g_strings
      */
-    std::string strip_trailing_string(const std::string & s, const std::string & suffix) PALUDIS_VISIBLE
+    std::string strip_leading(const std::string & s, const std::string & prefix) PALUDIS_VISIBLE
         PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
@@ -69,7 +60,16 @@ namespace paludis
      *
      * \ingroup g_strings
      */
-    std::string strip_trailing(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
+    std::string strip_trailing_string(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
+
+    /**
+     * Return a string equal to s minus any trailing characters that are
+     * contained in suffix.
+     *
+     * \ingroup g_strings
+     */
+    std::string strip_trailing(const std::string & s, const std::string & suffix) PALUDIS_VISIBLE
         PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
