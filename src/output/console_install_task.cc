@@ -951,8 +951,22 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const Disp
 void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode)
 {
-    if (environment()->package_database()->favourite_repository() != d.package_id->repository()->name())
+    // XXX fix this once the new resolver's in
+    tr1::shared_ptr<const PackageIDSequence> inst(
+        environment()->package_database()->query(
+            query::Matches(make_package_dep_spec()
+                           .package(d.package_id->name())
+                           .slot(d.package_id->slot())) &
+            query::InstalledAtRoot(environment()->root()),
+            qo_best_version_only));
+    bool changed(! inst->empty() && (*inst->begin())->source_origin_key() &&
+                 (*inst->begin())->source_origin_key()->value() !=
+                 stringify(d.package_id->repository()->name()));
+
+    if (changed || environment()->package_database()->favourite_repository() != d.package_id->repository()->name())
         output_no_endl("::" + stringify(d.package_id->repository()->name()));
+    if (changed)
+        output_no_endl(" (previously ::" + (*inst->begin())->source_origin_key()->value() + ")");
 }
 
 void
