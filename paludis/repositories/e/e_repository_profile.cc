@@ -333,8 +333,8 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
             environment_variables[k->first] = k->second;
     }
 
-    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
+    std::string use_expand_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi))[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand()]);
     try
     {
         use_expand.clear();
@@ -352,8 +352,8 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
 void
 Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 {
-    std::string use_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use);
+    std::string use_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                        repository->params().profile_eapi))[k::supported()])[k::ebuild_environment_variables()][k::env_use()]);
     try
     {
         use.clear();
@@ -367,8 +367,8 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 + e.message() + " (" + e.what() + ")");
     }
 
-    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
+    std::string use_expand_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi))[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand()]);
     try
     {
         use_expand.clear();
@@ -382,8 +382,8 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 + e.message() + " (" + e.what() + ")");
     }
 
-    std::string use_expand_hidden_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand_hidden);
+    std::string use_expand_hidden_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi))[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand_hidden()]);
     try
     {
         use_expand_hidden.clear();
@@ -408,9 +408,9 @@ Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
         Context c("When checking whether '" + s + "' is incremental:");
 
         return (! s.empty()) &&
-            (s == e->supported->ebuild_environment_variables->env_use
-             || s == e->supported->ebuild_environment_variables->env_use_expand
-             || s == e->supported->ebuild_environment_variables->env_use_expand_hidden
+            (s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use()]
+             || s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand()]
+             || s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand_hidden()]
              || s == "CONFIG_PROTECT"
              || s == "CONFIG_PROTECT_MASK"
              || use_expand.end() != use_expand.find(UseFlagName(s)));
@@ -421,9 +421,9 @@ Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
             << "), possibly due to weird variable name being used in profile";
 
         return (! s.empty()) &&
-            (s == e->supported->ebuild_environment_variables->env_use
-             || s == e->supported->ebuild_environment_variables->env_use_expand
-             || s == e->supported->ebuild_environment_variables->env_use_expand_hidden
+            (s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use()]
+             || s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand()]
+             || s == (*(*e)[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand_hidden()]
              || s == "CONFIG_PROTECT"
              || s == "CONFIG_PROTECT_MASK");
     }
@@ -602,8 +602,8 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
 
     stacked_values_list.push_back(StackedValues("use_expand special values"));
 
-    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
-                    repository->params().profile_eapi)->supported->ebuild_options->use_expand_separator));
+    std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                    repository->params().profile_eapi))[k::supported()])[k::ebuild_options()].use_expand_separator));
 
     for (UseFlagSet::const_iterator x(use_expand.begin()), x_end(use_expand.end()) ;
             x != x_end ; ++x)

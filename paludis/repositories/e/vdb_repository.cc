@@ -377,7 +377,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
 
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_uninstall);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_uninstall);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
@@ -409,27 +409,27 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
         }
         else
         {
-            EbuildCommandParams params(EbuildCommandParams::create()
-                    .environment(_imp->params.environment)
-                    .package_id(id)
-                    .ebuild_dir(pkg_dir)
-                    .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                    .files_dir(pkg_dir)
-                    .eclassdirs(eclassdirs)
-                    .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                    .portdir(_imp->params.location)
-                    .distdir(pkg_dir)
-                    .sandbox(phase->option("sandbox"))
-                    .userpriv(phase->option("userpriv"))
-                    .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                    .builddir(_imp->params.builddir));
+            EbuildCommandParams params(EbuildCommandParams::named_create()
+                    (k::environment(), _imp->params.environment)
+                    (k::package_id(), id)
+                    (k::ebuild_dir(), pkg_dir)
+                    (k::ebuild_file(), pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
+                    (k::files_dir(), pkg_dir)
+                    (k::eclassdirs(), eclassdirs)
+                    (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
+                    (k::portdir(), _imp->params.location)
+                    (k::distdir(), pkg_dir)
+                    (k::sandbox(), phase->option("sandbox"))
+                    (k::userpriv(), phase->option("userpriv"))
+                    (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                    (k::builddir(), _imp->params.builddir));
 
-            EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
-                    .root(stringify(_imp->params.root))
-                    .disable_cfgpro(o[k::no_config_protect()])
-                    .unmerge_only(false)
-                    .loadsaveenv_dir(pkg_dir)
-                    .load_environment(load_env.get()));
+            EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::named_create()
+                    (k::root(), stringify(_imp->params.root))
+                    (k::disable_cfgpro(), o[k::no_config_protect()])
+                    (k::unmerge_only(), false)
+                    (k::loadsaveenv_dir(), pkg_dir)
+                    (k::load_environment(), load_env.get()));
 
             EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
             uninstall_cmd_pre();
@@ -714,11 +714,11 @@ VDBRepository::merge(const MergeParams & m)
     tmp_vdb_dir.mkdir();
 
     WriteVDBEntryCommand write_vdb_entry_command(
-            WriteVDBEntryParams::create()
-            .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
-            .output_directory(tmp_vdb_dir)
-            .environment_file(m[k::environment_file()]));
+            WriteVDBEntryParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::package_id(), tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
+            (k::output_directory(), tmp_vdb_dir)
+            (k::environment_file(), m[k::environment_file()]));
 
     write_vdb_entry_command();
 
@@ -776,8 +776,8 @@ VDBRepository::merge(const MergeParams & m)
     }
 
     VDBPostMergeCommand post_merge_command(
-            VDBPostMergeCommandParams::create()
-            .root(installed_root_key()->value()));
+            VDBPostMergeCommandParams::named_create()
+            (k::root(), installed_root_key()->value()));
 
     post_merge_command();
 }

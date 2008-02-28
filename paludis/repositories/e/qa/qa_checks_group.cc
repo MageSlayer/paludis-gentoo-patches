@@ -27,7 +27,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/hashed_containers.hh>
-
+#include <algorithm>
 #include <list>
 
 using namespace paludis;

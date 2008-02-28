@@ -98,35 +98,6 @@ make_class_EAPIEbuildMetadataVariables()
 END
 }
 
-make_class_EAPIEbuildEnvironmentVariables()
-{
-    visible
-    allow_named_args cc
-
-    key env_use                   std::string
-    key env_use_expand            std::string
-    key env_use_expand_hidden     std::string
-    key env_aa                    std::string
-    key env_arch                  std::string
-    key env_kv                    std::string
-    key env_accept_keywords       std::string
-    key env_distdir               std::string
-    key env_portdir               std::string
-
-    key description_use           std::string
-
-    doxygen_comment << "END"
-        /**
-         * Information about a supported EAPI's ebuild environment variables.
-         *
-         * \see EAPIData
-         * \see EAPI
-         * \ingroup grpeapi
-         * \nosubgrouping
-         */
-END
-}
-
 make_class_EAPIToolsOptions()
 {
     visible
@@ -191,70 +162,6 @@ make_class_EAPIEbuildOptions()
          *
          * \see EAPIData
          * \see EAPI
-         * \ingroup grpeapi
-         * \nosubgrouping
-         */
-END
-}
-
-make_class_EAPIPipeCommands()
-{
-    visible
-    allow_named_args cc
-
-    key rewrite_virtuals bool
-    key no_slot_or_repo bool
-}
-
-make_class_SupportedEAPI()
-{
-    visible
-    allow_named_args cc
-
-    key package_dep_spec_parse_options "erepository::PackageDepSpecParseOptions"
-    key dependency_spec_tree_parse_options "erepository::DependencySpecTreeParseOptions"
-    key iuse_flag_parse_options IUseFlagParseOptions
-    key merger_options "MergerOptions"
-
-    key breaks_portage bool
-    key can_be_pbin bool
-
-    key ebuild_options                "tr1::shared_ptr<const EAPIEbuildOptions>"
-    key ebuild_phases                 "tr1::shared_ptr<const EAPIEbuildPhases>"
-    key ebuild_metadata_variables     "tr1::shared_ptr<const EAPIEbuildMetadataVariables>"
-    key ebuild_environment_variables  "tr1::shared_ptr<const EAPIEbuildEnvironmentVariables>"
-    key uri_labels                    "tr1::shared_ptr<const EAPILabels>"
-    key dependency_labels             "tr1::shared_ptr<const EAPILabels>"
-    key pipe_commands                 "tr1::shared_ptr<const EAPIPipeCommands>"
-    key tools_options                 "tr1::shared_ptr<const EAPIToolsOptions>"
-
-    doxygen_comment << "END"
-        /**
-         * Information about a supported EAPI.
-         *
-         * \see EAPIData
-         * \see EAPI
-         * \ingroup grpeapi
-         * \nosubgrouping
-         */
-END
-}
-
-make_class_EAPI()
-{
-    visible
-
-    key name std::string
-    key exported_name std::string
-    key supported "tr1::shared_ptr<const SupportedEAPI>"
-
-    allow_named_args
-
-    doxygen_comment << "END"
-        /**
-         * Information about an EAPI.
-         *
-         * \see EAPIData
          * \ingroup grpeapi
          * \nosubgrouping
          */

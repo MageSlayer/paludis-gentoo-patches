@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -318,12 +318,12 @@ QAController::_check_package(const QualifiedPackageName p)
     if (_above_base_dir(p_dir) || _under_base_dir(p_dir))
     {
         std::find_if(
-            QAChecks::get_instance()->package_dir_checks_group()->begin(),
-            QAChecks::get_instance()->package_dir_checks_group()->end(),
-            tr1::bind(std::equal_to<bool>(), false,
-                      tr1::bind<bool>(&PackageDirCheckFunction::operator(),
-                                      _1, _imp->repo->layout()->package_directory(p),
-                                      tr1::ref(_imp->reporter), _imp->env, _imp->repo, p)));
+                QAChecks::get_instance()->package_dir_checks_group()->begin(),
+                QAChecks::get_instance()->package_dir_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&PackageDirCheckFunction::operator()),
+                        _1, _imp->repo->layout()->package_directory(p),
+                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, p)));
 
         tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
         std::for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_check_id, this, _1));

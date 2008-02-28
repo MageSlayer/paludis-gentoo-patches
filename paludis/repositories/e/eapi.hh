@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,11 +39,11 @@ namespace paludis
 #include <paludis/repositories/e/eapi-sr.hh>
 
         class PALUDIS_VISIBLE EAPILabels :
-            private InstantiationPolicy<EAPILabels, instantiation_method::NonCopyableTag>,
             private PrivateImplementationPattern<EAPILabels>
         {
             public:
                 EAPILabels(const std::string &);
+                EAPILabels(const EAPILabels &);
                 ~EAPILabels();
 
                 const std::string class_for_label(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/util/kc.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -28,6 +29,6 @@ bool
 ERepositoryID::breaks_portage() const
 {
     return (version().has_try_part() || version().has_scm_part()
-            || (! eapi()->supported) || (eapi()->supported->breaks_portage));
+            || (! (*eapi())[k::supported()]) || (*((*eapi())[k::supported()]))[k::breaks_portage()]);
 }
 

@@ -226,6 +226,7 @@ export REAL_CHOST="${CHOST}"
 
 ebuild_scrub_environment()
 {
+    local save_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
     (
         ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
             PALUDIS_BRACKET_MERGED_VARIABLES || exit 1
@@ -275,7 +276,7 @@ ebuild_scrub_environment()
             done )
 
         set >"${1}"
-        print_exports >>"${1}"
+        LD_LIBRARY_PATH="${save_LD_LIBRARY_PATH}" print_exports >>"${1}"
     )
 }
 

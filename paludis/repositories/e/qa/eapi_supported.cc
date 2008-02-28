@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/kc.hh>
 
 bool
 paludis::erepository::eapi_supported_check(
@@ -33,10 +34,10 @@ paludis::erepository::eapi_supported_check(
 {
     Context context("When performing check '" + name + "' using eapi_supported_check on ID '" + stringify(*id) + "':");
 
-    if (! id->eapi()->supported)
+    if (! (*id->eapi())[k::supported()])
     {
         reporter.message(QAMessage(entry, qaml_severe, name,
-                    "EAPI '" + stringify(id->eapi()->name) + "' not supported")
+                    "EAPI '" + stringify((*id->eapi())[k::name()]) + "' not supported")
                 .with_associated_id(id));
         return false;
     }

@@ -652,7 +652,7 @@ namespace test_cases
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                 TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                TEST_CHECK_EQUAL(tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi()->name, "UNKNOWN");
+                TEST_CHECK_EQUAL((*tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi())[k::name()], "UNKNOWN");
                 TEST_CHECK(! id1->short_description_key());
             }
         }

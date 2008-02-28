@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/use_requirements.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -33,13 +34,13 @@ using namespace paludis::erepository;
 PackageDepSpec
 paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
 {
-    Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi.name) + "':");
+    Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi[k::name()]) + "':");
 
     if (ss.empty())
         throw PackageDepSpecError("Got empty dep spec");
 
-    if (! eapi.supported)
-        throw PackageDepSpecError("Don't know how to parse dep specs using EAPI '" + eapi.name + "'");
+    if (! eapi[k::supported()])
+        throw PackageDepSpecError("Don't know how to parse dep specs using EAPI '" + eapi[k::name()] + "'");
 
     PartiallyMadePackageDepSpec result;
     std::string s(ss);
@@ -48,9 +49,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
     std::string::size_type use_group_p;
     while (std::string::npos != ((use_group_p = s.rfind('['))))
     {
-        if (! eapi.supported->package_dep_spec_parse_options[pdspo_allow_square_bracket_deps])
+        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_square_bracket_deps])
         {
-            if (eapi.supported->package_dep_spec_parse_options[pdspo_strict_parsing])
+            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                 throw PackageDepSpecError("[] dependencies not safe for use with this EAPI");
             else
                 Log::get_instance()->message(ll_warning, lc_context, "[] dependencies not safe for use with this EAPI");
@@ -213,9 +214,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
     std::string::size_type repo_p;
     if (std::string::npos != ((repo_p = s.rfind("::"))))
     {
-        if (! eapi.supported->package_dep_spec_parse_options[pdspo_allow_repository_deps])
+        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_repository_deps])
         {
-            if (eapi.supported->package_dep_spec_parse_options[pdspo_strict_parsing])
+            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                 throw PackageDepSpecError("Repository dependencies not safe for use with this EAPI");
             else
                 Log::get_instance()->message(ll_warning, lc_context, "Repository dependencies not safe for use with this EAPI");
@@ -228,9 +229,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
     std::string::size_type slot_p;
     if (std::string::npos != ((slot_p = s.rfind(':'))))
     {
-        if (! eapi.supported->package_dep_spec_parse_options[pdspo_allow_slot_deps])
+        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_deps])
         {
-            if (eapi.supported->package_dep_spec_parse_options[pdspo_strict_parsing])
+            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                 throw PackageDepSpecError("Slot dependencies not safe for use with this EAPI");
             else
                 Log::get_instance()->message(ll_warning, lc_context, "Slot dependencies not safe for use with this EAPI");
@@ -251,9 +252,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         VersionOperator op(s.substr(0, p));
 
         if (op == vo_tilde_greater)
-            if (! eapi.supported->package_dep_spec_parse_options[pdspo_allow_tilde_greater_deps])
+            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_tilde_greater_deps])
             {
-                if (eapi.supported->package_dep_spec_parse_options[pdspo_strict_parsing])
+                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                     throw PackageDepSpecError("~> dependencies not safe for use with this EAPI");
                 else
                     Log::get_instance()->message(ll_warning, lc_context, "~> dependencies not safe for use with this EAPI");
@@ -288,7 +289,7 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
         {
             throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with eapi '"
-                    + stringify(eapi.name) + "'");
+                    + stringify(eapi[k::name()]) + "'");
 
             if (0 != t.compare(t.length() - 2, 2, "/*"))
                 result.package_name_part(PackageNamePart(t.substr(2)));
@@ -296,7 +297,7 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
         {
             throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with eapi '"
-                    + stringify(eapi.name) + "'");
+                    + stringify(eapi[k::name()]) + "'");
 
             result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
         }
@@ -307,9 +308,9 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         {
             if (op != vo_equal)
             {
-                if (! eapi.supported->package_dep_spec_parse_options[pdspo_strict_star_operator])
+                if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_star_operator])
                 {
-                    if (eapi.supported->package_dep_spec_parse_options[pdspo_strict_parsing])
+                    if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                         throw PackageDepSpecError(
                                 "Package dep spec '" + ss + "' uses * "
                                 "with operator '" + stringify(op) + "'");
@@ -332,7 +333,7 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
         {
             throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse eapi '"
-                    + stringify(eapi.name) + "'");
+                    + stringify(eapi[k::name()]) + "'");
 
             if (0 != s.compare(s.length() - 2, 2, "/*"))
                 result.package_name_part(PackageNamePart(s.substr(2)));
@@ -340,7 +341,7 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
             throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with EAPI '"
-                    + stringify(eapi.name) + "'");
+                    + stringify(eapi[k::name()]) + "'");
 
             result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }

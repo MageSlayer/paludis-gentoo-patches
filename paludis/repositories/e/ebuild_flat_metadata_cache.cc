@@ -75,9 +75,9 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                 id->set_eapi(lines[14]);
                 bool ok(true);
 
-                if (id->eapi()->supported)
+                if ((*id->eapi())[k::supported()])
                 {
-                    const EAPIEbuildMetadataVariables & m(*id->eapi()->supported->ebuild_metadata_variables);
+                    const EAPIEbuildMetadataVariables & m((*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()]);
 
                     {
                         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
@@ -227,10 +227,10 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
         return;
     }
 
-    if (! id->eapi()->supported)
+    if (! (*id->eapi())[k::supported()])
     {
         Log::get_instance()->message(ll_warning, lc_no_context) << "Not writing cache file to '"
-            << _filename << "' because EAPI '" << id->eapi()->name << "' is not supported";
+            << _filename << "' because EAPI '" << (*id->eapi())[k::name()] << "' is not supported";
         return;
     }
 
@@ -238,7 +238,7 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
 
     try
     {
-        const EAPIEbuildMetadataVariables & m(*id->eapi()->supported->ebuild_metadata_variables);
+        const EAPIEbuildMetadataVariables & m((*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()]);
         for (int x(0), x_end(m.flat_cache_minimum_size) ; x != x_end ; ++x)
         {
             if (x == m.flat_cache_dependencies)
@@ -358,7 +358,7 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
             }
             else if (x == m.flat_cache_eapi)
             {
-                cache << normalise(id->eapi()->name) << std::endl;
+                cache << normalise((*id->eapi())[k::name()]) << std::endl;
             }
             else
                 cache << std::endl;

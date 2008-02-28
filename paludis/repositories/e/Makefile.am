@@ -6,7 +6,6 @@ DISTCLEANFILES = \
 	e_repository_params-sr.hh e_repository_params-sr.cc \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
-	ebuild-sr.hh ebuild-sr.cc \
 	eapi-sr.hh eapi-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
 	manifest2_entry-sr.hh manifest2_entry-sr.cc
@@ -63,7 +62,6 @@ paludis_repositories_e_include_HEADERS = \
 	eapi-sr.hh \
 	eapi-fwd.hh \
 	eapi_phase.hh \
-	ebuild-sr.hh \
 	ebuild.hh \
 	ebuild_entries.hh \
 	ebuild_flat_metadata_cache.hh \
@@ -315,9 +313,6 @@ EXTRA_DIST = \
 	eapi.sr \
 	eapi-sr.hh \
 	eapi-sr.cc \
-	ebuild.sr \
-	ebuild-sr.hh \
-	ebuild-sr.cc \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
@@ -380,8 +375,6 @@ BUILT_SOURCES = \
 	exndbam_repository-sr.cc \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
-	ebuild-sr.hh \
-	ebuild-sr.cc \
 	eapi-sr.hh \
 	eapi-sr.cc \
 	manifest2_entry-sr.hh \
@@ -432,12 +425,6 @@ manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 
 manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
-
-ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebuild.sr > $@
-
-ebuild-sr.cc : ebuild.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebuild.sr > $@
 
 eapi-sr.hh : eapi.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/eapi.sr > $@

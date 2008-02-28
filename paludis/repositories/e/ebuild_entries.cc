@@ -195,9 +195,9 @@ namespace
                 if (env->query_use(i->flag, id))
                     use += stringify(i->flag) + " ";
 
-        if (id.eapi()->supported)
-            if (! id.eapi()->supported->ebuild_environment_variables->env_arch.empty())
-                use += profile->environment_variable(id.eapi()->supported->ebuild_environment_variables->env_arch) + " ";
+        if ((*id.eapi())[k::supported()])
+            if (! (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()].empty())
+                use += profile->environment_variable((*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]) + " ";
 
         return use;
     }
@@ -238,7 +238,7 @@ namespace
                 if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
                     continue;
 
-                if (! e.eapi()->supported->ebuild_options->require_use_expand_in_iuse)
+                if (! (*(*e.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
                     use.append(lower_x + expand_sep + stringify(*u) + " ");
 
                 std::string value;
@@ -275,9 +275,9 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
-            if (id->eapi()->supported->ebuild_options->restrict_fetch->end() !=
-                    std::find(id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
-                        id->eapi()->supported->ebuild_options->restrict_fetch->end(), (*i)->text()))
+            if ((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end() !=
+                    std::find((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->begin(),
+                        (*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end(), (*i)->text()))
                 fetch_restrict = true;
     }
 
@@ -330,7 +330,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         }
 
         /* make AA */
-        if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
+        if (! (*(*id->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_aa()].empty())
         {
             AAVisitor g;
             if (id->fetches_key())
@@ -375,41 +375,41 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         if (c.need_nofetch())
         {
             std::string use(make_use(_imp->params.environment, *id, p));
-            std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+            std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
             tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                         _imp->params.environment, *id, p, use, expand_sep));
 
             tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-            EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_nofetch);
+            EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_nofetch);
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
-                EbuildCommandParams command_params(EbuildCommandParams::create()
-                        .environment(_imp->params.environment)
-                        .package_id(id)
-                        .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-                        .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-                        .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-                        .eclassdirs(_imp->params.eclassdirs)
-                        .exlibsdirs(exlibsdirs)
-                        .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                            _imp->params.location)
-                        .distdir(_imp->params.distdir)
-                        .userpriv(phase->option("userpriv"))
-                        .sandbox(phase->option("sandbox"))
-                        .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                        .builddir(_imp->params.builddir));
+                EbuildCommandParams command_params(EbuildCommandParams::named_create()
+                        (k::environment(), _imp->params.environment)
+                        (k::package_id(), id)
+                        (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
+                        (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                        (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
+                        (k::eclassdirs(), _imp->params.eclassdirs)
+                        (k::exlibsdirs(), exlibsdirs)
+                        (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
+                         _imp->params.location)
+                        (k::distdir(), _imp->params.distdir)
+                        (k::userpriv(), phase->option("userpriv"))
+                        (k::sandbox(), phase->option("sandbox"))
+                        (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                        (k::builddir(), _imp->params.builddir));
 
                 EbuildNoFetchCommand nofetch_cmd(command_params,
-                        EbuildNoFetchCommandParams::create()
-                        .a(archives)
-                        .aa(all_archives)
-                        .use(use)
-                        .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
-                        .expand_vars(expand_vars)
-                        .root("/")
-                        .profiles(_imp->params.profiles));
+                        EbuildNoFetchCommandParams::named_create()
+                        (k::a(), archives)
+                        (k::aa(), all_archives)
+                        (k::use(), use)
+                        (k::use_expand(), join(p->begin_use_expand(), p->end_use_expand(), " "))
+                        (k::expand_vars(), expand_vars)
+                        (k::root(), "/")
+                        (k::profiles(), _imp->params.profiles));
 
                 if (! nofetch_cmd())
                     throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
@@ -464,7 +464,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         }
 
         /* make AA */
-        if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
+        if (! (*(*id->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_aa()].empty())
         {
             AAVisitor g;
             if (id->fetches_key())
@@ -497,7 +497,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
@@ -529,7 +529,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         }
     }
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_install);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_install);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
@@ -547,7 +547,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                                 + stringify(id->version())) / "image")
                         (k::environment_file(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
-                        (k::options(), id->eapi()->supported->merger_options)
+                        (k::options(), (*(*id->eapi())[k::supported()])[k::merger_options()])
                         );
         }
         else if ((! phase->option("prepost")) ||
@@ -578,38 +578,39 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                 }
             }
 
-            EbuildCommandParams command_params(EbuildCommandParams::create()
-                    .environment(_imp->params.environment)
-                    .package_id(id)
-                    .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-                    .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-                    .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-                    .eclassdirs(_imp->params.eclassdirs)
-                    .exlibsdirs(exlibsdirs)
-                    .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                        _imp->params.location)
-                    .distdir(_imp->params.distdir)
-                    .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                    .sandbox(phase->option("sandbox"))
-                    .userpriv(phase->option("userpriv") && userpriv_ok)
-                    .builddir(_imp->params.builddir));
+            EbuildCommandParams command_params(EbuildCommandParams::named_create()
+                    (k::environment(), _imp->params.environment)
+                    (k::package_id(), id)
+                    (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
+                    (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                    (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
+                    (k::eclassdirs(), _imp->params.eclassdirs)
+                    (k::exlibsdirs(), exlibsdirs)
+                    (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
+                     _imp->params.location)
+                    (k::distdir(), _imp->params.distdir)
+                    (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                    (k::sandbox(), phase->option("sandbox"))
+                    (k::userpriv(), phase->option("userpriv") && userpriv_ok)
+                    (k::builddir(), _imp->params.builddir));
 
             EbuildInstallCommandParams install_params(
-                    EbuildInstallCommandParams::create()
-                            .use(use)
-                            .a(archives)
-                            .aa(all_archives)
-                            .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
-                            .expand_vars(expand_vars)
-                            .root(o[k::destination()]->installed_root_key() ? stringify(o[k::destination()]->installed_root_key()->value()) : "/")
-                            .profiles(_imp->params.profiles)
-                            .disable_cfgpro(o[k::no_config_protect()])
-                            .debug_build(o[k::debug_build()])
-                            .config_protect(_imp->e_repository->profile_variable("CONFIG_PROTECT"))
-                            .config_protect_mask(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
-                            .loadsaveenv_dir(_imp->params.builddir / stringify(id->name().category) / (
-                                    stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
-                            .slot(SlotName(id->slot())));
+                    EbuildInstallCommandParams::named_create()
+                            (k::use(), use)
+                            (k::a(), archives)
+                            (k::aa(), all_archives)
+                            (k::use_expand(), join(p->begin_use_expand(), p->end_use_expand(), " "))
+                            (k::expand_vars(), expand_vars)
+                            (k::root(), o[k::destination()]->installed_root_key() ?
+                             stringify(o[k::destination()]->installed_root_key()->value()) : "/")
+                            (k::profiles(), _imp->params.profiles)
+                            (k::disable_cfgpro(), o[k::no_config_protect()])
+                            (k::debug_build(), o[k::debug_build()])
+                            (k::config_protect(), _imp->e_repository->profile_variable("CONFIG_PROTECT"))
+                            (k::config_protect_mask(), _imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
+                            (k::loadsaveenv_dir(), _imp->params.builddir / stringify(id->name().category) / (
+                                   stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
+                            (k::slot(), SlotName(id->slot())));
 
             EbuildInstallCommand cmd(command_params, install_params);
             cmd();
@@ -630,34 +631,34 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("installed=true"))
             continue;
 
-        EbuildCommandParams command_params(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-                .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-                .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-                .eclassdirs(_imp->params.eclassdirs)
-                .exlibsdirs(exlibsdirs)
-                .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                    _imp->params.location)
-                .distdir(_imp->params.distdir)
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .sandbox(phase->option("sandbox"))
-                .userpriv(phase->option("userpriv"))
-                .builddir(_imp->params.builddir));
+        EbuildCommandParams command_params(EbuildCommandParams::named_create()
+                (k::environment(), _imp->params.environment)
+                (k::package_id(), id)
+                (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
+                (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
+                (k::eclassdirs(), _imp->params.eclassdirs)
+                (k::exlibsdirs(), exlibsdirs)
+                (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
+                 _imp->params.location)
+                (k::distdir(), _imp->params.distdir)
+                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                (k::sandbox(), phase->option("sandbox"))
+                (k::userpriv(), phase->option("userpriv"))
+                (k::builddir(), _imp->params.builddir));
 
         FSEntry i(_imp->e_repository->layout()->info_variables_file(
                     _imp->e_repository->params().location / "profiles"));
@@ -667,14 +668,14 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
                     _imp->e_repository->params().master_repository->params().location / "profiles");
 
         EbuildInfoCommandParams info_params(
-                EbuildInfoCommandParams::create()
-                .use(use)
-                .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
-                .expand_vars(expand_vars)
-                .root(stringify(_imp->params.environment->root()))
-                .profiles(_imp->params.profiles)
-                .load_environment(0)
-                .info_vars(i)
+                EbuildInfoCommandParams::named_create()
+                (k::use(), use)
+                (k::use_expand(), join(p->begin_use_expand(), p->end_use_expand(), " "))
+                (k::expand_vars(), expand_vars)
+                (k::root(), stringify(_imp->params.environment->root()))
+                (k::profiles(), _imp->params.profiles)
+                (k::load_environment(), static_cast<const FSEntry *>(0))
+                (k::info_vars(), i)
                 );
 
         EbuildInfoCommand cmd(command_params, info_params);
@@ -686,30 +687,30 @@ std::string
 EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & var, tr1::shared_ptr<const ERepositoryProfile>) const
 {
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_variable);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_variable);
 
     int c(std::distance(phases.begin_phases(), phases.end_phases()));
     if (1 != c)
-        throw EAPIConfigurationError("EAPI '" + id->eapi()->name + "' defines "
+        throw EAPIConfigurationError("EAPI '" + (*id->eapi())[k::name()] + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    EbuildVariableCommand cmd(EbuildCommandParams::create()
-            .environment(_imp->params.environment)
-            .package_id(id)
-            .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-            .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-            .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-            .eclassdirs(_imp->params.eclassdirs)
-            .exlibsdirs(exlibsdirs)
-            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                _imp->params.location)
-            .distdir(_imp->params.distdir)
-            .sandbox(phases.begin_phases()->option("sandbox"))
-            .userpriv(phases.begin_phases()->option("userpriv"))
-            .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
-            .builddir(_imp->params.builddir),
+    EbuildVariableCommand cmd(EbuildCommandParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::package_id(), id)
+            (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
+            (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+            (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
+            (k::eclassdirs(), _imp->params.eclassdirs)
+            (k::exlibsdirs(), exlibsdirs)
+            (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
+             _imp->params.location)
+            (k::distdir(), _imp->params.distdir)
+            (k::sandbox(), phases.begin_phases()->option("sandbox"))
+            (k::userpriv(), phases.begin_phases()->option("userpriv"))
+            (k::commands(), join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
+            (k::builddir(), _imp->params.builddir),
 
             var);
 
@@ -737,23 +738,24 @@ EbuildEntries::merge(const MergeParams & m)
 
     FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
                 m[k::package_id()]->name(), m[k::package_id()]->version(),
-                "pbin-1+" + tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi()->name));
+                "pbin-1+" + (*tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::name()]));
 
     binary_ebuild_location.dirname().dirname().mkdir();
     binary_ebuild_location.dirname().mkdir();
 
     WriteBinaryEbuildCommand write_binary_ebuild_command(
-            WriteBinaryEbuildCommandParams::create()
-            .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
-            .binary_ebuild_location(binary_ebuild_location)
-            .binary_distdir(_imp->params.binary_distdir)
-            .environment_file(m[k::environment_file()])
-            .image(m[k::image_dir()])
-            .destination_repository(_imp->e_repository)
-            .builddir(_imp->params.builddir)
-            .merger_options(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])
-                ->eapi()->supported->merger_options));
+            WriteBinaryEbuildCommandParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::package_id(), tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
+            (k::binary_ebuild_location(), binary_ebuild_location)
+            (k::binary_distdir(), _imp->params.binary_distdir)
+            (k::environment_file(), m[k::environment_file()])
+            (k::image(), m[k::image_dir()])
+            (k::destination_repository(), _imp->e_repository)
+            (k::builddir(), _imp->params.builddir)
+            (k::merger_options(), (*(*tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::supported()])
+             [k::merger_options()])
+            );
 
     write_binary_ebuild_command();
 }
@@ -791,45 +793,45 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When running pretend for '" + stringify(*id) + "':");
 
-    if (! id->eapi()->supported)
+    if (! (*id->eapi())[k::supported()])
         return true;
-    if (id->eapi()->supported->ebuild_phases->ebuild_pretend.empty())
+    if ((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend.empty())
         return true;
 
     std::string use(make_use(_imp->params.environment, *id, p));
-    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_pretend);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        EbuildCommandParams command_params(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-                .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-                .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-                .eclassdirs(_imp->params.eclassdirs)
-                .exlibsdirs(exlibsdirs)
-                .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                    _imp->params.location)
-                .distdir(_imp->params.distdir)
-                .userpriv(phase->option("userpriv"))
-                .sandbox(phase->option("sandbox"))
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .builddir(_imp->params.builddir));
+        EbuildCommandParams command_params(EbuildCommandParams::named_create()
+                (k::environment(), _imp->params.environment)
+                (k::package_id(), id)
+                (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
+                (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
+                (k::eclassdirs(), _imp->params.eclassdirs)
+                (k::exlibsdirs(), exlibsdirs)
+                (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
+                   _imp->params.location)
+                (k::distdir(), _imp->params.distdir)
+                (k::userpriv(), phase->option("userpriv"))
+                (k::sandbox(), phase->option("sandbox"))
+                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                (k::builddir(), _imp->params.builddir));
 
         EbuildPretendCommand pretend_cmd(command_params,
-                EbuildPretendCommandParams::create()
-                .use(use)
-                .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
-                .expand_vars(expand_vars)
-                .root(stringify(_imp->params.environment->root()))
-                .profiles(_imp->params.profiles));
+                EbuildPretendCommandParams::named_create()
+                (k::use(), use)
+                (k::use_expand(), join(p->begin_use_expand(), p->end_use_expand(), " "))
+                (k::expand_vars(), expand_vars)
+                (k::root(), stringify(_imp->params.environment->root()))
+                (k::profiles(), _imp->params.profiles));
 
         if (! pretend_cmd())
             return false;

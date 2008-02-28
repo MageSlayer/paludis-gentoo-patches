@@ -402,7 +402,8 @@ namespace paludis
             suggested_dependencies_labels(new DependencyLabelSequence),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "",
-                            erepository::EAPIData::get_instance()->eapi_from_string(eapi)->supported->iuse_flag_parse_options, mkt_normal, id, env)),
+                        (*(*erepository::EAPIData::get_instance()->eapi_from_string(eapi))[k::supported()])[k::iuse_flag_parse_options()],
+                        mkt_normal, id, env)),
             has_masks(false)
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
@@ -957,7 +958,7 @@ FakePackageID::transient_key() const
 char
 FakePackageID::use_expand_separator() const
 {
-    return erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)->supported->ebuild_options->use_expand_separator;
+    return (*(*erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi))[k::supported()])[k::ebuild_options()].use_expand_separator;
 }
 
 std::string

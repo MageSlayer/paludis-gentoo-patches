@@ -274,9 +274,11 @@ namespace
         tr1::shared_ptr<typename H_::ConstItem> result;
         tr1::function<void (const tr1::shared_ptr<ConstAcceptInterface<H_> > &)> adder;
 
-        ValueToTree(VALUE val) :
-            adder(tr1::bind(&ValueToTree<H_>::set_result, this, tr1::placeholders::_1))
+        ValueToTree(VALUE val)
         {
+            using namespace tr1::placeholders;
+            adder = tr1::bind(tr1::mem_fn(&ValueToTree<H_>::set_result), this, _1);
+
             tr1::shared_ptr<WrappedSpecBase> * p;
             Data_Get_Struct(val, tr1::shared_ptr<WrappedSpecBase>, p);
             (*p)->accept(*this);
@@ -298,7 +300,7 @@ namespace
             adder(a);
 
             Save<tr1::function<void (const tr1::shared_ptr<ConstAcceptInterface<H_> > &)> > s(
-                &adder, tr1::bind(&ConstTreeSequence<H_, T_>::add, a, _1));
+                &adder, tr1::bind(tr1::mem_fn(&ConstTreeSequence<H_, T_>::add), a.get(), _1));
             std::for_each(indirect_iterator(second_iterator(item.children()->begin())),
                           indirect_iterator(second_iterator(item.children()->end())),
                           accept_visitor(*this));
@@ -1226,15 +1228,15 @@ paludis::ruby::uri_label_to_value(const tr1::shared_ptr<const URILabel> & m)
     }
 }
 
-template VALUE dep_tree_to_value <SetSpecTree> (const tr1::shared_ptr<const SetSpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <DependencySpecTree> (const tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <FetchableURISpecTree> (const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <SimpleURISpecTree> (const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <RestrictSpecTree> (const tr1::shared_ptr<const RestrictSpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <ProvideSpecTree> (const tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
-template VALUE dep_tree_to_value <LicenseSpecTree> (const tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<SetSpecTree> (const tr1::shared_ptr<const SetSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<DependencySpecTree> (const tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<FetchableURISpecTree> (const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<SimpleURISpecTree> (const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<RestrictSpecTree> (const tr1::shared_ptr<const RestrictSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<ProvideSpecTree> (const tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<LicenseSpecTree> (const tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
 
-template tr1::shared_ptr<const SetSpecTree::ConstItem> value_to_dep_tree <SetSpecTree> (VALUE);
+template tr1::shared_ptr<const SetSpecTree::ConstItem> paludis::ruby::value_to_dep_tree <SetSpecTree> (VALUE);
 
 RegisterRubyClass::Register paludis_ruby_register_dep_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_spec);

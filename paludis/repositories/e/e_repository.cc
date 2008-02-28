@@ -357,8 +357,8 @@ namespace paludis
 
         profile_ptr.reset(new ERepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
-                    erepository::EAPIData::get_instance()->eapi_from_string(
-                        params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch));
+                    (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                        params.eapi_when_unknown))[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]));
     }
 
     void
@@ -400,8 +400,8 @@ namespace paludis
                         (k::status(), tokens.at(2))
                         (k::profile(), tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
-                                    erepository::EAPIData::get_instance()->eapi_from_string(
-                                        params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch))));
+                                    (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                        params.eapi_when_unknown))[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]))));
             }
         }
 
@@ -918,8 +918,8 @@ ERepository::use_expand_flags() const
 {
     _imp->need_profiles();
 
-    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi
-                    )->supported->ebuild_options->use_expand_separator));
+    std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                            (_imp->params.profile_eapi)))[k::supported()])[k::ebuild_options()].use_expand_separator));
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
@@ -979,7 +979,7 @@ ERepository::use_expand_separator(const PackageID & id) const
     if (this != id.repository().get())
         return '\0';
     const tr1::shared_ptr<const erepository::EAPI> & eapi(static_cast<const erepository::ERepositoryID &>(id).eapi());
-    return eapi->supported ? eapi->supported->ebuild_options->use_expand_separator : '\0';
+    return (*eapi)[k::supported()] ? (*(*eapi)[k::supported()])[k::ebuild_options()].use_expand_separator : '\0';
 }
 
 void
@@ -1071,8 +1071,8 @@ ERepository::describe_use_flag(const UseFlagName & f,
 
     if (_imp->use_desc.empty())
     {
-        std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
-                        _imp->params.profile_eapi)->supported->ebuild_options->use_expand_separator));
+        std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                _imp->params.profile_eapi))[k::supported()])[k::ebuild_options()].use_expand_separator));
         tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
         for (FSEntrySequence::ConstIterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
@@ -1101,7 +1101,7 @@ ERepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     if (f == "ebuild")
-        return static_cast<const erepository::ERepositoryID &>(e).eapi()->supported->can_be_pbin;
+        return (*(*static_cast<const erepository::ERepositoryID &>(e).eapi())[k::supported()])[k::can_be_pbin()];
     else
         return false;
 }
@@ -1377,15 +1377,15 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 std::string
 ERepository::accept_keywords_variable() const
 {
-    return erepository::EAPIData::get_instance()->eapi_from_string(
-            params().profile_eapi)->supported->ebuild_environment_variables->env_accept_keywords;
+    return (*(*erepository::EAPIData::get_instance()->eapi_from_string(params().profile_eapi))
+            [k::supported()])[k::ebuild_environment_variables()][k::env_accept_keywords()];
 }
 
 std::string
 ERepository::arch_variable() const
 {
-    return erepository::EAPIData::get_instance()->eapi_from_string(
-            params().profile_eapi)->supported->ebuild_environment_variables->env_arch;
+    return (*(*erepository::EAPIData::get_instance()->eapi_from_string(params().profile_eapi))
+            [k::supported()])[k::ebuild_environment_variables()][k::env_arch()];
 }
 
 FSEntry

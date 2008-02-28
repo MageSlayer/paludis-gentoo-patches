@@ -24,6 +24,8 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/keys.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/merger-fwd.hh>
@@ -46,7 +48,171 @@ namespace paludis
         class EbuildID;
         class ERepositoryID;
 
-#include <paludis/repositories/e/ebuild-sr.hh>
+        /**
+         * Parameters for an EbuildCommand.
+         *
+         * \see EbuildCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::environment, const Environment *>,
+            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::ebuild_dir, FSEntry>,
+            kc::Field<k::ebuild_file, FSEntry>,
+            kc::Field<k::files_dir, FSEntry>,
+            kc::Field<k::eclassdirs, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::exlibsdirs, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::portdir, FSEntry>,
+            kc::Field<k::distdir, FSEntry>,
+            kc::Field<k::builddir, FSEntry>,
+            kc::Field<k::userpriv, bool>,
+            kc::Field<k::sandbox, bool>,
+            kc::Field<k::commands, std::string>
+                > EbuildCommandParams;
+
+        /**
+         * Parameters for an EbuildNoFetchCommand.
+         *
+         * \see EbuildNoFetchCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::a, std::string>,
+            kc::Field<k::aa, std::string>,
+            kc::Field<k::use, std::string>,
+            kc::Field<k::use_expand, std::string>,
+            kc::Field<k::root, std::string>,
+            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >
+                > EbuildNoFetchCommandParams;
+
+        /**
+         * Parameters for an EbuildInstallCommand.
+         *
+         * \see EbuildInstallCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::a, std::string>,
+            kc::Field<k::aa, std::string>,
+            kc::Field<k::use, std::string>,
+            kc::Field<k::use_expand, std::string>,
+            kc::Field<k::root, std::string>,
+            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
+            kc::Field<k::disable_cfgpro, bool>,
+            kc::Field<k::debug_build, InstallActionDebugOption>,
+            kc::Field<k::slot, SlotName>,
+            kc::Field<k::config_protect, std::string>,
+            kc::Field<k::config_protect_mask, std::string>,
+            kc::Field<k::loadsaveenv_dir, FSEntry>
+                > EbuildInstallCommandParams;
+
+        /**
+         * Parameters for an EbuildPretendCommand.
+         *
+         * \see EbuildPretendCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::use, std::string>,
+            kc::Field<k::use_expand, std::string>,
+            kc::Field<k::root, std::string>,
+            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >
+                > EbuildPretendCommandParams;
+
+        /**
+         * Parameters for an EbuildUninstallCommand.
+         *
+         * \see EbuildUninstallCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::root, std::string>,
+            kc::Field<k::disable_cfgpro, bool>,
+            kc::Field<k::unmerge_only, bool>,
+            kc::Field<k::load_environment, const FSEntry *>,
+            kc::Field<k::loadsaveenv_dir, FSEntry>
+                > EbuildUninstallCommandParams;
+
+        /**
+         * Parameters for an EbuildConfigCommand.
+         *
+         * \see EbuildConfigCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::root, std::string>,
+            kc::Field<k::load_environment, const FSEntry *>
+                > EbuildConfigCommandParams;
+
+        /**
+         * Parameters for an EbuildInfoCommand.
+         *
+         * \see EbuildInfoCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::use, std::string>,
+            kc::Field<k::use_expand, std::string>,
+            kc::Field<k::root, std::string>,
+            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
+            kc::Field<k::load_environment, const FSEntry *>,
+            kc::Field<k::info_vars, FSEntry>
+                > EbuildInfoCommandParams;
+
+        /**
+         * Parameters for writing a VDB entry.
+         *
+         * \see WriteVDBEntryCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::environment, const Environment *>,
+            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::output_directory, FSEntry>,
+            kc::Field<k::environment_file, FSEntry>
+                > WriteVDBEntryParams;
+
+        /**
+         * Parameters for writing a binary ebuild.
+         *
+         * \see WriteBinaryEbuildCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::environment, const Environment *>,
+            kc::Field<k::destination_repository, const ERepository *>,
+            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::binary_ebuild_location, FSEntry>,
+            kc::Field<k::binary_distdir, FSEntry>,
+            kc::Field<k::environment_file, FSEntry>,
+            kc::Field<k::image, FSEntry>,
+            kc::Field<k::merger_options, MergerOptions>,
+            kc::Field<k::builddir, FSEntry>
+                > WriteBinaryEbuildCommandParams;
+
+        /**
+         * Parameters for a VDBPostMergeCommand.
+         *
+         * \see VDBPostMergeCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        typedef kc::KeyedClass<
+            kc::Field<k::root, FSEntry>
+                > VDBPostMergeCommandParams;
 
         /**
          * An EbuildCommand is the base class from which specific ebuild

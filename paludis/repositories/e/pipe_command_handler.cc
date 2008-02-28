@@ -97,13 +97,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             else
             {
                 tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
+                if (! (*eapi)[k::supported()])
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
                 tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
-                if (eapi->supported->pipe_commands->rewrite_virtuals && (! entries->empty()) &&
+                if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
                     Log::get_instance()->message(ll_qa, lc_context) << "best-version of '" << spec <<
@@ -119,7 +119,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "O1;";
                 else
                 {
-                    if (eapi->supported->pipe_commands->no_slot_or_repo)
+                    if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::no_slot_or_repo()])
                         return "O0;" + name_and_version(**entries->last());
                     else
                         return "O0;" + stringify(**entries->last());
@@ -136,7 +136,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             else
             {
                 tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
+                if (! (*eapi)[k::supported()])
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
@@ -158,13 +158,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             else
             {
                 tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
-                if (! eapi->supported)
+                if (! (*eapi)[k::supported()])
                     return "EMATCH EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
                 tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
-                if (eapi->supported->pipe_commands->rewrite_virtuals && (! entries->empty()))
+                if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()))
                 {
                     tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
                     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
@@ -188,7 +188,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "O1;";
                 else
                 {
-                    if (eapi->supported->pipe_commands->no_slot_or_repo)
+                    if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::no_slot_or_repo()])
                         return "O0;" + join(indirect_iterator(entries->begin()), indirect_iterator(entries->end()), "\n", &name_and_version);
                     else
                         return "O0;" + join(indirect_iterator(entries->begin()), indirect_iterator(entries->end()), "\n");

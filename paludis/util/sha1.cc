@@ -24,6 +24,7 @@
 #include <sstream>
 #include <istream>
 #include <iomanip>
+#include <algorithm>
 
 using namespace paludis;
 

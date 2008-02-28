@@ -308,11 +308,11 @@ ExndbamRepository::merge(const MergeParams & m)
     target_ver_dir.mkdir();
 
     WriteVDBEntryCommand write_vdb_entry_command(
-            WriteVDBEntryParams::create()
-            .environment(_imp->params.environment)
-            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
-            .output_directory(target_ver_dir)
-            .environment_file(m[k::environment_file()]));
+            WriteVDBEntryParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::package_id(), tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
+            (k::output_directory(), target_ver_dir)
+            (k::environment_file(), m[k::environment_file()]));
 
     write_vdb_entry_command();
 
@@ -357,8 +357,8 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     VDBPostMergeCommand post_merge_command(
-            VDBPostMergeCommandParams::create()
-            .root(installed_root_key()->value()));
+            VDBPostMergeCommandParams::named_create()
+            (k::root(), installed_root_key()->value()));
 
     post_merge_command();
 }
@@ -392,7 +392,7 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
     tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_uninstall);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_uninstall);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
@@ -425,27 +425,27 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
         }
         else
         {
-            EbuildCommandParams params(EbuildCommandParams::create()
-                    .environment(_imp->params.environment)
-                    .package_id(id)
-                    .ebuild_dir(ver_dir)
-                    .ebuild_file(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                    .files_dir(ver_dir)
-                    .eclassdirs(eclassdirs)
-                    .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                    .portdir(_imp->params.location)
-                    .distdir(ver_dir)
-                    .sandbox(phase->option("sandbox"))
-                    .userpriv(phase->option("userpriv"))
-                    .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                    .builddir(_imp->params.builddir));
+            EbuildCommandParams params(EbuildCommandParams::named_create()
+                    (k::environment(), _imp->params.environment)
+                    (k::package_id(), id)
+                    (k::ebuild_dir(), ver_dir)
+                    (k::ebuild_file(), ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
+                    (k::files_dir(), ver_dir)
+                    (k::eclassdirs(), eclassdirs)
+                    (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
+                    (k::portdir(), _imp->params.location)
+                    (k::distdir(), ver_dir)
+                    (k::sandbox(), phase->option("sandbox"))
+                    (k::userpriv(), phase->option("userpriv"))
+                    (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                    (k::builddir(), _imp->params.builddir));
 
-            EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
-                    .root(stringify(_imp->params.root))
-                    .disable_cfgpro(o[k::no_config_protect()])
-                    .unmerge_only(false)
-                    .loadsaveenv_dir(ver_dir)
-                    .load_environment(load_env.get()));
+            EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::named_create()
+                    (k::root(), stringify(_imp->params.root))
+                    (k::disable_cfgpro(), o[k::no_config_protect()])
+                    (k::unmerge_only(), false)
+                    (k::loadsaveenv_dir(), ver_dir)
+                    (k::load_environment(), load_env.get()));
 
             EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
             uninstall_cmd_pre();

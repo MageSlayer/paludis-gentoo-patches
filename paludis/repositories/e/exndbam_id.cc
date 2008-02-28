@@ -22,6 +22,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/contents.hh>
 #include <paludis/ndbam.hh>
 

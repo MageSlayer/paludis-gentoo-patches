@@ -209,7 +209,7 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
                             stringify(_imp->id->version()))
                     .with_setenv("CATEGORY", stringify(_imp->id->name().category))
                     .with_setenv("REPOSITORY", stringify(_imp->id->repository()->name()))
-                    .with_setenv("EAPI", stringify(_imp->eapi.name))
+                    .with_setenv("EAPI", stringify(_imp->eapi[k::name()]))
                     .with_setenv("SLOT", "")
                     .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                             stringify(PALUDIS_VERSION_MINOR) + "." +

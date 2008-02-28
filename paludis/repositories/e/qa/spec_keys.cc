@@ -207,7 +207,7 @@ namespace
             {
                 if (iuse_flags.end() == iuse_flags.find(conditional_dep_spec_flag(u)))
                 {
-                    std::tr1::shared_ptr<const UseFlagNameSet> c(
+                    tr1::shared_ptr<const UseFlagNameSet> c(
                         (*id->repository())[k::use_interface()]->use_expand_hidden_prefixes());
                     std::string flag(stringify(conditional_dep_spec_flag(u)));
                     bool is_hidden(false);

@@ -58,7 +58,7 @@ namespace
 
     static VALUE c_pretend_action;
 
-    const bool
+    bool
     value_to_bool(VALUE v)
     {
         if (Qfalse == v || Qnil == v)

@@ -30,6 +30,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/kc.hh>
 #include <stack>
 #include <set>
 
@@ -286,7 +287,7 @@ namespace
         static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
                 const EAPI & e)
         {
-            if (e.supported && e.supported->uri_labels)
+            if (e[k::supported()])
                 p(tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
                             new TreeLeaf<H_, URILabelsDepSpec>(parse_uri_label(s, e))));
             else
@@ -300,7 +301,7 @@ namespace
         static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
                 const EAPI & e)
         {
-            if (e.supported && e.supported->dependency_labels)
+            if (e[k::supported()])
                 p(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
                             new TreeLeaf<H_, DependencyLabelsDepSpec>(parse_dependency_label(s, e))));
             else
@@ -661,13 +662,13 @@ tr1::shared_ptr<DependencySpecTree::ConstItem>
 paludis::erepository::parse_depend(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing dependency string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing dependency string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' dependencies");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' dependencies");
 
     return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, LabelsAreDependency>(s,
-            e.supported->dependency_spec_tree_parse_options[dstpo_disallow_any_use],
+            (*e[k::supported()])[k::dependency_spec_tree_parse_options()][dstpo_disallow_any_use],
             ParsePackageOrBlockDepSpec(e, id), env, e, id);
 }
 
@@ -675,10 +676,10 @@ tr1::shared_ptr<ProvideSpecTree::ConstItem>
 paludis::erepository::parse_provide(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing provide string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing provide string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' provides");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' provides");
 
     return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false,
             ParsePackageDepSpec(e, tr1::shared_ptr<const PackageID>()), env, e, id);
@@ -688,10 +689,10 @@ tr1::shared_ptr<RestrictSpecTree::ConstItem>
 paludis::erepository::parse_restrict(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing restrict string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing restrict string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' restrictions");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' restrictions");
 
     return parse<RestrictSpecTree, ParseTextDepSpec, false, true, void>(s, false,
             ParseTextDepSpec(), env, e, id);
@@ -701,13 +702,13 @@ tr1::shared_ptr<FetchableURISpecTree::ConstItem>
 paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing fetchable URI string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing fetchable URI string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' URIs");
 
     return parse<FetchableURISpecTree, ParseFetchableURIDepSpec, false, true, LabelsAreURI>(s, false,
-            ParseFetchableURIDepSpec(e.supported->dependency_spec_tree_parse_options[dstpo_uri_supports_arrow]),
+            ParseFetchableURIDepSpec((*e[k::supported()])[k::dependency_spec_tree_parse_options()][dstpo_uri_supports_arrow]),
             env, e, id);
 }
 
@@ -715,10 +716,10 @@ tr1::shared_ptr<SimpleURISpecTree::ConstItem>
 paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing simple URI string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing simple URI string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' URIs");
 
     return parse<SimpleURISpecTree, ParseSimpleURIDepSpec, false, true, void>(s, false,
             ParseSimpleURIDepSpec(), env, e, id);
@@ -728,10 +729,10 @@ tr1::shared_ptr<LicenseSpecTree::ConstItem>
 paludis::erepository::parse_license(const std::string & s, const Environment * const env,
         const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
-    Context c("When parsing license string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing license string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
-    if (! e.supported)
-        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' licenses");
+    if (! e[k::supported()])
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' licenses");
 
     return parse<LicenseSpecTree, ParseLicenseDepSpec, true, true, void>(s,
             true, ParseLicenseDepSpec(), env, e, id);
@@ -740,12 +741,12 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
 tr1::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
-    Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
+    Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
     if (s.empty())
         throw DepStringParseError(s, "Empty label");
 
-    std::string c(e.supported->uri_labels->class_for_label(s.substr(0, s.length() - 1)));
+    std::string c((*e[k::supported()])[k::uri_labels()].class_for_label(s.substr(0, s.length() - 1)));
     if (c.empty())
         throw DepStringParseError(s, "Unknown label");
 
@@ -772,7 +773,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 tr1::shared_ptr<DependencyLabelsDepSpec>
 paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
 {
-    Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
+    Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
     if (s.empty())
         throw DepStringParseError(s, "Empty label");
@@ -785,7 +786,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {
-        std::string c(e.supported->dependency_labels->class_for_label(*it));
+        std::string c((*e[k::supported()])[k::dependency_labels()].class_for_label(*it));
         if (c.empty())
             throw DepStringParseError(s, "Unknown label '" + *it + "'");
 

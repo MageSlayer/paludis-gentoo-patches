@@ -370,7 +370,7 @@ EInstalledRepository::use_expand_separator(const PackageID & id) const
     if (this != id.repository().get())
         return '\0';
     const tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
-    return eapi->supported ? eapi->supported->ebuild_options->use_expand_separator : '\0';
+    return (*eapi)[k::supported()] ? (*(*eapi)[k::supported()])[k::ebuild_options()].use_expand_separator : '\0';
 }
 
 std::string
@@ -426,29 +426,29 @@ EInstalledRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> 
     eclassdirs->push_back(ver_dir);
 
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_config);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_config);
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        EbuildConfigCommand config_cmd(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(ver_dir)
-                .ebuild_file(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                .files_dir(ver_dir)
-                .eclassdirs(eclassdirs)
-                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                .portdir(ver_dir)
-                .distdir(ver_dir)
-                .sandbox(phase->option("sandbox"))
-                .userpriv(phase->option("userpriv"))
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .builddir(_imp->params.builddir),
+        EbuildConfigCommand config_cmd(EbuildCommandParams::named_create()
+                (k::environment(), _imp->params.environment)
+                (k::package_id(), id)
+                (k::ebuild_dir(), ver_dir)
+                (k::ebuild_file(), ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
+                (k::files_dir(), ver_dir)
+                (k::eclassdirs(), eclassdirs)
+                (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
+                (k::portdir(), ver_dir)
+                (k::distdir(), ver_dir)
+                (k::sandbox(), phase->option("sandbox"))
+                (k::userpriv(), phase->option("userpriv"))
+                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                (k::builddir(), _imp->params.builddir),
 
-                EbuildConfigCommandParams::create()
-                .root(stringify(_imp->params.root))
-                .load_environment(load_env.get()));
+                EbuildConfigCommandParams::named_create()
+                (k::root(), stringify(_imp->params.root))
+                (k::load_environment(), load_env.get()));
 
         config_cmd();
     }
@@ -470,7 +470,7 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
 
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
-    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
+    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -514,29 +514,29 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
             }
         }
 
-        EbuildInfoCommand info_cmd(EbuildCommandParams::create()
-                .environment(_imp->params.environment)
-                .package_id(id)
-                .ebuild_dir(ver_dir)
-                .ebuild_file(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                .files_dir(ver_dir)
-                .eclassdirs(eclassdirs)
-                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
-                .portdir(ver_dir)
-                .distdir(ver_dir)
-                .sandbox(phase->option("sandbox"))
-                .userpriv(phase->option("userpriv"))
-                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .builddir(_imp->params.builddir),
+        EbuildInfoCommand info_cmd(EbuildCommandParams::named_create()
+                (k::environment(), _imp->params.environment)
+                (k::package_id(), id)
+                (k::ebuild_dir(), ver_dir)
+                (k::ebuild_file(), ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
+                (k::files_dir(), ver_dir)
+                (k::eclassdirs(), eclassdirs)
+                (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
+                (k::portdir(), ver_dir)
+                (k::distdir(), ver_dir)
+                (k::sandbox(), phase->option("sandbox"))
+                (k::userpriv(), phase->option("userpriv"))
+                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
+                (k::builddir(), _imp->params.builddir),
 
-                EbuildInfoCommandParams::create()
-                .root(stringify(_imp->params.root))
-                .use("")
-                .use_expand("")
-                .expand_vars(make_shared_ptr(new Map<std::string, std::string>))
-                .profiles(make_shared_ptr(new FSEntrySequence))
-                .info_vars(i)
-                .load_environment(load_env.get()));
+                EbuildInfoCommandParams::named_create()
+                (k::root(), stringify(_imp->params.root))
+                (k::use(), "")
+                (k::use_expand(), "")
+                (k::expand_vars(), make_shared_ptr(new Map<std::string, std::string>))
+                (k::profiles(), make_shared_ptr(new FSEntrySequence))
+                (k::info_vars(), i)
+                (k::load_environment(), load_env.get()));
 
         info_cmd();
     }
