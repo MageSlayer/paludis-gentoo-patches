@@ -662,6 +662,7 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	if test "x$cxxflag_success" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
 	fi
+	CHECK_CXXFLAG([-Wno-ignored-qualifiers])
 	CHECK_CXXFLAG([-pedantic])
 else
 	CHECK_CXXFLAG([-Wall])
@@ -950,6 +951,18 @@ if test "x$enable_python" = "xyes" ; then
 		AC_MSG_ERROR([Python is required for --enable-python])
 	fi
 	AC_SUBST([PYTHON_INSTALL_DIR])
+
+	AC_MSG_CHECKING([whether your gcc is new enough to enable Python])
+	AC_COMPILE_IFELSE([
+#ifdef __GNUC__
+#  if __GNUC__ < 4
+#    error too old
+#  endif
+#endif
+	],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])]
+	 AC_MSG_ERROR([Your gcc is too old for Python support]))
 
 	AC_MSG_CHECKING(for headers required to compile python extensions)
 	py_prefix=`$PYTHON -c "import sys; print sys.prefix"`
