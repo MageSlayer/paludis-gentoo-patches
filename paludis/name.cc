@@ -325,8 +325,8 @@ KeywordNameComparator::operator() (const std::string & a, const std::string & b)
 {
     char a_prefix('~' == a[0] || '-' == a[0] ? a[0] : '\0');
     char b_prefix('~' == b[0] || '-' == b[0] ? b[0] : '\0');
-    const std::string & a_keyword(a_prefix ? a.substr(1) : a);
-    const std::string & b_keyword(b_prefix ? b.substr(1) : b);
+    const std::string a_keyword(a_prefix ? a.substr(1) : a);
+    const std::string b_keyword(b_prefix ? b.substr(1) : b);
 
     if (a_keyword == b_keyword)
     {
