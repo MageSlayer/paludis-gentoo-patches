@@ -949,7 +949,7 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const Disp
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode)
+ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode m)
 {
     // XXX fix this once the new resolver's in
     tr1::shared_ptr<const PackageIDSequence> inst(
@@ -959,7 +959,8 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
                            .slot(d.package_id->slot())) &
             query::InstalledAtRoot(environment()->root()),
             qo_best_version_only));
-    bool changed(! inst->empty() && (*inst->begin())->source_origin_key() &&
+    bool changed(normal_entry == m &&
+                 ! inst->empty() && (*inst->begin())->source_origin_key() &&
                  (*inst->begin())->source_origin_key()->value() !=
                  stringify(d.package_id->repository()->name()));
 
