@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007 David Leverton
+# Copyright (c) 2007, 2008 David Leverton
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -22,7 +22,7 @@
 
 ebuild_safe_source()
 {
-    set -- "${@}" \
+    set -- "${@}" '[^a-zA-Z_]*' '*[^a-zA-Z0-9_]*' \
         EUID PPID UID FUNCNAME GROUPS SHELLOPTS \
         'BASH_@(ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH)' \
         'BASH_COMPLETION?(_DIR)' 'bash+([0-9])?([a-z])' \
@@ -32,9 +32,9 @@ ebuild_safe_source()
     trap DEBUG
     set -T
     shopt -s extdebug
-    trap "[[ \${BASH_COMMAND%% *} == @(eval|trap) ||
-              ( \${BASH_COMMAND} != *([^\$'\n'])=* && \${BASH_COMMAND} != export\ * ) ||
-              \${BASH_COMMAND} != ?(export\ |declare\ ?(+([^\ ])\ ))@($(IFS='|'; shift; echo "${*}"))?(=*) ]]" DEBUG
+    trap "[[ \${BASH_COMMAND%%[[:space:]]*} == @(eval|trap) ||
+              ( \${BASH_COMMAND} != *([^\$'\n'])=* && \${BASH_COMMAND%%[[:space:]]*} != @(export|declare) ) ||
+              \${BASH_COMMAND} == ?(*([^=])[[:space:]])!($(IFS='|'; shift; echo "${*}"))?(=*) ]]" DEBUG
 
     source "${1}"
     eval "trap DEBUG; shopt -u extdebug; set +T; return ${?}"

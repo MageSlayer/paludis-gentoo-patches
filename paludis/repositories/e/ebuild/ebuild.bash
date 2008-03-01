@@ -26,6 +26,7 @@ unalias -a
 set +C
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
 eval unset LANG ${!LC_*}
+export LC_ALL=C
 
 # The list below should include all variables from all EAPIs
 EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SRC_URI RESTRICT \
