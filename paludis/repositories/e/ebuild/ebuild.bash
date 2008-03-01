@@ -295,7 +295,7 @@ ebuild_load_environment()
 !!!     ${PALUDIS_LOAD_ENVIRONMENT}
 !!! Try copying this file, bunzip2ing it and sourcing it using a new
 !!! bash shell (do not continue to use said shell afterwards). You
-!!! should get an error that give you a rough idea of where the
+!!! should get an error that gives you a rough idea of where the
 !!! problem lies.
 "
 
