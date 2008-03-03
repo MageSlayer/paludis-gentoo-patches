@@ -135,7 +135,7 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
 
             default:
                 {
-                    std::string raw_flag(flag);
+                    std::string raw_flag("[" + flag + "]");
 
                     tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req;
                     if ('=' == flag.at(flag.length() - 1))
