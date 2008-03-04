@@ -1001,11 +1001,6 @@ namespace test_cases
                 TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), FetchActionError);
             }
         }
-
-        bool repeatable() const
-        {
-            return false;
-        }
     } test_e_repository_fetch;
 
     struct ERepositoryManifestCheckTest : TestCase
