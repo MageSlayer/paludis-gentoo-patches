@@ -82,13 +82,12 @@ echo "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: cat
 
 mkdir -p repo3
 
-mkdir -p srcrepo/{profiles/profile,cat/target,eclass}
+mkdir -p srcrepo/{profiles/profile,cat/{target,vars},eclass}
 cat <<END > srcrepo/profiles/profile/make.defaults
 ARCH=test
 USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
-PALUDIS_COMMAND="/bin/false"
 END
 echo "srcrepo" > srcrepo/profiles/repo_name || exit 1
 
@@ -104,6 +103,33 @@ DEPEND="foo/bar"
 
 src_install() {
     echo MONKEY > ${D}/monkey
+}
+END
+
+cat <<'END' > srcrepo/cat/vars/vars-1.ebuild
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND="foo/bar"
+
+pkg_setup() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+src_compile() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_preinst() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_prerm() {
+    [[ -d "${T}" ]] || die "T not a dir"
 }
 END
 

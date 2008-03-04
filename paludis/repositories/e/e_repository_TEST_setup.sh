@@ -500,7 +500,6 @@ USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
-PALUDIS_COMMAND="/bin/false"
 END
 mkdir -p "cat/in-ebuild-die"
 cat <<END > cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
@@ -740,7 +739,6 @@ END
 echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
-PALUDIS_COMMAND="/bin/false"
 END
 mkdir -p "packages/cat/in-ebuild-die"
 cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1

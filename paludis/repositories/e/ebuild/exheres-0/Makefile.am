@@ -8,12 +8,15 @@ libexecprogexheres_SCRIPTS = \
 	build_functions.bash \
 	builtin_infovars.bash \
 	builtin_init.bash \
+	builtin_initrm.bash \
 	builtin_loadenv.bash \
 	builtin_metadata.bash \
 	builtin_killold.bash \
+	builtin_killoldrm.bash \
 	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
+	builtin_tidyuprm.bash \
 	builtin_variable.bash \
 	conditional_functions.bash \
 	eclass_functions.bash \

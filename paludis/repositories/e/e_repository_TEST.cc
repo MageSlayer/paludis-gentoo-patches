@@ -67,6 +67,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -90,6 +91,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -113,6 +115,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -136,6 +139,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -168,6 +172,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -202,6 +207,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -242,6 +248,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -286,6 +293,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -339,6 +347,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -371,6 +380,7 @@ namespace test_cases
             using namespace tr1::placeholders;
 
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -419,6 +429,7 @@ namespace test_cases
             using namespace tr1::placeholders;
 
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -465,6 +476,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -507,6 +519,7 @@ namespace test_cases
                 TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
 
                 TestEnvironment env;
+                env.set_paludis_command("/bin/false");
                 tr1::shared_ptr<Map<std::string, std::string> > keys(
                         new Map<std::string, std::string>);
                 keys->insert("format", "ebuild");
@@ -574,6 +587,7 @@ namespace test_cases
                 TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
 
                 TestEnvironment env;
+                env.set_paludis_command("/bin/false");
                 tr1::shared_ptr<Map<std::string, std::string> > keys(
                         new Map<std::string, std::string>);
                 keys->insert("format", "ebuild");
@@ -634,6 +648,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -669,6 +684,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -717,6 +733,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -754,6 +771,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -788,6 +806,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -862,6 +881,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -906,6 +926,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exheres");
             keys->insert("names_cache", "/var/empty");
@@ -1010,6 +1031,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -1051,6 +1073,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
 
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -1201,6 +1224,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
@@ -1254,6 +1278,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
@@ -1400,6 +1425,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
@@ -1439,6 +1465,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
+            env.set_paludis_command("/bin/false");
             tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
