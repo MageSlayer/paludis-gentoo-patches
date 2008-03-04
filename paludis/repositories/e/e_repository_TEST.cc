@@ -497,7 +497,7 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
         }
 
         void run()
@@ -564,7 +564,7 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
         }
 
         void run()
@@ -628,7 +628,7 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
         }
 
         void run()
@@ -895,7 +895,12 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
         }
 
         void run()
@@ -1040,7 +1045,12 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
         }
 
         void run()
@@ -1176,7 +1186,12 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
         }
 
         void run()
@@ -1224,7 +1239,12 @@ namespace test_cases
 
         unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
         }
 
         void run()
