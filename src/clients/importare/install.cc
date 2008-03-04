@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -118,7 +118,7 @@ namespace
                 return CommandLine::get_instance()->install_args.want_existing_descriptions();
             }
 
-            virtual std::string make_resume_command(const PackageIDSequence &) const
+            virtual std::string make_resume_command(const bool) const
             {
                 return "";
             }
@@ -142,7 +142,9 @@ do_install(const tr1::shared_ptr<Environment> & env, const tr1::shared_ptr<const
     CommandLine::get_instance()->install_args.populate_install_task(env.get(), task);
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
-    task.add_exact_package(target);
+    tr1::shared_ptr<PackageIDSequence> targets(new PackageIDSequence);
+    targets->push_back(target);
+    task.set_targets_from_exact_packages(targets);
     task.execute();
 
     cout << endl;

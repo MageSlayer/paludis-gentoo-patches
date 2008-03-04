@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -142,6 +142,23 @@ namespace paludis
 
             ///\}
 
+            ///\name Iterate over our dependency list entries.
+            ///\{
+
+            struct IteratorTag;
+            typedef WrappedForwardIterator<IteratorTag, DepListEntry> Iterator;
+
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const DepListEntry> ConstIterator;
+
+            Iterator begin();
+            Iterator end();
+
+            ConstIterator begin() const;
+            ConstIterator end() const;
+
+            ///\}
+
             /**
              * Our options.
              */
@@ -165,6 +182,15 @@ namespace paludis
              */
             void add(const PackageDepSpec &,
                     tr1::shared_ptr<const DestinationsSet> target_destinations);
+
+            /**
+             * Manually add a DepListEntry to the list.
+             *
+             * Does not work well with ordered resolution, and does not do much
+             * sanity checking. This is used by InstallTask to implement resume
+             * commands and the exec command.
+             */
+            Iterator push_back(const DepListEntry &);
 
             /**
              * Clear the list.
@@ -198,23 +224,6 @@ namespace paludis
             void add_suggested_package(const tr1::shared_ptr<const PackageID> &,
                     const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsSet> destinations);
-
-            ///\name Iterate over our dependency list entries.
-            ///\{
-
-            struct IteratorTag;
-            typedef WrappedForwardIterator<IteratorTag, DepListEntry> Iterator;
-
-            struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const DepListEntry> ConstIterator;
-
-            Iterator begin();
-            Iterator end();
-
-            ConstIterator begin() const;
-            ConstIterator end() const;
-
-            ///\}
     };
 }
 

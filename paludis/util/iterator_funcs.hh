@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -73,6 +73,27 @@ namespace paludis
     {
         T_ result(i);
         return --result;
+    }
+
+    /**
+     * Return the distance from a to b, except if it is greater than n,
+     * in which case return n instead.
+     *
+     * \ingroup g_iterator
+     */
+    template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires std::ForwardIterator<T_>
+#endif
+    std::size_t capped_distance(T_ a, const T_ & b, unsigned n)
+    {
+        std::size_t x(0);
+        while ((x < n) && (a != b))
+        {
+            ++x;
+            ++a;
+        }
+        return x;
     }
 }
 

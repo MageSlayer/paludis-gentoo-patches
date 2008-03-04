@@ -129,7 +129,8 @@ namespace paludis
             virtual void execute();
             int exit_status() const;
 
-            bool try_to_add_target(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool try_to_set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > &)
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
 
@@ -164,6 +165,7 @@ namespace paludis
                     const int x, const int y, const int s, const int f);
             virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f);
+            virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int);
 
             virtual void on_no_clean_needed(const DepListEntry &);
             virtual void on_clean_all_pre(const DepListEntry &,
@@ -201,9 +203,8 @@ namespace paludis
             virtual void on_display_failure_summary_failure(const DepListEntry &);
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &);
             virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &);
-            virtual void on_display_failure_summary_totals(const int, const int, const int, const int);
+            virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int);
             virtual void on_display_failure_summary_post();
-            virtual void on_display_failure_no_summary();
 
             ///\name More granular display routines
             ///\{
@@ -255,7 +256,7 @@ namespace paludis
 
             virtual void show_resume_command() const;
             void show_resume_command(const std::string &) const;
-            virtual std::string make_resume_command(const PackageIDSequence &) const = 0;
+            virtual std::string make_resume_command(const bool undo_failures) const = 0;
             virtual void on_installed_paludis();
             virtual HookResult perform_hook(const Hook &) const;
 

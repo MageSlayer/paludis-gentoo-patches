@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -106,7 +106,7 @@ namespace
                 return false;
             }
 
-            virtual std::string make_resume_command(const PackageIDSequence &) const
+            virtual std::string make_resume_command(const bool) const
             {
                 return "";
             }
@@ -151,7 +151,9 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
             throw DoHelp("bad value for --debug-build");
     }
 
-    if (! task.try_to_add_target(spec_str))
+    tr1::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
+    specs->push_back(spec_str);
+    if (! task.try_to_set_targets_from_user_specs(specs))
         return task.exit_status();
 
     task.execute();

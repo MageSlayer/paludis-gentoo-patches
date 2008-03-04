@@ -65,6 +65,9 @@ namespace paludis
             void _one(const DepList::Iterator, const int, const int, const int, const int);
             void _display_failure_summary();
 
+            void _add_target(const std::string &);
+            void _add_package_id(const tr1::shared_ptr<const PackageID> &);
+
             tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
             tr1::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
 
@@ -76,6 +79,8 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsSet> destinations);
 
             ///\}
+
+            bool already_done(const DepListEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations
@@ -103,12 +108,11 @@ namespace paludis
             ///\name Targets
             ///\{
 
-            void add_target(const std::string &);
-            void add_exact_package(const tr1::shared_ptr<const PackageID> &);
+            void set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > &);
+            void set_targets_from_exact_packages(const tr1::shared_ptr<const PackageIDSequence> &);
+            void set_targets_from_serialisation(const std::string &, const tr1::shared_ptr<const Sequence<std::string> > &);
 
             void clear();
-            bool had_set_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             void override_target_type(const DepListTargetType);
 
             struct TargetsConstIteratorTag;
@@ -136,9 +140,8 @@ namespace paludis
             virtual void on_display_failure_summary_failure(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &) = 0;
             virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &) = 0;
-            virtual void on_display_failure_summary_totals(const int, const int, const int, const int) = 0;
+            virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int) = 0;
             virtual void on_display_failure_summary_post() = 0;
-            virtual void on_display_failure_no_summary() = 0;
 
             virtual void on_not_continuing_due_to_errors() = 0;
 
@@ -162,6 +165,7 @@ namespace paludis
                     const int x, const int y, const int s, const int f) = 0;
             virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f) = 0;
+            virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int) = 0;
 
             virtual void on_no_clean_needed(const DepListEntry &) = 0;
             virtual void on_clean_all_pre(const DepListEntry &,
@@ -246,11 +250,14 @@ namespace paludis
             virtual bool had_action_failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch packages (dlk_package) that have either not yet been installed, or that
-             * were skipped or failed.
+             * Serialise the task.
              */
-            virtual const tr1::shared_ptr<const PackageIDSequence> packages_not_yet_installed_successfully() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::string serialise(const bool undo_failures) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * The format for serialisation.
+             */
+            std::string serialised_format() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

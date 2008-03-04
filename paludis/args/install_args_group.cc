@@ -22,6 +22,7 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/args/do_help.hh>
+#include <paludis/util/iterator_funcs.hh>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -225,13 +226,18 @@ InstallArgsGroup::resume_command_fragment(const InstallTask & task) const
                 + " '" + a_add_to_world_spec.argument() + "'";
     else if (! a_preserve_world.specified())
     {
-        if (task.had_set_targets())
+        if (capped_distance(task.begin_targets(), task.end_targets(), 2) == 1)
+        {
             resume_command = resume_command + " --" + a_add_to_world_spec.long_name()
-                + " '( )'";
+                + " '" + *task.begin_targets() + "'";
+        }
         else
             resume_command = resume_command + " --" + a_add_to_world_spec.long_name()
                 + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
     }
+
+    if (a_continue_on_failure.specified())
+        resume_command.append(" --" + a_continue_on_failure.long_name() + " " + a_continue_on_failure.argument());
 
     if (a_destinations.specified())
         for (args::StringSetArg::ConstIterator i(a_destinations.begin_args()),

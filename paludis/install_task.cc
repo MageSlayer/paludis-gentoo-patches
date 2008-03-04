@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "install_task.hh"
+#include <paludis/install_task.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
@@ -39,10 +39,15 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/handled_information.hh>
+#include <sstream>
 #include <functional>
 #include <algorithm>
 #include <list>
+#include <vector>
 #include <set>
 
 using namespace paludis;
@@ -77,7 +82,6 @@ namespace paludis
 
         InstallTaskContinueOnFailure continue_on_failure;
 
-        bool had_action_failures;
         bool had_resolution_failures;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
@@ -106,7 +110,6 @@ namespace paludis
             had_package_targets(false),
             override_target_type(false),
             continue_on_failure(itcof_if_fetch_only),
-            had_action_failures(false),
             had_resolution_failures(false)
         {
         }
@@ -131,12 +134,237 @@ InstallTask::clear()
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
     _imp->raw_targets.clear();
-    _imp->had_action_failures = false;
     _imp->had_package_targets = false;
 }
 
 void
-InstallTask::add_target(const std::string & target)
+InstallTask::set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > & s)
+{
+    using namespace tr1::placeholders;
+    std::for_each(s->begin(), s->end(), tr1::bind(&InstallTask::_add_target, this, _1));
+}
+
+void
+InstallTask::set_targets_from_exact_packages(const tr1::shared_ptr<const PackageIDSequence> & s)
+{
+    using namespace tr1::placeholders;
+    std::for_each(s->begin(), s->end(), tr1::bind(&InstallTask::_add_package_id, this, _1));
+}
+
+namespace
+{
+    tr1::shared_ptr<DepListEntryHandled> handled_from_string(const std::string & s,
+            const Environment * const env)
+    {
+        Context context("When decoding DepListEntryHandled value '" + s + "':");
+
+        if (s.empty())
+            throw InternalError(PALUDIS_HERE, "Empty DepListEntryHandled value");
+
+        switch (s.at(0))
+        {
+            case 'S':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "S takes no extra value");
+                return make_shared_ptr(new DepListEntryHandledSuccess);
+
+            case 'U':
+                return make_shared_ptr(new DepListEntryHandledSkippedUnsatisfied(
+                            parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())));
+
+            case 'D':
+                return make_shared_ptr(new DepListEntryHandledSkippedDependent(
+                            *env->package_database()->query(query::Matches(
+                                    parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())),
+                                qo_require_exactly_one)->begin()));
+
+            case 'F':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "F takes no extra value");
+                return make_shared_ptr(new DepListEntryHandledFailed);
+
+            case 'P':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "P takes no extra value");
+                return make_shared_ptr(new DepListEntryUnhandled);
+
+            case 'N':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "N takes no extra value");
+                return make_shared_ptr(new DepListEntryNoHandlingRequired);
+
+            default:
+                throw InternalError(PALUDIS_HERE, "Unknown value '" + s + "'");
+        }
+    }
+}
+
+void
+InstallTask::set_targets_from_serialisation(const std::string & format, const tr1::shared_ptr<const Sequence<std::string> > & ss)
+{
+    if (format != "0.25")
+        throw InternalError(PALUDIS_HERE, "Serialisation format '" + format + "' not supported by this version of Paludis");
+
+    for (Sequence<std::string>::ConstIterator s(ss->begin()), s_end(ss->end()) ;
+            s != s_end ; ++s)
+    {
+        Context context("When adding serialised entry '" + *s + "':");
+
+        std::list<std::string> tokens;
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(*s, ";", "", std::back_inserter(tokens));
+
+        if (tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no kind");
+        const DepListEntryKind kind(destringify<DepListEntryKind>(*tokens.begin()));
+        tokens.pop_front();
+
+        if (tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
+        const tr1::shared_ptr<const PackageID> package_id(*_imp->env->package_database()->query(
+                    query::Matches(parse_user_package_dep_spec(*tokens.begin(), UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+        tokens.pop_front();
+
+        if (tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no destination");
+        tr1::shared_ptr<Repository> destination;
+        if ("0" != *tokens.begin())
+            destination = _imp->env->package_database()->fetch_repository(RepositoryName(*tokens.begin()));
+        tokens.pop_front();
+
+        if (tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no state");
+        const DepListEntryState state(destringify<DepListEntryState>(*tokens.begin()));
+        tokens.pop_front();
+
+        if (tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no handled");
+        tr1::shared_ptr<DepListEntryHandled> handled(handled_from_string(*tokens.begin(), _imp->env));
+        tokens.pop_front();
+
+        if (! tokens.empty())
+            throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too long");
+
+        _imp->dep_list.push_back(DepListEntry::create()
+                .kind(kind)
+                .package_id(package_id)
+                .associated_entry(static_cast<DepListEntry *>(0))
+                .tags(make_shared_ptr(new DepListEntryTags))
+                .destination(destination)
+                .generation(0)
+                .state(state)
+                .handled(handled)
+                );
+    }
+}
+
+std::string
+InstallTask::serialised_format() const
+{
+    return "0.25";
+}
+
+namespace
+{
+    struct HandledDisplayer :
+        ConstVisitor<DepListEntryHandledVisitorTypes>
+    {
+        std::string result;
+        const bool undo_failures;
+
+        HandledDisplayer(const bool b) :
+            undo_failures(b)
+        {
+        }
+
+        void visit(const DepListEntryNoHandlingRequired &)
+        {
+            result = "N";
+        }
+
+        void visit(const DepListEntryHandledSuccess &)
+        {
+            result = "S";
+        }
+
+        void visit(const DepListEntryHandledFailed &)
+        {
+            if (undo_failures)
+                result = "P";
+            else
+                result = "F";
+        }
+
+        void visit(const DepListEntryUnhandled &)
+        {
+            result = "P";
+        }
+
+        void visit(const DepListEntryHandledSkippedUnsatisfied & s)
+        {
+            result = "U" + stringify(s.spec());
+        }
+
+        void visit(const DepListEntryHandledSkippedDependent & s)
+        {
+            result = "D=" + stringify(*s.id());
+        }
+    };
+}
+
+std::string
+InstallTask::serialise(const bool undo_failures) const
+{
+    std::ostringstream result;
+
+    for (DepList::ConstIterator d(_imp->dep_list.begin()), d_end(_imp->dep_list.end()) ;
+            d != d_end ; ++d)
+    {
+        switch (d->kind)
+        {
+            case dlk_already_installed:
+            case dlk_virtual:
+            case dlk_provided:
+            case dlk_block:
+            case dlk_masked:
+            case dlk_suggested:
+                continue;
+
+            case dlk_package:
+            case dlk_subpackage:
+                break;
+
+            case last_dlk:
+                throw InternalError(PALUDIS_HERE, "Bad d->kind");
+        }
+
+        if (! result.str().empty())
+            result << " ";
+
+        result << "'";
+
+        result << d->kind << ";";
+
+        result << "=" << *d->package_id << ";";
+
+        if (d->destination)
+            result << d->destination->name() << ";";
+        else
+            result << "0" << ";";
+
+        result << d->state << ";";
+
+        HandledDisplayer h(undo_failures);
+        d->handled->accept(h);
+        result << h.result;
+
+        result << "'";
+    }
+
+    return result.str();
+}
+
+void
+InstallTask::_add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
@@ -216,7 +444,7 @@ InstallTask::add_target(const std::string & target)
 }
 
 void
-InstallTask::add_exact_package(const tr1::shared_ptr<const PackageID> & target)
+InstallTask::_add_package_id(const tr1::shared_ptr<const PackageID> & target)
 {
     Context context("When adding install target '" + stringify(*target) + "' from ID:");
 
@@ -296,7 +524,7 @@ namespace
     struct SummaryVisitor :
         ConstVisitor<DepListEntryHandledVisitorTypes>
     {
-        int total, successes, skipped, failures;
+        int total, successes, skipped, failures, unreached;
         InstallTask & task;
         const DepListEntry * entry;
 
@@ -305,6 +533,7 @@ namespace
             successes(0),
             skipped(0),
             failures(0),
+            unreached(0),
             task(t),
             entry(0)
         {
@@ -333,6 +562,8 @@ namespace
 
         void visit(const DepListEntryUnhandled &)
         {
+            ++unreached;
+            ++total;
         }
 
         void visit(const DepListEntryNoHandlingRequired &)
@@ -353,31 +584,8 @@ InstallTask::_display_failure_summary()
 {
     Context context("When displaying summary:");
 
-    if (! _imp->had_action_failures)
+    if (! had_action_failures())
         return;
-
-    switch (_imp->continue_on_failure)
-    {
-        case itcof_if_fetch_only:
-            if (! _imp->fetch_only)
-            {
-                on_display_failure_no_summary();
-                return;
-            }
-            break;
-
-        case itcof_always:
-        case itcof_if_satisfied:
-        case itcof_if_independent:
-            break;
-
-        case itcof_never:
-            on_display_failure_no_summary();
-            return;
-
-        case last_itcof:
-            throw InternalError(PALUDIS_HERE, "Bad continue_on_failure");
-    }
 
     on_display_failure_summary_pre();
 
@@ -391,7 +599,7 @@ InstallTask::_display_failure_summary()
     }
 
     /* we're done displaying our task list */
-    on_display_failure_summary_totals(s.total, s.successes, s.skipped, s.failures);
+    on_display_failure_summary_totals(s.total, s.successes, s.skipped, s.failures, s.unreached);
     on_display_failure_summary_post();
 }
 
@@ -442,6 +650,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     if (dep->destination)
         if ((*dep->destination)[k::destination_interface()] && (*dep->destination)[k::destination_interface()]->want_pre_post_phases())
             live_destination = true;
+
+    if (already_done(*dep))
+    {
+        on_skip_already_done(*dep, x, y, s, f);
+        return;
+    }
 
     /* we're about to fetch / install one item */
     if (_imp->fetch_only)
@@ -646,7 +860,7 @@ InstallTask::_main_actions()
 
         ++x;
 
-        if (_imp->had_action_failures)
+        if (had_action_failures())
         {
             switch (_imp->continue_on_failure)
             {
@@ -696,14 +910,12 @@ InstallTask::_main_actions()
         }
         catch (const InstallActionError & e)
         {
-            _imp->had_action_failures = true;
             dep->handled.reset(new DepListEntryHandledFailed);
             on_install_action_error(e);
             ++f;
         }
         catch (const FetchActionError & e)
         {
-            _imp->had_action_failures = true;
             dep->handled.reset(new DepListEntryHandledFailed);
             on_fetch_action_error(e);
             ++f;
@@ -711,7 +923,7 @@ InstallTask::_main_actions()
     }
 
     /* go no further if we had failures */
-    if (_imp->had_action_failures)
+    if (had_action_failures())
     {
         _display_failure_summary();
         return;
@@ -724,36 +936,54 @@ InstallTask::_main_actions()
         {
             on_update_world_pre();
 
-            if (_imp->had_package_targets)
+            if (_imp->add_to_world_spec)
             {
+                bool s_had_package_targets(_imp->had_package_targets), s_had_set_targets(_imp->had_set_targets);
                 if (_imp->add_to_world_spec)
                 {
-                    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-                    std::list<std::string> tokens;
-                    tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
-                    if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
-                    {
-                        tokens.erase(tokens.begin());
-                        tokens.erase(previous(tokens.end()));
-                    }
+                    s_had_package_targets = ((std::string::npos != _imp->add_to_world_spec->find('/')));
+                    s_had_set_targets = (! s_had_package_targets) && (std::string::npos != _imp->add_to_world_spec->find_first_not_of(
+                                "() \t\r\n"));
+                }
 
-                    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                            t != t_end ; ++t)
+                tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                std::list<std::string> tokens;
+                tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
+                if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
+                {
+                    tokens.erase(tokens.begin());
+                    tokens.erase(previous(tokens.end()));
+                }
+
+                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                        t != t_end ; ++t)
+                {
+                    if (s_had_package_targets)
                         all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
                                             new PackageDepSpec(parse_user_package_dep_spec(*t, UserPackageDepSpecOptions()))))));
-                    world_update_packages(all);
+                    else
+                        all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(tr1::shared_ptr<NamedSetDepSpec>(
+                                            new NamedSetDepSpec(SetName(*t))))));
                 }
-                else
-                    world_update_packages(_imp->targets);
-            }
-            else if (_imp->had_set_targets)
-            {
-                if (_imp->add_to_world_spec)
+
+                if (s_had_package_targets)
+                    world_update_packages(all);
+                else if (s_had_set_targets)
                     world_update_set(SetName(*_imp->add_to_world_spec));
-                else if (! _imp->raw_targets.empty())
-                    world_update_set(SetName(*_imp->raw_targets.begin()));
+            }
+            else
+            {
+                if (_imp->had_package_targets)
+                    world_update_packages(_imp->targets);
+                else if (_imp->had_set_targets)
+                {
+                    for (std::list<std::string>::const_iterator t(_imp->raw_targets.begin()), t_end(_imp->raw_targets.end()) ;
+                            t != t_end ; ++t)
+                        world_update_set(SetName(*t));
+                }
             }
 
             on_update_world_post();
@@ -922,18 +1152,6 @@ InstallTask::on_installed_paludis()
 {
 }
 
-bool
-InstallTask::had_set_targets() const
-{
-    return _imp->had_set_targets;
-}
-
-bool
-InstallTask::had_package_targets() const
-{
-    return _imp->had_package_targets;
-}
-
 void
 InstallTask::set_safe_resume(const bool value)
 {
@@ -1017,12 +1235,6 @@ InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>
 {
     WorldTargetFinder w(_imp->env, this);
     a->accept(w);
-}
-
-bool
-InstallTask::had_action_failures() const
-{
-    return _imp->had_action_failures;
 }
 
 bool
@@ -1331,6 +1543,21 @@ namespace
     };
 }
 
+bool
+InstallTask::had_action_failures() const
+{
+    for (DepList::ConstIterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+    {
+        CheckHandledVisitor v;
+        dep->handled->accept(v);
+        if (v.failure)
+            return true;
+    }
+    return false;
+}
+
+
 tr1::shared_ptr<const PackageID>
 InstallTask::_dependent(const DepListEntry & e) const
 {
@@ -1366,59 +1593,48 @@ InstallTask::_dependent(const DepListEntry & e) const
 
 namespace
 {
-    struct NotYetInstalledVisitor :
+    struct AlreadyDoneVisitor :
         ConstVisitor<DepListEntryHandledVisitorTypes>
     {
-        tr1::shared_ptr<const PackageID> id;
-        tr1::shared_ptr<PackageIDSequence> result;
-
-        NotYetInstalledVisitor() :
-            result(new PackageIDSequence)
-        {
-        }
+        bool result;
 
         void visit(const DepListEntryHandledSuccess &)
         {
+            result = true;
         }
 
         void visit(const DepListEntryHandledSkippedUnsatisfied &)
         {
-            result->push_back(id);
+            result = true;
         }
 
         void visit(const DepListEntryHandledSkippedDependent &)
         {
-            result->push_back(id);
+            result = true;
         }
 
         void visit(const DepListEntryHandledFailed &)
         {
-            result->push_back(id);
+            result = true;
         }
 
         void visit(const DepListEntryUnhandled &)
         {
-            result->push_back(id);
+            result = false;
         }
 
         void visit(const DepListEntryNoHandlingRequired &)
         {
+            result = false;
         }
     };
 }
 
-const tr1::shared_ptr<const PackageIDSequence>
-InstallTask::packages_not_yet_installed_successfully() const
+bool
+InstallTask::already_done(const DepListEntry & e) const
 {
-    NotYetInstalledVisitor s;
-
-    for (DepList::ConstIterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
-            dep != dep_end ; ++dep)
-    {
-        s.id = dep->package_id;
-        dep->handled->accept(s);
-    }
-
-    return s.result;
+    AlreadyDoneVisitor v;
+    e.handled->accept(v);
+    return v.result;
 }
 

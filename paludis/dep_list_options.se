@@ -217,6 +217,7 @@ END
 make_enum_DepListEntryState()
 {
     prefix dle
+    want_destringify
 
     key dle_no_deps         "Dependencies have yet to be added"
     key dle_has_pre_deps    "Predependencies have been added"
@@ -234,6 +235,7 @@ END
 make_enum_DepListEntryKind()
 {
     prefix dlk
+    want_destringify
 
     key dlk_package           "A package to be installed"
     key dlk_subpackage        "A package to be installed as part of the previous dlk_package"

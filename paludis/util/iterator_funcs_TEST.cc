@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -22,6 +22,7 @@
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <vector>
+#include <list>
 
 using namespace test;
 using namespace paludis;
@@ -71,5 +72,49 @@ namespace test_cases
             TEST_CHECK(--iter == v.begin());
         }
     } test_iterator_previous;
+
+    struct CappedDistanceTest : TestCase
+    {
+        CappedDistanceTest() : TestCase("capped distance") { }
+
+        void run()
+        {
+            std::list<int> v;
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(0));
+
+            v.push_back(1);
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(1));
+
+            v.push_back(2);
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(2));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(2));
+
+            v.push_back(3);
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(3));
+
+            v.push_back(4);
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(4));
+
+            v.push_back(5);
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
+            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(5));
+        }
+    } test_capped_distance;
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <paludis/hook.hh>
 #include <paludis/query.hh>
@@ -121,17 +122,16 @@ namespace
                 return CommandLine::get_instance()->install_args.want_existing_descriptions();
             }
 
-            virtual std::string make_resume_command(const PackageIDSequence & s) const
+            virtual std::string make_resume_command(const bool undo_failures) const
             {
                 std::string resume_command = environment()->paludis_command()
                     + " --" + CommandLine::get_instance()->a_install.long_name();
 
-                resume_command = resume_command + CommandLine::get_instance()->install_args.resume_command_fragment(*this);
-                resume_command = resume_command + CommandLine::get_instance()->dl_args.resume_command_fragment(*this);
-
-                for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
-                        i != i_end ; ++i)
-                    resume_command = resume_command + " '=" + stringify(**i) + "'";
+                resume_command.append(CommandLine::get_instance()->install_args.resume_command_fragment(*this));
+                resume_command.append(CommandLine::get_instance()->dl_args.resume_command_fragment(*this));
+                resume_command.append(" --" + CommandLine::get_instance()->a_serialised.long_name() + " " + serialised_format());
+                resume_command.append(" ");
+                resume_command.append(serialise(undo_failures));
 
                 return resume_command;
             }
@@ -161,10 +161,16 @@ do_install(tr1::shared_ptr<Environment> env)
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
     cout << "Building target list... " << std::flush;
-    for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
-            q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
-        if (! task.try_to_add_target(*q))
+    tr1::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
+    std::copy(CommandLine::get_instance()->begin_parameters(), CommandLine::get_instance()->end_parameters(),
+            specs->back_inserter());
+    if (CommandLine::get_instance()->a_serialised.specified())
+        task.set_targets_from_serialisation(CommandLine::get_instance()->a_serialised.argument(), specs);
+    else
+    {
+        if (! task.try_to_set_targets_from_user_specs(specs))
             return task.exit_status();
+    }
 
     cout << endl;
 

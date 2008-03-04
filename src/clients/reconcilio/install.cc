@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -102,16 +102,15 @@ namespace
                 return CommandLine::get_instance()->install_args.want_existing_descriptions();
             }
 
-            virtual std::string make_resume_command(const PackageIDSequence & s) const
+            virtual std::string make_resume_command(const bool undo_failures) const
             {
                 std::string resume_command = environment()->paludis_command() + " --install";
 
-                resume_command = resume_command + CommandLine::get_instance()->install_args.resume_command_fragment(*this);
-                resume_command = resume_command + CommandLine::get_instance()->dl_args.resume_command_fragment(*this);
-
-                for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
-                        i != i_end ; ++i)
-                    resume_command = resume_command + " '=" + stringify(**i) + "'";
+                resume_command.append(CommandLine::get_instance()->install_args.resume_command_fragment(*this));
+                resume_command.append(CommandLine::get_instance()->dl_args.resume_command_fragment(*this));
+                resume_command.append(" --serialised " + serialised_format());
+                resume_command.append(" ");
+                resume_command.append(serialise(undo_failures));
 
                 return resume_command;
             }
@@ -140,10 +139,8 @@ do_install(const tr1::shared_ptr<Environment> & env, const tr1::shared_ptr<const
     CommandLine::get_instance()->install_args.populate_install_task(env.get(), task);
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
-    for (Sequence<std::string>::ConstIterator t(targets->begin()), t_end(targets->end()) ;
-            t != t_end ; ++t)
-        if (! task.try_to_add_target(*t))
-            return task.exit_status();
+    if (! task.try_to_set_targets_from_user_specs(targets))
+        return task.exit_status();
 
     std::cout << std::endl;
     task.execute();

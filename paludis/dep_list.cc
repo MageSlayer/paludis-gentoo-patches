@@ -1525,6 +1525,14 @@ DepList::match_on_list(const PackageDepSpec & a) const
             MatchDepListEntryAgainstPackageDepSpec(_imp->env, a));
 }
 
+DepList::Iterator
+DepList::push_back(const DepListEntry & e)
+{
+    MergeList::iterator our_merge_entry_position(_imp->merge_list.insert(_imp->merge_list.end(), e));
+    _imp->merge_list_index.insert(std::make_pair(e.package_id->name(), our_merge_entry_position));
+    return Iterator(our_merge_entry_position);
+}
+
 bool
 paludis::is_viable_any_child(const DependencySpecTree::ConstItem & i)
 {

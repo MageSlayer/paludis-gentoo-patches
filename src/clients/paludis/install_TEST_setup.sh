@@ -43,7 +43,7 @@ cache = /var/empty
 format = ebuild
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestprofile
-buildroot = `pwd`/build
+builddir = `pwd`/build
 END
 
 done
@@ -53,13 +53,13 @@ location = `pwd`/root/var/db/pkg
 format = vdb
 names_cache = /var/empty
 provides_cache = /var/empty
-buildroot = `pwd`/build
+builddir = `pwd`/build
 END
 
 cat <<END > root/${SYSCONFDIR}/paludisexndbam/repositories/installed.conf
 location = `pwd`/root/var/db/exndbam
 format = exndbam
-buildroot = `pwd`/build
+builddir = `pwd`/build
 END
 
 mkdir -p root/tmp

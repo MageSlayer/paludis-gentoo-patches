@@ -173,12 +173,12 @@ ConsoleInstallTask::exit_status() const
 }
 
 bool
-ConsoleInstallTask::try_to_add_target(const std::string & s)
+ConsoleInstallTask::try_to_set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > & s)
 {
     bool is_ok(true);
     try
     {
-        InstallTask::add_target(s);
+        InstallTask::set_targets_from_user_specs(s);
     }
     catch (const NoSuchPackageError & e)
     {
@@ -345,6 +345,9 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         throw InternalError(PALUDIS_HERE, "Bad d.kind");
     } while (false);
 
+    if (already_done(d))
+        return;
+
     tr1::shared_ptr<RepositoryName> repo;
     if (d.destination)
         repo.reset(new RepositoryName(d.destination->name()));
@@ -464,6 +467,16 @@ ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const tr1::shared_
 {
     std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id) +
             " (dependent upon '" + stringify(*id) + "')");
+
+    output_heading(m);
+}
+
+void
+ConsoleInstallTask::on_skip_already_done(const DepListEntry & d,
+        const int x, const int y, const int s, const int f)
+{
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id) +
+            " (already done)");
 
     output_heading(m);
 }
@@ -1703,13 +1716,14 @@ ConsoleInstallTask::on_display_failure_summary_skipped_dependent(const DepListEn
 
 void
 ConsoleInstallTask::on_display_failure_summary_totals(const int total, const int successes,
-        const int skipped, const int failures)
+        const int skipped, const int failures, const int unreached)
 {
     std::ostringstream s;
     s << "Total: " << total << render_plural(total, " package", " packages");
     s << ", " << successes << render_plural(successes, " success", " successes");
     s << ", " << skipped << render_plural(skipped, " skipped", " skipped");
     s << ", " << failures << render_plural(failures, " failure", " failures");
+    s << ", " << unreached << render_plural(failures, " unreached", " unreached");
 
     output_endl();
     output_unstarred_item(s.str());
@@ -1717,12 +1731,6 @@ ConsoleInstallTask::on_display_failure_summary_totals(const int total, const int
 
 void
 ConsoleInstallTask::on_display_failure_summary_post()
-{
-    show_resume_command();
-}
-
-void
-ConsoleInstallTask::on_display_failure_no_summary()
 {
     show_resume_command();
 }
@@ -1747,10 +1755,9 @@ ConsoleInstallTask::show_resume_command() const
 void
 ConsoleInstallTask::show_resume_command(const std::string & resume_command_template) const
 {
-    const tr1::shared_ptr<const PackageIDSequence> p(packages_not_yet_installed_successfully());
-    if (! p->empty())
+    if (had_action_failures())
     {
-        std::string resume_command(make_resume_command(*p));
+        std::string resume_command(make_resume_command(true));
         if (resume_command.empty())
             return;
 
@@ -1816,7 +1823,7 @@ ConsoleInstallTask::on_installed_paludis()
             return;
     }
 
-    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+    std::string resume_command(make_resume_command(false));
     if (resume_command.empty())
         return;
 
@@ -1830,7 +1837,7 @@ ConsoleInstallTask::on_installed_paludis()
 HookResult
 ConsoleInstallTask::perform_hook(const Hook & hook) const
 {
-    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+    std::string resume_command(make_resume_command(true));
     if (resume_command.empty())
         return InstallTask::perform_hook(hook);
     return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -332,6 +332,6 @@ DepListArgsGroup::paludis_command_fragment() const
 std::string
 DepListArgsGroup::resume_command_fragment(const InstallTask &) const
 {
-    return " --" + dl_deps_default.long_name() + " discard";
+    return "";
 }
 
