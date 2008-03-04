@@ -327,12 +327,13 @@ namespace paludis
         {
             private:
                 ArgsOption * const _other;
+                bool _hidden;
 
             public:
                 /**
                  * Constructor.
                  */
-                AliasArg(ArgsOption * const other, const std::string & new_long_name);
+                AliasArg(ArgsOption * const other, const std::string & new_long_name, bool is_hidden = false);
 
                 virtual bool specified() const
                 {
@@ -342,6 +343,16 @@ namespace paludis
                 virtual void set_specified(const bool value)
                 {
                     _other->set_specified(value);
+                }
+
+                virtual bool hidden() const
+                {
+                    return _hidden;
+                }
+
+                virtual void set_hidden(const bool value)
+                {
+                    _hidden = value;
                 }
 
                 /**

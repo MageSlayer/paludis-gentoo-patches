@@ -66,7 +66,8 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
             ("if-satisfied",        "If remaining packages' dependencies are satisfied")
             ("if-independent",      "If independent of failed and skipped packages")
             ("always",              "Always (UNSAFE)"),
-            "if-fetch-only")
+            "if-fetch-only"),
+    a_continue_on_eroyf(&a_continue_on_failure, "continue-on-eroyf", true)
 {
 }
 

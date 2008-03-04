@@ -20,6 +20,7 @@
 #include "man.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <ostream>
 #include <sstream>
 #include <algorithm>
@@ -114,6 +115,9 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         for (paludis::args::ArgsGroup::ConstIterator b((*a)->begin()), b_end((*a)->end()) ;
                 b != b_end ; ++b)
         {
+            if (visitor_cast<const paludis::args::AliasArg>(**b) && visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
+                continue;
+
             dw.arg_group_item((*b)->short_name(), (*b)->long_name(),
                     (*b)->can_be_negated() ? "no-" + (*b)->long_name() : "", (*b)->description());
 

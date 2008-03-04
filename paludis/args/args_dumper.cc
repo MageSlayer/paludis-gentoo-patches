@@ -103,6 +103,7 @@ ArgsDumper::visit(const IntegerArg & a)
 void
 ArgsDumper::visit(const AliasArg & a)
 {
-    generic_visit(a);
+    if(!a.hidden())
+	    generic_visit(a);
 }
 

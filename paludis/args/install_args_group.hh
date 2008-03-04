@@ -100,6 +100,7 @@ namespace paludis
 
                 /// --continue-on-failure
                 paludis::args::EnumArg a_continue_on_failure;
+                paludis::args::AliasArg a_continue_on_eroyf;
 
                 /// }
 
