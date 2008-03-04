@@ -314,7 +314,7 @@ namespace paludis
 
             /**
              * Fetch the use expand separator (eg _ or :) for the
-             * specified package, or \0 if unknown.
+             * specified package, or null if unknown.
              */
             virtual char use_expand_separator(const PackageID & pkg) const = 0;
 
