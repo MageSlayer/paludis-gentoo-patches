@@ -19,6 +19,8 @@
 
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -28,6 +30,7 @@
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/action.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
@@ -395,5 +398,90 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(pp, "build: build,run: suggested: post: cat/pkg5");
         }
     } test_vdb_repository_dependencies_rewriter;
+
+    struct InstallReinstallUninstallTest : TestCase
+    {
+        InstallReinstallUninstallTest() : TestCase("install / reinstall / uninstall") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/srcrepo");
+            keys->insert("profiles", "vdb_repository_TEST_dir/srcrepo/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", "vdb_repository_TEST_dir/root");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/repo3");
+            keys->insert("root", "vdb_repository_TEST_dir/root");
+            tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            InstallAction install_action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), vdb_repo)
+                    );
+
+            UninstallAction uninstall_action(UninstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    );
+
+            {
+                TestMessageSuffix suffix("install", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/target-1::srcrepo",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(install_action);
+            }
+
+            vdb_repo->invalidate();
+
+            {
+                TestMessageSuffix suffix("reinstall", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/target-1::srcrepo",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(install_action);
+            }
+
+            vdb_repo->invalidate();
+
+            {
+                TestMessageSuffix suffix("uninstall", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/target-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(uninstall_action);
+            }
+        }
+    } test_vdb_install_reinstall_uninstall;
 }
 

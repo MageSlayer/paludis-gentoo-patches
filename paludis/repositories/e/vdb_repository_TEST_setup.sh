@@ -4,6 +4,10 @@
 mkdir -p vdb_repository_TEST_dir || exit 1
 cd vdb_repository_TEST_dir || exit 1
 
+mkdir -p distdir
+mkdir -p build
+mkdir -p root/etc
+
 mkdir -p repo1/cat-{one/{pkg-one-1,pkg-both-1},two/{pkg-two-2,pkg-both-2}} || exit 1
 
 for i in SLOT EAPI; do
@@ -75,4 +79,31 @@ mkdir -p repo2/category/package-1 || exit 1
 echo "exheres-0" >repo2/category/package-1/EAPI
 echo "0" >repo2/category/package-1/SLOT
 echo "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: cat/pkg5" >repo2/category/package-1/DEPENDENCIES
+
+mkdir -p repo3
+
+mkdir -p srcrepo/{profiles/profile,cat/target,eclass}
+cat <<END > srcrepo/profiles/profile/make.defaults
+ARCH=test
+USERLAND="GNU"
+KERNEL="linux"
+CHOST="i286-badger-linux-gnu"
+PALUDIS_COMMAND="/bin/false"
+END
+echo "srcrepo" > srcrepo/profiles/repo_name || exit 1
+
+cat <<'END' > srcrepo/cat/target/target-1.ebuild
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND="foo/bar"
+
+src_install() {
+    echo MONKEY > ${D}/monkey
+}
+END
 

@@ -705,6 +705,29 @@ DONE
     [[ "$BV2" == "" ]] || die "BV2 is $BV2"
 }
 END
+mkdir -p "cat/vars"
+cat <<'END' > cat/vars/vars-0.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+src_compile() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_preinst() {
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
