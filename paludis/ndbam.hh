@@ -37,14 +37,31 @@ namespace paludis
 
 #include <paludis/ndbam-sr.hh>
 
+    /**
+     * NDBAM provides a partial implementation of a Repository for installed packages using
+     * a Paludis-defined on-disk format. It is used by unpackaged repositories and exndbam,
+     * where the format can be defined by us. NDBAM is designed to reduce unnecessary disk
+     * access and to reduce the need for global locking.
+     *
+     * \ingroup g_ndbam
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE NDBAM :
         private PrivateImplementationPattern<NDBAM>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             NDBAM(const FSEntry &,
                     const tr1::function<bool (const std::string &)> & check_format,
                     const std::string & preferred_format);
             ~NDBAM();
+
+            ///\}
+
+            ///\name Repository method implementations
+            ///\{
 
             tr1::shared_ptr<const CategoryNamePartSet> category_names()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -66,13 +83,26 @@ namespace paludis
             tr1::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            ///\}
+
+            /**
+             * Parse the contents file for a given ID, using the provided callbacks.
+             */
             void parse_contents(const PackageID &,
                     const tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
                     const tr1::function<void (const FSEntry &)> & on_dir,
                     const tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
                     ) const;
 
+            /**
+             * Index a newly added QualifiedPackageName, using the provided data directory
+             * name part.
+             */
             void index(const QualifiedPackageName &, const std::string &) const;
+
+            /**
+             * Deindex a QualifiedPackageName that no longer has any versions installed.
+             */
             void deindex(const QualifiedPackageName &) const;
     };
 }

@@ -27,6 +27,12 @@ namespace paludis
 {
 #include <paludis/ndbam_merger-sr.hh>
 
+    /**
+     * Merger subclass for NDBAM.
+     *
+     * \ingroup g_ndbam
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE NDBAMMerger :
         public Merger,
         private PrivateImplementationPattern<NDBAMMerger>

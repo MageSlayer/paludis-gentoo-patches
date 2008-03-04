@@ -137,6 +137,45 @@ namespace paludis
                 }
         };
 
+        /**
+         * A KeyedClass is used to avoid huge amounts of boilerplate code for classes that merely
+         * contain a few member variables. It provides type safe, compile-time checked constructors
+         * using arbitrarily ordered named arguments that ensures that all members are initialised
+         * exactly once.
+         *
+         * A typical KeyedClass is constructed like this:
+         *
+         * \code
+         *    MyKeyedClass foo(MyKeyedClass::named_create()
+         *        (k::first_param(), "first")
+         *        (k::second_param(), second())
+         *        (k::third_param(), 3)
+         *        );
+         * \endcode
+         *
+         * Member access is:
+         *
+         * \code
+         *    std::cout << foo[k::first_param()];
+         *    foo[k::second_param()] = another_value();
+         * \endcode
+         *
+         * A KeyedClass can be declared through a typedef, or through subclassing if additional
+         * functionality is required:
+         *
+         * \code
+         *    typedef kc::KeyedClass<
+         *        kc::Field<k::first_param, std::string>,
+         *        kc::Field<k::second_param, std::string>,
+         *        kc::Field<k::third_param, int>
+         *            > MyKeyedClass;
+         * \endcode
+         *
+         * All keys are in the paludis::k:: namespace.
+         *
+         * \since 0.26
+         * \ingroup g_data_structures
+         */
         template <
             typename T1_,
             typename T2_,
@@ -181,8 +220,17 @@ namespace paludis
                 public Part<T20_>
         {
             public:
+                /**
+                 * Convenience access to our own type.
+                 */
                 typedef KeyedClass BaseType;
 
+                ///\name Basic operations
+                ///\{
+
+                /**
+                 * Constructor, using ordered literal parameters.
+                 */
                 KeyedClass
                 (
                         const typename T1_::ConstructorType & v1 = typename T1_::DefaultConstructorValueType(),
@@ -229,6 +277,9 @@ namespace paludis
                 {
                 }
 
+                /**
+                 * Copy constructor.
+                 */
                 KeyedClass(const KeyedClass & other) :
                     Part<T1_>(other),
                     Part<T2_>(other),
@@ -274,6 +325,12 @@ namespace paludis
                 using Part<T19_>::operator[];
                 using Part<T20_>::operator[];
 
+                /**
+                 * Named arguments class helper for KeyedClass.
+                 *
+                 * \ingroup g_data_structures
+                 * \since 0.26
+                 */
                 template <
                     bool b1_,
                     bool b2_,
@@ -298,6 +355,9 @@ namespace paludis
                     >
                 struct Named
                 {
+                    ///\name Members
+                    ///\{
+
                     NamedField<b1_, T1_> v1;
                     NamedField<b2_, T2_> v2;
                     NamedField<b3_, T3_> v3;
@@ -319,10 +379,18 @@ namespace paludis
                     NamedField<b19_, T19_> v19;
                     NamedField<b20_, T20_> v20;
 
+                    ///\}
+
+                    /**
+                     * Empty constructor.
+                     */
                     Named()
                     {
                     }
 
+                    /**
+                     * Copy constructor.
+                     */
                     Named(
                             NamedField<b1_, T1_> p1,
                             NamedField<b2_, T2_> p2,
@@ -368,6 +436,11 @@ namespace paludis
                     {
                     }
 
+                    /**
+                     * Set a member.
+                     *
+                     * The member must not have already been set.
+                     */
                     template <typename K_, typename V_>
                     Named<
                         tr1::is_same<K_, typename T1_::NamedFirstParamType>::value ? (true && ! b1_) : b1_,
@@ -441,6 +514,9 @@ namespace paludis
                     }
                 };
 
+                /**
+                 * Create an empty set of named arguments.
+                 */
                 static Named<
                     false, false, false, false, false,
                     false, false, false, false, false,
@@ -454,6 +530,9 @@ namespace paludis
                         false, false, false, false, false>();
                 }
 
+                /**
+                 * Create using a fully constructed set of named arguments.
+                 */
                 template <
                     bool b1_,
                     bool b2_,
@@ -502,6 +581,8 @@ namespace paludis
                     Part<T20_>(named.v20)
                 {
                 }
+
+                ///\}
         };
 
     }

@@ -41,6 +41,12 @@ namespace paludis
             NDBAMUnmergerError(const std::string &) throw ();
     };
 
+    /**
+     * Unmerger implementation for NDBAM.
+     *
+     * \ingroup g_ndbam
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE NDBAMUnmerger :
         public Unmerger,
         private PrivateImplementationPattern<NDBAMUnmerger>
@@ -68,8 +74,13 @@ namespace paludis
             bool check_misc(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             NDBAMUnmerger(const NDBAMUnmergerOptions &);
             ~NDBAMUnmerger();
+
+            ///\}
 
             virtual Hook extend_hook(const Hook &) const;
     };

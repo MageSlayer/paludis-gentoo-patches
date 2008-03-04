@@ -177,6 +177,14 @@ namespace paludis
             const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
     };
 
+    /**
+     * A PackageID in a FakeRepository or a FakeInstalledRepository.
+     *
+     * Various keys can be modified.
+     *
+     * \ingroup g_fake_repository
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
         private PrivateImplementationPattern<FakePackageID>,
@@ -190,10 +198,15 @@ namespace paludis
             virtual void need_masks_added() const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FakePackageID(const Environment * const e,
                     const tr1::shared_ptr<const FakeRepositoryBase> &,
                     const QualifiedPackageName &, const VersionSpec &, const std::string & eapi);
             ~FakePackageID();
+
+            ///\}
 
             virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
 
@@ -229,6 +242,9 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
             const tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();
 
+            ///\name Modifiable keys
+            ///\{
+
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
@@ -237,9 +253,11 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
 
-            char use_expand_separator() const;
-
             void set_slot(const SlotName &);
+
+            ///\}
+
+            char use_expand_separator() const;
 
             virtual bool arbitrary_less_than_comparison(const PackageID &) const;
             virtual std::size_t extra_hash_value() const;
