@@ -4,11 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-TRUNK:
+0.26.0_alpha10:
     * rsync based syncers (rsync://, file://, tar+http:// and tar+ftp://) now
       support --exclude in sync_options, as well as --exclude-from.
 
     * Set names are now supported in package_mask.conf and package_unmask.conf.
+
+    * Experimental new Exndbam repository, which can replace VDB on systems that
+      don't use Gentoo trees.
+
+    * In various places we now sort by i-node rather than filename when doing
+      directory recursion. This gives substantial i/o improvements.
 
 0.26.0_alpha9:
     * Recent Portage unpacks lzma files, in violation of PMS and without any way
