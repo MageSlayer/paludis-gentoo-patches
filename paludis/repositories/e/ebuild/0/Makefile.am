@@ -19,7 +19,7 @@ libexecprog0_SCRIPTS = \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
 	builtin_tidyuprm.bash \
-	builtin_tidyupmisc.bash 
+	builtin_tidyupmisc.bash \
 	builtin_variable.bash \
 	conditional_functions.bash \
 	eclass_functions.bash \
