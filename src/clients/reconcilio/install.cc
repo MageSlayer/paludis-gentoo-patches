@@ -104,13 +104,17 @@ namespace
 
             virtual std::string make_resume_command(const bool undo_failures) const
             {
+                std::string serialisation(serialise(undo_failures));
+                if (serialisation.empty())
+                    return "";
+
                 std::string resume_command = environment()->paludis_command() + " --install";
 
                 resume_command.append(CommandLine::get_instance()->install_args.resume_command_fragment(*this));
                 resume_command.append(CommandLine::get_instance()->dl_args.resume_command_fragment(*this));
                 resume_command.append(" --serialised " + serialised_format());
                 resume_command.append(" ");
-                resume_command.append(serialise(undo_failures));
+                resume_command.append(serialisation);
 
                 return resume_command;
             }

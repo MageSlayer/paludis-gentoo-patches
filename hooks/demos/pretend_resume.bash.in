@@ -11,7 +11,7 @@
 #
 # You should ensure that it has execute permissions.
 
-[[ ${RESUME_COMMAND} = *" '="* ]] || exit 0
+[[ -n ${RESUME_COMMAND} ]] || exit 0
 ${DEPLIST_HAS_ERRORS} && exit 0
 echo
 
