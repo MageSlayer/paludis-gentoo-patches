@@ -1055,5 +1055,62 @@ DEPENDENCIES="cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 p
 END
 cd ..
 
+mkdir -p repo18/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo18/category/package || exit 1
+cd repo18 || exit 1
+echo test-repo-18 >> profiles/repo_name || exit 1
+echo category >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults || exit 1
+ARCH=test
+END
+cat <<END > profiles/package.mask || exit 1
+=category/package-1
+=category/package-2
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-2.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-3.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-4.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cd ..
+
+mkdir -p repo19/profiles || exit 1
+mkdir -p repo19/category/package || exit 1
+cd repo19 || exit 1
+echo test-repo-19 >> profiles/repo_name || exit 1
+cat <<END > profiles/package.mask || exit 1
+-category/package
+-=category/package-2
+=category/package-3
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-2.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-3.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cat <<END > category/package/package-4.ebuild || exit 1
+SLOT="0"
+KEYWORDS="test"
+END
+cd ..
+
 cd ..
 

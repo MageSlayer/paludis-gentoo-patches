@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_mask_file.hh>
+#include <paludis/repositories/e/e_repository_profile_file.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/e_repository_sets.hh>
@@ -555,38 +556,35 @@ ERepository::repository_masked(const PackageID & id) const
     {
         Context context("When querying repository mask for '" + stringify(id) + "':");
 
-        tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
-        for (FSEntrySequence::ConstIterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
-                p != p_end ; ++p)
-        {
-            Context context_local("When reading '" + stringify(*p) + "':");
+        using namespace tr1::placeholders;
 
-            if (p->exists())
+        tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
+        erepository::ProfileFile<erepository::MaskFile> repository_mask_file;
+        std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
+                      tr1::bind(&erepository::ProfileFile<erepository::MaskFile>::add_file, tr1::ref(repository_mask_file), _1));
+
+        for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator
+                 line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
+                line != line_end ; ++line)
+        {
+            try
             {
-                erepository::MaskFile ff(*p, LineConfigFileOptions());
-                for (erepository::MaskFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
-                        line != line_end ; ++line)
-                {
-                    try
-                    {
-                        tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
-                                        line->first,
-                                        *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi),
-                                        tr1::shared_ptr<const PackageID>())));
-                        if (a->package_ptr())
-                            _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
-                        else
-                            Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                                    + stringify(line->first) + "' failed because specification does not restrict to a "
-                                    "unique package");
-                    }
-                    catch (const Exception & e)
-                    {
-                        Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                                + stringify(line->first) + "' failed due to exception '" + e.message() + "' ("
-                                + e.what() + ")");
-                    }
-                }
+                tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
+                                line->first,
+                                *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi),
+                                tr1::shared_ptr<const PackageID>())));
+                if (a->package_ptr())
+                    _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
+                            + stringify(line->first) + "' failed because specification does not restrict to a "
+                            "unique package");
+            }
+            catch (const Exception & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
+                        + stringify(line->first) + "' failed due to exception '" + e.message() + "' ("
+                        + e.what() + ")");
             }
         }
 

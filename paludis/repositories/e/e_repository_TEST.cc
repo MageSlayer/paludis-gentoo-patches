@@ -724,6 +724,57 @@ namespace test_cases
     } test_e_repository_query_use;
 
     /**
+     * \test Test ERepository repository masks.
+     *
+     */
+    struct ERepositoryRepositoryMasksTest : TestCase
+    {
+        ERepositoryRepositoryMasksTest() : TestCase("repository masks") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+
+            tr1::shared_ptr<Map<std::string, std::string> > keys18(
+                    new Map<std::string, std::string>);
+            keys18->insert("format", "ebuild");
+            keys18->insert("names_cache", "/var/empty");
+            keys18->insert("location", "e_repository_TEST_dir/repo18");
+            keys18->insert("profiles", "e_repository_TEST_dir/repo18/profiles/profile");
+            tr1::shared_ptr<ERepository> repo18(make_ebuild_repository(&env, keys18));
+            env.package_database()->add_repository(1, repo18);
+
+            tr1::shared_ptr<Map<std::string, std::string> > keys19(
+                    new Map<std::string, std::string>);
+            keys19->insert("format", "ebuild");
+            keys19->insert("names_cache", "/var/empty");
+            keys19->insert("location", "e_repository_TEST_dir/repo19");
+            keys19->insert("master_repository", "test-repo-18");
+            tr1::shared_ptr<ERepository> repo19(make_ebuild_repository(&env, keys19));
+            env.package_database()->add_repository(1, repo19);
+
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-18",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-18",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-18",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-18",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-19",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-19",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-19",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-19",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin())->masked());
+        }
+    } test_e_repository_repository_masks;
+
+    /**
      * \test Test ERepository query_profile_masks functions.
      *
      */
