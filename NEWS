@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * paludis --owner now shows matching files when --full-match is not
+      specified.
+
 0.26.0_alpha10:
     * rsync based syncers (rsync://, file://, tar+http:// and tar+ftp://) now
       support --exclude in sync_options, as well as --exclude-from.

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/paludis.hh>
 #include <iostream>
 #include <algorithm>
+#include <set>
 
 using namespace paludis;
 using std::cout;
@@ -36,12 +37,11 @@ namespace
     struct ContentsFinder :
         ConstVisitor<ContentsVisitorTypes>
     {
-        bool found;
+        std::set<std::string> matches;
         const std::string query;
         const bool full;
 
         ContentsFinder(const std::string & q, bool f) :
-            found(false),
             query(q),
             full(f)
         {
@@ -50,9 +50,15 @@ namespace
         void handle(const std::string & e)
         {
             if (full)
-                found |= (e == query);
+            {
+                if (e == query)
+                    matches.insert(e);
+            }
             else
-                found |= (std::string::npos != e.find(query));
+            {
+                if (std::string::npos != e.find(query))
+                    matches.insert(e);
+            }
         }
 
         void visit(const ContentsFileEntry & e)
@@ -119,9 +125,16 @@ do_one_owner(
                     tr1::shared_ptr<const Contents> contents((*v)->contents_key()->value());
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
-                    if (d.found)
+                    if (! d.matches.empty())
                     {
                         cout << "    " << **v << endl;
+                        if (! CommandLine::get_instance()->a_full_match.specified())
+                        {
+                            for (std::set<std::string>::const_iterator f(d.matches.begin()), f_end(d.matches.end()) ;
+                                    f != f_end ; ++f)
+                                cout << "        " << *f << endl;
+                        }
+
                         found_owner=true;
                     }
                 }
