@@ -31,6 +31,7 @@
 #include <paludis/util/stringify.hh>
 
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
@@ -104,11 +105,11 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
             targets->push_back(stringify(make_package_dep_spec()
                         .package((*pkg_it)->name())
                         .version_requirement(VersionRequirement(vo_equal, (*pkg_it)->version()))
-                        .slot((*pkg_it)->slot())));
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
         else
             targets->push_back(stringify(make_package_dep_spec()
                         .package((*pkg_it)->name())
-                        .slot((*pkg_it)->slot())));
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
     }
 
     tr1::shared_ptr<const PackageID> orphans;

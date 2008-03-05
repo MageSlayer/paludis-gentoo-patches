@@ -55,9 +55,9 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assertEqual(str(self.bds.blocked_spec), ">=foo/bar-1:100::testrepo")
         self.assertEqual(str(self.nds), "system")
 
-    def test_04_slot(self):
-        self.get_depspecs()
-        self.assertEqual(str(self.pds.slot), "100")
+###    def test_04_slot(self):
+###        self.get_depspecs()
+###        self.assertEqual(str(self.pds.slot), "100")
 
     def test_05_package(self):
         self.get_depspecs()

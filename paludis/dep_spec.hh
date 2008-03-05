@@ -36,6 +36,7 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/slot_requirement-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -319,7 +320,7 @@ namespace paludis
             /**
              * Set our slot requirements, return ourself.
              */
-            PartiallyMadePackageDepSpec & slot(const SlotName &);
+            PartiallyMadePackageDepSpec & slot_requirement(const tr1::shared_ptr<const SlotRequirement> &);
 
             /**
              * Set our repository requirements, return ourself.
@@ -439,9 +440,9 @@ namespace paludis
             VersionRequirementsMode version_requirements_mode() const;
 
             /**
-             * Fetch the slot name (may be a zero pointer).
+             * Fetch the slot requirement (may be a zero pointer).
              */
-            tr1::shared_ptr<const SlotName> slot_ptr() const;
+            tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
              * Fetch the repo name (may be a zero pointer).
@@ -520,7 +521,7 @@ namespace paludis
             /**
              * Fetch the slot name (may be a zero pointer).
              */
-            virtual tr1::shared_ptr<const SlotName> slot_ptr() const = 0;
+            virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
 
             /**
              * Fetch the repo name (may be a zero pointer).

@@ -86,10 +86,10 @@ module Paludis
             assert_equal "*/bar", pdb.text
         end
 
-        def test_slot
-            assert_equal "100", pda.slot
-            assert_nil pdb.slot
-        end
+###        def test_slot
+###            assert_equal "100", pda.slot
+###            assert_nil pdb.slot
+###        end
 
         def test_package
             assert_equal QualifiedPackageName.new("foo/bar"), pda.package

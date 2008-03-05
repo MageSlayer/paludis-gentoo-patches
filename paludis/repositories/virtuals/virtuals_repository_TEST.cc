@@ -32,6 +32,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/query.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace test;
 using namespace paludis;

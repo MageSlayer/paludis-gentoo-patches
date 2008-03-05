@@ -19,6 +19,7 @@
 
 #include <paludis/install_task.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
@@ -38,6 +39,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/destringify.hh>
@@ -461,7 +463,7 @@ InstallTask::_add_package_id(const tr1::shared_ptr<const PackageID> & target)
     tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                 .package(target->name())
                 .version_requirement(VersionRequirement(vo_equal, target->version()))
-                .slot(target->slot())
+                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
                 .repository(target->repository()->name())));
 
     spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
@@ -737,7 +739,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         collision_list = _imp->env->package_database()->query(
                 query::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
-                    .slot(dep->package_id->slot())
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
                     .repository(dep->destination->name())) &
                 query::SupportsAction<UninstallAction>(),
                 qo_order_by_version);
@@ -1209,8 +1211,8 @@ namespace
 
         void visit_leaf(const PackageDepSpec & a)
         {
-            if (a.slot_ptr())
-                task->on_update_world_skip(a, ":slot restrictions");
+            if (a.slot_requirement_ptr())
+                task->on_update_world_skip(a, "slot restrictions");
             else if (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())
                 task->on_update_world_skip(a, "version restrictions");
             else

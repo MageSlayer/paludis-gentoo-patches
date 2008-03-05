@@ -26,7 +26,6 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/formatter-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/options-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
@@ -88,24 +87,6 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     typedef Sequence<tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
-
-#include <paludis/dep_spec-se.hh>
-
-    /**
-     * Options for parse_user_package_dep_spec.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef Options<UserPackageDepSpecOption> UserPackageDepSpecOptions;
-
-    /**
-     * Create a PackageDepSpec from user input.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    PackageDepSpec parse_user_package_dep_spec(const std::string &, const UserPackageDepSpecOptions &) PALUDIS_VISIBLE;
 
     /**
      * Create a PackageDepSpec from various rules.

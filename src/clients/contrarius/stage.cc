@@ -25,6 +25,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/query.hh>
+#include <paludis/user_dep_spec.hh>
 #include <string>
 #include <paludis/util/tr1_memory.hh>
 

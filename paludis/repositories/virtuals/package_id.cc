@@ -38,6 +38,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -60,7 +61,7 @@ namespace paludis
                                 make_package_dep_spec()
                                 .package(v->name())
                                 .version_requirement(VersionRequirement(vo_equal, v->version()))
-                                .slot(v->slot())
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
                                 .repository(v->repository()->name()))))
                     :
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(

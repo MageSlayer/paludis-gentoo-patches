@@ -24,11 +24,43 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/slot_requirement.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <algorithm>
 
 using namespace paludis;
+
+namespace
+{
+    struct SlotRequirementChecker :
+        ConstVisitor<SlotRequirementVisitorTypes>
+    {
+        const SlotName actual;
+        bool result;
+
+        SlotRequirementChecker(const SlotName & a) :
+            actual(a),
+            result(true)
+        {
+        }
+
+        void visit(const SlotExactRequirement & s)
+        {
+            result = (actual == s.slot());
+        }
+
+        void visit(const SlotAnyLockedRequirement &)
+        {
+            result = true;
+        }
+
+        void visit(const SlotAnyUnlockedRequirement &)
+        {
+            result = true;
+        }
+    };
+}
 
 bool
 paludis::match_package(
@@ -79,9 +111,13 @@ paludis::match_package(
         if (*spec.repository_ptr() != entry.repository()->name())
             return false;
 
-    if (spec.slot_ptr())
-        if (*spec.slot_ptr() != entry.slot())
+    if (spec.slot_requirement_ptr())
+    {
+        SlotRequirementChecker v(entry.slot());
+        spec.slot_requirement_ptr()->accept(v);
+        if (! v.result)
             return false;
+    }
 
     if (spec.additional_requirements_ptr())
     {

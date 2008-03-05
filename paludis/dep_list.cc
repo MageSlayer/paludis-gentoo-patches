@@ -26,6 +26,7 @@
 #include <paludis/handled_information.hh>
 
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/distribution.hh>
@@ -559,7 +560,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                             query::SupportsAction<InstalledAction>() &
                             query::Matches(make_package_dep_spec()
                                 .package(best_visible_candidate->name())
-                                .slot(best_visible_candidate->slot())),
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot())))
+                                ),
                             qo_order_by_version));
 
                 if (are_we_downgrading->empty())
@@ -809,7 +811,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
+        if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
                     || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                 && d->_imp->current_package_id())
         {
@@ -850,7 +852,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
+        if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
                     || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                 && d->_imp->current_package_id())
         {
@@ -875,7 +877,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
-            if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
+            if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
                         || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->repository_ptr())
                     && d->_imp->current_package_id())
             {

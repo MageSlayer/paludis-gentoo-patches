@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/package_dep_spec.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/util/config_file.hh>
@@ -31,6 +32,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -42,6 +44,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <algorithm>
 #include <list>
@@ -291,7 +294,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 _imp->environment->package_database()->query(
                                     query::Matches(make_package_dep_spec()
                                         .package(glsa_pkg->name())
-                                        .slot((*c)->slot())) &
+                                        .slot_requirement(make_shared_ptr(new erepository::ESlotExactRequirement((*c)->slot(), false)))) &
                                     query::SupportsAction<InstallAction>() &
                                     query::NotMasked(),
                                     qo_order_by_version));

@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -31,8 +32,9 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-PackageDepSpec
-paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
+PartiallyMadePackageDepSpec
+paludis::erepository::partial_parse_e_package_dep_spec(
+        const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
 {
     Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi[k::name()]) + "':");
 
@@ -229,15 +231,47 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
     std::string::size_type slot_p;
     if (std::string::npos != ((slot_p = s.rfind(':'))))
     {
-        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_deps])
-        {
-            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                throw PackageDepSpecError("Slot dependencies not safe for use with this EAPI");
-            else
-                Log::get_instance()->message(ll_warning, lc_context, "Slot dependencies not safe for use with this EAPI");
-        }
+        std::string match(s.substr(slot_p + 1));
+        if (match.empty())
+            throw PackageDepSpecError("Empty slot dependency specified");
 
-        result.slot(SlotName(s.substr(slot_p + 1)));
+        if ("*" == match)
+        {
+            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_star_deps])
+            {
+                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
+                    throw PackageDepSpecError("Slot '*' dependencies not safe for use with this EAPI");
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Slot '*' dependencies not safe for use with this EAPI");
+            }
+            result.slot_requirement(make_shared_ptr(new ESlotAnyUnlockedRequirement));
+        }
+        else if ('=' == match.at(0))
+        {
+            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_equal_deps])
+            {
+                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
+                    throw PackageDepSpecError("Slot '=' dependencies not safe for use with this EAPI");
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Slot '=' dependencies not safe for use with this EAPI");
+            }
+
+            if (1 == match.length())
+                result.slot_requirement(make_shared_ptr(new ESlotAnyLockedRequirement));
+            else
+                result.slot_requirement(make_shared_ptr(new ESlotExactRequirement(SlotName(s.substr(slot_p + 2)), true)));
+        }
+        else
+        {
+            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_deps])
+            {
+                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
+                    throw PackageDepSpecError("Slot dependencies not safe for use with this EAPI");
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Slot dependencies not safe for use with this EAPI");
+            }
+            result.slot_requirement(make_shared_ptr(new ESlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
+        }
         s.erase(slot_p);
     }
 
@@ -350,5 +384,41 @@ paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAP
     }
 
     return result;
+}
+
+PackageDepSpec
+paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
+{
+    return partial_parse_e_package_dep_spec(ss, eapi, id);
+}
+
+ESlotExactRequirement::ESlotExactRequirement(const SlotName & s, const bool e) :
+    _s(s),
+    _e(e)
+{
+}
+
+const std::string
+ESlotExactRequirement::as_string() const
+{
+    return ":" + std::string(_e ? "=" : "") + stringify(_s);
+}
+
+const SlotName
+ESlotExactRequirement::slot() const
+{
+    return _s;
+}
+
+const std::string
+ESlotAnyUnlockedRequirement::as_string() const
+{
+    return ":*";
+}
+
+const std::string
+ESlotAnyLockedRequirement::as_string() const
+{
+    return ":=";
 }
 

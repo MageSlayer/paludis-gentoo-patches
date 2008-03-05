@@ -28,6 +28,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
+#include <paludis/user_dep_spec.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <fstream>

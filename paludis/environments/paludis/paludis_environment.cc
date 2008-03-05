@@ -35,6 +35,7 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>

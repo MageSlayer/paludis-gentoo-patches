@@ -234,6 +234,7 @@ ebuild_scrub_environment()
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
         unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
+        unset -f paludis_rewrite_var
 
         if [[ "${2}" == "--pivot" ]] ; then
             unset -f ${PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS}

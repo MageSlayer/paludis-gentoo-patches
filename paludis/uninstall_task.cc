@@ -17,12 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "uninstall_task.hh"
+#include <paludis/uninstall_task.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/tasks_exceptions.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -436,7 +437,7 @@ namespace
 
         void visit_leaf(const PackageDepSpec & a)
         {
-            if (! (a.slot_ptr() || (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
+            if (! (a.slot_requirement_ptr() || (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
             {
                 for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                         r_end(env->package_database()->end_repositories()) ;

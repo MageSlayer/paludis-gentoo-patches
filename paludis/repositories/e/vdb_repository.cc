@@ -31,6 +31,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_tag.hh>

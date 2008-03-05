@@ -43,6 +43,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/user_dep_spec.hh>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/mutex.hh>

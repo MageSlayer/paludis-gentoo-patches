@@ -37,6 +37,7 @@
 #include <paludis/mask.hh>
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/query.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <set>
 #include <map>

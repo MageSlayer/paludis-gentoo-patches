@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
+#include <paludis/user_dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
@@ -61,6 +62,7 @@ namespace test_cases
             tr1::shared_ptr<PackageIDSequence> targets;
             std::list<std::string> expected;
             bool done_populate;
+            bool unused_target;
 
             /**
              * Constructor.
@@ -71,7 +73,8 @@ namespace test_cases
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
                 virtuals_repo(new VirtualsRepository(&env)),
                 targets(new PackageIDSequence),
-                done_populate(false)
+                done_populate(false),
+                unused_target(false)
             {
                 env.package_database()->add_repository(2, installed_repo);
                 env.package_database()->add_repository(1, virtuals_repo);
@@ -96,6 +99,11 @@ namespace test_cases
                             RepositoryName("installed")));
             }
 
+            void add_unused_target()
+            {
+                unused_target = true;
+            }
+
             /**
              * Populate our expected member.
              */
@@ -108,18 +116,21 @@ namespace test_cases
             {
                 TEST_CHECK(true);
                 UninstallList d(&env, options());
-                for (PackageIDSequence::ConstIterator i(targets->begin()),
-                        i_end(targets->end()) ; i != i_end ; ++i)
-                    d.add(*i);
+                if (unused_target)
+                    d.add_unused();
+                else
+                    for (PackageIDSequence::ConstIterator i(targets->begin()),
+                            i_end(targets->end()) ; i != i_end ; ++i)
+                        d.add(*i);
                 TEST_CHECK(true);
 
-                unsigned n(0);
+                TestMessageSuffix s("got={ " + join(d.begin(), d.end(), ", ") + " }", false);
+                TestMessageSuffix s2("expected={ " + join(expected.begin(), expected.end(), ", ") + " }", false);
+
                 std::list<std::string>::const_iterator exp(expected.begin());
                 UninstallList::ConstIterator got(d.begin());
                 while (true)
                 {
-                    TestMessageSuffix s(stringify(n++), true);
-
                     TEST_CHECK((exp == expected.end()) == (got == d.end()));
                     if (got == d.end())
                         break;
@@ -409,6 +420,70 @@ namespace test_cases
                 .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_world_target_test;
+
+    struct UninstallListWithSlotsTest :
+        UninstallListTestCaseBase
+    {
+        UninstallListWithSlotsTest() :
+            UninstallListTestCaseBase("with slots")
+        {
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > world(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("cat/needs-a", UserPackageDepSpecOptions()))))));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("cat/needs-b", UserPackageDepSpecOptions()))))));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("cat/needs-c", UserPackageDepSpecOptions()))))));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                    parse_user_package_dep_spec("cat/needs-d", UserPackageDepSpecOptions()))))));
+            installed_repo->add_package_set(SetName("world"), world);
+        }
+
+        void populate_targets()
+        {
+            add_unused_target();
+        }
+
+        void populate_repo()
+        {
+            installed_repo->add_version("cat", "needs-a", "1")->run_dependencies_key()->set_from_string("cat/a:1");
+            installed_repo->add_version("cat", "needs-b", "1")->run_dependencies_key()->set_from_string("cat/b:2");
+            installed_repo->add_version("cat", "needs-c", "1")->run_dependencies_key()->set_from_string("cat/c");
+            installed_repo->add_version("cat", "needs-d", "1")->run_dependencies_key()->set_from_string("cat/d:*");
+
+            installed_repo->add_version("cat", "a", "1")->set_slot(SlotName("1"));
+            installed_repo->add_version("cat", "a", "2")->set_slot(SlotName("2"));
+
+            installed_repo->add_version("cat", "b", "1")->set_slot(SlotName("1"));
+            installed_repo->add_version("cat", "b", "2")->set_slot(SlotName("2"));
+
+            installed_repo->add_version("cat", "c", "1")->set_slot(SlotName("1"));
+            installed_repo->add_version("cat", "c", "2")->set_slot(SlotName("2"));
+
+            installed_repo->add_version("cat", "d", "1")->set_slot(SlotName("1"));
+            installed_repo->add_version("cat", "d", "2")->set_slot(SlotName("2"));
+        }
+
+        void populate_expected()
+        {
+            expected.push_back("cat/a-2:2::installed");
+            expected.push_back("cat/b-1:1::installed");
+            expected.push_back("cat/d-1:1::installed");
+        }
+
+        UninstallListOptions options()
+        {
+            return UninstallListOptions::create()
+                .with_unused_dependencies(false)
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
+        }
+    } uninstall_list_slots_test;
 }
 
 

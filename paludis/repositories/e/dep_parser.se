@@ -8,6 +8,8 @@ make_enum_PackageDepSpecParseOption()
     namespace paludis::erepository
 
     key pdspo_allow_slot_deps            "Allow :slot deps"
+    key pdspo_allow_slot_star_deps       "Allow :* slot deps"
+    key pdspo_allow_slot_equal_deps      "Allow := and :=blah slot deps"
     key pdspo_allow_repository_deps      "Allow ::repo deps"
     key pdspo_allow_square_bracket_deps  "Allow [use] and [opver] deps"
     key pdspo_allow_tilde_greater_deps   "Allow ~> deps"

@@ -20,6 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -665,6 +666,7 @@ namespace
         return rb_str_new2(stringify(*tr1::static_pointer_cast<const WrappedSpec<T_> >(*ptr)->spec()).c_str());
     }
 
+#if 0
     /*
      * call-seq:
      *     slot -> String or Nil
@@ -680,6 +682,7 @@ namespace
             return Qnil;
         return rb_str_new2(stringify((*tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())).c_str());
     }
+#endif
 
     /*
      * call-seq:
@@ -1045,7 +1048,9 @@ namespace
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_package_dep_spec, "slot", RUBY_FUNC_CAST(&package_dep_spec_slot_ptr), 0);
+#endif
         rb_define_method(c_package_dep_spec, "repository", RUBY_FUNC_CAST(&package_dep_spec_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);

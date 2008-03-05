@@ -39,6 +39,7 @@
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/user_dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

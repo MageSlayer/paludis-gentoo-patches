@@ -28,6 +28,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/query.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <list>

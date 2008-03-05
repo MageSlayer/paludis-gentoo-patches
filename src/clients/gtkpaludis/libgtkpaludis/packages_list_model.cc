@@ -9,6 +9,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -139,7 +140,7 @@ namespace
                     query::Matches(pds) &
                     query::Matches(make_package_dep_spec()
                         .package(id->name())
-                        .slot(id->slot())),
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))),
                     qo_order_by_version));
 
         paludis::tr1::shared_ptr<const PackageIDSequence> av(
@@ -148,7 +149,7 @@ namespace
                     query::Matches(pds) &
                     query::Matches(make_package_dep_spec()
                         .package(id->name())
-                        .slot(id->slot())) &
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) &
                     query::NotMasked(),
                     qo_order_by_version));
 
@@ -178,7 +179,7 @@ namespace
                         query::Matches(pds) &
                         query::Matches(make_package_dep_spec()
                             .package(id->name())
-                            .slot(id->slot())) &
+                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) &
                         query::SupportsAction<InstallAction>() &
                         query::NotMasked(),
                         qo_order_by_version));

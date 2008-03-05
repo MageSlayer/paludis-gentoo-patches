@@ -29,6 +29,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>

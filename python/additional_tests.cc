@@ -32,6 +32,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/options.hh>
 #include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>

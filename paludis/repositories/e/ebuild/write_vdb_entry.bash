@@ -117,7 +117,7 @@ main()
 
     local v VDB_FORMAT="paludis-2" COUNTER="$(date +%s )"
     for v in ${PALUDIS_VDB_FROM_ENV_VARIABLES} ; do
-        if ! echo "${!v}" > "${vdbdir}"/${v} ; then
+        if ! paludis_rewrite_var VDB "${v}" "${!v}" > "${vdbdir}"/${v} ; then
             echo "!!! vdb write ${v} failed"
             exit 1
         fi
@@ -125,7 +125,7 @@ main()
 
     for v in ${PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES} ; do
         [[ -z "${!v}" ]] && continue
-        if ! echo "${!v}" > "${vdbdir}"/${v} ; then
+        if ! paludis_rewrite_var VDB "${v}" "${!v}" > "${vdbdir}"/${v} ; then
             echo "!!! vdb write ${v} failed"
             exit 1
         fi

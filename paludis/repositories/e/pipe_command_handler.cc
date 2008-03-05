@@ -20,6 +20,9 @@
 #include <paludis/repositories/e/pipe_command_handler.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/package_dep_spec.hh>
+#include <paludis/repositories/e/fix_locked_dependencies.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/exception.hh>
@@ -35,6 +38,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/stringify_formatter.hh>
 #include <vector>
 
 using namespace paludis;
@@ -214,6 +218,37 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Einstalled repository location key is not a MetadataValueKey<FSEntry> ";
                 return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSEntry> >(**key)->value());
             }
+        }
+        else if (tokens[0] == "REWRITE_VAR")
+        {
+            if (tokens.size() < 4)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Got bad REWRITE_VAR pipe command";
+                return "Ebad REWRITE_VAR command";
+            }
+
+            tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+            if (! (*eapi)[k::supported()])
+                return "EREWRITE_VAR EAPI " + tokens[1] + " unsupported";
+
+            std::string var(tokens[2]);
+
+            if ((var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_build_depend) ||
+                    (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_run_depend) ||
+                    (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_pdepend) ||
+                    (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_dependencies))
+            {
+                tr1::shared_ptr<const DependencySpecTree::ConstItem> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
+                            environment, package_id, *eapi));
+                tr1::shared_ptr<const DependencySpecTree::ConstItem> after(fix_locked_dependencies(
+                            environment, *eapi, package_id, before));
+                StringifyFormatter ff;
+                DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                after->accept(p);
+                return "O0;" + stringify(p);
+            }
+
+            return "O0;" + join(tokens.begin() + 4, tokens.end(), " ");
         }
         else if (tokens[0] == "EVER")
         {

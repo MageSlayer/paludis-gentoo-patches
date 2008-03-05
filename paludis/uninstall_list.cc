@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -38,6 +39,7 @@
 #include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/slot_requirement.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -276,8 +278,13 @@ namespace
             Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
                 &conditions, ConditionTracker(conditions).add_condition(a));
 
+            bool best_only(false);
+            if (a.slot_requirement_ptr())
+                best_only = visitor_cast<const SlotAnyUnlockedRequirement>(*a.slot_requirement_ptr());
+
             tr1::shared_ptr<const PackageIDSequence> m(env->package_database()->query(
-                        query::Matches(a) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+                        query::Matches(a) & query::InstalledAtRoot(env->root()),
+                        best_only ? qo_best_version_only : qo_order_by_version));
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(DepTagEntry(tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)), 0));

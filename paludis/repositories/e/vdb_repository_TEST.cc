@@ -29,6 +29,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <test/test_framework.hh>

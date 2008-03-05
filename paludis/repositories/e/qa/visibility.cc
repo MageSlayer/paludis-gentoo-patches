@@ -127,8 +127,8 @@ namespace
                                 tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
 
                     pp.package(*v->second->package_ptr());
-                    if (orig_p.slot_ptr())
-                        pp.slot(*orig_p.slot_ptr());
+                    if (orig_p.slot_requirement_ptr())
+                        pp.slot_requirement(orig_p.slot_requirement_ptr());
                     if (orig_p.repository_ptr())
                         pp.repository(*orig_p.repository_ptr());
 

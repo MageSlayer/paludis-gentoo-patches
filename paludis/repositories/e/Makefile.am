@@ -72,6 +72,7 @@ paludis_repositories_e_include_HEADERS = \
 	exndbam_repository.hh \
 	exndbam_repository-sr.hh \
 	fetch_visitor.hh \
+	fix_locked_dependencies.hh \
 	glsa-sr.hh \
 	glsa.hh \
 	layout.hh \
@@ -125,6 +126,7 @@ libpaludiserepository_la_SOURCES = \
 	exndbam_repository.cc \
 	exheres_layout.cc \
 	fetch_visitor.cc \
+	fix_locked_dependencies.cc \
 	glsa.cc \
 	layout.cc \
 	make_ebuild_repository.cc \
@@ -302,6 +304,18 @@ source_uri_finder_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+fix_locked_dependencies_TEST_SOURCES = fix_locked_dependencies_TEST.cc
+
+fix_locked_dependencies_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 EXTRA_DIST = \
 	aa_visitor_TEST.cc \
 	dep_lexer_TEST.cc \
@@ -340,6 +354,7 @@ EXTRA_DIST = \
 	fetch_visitor_TEST.cc \
 	fetch_visitor_TEST_setup.sh \
 	fetch_visitor_TEST_cleanup.sh \
+	fix_locked_dependencies_TEST.cc \
 	manifest2_entry.sr \
 	manifest2_entry-sr.hh \
 	manifest2_entry-sr.cc \
@@ -507,7 +522,8 @@ TESTS = \
 	fetch_visitor_TEST \
 	source_uri_finder_TEST \
 	exndbam_repository_TEST \
-	vdb_repository_TEST
+	vdb_repository_TEST \
+	fix_locked_dependencies_TEST
 
 check_PROGRAMS = $(TESTS)
 

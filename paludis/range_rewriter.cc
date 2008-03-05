@@ -17,12 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "range_rewriter.hh"
+#include <paludis/range_rewriter.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <list>
 #include <sstream>
@@ -116,9 +117,9 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual tr1::shared_ptr<const SlotName> slot_ptr() const
+        virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
-            return tr1::shared_ptr<const SlotName>();
+            return tr1::shared_ptr<const SlotRequirement>();
         }
 
         virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const
@@ -146,6 +147,16 @@ namespace
             strings.push_back(stringify(spec));
             std::copy(spec.version_requirements_ptr()->begin(), spec.version_requirements_ptr()->end(),
                     version_requirements->back_inserter());
+        }
+
+        tr1::shared_ptr<const PackageDepSpecData> without_additional_requirements() const
+        {
+            return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
+        }
+
+        tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
+        {
+            return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
         }
     };
 }
@@ -206,7 +217,7 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
     if (_imp->invalid)
         return;
 
-    if (a.additional_requirements_ptr() || a.slot_ptr() || a.repository_ptr() || a.package_name_part_ptr()
+    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.repository_ptr() || a.package_name_part_ptr()
             || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr())
     {
         _imp->invalid = true;

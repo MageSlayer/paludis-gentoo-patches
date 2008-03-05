@@ -90,9 +90,9 @@ namespace
             return vr_and;
         }
 
-        virtual tr1::shared_ptr<const SlotName> slot_ptr() const
+        virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
-            return tr1::shared_ptr<const SlotName>();
+            return tr1::shared_ptr<const SlotRequirement>();
         }
 
         virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const

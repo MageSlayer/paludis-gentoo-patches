@@ -17,13 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_spec.hh"
+#include <python/dep_spec.hh>
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
 #include <python/options.hh>
 #include <python/nice_names-nn.hh>
 
 #include <paludis/dep_tag.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -108,7 +110,7 @@ namespace paludis
         tr1::shared_ptr<const PackageNamePart> package_name_part_ptr;
         tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
-        tr1::shared_ptr<const SlotName> slot;
+        tr1::shared_ptr<const SlotRequirement> slot;
         tr1::shared_ptr<const RepositoryName> repository;
         tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
         tr1::shared_ptr<const DepTag> tag;
@@ -120,7 +122,7 @@ namespace paludis
                 const tr1::shared_ptr<const PackageNamePart> & p,
                 const tr1::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
-                const tr1::shared_ptr<const SlotName> & s,
+                const tr1::shared_ptr<const SlotRequirement> & s,
                 const tr1::shared_ptr<const RepositoryName> & r,
                 const tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const tr1::shared_ptr<const DepTag> & t,
@@ -256,7 +258,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
                 deep_copy(p.package_name_part_ptr()),
                 make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
-                deep_copy(p.slot_ptr()),
+                p.slot_requirement_ptr(),
                 deep_copy(p.repository_ptr()),
                 p.additional_requirements_ptr(),
                 p.tag(),
@@ -277,7 +279,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 deep_copy(p.package_name_part_ptr()),
                 make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
-                deep_copy(p.slot_ptr()),
+                p.slot_requirement_ptr(),
                 deep_copy(p.repository_ptr()),
                 p.additional_requirements_ptr(),
                 p.tag(),
@@ -306,8 +308,8 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 
     p.version_requirements_mode(version_requirements_mode());
 
-    if (slot_ptr())
-        p.slot(*slot_ptr());
+    if (slot_requirement_ptr())
+        p.slot_requirement(slot_requirement_ptr());
 
     if (repository_ptr())
         p.repository(*repository_ptr());
@@ -385,8 +387,8 @@ PythonPackageDepSpec::set_version_requirements_mode(const VersionRequirementsMod
     _imp->version_requirements_mode = m;
 }
 
-tr1::shared_ptr<const SlotName>
-PythonPackageDepSpec::slot_ptr() const
+tr1::shared_ptr<const SlotRequirement>
+PythonPackageDepSpec::slot_requirement_ptr() const
 {
     return _imp->slot;
 }
@@ -1219,10 +1221,12 @@ void expose_dep_spec()
                 "Version requirements mode."
                 )
 
+#if 0
         .add_property("slot", &PythonPackageDepSpec::slot_ptr,
                 "[ro] SlotName\n"
                 "Slot name (may be None)."
                 )
+#endif
 
         .add_property("repository", &PythonPackageDepSpec::repository_ptr,
                 "[ro] RepositoryName\n"

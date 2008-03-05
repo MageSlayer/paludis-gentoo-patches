@@ -26,7 +26,9 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_id.hh>
+#include <paludis/user_dep_spec.hh>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -138,7 +140,7 @@ namespace
             {
                 if (! env.package_database()->query(query::Matches(make_package_dep_spec()
                                 .package(b->first.name)
-                                .slot(b->first.slot)),
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot)))),
                             qo_whatever)->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));

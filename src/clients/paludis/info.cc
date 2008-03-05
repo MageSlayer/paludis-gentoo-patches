@@ -22,6 +22,7 @@
 #include "src/output/colour.hh"
 #include "src/output/colour_formatter.hh"
 #include <paludis/about.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>

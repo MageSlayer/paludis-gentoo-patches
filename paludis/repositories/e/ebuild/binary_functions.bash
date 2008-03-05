@@ -65,7 +65,7 @@ make_binary_ebuild()
     local p
     for p in ${PALUDIS_BINARY_FROM_ENV_VARIABLES} ; do
         set -o noglob
-        local k=${!p}
+        local k=$(paludis_rewrite_var BINARY "${p}" "${!p}" )
         k=${k//\\/\\\\}
         k=${k//\"/\\\"}
         # {"} fix vim syntax highlighting

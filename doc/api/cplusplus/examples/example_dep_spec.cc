@@ -98,8 +98,8 @@ int main(int argc, char * argv[])
                 cout << endl;
             }
 
-            if (spec.slot_ptr())
-                cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_ptr() << endl;
+            if (spec.slot_requirement_ptr())
+                cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
 
             if (spec.repository_ptr())
                 cout << "    " << left << setw(24) << "Repository:" << " " << *spec.repository_ptr() << endl;

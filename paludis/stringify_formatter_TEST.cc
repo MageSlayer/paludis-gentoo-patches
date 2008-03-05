@@ -23,6 +23,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
+#include <paludis/user_dep_spec.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/clone-impl.hh>

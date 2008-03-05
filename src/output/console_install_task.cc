@@ -37,6 +37,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -46,6 +47,7 @@
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
 #include <paludis/fuzzy_finder.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <algorithm>
 #include <set>
@@ -360,8 +362,14 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
             query(query::Matches(repo ?
-                    make_package_dep_spec().package(d.package_id->name()).slot(d.package_id->slot()).repository(*repo) :
-                    make_package_dep_spec().package(d.package_id->name()).slot(d.package_id->slot())),
+                    make_package_dep_spec()
+                        .package(d.package_id->name())
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
+                        .repository(*repo) :
+                    make_package_dep_spec()
+                        .package(d.package_id->name())
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
+                        ),
                 qo_order_by_version));
 
     display_merge_list_entry_start(d, m);
@@ -969,7 +977,7 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
         environment()->package_database()->query(
             query::Matches(make_package_dep_spec()
                            .package(d.package_id->name())
-                           .slot(d.package_id->slot())) &
+                           .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))) &
             query::InstalledAtRoot(environment()->root()),
             qo_best_version_only));
     bool changed(normal_entry == m &&
