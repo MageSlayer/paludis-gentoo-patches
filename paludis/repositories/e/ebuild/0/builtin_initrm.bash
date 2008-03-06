@@ -20,15 +20,18 @@ builtin_initrm()
 {
     local a
     for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
+        [[ "${a#build:}" != "${a}" ]] && continue
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
 
     for a in ${PALUDIS_DIRECTORY_VARIABLES} ; do
+        [[ "${a#build:}" != "${a}" ]] && continue
         [[ -d "${!a}" ]] || die "\$${a} (\"${!a}\") not a directory"
     done
 
     for a in ${PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES} ; do
+        [[ "${a#build:}" != "${a}" ]] && continue
         [[ -e "${!a}" ]] && [[ ! -d "${!a}" ]] && \
             die "\$${a} (\"${!a}\") exists but is not a directory"
     done

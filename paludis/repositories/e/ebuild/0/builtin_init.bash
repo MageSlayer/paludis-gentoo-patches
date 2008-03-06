@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,15 +20,18 @@ builtin_init()
 {
     local a
     for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
+        a=${a#build:}
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
 
     for a in ${PALUDIS_DIRECTORY_VARIABLES} ; do
+        a=${a#build:}
         [[ -d "${!a}" ]] || die "\$${a} (\"${!a}\") not a directory"
     done
 
     for a in ${PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES} ; do
+        a=${a#build:}
         [[ -e "${!a}" ]] && [[ ! -d "${!a}" ]] && \
             die "\$${a} (\"${!a}\") exists but is not a directory"
     done
