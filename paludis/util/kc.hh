@@ -137,6 +137,15 @@ namespace paludis
                 }
         };
 
+        template <bool b_>
+        struct CheckTrue;
+
+        template <>
+        struct CheckTrue<true>
+        {
+            static const bool check_true = true;
+        };
+
         /**
          * A KeyedClass is used to avoid huge amounts of boilerplate code for classes that merely
          * contain a few member variables. It provides type safe, compile-time checked constructors
@@ -443,52 +452,98 @@ namespace paludis
                      */
                     template <typename K_, typename V_>
                     Named<
-                        tr1::is_same<K_, typename T1_::NamedFirstParamType>::value ? (true && ! b1_) : b1_,
-                        tr1::is_same<K_, typename T2_::NamedFirstParamType>::value ? (true && ! b2_) : b2_,
-                        tr1::is_same<K_, typename T3_::NamedFirstParamType>::value ? (true && ! b3_) : b3_,
-                        tr1::is_same<K_, typename T4_::NamedFirstParamType>::value ? (true && ! b4_) : b4_,
-                        tr1::is_same<K_, typename T5_::NamedFirstParamType>::value ? (true && ! b5_) : b5_,
-                        tr1::is_same<K_, typename T6_::NamedFirstParamType>::value ? (true && ! b6_) : b6_,
-                        tr1::is_same<K_, typename T7_::NamedFirstParamType>::value ? (true && ! b7_) : b7_,
-                        tr1::is_same<K_, typename T8_::NamedFirstParamType>::value ? (true && ! b8_) : b8_,
-                        tr1::is_same<K_, typename T9_::NamedFirstParamType>::value ? (true && ! b9_) : b9_,
-                        tr1::is_same<K_, typename T10_::NamedFirstParamType>::value ? (true && ! b10_) : b10_,
-                        tr1::is_same<K_, typename T11_::NamedFirstParamType>::value ? (true && ! b11_) : b11_,
-                        tr1::is_same<K_, typename T12_::NamedFirstParamType>::value ? (true && ! b12_) : b12_,
-                        tr1::is_same<K_, typename T13_::NamedFirstParamType>::value ? (true && ! b13_) : b13_,
-                        tr1::is_same<K_, typename T14_::NamedFirstParamType>::value ? (true && ! b14_) : b14_,
-                        tr1::is_same<K_, typename T15_::NamedFirstParamType>::value ? (true && ! b15_) : b15_,
-                        tr1::is_same<K_, typename T16_::NamedFirstParamType>::value ? (true && ! b16_) : b16_,
-                        tr1::is_same<K_, typename T17_::NamedFirstParamType>::value ? (true && ! b17_) : b17_,
-                        tr1::is_same<K_, typename T18_::NamedFirstParamType>::value ? (true && ! b18_) : b18_,
-                        tr1::is_same<K_, typename T19_::NamedFirstParamType>::value ? (true && ! b19_) : b19_,
-                        tr1::is_same<K_, typename T20_::NamedFirstParamType>::value ? (true && ! b20_) : b20_
+                        tr1::is_same<K_, typename T1_::NamedFirstParamType>::value || b1_,
+                        tr1::is_same<K_, typename T2_::NamedFirstParamType>::value || b2_,
+                        tr1::is_same<K_, typename T3_::NamedFirstParamType>::value || b3_,
+                        tr1::is_same<K_, typename T4_::NamedFirstParamType>::value || b4_,
+                        tr1::is_same<K_, typename T5_::NamedFirstParamType>::value || b5_,
+                        tr1::is_same<K_, typename T6_::NamedFirstParamType>::value || b6_,
+                        tr1::is_same<K_, typename T7_::NamedFirstParamType>::value || b7_,
+                        tr1::is_same<K_, typename T8_::NamedFirstParamType>::value || b8_,
+                        tr1::is_same<K_, typename T9_::NamedFirstParamType>::value || b9_,
+                        tr1::is_same<K_, typename T10_::NamedFirstParamType>::value || b10_,
+                        tr1::is_same<K_, typename T11_::NamedFirstParamType>::value || b11_,
+                        tr1::is_same<K_, typename T12_::NamedFirstParamType>::value || b12_,
+                        tr1::is_same<K_, typename T13_::NamedFirstParamType>::value || b13_,
+                        tr1::is_same<K_, typename T14_::NamedFirstParamType>::value || b14_,
+                        tr1::is_same<K_, typename T15_::NamedFirstParamType>::value || b15_,
+                        tr1::is_same<K_, typename T16_::NamedFirstParamType>::value || b16_,
+                        tr1::is_same<K_, typename T17_::NamedFirstParamType>::value || b17_,
+                        tr1::is_same<K_, typename T18_::NamedFirstParamType>::value || b18_,
+                        tr1::is_same<K_, typename T19_::NamedFirstParamType>::value || b19_,
+                        tr1::is_same<K_, typename T20_::NamedFirstParamType>::value || b20_
                         >
                         operator() (
                                 const K_ &,
                                 const V_ & v)
                     {
+                        bool PALUDIS_ATTRIBUTE((unused)) check_key_known(CheckTrue<
+                                tr1::is_same<K_, typename T1_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T2_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T3_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T4_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T5_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T6_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T7_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T8_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T9_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T10_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T11_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T12_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T13_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T14_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T15_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T16_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T17_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T18_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T19_::NamedFirstParamType>::value ||
+                                tr1::is_same<K_, typename T20_::NamedFirstParamType>::value
+                                >::check_true);
+
+                        bool PALUDIS_ATTRIBUTE((unused)) check_key_unrepeated(CheckTrue<
+                                ((! tr1::is_same<K_, typename T1_::NamedFirstParamType>::value) || ! b1_) &&
+                                ((! tr1::is_same<K_, typename T2_::NamedFirstParamType>::value) || ! b2_) &&
+                                ((! tr1::is_same<K_, typename T3_::NamedFirstParamType>::value) || ! b3_) &&
+                                ((! tr1::is_same<K_, typename T4_::NamedFirstParamType>::value) || ! b4_) &&
+                                ((! tr1::is_same<K_, typename T5_::NamedFirstParamType>::value) || ! b5_) &&
+                                ((! tr1::is_same<K_, typename T6_::NamedFirstParamType>::value) || ! b6_) &&
+                                ((! tr1::is_same<K_, typename T7_::NamedFirstParamType>::value) || ! b7_) &&
+                                ((! tr1::is_same<K_, typename T8_::NamedFirstParamType>::value) || ! b8_) &&
+                                ((! tr1::is_same<K_, typename T9_::NamedFirstParamType>::value) || ! b9_) &&
+                                ((! tr1::is_same<K_, typename T10_::NamedFirstParamType>::value) || ! b10_) &&
+                                ((! tr1::is_same<K_, typename T11_::NamedFirstParamType>::value) || ! b11_) &&
+                                ((! tr1::is_same<K_, typename T12_::NamedFirstParamType>::value) || ! b12_) &&
+                                ((! tr1::is_same<K_, typename T13_::NamedFirstParamType>::value) || ! b13_) &&
+                                ((! tr1::is_same<K_, typename T14_::NamedFirstParamType>::value) || ! b14_) &&
+                                ((! tr1::is_same<K_, typename T15_::NamedFirstParamType>::value) || ! b15_) &&
+                                ((! tr1::is_same<K_, typename T16_::NamedFirstParamType>::value) || ! b16_) &&
+                                ((! tr1::is_same<K_, typename T17_::NamedFirstParamType>::value) || ! b17_) &&
+                                ((! tr1::is_same<K_, typename T18_::NamedFirstParamType>::value) || ! b18_) &&
+                                ((! tr1::is_same<K_, typename T19_::NamedFirstParamType>::value) || ! b19_) &&
+                                ((! tr1::is_same<K_, typename T20_::NamedFirstParamType>::value) || ! b20_)
+                                >::check_true);
+
                         return Named<
-                            tr1::is_same<K_, typename T1_::NamedFirstParamType>::value ? true : b1_,
-                            tr1::is_same<K_, typename T2_::NamedFirstParamType>::value ? true : b2_,
-                            tr1::is_same<K_, typename T3_::NamedFirstParamType>::value ? true : b3_,
-                            tr1::is_same<K_, typename T4_::NamedFirstParamType>::value ? true : b4_,
-                            tr1::is_same<K_, typename T5_::NamedFirstParamType>::value ? true : b5_,
-                            tr1::is_same<K_, typename T6_::NamedFirstParamType>::value ? true : b6_,
-                            tr1::is_same<K_, typename T7_::NamedFirstParamType>::value ? true : b7_,
-                            tr1::is_same<K_, typename T8_::NamedFirstParamType>::value ? true : b8_,
-                            tr1::is_same<K_, typename T9_::NamedFirstParamType>::value ? true : b9_,
-                            tr1::is_same<K_, typename T10_::NamedFirstParamType>::value ? true : b10_,
-                            tr1::is_same<K_, typename T11_::NamedFirstParamType>::value ? true : b11_,
-                            tr1::is_same<K_, typename T12_::NamedFirstParamType>::value ? true : b12_,
-                            tr1::is_same<K_, typename T13_::NamedFirstParamType>::value ? true : b13_,
-                            tr1::is_same<K_, typename T14_::NamedFirstParamType>::value ? true : b14_,
-                            tr1::is_same<K_, typename T15_::NamedFirstParamType>::value ? true : b15_,
-                            tr1::is_same<K_, typename T16_::NamedFirstParamType>::value ? true : b16_,
-                            tr1::is_same<K_, typename T17_::NamedFirstParamType>::value ? true : b17_,
-                            tr1::is_same<K_, typename T18_::NamedFirstParamType>::value ? true : b18_,
-                            tr1::is_same<K_, typename T19_::NamedFirstParamType>::value ? true : b19_,
-                            tr1::is_same<K_, typename T20_::NamedFirstParamType>::value ? true : b20_
+                            tr1::is_same<K_, typename T1_::NamedFirstParamType>::value || b1_,
+                            tr1::is_same<K_, typename T2_::NamedFirstParamType>::value || b2_,
+                            tr1::is_same<K_, typename T3_::NamedFirstParamType>::value || b3_,
+                            tr1::is_same<K_, typename T4_::NamedFirstParamType>::value || b4_,
+                            tr1::is_same<K_, typename T5_::NamedFirstParamType>::value || b5_,
+                            tr1::is_same<K_, typename T6_::NamedFirstParamType>::value || b6_,
+                            tr1::is_same<K_, typename T7_::NamedFirstParamType>::value || b7_,
+                            tr1::is_same<K_, typename T8_::NamedFirstParamType>::value || b8_,
+                            tr1::is_same<K_, typename T9_::NamedFirstParamType>::value || b9_,
+                            tr1::is_same<K_, typename T10_::NamedFirstParamType>::value || b10_,
+                            tr1::is_same<K_, typename T11_::NamedFirstParamType>::value || b11_,
+                            tr1::is_same<K_, typename T12_::NamedFirstParamType>::value || b12_,
+                            tr1::is_same<K_, typename T13_::NamedFirstParamType>::value || b13_,
+                            tr1::is_same<K_, typename T14_::NamedFirstParamType>::value || b14_,
+                            tr1::is_same<K_, typename T15_::NamedFirstParamType>::value || b15_,
+                            tr1::is_same<K_, typename T16_::NamedFirstParamType>::value || b16_,
+                            tr1::is_same<K_, typename T17_::NamedFirstParamType>::value || b17_,
+                            tr1::is_same<K_, typename T18_::NamedFirstParamType>::value || b18_,
+                            tr1::is_same<K_, typename T19_::NamedFirstParamType>::value || b19_,
+                            tr1::is_same<K_, typename T20_::NamedFirstParamType>::value || b20_
                             >(
                                     SV<tr1::is_same<K_, typename T1_::NamedFirstParamType>::value, typename T1_::NamedSecondParamType>::sv(v, v1),
                                     SV<tr1::is_same<K_, typename T2_::NamedFirstParamType>::value, typename T2_::NamedSecondParamType>::sv(v, v2),
