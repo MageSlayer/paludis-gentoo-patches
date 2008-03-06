@@ -104,7 +104,6 @@ namespace paludis
             kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::disable_cfgpro, bool>,
-            kc::Field<k::debug_build, InstallActionDebugOption>,
             kc::Field<k::slot, SlotName>,
             kc::Field<k::config_protect, std::string>,
             kc::Field<k::config_protect_mask, std::string>,

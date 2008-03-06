@@ -58,6 +58,7 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_profile.hh \
 	e_repository_profile_file.hh \
 	e_repository_sets.hh \
+	e_stripper.hh \
 	eapi.hh \
 	eapi-sr.hh \
 	eapi-fwd.hh \
@@ -115,6 +116,7 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_profile.cc \
 	e_repository_profile_file.cc \
 	e_repository_sets.cc \
+	e_stripper.cc \
 	eapi.cc \
 	eapi_phase.cc \
 	ebuild.cc \

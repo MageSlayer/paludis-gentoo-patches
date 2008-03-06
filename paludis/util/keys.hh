@@ -151,6 +151,7 @@ namespace paludis
         typedef kc::Key<122> env_portdir;
         typedef kc::Key<123> env_distdir;
         typedef kc::Key<124> description_use;
+        typedef kc::Key<125> debug_dir;
     }
 }
 

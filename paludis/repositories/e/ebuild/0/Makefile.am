@@ -16,7 +16,6 @@ libexecprog0_SCRIPTS = \
 	builtin_killoldrm.bash \
 	builtin_killoldmisc.bash \
 	builtin_saveenv.bash \
-	builtin_strip.bash \
 	builtin_tidyup.bash \
 	builtin_tidyuprm.bash \
 	builtin_tidyupmisc.bash \

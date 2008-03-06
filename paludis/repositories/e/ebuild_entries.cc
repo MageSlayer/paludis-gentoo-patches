@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/fetch_visitor.hh>
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
+#include <paludis/repositories/e/e_stripper.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -429,7 +430,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When installing '" + stringify(*id) + "':");
 
-    bool userpriv_restrict;
+    bool userpriv_restrict, strip_restrict;
     {
         DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
@@ -440,6 +441,12 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+
+        strip_restrict =
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "strip")) ||
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
     std::string archives, all_archives;
@@ -550,6 +557,33 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                         (k::options(), (*(*id->eapi())[k::supported()])[k::merger_options()])
                         );
         }
+        else if (phase->option("strip"))
+        {
+            if (! strip_restrict)
+            {
+                std::string libdir("lib");
+                FSEntry root(o[k::destination()]->installed_root_key() ?
+                        stringify(o[k::destination()]->installed_root_key()->value()) : "/");
+                if ((root / "usr" / "lib").is_symbolic_link())
+                {
+                    libdir = (root / "usr" / "lib").readlink();
+                    if (std::string::npos != libdir.find_first_of("./"))
+                        libdir = "lib";
+                }
+
+                Log::get_instance()->message(ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
+
+                EStripper stripper(EStripperOptions::named_create()
+                        (k::package_id(), id)
+                        (k::image_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                                + stringify(id->version())) / "image")
+                        (k::debug_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                                + stringify(id->version())) / "image" / "usr" / libdir / "debug")
+                        (k::debug_build(), o[k::debug_build()])
+                        );
+                stripper.strip();
+            }
+        }
         else if ((! phase->option("prepost")) ||
                 ((*o[k::destination()])[k::destination_interface()] &&
                  (*o[k::destination()])[k::destination_interface()]->want_pre_post_phases()))
@@ -605,7 +639,6 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                              stringify(o[k::destination()]->installed_root_key()->value()) : "/")
                             (k::profiles(), _imp->params.profiles)
                             (k::disable_cfgpro(), o[k::no_config_protect()])
-                            (k::debug_build(), o[k::debug_build()])
                             (k::config_protect(), _imp->e_repository->profile_variable("CONFIG_PROTECT"))
                             (k::config_protect_mask(), _imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
                             (k::loadsaveenv_dir(), _imp->params.builddir / stringify(id->name().category) / (

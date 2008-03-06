@@ -27,6 +27,7 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	unpackaged_repository.hh \
 	unpackaged_repository-sr.hh \
 	unpackaged_key.hh \
+	unpackaged_stripper.hh \
 	installed_repository.hh \
 	installed_repository-sr.hh \
 	installed_id.hh
@@ -38,6 +39,7 @@ libpaludisunpackagedrepository_la_SOURCES = \
 	unpackaged_id.cc \
 	unpackaged_repository.cc \
 	unpackaged_key.cc \
+	unpackaged_stripper.cc \
 	installed_repository.cc \
 	installed_id.cc \
 	registration.cc \

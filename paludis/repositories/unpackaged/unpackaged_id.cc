@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
+#include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
 #include <paludis/repositories/unpackaged/dep_parser.hh>
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -28,6 +29,7 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/log.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -310,6 +312,27 @@ UnpackagedID::perform_action(Action & action) const
         throw InstallActionError("Can't install '" + stringify(*this)
                 + "' to destination '" + stringify(install_action->options[k::destination()]->name())
                 + "' because destination does not provide destination_interface");
+
+    std::string libdir("lib");
+    FSEntry root(install_action->options[k::destination()]->installed_root_key() ?
+            stringify(install_action->options[k::destination()]->installed_root_key()->value()) : "/");
+    if ((root / "usr" / "lib").is_symbolic_link())
+    {
+        libdir = (root / "usr" / "lib").readlink();
+        if (std::string::npos != libdir.find_first_of("./"))
+            libdir = "lib";
+    }
+
+    Log::get_instance()->message(ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
+
+    UnpackagedStripper stripper(UnpackagedStripperOptions::named_create()
+            (k::image_dir(), fs_location_key()->value())
+            (k::debug_dir(), fs_location_key()->value() / "usr" / libdir / "debug")
+            (k::debug_build(), install_action->options[k::debug_build()])
+            (k::package_id(), shared_from_this())
+            );
+
+    stripper.strip();
 
     (*install_action->options[k::destination()])[k::destination_interface()]->merge(
             MergeParams::named_create()

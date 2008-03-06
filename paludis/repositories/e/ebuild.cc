@@ -556,31 +556,6 @@ EbuildInstallCommand::failure()
 Command
 EbuildInstallCommand::extend_command(const Command & cmd)
 {
-    std::string debug_build;
-    do
-    {
-        switch (install_params[k::debug_build()])
-        {
-            case iado_none:
-                debug_build = "none";
-                continue;
-
-            case iado_split:
-                debug_build = "split";
-                continue;
-
-            case iado_internal:
-                debug_build = "internal";
-                continue;
-
-            case last_iado:
-                break;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Bad debug_build value");
-    }
-    while (false);
-
     Command result(Command(cmd)
             .with_setenv("A", install_params[k::a()])
             .with_setenv("ROOT", install_params[k::root()])
@@ -589,7 +564,6 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_CONFIG_PROTECT_MASK", install_params[k::config_protect_mask()])
             .with_setenv("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 install_params[k::disable_cfgpro()] ? "/" : "")
-            .with_setenv("PALUDIS_DEBUG_BUILD", debug_build)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params[k::profiles()]->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params[k::profiles()]->begin(),
                                           install_params[k::profiles()]->end(), " "))

@@ -8,6 +8,9 @@ trunk/:
     * paludis --owner now shows matching files when --full-match is not
       specified.
 
+    * importare now does stripping the same way as E repositories, based upon
+      the --debug-build argument.
+
 0.26.0_alpha10:
     * rsync based syncers (rsync://, file://, tar+http:// and tar+ftp://) now
       support --exclude in sync_options, as well as --exclude-from.

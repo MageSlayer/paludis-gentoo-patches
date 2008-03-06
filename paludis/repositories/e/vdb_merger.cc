@@ -40,8 +40,6 @@
 
 using namespace paludis;
 
-#include <iostream>
-
 namespace paludis
 {
     template<>
