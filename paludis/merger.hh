@@ -27,6 +27,9 @@
 #include <paludis/util/kc.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <paludis/hashed_containers.hh>
 
 /** \file
  * Declarations for the Merger class, which can be used by Repository
@@ -73,6 +76,8 @@ namespace paludis
     class PALUDIS_VISIBLE Merger
     {
         private:
+            typedef MakeHashedMultiMap<std::pair<dev_t, ino_t>, std::string>::Type MergedMap;
+            MergedMap _merged_ids;
             MergerParams _params;
             bool _result;
             bool _skip_dir;

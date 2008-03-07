@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * The merger is able to detect hardlinks and tries to merge them as such.
+
 0.26.0_alpha11:
     * paludis --owner now shows matching files when --full-match is not
       specified.

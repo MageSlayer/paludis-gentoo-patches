@@ -99,6 +99,13 @@ CRCHash<std::pair<QualifiedPackageName, VersionSpec> >::operator() (
 }
 
 std::size_t
+CRCHash<std::pair<dev_t, ino_t> >::operator() (
+        const std::pair<dev_t, ino_t> & val) const
+{
+    return val.first ^ val.second;
+}
+
+std::size_t
 CRCHash<PackageID>::operator() (const PackageID & val) const
 {
     return

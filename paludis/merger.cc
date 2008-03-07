@@ -650,6 +650,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         dest_gid = new_gid == 0 ? 0 : dest_gid;
     }
 
+    bool do_copy(false);
+
     if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
     {
         result += msi_rename;
@@ -658,11 +660,32 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
+
+        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
     else
     {
+        do_copy = true;
+        std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
+                _merged_ids.equal_range(src.lowlevel_id()));
+        for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
+        {
+            if (0 == ::link(i->second.c_str(), stringify(dst_real).c_str()))
+            {
+                do_copy = false;
+                result += msi_as_hardlink;
+                break;
+            }
+            Log::get_instance()->message(ll_debug, lc_context,
+                    "link(" + i->second + ", " + stringify(dst_real) + ") failed: "
+                    + stringify(::strerror(errno)));
+        }
+    }
+
+    if (do_copy)
+    {
         Log::get_instance()->message(ll_debug, lc_context,
-                "link failed: " + stringify(::strerror(errno))
+                "rename/link failed: " + stringify(::strerror(errno))
                 + ". Falling back to regular read/write copy");
         FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
         if (-1 == input_fd)
@@ -691,6 +714,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (0 != ::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
             throw MergerError(
                     "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
+
+        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
@@ -764,10 +789,12 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
                 record_install_sym(*d, dst, MergeStatusFlags() + msi_parent_rename);
+                _merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
             case et_file:
                 record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
+                _merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
             case et_dir:
@@ -887,10 +914,12 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 
     MergeStatusFlags result;
 
+    FSEntry dst(dst_dir / src.basename());
+
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
+                         ("INSTALL_DESTINATION", stringify(dst)))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
@@ -900,27 +929,50 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
     if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
+    bool do_sym(false);
+
     if (symlink_needs_rewriting(src))
         rewrite_symlink_as_needed(src, dst_dir);
     else
     {
-        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
-        if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
-            throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "': "
+        do_sym = true;
+        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
+        std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
+                _merged_ids.equal_range(src.lowlevel_id()));
+        for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
+        {
+            if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
+            {
+                do_sym = false;
+                result += msi_as_hardlink;
+                break;
+            }
+            Log::get_instance()->message(ll_debug, lc_context,
+                    "link(" + i->second + ", " + stringify(dst) + ") failed: "
                     + stringify(::strerror(errno)));
+        }
+    }
+
+    if (do_sym)
+    {
+        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
+        if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst).c_str()))
+            throw MergerError("Couldn't create symlink at '" + stringify(dst) + "': "
+                    + stringify(::strerror(errno)));
+        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst)));
     }
 
     if (! _params[k::no_chown()])
     {
         if (src.owner() != dest_uid || src.group() != dest_gid)
             result += msi_fixed_ownership;
-        FSEntry(dst_dir / src.basename()).lchown(dest_uid, dest_gid);
+        dst.lchown(dest_uid, dest_gid);
     }
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
+                         ("INSTALL_DESTINATION", stringify(dst)))).max_exit_status)
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
 

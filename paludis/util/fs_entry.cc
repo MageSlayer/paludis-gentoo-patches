@@ -693,3 +693,13 @@ FSEntry::rename(const FSEntry & new_name)
                 ::strerror(errno));
 }
 
+std::pair<dev_t, ino_t>
+FSEntry::lowlevel_id() const
+{
+    _stat();
+
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
+
+    return std::make_pair(_imp->stat_info->st_dev, _imp->stat_info->st_ino);
+}

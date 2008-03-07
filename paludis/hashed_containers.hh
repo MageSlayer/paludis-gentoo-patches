@@ -337,6 +337,34 @@ namespace paludis
     };
 
     /**
+     * Hash, for a dev_t + ino_t pair.
+     *
+     * \ingroup g_data_structures
+     */
+    template <>
+    class PALUDIS_VISIBLE CRCHash<std::pair<dev_t, ino_t> > :
+        public std::unary_function<const std::pair<dev_t, ino_t>, std::size_t>,
+        protected hashed_containers_internals::CRCHashBase
+    {
+        public:
+            /// Hash function
+            std::size_t operator() (const std::pair<dev_t, ino_t> & val) const;
+
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const std::pair<dev_t, ino_t> & i1, const std::pair<dev_t, ino_t> & i2) const
+            {
+                return i1 < i2;
+            }
+#endif
+    };
+
+    /**
      * Hash, for a shared pointer.
      *
      * \ingroup g_data_structures

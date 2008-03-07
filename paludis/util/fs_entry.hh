@@ -29,6 +29,7 @@
 #include <iosfwd>
 #include <paludis/util/tr1_memory.hh>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 /** \file
  * Declarations for FSEntry.
@@ -292,6 +293,12 @@ namespace paludis
              * Return the current working directory
              */
             static FSEntry cwd()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Return an unique low-level id for this entry
+             */
+            std::pair<dev_t, ino_t> lowlevel_id() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

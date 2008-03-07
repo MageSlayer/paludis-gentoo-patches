@@ -322,6 +322,10 @@ VDBMerger::make_arrows(const MergeStatusFlags & flags) const
                 result[1] = '-';
                 continue;
 
+            case msi_as_hardlink:
+                result[1] = '&';
+                continue;
+
             case msi_fixed_ownership:
                 result[2] = '~';
                 continue;
