@@ -138,7 +138,7 @@ namespace
      * call-seq:
      *     conditions -> DepSpec
      *
-     * The AnyDepSpec instances and UseDepSpec instances that our dependency
+     * The AnyDepSpec instances and ConditionalDepSpec instances that our dependency
      * is conditional upon.
      */
     VALUE

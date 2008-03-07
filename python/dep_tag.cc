@@ -186,7 +186,7 @@ void expose_dep_tag()
 
         .add_property("conditions", &DependencyDepTag::conditions,
                 "[ro] CompositeDepSpec\n"
-                "The AllDepSpecs and UseDepSpecs that our dependency is conditional upon."
+                "The AnyDepSpec instances and ConditionalDepSpec instances that our dependency is conditional upon."
                 )
         ;
 

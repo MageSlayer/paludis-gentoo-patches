@@ -29,10 +29,9 @@ def collect_dependencies env, id, spec, results, recursing_sets = {}
             collect_dependencies(env, id, child, results, recursing_sets)
         end
 
-    elsif spec.instance_of? UseDepSpec
-        # Was this use flag enabled (or, if we're inverse, disabled) when we
-        # built this package?
-        if env.query_use(spec.flag, id) ^ spec.inverse?
+    elsif spec.instance_of? ConditionalDepSpec
+        # Was this condition satisfied when we built this package?
+        if spec.condition_met?
             spec.each do | child |
                 collect_dependencies(env, id, child, results, recursing_sets)
             end
@@ -88,10 +87,9 @@ def collect_extensions env, id, spec, results, recursing_sets = {}
             collect_extensions(env, id, child, results, recursing_sets)
         end
 
-    elsif spec.instance_of? UseDepSpec
-        # Was this use flag enabled (or, if we're inverse, disabled) when we
-        # built this package?
-        if env.query_use(spec.flag, id) ^ spec.inverse?
+    elsif spec.instance_of? ConditionalDepSpec
+        # Was this condition satisfied when we built this package?
+        if spec.condition_met?
             spec.each do | child |
                 collect_extensions(env, id, child, results, recursing_sets)
             end

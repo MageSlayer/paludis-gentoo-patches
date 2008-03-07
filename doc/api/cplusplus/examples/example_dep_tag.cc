@@ -89,8 +89,7 @@ namespace
             return;
 
         /* The set isn't necessarily flat. We use DepSpecFlattener to make it
-         * so, rather than writing a full visitor ourselves. We don't need to
-         * supply a package, since a SetSpecTree cannot contain a UseDepSpec. */
+         * so, rather than writing a full visitor ourselves. */
         DepSpecFlattener<SetSpecTree, PackageDepSpec> set_flat(env.get());
         set->accept(set_flat);
 
