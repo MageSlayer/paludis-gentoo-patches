@@ -121,7 +121,7 @@ end
 if mirror_repository then
     env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_dir)
     relevant_packages = Paludis::Query::Repository.new(env.main_repository.name)
-    $check_use = lambda { true }
+    $check_condition = lambda { true }
     $banned_labels = {
         Paludis::URIListedOnlyLabel       => true,
         Paludis::URILocalMirrorsOnlyLabel => true,
@@ -130,7 +130,7 @@ if mirror_repository then
 else
     env = Paludis::EnvironmentMaker.instance.make_from_spec(env_spec || "")
     relevant_packages = Paludis::Query::SupportsInstalledAction.new
-    $check_use = lambda { | spec, id | env.query_use(spec.flag, id) ^ spec.inverse? }
+    $check_condition = lambda { | spec | spec.condition_met? }
     $banned_labels = { }
 end
 
@@ -143,8 +143,8 @@ def collect_filenames(parts, id, label, spec)
             collect_filenames(parts, id, new_label, item)
         end
 
-    when Paludis::UseDepSpec
-        if $check_use[spec, id] then
+    when Paludis::ConditionalDepSpec
+        if $check_condition[spec] then
             new_label = label.dup
             spec.each do | item |
                 collect_filenames(parts, id, new_label, item)
