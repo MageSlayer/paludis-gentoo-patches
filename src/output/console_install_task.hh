@@ -121,6 +121,8 @@ namespace paludis
             void _add_descriptions(tr1::shared_ptr<const UseFlagNameSet>,
                     const tr1::shared_ptr<const PackageID> &, UseDescriptionState);
 
+            bool _resolution_finished;
+
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
                     tr1::shared_ptr<const DestinationsSet>);

@@ -129,7 +129,8 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
     _download_size(0),
     _all_tags(new Set<DepTagEntry>),
     _all_use_descriptions(new Set<UseDescription, UseDescriptionComparator>),
-    _all_expand_prefixes(new UseFlagNameSet)
+    _all_expand_prefixes(new UseFlagNameSet),
+    _resolution_finished(false)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
 }
@@ -223,6 +224,7 @@ void
 ConsoleInstallTask::on_build_deplist_post()
 {
     output_activity_end_message();
+    _resolution_finished = true;
 }
 
 void
@@ -1763,7 +1765,7 @@ ConsoleInstallTask::show_resume_command() const
 void
 ConsoleInstallTask::show_resume_command(const std::string & resume_command_template) const
 {
-    if (had_action_failures())
+    if (_resolution_finished)
     {
         std::string resume_command(make_resume_command(true));
         if (resume_command.empty())
