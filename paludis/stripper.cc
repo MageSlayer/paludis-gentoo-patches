@@ -100,12 +100,10 @@ Stripper::do_dir_recursive(const FSEntry & f)
                 {
                     FSEntry target(_imp->options[k::debug_dir()] / d->strip_leading(_imp->options[k::image_dir()]));
                     target = target.dirname() / (target.basename() + ".debug");
-                    on_split(*d, target);
                     do_split(*d, target);
                 }
                 else if (std::string::npos != t.find("current ar archive"))
                 {
-                    on_strip(*d);
                     do_strip(*d, "-g");
                 }
                 else
@@ -133,6 +131,7 @@ void
 Stripper::do_strip(const FSEntry & f, const std::string & options)
 {
     Context context("When stripping '" + stringify(f) + "':");
+    on_strip(f);
     if (0 != run_command(Command("strip " + options + " '" + stringify(f) + "'")))
         Log::get_instance()->message(ll_warning, lc_context) << "Couldn't strip '" << f << "'";
 }
@@ -155,6 +154,8 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
         case iado_split:
             break;
     }
+
+    on_split(f, g);
 
     {
         std::list<FSEntry> to_make;
