@@ -74,8 +74,8 @@ paludis_pipe_command()
 paludis_rewrite_var()
 {
     [[ "${#@}" -ne 3 ]] && die "$0 should take exactly three args"
-    local r=$(paludis_pipe_command REWRITE_VAR "$EAPI" "$1" "$2" "$3" )
-    echo ${r#*;}
+    local r="$(paludis_pipe_command REWRITE_VAR "$EAPI" "$1" "$2" "$3" )"
+    echo "${r#*;}"
     return ${r%%;*}
 }
 

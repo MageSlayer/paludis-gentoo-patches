@@ -4,8 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_alpha12:
     * The merger is able to detect hardlinks and tries to merge them as such.
+
+    * We're even less strict about environment checking from VDB, to avoid
+      issues with packages installed several years ago when USE_EXPAND didn't
+      include KERNEL etc.
+
+    * Fixed a quoting bug that would result in unwanted wildcard expansion
+      when rewriting *DEPEND values.
 
 0.26.0_alpha11:
     * paludis --owner now shows matching files when --full-match is not
