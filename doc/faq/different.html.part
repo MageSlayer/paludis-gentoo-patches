@@ -44,9 +44,7 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <code>$D</code>.</dd>
 
     <dt>nostrip</dt>
-    <dd>You can use <code>--debug-build internal</code> globally. Again, as this
-    is a function, you can also use <code>SKIP_FUNCTIONS="strip"</code> on a per
-    package basis.</dd>
+    <dd>Use <code>--debug-build internal</code>.</dd>
 
     <dt>sandbox</dt>
     <dd>Always on.</dd>
