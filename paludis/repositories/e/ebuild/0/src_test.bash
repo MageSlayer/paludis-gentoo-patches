@@ -56,9 +56,7 @@ ebuild_f_test()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "test" ${RESTRICT} ; then
-        ebuild_section "Skipping src_test (RESTRICT)"
-    elif hasq "test" ${SKIP_FUNCTIONS} ; then
+    if hasq "test" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_src_test ) == "function" ]] ; then

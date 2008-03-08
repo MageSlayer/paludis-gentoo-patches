@@ -30,9 +30,7 @@ ebuild_f_config()
     local old_sandbox_write="${SANDBOX_WRITE}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
-    if hasq "config" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_config (RESTRICT)"
-    elif hasq "config" ${SKIP_FUNCTIONS} ; then
+    if hasq "config" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_config (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_pkg_config ) == "function" ]] ; then

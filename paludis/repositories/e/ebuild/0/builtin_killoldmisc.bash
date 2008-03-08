@@ -33,9 +33,7 @@ builtin_killoldmisc()
 
 ebuild_f_killoldmisc()
 {
-    if hasq "killoldmisc" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_killoldmisc (RESTRICT)"
-    elif hasq "killoldmisc" ${SKIP_FUNCTIONS} ; then
+    if hasq "killoldmisc" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_killoldmisc (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_killoldmisc"

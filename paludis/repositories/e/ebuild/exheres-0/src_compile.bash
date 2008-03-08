@@ -40,9 +40,7 @@ exheres_internal_compile()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "compile" ${RESTRICT} ; then
-        ebuild_section "Skipping src_compile (RESTRICT)"
-    elif hasq "compile" ${SKIP_FUNCTIONS} ; then
+    if hasq "compile" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_compile"

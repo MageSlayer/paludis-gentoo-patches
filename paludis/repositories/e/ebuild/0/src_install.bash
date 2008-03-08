@@ -33,9 +33,7 @@ ebuild_f_install()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "install" ${RESTRICT} ; then
-        ebuild_section "Skipping src_install (RESTRICT)"
-    elif hasq "install" ${SKIP_FUNCTIONS} ; then
+    if hasq "install" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_install (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_src_install ) == "function" ]] ; then

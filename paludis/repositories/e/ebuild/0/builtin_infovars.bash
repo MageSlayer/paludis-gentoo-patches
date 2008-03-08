@@ -26,9 +26,7 @@ builtin_infovars()
 
 ebuild_f_infovars()
 {
-    if hasq "infovars" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_infovars (RESTRICT)"
-    elif hasq "infovars" ${SKIP_FUNCTIONS} ; then
+    if hasq "infovars" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_infovars (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_builtin_infovars ) == "function" ]] ; then

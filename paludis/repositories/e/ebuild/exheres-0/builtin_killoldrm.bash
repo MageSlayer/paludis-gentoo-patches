@@ -33,9 +33,7 @@ builtin_killoldrm()
 
 exheres_internal_killoldrm()
 {
-    if hasq "killoldrm" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_killoldrm (RESTRICT)"
-    elif hasq "killoldrm" ${SKIP_FUNCTIONS} ; then
+    if hasq "killoldrm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_killoldrm (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_killoldrm"

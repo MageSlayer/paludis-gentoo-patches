@@ -35,9 +35,7 @@ exheres_internal_postinst()
     local old_sandbox_write="${SANDBOX_WRITE}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
-    if hasq "postinst" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_postinst (RESTRICT)"
-    elif hasq "postinst" ${SKIP_FUNCTIONS} ; then
+    if hasq "postinst" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_postinst (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting pkg_postinst"

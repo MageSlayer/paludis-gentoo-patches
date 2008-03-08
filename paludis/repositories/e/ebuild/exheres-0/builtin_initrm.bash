@@ -69,9 +69,7 @@ builtin_initrm()
 
 exheres_internal_initrm()
 {
-    if hasq "initrm" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_initrm (RESTRICT)"
-    elif hasq "initrm" ${SKIP_FUNCTIONS} ; then
+    if hasq "initrm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_initrm (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_initrm"

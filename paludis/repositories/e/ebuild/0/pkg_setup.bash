@@ -30,9 +30,7 @@ ebuild_f_setup()
     local old_sandbox_write="${SANDBOX_WRITE}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
-    if hasq "setup" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_setup (RESTRICT)"
-    elif hasq "setup" ${SKIP_FUNCTIONS} ; then
+    if hasq "setup" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_setup (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_pkg_setup ) == "function" ]] ; then

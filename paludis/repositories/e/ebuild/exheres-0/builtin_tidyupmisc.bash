@@ -30,9 +30,7 @@ builtin_tidyupmisc()
 
 exheres_internal_tidyupmisc()
 {
-    if hasq "tidyupmisc" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_tidyupmisc (RESTRICT)"
-    elif hasq "tidyupmisc" ${SKIP_FUNCTIONS} ; then
+    if hasq "tidyupmisc" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_tidyupmisc (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_tidyupmisc"

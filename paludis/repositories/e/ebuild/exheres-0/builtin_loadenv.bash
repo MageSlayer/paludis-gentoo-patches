@@ -31,9 +31,7 @@ exheres_internal_loadenv()
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && \
         SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_LOADSAVEENV_DIR%/}/"
 
-    if hasq "loadenv" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_loadenv (RESTRICT)"
-    elif hasq "loadenv" ${SKIP_FUNCTIONS} ; then
+    if hasq "loadenv" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_loadenv (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_loadenv"

@@ -69,9 +69,7 @@ builtin_initmisc()
 
 ebuild_f_initmisc()
 {
-    if hasq "initmisc" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_initmisc (RESTRICT)"
-    elif hasq "initmisc" ${SKIP_FUNCTIONS} ; then
+    if hasq "initmisc" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_initmisc (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_initmisc"

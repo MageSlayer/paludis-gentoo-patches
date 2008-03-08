@@ -36,9 +36,7 @@ ebuild_f_compile()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "compile" ${RESTRICT} ; then
-        ebuild_section "Skipping src_compile (RESTRICT)"
-    elif hasq "compile" ${SKIP_FUNCTIONS} ; then
+    if hasq "compile" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_src_compile ) == "function" ]] ; then

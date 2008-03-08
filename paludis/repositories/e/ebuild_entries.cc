@@ -430,7 +430,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When installing '" + stringify(*id) + "':");
 
-    bool userpriv_restrict, strip_restrict;
+    bool userpriv_restrict, test_restrict, strip_restrict;
     {
         DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
@@ -441,6 +441,10 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+
+        test_restrict =
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "test"));
 
         strip_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -590,6 +594,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         {
             if (phase->option("checkphase"))
             {
+                if (test_restrict)
+                    continue;
+
                 switch (o[k::checks()])
                 {
                     case iaco_none:

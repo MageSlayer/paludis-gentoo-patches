@@ -30,9 +30,7 @@ builtin_tidyuprm()
 
 ebuild_f_tidyuprm()
 {
-    if hasq "tidyuprm" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_tidyuprm (RESTRICT)"
-    elif hasq "tidyuprm" ${SKIP_FUNCTIONS} ; then
+    if hasq "tidyuprm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_tidyuprm (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_tidyuprm"

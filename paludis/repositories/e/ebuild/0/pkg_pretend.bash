@@ -23,9 +23,7 @@ pkg_pretend()
 
 ebuild_f_pretend()
 {
-    if hasq "pretend" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_pretend (RESTRICT)"
-    elif hasq "pretend" ${SKIP_FUNCTIONS} ; then
+    if hasq "pretend" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_pretend (SKIP_FUNCTIONS)"
     else
         echo

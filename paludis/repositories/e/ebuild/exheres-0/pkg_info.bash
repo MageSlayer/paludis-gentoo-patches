@@ -28,9 +28,7 @@ pkg_info()
 
 exheres_internal_info()
 {
-    if hasq "info" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_info (RESTRICT)"
-    elif hasq "info" ${SKIP_FUNCTIONS} ; then
+    if hasq "info" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_info (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting pkg_info"

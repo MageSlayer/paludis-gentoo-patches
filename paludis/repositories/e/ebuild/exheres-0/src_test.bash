@@ -56,9 +56,7 @@ exheres_internal_test()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "test" ${RESTRICT} ; then
-        ebuild_section "Skipping src_test (RESTRICT)"
-    elif hasq "test" ${SKIP_FUNCTIONS} ; then
+    if hasq "test" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_test"

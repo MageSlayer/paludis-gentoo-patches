@@ -34,9 +34,7 @@ builtin_pivotbin()
 
 generic_internal_pivotbin()
 {
-    if hasq "pivotbin" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_pivotbin (RESTRICT)"
-    elif hasq "init" ${SKIP_FUNCTIONS} ; then
+    if hasq "init" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_pivotbin (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_pivotbin"

@@ -30,9 +30,7 @@ ebuild_f_postrm()
     local old_sandbox_write="${SANDBOX_WRITE}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
-    if hasq "postrm" ${RESTRICT} ; then
-        ebuild_section "Skipping pkg_postrm (RESTRICT)"
-    elif hasq "postrm" ${SKIP_FUNCTIONS} ; then
+    if hasq "postrm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_postrm (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_pkg_postrm ) == "function" ]] ; then

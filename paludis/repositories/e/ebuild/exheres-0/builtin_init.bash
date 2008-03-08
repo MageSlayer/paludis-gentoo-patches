@@ -83,9 +83,7 @@ builtin_init()
 
 exheres_internal_init()
 {
-    if hasq "init" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_init (RESTRICT)"
-    elif hasq "init" ${SKIP_FUNCTIONS} ; then
+    if hasq "init" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_init (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_init"

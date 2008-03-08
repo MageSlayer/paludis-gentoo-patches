@@ -40,9 +40,7 @@ exheres_internal_prepare()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "prepare" ${RESTRICT} ; then
-        ebuild_section "Skipping src_prepare (RESTRICT)"
-    elif hasq "prepare" ${SKIP_FUNCTIONS} ; then
+    if hasq "prepare" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_prepare (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_prepare"

@@ -29,9 +29,7 @@ ebuild_f_unpack()
 {
     cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
 
-    if hasq "unpack" ${RESTRICT} ; then
-        ebuild_section "Skipping src_unpack (RESTRICT)"
-    elif hasq "unpack" ${SKIP_FUNCTIONS} ; then
+    if hasq "unpack" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
     else
         if [[ $(type -t pre_src_unpack ) == "function" ]] ; then

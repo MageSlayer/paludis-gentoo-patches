@@ -47,9 +47,7 @@ exheres_internal_configure()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if hasq "configure" ${RESTRICT} ; then
-        ebuild_section "Skipping src_configure (RESTRICT)"
-    elif hasq "configure" ${SKIP_FUNCTIONS} ; then
+    if hasq "configure" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_configure (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_configure"

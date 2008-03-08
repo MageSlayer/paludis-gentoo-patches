@@ -33,9 +33,7 @@ builtin_killold()
 
 ebuild_f_killold()
 {
-    if hasq "killold" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_killold (RESTRICT)"
-    elif hasq "killold" ${SKIP_FUNCTIONS} ; then
+    if hasq "killold" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_killold (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting builtin_killold"
