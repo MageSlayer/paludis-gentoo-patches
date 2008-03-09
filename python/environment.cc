@@ -344,6 +344,50 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::default_distribution();
         }
 
+        virtual void add_to_world(const QualifiedPackageName & s) const
+        {
+            Lock l(get_mutex());
+            if (bp::override f = get_override("add_to_world"))
+                f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
+        }
+
+        virtual void add_to_world(const SetName & s) const
+        {
+            Lock l(get_mutex());
+            if (bp::override f = get_override("add_to_world"))
+                f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
+        }
+
+        virtual void remove_from_world(const QualifiedPackageName & s) const
+        {
+            Lock l(get_mutex());
+            if (bp::override f = get_override("remove_from_world"))
+                f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
+        }
+
+        virtual void remove_from_world(const SetName & s) const
+        {
+            Lock l(get_mutex());
+            if (bp::override f = get_override("remove_from_world"))
+                f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
+        }
+
+        virtual tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
+        {
+            Lock l(get_mutex());
+            if (bp::override f = get_override("world_set"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "world_set");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :

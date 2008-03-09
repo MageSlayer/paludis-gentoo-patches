@@ -457,7 +457,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
             (k::sets_interface(), this)
             (k::syncable_interface(), this)
             (k::use_interface(), this)
-            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
             (k::environment_variable_interface(), this)
             (k::mirrors_interface(), this)
             (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(

@@ -69,7 +69,6 @@ namespace paludis
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > world_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
 
         Implementation(const ExndbamRepositoryParams & p) :
@@ -81,8 +80,6 @@ namespace paludis
                         mkt_normal, params.root)),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "vdb")),
-            world_key(new LiteralMetadataValueKey<FSEntry> ("world", "world",
-                        mkt_normal, params.world)),
             builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
                         mkt_normal, params.builddir))
         {
@@ -93,15 +90,14 @@ namespace paludis
 ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepositoryParams & p) :
     EInstalledRepository(
             EInstalledRepositoryParams::create()
+            .deprecated_world(p.deprecated_world)
             .environment(p.environment)
-            .world(p.world)
             .builddir(p.builddir)
             .root(p.root),
             n, RepositoryCapabilities::named_create()
             (k::sets_interface(), this)
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::use_interface(), this)
-            (k::world_interface(), this)
             (k::environment_variable_interface(), this)
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
@@ -129,7 +125,6 @@ ExndbamRepository::_add_metadata_keys() const
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->world_key);
     add_metadata_key(_imp->builddir_key);
 }
 
@@ -150,10 +145,6 @@ ExndbamRepository::make_exndbam_repository(
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
-    std::string world;
-    if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
-        world = location + "/world";
-
     std::string builddir;
     if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
     {
@@ -168,13 +159,22 @@ ExndbamRepository::make_exndbam_repository(
     if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
         name = "installed";
 
+    std::string deprecated_world;
+    if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
+        deprecated_world = "/DOESNOTEXIST";
+    else
+        Log::get_instance()->message(ll_warning, lc_context) << "Specifying world location " <<
+            "in repository configuration files is deprecated. File '" << deprecated_world << "' will be "
+            "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
+            "the FAQ Upgrades section.";
+
     return tr1::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
                 ExndbamRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .root(root)
-                .world(world)
+                .deprecated_world(deprecated_world)
                 .builddir(builddir)));
 }
 

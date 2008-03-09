@@ -142,10 +142,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
 
         self.assert_(ui.describe_use_flag("test1", pid), "A test use flag")
 
-    def test_05_world_interface(self):
-        wi = irepo.world_interface
-        self.assert_(isinstance(wi, RepositoryWorldInterface))
-
     def test_06_environment_variable_interface(self):
         evi = repo.environment_variable_interface
         self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))

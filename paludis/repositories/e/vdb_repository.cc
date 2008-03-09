@@ -105,7 +105,6 @@ namespace paludis
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > world_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
@@ -123,8 +122,6 @@ namespace paludis
                     mkt_normal, params.root)),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, "vdb")),
-        world_key(new LiteralMetadataValueKey<FSEntry> ("world", "world",
-                    mkt_normal, params.world)),
         provides_cache_key(new LiteralMetadataValueKey<FSEntry> ("provides_cache", "provides_cache",
                     mkt_normal, params.provides_cache)),
         names_cache_key(new LiteralMetadataValueKey<FSEntry> ("names_cache", "names_cache",
@@ -145,13 +142,12 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .environment(p.environment)
             .root(p.root)
             .builddir(p.builddir)
-            .world(p.world),
+            .deprecated_world(p.deprecated_world),
             p.name,
             RepositoryCapabilities::named_create()
             (k::sets_interface(), this)
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::use_interface(), this)
-            (k::world_interface(), this)
             (k::environment_variable_interface(), this)
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
             (k::provides_interface(), this)
@@ -179,7 +175,6 @@ VDBRepository::_add_metadata_keys() const
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->world_key);
     add_metadata_key(_imp->provides_cache_key);
     add_metadata_key(_imp->names_cache_key);
     add_metadata_key(_imp->builddir_key);
@@ -288,9 +283,14 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
-    std::string world;
-    if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
-        world = location + "/world";
+    std::string deprecated_world;
+    if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
+        deprecated_world = "/DOESNOTEXIST";
+    else
+        Log::get_instance()->message(ll_warning, lc_context) << "Specifying world location " <<
+            "in repository configuration files is deprecated. File '" << deprecated_world << "' will be "
+            "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
+            "the FAQ Upgrades section.";
 
     std::string provides_cache;
     if (m->end() == m->find("provides_cache") || ((provides_cache = m->find("provides_cache")->second)).empty())
@@ -338,7 +338,7 @@ VDBRepository::make_vdb_repository(
                 .environment(env)
                 .location(location)
                 .root(root)
-                .world(world)
+                .deprecated_world(deprecated_world)
                 .builddir(builddir)
                 .provides_cache(provides_cache)
                 .name(RepositoryName(name))

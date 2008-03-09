@@ -24,6 +24,10 @@ for c in vdb exndbam ; do
 */* foo
 END
 
+    cat <<END > root/${SYSCONFDIR}/paludis${c}/environment.conf
+world = `pwd`/root/world-${c}
+END
+
     cat <<END > root/${SYSCONFDIR}/paludis${c}/licenses.conf
 */* *
 END

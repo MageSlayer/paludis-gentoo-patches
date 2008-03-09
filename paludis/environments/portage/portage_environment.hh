@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,8 +74,14 @@ namespace paludis
             template<typename I_>
             void _load_atom_file(const FSEntry &, I_, const std::string &);
 
+            void _add_string_to_world(const std::string &) const;
+            void _remove_string_from_world(const std::string &) const;
+
         protected:
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -138,6 +144,14 @@ namespace paludis
             virtual uid_t reduced_uid() const;
 
             virtual gid_t reduced_gid() const;
+
+            virtual void add_to_world(const QualifiedPackageName &) const;
+
+            virtual void add_to_world(const SetName &) const;
+
+            virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual void remove_from_world(const SetName &) const;
     };
 }
 

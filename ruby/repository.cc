@@ -330,14 +330,6 @@ namespace
      * Returns self if the repository supports the interface, otherwise Nil.
      */
     /*
-     * Document-method: world_interface
-     *
-     * call-seq:
-     *     world_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
      * Document-method: mirrors_interface
      *
      * call-seq:
@@ -928,7 +920,6 @@ namespace
         rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface< k::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface< k::syncable_interface>::fetch)), 0);
         rb_define_method(c_repository, "use_interface", RUBY_FUNC_CAST((&Interface< k::use_interface>::fetch)), 0);
-        rb_define_method(c_repository, "world_interface", RUBY_FUNC_CAST((&Interface< k::world_interface>::fetch)), 0);
         rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface< k::mirrors_interface>::fetch)), 0);
         rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<
                         k::environment_variable_interface>::fetch)), 0);

@@ -44,14 +44,17 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
-#include <algorithm>
+#include <paludis/set_file.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/mutex.hh>
 #include <functional>
+#include <algorithm>
 #include <set>
 #include <map>
 #include <vector>
 #include <list>
+#include <fstream>
 
 using namespace paludis;
 using namespace paludis::portage_environment;
@@ -95,12 +98,16 @@ namespace paludis
 
         tr1::shared_ptr<PackageDatabase> package_database;
 
+        const FSEntry world_file;
+        mutable Mutex world_mutex;
+
         Implementation(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
             done_hooks(false),
             overlay_importance(10),
-            package_database(new PackageDatabase(e))
+            package_database(new PackageDatabase(e)),
+            world_file("/var/lib/portage/world")
         {
         }
 
@@ -420,7 +427,6 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
-    keys->insert("world", "/var/lib/portage/world");
     std::string builddir(_imp->vars->get("PORTAGE_TMPDIR"));
     if (! builddir.empty())
         builddir.append("/portage");
@@ -738,5 +744,112 @@ uid_t
 PortageEnvironment::reduced_uid() const
 {
     return getuid();
+}
+
+void
+PortageEnvironment::add_to_world(const QualifiedPackageName & q) const
+{
+    _add_string_to_world(stringify(q));
+}
+
+void
+PortageEnvironment::add_to_world(const SetName & s) const
+{
+    _add_string_to_world(stringify(s));
+}
+
+void
+PortageEnvironment::remove_from_world(const QualifiedPackageName & q) const
+{
+    _remove_string_from_world(stringify(q));
+}
+
+void
+PortageEnvironment::remove_from_world(const SetName & s) const
+{
+    _remove_string_from_world(stringify(s));
+}
+
+void
+PortageEnvironment::_add_string_to_world(const std::string & s) const
+{
+    Lock l(_imp->world_mutex);
+
+    Context context("When adding '" + s + "' to world file '" + stringify(_imp->world_file) + "':");
+
+    using namespace tr1::placeholders;
+
+    if (! _imp->world_file.exists())
+    {
+        std::ofstream f(stringify(_imp->world_file).c_str());
+        if (! f)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
+                    + stringify(_imp->world_file) + "'");
+            return;
+        }
+    }
+
+    SetFile world(SetFileParams::create()
+            .file_name(_imp->world_file)
+            .type(sft_simple)
+            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+            .tag(tr1::shared_ptr<DepTag>())
+            .environment(this));
+    world.add(s);
+    world.rewrite();
+}
+
+void
+PortageEnvironment::_remove_string_from_world(const std::string & s) const
+{
+    Lock l(_imp->world_mutex);
+
+    Context context("When removing '" + s + "' from world file '" + stringify(_imp->world_file) + "':");
+
+    using namespace tr1::placeholders;
+
+    if (_imp->world_file.exists())
+    {
+        SetFile world(SetFileParams::create()
+                .file_name(_imp->world_file)
+                .type(sft_simple)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .tag(tr1::shared_ptr<DepTag>())
+                .environment(this));
+
+        world.remove(s);
+        world.rewrite();
+    }
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+PortageEnvironment::world_set() const
+{
+    Context context("When fetching environment world set:");
+
+    tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify("Environment")));
+
+    using namespace tr1::placeholders;
+
+    Lock l(_imp->world_mutex);
+
+    if (_imp->world_file.exists())
+    {
+        SetFile world(SetFileParams::create()
+                .file_name(_imp->world_file)
+                .type(sft_simple)
+                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .tag(tag)
+                .environment(this));
+        return world.contents();
+    }
+    else
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "World file '" + stringify(_imp->world_file) +
+                "' doesn't exist");
+
+    return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 }
 

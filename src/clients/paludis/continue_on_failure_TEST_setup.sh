@@ -24,6 +24,10 @@ cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
 */* test
 END
 
+cat <<END > root/${SYSCONFDIR}/paludis/environment.conf
+world = `pwd`/root/world
+END
+
 cat <<END > root/${SYSCONFDIR}/paludis/bashrc
 export CHOST="my-chost"
 END

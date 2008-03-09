@@ -383,44 +383,6 @@ namespace paludis
     };
 
     /**
-     * Interface for world handling for repositories.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryWorldInterface
-    {
-        public:
-            ///\name World functionality
-            ///\{
-
-            /**
-             * Add this package to world.
-             */
-            virtual void add_to_world(const QualifiedPackageName &) const = 0;
-
-            /**
-             * Add this set to world.
-             */
-            virtual void add_to_world(const SetName &) const = 0;
-
-            /**
-             * Remove this package from world, if it is present.
-             */
-            virtual void remove_from_world(const QualifiedPackageName &) const = 0;
-
-            /**
-             * Remove this set from world, if it is present.
-             */
-            virtual void remove_from_world(const SetName &) const = 0;
-
-            ///\}
-
-            virtual ~RepositoryWorldInterface();
-    };
-
-    /**
      * Interface for environment variable querying for repositories.
      *
      * \see Repository

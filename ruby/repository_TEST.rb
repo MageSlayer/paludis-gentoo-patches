@@ -170,7 +170,7 @@ module Paludis
         def test_responds
             repo = no_config_testrepo.main_repository
             [:sets_interface, :syncable_interface, :use_interface,
-                :world_interface, :mirrors_interface, :environment_variable_interface,
+                :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :e_interface,
                 :qa_interface].each do |sym|
                 assert_respond_to repo, sym

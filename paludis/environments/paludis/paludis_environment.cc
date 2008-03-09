@@ -24,6 +24,7 @@
 #include <paludis/environments/paludis/package_mask_conf.hh>
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/mirrors_conf.hh>
+#include <paludis/environments/paludis/world.hh>
 
 #include <paludis/repository_maker.hh>
 
@@ -384,6 +385,36 @@ PaludisEnvironment::local_set(const SetName & s) const
         _imp->sets.insert(std::make_pair(s, tr1::shared_ptr<SetSpecTree::ConstItem>()));
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
     }
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+PaludisEnvironment::world_set() const
+{
+    return _imp->config->world()->world_set();
+}
+
+void
+PaludisEnvironment::add_to_world(const QualifiedPackageName & q) const
+{
+    _imp->config->world()->add_to_world(q);
+}
+
+void
+PaludisEnvironment::add_to_world(const SetName & s) const
+{
+    _imp->config->world()->add_to_world(s);
+}
+
+void
+PaludisEnvironment::remove_from_world(const QualifiedPackageName & q) const
+{
+    _imp->config->world()->remove_from_world(q);
+}
+
+void
+PaludisEnvironment::remove_from_world(const SetName & s) const
+{
+    _imp->config->world()->remove_from_world(s);
 }
 
 tr1::shared_ptr<const SetNameSet>

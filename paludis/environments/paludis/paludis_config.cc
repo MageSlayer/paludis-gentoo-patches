@@ -24,6 +24,7 @@
 #include <paludis/environments/paludis/mirrors_conf.hh>
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/package_mask_conf.hh>
+#include <paludis/environments/paludis/world.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/distribution.hh>
@@ -100,6 +101,7 @@ namespace paludis
         tr1::shared_ptr<PackageMaskConf> package_mask_conf;
         tr1::shared_ptr<PackageMaskConf> package_unmask_conf;
         tr1::shared_ptr<MirrorsConf> mirrors_conf;
+        mutable tr1::shared_ptr<World> world;
 
         mutable Mutex reduced_mutex;
         mutable tr1::shared_ptr<uid_t> reduced_uid;
@@ -143,6 +145,7 @@ namespace paludis
         Context context("When loading environment.conf:");
 
         tr1::shared_ptr<KeyValueConfigFile> kv;
+        tr1::shared_ptr<FSEntry> world_file;
 
         if ((FSEntry(config_dir) / "environment.conf").exists())
             kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions()));
@@ -182,7 +185,16 @@ namespace paludis
 
             accept_breaks_portage = kv->get("portage_compatible").empty();
             distribution = kv->get("distribution");
+
+            if (! kv->get("world").empty())
+                world_file.reset(new FSEntry(kv->get("world")));
         }
+
+        if (! world_file)
+            Log::get_instance()->message(ll_warning, lc_context) << "No world file specified. You should "
+                "specify 'world = /path/to/world/file' in " << (FSEntry(config_dir) / "environment.conf")
+                << ". Any attempted updates to world will not be saved.";
+        world.reset(new World(env, world_file));
 
         has_environment_conf = true;
     }
@@ -703,6 +715,13 @@ tr1::shared_ptr<const MirrorsConf>
 PaludisConfig::mirrors_conf() const
 {
     return _imp->mirrors_conf;
+}
+
+tr1::shared_ptr<const World>
+PaludisConfig::world() const
+{
+    _imp->need_environment_conf();
+    return _imp->world;
 }
 
 std::string

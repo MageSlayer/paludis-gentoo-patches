@@ -163,10 +163,6 @@ RepositoryUseInterface::~RepositoryUseInterface()
 {
 }
 
-RepositoryWorldInterface::~RepositoryWorldInterface()
-{
-}
-
 RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
 {
 }

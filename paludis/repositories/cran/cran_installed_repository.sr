@@ -8,7 +8,6 @@ make_class_CRANInstalledRepositoryParams()
     key environment "const Environment *"
     key location FSEntry
     key root FSEntry
-    key world FSEntry
 
     doxygen_comment << "END"
         /**

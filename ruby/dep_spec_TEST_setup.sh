@@ -14,6 +14,10 @@ cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
 
+cat <<END > home/.paludis/environment.conf
+world = /dev/null
+END
+
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files,bar/foo/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1

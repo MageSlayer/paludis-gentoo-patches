@@ -57,7 +57,6 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             (k::sets_interface(), this)
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::use_interface(), this)
-            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::provides_interface(), this)

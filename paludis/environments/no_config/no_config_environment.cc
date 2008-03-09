@@ -364,6 +364,32 @@ NoConfigEnvironment::local_set(const SetName &) const
     return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
+tr1::shared_ptr<SetSpecTree::ConstItem>
+NoConfigEnvironment::world_set() const
+{
+    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+void
+NoConfigEnvironment::add_to_world(const QualifiedPackageName &) const
+{
+}
+
+void
+NoConfigEnvironment::remove_from_world(const QualifiedPackageName &) const
+{
+}
+
+void
+NoConfigEnvironment::add_to_world(const SetName &) const
+{
+}
+
+void
+NoConfigEnvironment::remove_from_world(const SetName &) const
+{
+}
+
 bool
 NoConfigEnvironment::unmasked_by_user(const PackageID &) const
 {

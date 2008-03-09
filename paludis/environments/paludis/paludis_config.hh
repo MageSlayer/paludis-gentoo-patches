@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,6 +49,7 @@ namespace paludis
         struct LicensesConf;
         struct PackageMaskConf;
         struct MirrorsConf;
+        struct World;
 
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered
@@ -119,6 +120,7 @@ namespace paludis
                 tr1::shared_ptr<const PackageMaskConf> package_mask_conf() const;
                 tr1::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
                 tr1::shared_ptr<const MirrorsConf> mirrors_conf() const;
+                tr1::shared_ptr<const World> world() const;
 
                 ///\}
 

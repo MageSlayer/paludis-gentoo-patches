@@ -79,3 +79,9 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="repositories.html#repo_name">Repository names</a></li>
 </ul>
 
+<h2>Upgrades, Old Bugs and Migration</h2>
+
+<ul>
+    <li><a href="upgrades.html#world-0.26.0_alpha13">World changes in 0.26.0_alpha13</a></li>
+</ul>
+

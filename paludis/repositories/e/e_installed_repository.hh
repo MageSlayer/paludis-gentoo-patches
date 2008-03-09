@@ -34,16 +34,12 @@ namespace paludis
             public Repository,
             public RepositoryUseInterface,
             public RepositorySetsInterface,
-            public RepositoryWorldInterface,
             public RepositoryEnvironmentVariableInterface,
             public RepositoryDestinationInterface,
             public RepositoryHookInterface,
             private PrivateImplementationPattern<EInstalledRepository>
         {
             private:
-                void add_string_to_world(const std::string & n) const;
-                void remove_string_from_world(const std::string &) const;
-
                 PrivateImplementationPattern<EInstalledRepository>::ImpPtr & _imp;
 
             protected:
@@ -88,16 +84,6 @@ namespace paludis
 
                 virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                /* RepositoryWorldInterface */
-
-                virtual void add_to_world(const QualifiedPackageName &) const;
-
-                virtual void add_to_world(const SetName &) const;
-
-                virtual void remove_from_world(const QualifiedPackageName &) const;
-
-                virtual void remove_from_world(const SetName &) const;
 
                 /* RepositoryEnvironmentVariableInterface */
 

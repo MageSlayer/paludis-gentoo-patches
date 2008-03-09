@@ -35,6 +35,10 @@ cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
+cat <<END > home/.paludis/environment.conf
+world = /dev/null
+END
+
 mkdir -p testrepo/{eclass,licenses,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 

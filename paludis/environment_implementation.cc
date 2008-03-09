@@ -128,6 +128,13 @@ EnvironmentImplementation::set(const SetName & s) const
         result->add(make_shared_ptr(new TreeLeaf<SetSpecTree, NamedSetDepSpec>(
                         make_shared_ptr(new NamedSetDepSpec(SetName("system"))))));
 
+    if ("world" == s.data())
+    {
+        tr1::shared_ptr<SetSpecTree::ConstItem> w(world_set());
+        if (w)
+            result->add(w);
+    }
+
     if (! result)
         Log::get_instance()->message(ll_debug, lc_context) << "No match for set '" << s << "'";
     return result;

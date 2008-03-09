@@ -147,83 +147,6 @@ EInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
-void
-EInstalledRepository::add_string_to_world(const std::string & n) const
-{
-    using namespace tr1::placeholders;
-
-    Lock l(_imp->world_mutex);
-
-    Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
-
-    if (! _imp->params.world.exists())
-    {
-        std::ofstream f(stringify(_imp->params.world).c_str());
-        if (! f)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
-                    + stringify(_imp->params.world) + "'");
-            return;
-        }
-    }
-
-    SetFile world(SetFileParams::create()
-            .file_name(_imp->params.world)
-            .type(sft_simple)
-            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-            .tag(tr1::shared_ptr<DepTag>())
-            .environment(_imp->params.environment));
-    world.add(n);
-    world.rewrite();
-}
-
-void
-EInstalledRepository::remove_string_from_world(const std::string & n) const
-{
-    using namespace tr1::placeholders;
-
-    Lock l(_imp->world_mutex);
-
-    Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
-
-    if (_imp->params.world.exists())
-    {
-        SetFile world(SetFileParams::create()
-                .file_name(_imp->params.world)
-                .type(sft_simple)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                .tag(tr1::shared_ptr<DepTag>())
-                .environment(_imp->params.environment));
-
-        world.remove(n);
-        world.rewrite();
-    }
-}
-
-void
-EInstalledRepository::add_to_world(const QualifiedPackageName & n) const
-{
-    add_string_to_world(stringify(n));
-}
-
-void
-EInstalledRepository::add_to_world(const SetName & n) const
-{
-    add_string_to_world(stringify(n));
-}
-
-void
-EInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
-{
-    remove_string_from_world(stringify(n));
-}
-
-void
-EInstalledRepository::remove_from_world(const SetName & n) const
-{
-    remove_string_from_world(stringify(n));
-}
-
 UseFlagState
 EInstalledRepository::query_use(const UseFlagName & f, const PackageID & e) const
 {
@@ -316,22 +239,18 @@ EInstalledRepository::package_set(const SetName & s) const
     }
     else if ("world" == s.data())
     {
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
-
-        if (_imp->params.world.exists())
+        if (_imp->params.deprecated_world.exists())
         {
+            tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
+
             SetFile world(SetFileParams::create()
-                    .file_name(_imp->params.world)
+                    .file_name(_imp->params.deprecated_world)
                     .type(sft_simple)
                     .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tag)
                     .environment(_imp->params.environment));
             return world.contents();
         }
-        else
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "World file '" + stringify(_imp->params.world) +
-                    "' doesn't exist");
 
         return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
@@ -347,7 +266,8 @@ EInstalledRepository::sets_list() const
 
     tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
-    result->insert(SetName("world"));
+    if (_imp->params.deprecated_world.exists())
+        result->insert(SetName("world"));
     return result;
 }
 

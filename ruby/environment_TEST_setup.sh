@@ -37,6 +37,10 @@ foo/bar GPL-2
 foo/baz *
 END
 
+cat <<END > home/.paludis/environment.conf
+world = /dev/null
+END
+
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files,foo/baz/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1

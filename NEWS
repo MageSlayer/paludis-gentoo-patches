@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * World is now handled by environment, not individual repositories. Consult
+      the FAQ 'Upgrades' section for migration instructions.
+
 0.26.0_alpha12:
     * The merger is able to detect hardlinks and tries to merge them as such.
 

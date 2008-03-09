@@ -18,7 +18,7 @@ endif
 syn region PaludisRepositoriesConfComment start=/^\s*#/ end=/$/
 
 syn region PaludisRepositoriesConfKey start=/^\(\s*[^#]\)\@=/ end=/=\@=/
-	    \ contains=PaludisRepositoriesConfKnownKey
+	    \ contains=PaludisRepositoriesConfKnownKey,PaludisRepositoriesConfBadKey
 
 syn match PaludisRepositoriesConfEquals /=/ skipwhite
 	    \ nextgroup=PaludisRepositoriesConfValue
@@ -42,10 +42,13 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ location distdir format builddir library sync root yaml_uri
 	    \ master_repository profiles pkgdir setsdir securitydir newsdir
 	    \ names_cache sync sync_options eclassdirs cache write_cache
-	    \ world provides_cache importance layout use_manifest
+	    \ provides_cache importance layout use_manifest
 	    \ binary_uri_prefix binary_keywords binary_destination
 	    \ eapi_when_unspecified eapi_when_unknown profile_eapi
 	    \ name
+
+syn keyword PaludisRepositoriesConfBadKey contained
+	    \ world
 
 syn keyword PaludisRepositoriesConfKnownValue contained
 	    \ use require ignore
@@ -53,6 +56,7 @@ syn keyword PaludisRepositoriesConfKnownValue contained
 syn match PaludisRepositoriesConfVariable contained /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
 
 hi def link PaludisRepositoriesConfKnownKey         Keyword
+hi def link PaludisRepositoriesConfBadKey           Error
 hi def link PaludisRepositoriesConfKnownValue       Keyword
 hi def link PaludisRepositoriesConfString           String
 hi def link PaludisRepositoriesConfUnquoted         Constant

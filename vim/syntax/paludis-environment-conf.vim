@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:	Paludis environment.conf files
 " Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007 Ciaran McCreesh
+" Copyright:	Copyright (c) 2007, 2008 Ciaran McCreesh
 " Licence:	You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for Paludis environment.conf files.
@@ -38,7 +38,7 @@ syn region PaludisEnvironmentConfString contained start=/"/ end=/"/
 	    \ skipwhite
 
 syn keyword PaludisEnvironmentConfKnownKey contained
-	    \ reduced_username portage_compatible distribution
+	    \ reduced_username portage_compatible distribution world
 
 syn match PaludisEnvironmentConfVariable contained /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
 

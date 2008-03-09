@@ -103,7 +103,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             (k::sets_interface(), this)
             (k::syncable_interface(), this)
             (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))

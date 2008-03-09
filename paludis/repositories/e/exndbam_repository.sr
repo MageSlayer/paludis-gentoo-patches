@@ -8,7 +8,7 @@ make_class_ExndbamRepositoryParams()
     key environment "Environment *"
     key location FSEntry
     key root FSEntry
-    key world FSEntry
+    key deprecated_world FSEntry
     key builddir FSEntry
 
     allow_named_args

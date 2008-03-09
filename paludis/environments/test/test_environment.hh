@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,6 +45,9 @@ namespace paludis
     {
         protected:
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -110,6 +113,14 @@ namespace paludis
 
             virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void add_to_world(const QualifiedPackageName &) const;
+
+            virtual void add_to_world(const SetName &) const;
+
+            virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual void remove_from_world(const SetName &) const;
     };
 }
 

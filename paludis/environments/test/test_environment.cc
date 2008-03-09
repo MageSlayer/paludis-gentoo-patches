@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -187,5 +187,31 @@ tr1::shared_ptr<const UseFlagNameSet>
 TestEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
 {
     return make_shared_ptr(new UseFlagNameSet);
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+TestEnvironment::world_set() const
+{
+    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+void
+TestEnvironment::add_to_world(const QualifiedPackageName &) const
+{
+}
+
+void
+TestEnvironment::remove_from_world(const QualifiedPackageName &) const
+{
+}
+
+void
+TestEnvironment::add_to_world(const SetName &) const
+{
+}
+
+void
+TestEnvironment::remove_from_world(const SetName &) const
+{
 }
 

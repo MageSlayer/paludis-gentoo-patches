@@ -47,7 +47,6 @@ namespace paludis
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositorySetsInterface,
-        public RepositoryWorldInterface,
         public RepositoryDestinationInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
@@ -56,8 +55,6 @@ namespace paludis
             void _add_metadata_keys() const;
 
             void need_ids() const;
-            void add_string_to_world(const std::string & n) const;
-            void remove_string_from_world(const std::string &) const;
 
         protected:
             virtual void need_keys_added() const;
@@ -87,13 +84,6 @@ namespace paludis
 
             virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryWorldInterface */
-
-            virtual void add_to_world(const QualifiedPackageName &) const;
-            virtual void add_to_world(const SetName &) const;
-            virtual void remove_from_world(const QualifiedPackageName &) const;
-            virtual void remove_from_world(const SetName &) const;
 
             /* RepositoryDestinationInterface */
 

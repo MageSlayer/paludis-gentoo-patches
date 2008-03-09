@@ -18,6 +18,7 @@ libpaludispaludisenvironment_la_SOURCES = \
 	package_mask_conf.cc   package_mask_conf.hh \
 	use_conf.cc            use_conf.hh \
 	mirrors_conf.cc        mirrors_conf.hh \
+	world.cc               world.hh \
 	paludis_config.cc      paludis_config.hh \
 	paludis_environment.cc paludis_environment.hh \
 	registration.cc
@@ -55,6 +56,7 @@ paludis_environment_paludis_include_HEADERS = \
 	licenses_conf.hh \
 	bashable_conf.hh \
 	package_mask_conf.hh \
+	world.hh \
 	mirrors_conf.hh
 
 EXTRA_DIST = \

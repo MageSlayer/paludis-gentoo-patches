@@ -6,7 +6,7 @@ make_class_EInstalledRepositoryParams()
     visible
 
     key environment "Environment *"
-    key world "FSEntry"
+    key deprecated_world "FSEntry"
     key root "FSEntry"
     key builddir "FSEntry"
 

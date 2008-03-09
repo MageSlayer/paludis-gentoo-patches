@@ -1183,11 +1183,7 @@ InstallTask::world_update_set(const SetName & s)
         return;
     }
 
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-        if ((**r)[k::world_interface()])
-            (**r)[k::world_interface()]->add_to_world(s);
+    _imp->env->add_to_world(s);
 
     on_update_world(s);
 }
@@ -1217,11 +1213,8 @@ namespace
                 task->on_update_world_skip(a, "version restrictions");
             else
             {
-                for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-                        r_end(env->package_database()->end_repositories()) ;
-                        r != r_end ; ++r)
-                    if ((**r)[k::world_interface()] && a.package_ptr())
-                        (**r)[k::world_interface()]->add_to_world(*a.package_ptr());
+                if (a.package_ptr())
+                    env->add_to_world(*a.package_ptr());
                 task->on_update_world(a);
             }
         }

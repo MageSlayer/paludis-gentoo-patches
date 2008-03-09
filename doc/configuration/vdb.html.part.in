@@ -12,9 +12,6 @@ repositories:</p>
     <dd>The location of the repository. Mandatory. On Gentoo systems, this must be <code>${root}/var/db/pkg</code> to
     avoid problems with broken ebuilds that illegally access the VDB.</dd>
 
-    <dt><code>world</code></dt>
-    <dd>The location of the world file. Optional.</dd>
-
     <dt><code>provides_cache</code></dt>
     <dd>The directory to use for reading and writing a cache of providers of old-style virtuals. See <a
         href="../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>

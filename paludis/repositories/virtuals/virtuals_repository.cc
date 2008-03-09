@@ -119,7 +119,6 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
             (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
             (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))

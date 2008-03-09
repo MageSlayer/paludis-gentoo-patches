@@ -57,12 +57,6 @@ struct RepositoryWrapper :
         return self[k::use_interface()];
     }
 
-    static RepositoryWorldInterface *
-    get_world_interface(const Repository & self)
-    {
-        return self[k::world_interface()];
-    }
-
     static RepositoryMirrorsInterface *
     get_mirrors_interface(const Repository & self)
     {
@@ -233,11 +227,6 @@ void expose_repository()
                 "[ro] RepositorySyncableInterface"
                 )
 
-        .add_property("world_interface", bp::make_function(&RepositoryWrapper::get_world_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryWorldInterface"
-                )
-
         .add_property("environment_variable_interface",
                 bp::make_function(&RepositoryWrapper::get_environment_variable_interface,
                     bp::return_internal_reference<>()),
@@ -346,16 +335,6 @@ void expose_repository()
         (
          "RepositorySyncableInterface",
          "Interface for syncing for repositories.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryWorldInterface
-     */
-    bp::class_<RepositoryWorldInterface, boost::noncopyable>
-        (
-         "RepositoryWorldInterface",
-         "Interface for world handling for repositories.",
          bp::no_init
         );
 

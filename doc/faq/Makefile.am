@@ -11,7 +11,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	misfunctionality.html \
 	operation.html \
 	stricter.html \
-	repositories.html
+	repositories.html \
+	upgrades.html
 
 EXTRA_DIST = \
 	toplinks.html.part.in \
@@ -22,7 +23,8 @@ EXTRA_DIST = \
 	misfunctionality.html.part \
 	operation.html.part \
 	stricter.html.part \
-	repositories.html.part
+	repositories.html.part \
+	upgrades.html.part
 
 paludisfaqhtmldir = $(htmldir)/faq
 
@@ -34,7 +36,8 @@ paludisfaqhtml_DATA = \
 	misfunctionality.html \
 	operation.html \
 	stricter.html \
-	repositories.html
+	repositories.html \
+	upgrades.html
 
 if HAVE_HTMLTIDY
 
@@ -66,6 +69,9 @@ stricter.html : header.html.part $(srcdir)/stricter.html.part footer.html.part
 
 repositories.html : header.html.part $(srcdir)/repositories.html.part footer.html.part
 	cat header.html.part $(srcdir)/repositories.html.part footer.html.part > $@
+
+upgrades.html : header.html.part $(srcdir)/upgrades.html.part footer.html.part
+	cat header.html.part $(srcdir)/upgrades.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \

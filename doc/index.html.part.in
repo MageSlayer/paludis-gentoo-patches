@@ -29,6 +29,7 @@
     things.</li>
     <li><a href="faq/different.html">Things Paludis does differently</a>: why Paludis does some things differently.</li>
     <li><a href="faq/repositories.html">Repository questions</a>.</li>
+    <li><a href="faq/upgrades.html">Upgrades, old bugs and migration</a>.</li>
 </ul>
 
 <h2>Configuration</h2>

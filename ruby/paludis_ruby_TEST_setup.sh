@@ -35,6 +35,10 @@ cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
+cat <<END > home/.paludis/environment.conf
+world = `pwd`/world
+END
+
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
@@ -73,6 +77,6 @@ cd ..
 
 mkdir -p installed || exit 1
 
-echo "foo/bar" > installed/world
+echo "foo/bar" > world
 
 

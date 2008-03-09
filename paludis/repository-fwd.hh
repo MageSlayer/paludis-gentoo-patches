@@ -51,7 +51,6 @@ namespace paludis
     class RepositorySetsInterface;
     class RepositorySyncableInterface;
     class RepositoryUseInterface;
-    class RepositoryWorldInterface;
     class RepositoryEnvironmentVariableInterface;
     class RepositoryMirrorsInterface;
     class RepositoryProvidesInterface;
@@ -83,7 +82,6 @@ namespace paludis
         kc::Field<k::sets_interface, RepositorySetsInterface *>,
         kc::Field<k::syncable_interface, RepositorySyncableInterface *>,
         kc::Field<k::use_interface, RepositoryUseInterface *>,
-        kc::Field<k::world_interface, RepositoryWorldInterface *>,
         kc::Field<k::mirrors_interface, RepositoryMirrorsInterface *>,
         kc::Field<k::environment_variable_interface, RepositoryEnvironmentVariableInterface *>,
         kc::Field<k::provides_interface, RepositoryProvidesInterface *>,

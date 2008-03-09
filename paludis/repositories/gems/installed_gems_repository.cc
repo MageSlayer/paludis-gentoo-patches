@@ -89,7 +89,6 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
             (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::world_interface(), static_cast<RepositoryWorldInterface *>(0))
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
             (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
