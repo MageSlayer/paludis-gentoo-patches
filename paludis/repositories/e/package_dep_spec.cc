@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>

@@ -67,12 +67,13 @@ namespace paludis
             _longname("paludis." + name),
             _e(PyErr_NewException(const_cast<char*>(_longname.c_str()), base, NULL))
         {
+            using namespace tr1::placeholders;
             PyModule_AddObject(boost::python::detail::current_scope, const_cast<char*>(_name.c_str()), _e);
             PyObject * doc_string = PyString_FromString(doc.c_str());
             PyObject_SetAttrString(_e, "__doc__", doc_string);
             boost::python::register_exception_translator<Ex_>(
                     tr1::bind(tr1::mem_fn(&RegisteredException<Ex_>::translator),
-                        this, tr1::placeholders::_1)
+                        this, _1)
                     );
         }
 

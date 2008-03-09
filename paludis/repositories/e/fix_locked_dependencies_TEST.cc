@@ -24,6 +24,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/package_database.hh>
