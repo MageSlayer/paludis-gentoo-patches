@@ -40,7 +40,7 @@ TESTS_ENVIRONMENT = env \
 if ENABLE_RUBY
 
 rubydemosdir = $(datadir)/paludis/ruby/demos/
-rubydemos_DATA = $(IF_RUBY_DEMOS)
+rubydemos_SCRIPTS = $(IF_RUBY_DEMOS)
 
 endif
 
@@ -54,3 +54,7 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
+install-exec-local :
+	$(INSTALL) -d $(DESTDIR)$(bindir)
+	ln -s $(rubydemosdir)/playman.rb $(DESTDIR)$(bindir)/playman
