@@ -260,6 +260,37 @@ namespace
     }
 }
 
+namespace
+{
+    bool
+    check_userpriv(const FSEntry & f, const Environment * env)
+    {
+        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
+
+        if (f.exists())
+        {
+            if (f.group() != env->reduced_gid())
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' owned by group '" +
+                        stringify(get_group_name(f.group())) + "', not '" +
+                        stringify(get_group_name(env->reduced_gid())) +
+                        "', so cannot enable userpriv");
+                return false;
+            }
+            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' does not have group write permission," +
+                        "cannot enable userpriv");
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
 void
 EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         const FetchActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
@@ -282,32 +313,8 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                 fetch_restrict = true;
     }
 
-    bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
-    if (fetch_userpriv_ok)
-    {
-        FSEntry f(_imp->params.distdir);
-        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
-
-        if (f.exists())
-        {
-            if (f.group() != _imp->environment->reduced_gid())
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' owned by group '" +
-                        stringify(get_group_name(f.group())) + "', not '" +
-                        stringify(get_group_name(_imp->environment->reduced_gid())) +
-                        "', so cannot enable userpriv");
-                fetch_userpriv_ok = false;
-            }
-            else if (! f.has_permission(fs_ug_group, fs_perm_write))
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' does not have group write permission," +
-                        "cannot enable userpriv");
-                fetch_userpriv_ok = false;
-            }
-        }
-    }
+    bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid() &&
+            check_userpriv(FSEntry(_imp->params.distdir), _imp->environment));
 
     std::string archives, all_archives;
     {
@@ -514,31 +521,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()));
-    if (userpriv_ok)
-    {
-        FSEntry f(_imp->params.builddir);
-        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
-
-        if (f.exists())
-        {
-            if (f.group() != _imp->environment->reduced_gid())
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' owned by group '" +
-                        stringify(get_group_name(f.group())) + "', not '" +
-                        stringify(get_group_name(_imp->environment->reduced_gid())) + "', cannot enable userpriv");
-                userpriv_ok = false;
-            }
-            else if (! f.has_permission(fs_ug_group, fs_perm_write))
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' does not have group write permission," +
-                        "cannot enable userpriv");
-                userpriv_ok = false;
-            }
-        }
-    }
+    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+            check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment) &&
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
 
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_install);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
