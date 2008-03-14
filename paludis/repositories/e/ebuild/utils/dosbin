@@ -35,11 +35,13 @@ if [[ ! -d "${D}${DESTTREE}/sbin" ]]; then
     install -d "${D}${DESTTREE}/sbin" || exit 3
 fi
 
+ret=0
 for x in "$@"; do
-    if [[ -x ${x} ]]; then
-        install -m0755 "${x}" "${D}${DESTTREE}/sbin" || exit 2
+    if [[ -n ${PALUDIS_NO_CHOWN} ]]; then
+        install -m0755 "${x}" "${D}${DESTTREE}/sbin" || ret=2
     else
-        echo ">>> dosbin: making ${x} executable..."
-        install -m0755 -o root -g 0 "${x}" "${D}${DESTTREE}/sbin" || exit 2
+        install -m0755 -o root -g 0 "${x}" "${D}${DESTTREE}/sbin" || ret=2
     fi
 done
+
+exit ${ret}

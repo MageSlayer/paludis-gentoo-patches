@@ -37,10 +37,9 @@ fi
 
 ret=0
 for x in "$@" ; do
-    if [[ -x "${x}" ]]; then
-        install "${x}" "${D}${DESTTREE}/bin" || ret=2
+    if [[ -n ${PALUDIS_NO_CHOWN} ]]; then
+        install -m0755 "${x}" "${D}${DESTTREE}/bin" || ret=2
     else
-        echo ">>> ${0}: making ${x} executable..."
         install -m0755 -o root -g 0 "${x}" "${D}${DESTTREE}/bin" || ret=2
     fi
 done

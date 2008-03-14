@@ -76,6 +76,7 @@ TESTS_ENVIRONMENT = env \
 	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/`" \
 	PALUDIS_EBUILD_LOG_LEVEL="silent" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_NO_CHOWN="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
