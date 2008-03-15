@@ -22,7 +22,8 @@ EXTRA_DIST = \
 	news.html.part.in \
 	changelog.html.part.in \
 	paludis.css \
-	paludis_270.png
+	paludis_270.png \
+	paludis_64.png
 
 paludishtmldir = $(htmldir)
 
