@@ -61,6 +61,8 @@
 
 using namespace paludis;
 
+typedef std::list<tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+
 template class Sequence<tr1::function<bool (const PackageID &, const Mask &)> >;
 template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
 template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
@@ -113,6 +115,8 @@ namespace paludis
 
         bool throw_on_blocker;
 
+        LabelsStack labels;
+
         const tr1::shared_ptr<const PackageID> current_package_id() const
         {
             if (current_merge_list_entry != merge_list.end())
@@ -129,6 +133,7 @@ namespace paludis
             current_top_level_target(0),
             throw_on_blocker(o.blocks == dl_blocks_error)
         {
+            labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
         }
     };
 }
@@ -282,26 +287,29 @@ namespace
 }
 
 struct DepList::AddVisitor :
-    ConstVisitor<DependencySpecTree>,
-    ConstVisitor<DependencySpecTree>::VisitConstSequence<AddVisitor, AllDepSpec>
+    ConstVisitor<DependencySpecTree>
 {
     DepList * const d;
     tr1::shared_ptr<const DestinationsSet> destinations;
     tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
     std::set<SetName> recursing_sets;
+    const bool only_if_not_suggested_label;
 
-    AddVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsSet> ddd,
+    AddVisitor(DepList * const dd, bool l, tr1::shared_ptr<const DestinationsSet> ddd,
                tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c =
                (tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                    new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))) :
         d(dd),
         destinations(ddd),
-        conditions(c)
+        conditions(c),
+        only_if_not_suggested_label(l)
     {
     }
 
-    using ConstVisitor<DependencySpecTree>::VisitConstSequence<AddVisitor, AllDepSpec>::visit_sequence;
+    void visit_sequence(const AllDepSpec &,
+            DependencySpecTree::ConstSequenceIterator,
+            DependencySpecTree::ConstSequenceIterator);
 
     void visit_sequence(const AnyDepSpec &,
             DependencySpecTree::ConstSequenceIterator,
@@ -320,10 +328,54 @@ struct DepList::AddVisitor :
     void visit_leaf(const NamedSetDepSpec &);
 };
 
+namespace
+{
+    struct SuggestActiveVisitor :
+        ConstVisitor<DependencySuggestLabelVisitorTypes>
+    {
+        bool result;
+
+        SuggestActiveVisitor() :
+            result(false)
+        {
+        }
+
+        void visit(const DependencyRecommendedLabel &)
+        {
+        }
+
+        void visit(const DependencySuggestedLabel &)
+        {
+            result = true;
+        }
+
+        void visit(const DependencyRequiredLabel &)
+        {
+        }
+    };
+}
+
 void
 DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 {
     Context context("When adding PackageDepSpec '" + stringify(a) + "':");
+
+    if (only_if_not_suggested_label)
+    {
+        SuggestActiveVisitor v;
+        for (DependencySuggestLabelSequence::ConstIterator
+                i((*d->_imp->labels.begin())->suggest_labels()->begin()),
+                i_end((*d->_imp->labels.begin())->suggest_labels()->end()) ;
+                i != i_end ; ++i)
+            (*i)->accept(v);
+
+        if (v.result)
+        {
+            Log::get_instance()->message(ll_debug, lc_context) << "Skipping dep '"
+                << a << "' because suggested label is active";
+            return;
+        }
+    }
 
     Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
@@ -608,6 +660,17 @@ DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
 }
 
 void
+DepList::AddVisitor::visit_sequence(const AllDepSpec &,
+        DependencySpecTree::ConstSequenceIterator cur,
+        DependencySpecTree::ConstSequenceIterator end)
+{
+    d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+
+    std::for_each(cur, end, accept_visitor(*this));
+}
+
+void
 DepList::AddVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
@@ -617,6 +680,9 @@ DepList::AddVisitor::visit_sequence(const ConditionalDepSpec & a,
 
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
+        d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+        RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+
         if (a.condition_met())
             std::for_each(cur, end, accept_visitor(*this));
     }
@@ -634,6 +700,9 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 {
     using namespace tr1::placeholders;
 
+    d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
     if (end == std::find_if(cur, end, &is_viable_any_child))
         return;
@@ -645,7 +714,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         if (rewritten_spec)
         {
             TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
-            d->add_not_top_level(rr, destinations, conditions);
+            d->add_not_top_level(only_if_not_suggested_label, rr, destinations, conditions);
             return;
         }
     }
@@ -663,7 +732,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         if (d->already_installed(*c, destinations))
         {
             Context context("When using already installed group to resolve dependencies:");
-            d->add_not_top_level(*c, destinations, conditions);
+            d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
     }
@@ -685,7 +754,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
                     tr1::shared_ptr<DepListOverrideMasksFunctions>());
-            d->add_not_top_level(*c, destinations, conditions);
+            d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
         catch (const DepListError &)
@@ -707,7 +776,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
                     tr1::shared_ptr<DepListOverrideMasksFunctions>());
-            d->add_not_top_level(*c, destinations, conditions);
+            d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
         catch (const DepListError &)
@@ -724,7 +793,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
             if (! is_viable_any_child(*c))
                 continue;
 
-            d->add_not_top_level(*c, destinations, conditions);
+            d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
     }
@@ -895,9 +964,9 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 }
 
 void
-DepList::AddVisitor::visit_leaf(const DependencyLabelsDepSpec &)
+DepList::AddVisitor::visit_leaf(const DependencyLabelsDepSpec & spec)
 {
-    // XXX implement
+    d->_imp->labels.begin()->reset(new ActiveDependencyLabels(**d->_imp->labels.begin(), spec));
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
@@ -929,22 +998,23 @@ DepList::clear()
 }
 
 void
-DepList::add_in_role(DependencySpecTree::ConstItem & spec, const std::string & role,
+DepList::add_in_role(const bool only_if_not_suggested_label, DependencySpecTree::ConstItem & spec, const std::string & role,
         tr1::shared_ptr<const DestinationsSet> destinations)
 {
-    Context context("When adding " + role + ":");
-    add_not_top_level(spec, destinations,
+    Context context("When adding " + role + (only_if_not_suggested_label ? " unless under a suggested label" : "") + ":");
+    add_not_top_level(only_if_not_suggested_label, spec, destinations,
         tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))));
 }
 
 void
-DepList::add_not_top_level(DependencySpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSet> destinations,
+DepList::add_not_top_level(const bool only_if_not_suggested_label,
+        DependencySpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSet> destinations,
                            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
-    AddVisitor visitor(this, destinations, conditions);
+    AddVisitor visitor(this, only_if_not_suggested_label, destinations, conditions);
     spec.accept(visitor);
     transaction.commit();
 }
@@ -957,7 +1027,7 @@ DepList::add(SetSpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSe
     Save<SetSpecTree::ConstItem *> save_current_top_level_target(&_imp->current_top_level_target,
             _imp->current_top_level_target ? _imp->current_top_level_target : &spec);
 
-    AddVisitor visitor(this, destinations);
+    AddVisitor visitor(this, false, destinations);
     spec.accept(visitor);
     transaction.commit();
 }
@@ -1064,33 +1134,45 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
         Context c("When showing suggestions:");
         Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                 next(our_merge_entry_position));
-        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags);
+        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags, false);
         p->suggested_dependencies_key()->value()->accept(visitor);
+    }
+
+    /* add suggests in post depend too */
+    if (_imp->opts->suggested == dl_suggested_show && p->post_dependencies_key())
+    {
+        Context c("When showing suggestions in post dependencies key:");
+        Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
+                next(our_merge_entry_position));
+        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags, true);
+        p->post_dependencies_key()->value()->accept(visitor);
     }
 
     /* add pre dependencies */
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations);
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations,
+                (_imp->opts->suggested == dl_suggested_install) ? false : true);
     if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
-        add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
+        add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
 
     our_merge_entry_position->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
     /* add post dependencies */
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations);
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations,
+                (_imp->opts->suggested == dl_suggested_install) ? false : true);
 
     if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
-        add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
+        add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
 
     our_merge_entry_position->state = dle_has_all_deps;
 }
@@ -1172,13 +1254,13 @@ DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
 
 void
 DepList::add_predeps(DependencySpecTree::ConstItem & d, const DepListDepsOption opt, const std::string & s,
-        tr1::shared_ptr<const DestinationsSet> destinations)
+        tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
     {
         try
         {
-            add_in_role(d, s + " dependencies as pre dependencies", destinations);
+            add_in_role(only_if_not_suggested_label, d, s + " dependencies as pre dependencies", destinations);
         }
         catch (const DepListError & e)
         {
@@ -1193,7 +1275,7 @@ DepList::add_predeps(DependencySpecTree::ConstItem & d, const DepListDepsOption 
 
 void
 DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption opt, const std::string & s,
-        tr1::shared_ptr<const DestinationsSet> destinations)
+        tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
     {
@@ -1201,7 +1283,7 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
         {
             try
             {
-                add_in_role(d, s + " dependencies as post dependencies", destinations);
+                add_in_role(only_if_not_suggested_label, d, s + " dependencies as post dependencies", destinations);
             }
             catch (const CircularDependencyError &)
             {
@@ -1210,7 +1292,7 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
                         dl_circular_discard_silently : dl_circular_discard);
                 Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position,
                         _imp->merge_list.end());
-                add_in_role(d, s + " dependencies as post dependencies with cycle breaking", destinations);
+                add_in_role(only_if_not_suggested_label, d, s + " dependencies as post dependencies with cycle breaking", destinations);
             }
         }
         catch (const DepListError & e)
@@ -1259,21 +1341,21 @@ DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & 
             our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations);
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations);
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations);
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations, true);
 
     our_merge_entry->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations);
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations);
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations);
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations, true);
 }
 
 namespace

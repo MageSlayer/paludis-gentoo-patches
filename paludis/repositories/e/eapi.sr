@@ -105,6 +105,7 @@ make_class_EAPIToolsOptions()
 
     key unpack_unrecognised_is_fatal bool
     key unpack_fix_permissions       bool
+    key dosym_mkdir                  bool
 
     doxygen_comment << "END"
         /**

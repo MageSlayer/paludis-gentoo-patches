@@ -24,13 +24,21 @@
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/join.hh>
 #include <set>
+#include <list>
 
 using namespace paludis;
+
+typedef std::list<tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
 
 namespace paludis
 {
@@ -42,27 +50,31 @@ namespace paludis
         const Environment * const environment;
         const tr1::shared_ptr<const PackageID> id;
         bool dependency_tags;
+        const bool only_if_suggested_label;
         tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
         std::set<SetName> recursing_sets;
+        LabelsStack labels;
 
         Implementation(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-                const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
+                const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
             dep_list(d),
             destinations(dd),
             environment(e),
             id(p),
             dependency_tags(t),
+            only_if_suggested_label(l),
             conditions(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))
         {
+            labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
         }
     };
 }
 
 ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-        const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
-    PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t))
+        const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
+    PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t, l))
 {
 }
 
@@ -80,7 +92,12 @@ ShowSuggestVisitor::visit_sequence(const ConditionalDepSpec & a,
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     if (a.condition_met())
+    {
+        _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+        RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+
         std::for_each(cur, end, accept_visitor(*this));
+    }
 }
 
 void
@@ -92,6 +109,20 @@ ShowSuggestVisitor::visit_sequence(const AnyDepSpec & a,
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
+    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+
+    std::for_each(cur, end, accept_visitor(*this));
+}
+
+void
+ShowSuggestVisitor::visit_sequence(const AllDepSpec &,
+        DependencySpecTree::ConstSequenceIterator cur,
+        DependencySpecTree::ConstSequenceIterator end)
+{
+    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+
     std::for_each(cur, end, accept_visitor(*this));
 }
 
@@ -100,14 +131,69 @@ ShowSuggestVisitor::visit_leaf(const BlockDepSpec &)
 {
 }
 
+namespace
+{
+    struct SuggestActiveVisitor :
+        ConstVisitor<DependencySuggestLabelVisitorTypes>
+    {
+        bool result;
+
+        SuggestActiveVisitor() :
+            result(false)
+        {
+        }
+
+        void visit(const DependencyRecommendedLabel &)
+        {
+        }
+
+        void visit(const DependencySuggestedLabel &)
+        {
+            result = true;
+        }
+
+        void visit(const DependencyRequiredLabel &)
+        {
+        }
+    };
+}
+
 void
 ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
 {
     Context context("When adding suggested dep '" + stringify(a) + "':");
 
+    if (_imp->only_if_suggested_label)
+    {
+        SuggestActiveVisitor v;
+        for (DependencySuggestLabelSequence::ConstIterator
+                i((*_imp->labels.begin())->suggest_labels()->begin()),
+                i_end((*_imp->labels.begin())->suggest_labels()->end()) ;
+                i != i_end ; ++i)
+            (*i)->accept(v);
+
+        if (! v.result)
+        {
+            Log::get_instance()->message(ll_debug, lc_context) << "Skipping dep '"
+                << a << "' because no suggested label is active";
+            return;
+        }
+    }
+
     Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
+
+    tr1::shared_ptr<const PackageIDSequence> installed_matches(_imp->environment->package_database()->query(
+                query::SupportsAction<InstalledAction>() &
+                query::Matches(a), qo_order_by_version));
+    if (! installed_matches->empty())
+    {
+        Log::get_instance()->message(ll_debug, lc_context) << "Suggestion '" << a << "' already matched by installed packages '"
+            << join(indirect_iterator(installed_matches->begin()), indirect_iterator(installed_matches->end()), ", ")
+            << "', not suggesting it";
+        return;
+    }
 
     tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
                 query::SupportsAction<InstallAction>() &
@@ -132,9 +218,9 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
 }
 
 void
-ShowSuggestVisitor::visit_leaf(const DependencyLabelsDepSpec &)
+ShowSuggestVisitor::visit_leaf(const DependencyLabelsDepSpec & spec)
 {
-    // XXX implement
+    _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), spec));
 }
 
 void

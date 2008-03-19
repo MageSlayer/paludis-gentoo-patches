@@ -166,7 +166,8 @@ namespace paludis
             kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::load_environment, const FSEntry *>,
-            kc::Field<k::info_vars, FSEntry>
+            kc::Field<k::info_vars, FSEntry>,
+            kc::Field<k::use_ebuild_file, bool>
                 > EbuildInfoCommandParams;
 
         /**
@@ -425,6 +426,8 @@ namespace paludis
 
                 virtual Command extend_command(const Command &);
 
+                virtual std::string ebuild_file() const;
+
             public:
                 /**
                  * Constructor.
@@ -433,7 +436,7 @@ namespace paludis
         };
 
         /**
-         * An EbuildPretendCommand is used to configure a package in a VDBRepository.
+         * An EbuildPretendCommand is used to pretend a package in ERepository.
          *
          * \ingroup grpebuildinterface
          */
@@ -458,7 +461,7 @@ namespace paludis
         };
 
         /**
-         * An EbuildInfoCommand is used to obtain information from a package in a VDBRepository.
+         * An EbuildInfoCommand is used to obtain information from a package.
          *
          * \ingroup grpebuildinterface
          */
@@ -471,9 +474,11 @@ namespace paludis
 
                 virtual std::string commands() const;
 
-                virtual bool failure();
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
                 virtual Command extend_command(const Command &);
+
+                virtual std::string ebuild_file() const;
 
             public:
                 /**

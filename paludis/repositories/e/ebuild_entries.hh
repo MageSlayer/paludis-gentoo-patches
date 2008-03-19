@@ -46,6 +46,9 @@ namespace paludis
             public ERepositoryEntries,
             private PrivateImplementationPattern<EbuildEntries>
         {
+            private:
+                std::string _guess_eapi(const QualifiedPackageName &, const FSEntry &) const;
+
             public:
                 /**
                  * Create an EbuildEntries instance.
@@ -72,8 +75,7 @@ namespace paludis
                 virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
-                        const FSEntry &, const std::string &) const
+                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,

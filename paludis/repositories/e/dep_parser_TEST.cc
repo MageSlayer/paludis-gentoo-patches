@@ -412,5 +412,26 @@ namespace test_cases
                         &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringParseError);
         }
     } test_dep_spec_parser_labels;
+
+    struct DepParserKDEBuildURILabelsTest : TestCase
+    {
+        DepParserKDEBuildURILabelsTest() : TestCase("kdebuild uri label handling") { }
+
+        void run()
+        {
+            StringifyFormatter ff;
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
+            DepSpecPrettyPrinter d(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            parse_fetchable_uri("http://foo/bar manual: two",
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d);
+            TEST_CHECK_EQUAL(stringify(d), "http://foo/bar manual: two");
+            TEST_CHECK_THROWS(parse_fetchable_uri("http://foo/bar monkey: two",
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d), DepStringParseError);
+        }
+    } test_dep_spec_parser_kdebuild_uri_labels;
 }
 

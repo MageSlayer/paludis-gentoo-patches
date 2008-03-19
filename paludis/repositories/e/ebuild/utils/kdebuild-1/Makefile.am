@@ -1,10 +1,9 @@
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = .
 
-libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
+libexecprogdir = $(libexecdir)/paludis/utils/kdebuild-1
 
 libexecprog_SCRIPTS = \
-	dodoc \
 	dohard \
 	dohtml \
 	dosed \
@@ -20,8 +19,7 @@ libexecprog_SCRIPTS = \
 	prepalldocs \
 	ecompress \
 	ecompressdir \
-	emake \
-	banned_in_eapi_exheres-0
+	banned_in_eapi_kdebuild-1
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
@@ -39,7 +37,7 @@ TESTS_ENVIRONMENT = env \
 TESTS =
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) \
-	banned_in_eapi_exheres-0 $(TESTS)
+	banned_in_eapi_kdebuild-1 $(TESTS)
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
@@ -47,7 +45,7 @@ bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 
 CLEANFILES = *~ $(bannedscripts)
 
-$(bannedscripts) : banned_in_eapi_exheres-0
+$(bannedscripts) : banned_in_eapi_kdebuild-1
 	cat $? > $@
 	chmod +x $@
 

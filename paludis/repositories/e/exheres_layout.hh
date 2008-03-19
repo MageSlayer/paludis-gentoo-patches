@@ -88,9 +88,6 @@ namespace paludis
                 virtual FSEntry category_directory(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSEntry package_file(const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual FSEntry binary_ebuild_location(const QualifiedPackageName &, const VersionSpec &,
                         const std::string & eapi) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -108,9 +105,6 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual bool eapi_ebuild_suffix() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry profiles_base_dir() const

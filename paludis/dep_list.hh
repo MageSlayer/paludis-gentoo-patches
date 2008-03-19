@@ -80,7 +80,7 @@ namespace paludis
             /**
              * Add a DepSpec with role context.
              */
-            void add_in_role(DependencySpecTree::ConstItem &, const std::string & role,
+            void add_in_role(const bool only_if_not_suggested_label, DependencySpecTree::ConstItem &, const std::string & role,
                     tr1::shared_ptr<const DestinationsSet>);
 
             /**
@@ -114,13 +114,13 @@ namespace paludis
              * Add predependencies.
              */
             void add_predeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
-                    tr1::shared_ptr<const DestinationsSet> destinations);
+                    tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label);
 
             /**
              * Add postdependencies.
              */
             void add_postdeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
-                    tr1::shared_ptr<const DestinationsSet> destinations);
+                    tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label);
 
             /**
              * Return whether the specified PackageID is matched by
@@ -128,7 +128,9 @@ namespace paludis
              */
             bool is_top_level_target(const PackageID &) const;
 
-            void add_not_top_level(DependencySpecTree::ConstItem &,
+            void add_not_top_level(
+                    const bool only_if_not_suggested_label,
+                    DependencySpecTree::ConstItem &,
                     tr1::shared_ptr<const DestinationsSet> target_destinations,
                     tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions);
 

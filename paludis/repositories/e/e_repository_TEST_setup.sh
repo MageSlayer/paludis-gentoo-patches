@@ -612,6 +612,22 @@ src_install() {
 }
 END
 cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
+mkdir -p "cat/dosym-success"
+cat <<'END' > cat/dosym-success/dosym-success-1.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dosym foo /usr/bin/bar
+    [[ "$(readlink ${D}/usr/bin/bar )" == "foo" ]] || die
+}
+END
 mkdir -p "cat/best-version"
 cat <<'END' > cat/best-version/best-version-0.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -725,6 +741,113 @@ src_compile() {
 
 pkg_preinst() {
     [[ -d "${T}" ]] || die "T not a dir"
+}
+END
+mkdir -p "cat/econf-source-kdebuild"
+cat <<END > cat/econf-source-kdebuild/econf-source-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    ECONF_SOURCE=subdir
+    mkdir \${S}
+    cd \${S}
+    mkdir subdir
+    echo 'touch monkey' > subdir/configure
+    chmod +x subdir/configure
+}
+
+src_install() {
+    insinto /usr/bin
+    doins monkey || die "no monkey"
+}
+END
+mkdir -p "cat/info-success-kdebuild"
+cat <<END > cat/info-success-kdebuild/info-success-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_info() {
+    einfo "This is my pkg_info. There are many like it, but this one is mine."
+}
+END
+mkdir -p "cat/info-fail-kdebuild"
+cat <<END > cat/info-fail-kdebuild/info-fail-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_info() {
+    die "This is my pkg_info. There are many like it, but this one is mine."
+}
+END
+mkdir -p "cat/banned-functions-kdebuild"
+cat <<END > cat/banned-functions-kdebuild/banned-functions-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    prepall
+}
+END
+mkdir -p "cat/banned-vars-kdebuild"
+cat <<END > cat/banned-vars-kdebuild/banned-vars-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+PROVIDE="virtual/monkey"
+END
+mkdir -p "cat/dosym-success-kdebuild"
+cat <<'END' > cat/dosym-success-kdebuild/dosym-success-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dodir /usr/bin
+    dosym foo /usr/bin/bar
+    [[ "$(readlink ${D}/usr/bin/bar )" == "foo" ]] || die
+}
+END
+mkdir -p "cat/dosym-fail-kdebuild"
+cat <<END > cat/dosym-fail-kdebuild/dosym-fail-kdebuild-1.kdebuild-1 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dosym foo /usr/bin/bar
 }
 END
 cd ..

@@ -122,7 +122,7 @@ dist_check_SCRIPTS = \
 
 endif
 
-EXTRA_DIST = test_extras.cc $(check_SCRIPTS)
+EXTRA_DIST = $(check_SCRIPTS)
 BUILT_SOURCES =
 
 TESTS_ENVIRONMENT = env \
@@ -132,6 +132,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
 	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
 	PALUDIS_QA_DATA_DIR="$(top_srcdir)/paludis/repositories/e/qa/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
@@ -163,7 +164,6 @@ check_PROGRAMS = $(TESTS)
 spec_keys_TEST_SOURCES = spec_keys_TEST.cc
 spec_keys_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -175,7 +175,6 @@ spec_keys_TEST_LDADD = \
 stray_files_TEST_SOURCES = stray_files_TEST.cc
 stray_files_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -187,7 +186,6 @@ stray_files_TEST_LDADD = \
 extractors_TEST_SOURCES = extractors_TEST.cc
 extractors_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -199,7 +197,6 @@ extractors_TEST_LDADD = \
 homepage_key_TEST_SOURCES = homepage_key_TEST.cc
 homepage_key_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -211,7 +208,6 @@ homepage_key_TEST_LDADD = \
 visibility_TEST_SOURCES = visibility_TEST.cc
 visibility_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -223,7 +219,6 @@ visibility_TEST_LDADD = \
 default_functions_TEST_SOURCES = default_functions_TEST.cc
 default_functions_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -235,7 +230,6 @@ default_functions_TEST_LDADD = \
 kv_variables_TEST_SOURCES = kv_variables_TEST.cc
 kv_variables_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -247,7 +241,6 @@ kv_variables_TEST_LDADD = \
 misc_files_TEST_SOURCES = misc_files_TEST.cc
 misc_files_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -259,7 +252,6 @@ misc_files_TEST_LDADD = \
 manifest_TEST_SOURCES = manifest_TEST.cc
 manifest_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -271,7 +263,6 @@ manifest_TEST_LDADD = \
 subshell_die_TEST_SOURCES = subshell_die_TEST.cc
 subshell_die_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -283,7 +274,6 @@ subshell_die_TEST_LDADD = \
 function_keyword_TEST_SOURCES = function_keyword_TEST.cc
 function_keyword_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
-	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \

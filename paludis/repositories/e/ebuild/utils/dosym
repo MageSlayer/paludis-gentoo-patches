@@ -36,8 +36,14 @@ if [[ ${#} -ne 2 ]]; then
 fi
 
 if [[ ! -d $(dirname "${D}$2") ]]; then
-    ebuild_notice "qa" "$0: target directory $(dirname "${D}$2") does not exist; creating. Please fix the ebuild to create it explicitly."
-    dodir $(dirname $2)
+    if [[ -n "${PALUDIS_DOSYM_NO_MKDIR}" ]] ; then
+        echo "dosym: error: target directory $(dirname "${D}$2" ) does not exist" 1>&2
+        kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+        exit 123
+    else
+        ebuild_notice "qa" "$0: target directory $(dirname "${D}$2") does not exist; creating. Please fix the ebuild to create it explicitly."
+        dodir $(dirname $2)
+    fi
 fi
 
 ln -snf "${1}" "${D}${2}"

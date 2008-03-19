@@ -220,7 +220,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 
         try
         {
-            tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, _imp->entries->extract_package_file_version(n, *e), *e, ""));
+            tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
                         tr1::bind(std::equal_to<VersionSpec>(), id->version(), tr1::bind(tr1::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
@@ -436,30 +436,6 @@ tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::use_desc_dirs() const
 {
     return _imp->use_desc_dirs;
-}
-
-bool
-TraditionalLayout::eapi_ebuild_suffix() const
-{
-    return false;
-}
-
-FSEntry
-TraditionalLayout::package_file(const PackageID & id) const
-{
-    for (DirIterator d(package_directory(id.name()), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
-    {
-        std::string::size_type p(d->basename().rfind('.'));
-        if (std::string::npos == p)
-            continue;
-
-        std::string prefix(stringify(id.name().package) + "-" + stringify(id.version()));
-        if (0 == d->basename().compare(0, p, prefix))
-            if (_imp->entries->is_package_file(id.name(), *d))
-                return *d;
-    }
-
-    throw NoSuchPackageError(stringify(id));
 }
 
 FSEntry

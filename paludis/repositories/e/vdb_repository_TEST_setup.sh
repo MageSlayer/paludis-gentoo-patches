@@ -82,7 +82,7 @@ echo "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: cat
 
 mkdir -p repo3
 
-mkdir -p srcrepo/{profiles/profile,cat/{target,vars}{,-exheres},eclass}
+mkdir -p srcrepo/{profiles/profile,cat/{target,vars}{,-exheres,-kdebuild},eclass}
 cat <<END > srcrepo/profiles/profile/make.defaults
 ARCH=test
 USERLAND="GNU"
@@ -140,6 +140,30 @@ pkg_config() {
 END
 
 cat <<'END' > srcrepo/cat/target-exheres/target-exheres-0.ebuild
+EAPI="exheres-0"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+
+src_install() {
+    echo MONKEY > ${D}/monkey
+}
+
+pkg_info() {
+    echo "This is pkg_info"
+}
+
+pkg_config() {
+    echo "This is pkg_config"
+}
+END
+
+cat <<'END' > srcrepo/cat/target-kdebuild/target-kdebuild-1.ebuild
 EAPI="exheres-0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -248,6 +272,48 @@ pkg_config() {
 END
 
 cat <<'END' > srcrepo/cat/vars-exheres/vars-exheres-0.ebuild
+EAPI="exheres-0"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES="foo/bar"
+
+pkg_setup() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+src_compile() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_preinst() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_prerm() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_info() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+
+pkg_config() {
+    einfo "${EBUILD_PHASE}: T=${T}"
+    [[ -d "${T}" ]] || die "T not a dir"
+}
+END
+
+cat <<'END' > srcrepo/cat/vars-kdebuild/vars-kdebuild-1.ebuild
 EAPI="exheres-0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"

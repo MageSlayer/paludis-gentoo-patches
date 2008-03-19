@@ -1310,8 +1310,170 @@ namespace test_cases
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("dosym success 1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_1;
+
+    struct ERepositoryInstallEAPIKdebuild1Test : TestCase
+    {
+        ERepositoryInstallEAPIKdebuild1Test() : TestCase("install_eapi_kdebuild_1") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo13");
+            keys->insert("profiles", "e_repository_TEST_dir/repo13/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            env.package_database()->add_repository(2, installed_repo);
+
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), installed_repo)
+                    );
+
+            {
+                TestMessageSuffix suffix("econf source kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("banned functions kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("banned vars kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/banned-vars-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "UNKNOWN");
+            }
+
+            {
+                TestMessageSuffix suffix("dosym success kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("dosym fail kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-fail-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+        }
+    } test_e_repository_install_eapi_kdebuild_1;
+
+    struct ERepositoryInfoEAPIKdebuild1Test : TestCase
+    {
+        ERepositoryInfoEAPIKdebuild1Test() : TestCase("info_eapi_kdebuild_1") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo13");
+            keys->insert("profiles", "e_repository_TEST_dir/repo13/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            env.package_database()->add_repository(2, installed_repo);
+
+            InfoAction action;
+
+            {
+                TestMessageSuffix suffix("info success kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/info-success-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("info fail kdebuild-1", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/info-fail-kdebuild-1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_THROWS(id->perform_action(action), InfoActionError);
+            }
+        }
+    } test_e_repository_info_eapi_kdebuild_1;
 
     struct ERepositoryInstallExheres0Test : TestCase
     {

@@ -71,8 +71,7 @@ namespace paludis
                 /**
                  * Create an ERepositoryID.
                  */
-                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
-                        const FSEntry &, const std::string &) const
+                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**

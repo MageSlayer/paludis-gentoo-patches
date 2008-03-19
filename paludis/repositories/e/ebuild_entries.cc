@@ -50,6 +50,8 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/config_file.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 #include <fstream>
 #include <list>
@@ -60,6 +62,44 @@
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+namespace
+{
+    struct Suffixes :
+        InstantiationPolicy<Suffixes, instantiation_method::SingletonTag>
+    {
+        KeyValueConfigFile file;
+
+        Suffixes() :
+            file(FSEntry(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
+                    KeyValueConfigFileOptions())
+        {
+        }
+
+        bool is_known_suffix(const std::string & s) const
+        {
+            return ! file.get("suffix_" + s + "_known").empty();
+        }
+
+        std::string guess_eapi(const std::string & s) const
+        {
+            return file.get("guess_eapi_" + s);
+        }
+
+        std::string manifest_key(const std::string & s) const
+        {
+            std::string result(file.get("manifest_key_" + s));
+            if (result.empty())
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Don't know what the manifest key for files with "
+                    "suffix '" << s << "' is, guessing 'MISC'";
+                return "MISC";
+            }
+            else
+                return result;
+        }
+    };
+}
 
 namespace paludis
 {
@@ -104,13 +144,12 @@ EbuildEntries::~EbuildEntries()
 }
 
 const tr1::shared_ptr<const ERepositoryID>
-EbuildEntries::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f,
-        const std::string & guessed_eapi) const
+EbuildEntries::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 {
-    Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
+    Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
-    tr1::shared_ptr<EbuildID> result(new EbuildID(q, v, _imp->params.environment,
-                _imp->e_repository->shared_from_this(), f, guessed_eapi,
+    tr1::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f), _imp->params.environment,
+                _imp->e_repository->shared_from_this(), f, _guess_eapi(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }
@@ -397,7 +436,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                         (k::environment(), _imp->params.environment)
                         (k::package_id(), id)
                         (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
-                        (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                        (k::ebuild_file(), id->fs_location_key()->value())
                         (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
                         (k::eclassdirs(), _imp->params.eclassdirs)
                         (k::exlibsdirs(), exlibsdirs)
@@ -608,7 +647,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                     (k::environment(), _imp->params.environment)
                     (k::package_id(), id)
                     (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
-                    (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                    (k::ebuild_file(), id->fs_location_key()->value())
                     (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
                     (k::eclassdirs(), _imp->params.eclassdirs)
                     (k::exlibsdirs(), exlibsdirs)
@@ -673,7 +712,7 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
                 (k::environment(), _imp->params.environment)
                 (k::package_id(), id)
                 (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
-                (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                (k::ebuild_file(), id->fs_location_key()->value())
                 (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
                 (k::eclassdirs(), _imp->params.eclassdirs)
                 (k::exlibsdirs(), exlibsdirs)
@@ -701,6 +740,7 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
                 (k::profiles(), _imp->params.profiles)
                 (k::load_environment(), static_cast<const FSEntry *>(0))
                 (k::info_vars(), i)
+                (k::use_ebuild_file(), true)
                 );
 
         EbuildInfoCommand cmd(command_params, info_params);
@@ -725,7 +765,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
             (k::environment(), _imp->params.environment)
             (k::package_id(), id)
             (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
-            (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+            (k::ebuild_file(), id->fs_location_key()->value())
             (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
             (k::eclassdirs(), _imp->params.eclassdirs)
             (k::exlibsdirs(), exlibsdirs)
@@ -788,26 +828,27 @@ EbuildEntries::merge(const MergeParams & m)
 bool
 EbuildEntries::is_package_file(const QualifiedPackageName & n, const FSEntry & e) const
 {
-    if (_imp->e_repository->layout()->eapi_ebuild_suffix())
-        return (0 == e.basename().compare(0, stringify(n.package).length() + 1, stringify(n.package) + "-")) &&
-            std::string::npos != e.basename().rfind('.') &&
-            e.basename().at(e.basename().length() - 1) != '~' &&
-            e.is_regular_file_or_symlink_to_regular_file();
-    else
-        return is_file_with_prefix_extension(e, stringify(n.package) + "-", ".ebuild", IsFileWithOptions());
+    Context context("When working out whether '" + stringify(e) + "' is a package file for '" + stringify(n) + "':");
+
+    if (0 != e.basename().compare(0, stringify(n.package).length() + 1, stringify(n.package) + "-"))
+        return false;
+
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        return false;
+
+    std::string suffix(e.basename().substr(p + 1));
+    return Suffixes::get_instance()->is_known_suffix(suffix);
 }
 
 VersionSpec
 EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, const FSEntry & e) const
 {
     Context context("When extracting version from '" + stringify(e) + "':");
-    if (_imp->e_repository->layout()->eapi_ebuild_suffix())
-    {
-        std::string::size_type p(e.basename().rfind('.'));
-        return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package) + "-"));
-    }
-    else
-        return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebuild"), stringify(n.package) + "-"));
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        throw InternalError(PALUDIS_HERE, "got npos");
+    return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package) + "-"));
 }
 
 bool
@@ -838,7 +879,7 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
                 (k::environment(), _imp->params.environment)
                 (k::package_id(), id)
                 (k::ebuild_dir(), _imp->e_repository->layout()->package_directory(id->name()))
-                (k::ebuild_file(), _imp->e_repository->layout()->package_file(*id))
+                (k::ebuild_file(), id->fs_location_key()->value())
                 (k::files_dir(), _imp->e_repository->layout()->package_directory(id->name()) / "files")
                 (k::eclassdirs(), _imp->params.eclassdirs)
                 (k::exlibsdirs(), exlibsdirs)
@@ -866,22 +907,33 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 std::string
-EbuildEntries::get_package_file_manifest_key(const FSEntry & f, const QualifiedPackageName & q) const
+EbuildEntries::get_package_file_manifest_key(const FSEntry & e, const QualifiedPackageName & q) const
 {
-    if (! is_package_file(q, f))
+    if (! is_package_file(q, e))
         return "";
-    if (is_file_with_prefix_extension(f, stringify(q.package) + "-", ".ebuild", IsFileWithOptions()))
+
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
         return "EBUILD";
-    else
-        return "EXHERES";
+
+    std::string suffix(e.basename().substr(p + 1));
+    return Suffixes::get_instance()->manifest_key(suffix);
 }
 
 std::string
 EbuildEntries::binary_ebuild_name(const QualifiedPackageName & q, const VersionSpec & v, const std::string & e) const
 {
-    if (_imp->e_repository->layout()->eapi_ebuild_suffix())
-        return stringify(q.package) + "-" + stringify(v) + "." + e;
-    else
-        return stringify(q.package) + "-" + stringify(v) + ".ebuild";
+    return stringify(q.package) + "-" + stringify(v) + "." + e;
+}
+
+std::string
+EbuildEntries::_guess_eapi(const QualifiedPackageName &, const FSEntry & e) const
+{
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        return "";
+
+    std::string suffix(e.basename().substr(p + 1));
+    return Suffixes::get_instance()->guess_eapi(suffix);
 }
 

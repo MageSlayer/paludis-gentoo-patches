@@ -412,6 +412,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
 	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
@@ -509,7 +510,7 @@ endif
 
 paludis_datadir = $(datadir)/paludis
 
-dist_paludis_data_DATA = traditional.exclude
+dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
 
 TESTS = \
 	dep_lexer_TEST \

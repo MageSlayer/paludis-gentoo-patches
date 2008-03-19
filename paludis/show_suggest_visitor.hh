@@ -44,8 +44,6 @@ namespace paludis
      */
     class ShowSuggestVisitor :
         public ConstVisitor<DependencySpecTree>,
-        public ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>,
-        public ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>,
         private PrivateImplementationPattern<ShowSuggestVisitor>
     {
         public:
@@ -53,7 +51,7 @@ namespace paludis
             ///\{
 
             ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsSet> ddd,
-                    const Environment * const, const tr1::shared_ptr<const PackageID> &, bool);
+                    const Environment * const, const tr1::shared_ptr<const PackageID> &, bool, bool);
             ~ShowSuggestVisitor();
 
             ///\}
@@ -77,7 +75,9 @@ namespace paludis
                     DependencySpecTree::ConstSequenceIterator,
                     DependencySpecTree::ConstSequenceIterator);
 
-            using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>::visit_sequence;
+            void visit_sequence(const AllDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
 
             ///\}
     };

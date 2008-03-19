@@ -29,6 +29,7 @@ COLOUR_YELLOW=$'\e[33;01m'
 COLOUR_RED=$'\e[31;01m'
 COLOUR_BLUE=$'\e[34;01m'
 COLOUR_PINK=$'\e[35;01m'
+COLOUR_CYAN=$'\e[36;01m'
 
 if [[ ${PALUDIS_COLOURS} == pink ]]; then
     COLOUR_GOOD=${COLOUR_PINK}

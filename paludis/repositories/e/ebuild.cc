@@ -179,6 +179,8 @@ EbuildCommand::operator() ()
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].unpack_unrecognised_is_fatal ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].unpack_fix_permissions ? "yes" : "")
+            .with_setenv("PALUDIS_DOSYM_NO_MKDIR",
+                    (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].dosym_mkdir ? "" : "yes")
             .with_setenv("PALUDIS_UNPACK_FROM_VAR",
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_distdir()])
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
@@ -637,6 +639,12 @@ EbuildUninstallCommand::EbuildUninstallCommand(const EbuildCommandParams & p,
 }
 
 std::string
+EbuildConfigCommand::ebuild_file() const
+{
+    return "-";
+}
+
+std::string
 EbuildConfigCommand::commands() const
 {
     return params[k::commands()];
@@ -791,6 +799,15 @@ EbuildPretendCommand::EbuildPretendCommand(const EbuildCommandParams & p,
 }
 
 std::string
+EbuildInfoCommand::ebuild_file() const
+{
+    if (info_params[k::use_ebuild_file()])
+        return stringify(params[k::ebuild_file()]);
+    else
+        return "-";
+}
+
+std::string
 EbuildInfoCommand::commands() const
 {
     return params[k::commands()];
@@ -799,7 +816,7 @@ EbuildInfoCommand::commands() const
 bool
 EbuildInfoCommand::failure()
 {
-    return false;
+    throw InfoActionError("Info command failed");
 }
 
 Command

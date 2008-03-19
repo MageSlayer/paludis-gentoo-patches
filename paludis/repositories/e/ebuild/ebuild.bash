@@ -171,7 +171,6 @@ check_base_vars="${save_base_vars}"
 check_unmodifiable_vars="${save_unmodifiable_vars}"
 
 for var in ${save_vars} ${default_save_vars} ${save_base_vars} ${save_unmodifiable_vars} ; do
-    ebuild_notice "debug" "Saving ${var}=${!var}"
     eval "export save_var_${var}='${!var}'"
 done
 

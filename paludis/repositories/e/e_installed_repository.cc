@@ -457,6 +457,7 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
                 (k::expand_vars(), make_shared_ptr(new Map<std::string, std::string>))
                 (k::profiles(), make_shared_ptr(new FSEntrySequence))
                 (k::info_vars(), i)
+                (k::use_ebuild_file(), false)
                 (k::load_environment(), load_env.get()));
 
         info_cmd();
