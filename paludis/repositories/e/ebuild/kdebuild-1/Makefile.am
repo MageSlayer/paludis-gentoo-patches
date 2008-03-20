@@ -22,7 +22,7 @@ TESTS_ENVIRONMENT = env \
 TESTS =
 check_SCRIPTS = $(TESTS)
 
-EXTRA_DIST = $(libexecprog1_SCRIPTS)
+EXTRA_DIST = $(libexecprogkdebuild1_SCRIPTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
