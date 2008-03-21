@@ -9,6 +9,11 @@ cat <<"END" > pkg/first
 This is the first file.
 END
 
-mkdir -p root
-mkdir -p installed
+mkdir -p under_pkg
+cat <<"END" > under_pkg/first
+This is also the first file.
+END
+
+mkdir -p {under_,}root
+mkdir -p {under_,}installed
 

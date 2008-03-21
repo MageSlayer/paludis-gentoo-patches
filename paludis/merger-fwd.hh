@@ -67,7 +67,8 @@ namespace paludis
         kc::Field<k::image, FSEntry>,
         kc::Field<k::root, FSEntry>,
         kc::Field<k::no_chown, bool>,
-        kc::Field<k::options, MergerOptions>
+        kc::Field<k::options, MergerOptions>,
+        kc::Field<k::install_under, FSEntry>
             > MergerParams;
 
     class MergerError;

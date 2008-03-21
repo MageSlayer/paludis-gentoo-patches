@@ -46,6 +46,7 @@ namespace paludis
         tr1::shared_ptr<CategoryNamePartSet> category_names;
 
         tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_under_key;
         tr1::shared_ptr<const MetadataValueKey<std::string> > name_key;
         tr1::shared_ptr<const MetadataValueKey<std::string> > slot_key;
         tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
@@ -63,6 +64,8 @@ namespace paludis
             category_names(new CategoryNamePartSet),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location)),
+            install_under_key(new LiteralMetadataValueKey<FSEntry> ("install_under", "install_under",
+                        mkt_significant, params.install_under)),
             name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
                         mkt_normal, stringify(params.name))),
             slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
@@ -114,6 +117,7 @@ UnpackagedRepository::_add_metadata_keys() const
 {
     clear_metadata_keys();
     add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->install_under_key);
     add_metadata_key(_imp->name_key);
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->format_key);

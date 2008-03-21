@@ -7,6 +7,7 @@ make_class_UnpackagedRepositoryParams()
 
     key environment "Environment *"
     key location FSEntry
+    key install_under FSEntry
     key name QualifiedPackageName
     key version VersionSpec
     key slot SlotName

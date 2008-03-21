@@ -49,6 +49,7 @@ namespace paludis
 
             virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &);
             virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+            virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &);
             virtual void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
 
             virtual void on_error(bool is_check, const std::string &);

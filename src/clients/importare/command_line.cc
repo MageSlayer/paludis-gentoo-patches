@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,6 +45,7 @@ CommandLine::CommandLine() :
     source_args(this, "Source options",
             "Options affecting the source image"),
     a_location(&source_args, "location", 'l', "Location of source image (default: current directory)"),
+    a_install_under(&source_args, "install-under", 'u', "Install under a given directory (default: /)"),
 
     metadata_args(this, "Metadata options",
             "Options affecting generated metadata"),

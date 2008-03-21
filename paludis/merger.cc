@@ -18,7 +18,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "merger.hh"
+#include <paludis/merger.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <cstring>
+#include <list>
 
 using namespace paludis;
 
@@ -66,7 +67,7 @@ Merger::check()
                          ("INSTALL_DESTINATION", stringify(_params[k::root()])))).max_exit_status)
         make_check_fail();
 
-    do_dir_recursive(true, _params[k::image()], _params[k::root()]);
+    do_dir_recursive(true, _params[k::image()], _params[k::root()] / _params[k::install_under()]);
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_post")
@@ -111,7 +112,26 @@ Merger::merge()
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(_params[k::image()]) + "' to '" + stringify(_params[k::root()]) + "' pre hooks returned non-zero");
 
-    do_dir_recursive(false, _params[k::image()], _params[k::root()].realpath());
+    /* special handling for install_under */
+    {
+        Context local_context("When preparing install_under directory '" + stringify(_params[k::install_under()]) + "' under root '"
+                + stringify(_params[k::root()]) + "':");
+
+        std::list<FSEntry> dd;
+        for (FSEntry d(_params[k::root()].realpath() / _params[k::install_under()]), d_end(_params[k::root()].realpath()) ;
+                d != d_end ; d = d.dirname())
+            dd.push_front(d);
+        for (std::list<FSEntry>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
+            if (! d->exists())
+            {
+                d->mkdir();
+                record_install_under_dir(*d, MergeStatusFlags());
+            }
+            else
+                record_install_under_dir(*d, MergeStatusFlags() + msi_used_existing);
+    }
+
+    do_dir_recursive(false, _params[k::image()], (_params[k::root()] / _params[k::install_under()]).realpath());
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_post")

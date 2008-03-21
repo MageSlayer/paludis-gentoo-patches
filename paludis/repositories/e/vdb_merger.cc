@@ -66,6 +66,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
     Merger(MergerParams::named_create()
             (k::environment(), p[k::environment()])
             (k::image(), p[k::image()])
+            (k::install_under(), FSEntry("/"))
             (k::root(), p[k::root()])
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
             (k::options(), p[k::options()])),
@@ -135,6 +136,15 @@ void
 VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
+    display_override(make_arrows(flags) + " [dir] " + tidy);
+
+    *_imp->contents_file << "dir " << tidy << std::endl;
+}
+
+void
+VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const MergeStatusFlags & flags)
+{
+    std::string tidy(stringify(dst_dir.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
 
     *_imp->contents_file << "dir " << tidy << std::endl;

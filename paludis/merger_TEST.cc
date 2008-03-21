@@ -98,6 +98,10 @@ namespace
         {
         }
 
+        virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &)
+        {
+        }
+
         void on_error(bool is_check, const std::string & s)
         {
             if (is_check)
@@ -151,6 +155,7 @@ namespace
                 merger(MergerParams::named_create()
                         (k::image(), image_dir)
                         (k::root(), root_dir)
+                        (k::install_under(), FSEntry("/"))
                         (k::environment(), &env)
                         (k::no_chown(), true)
                         (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
@@ -165,6 +170,7 @@ namespace
                 merger(MergerParams::named_create()
                         (k::image(), image_dir)
                         (k::root(), root_dir)
+                        (k::install_under(), FSEntry("/"))
                         (k::environment(), &env)
                         (k::no_chown(), true)
                         (k::options(), o))

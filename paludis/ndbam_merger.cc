@@ -70,6 +70,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
             (k::image(), p.image)
             (k::root(), p.root)
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
+            (k::install_under(), p.install_under)
             (k::options(), p.options)),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p))
 {
@@ -166,6 +167,15 @@ void
 NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
+    display_override(make_arrows(flags) + " [dir] " + tidy);
+
+    *_imp->contents_file << "type=dir path=" << escape(tidy) << std::endl;
+}
+
+void
+NDBAMMerger::record_install_under_dir(const FSEntry & dst, const MergeStatusFlags & flags)
+{
+    std::string tidy(stringify(dst.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
 
     *_imp->contents_file << "type=dir path=" << escape(tidy) << std::endl;

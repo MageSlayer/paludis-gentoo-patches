@@ -11,6 +11,8 @@ trunk/:
     * All ruby demos are now installed with the executable bit set, and a
       symlink for playman is installed in $(bindir).
 
+    * importare now has an --install-under option.
+
 0.26.0_alpha12:
     * The merger is able to detect hardlinks and tries to merge them as such.
 

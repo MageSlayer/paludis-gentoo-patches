@@ -54,6 +54,7 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .install_under(FSEntry("/"))
                         .build_dependencies("")
                         .run_dependencies("")
                         .description("")
@@ -82,6 +83,7 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .install_under(FSEntry("/"))
                         .build_dependencies("")
                         .run_dependencies("")
                         .description("")
@@ -115,6 +117,7 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .install_under(FSEntry("/"))
                         .build_dependencies("")
                         .run_dependencies("")
                         .description("")
@@ -143,6 +146,7 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .install_under(FSEntry("/"))
                         .build_dependencies("")
                         .run_dependencies("")
                         .description("")
@@ -184,6 +188,7 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .install_under(FSEntry("/"))
                         .build_dependencies("")
                         .run_dependencies("")
                         .description("")
@@ -220,5 +225,59 @@ namespace test_cases
             return false;
         }
     } test_install;
+
+    struct InstallUnderTest : TestCase
+    {
+        InstallUnderTest() : TestCase("install under") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+                        RepositoryName("unpackaged"),
+                        unpackaged_repositories::UnpackagedRepositoryParams::create()
+                        .environment(&env)
+                        .name(QualifiedPackageName("cat/pkg"))
+                        .version(VersionSpec("1.0"))
+                        .slot(SlotName("foo"))
+                        .location(FSEntry("unpackaged_repository_TEST_dir/under_pkg"))
+                        .install_under(FSEntry("/magic/pixie"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
+                        ));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
+                        RepositoryName("installed-unpackaged"),
+                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
+                        .environment(&env)
+                        .location(FSEntry("unpackaged_repository_TEST_dir/under_installed"))
+                        .root(FSEntry("unpackaged_repository_TEST_dir/under_root"))
+                        ));
+            env.package_database()->add_repository(0, installed_repo);
+
+            TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
+
+            const tr1::shared_ptr<const PackageID> id(
+                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::destination(), installed_repo)
+                    );
+            id->perform_action(action);
+
+            TEST_CHECK(FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+    } test_install_under;
 }
 

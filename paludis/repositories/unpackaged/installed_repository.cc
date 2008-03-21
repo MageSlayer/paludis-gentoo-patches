@@ -31,6 +31,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -226,6 +227,17 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m[k::package_id()]))
         throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
+    FSEntry install_under("/");
+    {
+        Repository::MetadataConstIterator k(m[k::package_id()]->repository()->find_metadata("install_under"));
+        if (k == m[k::package_id()]->repository()->end_metadata())
+            throw InstallActionError("Could not fetch install_under key from owning repository");
+        const MetadataValueKey<FSEntry> * kk(visitor_cast<const MetadataValueKey<FSEntry> >(**k));
+        if (! kk)
+            throw InstallActionError("Fetched install_under key but did not get an FSEntry key from owning repository");
+        install_under = kk->value();
+    }
+
     tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
         tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m[k::package_id()]->name()));
@@ -298,6 +310,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
             NDBAMMergerParams::create()
             .environment(_imp->params.environment)
             .image(m[k::image_dir()])
+            .install_under(install_under)
             .root(installed_root_key()->value())
             .contents_file(target_ver_dir / "contents")
             .config_protect(getenv_with_default("CONFIG_PROTECT", ""))

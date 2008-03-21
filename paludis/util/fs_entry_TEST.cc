@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -102,6 +102,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(c, FSEntry("/foo/bar/moo"));
 
             f = FSEntry::cwd();
+
+            TEST_CHECK_EQUAL(f, f / FSEntry("/"));
         }
     } test_fs_entry_manipulation;
 

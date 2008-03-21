@@ -148,6 +148,7 @@ namespace paludis
             virtual MergeStatusFlags install_dir(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_dir(FSEntry);
             virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &) = 0;
+            virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &) = 0;
 
             virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);

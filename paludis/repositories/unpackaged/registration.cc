@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,10 @@ namespace
         if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'location' not specified or empty");
 
+        std::string install_under;
+        if (m->end() == m->find("install_under") || ((install_under = m->find("install_under")->second)).empty())
+            install_under = "/";
+
         std::string name;
         if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'name' not specified or empty");
@@ -68,6 +72,7 @@ namespace
                     unpackaged_repositories::UnpackagedRepositoryParams::create()
                     .environment(env)
                     .location(location)
+                    .install_under(install_under)
                     .name(QualifiedPackageName(name))
                     .version(VersionSpec(version))
                     .slot(SlotName(slot))

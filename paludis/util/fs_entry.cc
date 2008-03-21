@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  * Copyright (c) 2008 Fernando J. Pereda
  *
@@ -149,6 +149,9 @@ FSEntry::operator= (const FSEntry & other)
 const FSEntry &
 FSEntry::operator/= (const FSEntry & rhs)
 {
+    if (rhs._imp->path == "/")
+        return *this;
+
     if (_imp->path.empty() || '/' != _imp->path.at(_imp->path.length() - 1))
         _imp->path.append("/");
 

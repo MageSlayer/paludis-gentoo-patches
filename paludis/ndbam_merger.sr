@@ -8,6 +8,7 @@ make_class_NDBAMMergerParams()
     key environment "Environment *"
     key image "FSEntry"
     key root "FSEntry"
+    key install_under "FSEntry"
     key contents_file "FSEntry"
     key config_protect std::string
     key config_protect_mask std::string
