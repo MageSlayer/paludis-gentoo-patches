@@ -225,7 +225,6 @@ install-data-local :
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_all_post/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_pre/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_post/
-	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/install_task_execute_post/
 	ln -sf ../common/gnu_info_index.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
 	ln -sf ../common/gnu_info_index.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_all_post/
 	ln -sf ../common/eselect_env_update.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
