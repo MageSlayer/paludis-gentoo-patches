@@ -37,6 +37,7 @@ CommandLine::CommandLine() :
     a_sync(&action_args,      "sync",         's',  "Sync all or specified repositories", false),
     a_report(&action_args,    "report",       'r',  "Report the current state of the system", false),
     a_contents(&action_args,  "contents",     'k',  "Display contents of a package", false),
+    a_executables(&action_args,"executables", '\0',  "Display executable contents of a package", false),
     a_owner(&action_args,     "owner",        'o',  "Display the owner of a file", false),
     a_config(&action_args,    "config",       '\0',  "Run post-install configuration for a package", false),
     a_version(&action_args,   "version",      'V',  "Display program version", false),
@@ -150,6 +151,7 @@ CommandLine::CommandLine() :
     add_usage_line("--sync [target (leave blank for all)]");
     add_usage_line("--report");
     add_usage_line("--contents target ...");
+    add_usage_line("--executables target ...");
     add_usage_line("--owner [owner options] files ...");
     add_usage_line("--config target ...");
     add_usage_line("--version");

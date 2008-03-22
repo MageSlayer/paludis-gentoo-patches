@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "config.h"
 #include "do_contents.hh"
+#include "do_executables.hh"
 #include "do_config.hh"
 #include "install.hh"
 #include "list.hh"
@@ -180,6 +181,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
                     CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
                     CommandLine::get_instance()->a_contents.specified() +
+                    CommandLine::get_instance()->a_executables.specified() +
                     CommandLine::get_instance()->a_owner.specified() +
                     CommandLine::get_instance()->a_config.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
@@ -400,6 +402,14 @@ main(int argc, char *argv[])
                     throw args::DoHelp("contents action requires at least one parameter");
 
                 return do_contents(env);
+            }
+
+            if (CommandLine::get_instance()->a_executables.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("executables action requires at least one parameter");
+
+                return do_executables(env);
             }
 
             if (CommandLine::get_instance()->a_owner.specified())

@@ -5,6 +5,9 @@ This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
 trunk/:
+    * paludis now has an --executables option, this will show all executables
+      installed by a package that are in $PATH.
+
     * Installation details for pretend_resume demo hook have changed. Please
       remove any old symlinks and see the comments at the start of the file
       for new instructions.

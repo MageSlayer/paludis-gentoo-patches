@@ -83,6 +83,9 @@ class CommandLine :
         /// --contents
         paludis::args::SwitchArg a_contents;
 
+        /// --executables
+        paludis::args::SwitchArg a_executables;
+
         /// --owner
         paludis::args::SwitchArg a_owner;
 
