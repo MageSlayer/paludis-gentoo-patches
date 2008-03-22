@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,8 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/graph-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <string>
 
 /** \file
@@ -62,6 +64,7 @@ namespace paludis
             virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual const FSEntry file_name() const = 0;
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
+            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const = 0;
     };
 
     /**
@@ -74,6 +77,9 @@ namespace paludis
         private PrivateImplementationPattern<Hooker>,
         private InstantiationPolicy<Hooker, instantiation_method::NonCopyableTag>
     {
+        private:
+            tr1::shared_ptr<Sequence<tr1::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;
+
         public:
             ///\name Basic operations
             ///\{

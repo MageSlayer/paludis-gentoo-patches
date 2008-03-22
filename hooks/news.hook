@@ -33,8 +33,26 @@ check_for_news()
     fi
 }
 
-for h in sync_all_post install_all_post install_pretend_post ; do
+stale_hook()
+{
+    export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+    source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
+
+    echo
+    ewarn "news hook should not be run in phase '${HOOK}'"
+    ewarn "Do you have stale symlinks?"
+}
+
+for h in sync_all_post install_all_post install_pretend_post install_task_execute_post ; do
     eval "hook_run_${h}() { check_for_news ; }"
     eval "hook_after_${h}() { echo gnu_info_index eselect_env_update log write_cache_clean ; }"
 done
+
+for h in install_all_post install_pretend_post ; do
+    eval "hook_run_${h}() { stale_hook ; }"
+done
+
+hook_auto_names() {
+    echo sync_all_post install_task_execute_post
+}
 

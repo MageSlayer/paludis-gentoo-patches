@@ -10,19 +10,19 @@ SUBDIRS = . demos
 installvarlibpaludisnewsdir = $(localstatedir)/gentoo/news
 
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common
-installhookinstallallpostdir = $(libexecdir)/paludis/hooks/install_all_post
+installhookautoprogdir = $(libexecdir)/paludis/hooks/auto
 installhookinstallpostdir = $(libexecdir)/paludis/hooks/install_post
 
 installhookcommonprog_SCRIPTS = \
 	gnu_info_index.bash \
 	eselect_env_update.bash \
 	log.bash \
-	news.hook \
 	installable_cache_regen.bash \
 	installed_cache_regen.bash \
 	write_cache_clean.bash
 
-installhookinstallallpost_SCRIPTS = \
+installhookautoprog_SCRIPTS = \
+	news.hook \
 	find_config_updates.hook
 
 installhookinstallpost_SCRIPTS = \
@@ -44,7 +44,7 @@ check_PROGRAMS =
 EXTRA_DIST = \
 	Makefile.am.m4 \
 	$(installhookcommonprog_SCRIPTS) \
-	$(installhookinstallallpost_SCRIPTS) \
+	$(installhookautoprog_SCRIPTS) \
 	$(installhookinstallpost_SCRIPTS) \
 	$(check_SCRIPTS)
 
@@ -57,6 +57,7 @@ installuserhooks$1_DATA = .keep
 installuserhooksplat$1dir = $(libdir)/paludis/hooks/$1
 installuserhooksplat$1_DATA = .keep')
 
+userhook(`auto')
 userhook(`install_pre')
 userhook(`install_fail')
 userhook(`install_post')
@@ -66,6 +67,8 @@ userhook(`install_pretend_pre')
 userhook(`install_pretend_post')
 userhook(`install_pretend_display_item_pre')
 userhook(`install_pretend_display_item_post')
+userhook(`install_task_execute_pre')
+userhook(`install_task_execute_post')
 userhook(`clean_all_post')
 userhook(`clean_all_pre')
 userhook(`clean_fail')
@@ -179,6 +182,7 @@ define(`systemhook', `
 installsystemhooks$1dir = $(libexecdir)/paludis/hooks/$1
 installsystemhooks$1_DATA = .keep')
 
+systemhook(`auto')
 systemhook(`install_pre')
 systemhook(`install_post')
 systemhook(`install_all_pre')
@@ -221,6 +225,7 @@ install-data-local :
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_all_post/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_pre/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_post/
+	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/install_task_execute_post/
 	ln -sf ../common/gnu_info_index.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
 	ln -sf ../common/gnu_info_index.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_all_post/
 	ln -sf ../common/eselect_env_update.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
@@ -243,9 +248,6 @@ install-data-local :
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_post/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_pre/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_post/
-	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
-	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/install_all_post/
-	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/install_pretend_post/
 	ln -sf ../common/installable_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/write_cache_clean.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_post/
@@ -256,7 +258,6 @@ uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/eselect_env_update.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
-	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/news.hook
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/write_cache_clean.bash
 
 Makefile.am : Makefile.am.m4

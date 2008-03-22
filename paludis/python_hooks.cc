@@ -12,6 +12,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <set>
 
@@ -69,7 +71,13 @@ namespace
             }
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+
+            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            {
+                return make_shared_ptr(new Sequence<std::string>);
+            }
     };
+
     Mutex PyHookFile::_mutex;
     bp::dict PyHookFile::_output_wrapper_namespace;
     bp::dict PyHookFile::_local_namespace_base;

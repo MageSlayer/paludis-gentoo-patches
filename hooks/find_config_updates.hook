@@ -18,6 +18,10 @@
 
 check_for_config_updates()
 {
+    if [[ "${PRETEND}" == true ]] ; then
+        return
+    fi
+
     shopt -s extglob
 
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
@@ -57,8 +61,26 @@ check_for_config_updates()
     fi
 }
 
-for h in install_all_post ; do
+stale_hook()
+{
+    export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+    source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
+
+    echo
+    ewarn "find_config_updates hook should not be run in phase '${HOOK}'"
+    ewarn "Do you have stale symlinks?"
+}
+
+for h in install_task_execute_post ; do
     eval "hook_run_${h}() { check_for_config_updates ; }"
     eval "hook_after_${h}() { echo log write_cache_clean news ; }"
 done
+
+for h in install_all_post ; do
+    eval "hook_run_${h}() { stale_hook ; }"
+done
+
+hook_auto_names() {
+    echo install_task_execute_post
+}
 

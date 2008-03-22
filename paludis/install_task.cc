@@ -1035,9 +1035,20 @@ InstallTask::_execute()
 void
 InstallTask::execute()
 {
+    bool success(false);
     try
     {
+        if (0 != perform_hook(Hook("install_task_execute_pre")
+                    ("TARGETS", join(
+                                     _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                    ("PRETEND", stringify(_imp->pretend))
+                    ("FETCH_ONLY", stringify(_imp->fetch_only))
+                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
+                    ).max_exit_status)
+            throw InstallActionError("Install task execute aborted by hook");
+
         _execute();
+        success = true;
     }
     catch (const AmbiguousPackageNameError & e)
     {
@@ -1074,6 +1085,16 @@ InstallTask::execute()
         _imp->had_resolution_failures = true;
         on_multiple_set_targets_specified(e);
     }
+
+    if (0 != perform_hook(Hook("install_task_execute_post")
+                ("TARGETS", join(
+                                 _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                ("PRETEND", stringify(_imp->pretend))
+                ("FETCH_ONLY", stringify(_imp->fetch_only))
+                ("SUCCESS", stringify(success))
+                ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
+                ).max_exit_status)
+        throw InstallActionError("Install task execute aborted by hook");
 }
 
 const DepList &

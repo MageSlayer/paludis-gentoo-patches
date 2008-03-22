@@ -6,13 +6,7 @@
 # this functionality, this script should be copied or symlinked into:
 #
 #     @DATADIR@/paludis/hooks/elog/
-#     @DATADIR@/paludis/hooks/install_all_pre/
-#     @DATADIR@/paludis/hooks/install_all_post/
-#     @DATADIR@/paludis/hooks/install_fail/
-#     @DATADIR@/paludis/hooks/uninstall_all_pre/
-#     @DATADIR@/paludis/hooks/uninstall_all_post/
-#     @DATADIR@/paludis/hooks/uninstall_fail/
-#     @DATADIR@/paludis/hooks/clean_fail/
+#     @DATADIR@/paludis/hooks/install_task_execute_post/
 #
 # And optionally:
 #
@@ -56,7 +50,7 @@ case "${HOOK}" in
     fi
     ;;
 
-    install_all_post|uninstall_all_post|install_fail|uninstall_fail|clean_fail)
+    install_all_post|uninstall_all_post|install_fail|uninstall_fail|clean_fail|install_task_execute_post)
     echo
     old_pf=""
     while read line ; do

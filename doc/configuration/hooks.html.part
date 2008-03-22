@@ -118,6 +118,8 @@ hooks.</p>
     <li><code>install_pretend_post</code></li>
     <li><code>install_pretend_display_item_pre</code></li>
     <li><code>install_pretend_display_item_post</code></li>
+    <li><code>install_task_execute_pre</code></li>
+    <li><code>install_task_execute_post</code></li>
     <li><code>uninstall_pre</code></li>
     <li><code>uninstall_fail</code></li>
     <li><code>uninstall_post</code></li>
@@ -139,12 +141,20 @@ hooks.</p>
     <li><code>fetch_all_post</code></li>
 </ul>
 
-<p>In general, certain special environment variables will be set. <code>HOOK</code> will contain
-the name of the hook. For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
-for the operation. For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
-target. The <code>PALUDIS_CMDLINE</code> variables described below are also available. For the
-<code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
-interest.</p>
+<p>In general, certain special environment variables will be set:</p>
+
+<ul>
+    <li><code>HOOK</code> will contain the name of the hook.</li>
+    <li>For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
+    for the operation.</li>
+    <li>For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
+    target.</li>
+    <li>The <code>PALUDIS_CMDLINE</code> variables described below are also available.
+    <li>For the <code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
+    interest.</li>
+    <li>For the <code>install_task_execute_pre</code> and <code>install_task_execute_post</code> hooks,
+    <code>PRETEND</code>, <code>FETCH_ONLY</code> and <code>SUCCESS</code> may be useful.</li>
+</ul>
 
 <h3 id="ebuild-phase-hooks">Ebuild Phase Hooks</h3>
 
@@ -314,6 +324,10 @@ scripts should be executable (<code>chmod a+x</code>). They can live in three lo
     systems, <code><em>LIBDIR</em></code> is <code>/usr/lib</code> or <code>/usr/lib64</code>.</li>
 </ul>
 
+<p>For <code>.hook</code> and <code>.so</code> hooks, rather than using <code><em>hookname</em></code>, the
+<code>auto</code> directory may be used. In this case, Paludis will ask the hook for which hook names it should be
+run.</p>
+
 <h3 id="bash-hooks">Bash Hooks</h3>
 
 <p>A <code>.bash</code> hook is merely executed when the associated action is
@@ -364,9 +378,17 @@ hook_after_install_all_post()
 }
 </pre>
 
-<p>Note that the <code>hook_depend_</code> and <code>hook_after_</code> functions
-are cached, and are generally only called once per session, so the output should
-not vary based upon outside parameters.</p>
+<p>If the hook is located in an <code>auto</code> directory, the <code>hook_auto_names</code> function must also be
+provided. This function should output the hook names under which the hook should be run. For example:</p>
+
+<pre>
+hook_auto_names() {
+    echo install_all_pre install_all_post
+}
+</pre>
+
+<p>Note that the <code>hook_depend_</code>, <code>hook_after_</code> and <code>hook_auto_names</code> functions are
+cached, and are generally only called once per session, so the output should not vary based upon outside parameters.</p>
 
 <h3 id="py-hooks">Python Hooks</h3>
 
@@ -411,7 +433,9 @@ or 102 for Paludis 1.2.y).  The library must export a function with prototype
 that performs the action, and optionally one with prototype
 <code>void paludis_hook_add_dependencies(const paludis::Environment *, const paludis::Hook &amp;,
     paludis::DirectedGraph&lt;std::string, int&gt; &amp;)</code>
-if it needs to define ordering dependencies with other hooks.  Both functions are
+if it needs to define ordering dependencies with other hooks. If the hook is to be placed in an <code>auto</code>
+directory, it must also define <code>const paludis::tr1::shared_ptr&lt;const Seqyence&lt;std::string&gt; &gt;
+paludis_hook_auto_phases(const paludis::Environment *)</code>. All functions are
 declared in the header <code>&lt;paludis/hook.hh&gt;</code>, including any necessary
 <code>extern</code> or visibility declarations.</p>
 

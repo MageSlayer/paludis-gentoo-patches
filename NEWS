@@ -13,6 +13,12 @@ trunk/:
 
     * importare now has an --install-under option.
 
+    * Added two new hook phases, install_task_execute_pre and
+      install_task_execute_post, to avoid issues with continue-on-failure.
+
+    * Hooks in the auto/ directory can now specify in which phase or phases they
+      are to be run.
+
 0.26.0_alpha12:
     * The merger is able to detect hardlinks and tries to merge them as such.
 

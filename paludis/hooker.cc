@@ -34,6 +34,9 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/join.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <iterator>
@@ -41,12 +44,16 @@
 
 using namespace paludis;
 
+template class Sequence<tr1::shared_ptr<HookFile> >;
+
 HookFile::~HookFile()
 {
 }
 
 namespace
 {
+    static const std::string so_suffix(".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
+
     class BashHookFile :
         public HookFile
     {
@@ -72,6 +79,11 @@ namespace
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &)
             {
+            }
+
+            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            {
+                return make_shared_ptr(new Sequence<std::string>);
             }
     };
 
@@ -101,6 +113,8 @@ namespace
             }
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+
+            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
     };
 
     class SoHookFile :
@@ -111,8 +125,9 @@ namespace
             const Environment * const _env;
 
             void * _dl;
-            HookResult (*_run)(Environment const *, const Hook &);
-            void (*_add_dependencies)(Environment const *, const Hook &, DirectedGraph<std::string, int> &);
+            HookResult (*_run)(const Environment *, const Hook &);
+            void (*_add_dependencies)(const Environment *, const Hook &, DirectedGraph<std::string, int> &);
+            const tr1::shared_ptr<const Sequence<std::string > > (*_auto_hook_names)(const Environment *);
 
         public:
             SoHookFile(const FSEntry &, const bool, const Environment * const);
@@ -125,6 +140,8 @@ namespace
             }
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+
+            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
     };
 }
 
@@ -228,6 +245,52 @@ FancyHookFile::run(const Hook & hook) const
     return HookResult(exit_status, output);
 }
 
+const tr1::shared_ptr<const Sequence<std::string > >
+FancyHookFile::auto_hook_names() const
+{
+    Context c("When querying auto hook names for fancy hook '" + stringify(file_name()) + "':");
+
+    Log::get_instance()->message(ll_debug, lc_no_context) << "Starting hook script '" <<
+            file_name() << "' for auto hook names";
+
+    Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+            "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'");
+
+    cmd
+        .with_setenv("ROOT", stringify(_env->root()))
+        .with_setenv("HOOK_FILE", stringify(file_name()))
+        .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .with_setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
+        .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
+        .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
+
+    int exit_status(0);
+    std::string output("");
+    {
+        std::stringstream s;
+        exit_status = run_command(cmd.with_captured_stdout_stream(&s));
+        output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
+                " \t\n");
+    }
+
+    if (0 == exit_status)
+    {
+        tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+        tokenise_whitespace(output, result->back_inserter());
+        Log::get_instance()->message(ll_debug, lc_no_context) << "Hook '" << file_name()
+            << "' returned success '" << exit_status << "' for auto hook names, result ("
+            << join(result->begin(), result->end(), ", ") << ")";
+        return result;
+    }
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
+                + "' returned failure '" + stringify(exit_status) + "' for auto hook names");
+        return make_shared_ptr(new Sequence<std::string>);
+    }
+}
+
 void
 FancyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, int> & g)
 {
@@ -312,15 +375,19 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
     if (_dl)
     {
         _run = reinterpret_cast<HookResult (*)(
-            Environment const *, const Hook &)>(
+            const Environment *, const Hook &)>(
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_run")));
 
         if (! _run)
             Log::get_instance()->message(ll_warning, lc_no_context, ".so hook '" + stringify(f) + "' does not define the paludis_hook_run function");
 
         _add_dependencies = reinterpret_cast<void (*)(
-            Environment const *, const Hook &, DirectedGraph<std::string, int> &)>(
+            const Environment *, const Hook &, DirectedGraph<std::string, int> &)>(
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_add_dependencies")));
+
+        _auto_hook_names = reinterpret_cast<const tr1::shared_ptr<const Sequence<std::string> > (*)(
+            const Environment *)>(
+                reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_auto_phases")));
     }
     else
         Log::get_instance()->message(ll_warning, lc_no_context, "Opening .so hook '" + stringify(f) + "' failed: " + dlerror());
@@ -347,6 +414,17 @@ SoHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, int> 
         _add_dependencies(_env, hook, g);
 }
 
+const tr1::shared_ptr<const Sequence<std::string > >
+SoHookFile::auto_hook_names() const
+{
+    Context c("When querying auto hook names for .so hook '" + stringify(file_name()) + "':");
+
+    if (! _auto_hook_names)
+        return make_shared_ptr(new Sequence<std::string>);
+
+    return _auto_hook_names(_env);
+}
+
 namespace paludis
 {
     template<>
@@ -354,16 +432,68 @@ namespace paludis
     {
         const Environment * const env;
         std::list<std::pair<FSEntry, bool> > dirs;
+
         mutable Mutex hook_files_mutex;
-        mutable std::map<std::string, std::list<tr1::shared_ptr<HookFile> > > hook_files;
+        mutable std::map<std::string, tr1::shared_ptr<Sequence<tr1::shared_ptr<HookFile> > > > hook_files;
+        mutable std::map<std::string, std::map<std::string, tr1::shared_ptr<HookFile> > > auto_hook_files;
+        mutable bool has_auto_hook_files;
 
         Implementation(const Environment * const e) :
-            env(e)
+            env(e),
+            has_auto_hook_files(false)
         {
+        }
+
+        void need_auto_hook_files() const
+        {
+            Lock l(hook_files_mutex);
+
+            if (has_auto_hook_files)
+                return;
+            has_auto_hook_files = true;
+
+            Context context("When loading auto hooks:");
+
+            for (std::list<std::pair<FSEntry, bool> >::const_iterator d(dirs.begin()), d_end(dirs.end()) ;
+                    d != d_end ; ++d)
+            {
+                FSEntry d_a(d->first / "auto");
+                if (! d_a.is_directory())
+                    continue;
+
+                for (DirIterator e(d_a), e_end ; e != e_end ; ++e)
+                {
+                    tr1::shared_ptr<HookFile> hook_file;
+                    std::string name;
+
+                    if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
+                    {
+                        hook_file.reset(new FancyHookFile(*e, d->second, env));
+                        name = strip_trailing_string(e->basename(), ".hook");
+                    }
+                    else if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
+                    {
+                        hook_file.reset(new SoHookFile(*e, d->second, env));
+                        name = strip_trailing_string(e->basename(), so_suffix);
+                    }
+
+                    if (! hook_file)
+                        continue;
+
+                    const tr1::shared_ptr<const Sequence<std::string> > names(hook_file->auto_hook_names());
+                    for (Sequence<std::string>::ConstIterator n(names->begin()), n_end(names->end()) ;
+                            n != n_end ; ++n)
+                    {
+                        if (! auto_hook_files[*n].insert(std::make_pair(name, hook_file)).second)
+                            Log::get_instance()->message(ll_warning, lc_context) << "Discarding hook file '" << *e
+                                << "' in phase '" << *n << "' because of naming conflict with '"
+                                << auto_hook_files[*n].find(name)->second->file_name() << "'";
+                    }
+                }
+            }
         }
     };
 }
-
 
 Hooker::Hooker(const Environment * const e) :
     PrivateImplementationPattern<Hooker>(new Implementation<Hooker>(e))
@@ -379,6 +509,7 @@ Hooker::add_dir(const FSEntry & dir, const bool v)
 {
     Lock l(_imp->hook_files_mutex);
     _imp->hook_files.clear();
+    _imp->auto_hook_files.clear();
     _imp->dirs.push_back(std::make_pair(dir, v));
 }
 
@@ -405,6 +536,153 @@ namespace
         }
 
     } pyhookfilehandle;
+}
+
+tr1::shared_ptr<Sequence<tr1::shared_ptr<HookFile> > >
+Hooker::_find_hooks(const Hook & hook) const
+{
+    std::map<std::string, tr1::shared_ptr<HookFile> > hook_files;
+
+    {
+        _imp->need_auto_hook_files();
+        std::map<std::string, std::map<std::string, tr1::shared_ptr<HookFile> > >::const_iterator h(
+                _imp->auto_hook_files.find(hook.name()));
+        if (_imp->auto_hook_files.end() != h)
+            hook_files = h->second;
+    }
+
+    /* named subdirectories */
+    for (std::list<std::pair<FSEntry, bool> >::const_iterator d(_imp->dirs.begin()), d_end(_imp->dirs.end()) ;
+            d != d_end ; ++d)
+    {
+        if (! (d->first / hook.name()).is_directory())
+            continue;
+
+        for (DirIterator e(d->first / hook.name()), e_end ; e != e_end ; ++e)
+        {
+            if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
+                if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
+                                tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
+                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
+                            + "' because of naming conflict with '" + stringify(
+                                hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name()) + "'");
+
+            if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
+                if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
+                                tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
+                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
+                            + "' because of naming conflict with '" + stringify(
+                                hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name()) + "'");
+
+            if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
+                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
+                                 tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
+                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
+                            + "' because of naming conflict with '" + stringify(
+                                hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
+
+#ifdef ENABLE_PYTHON_HOOKS
+            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            {
+                static bool load_try(false);
+                static bool load_ok(false);
+
+                {
+                    Lock lock(pyhookfilehandle.mutex);
+
+                    if (! load_try)
+                    {
+                        load_try = true;
+
+                        pyhookfilehandle.handle = dlopen("libpaludispythonhooks.so", RTLD_NOW | RTLD_GLOBAL);
+                        if (pyhookfilehandle.handle)
+                        {
+                            pyhookfilehandle.create_py_hook_file_handle =
+                                reinterpret_cast<tr1::shared_ptr<HookFile> (*)(
+                                        const FSEntry &, const bool, const Environment * const)>(
+                                            reinterpret_cast<uintptr_t>(dlsym(
+                                                    pyhookfilehandle.handle, "create_py_hook_file")));
+                            if (pyhookfilehandle.create_py_hook_file_handle)
+                            {
+                                load_ok = true;
+                            }
+                            else
+                            {
+                                Log::get_instance()->message(ll_warning, lc_context,
+                                        "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
+                                        "failed due to error '" + stringify(dlerror()) + "'");
+                            }
+                        }
+                        else
+                        {
+                            Log::get_instance()->message(ll_warning, lc_context,
+                                    "dlopen(libpaludispythonhooks.so) "
+                                    "failed due to error '" + stringify(dlerror()) + "'");
+                        }
+                    }
+                }
+                if (load_ok)
+                {
+                    if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
+                                    tr1::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
+                                             *e, d->second, _imp->env)))).second)
+                        Log::get_instance()->message(ll_warning, lc_context,
+                                "Discarding hook file '" + stringify(*e)
+                                + "' because of naming conflict with '"
+                                + stringify(hook_files.find(stringify(strip_trailing_string(
+                                                e->basename(), ".py")))->second->file_name()) + "'");
+                }
+            }
+#elif ENABLE_PYTHON
+            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                    << " Paludis was built using a dev-libs/boost version older than 1.34.0.";
+            }
+#else
+            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                    << " Paludis was built without Python support (also needs >=dev-libs/boost-1.34.0).";
+            }
+#endif
+        }
+    }
+
+    DirectedGraph<std::string, int> hook_deps;
+    {
+        Context context_local("When determining hook dependencies for '" + hook.name() + "':");
+        for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+                f != f_end ; ++f)
+            hook_deps.add_node(f->first);
+
+        for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+                f != f_end ; ++f)
+            f->second->add_dependencies(hook, hook_deps);
+    }
+
+    std::list<std::string> ordered;
+    {
+        Context context_local("When determining hook ordering for '" + hook.name() + "':");
+        try
+        {
+            hook_deps.topological_sort(std::back_inserter(ordered));
+        }
+        catch (const NoGraphTopologicalOrderExistsError & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Could not resolve dependency order for hook '"
+                    + hook.name() + "' due to exception '" + e.message() + "' (" + e.what() + "'), skipping hooks '" +
+                    join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") + "' and using hooks '" + join(ordered.begin(),
+                        ordered.end(), "', '") + "' in that order");;
+        }
+    }
+
+    tr1::shared_ptr<Sequence<tr1::shared_ptr<HookFile> > > result(new Sequence<tr1::shared_ptr<HookFile> >);
+    for (std::list<std::string>::const_iterator o(ordered.begin()), o_end(ordered.end()) ;
+            o != o_end ; ++o)
+        result->push_back(hook_files.find(*o)->second);
+
+    return result;
 }
 
 HookResult
@@ -461,160 +739,26 @@ Hooker::perform_hook(const Hook & hook) const
     /* file hooks, but only if necessary */
 
     Lock l(_imp->hook_files_mutex);
-    std::map<std::string, std::list<tr1::shared_ptr<HookFile> > >::iterator h(_imp->hook_files.find(hook.name()));
+    std::map<std::string, tr1::shared_ptr<Sequence<tr1::shared_ptr<HookFile> > > >::iterator h(_imp->hook_files.find(hook.name()));
 
     if (h == _imp->hook_files.end())
-    {
-        h = _imp->hook_files.insert(std::make_pair(hook.name(), std::list<tr1::shared_ptr<HookFile> >())).first;
+        h = _imp->hook_files.insert(std::make_pair(hook.name(), _find_hooks(hook))).first;
 
-        std::map<std::string, tr1::shared_ptr<HookFile> > hook_files;
-
-        for (std::list<std::pair<FSEntry, bool> >::const_iterator d(_imp->dirs.begin()), d_end(_imp->dirs.end()) ;
-                d != d_end ; ++d)
-        {
-            if (! (d->first / hook.name()).is_directory())
-                continue;
-
-            for (DirIterator e(d->first / hook.name()), e_end ; e != e_end ; ++e)
-            {
-                if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
-                    if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
-                                    tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
-                        Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                                + "' because of naming conflict with '" + stringify(
-                                    hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name()) + "'");
-
-                if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
-                    if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
-                                    tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
-                        Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                                + "' because of naming conflict with '" + stringify(
-                                    hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name()) + "'");
-
-                std::string so_suffix(".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
-                if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
-                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
-                                     tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
-                        Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                                + "' because of naming conflict with '" + stringify(
-                                    hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
-
-#ifdef ENABLE_PYTHON_HOOKS
-                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
-                {
-                    static bool load_try(false);
-                    static bool load_ok(false);
-
-                    {
-                        Lock lock(pyhookfilehandle.mutex);
-
-                        if (! load_try)
-                        {
-                            load_try = true;
-
-                            pyhookfilehandle.handle = dlopen("libpaludispythonhooks.so", RTLD_NOW | RTLD_GLOBAL);
-                            if (pyhookfilehandle.handle)
-                            {
-                                pyhookfilehandle.create_py_hook_file_handle =
-                                    reinterpret_cast<tr1::shared_ptr<HookFile> (*)(
-                                            const FSEntry &, const bool, const Environment * const)>(
-                                                reinterpret_cast<uintptr_t>(dlsym(
-                                                        pyhookfilehandle.handle, "create_py_hook_file")));
-                                if (pyhookfilehandle.create_py_hook_file_handle)
-                                {
-                                    load_ok = true;
-                                }
-                                else
-                                {
-                                    Log::get_instance()->message(ll_warning, lc_context,
-                                            "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
-                                            "failed due to error '" + stringify(dlerror()) + "'");
-                                }
-                            }
-                            else
-                            {
-                                Log::get_instance()->message(ll_warning, lc_context,
-                                        "dlopen(libpaludispythonhooks.so) "
-                                        "failed due to error '" + stringify(dlerror()) + "'");
-                            }
-                        }
-                    }
-                    if (load_ok)
-                    {
-                        if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
-                                        tr1::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
-                                                 *e, d->second, _imp->env)))).second)
-                            Log::get_instance()->message(ll_warning, lc_context,
-                                    "Discarding hook file '" + stringify(*e)
-                                    + "' because of naming conflict with '"
-                                    + stringify(hook_files.find(stringify(strip_trailing_string(
-                                                    e->basename(), ".py")))->second->file_name()) + "'");
-                    }
-                }
-#elif ENABLE_PYTHON
-                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
-                {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
-                        << " Paludis was built using a dev-libs/boost version older than 1.34.0.";
-                }
-#else
-                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
-                {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
-                        << " Paludis was built without Python support (also needs >=dev-libs/boost-1.34.0).";
-                }
-#endif
-            }
-        }
-
-        DirectedGraph<std::string, int> hook_deps;
-        {
-            Context context_local("When determining hook dependencies for '" + hook.name() + "':");
-            for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
-                    f != f_end ; ++f)
-                hook_deps.add_node(f->first);
-
-            for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
-                    f != f_end ; ++f)
-                f->second->add_dependencies(hook, hook_deps);
-        }
-
-        std::list<std::string> ordered;
-        {
-            Context context_local("When determining hook ordering for '" + hook.name() + "':");
-            try
-            {
-                hook_deps.topological_sort(std::back_inserter(ordered));
-            }
-            catch (const NoGraphTopologicalOrderExistsError & e)
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Could not resolve dependency order for hook '"
-                        + hook.name() + "' due to exception '" + e.message() + "' (" + e.what() + "'), skipping hooks '" +
-                        join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") + "' and using hooks '" + join(ordered.begin(),
-                            ordered.end(), "', '") + "' in that order");;
-            }
-        }
-
-        for (std::list<std::string>::const_iterator o(ordered.begin()), o_end(ordered.end()) ;
-                o != o_end ; ++o)
-            h->second.push_back(hook_files.find(*o)->second);
-    }
-
-    if (! h->second.empty())
+    if (! h->second->empty())
     {
         do
         {
             switch (hook.output_dest)
             {
                 case hod_stdout:
-                    for (std::list<tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
-                            f_end(h->second.end()) ; f != f_end ; ++f)
+                    for (Sequence<tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
+                            f_end(h->second->end()) ; f != f_end ; ++f)
                         result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
                     continue;
 
                 case hod_grab:
-                    for (std::list<tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
-                            f_end(h->second.end()) ; f != f_end ; ++f)
+                    for (Sequence<tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
+                            f_end(h->second->end()) ; f != f_end ; ++f)
                     {
                         HookResult tmp((*f)->run(hook));
                         if (tmp > result)
