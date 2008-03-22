@@ -77,7 +77,7 @@ namespace
                 FSEntry sym(e.name());
                 FSEntry real(sym.realpath_if_exists());
                 if (sym != real)
-                    if (is_file_in_path(real))
+                    if (is_file_in_path(sym))
                         cout << "    " << colour(cl_sym, e.name()) << endl;
             }
 
