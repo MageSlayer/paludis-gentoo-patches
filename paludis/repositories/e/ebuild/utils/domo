@@ -40,7 +40,7 @@ ret=0
 for x in "$@"; do
     if [[ -e ${x} ]]; then
         mytiny="$(basename "${x}")"
-        mydir="${D}${DESTTREE}/share/local/${mytiny%.*}/LC_MESSAGES"
+        mydir="${D}${DESTTREE}/share/locale/${mytiny%.*}/LC_MESSAGES"
         if [[ ! -d ${mydir} ]]; then
             install -d "${mydir}"
         fi
