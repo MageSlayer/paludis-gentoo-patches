@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * Installation details for pretend_resume demo hook have changed. Please
+      remove any old symlinks and see the comments at the start of the file
+      for new instructions.
+
 0.26.0_alpha13:
     * World is now handled by environment, not individual repositories. Consult
       the FAQ 'Upgrades' section for migration instructions.
