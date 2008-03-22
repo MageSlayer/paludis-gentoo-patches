@@ -6,7 +6,11 @@
 # this functionality, this script should be copied or symlinked into:
 #
 #     @DATADIR@/paludis/hooks/elog/
+#     @DATADIR@/paludis/hooks/install_task_execute_pre/
 #     @DATADIR@/paludis/hooks/install_task_execute_post/
+#     @DATADIR@/paludis/hooks/uninstall_all_pre/
+#     @DATADIR@/paludis/hooks/uninstall_all_post/
+#     @DATADIR@/paludis/hooks/uninstall_fail/
 #
 # And optionally:
 #
@@ -41,7 +45,15 @@ case "${HOOK}" in
     echo "E ${CATEGORY}/${PF} ${MESSAGE}" >> "${logfile}"
     ;;
 
-    install_all_pre|uninstall_all_pre)
+    install_task_execute_pre|install_all_pre|uninstall_all_pre)
+    if [[ ${HOOK} = install_all_pre ]]; then
+        paludis_ecmd \
+            "ewarn" \
+            "" \
+            "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
+            "Use of elog.bash in phase \"${HOOK}\" is deprecated, see comments at beginning of file for updated instructions"
+    fi
+
     rm -f "${logfile}"
     touch "${logfile}" || die "Couldn't create '${logfile}' for elog hooks"
     if [[ -n "${PALUDIS_REDUCED_GID}" ]] ; then
@@ -51,6 +63,14 @@ case "${HOOK}" in
     ;;
 
     install_all_post|uninstall_all_post|install_fail|uninstall_fail|clean_fail|install_task_execute_post)
+    if [[ ${HOOK} = install_all_post || ${HOOK} = install_fail || ${HOOK} = clean_fail ]]; then
+        paludis_ecmd \
+            "ewarn" \
+            "" \
+            "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
+            "Use of elog.bash in phase \"${HOOK}\" is deprecated, see comments at beginning of file for updated instructions"
+    fi
+
     echo
     old_pf=""
     while read line ; do
