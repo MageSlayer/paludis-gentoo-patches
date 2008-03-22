@@ -57,4 +57,4 @@ distcheck-deps-subdirs :
 
 install-exec-local :
 	$(INSTALL) -d $(DESTDIR)$(bindir)
-	ln -s $(rubydemosdir)/playman.rb $(DESTDIR)$(bindir)/playman
+	ln -sf $(rubydemosdir)/playman.rb $(DESTDIR)$(bindir)/playman
