@@ -122,6 +122,11 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (number_part.empty())
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
 
+            if (number_part.size() > 8)
+                Log::get_instance()->message(ll_qa, lc_context) <<
+                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
+
             _imp->parts.push_back(Part(number, number_part));
 
             if (p < text.length() && ('.' != text.at(p) || p + 1 == text.length()))
@@ -177,6 +182,11 @@ VersionSpec::VersionSpec(const std::string & text) :
                     std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
                     p = std::string::npos == q ? text.length() : q;
 
+                    if (number_part.size() > 8)
+                        Log::get_instance()->message(ll_qa, lc_context) <<
+                            "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                            "(Paludis supports arbitrary lengths, but other package managers do not)";
+
                     if (number_part.size() > 0)
                     {
                         number_part = strip_leading(number_part, "0");
@@ -196,6 +206,11 @@ VersionSpec::VersionSpec(const std::string & text) :
             std::string::size_type q(text.find_first_not_of("0123456789", p));
             std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
             p = std::string::npos == q ? text.length() : q;
+
+            if (number_part.size() > 8)
+                Log::get_instance()->message(ll_qa, lc_context) <<
+                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             if (number_part.size() > 0)
             {
@@ -233,6 +248,11 @@ VersionSpec::VersionSpec(const std::string & text) :
                 std::string::size_type q(text.find_first_not_of("0123456789", p));
                 std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
                 p = std::string::npos == q ? text.length() : q;
+
+                if (number_part.size() > 8)
+                    Log::get_instance()->message(ll_qa, lc_context) <<
+                        "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                        "(Paludis supports arbitrary lengths, but other package managers do not)";
 
                 /* Are we -r */
                 bool empty(number_part.empty());
