@@ -137,6 +137,11 @@ code {
     background-color: #ffeedd;
 }
 
+a:hover code {
+    background-color: #996600;
+    color: #ffeedd;
+}
+
 div.main table {
     border-width: 0px;
 }
@@ -150,3 +155,7 @@ div.main th {
     font-weight: bold;
 }
 
+li a {
+    padding-right: 2px;
+    padding-left: 2px;
+}
