@@ -4,8 +4,8 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
-    * paludis now has an --executables option, this will show all executables
+0.26.0_alpha14:
+    * paludis now has an --executables option which shows all executables
       installed by a package that are in $PATH.
 
     * paludis --info pkg now shows information about all installed matches and
