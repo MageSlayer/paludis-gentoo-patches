@@ -263,11 +263,10 @@ namespace test
 #define TEST_CHECK_STRINGIFY_EQUAL(a, b) \
     do { \
         try { \
-            std::string s_a(paludis::stringify(a)); \
-            std::string s_b(paludis::stringify(b)); \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, s_a == s_b, \
-                    "Expected '" #a "' to equal '" + s_b + \
-                    "' but got '" + s_a + "'"); \
+            test::TwoVarHolder test_h(paludis::stringify(a), paludis::stringify(b)); \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
+                    "Expected 'stringify(" #a ")' to equal 'stringify(" #b \
+                    ")' but got '" + test_h.s_a + "'" + test_h.s_d); \
         } catch (const TestFailedException &) { \
             throw; \
         } catch (const std::exception & test_e) { \
