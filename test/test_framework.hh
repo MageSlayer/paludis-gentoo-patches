@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -201,6 +201,7 @@ namespace test
         bool result;
         std::string s_a;
         std::string s_b;
+        std::string s_d;
 
         template <typename T1_, typename T2_>
         TwoVarHolder(T1_ a, T2_ b) :
@@ -208,6 +209,28 @@ namespace test
             s_a(paludis::stringify(a)),
             s_b(paludis::stringify(b))
         {
+            if (! result)
+            {
+                if (0 == s_a.compare(0, std::min(s_a.length(), s_b.length()), s_b,
+                            0, std::min(s_a.length(), s_b.length())))
+                {
+                    if (s_a.length() < s_b.length())
+                        s_d = " (trailing '" + s_b.substr(s_a.length()) + "' missing)";
+                    else
+                        s_d = " (trailing '" + s_a.substr(s_b.length()) + "' found)";
+                }
+                else
+                {
+                    std::string::size_type p(0);
+                    for (std::string::size_type p_end(std::min(s_a.length(), s_b.length())) ; p < p_end ; ++p)
+                        if (s_a.at(p) != s_b.at(p))
+                        {
+                            s_d = " (difference starts at offset " + paludis::stringify(p) + ", got '" +
+                                s_b.substr(p, 10) + "', expected '" + s_a.substr(p, 10) + "')";
+                            break;
+                        }
+                }
+            }
         }
     };
 }
@@ -221,7 +244,7 @@ namespace test
             test::TwoVarHolder test_h(a, b); \
             check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
                     "Expected '" #a "' to equal '" + test_h.s_b + \
-                    "' but got '" + test_h.s_a + "'"); \
+                    "' but got '" + test_h.s_a + "'" + test_h.s_d); \
         } catch (const TestFailedException &) { \
             throw; \
         } catch (const std::exception & test_e) { \
