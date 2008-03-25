@@ -8,6 +8,9 @@ trunk/:
     * paludis now has an --executables option, this will show all executables
       installed by a package that are in $PATH.
 
+    * paludis --info pkg now shows information about all installed matches and
+      the best installable match by default.
+
     * Installation details for pretend_resume demo hook have changed. Please
       remove any old symlinks and see the comments at the start of the file
       for new instructions.

@@ -212,33 +212,42 @@ int do_one_info(
 
     tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec), qo_order_by_version)),
-        preferred_entries(env->package_database()->query(
-                    query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+        installed_entries(env->package_database()->query(
+                    query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version)),
+        installable_entries(env->package_database()->query(
+                    query::Matches(*spec) & query::SupportsAction<InstallAction>() & query::NotMasked(),
+                    qo_order_by_version));
+
+    tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
 
     if (entries->empty())
         throw NoSuchPackageError(q);
-    if (preferred_entries->empty())
-        preferred_entries = entries;
 
-    tr1::shared_ptr<const PackageID> display_entry(*preferred_entries->last());
-        for (PackageIDSequence::ConstIterator i(preferred_entries->begin()),
-                i_end(preferred_entries->end()) ; i != i_end ; ++i)
-            if (! (*i)->masked())
-                display_entry = *i;
+    if (! installed_entries->empty())
+        std::copy(installed_entries->begin(), installed_entries->end(), to_show_entries->back_inserter());
 
-    InfoAction a;
-    try
+    if (! installable_entries->empty())
+        to_show_entries->push_back(*installable_entries->last());
+
+    if (to_show_entries->empty())
+        to_show_entries->push_back(*entries->last());
+
+    for (PackageIDSequence::ConstIterator p(to_show_entries->begin()), p_end(to_show_entries->end()) ;
+            p != p_end ; ++p)
     {
-        cout << "Package " << colour(cl_package_name, *display_entry) << ":" << endl;
-        cout << endl;
-        display_entry->perform_action(a);
-        cout << endl;
-    }
-    catch (const UnsupportedActionError &)
-    {
-        cout << "        No extra information available for '" << *display_entry << "'" << endl;
-        cout << endl;
-        return 1;
+        InfoAction a;
+        try
+        {
+            cout << "Package " << colour(cl_package_name, **p) << ":" << endl;
+            cout << endl;
+            (*p)->perform_action(a);
+            cout << endl;
+        }
+        catch (const UnsupportedActionError &)
+        {
+            cout << "        No extra information available for '" << **p << "'" << endl;
+            cout << endl;
+        }
     }
 
     return 0;
