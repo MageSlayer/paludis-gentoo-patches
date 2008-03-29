@@ -352,11 +352,11 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
             FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
             try
             {
-                r->installed_time = f.ctime();
+                r->installed_time = f.mtime();
             }
             catch (const FSError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Can't get ctime of '"
+                Log::get_instance()->message(ll_warning, lc_no_context, "Can't get mtime of '"
                         + stringify(f) + "' due to exception '" + e.message() + "' (" + e.what()
                         + ")");
                 r->installed_time = 1;

@@ -1040,7 +1040,7 @@ EContentsKey::value() const
 namespace paludis
 {
     template <>
-    struct Implementation<ECTimeKey>
+    struct Implementation<EMTimeKey>
     {
         const tr1::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
@@ -1055,20 +1055,20 @@ namespace paludis
     };
 }
 
-ECTimeKey::ECTimeKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EMTimeKey::EMTimeKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
     MetadataTimeKey(r, h, t),
-    PrivateImplementationPattern<ECTimeKey>(new Implementation<ECTimeKey>(id, v)),
-    _imp(PrivateImplementationPattern<ECTimeKey>::_imp)
+    PrivateImplementationPattern<EMTimeKey>(new Implementation<EMTimeKey>(id, v)),
+    _imp(PrivateImplementationPattern<EMTimeKey>::_imp)
 {
 }
 
-ECTimeKey::~ECTimeKey()
+EMTimeKey::~EMTimeKey()
 {
 }
 
 time_t
-ECTimeKey::value() const
+EMTimeKey::value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -1079,11 +1079,11 @@ ECTimeKey::value() const
 
     try
     {
-        *_imp->value = _imp->filename.ctime();
+        *_imp->value = _imp->filename.mtime();
     }
     catch (const FSError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't get ctime for '"
+        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't get mtime for '"
             << _imp->filename << "' for ID '" << *_imp->id << "' due to exception '" << e.message()
             << "' (" << e.what() << ")";
     }

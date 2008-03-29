@@ -303,17 +303,17 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class ECTimeKey :
+        class EMTimeKey :
             public MetadataTimeKey,
-            private PrivateImplementationPattern<ECTimeKey>
+            private PrivateImplementationPattern<EMTimeKey>
         {
             private:
-                PrivateImplementationPattern<ECTimeKey>::ImpPtr & _imp;
+                PrivateImplementationPattern<EMTimeKey>::ImpPtr & _imp;
 
             public:
-                ECTimeKey(const tr1::shared_ptr<const ERepositoryID> &,
+                EMTimeKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
-                ~ECTimeKey();
+                ~EMTimeKey();
 
                 time_t value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

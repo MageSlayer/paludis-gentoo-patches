@@ -297,7 +297,7 @@ EInstalledRepositoryID::need_keys_added() const
     _imp->contents = make_contents_key();
     add_metadata_key(_imp->contents);
 
-    _imp->installed_time.reset(new ECTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
+    _imp->installed_time.reset(new EMTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
                 _imp->dir / contents_filename(), mkt_normal));
     add_metadata_key(_imp->installed_time);
 
