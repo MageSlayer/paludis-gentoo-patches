@@ -45,6 +45,7 @@ _paludis() {
         --sync -s \
         --report -r \
         --contents -k \
+        --executables \
         --owner -o \
         --config \
         --version -V \
