@@ -44,6 +44,7 @@ namespace paludis
     {
         mutable Mutex mutex;
 
+        mutable bool usable;
         mutable FSEntry location;
         const Repository * const repo;
 
@@ -51,6 +52,7 @@ namespace paludis
         mutable bool checked_name_cache_map;
 
         Implementation(const FSEntry & l, const Repository * const r) :
+            usable(l != FSEntry("/var/empty")),
             location(l == FSEntry("/var/empty") ? l : l / stringify(r->name())),
             repo(r),
             checked_name_cache_map(false)
@@ -63,8 +65,7 @@ RepositoryNameCache::RepositoryNameCache(
         const FSEntry & location,
         const Repository * const repo) :
     PrivateImplementationPattern<RepositoryNameCache>(new Implementation<RepositoryNameCache>(
-                location, repo)),
-    _usable(_imp->location != FSEntry("/var/empty"))
+                location, repo))
 {
 }
 
@@ -77,7 +78,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
 {
     Lock l(_imp->mutex);
 
-    if (! usable())
+    if (! _imp->usable)
         return tr1::shared_ptr<const CategoryNamePartSet>();
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
@@ -103,7 +104,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                     Log::get_instance()->message(ll_warning, lc_context, "Names cache for '" + stringify(_imp->repo->name())
                             + "' has version string '" + line + "', which is not supported. Was it generated using "
                             "a different Paludis version?");
-                    _usable = false;
+                    _imp->usable = false;
                     return tr1::shared_ptr<const CategoryNamePartSet>();
                 }
                 std::getline(vvf, line);
@@ -112,7 +113,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                     Log::get_instance()->message(ll_warning, lc_context, "Names cache for '" + stringify(_imp->repo->name())
                             + "' was generated for repository '" + line + "', so it cannot be used. You must not "
                             "have multiple name caches at the same location.");
-                    _usable = false;
+                    _imp->usable = false;
                     return tr1::shared_ptr<const CategoryNamePartSet>();
                 }
                 _imp->checked_name_cache_map = true;
@@ -125,7 +126,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                         "older than 0.18.0. The names cache now automatically appends the repository name to the "
                         "directory. You probably want to manually remove '" + stringify(_imp->location.dirname()) +
                         "' and then regenerate the cache.");
-                _usable = false;
+                _imp->usable = false;
                 return tr1::shared_ptr<const CategoryNamePartSet>();
             }
             else
@@ -133,7 +134,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                 Log::get_instance()->message(ll_warning, lc_context, "Names cache for '" + stringify(_imp->repo->name())
                         + "' has no version information, so cannot be used. Either it was generated using "
                         "an older Paludis version or it has not yet been generated.");
-                _usable = false;
+                _imp->usable = false;
                 return tr1::shared_ptr<const CategoryNamePartSet>();
             }
         }
@@ -209,5 +210,11 @@ RepositoryNameCache::regenerate_cache() const
     else
         Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
                 + stringify(_imp->location) + "'");
+}
+
+bool
+RepositoryNameCache::usable() const
+{
+    return _imp->usable;
 }
 

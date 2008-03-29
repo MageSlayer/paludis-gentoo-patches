@@ -50,9 +50,6 @@ namespace paludis
     class PALUDIS_VISIBLE RepositoryNameCache :
         private PrivateImplementationPattern<RepositoryNameCache>
     {
-        private:
-            mutable bool _usable;
-
         public:
             ///\name Basic operations
             ///\{
@@ -85,10 +82,7 @@ namespace paludis
              * Initially this will be true. After the first query the value may
              * change to false (the query will return a zero pointer too).
              */
-            bool usable() const PALUDIS_ATTRIBUTE((nothrow))
-            {
-                return _usable;
-            }
+            bool usable() const PALUDIS_ATTRIBUTE((nothrow));
 
             /**
              * Implement cache regeneration.
