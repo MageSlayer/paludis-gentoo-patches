@@ -578,9 +578,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                 (*o[k::destination()])[k::destination_interface()]->merge(
                         MergeParams::named_create()
                         (k::package_id(), id)
-                        (k::image_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        (k::image_dir(), _imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image")
-                        (k::environment_file(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        (k::environment_file(), _imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
                         (k::options(), (*(*id->eapi())[k::supported()])[k::merger_options()])
                         );
@@ -603,9 +603,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
                 EStripper stripper(EStripperOptions::named_create()
                         (k::package_id(), id)
-                        (k::image_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        (k::image_dir(), _imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image")
-                        (k::debug_dir(), _imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        (k::debug_dir(), _imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image" / "usr" / libdir / "debug")
                         (k::debug_build(), o[k::debug_build()])
                         );
@@ -672,7 +672,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                             (k::disable_cfgpro(), o[k::no_config_protect()])
                             (k::config_protect(), _imp->e_repository->profile_variable("CONFIG_PROTECT"))
                             (k::config_protect_mask(), _imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
-                            (k::loadsaveenv_dir(), _imp->params.builddir / stringify(id->name().category) / (
+                            (k::loadsaveenv_dir(), _imp->params.builddir / (stringify(id->name().category) + "-" +
                                    stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
                             (k::slot(), SlotName(id->slot())));
 

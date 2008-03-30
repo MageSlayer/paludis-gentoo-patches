@@ -231,7 +231,7 @@ EbuildCommand::add_portage_vars(const Command & cmd) const
         .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params[k::distdir()]))
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
         .with_setenv("PORTAGE_BUILDDIR", stringify(params[k::builddir()]) + "/" +
-             stringify(params[k::package_id()]->name().category) + "/" +
+             stringify(params[k::package_id()]->name().category) + "-" +
              stringify(params[k::package_id()]->name().package) + "-" +
              stringify(params[k::package_id()]->version()))
         .with_setenv("PORTAGE_CALLER", params[k::environment()]->paludis_command())

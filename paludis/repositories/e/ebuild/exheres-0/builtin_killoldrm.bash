@@ -23,11 +23,11 @@ builtin_killoldrm()
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
     done
 
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}-uninstall" ]] ; then
+    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" ]] ; then
         if type -p chflags &>/dev/null; then
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}-uninstall" || die "Couldn't remove flags from workdir"
+            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" || die "Couldn't remove flags from workdir"
         fi
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}-uninstall" || die "Couldn't remove previous work"
+        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" || die "Couldn't remove previous work"
     fi
 }
 
