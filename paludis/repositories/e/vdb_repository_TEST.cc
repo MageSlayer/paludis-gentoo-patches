@@ -27,6 +27,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
@@ -34,8 +36,11 @@
 #include <paludis/action.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <algorithm>
 #include <fstream>
+#include <functional>
 #include <iterator>
+#include <vector>
 
 using namespace test;
 using namespace paludis;
@@ -510,5 +515,267 @@ namespace test_cases
         }
     } test_vdb_vars_eapi_0("0"), test_vdb_vars_eapi_1("1"), test_vdb_vars_eapi_exheres_0("exheres-0"),
                       test_vdb_vars_eapi_kdebuild_1("kdebuild-1");
+
+    struct NamesCacheIncrementalTest : TestCase
+    {
+        FSEntry names_cache;
+
+        NamesCacheIncrementalTest() :
+            TestCase("names cache incremental"),
+            names_cache("vdb_repository_TEST_dir/namesincrtest/.cache/names/installed")
+        {
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/namesincrtest_src");
+            keys->insert("profiles", "vdb_repository_TEST_dir/namesincrtest_src/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", stringify(names_cache.dirname()));
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/namesincrtest");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            InstallAction install_action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), vdb_repo)
+                    );
+
+            UninstallAction uninstall_action(UninstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    );
+
+            {
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 0U);
+            }
+
+            {
+                TestMessageSuffix suffix("install", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("downgrade", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("new slot", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("remove other slot", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("new package", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 2U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(cache_contents.back().basename(), "pkg2");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg2"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("remove other package", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("new category", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::namesincrtest_src",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\ncat2\n");
+            }
+
+            {
+                TestMessageSuffix suffix("remove other category", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat1\n");
+            }
+
+            {
+                TestMessageSuffix suffix("uninstall", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 0U);
+            }
+        }
+
+        void read_cache(std::vector<FSEntry> & vec)
+        {
+            using namespace tr1::placeholders;
+            std::remove_copy_if(DirIterator(names_cache, DirIteratorOptions() + dio_include_dotfiles),
+                                DirIterator(), std::back_inserter(vec),
+                                tr1::bind(&std::equal_to<std::string>::operator(),
+                                          std::equal_to<std::string>(),
+                                          "_VERSION_", tr1::bind(&FSEntry::basename, _1)));
+        }
+
+        std::string read_file(const FSEntry & f)
+        {
+            std::ifstream s(stringify(f).c_str());
+            std::stringstream ss;
+            std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
+                      std::ostreambuf_iterator<char>(ss));
+            return ss.str();
+        }
+    } test_names_cache;
 }
 

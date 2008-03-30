@@ -441,6 +441,21 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
     for (DirIterator d(pkg_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     pkg_dir.rmdir();
+
+    if (! reinstalling)
+    {
+        tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
+        bool only(true);
+        for (PackageIDSequence::ConstIterator it(ids->begin()),
+                 it_end(ids->end()); it_end != it; ++it)
+            if (*tr1::static_pointer_cast<const PackageID>(id) != **it)
+            {
+                only = false;
+                break;
+            }
+        if (only)
+            _imp->names_cache->remove(id->name());
+    }
 }
 
 void
@@ -781,6 +796,7 @@ VDBRepository::merge(const MergeParams & m)
             (k::root(), installed_root_key()->value()));
 
     post_merge_command();
+    _imp->names_cache->add(m[k::package_id()]->name());
 }
 
 void

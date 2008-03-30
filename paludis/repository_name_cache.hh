@@ -89,6 +89,16 @@ namespace paludis
              */
             void regenerate_cache() const;
 
+            /**
+             * Add a new package to the cache.
+             */
+            void add(const QualifiedPackageName &);
+
+            /**
+             * Remove a package from the cache.
+             */
+            void remove(const QualifiedPackageName &);
+
             ///\}
     };
 }
