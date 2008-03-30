@@ -208,7 +208,8 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
                         + "' for '" + stringify(n) + "' in repository '" + stringify(_imp->repository->name())
                         + "' because another equivalent version already exists");
-            v->push_back(id);
+            else
+                v->push_back(id);
         }
         catch (const Exception & ee)
         {
