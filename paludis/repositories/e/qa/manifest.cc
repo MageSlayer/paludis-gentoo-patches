@@ -136,7 +136,7 @@ namespace
             Map<FSEntry, std::string>::ConstIterator it(files->find(file));
             if (files->end() == it)
             {
-                reporter.message(QAMessage(file, qaml_normal, name, "File is not present but listed in the Manifest"));
+                reporter.message(QAMessage(file, qaml_normal, name, "File is listed in the Manifest but is either not present or should not be listed"));
                 return;
             }
 
