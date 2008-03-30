@@ -776,6 +776,295 @@ namespace test_cases
                       std::ostreambuf_iterator<char>(ss));
             return ss.str();
         }
-    } test_names_cache;
+    } test_names_cache_incremental;
+
+    struct ProvidesCacheTest : TestCase
+    {
+        FSEntry provides_cache;
+
+        ProvidesCacheTest() :
+            TestCase("provides cache"),
+            provides_cache("vdb_repository_TEST_dir/providestest/.cache/provides")
+        {
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", stringify(provides_cache));
+            keys->insert("location", "vdb_repository_TEST_dir/providestest");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            TEST_CHECK(! provides_cache.exists());
+
+            {
+                tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq((*vdb_repo)[k::provides_interface()]->provided_packages());
+                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
+
+                RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-2::installed");
+            }
+
+            vdb_repo->regenerate_cache();
+            TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/foo\ncat1/pkg1 2 virtual/foo\ncat1/pkg2 1 virtual/foo virtual/bar\ncat1/pkg2 2 virtual/bar\n");
+            vdb_repo->invalidate();
+
+            {
+                tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq((*vdb_repo)[k::provides_interface()]->provided_packages());
+                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
+
+                RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-2::installed");
+            }
+        }
+
+        std::string read_file(const FSEntry & f)
+        {
+            std::ifstream s(stringify(f).c_str());
+            std::stringstream ss;
+            std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
+                      std::ostreambuf_iterator<char>(ss));
+            return ss.str();
+        }
+    } test_provides_cache;
+
+    struct ProvidesCacheIncrementalTest : TestCase
+    {
+        FSEntry provides_cache;
+
+        ProvidesCacheIncrementalTest() :
+            TestCase("provides cache incremental"),
+            provides_cache("vdb_repository_TEST_dir/providesincrtest/.cache/provides")
+        {
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest_src1");
+            keys->insert("profiles", "vdb_repository_TEST_dir/providesincrtest_src1/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo1);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest_src2");
+            keys->insert("profiles", "vdb_repository_TEST_dir/providesincrtest_src1/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(2, repo2);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", stringify(provides_cache));
+            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            InstallAction install_action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), vdb_repo)
+                    );
+
+            UninstallAction uninstall_action(UninstallActionOptions::named_create()
+                    (k::no_config_protect(), false)
+                    );
+
+            TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
+
+            {
+                TestMessageSuffix suffix("install", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1.1 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("downgrade", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall different PROVIDE", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src2",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/bar\n");
+            }
+
+            {
+                TestMessageSuffix suffix("new slot", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/bar\ncat1/pkg1 2 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("remove other slot", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/bar\n");
+            }
+
+            {
+                TestMessageSuffix suffix("new package", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::providesincrtest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/bar\ncat1/pkg2 1 virtual/foo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("remove other package", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1 virtual/bar\n");
+            }
+
+            {
+                TestMessageSuffix suffix("uninstall", true);
+                const tr1::shared_ptr<const PackageID> inst_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
+            }
+        }
+
+        std::string read_file(const FSEntry & f)
+        {
+            std::ifstream s(stringify(f).c_str());
+            std::stringstream ss;
+            std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
+                      std::ostreambuf_iterator<char>(ss));
+            return ss.str();
+        }
+    } test_provides_cache_incremental;
 }
 

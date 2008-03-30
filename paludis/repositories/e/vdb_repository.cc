@@ -68,12 +68,16 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/create_iterator-impl.hh>
 
 #include <fstream>
 #include <functional>
 #include <algorithm>
 #include <vector>
 #include <list>
+#include <map>
+#include <cstring>
+#include <cerrno>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -82,6 +86,7 @@ using namespace paludis::erepository;
 
 typedef MakeHashedMap<CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
+typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const Sequence<QualifiedPackageName> > > ProvidesMap;
 
 namespace paludis
 {
@@ -97,6 +102,8 @@ namespace paludis
         mutable IDMap ids;
 
         mutable tr1::shared_ptr<RepositoryProvidesInterface::ProvidesSequence> provides;
+        mutable tr1::shared_ptr<ProvidesMap> provides_map;
+        mutable bool tried_provides_cache, used_provides_cache;
         tr1::shared_ptr<RepositoryNameCache> names_cache;
 
         Implementation(const VDBRepository * const, const VDBRepositoryParams &, tr1::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
@@ -115,6 +122,8 @@ namespace paludis
         params(p),
         big_nasty_mutex(m),
         has_category_names(false),
+        tried_provides_cache(false),
+        used_provides_cache(false),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
         location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                     mkt_significant, params.location)),
@@ -455,6 +464,13 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
             }
         if (only)
             _imp->names_cache->remove(id->name());
+
+        if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
+        {
+            _imp->provides_map->erase(std::make_pair(id->name(), id->version()));
+            write_provides_cache();
+            _imp->provides.reset();
+        }
     }
 }
 
@@ -479,8 +495,32 @@ VDBRepository::provided_packages() const
     if (_imp->provides)
         return _imp->provides;
 
-    if (! load_provided_using_cache())
-        load_provided_the_slow_way();
+    Context context("When finding provided packages for '" + stringify(name()) + "':");
+
+    if (! _imp->provides_map)
+    {
+        if (! load_provided_using_cache())
+            load_provided_the_slow_way();
+    }
+
+    _imp->provides.reset(new RepositoryProvidesInterface::ProvidesSequence);
+    for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
+             it_end(_imp->provides_map->end()); it_end != it; ++it)
+    {
+        tr1::shared_ptr<const ERepositoryID> id(package_id_if_exists(it->first.first, it->first.second));
+        if (! id)
+        {
+            Log::get_instance()->message(ll_warning, lc_context) <<
+                "No package available for '" << it->first.first <<  " " << it->first.second << "'";
+            continue;
+        }
+
+        for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
+                 it2_end(it->second->end()); it2_end != it2; ++it2)
+            _imp->provides->push_back(RepositoryProvidesEntry::named_create()
+                    (k::virtual_name(), *it2)
+                    (k::provided_by(), id));
+    }
 
     return _imp->provides;
 }
@@ -489,13 +529,12 @@ bool
 VDBRepository::load_provided_using_cache() const
 {
     Lock l(*_imp->big_nasty_mutex);
+    _imp->tried_provides_cache = true;
 
     if (_imp->params.provides_cache == FSEntry("/var/empty"))
         return false;
 
     Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache) + "':");
-
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
     if (! _imp->params.provides_cache.is_regular_file())
     {
@@ -509,10 +548,10 @@ VDBRepository::load_provided_using_cache() const
     std::string version;
     std::getline(provides_cache, version);
 
-    if (version != "paludis-2")
+    if (version != "paludis-3")
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "Can't use provides cache at '"
-                + stringify(_imp->params.provides_cache) + "' because format '" + version + "' is not 'paludis-2'");
+                + stringify(_imp->params.provides_cache) + "' because format '" + version + "' is not 'paludis-3'");
         return false;
     }
 
@@ -522,44 +561,105 @@ VDBRepository::load_provided_using_cache() const
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "Can't use provides cache at '"
                 + stringify(_imp->params.provides_cache) + "' because it was generated for repository '"
-                + for_name + "'. You must not have multiple name caches at the same location.");
+                + for_name + "'. You must not have multiple provides caches at the same location.");
         return false;
     }
+
+    _imp->provides_map.reset(new ProvidesMap);
 
     std::string line;
     while (std::getline(provides_cache, line))
     {
-        std::vector<std::string> tokens;
-        tokenise_whitespace(line, std::back_inserter(tokens));
-        if (tokens.size() < 3)
-            continue;
-
-        QualifiedPackageName q(tokens.at(0));
-        VersionSpec v(tokens.at(1));
-
-        tr1::shared_ptr<const PackageID> id(package_id_if_exists(q, v));
-        if (! id)
+        try
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "No package available for line '"
-                << line << "'";
-            continue;
+            std::vector<std::string> tokens;
+            tokenise_whitespace(line, std::back_inserter(tokens));
+            if (tokens.size() < 3)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
+                        line + "' as it contains fewer than three tokens");
+                continue;
+            }
+
+            QualifiedPackageName q(tokens.at(0));
+            VersionSpec v(tokens.at(1));
+
+            tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
+            std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(qpns->back_inserter()));
+
+            if (_imp->provides_map->end() != _imp->provides_map->find(std::make_pair(q, v)))
+                Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
+                        line + "' as it names a package that has already been specified");
+            else
+                _imp->provides_map->insert(std::make_pair(std::make_pair(q, v), qpns));
         }
-
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
-        tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(parse_provide(
-                    join(next(next(tokens.begin())), tokens.end(), " "),
-                    _imp->params.environment, id,
-                    *EAPIData::get_instance()->eapi_from_string("paludis-1")));
-        pp->accept(f);
-
-        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
-            result->push_back(RepositoryProvidesEntry::named_create()
-                    (k::virtual_name(), QualifiedPackageName((*p)->text()))
-                    (k::provided_by(), id));
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
+                    line + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+        }
     }
 
-    _imp->provides = result;
+    _imp->used_provides_cache = true;
     return true;
+}
+
+void
+VDBRepository::provides_from_package_id(const PackageID & id) const
+{
+    Context context("When loading VDB PROVIDEs entry for '" + stringify(id) + "':");
+
+    try
+    {
+        if (! id.provide_key())
+            return;
+
+        tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide(id.provide_key()->value());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
+        provide->accept(f);
+
+        tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
+
+        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
+                 p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        {
+            QualifiedPackageName pp((*p)->text());
+
+            if (pp.category != CategoryNamePart("virtual"))
+                Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
+                        + stringify(pp) + "' from '" + stringify(id) + "' will not work as expected");
+
+            qpns->push_back(pp);
+        }
+
+        ProvidesMap::iterator it(_imp->provides_map->find(std::make_pair(id.name(), id.version())));
+        if (qpns->empty())
+        {
+            if (_imp->provides_map->end() != it)
+                _imp->provides_map->erase(it);
+        }
+        else
+        {
+            if (_imp->provides_map->end() == it)
+                _imp->provides_map->insert(std::make_pair(std::make_pair(id.name(), id.version()), qpns));
+            else
+                it->second = qpns;
+        }
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & ee)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
+                + stringify(id) + "' due to exception '"
+                + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
+    }
 }
 
 void
@@ -572,8 +672,7 @@ VDBRepository::load_provided_the_slow_way() const
     Context context("When loading VDB PROVIDEs map the slow way:");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
-
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
+    _imp->provides_map.reset(new ProvidesMap);
 
     need_category_names();
     std::for_each(_imp->categories.begin(), _imp->categories.end(),
@@ -584,51 +683,38 @@ VDBRepository::load_provided_the_slow_way() const
 
     for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
             i != i_end ; ++i)
-    {
         for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                 e != e_end ; ++e)
-        {
-            Context loop_context("When loading VDB PROVIDEs entry for '" + stringify(**e) + "':");
-
-            try
-            {
-                if (! (*e)->provide_key())
-                    continue;
-
-                tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());;
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
-                provide->accept(f);
-
-                for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
-                        p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
-                {
-                    QualifiedPackageName pp((*p)->text());
-
-                    if (pp.category != CategoryNamePart("virtual"))
-                        Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
-                                + stringify(pp) + "' from '" + stringify(**e) + "' will not work as expected");
-
-                    result->push_back(RepositoryProvidesEntry::named_create()
-                            (k::virtual_name(), pp)
-                            (k::provided_by(), *e));
-                }
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & ee)
-            {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
-                        + stringify(**e) + "' due to exception '"
-                        + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
-            }
-        }
-    }
+            provides_from_package_id(**e);
 
     Log::get_instance()->message(ll_debug, lc_no_context) << "Done VDB PROVIDEs map creation";
+}
 
-    _imp->provides = result;
+void
+VDBRepository::write_provides_cache() const
+{
+    Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache) + "':");
+
+    std::ofstream f(stringify(_imp->params.provides_cache).c_str());
+    if (! f)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Cannot write to '" <<
+                _imp->params.provides_cache << "': " << std::strerror(errno);
+        return;
+    }
+
+    f << "paludis-3" << std::endl;
+    f << name() << std::endl;
+
+    for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
+             it_end(_imp->provides_map->end()); it_end != it; ++it)
+    {
+        f << it->first.first << " " << it->first.second;
+        for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
+                 it2_end(it->second->end()); it2_end != it2; ++it2)
+            f << " " << *it2;
+        f << std::endl;
+    }
 }
 
 void
@@ -656,43 +742,8 @@ VDBRepository::regenerate_provides_cache() const
     FSEntry(_imp->params.provides_cache).unlink();
     _imp->params.provides_cache.dirname().mkdir();
 
-    need_category_names();
-    std::for_each(_imp->categories.begin(), _imp->categories.end(),
-            tr1::bind(tr1::mem_fn(&VDBRepository::need_package_ids), this,
-                tr1::bind<CategoryNamePart>(tr1::mem_fn(
-                        &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
-
-    std::ofstream f(stringify(_imp->params.provides_cache).c_str());
-    if (! f)
-    {
-        Log::get_instance()->message(ll_warning, lc_context) << "Cannot write to '" <<
-                _imp->params.provides_cache << "'";
-        return;
-    }
-
-    f << "paludis-2" << std::endl;
-    f << name() << std::endl;
-
-    for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
-            i != i_end ; ++i)
-    {
-        for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
-                e != e_end ; ++e)
-        {
-            if (! (*e)->provide_key())
-                continue;
-
-            tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());
-            StringifyFormatter ff;
-            DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
-            provide->accept(p);
-            std::string provide_str(strip_leading(strip_trailing(stringify(p), " \t\r\n"), " \t\r\n"));
-            if (provide_str.empty())
-                continue;
-
-            f << (*e)->name() << " " << (*e)->version() << " " << provide_str << std::endl;
-        }
-    }
+    load_provided_the_slow_way();
+    write_provides_cache();
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
@@ -797,6 +848,13 @@ VDBRepository::merge(const MergeParams & m)
 
     post_merge_command();
     _imp->names_cache->add(m[k::package_id()]->name());
+
+    if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
+    {
+        provides_from_package_id(*m[k::package_id()]);
+        write_provides_cache();
+        _imp->provides.reset();
+    }
 }
 
 void
