@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * paludis now rebuilds the VDB names and provides caches
+      incrementally after each install and uninstall. This can give a
+      significant speed-up, but it makes it more important to run
+      paludis --regenerate-installed-cache after installing or
+      removing a package with portage, as this will no longer be done
+      automatically.
+
 0.26.0_alpha14:
     * paludis now has an --executables option which shows all executables
       installed by a package that are in $PATH.

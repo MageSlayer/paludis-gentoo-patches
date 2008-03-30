@@ -16,13 +16,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
-
-echo
-einfo_unhooked "Regenerating cache for installed repositories..."
-${PALUDIS_COMMAND} --regenerate-installed-cache
-einfo_unhooked "Done regenerating cache for installed repositories"
-
+# Placeholder to make the upgrade path not explode
 true
 
