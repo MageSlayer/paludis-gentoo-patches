@@ -12,6 +12,9 @@ trunk/:
       removing a package with portage, as this will no longer be done
       automatically.
 
+      This also changes the format of the provides cache, so you will need
+      to run paludis --regenerate-installed-cache once after upgrading.
+
     * paludis now uses ${builddir}/${CATEGORY}-${PF} instead of
       ${builddir}/${CATEGORY}/${PF} as a temporary build directory.
 
