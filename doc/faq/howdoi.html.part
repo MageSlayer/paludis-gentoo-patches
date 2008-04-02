@@ -25,8 +25,8 @@ SANDBOX_WRITE="${SANDBOX_WRITE}:${CCACHE_DIR}"
 
 <p>You'll need to make sure that your ccache directory has appropriate permissions. Paludis
 will sometimes use the <code>paludisbuild</code> user when compiling.
-You can set the maxium size of the cache with (for example)
-<code>CCACHE_DIR="/var/tmp/ccache" ccache -M 2G</code>.</p>
+You can set the maxium size of the cache by running (for example)
+<code>CCACHE_DIR="/var/tmp/ccache" ccache -M 2G</code> once as root.</p>
 
 <h2 id="distcc">Use <code>distcc</code></h2>
 
