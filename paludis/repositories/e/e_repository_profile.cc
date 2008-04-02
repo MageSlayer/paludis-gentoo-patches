@@ -182,7 +182,7 @@ namespace paludis
                             tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
-                Context context("When loading profiles for repository '" + stringify(name) + "':");
+                Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
                 load_environment();
 
                 for (FSEntrySequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;

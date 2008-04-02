@@ -395,14 +395,26 @@ namespace paludis
 
                 FSEntrySequence profiles;
                 profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
-                profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::named_create()
-                        (k::arch(), tokens.at(0))
-                        (k::path(), *profiles.begin())
-                        (k::status(), tokens.at(2))
-                        (k::profile(), tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
-                                    params.environment, repo, repo->name(), profiles,
-                                    (*(*erepository::EAPIData::get_instance()->eapi_from_string(
-                                        params.eapi_when_unknown))[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]))));
+                try
+                {
+                    profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::named_create()
+                            (k::arch(), tokens.at(0))
+                            (k::path(), *profiles.begin())
+                            (k::status(), tokens.at(2))
+                            (k::profile(), tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
+                                        params.environment, repo, repo->name(), profiles,
+                                        (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                            params.eapi_when_unknown))[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]))));
+                }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
+                catch (const Exception & e)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "No loading profile '" +
+                            tokens.at(1) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+                }
             }
         }
 
@@ -1027,6 +1039,7 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 {
     Context context("When setting profile by iterator:");
 
+    Log::get_instance()->message(ll_debug, lc_context, "Using profile '" + stringify((*iter)[k::path()]) + "'");
     _imp->profile_ptr = (*iter)[k::profile()];
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
