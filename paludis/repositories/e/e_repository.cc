@@ -412,7 +412,7 @@ namespace paludis
                 }
                 catch (const Exception & e)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "No loading profile '" +
+                    Log::get_instance()->message(ll_warning, lc_context, "Not loading profile '" +
                             tokens.at(1) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
                 }
             }
