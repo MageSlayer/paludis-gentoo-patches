@@ -54,6 +54,10 @@ namespace
             {
                 file.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions()));
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
@@ -392,6 +396,10 @@ paludis::erepository::extractors_check(
                             .with_associated_key(id, id->fetches_key()));
                 }
             }
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

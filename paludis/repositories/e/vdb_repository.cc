@@ -874,6 +874,10 @@ VDBRepository::need_category_names() const
                 _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
                             tr1::shared_ptr<QualifiedPackageNameSet>()));
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_context) << "Skipping VDB category dir '"
@@ -912,6 +916,10 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                     i = _imp->ids.insert(std::make_pair(*p.package_ptr(), make_shared_ptr(new PackageIDSequence))).first;
                 i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec, *d));
             }
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

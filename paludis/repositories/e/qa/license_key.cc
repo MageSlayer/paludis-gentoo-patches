@@ -95,6 +95,10 @@ paludis::erepository::license_key_check(
             Checker c(entry, reporter, id, repo->layout()->licenses_dirs(), name);
             id->license_key()->value()->accept(c);
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             reporter.message(QAMessage(entry, qaml_severe, name,

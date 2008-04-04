@@ -389,6 +389,10 @@ namespace
                 Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), false, false);
                 k.value()->accept(c);
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
@@ -405,6 +409,10 @@ namespace
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
+            }
+            catch (const InternalError &)
+            {
+                throw;
             }
             catch (const Exception & e)
             {
@@ -423,6 +431,10 @@ namespace
                 Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
@@ -439,6 +451,10 @@ namespace
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, iuse_flags, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), false, true);
                 k.value()->accept(c);
+            }
+            catch (const InternalError &)
+            {
+                throw;
             }
             catch (const Exception & e)
             {
@@ -457,6 +473,10 @@ namespace
                 Checker c(entry, reporter, id, iuse_flags, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), true, true);
                 k.value()->accept(c);
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
@@ -473,6 +493,10 @@ namespace
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
+            }
+            catch (const InternalError &)
+            {
+                throw;
             }
             catch (const Exception & e)
             {

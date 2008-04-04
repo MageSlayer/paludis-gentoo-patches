@@ -229,6 +229,10 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
             else
                 v->push_back(id);
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & ee)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"

@@ -176,6 +176,10 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                 return false;
             }
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_no_context) << "Not using cache file at '"
@@ -363,6 +367,10 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
             else
                 cache << std::endl;
         }
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (const Exception & e)
     {

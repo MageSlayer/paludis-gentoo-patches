@@ -140,6 +140,10 @@ namespace
                             return tr1::shared_ptr<const PackageID>();
                     }
                 }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
                 catch (const Exception & ex)
                 {
                     Log::get_instance()->message(ll_warning, lc_context,

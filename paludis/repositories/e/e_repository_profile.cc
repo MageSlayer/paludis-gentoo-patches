@@ -342,6 +342,10 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
             tokenise_whitespace(environment_variables[use_expand_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
@@ -361,6 +365,10 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
             tokenise_whitespace(environment_variables[use_var],
                     create_inserter<UseFlagName>(std::inserter(use, use.end())));
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_var + "' failed due to exception: "
@@ -376,6 +384,10 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
             tokenise_whitespace(environment_variables[use_expand_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
@@ -390,6 +402,10 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
         if (! use_expand_hidden_var.empty())
             tokenise_whitespace(environment_variables[use_expand_hidden_var],
                     create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (const Exception & e)
     {
@@ -414,6 +430,10 @@ Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
              || s == "CONFIG_PROTECT"
              || s == "CONFIG_PROTECT_MASK"
              || use_expand.end() != use_expand.find(UseFlagName(s)));
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (const Exception & x)
     {
@@ -450,6 +470,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading packages "
@@ -475,6 +499,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                                             repository->params().profile_eapi), tr1::shared_ptr<const PackageID>())))));
             }
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
@@ -499,6 +527,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
                         + stringify(line->first) + "' failed because specification does not restrict to a "
                         "unique package");
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {
@@ -534,6 +566,10 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
                     m[UseFlagName(t->substr(1))] = false;
                 else
                     m[UseFlagName(*t)] = true;
+            }
+            catch (const InternalError &)
+            {
+                throw;
             }
             catch (const Exception & e)
             {
@@ -579,6 +615,10 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
                         n->second[UseFlagName(t->substr(1))] = false;
                     else
                         n->second[UseFlagName(*t)] = true;
+                }
+                catch (const InternalError &)
+                {
+                    throw;
                 }
                 catch (const Exception & e)
                 {
@@ -637,6 +677,10 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & 
 
         use.insert(arch);
         stacked_values_list.back().use_force[arch] = true;
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (const Exception &)
     {

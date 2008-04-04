@@ -315,6 +315,10 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         if (0 == exit_status)
             ok = true;
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
@@ -416,6 +420,10 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
                 slot = "0";
             }
             id->set_slot(SlotName(slot));
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

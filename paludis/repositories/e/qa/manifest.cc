@@ -281,6 +281,10 @@ paludis::erepository::manifest_check(
         else
             reporter.message(QAMessage(manifest, qaml_minor, name, "Manifest not signed"));
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         reporter.message(QAMessage(dir, qaml_severe, name,

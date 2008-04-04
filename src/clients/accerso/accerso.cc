@@ -163,6 +163,10 @@ main(int argc, char *argv[])
                         results.insert(std::make_pair(*i, (*f)[k::target_file()] + ": " + r));
                     }
                 }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
                 catch (const Exception & e)
                 {
                     results.insert(std::make_pair(*i, "Uncaught exception '" + e.message() + "' (" + e.what() + ")"));

@@ -591,6 +591,10 @@ ERepository::repository_masked(const PackageID & id) const
                             + stringify(line->first) + "' failed because specification does not restrict to a "
                             "unique package");
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"

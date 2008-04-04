@@ -68,6 +68,10 @@ paludis::erepository::keywords_key_check(
                                     .with_associated_key(id, id->keywords_key())
                                     .with_associated_key(id, id->eclass_keywords_key()));
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             reporter.message(QAMessage(entry, qaml_severe, name,

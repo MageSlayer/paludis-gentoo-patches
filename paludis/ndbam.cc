@@ -327,6 +327,10 @@ NDBAM::entries(const QualifiedPackageName & q)
                                 .magic(m)
                                 .mutex(make_shared_ptr(new Mutex)))));
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
@@ -524,6 +528,10 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
                 try
                 {
                     cncp.category_names_containing_package->insert(CategoryNamePart(d->basename()));
+                }
+                catch (const InternalError &)
+                {
+                    throw;
                 }
                 catch (const Exception & e)
                 {

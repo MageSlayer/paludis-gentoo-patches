@@ -244,6 +244,10 @@ QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
                                     _imp->env, _imp->repo, content)));
             }
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         _imp->reporter.message(
@@ -371,6 +375,10 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
                                 _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i), content)));
         }
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         _imp->reporter.message(
@@ -423,6 +431,10 @@ QAController::run()
 #else
         _worker();
 #endif
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (const Exception & e)
     {

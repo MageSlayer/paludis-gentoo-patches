@@ -265,6 +265,10 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
             _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", "R", _imp->depends_labels, mkt_dependencies));
         add_metadata_key(_imp->depends_key);
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context) << "Broken CRAN description file '" << stringify(f) << "': '"

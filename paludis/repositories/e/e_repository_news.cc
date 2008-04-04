@@ -200,6 +200,10 @@ ERepositoryNews::update_news() const
                 }
             }
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_no_context,

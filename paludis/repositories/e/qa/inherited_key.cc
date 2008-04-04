@@ -53,6 +53,10 @@ namespace
                 std::copy(inherited_blacklist_file.begin(), inherited_blacklist_file.end(),
                         std::inserter(inherited_blacklist, inherited_blacklist.end()));
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
@@ -85,6 +89,10 @@ paludis::erepository::inherited_key_check(
                     reporter.message(QAMessage(entry, qaml_normal, name, "Deprecated inherit '" + *it + "' in '" + id->inherited_key()->raw_name() + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, id->inherited_key()));
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

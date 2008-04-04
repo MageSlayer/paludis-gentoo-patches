@@ -224,6 +224,10 @@ namespace
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(line) +
                         "' because it does not start with '?' or '*'");
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(line) +
@@ -285,6 +289,10 @@ SimpleHandler::_create_contents() const
                 _contents->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                             new TreeLeaf<SetSpecTree, PackageDepSpec>(p)));
             }
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

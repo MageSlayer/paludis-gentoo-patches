@@ -239,6 +239,10 @@ namespace
 
                 found_matches |= checker.found_matches();
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & exception)
             {
                 cerr << "Caught exception:" << endl;

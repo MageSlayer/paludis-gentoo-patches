@@ -280,6 +280,10 @@ main(int argc, char *argv[])
                     {
                         (*m)->accept(v);
                     }
+                    catch (const InternalError &)
+                    {
+                        throw;
+                    }
                     catch (const Exception & e)
                     {
                         results.insert(std::make_pair(*i, "Error in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
@@ -290,6 +294,10 @@ main(int argc, char *argv[])
 
                 if (! metadata_errors)
                     ++success;
+            }
+            catch (const InternalError &)
+            {
+                throw;
             }
             catch (const Exception & e)
             {

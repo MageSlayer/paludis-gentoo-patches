@@ -165,6 +165,10 @@ paludis::erepository::metadata_keys_check(
         {
             (*it)->accept(validator);
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             retval = false;

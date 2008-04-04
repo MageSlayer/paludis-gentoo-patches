@@ -126,6 +126,10 @@ namespace
                     tr1::shared_ptr<GemSpecification> spec(new GemSpecification(environment, repository, *i->second));
                     _imp->specs.insert(std::make_pair(std::make_pair(spec->name(), spec->version()), spec));
                 }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
                 catch (const Exception & e)
                 {
                     Log::get_instance()->message(ll_qa, lc_context) << "Skipping entry '"

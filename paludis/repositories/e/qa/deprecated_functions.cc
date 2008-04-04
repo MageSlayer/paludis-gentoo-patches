@@ -55,6 +55,10 @@ namespace
 
                         std::back_inserter(deprecated_functions));
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()

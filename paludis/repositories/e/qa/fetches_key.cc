@@ -202,6 +202,10 @@ paludis::erepository::fetches_key_check(
                       id, id->fetches_key(), entry, name);
             id->fetches_key()->value()->accept(c);
         }
+        catch (const InternalError &)
+        {
+            throw;
+        }
         catch (const Exception & e)
         {
             reporter.message(QAMessage(entry, qaml_severe, name,

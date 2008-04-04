@@ -53,6 +53,10 @@ namespace
                 std::copy(iuse_blacklist_file.begin(), iuse_blacklist_file.end(),
                         create_inserter<UseFlagName>(std::inserter(iuse_blacklist, iuse_blacklist.end())));
             }
+            catch (const InternalError &)
+            {
+                throw;
+            }
             catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
@@ -95,6 +99,10 @@ paludis::erepository::iuse_key_check(
                                     .with_associated_id(id)
                                     .with_associated_key(id, id->iuse_key()));
             }
+        }
+        catch (const InternalError &)
+        {
+            throw;
         }
         catch (const Exception & e)
         {

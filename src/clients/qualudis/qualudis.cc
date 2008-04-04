@@ -270,6 +270,10 @@ namespace
                         i->second->accept(pp);
                         std::cout << "    " << pp.stream.str();
                     }
+                    catch (const InternalError &)
+                    {
+                        throw;
+                    }
                     catch (const Exception &)
                     {
                         // assume one of the QA checks already

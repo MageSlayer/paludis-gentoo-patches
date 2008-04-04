@@ -91,6 +91,10 @@ paludis::erepository::categories_check(
             }
         }
     }
+    catch (const InternalError &)
+    {
+        throw;
+    }
     catch (const Exception & err)
     {
         reporter.message(QAMessage(cats, qaml_severe, name, "Caught Exception '" + err.message() + "' ("
