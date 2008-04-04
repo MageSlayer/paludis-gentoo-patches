@@ -753,13 +753,24 @@ Hooker::perform_hook(const Hook & hook) const
                 case hod_stdout:
                     for (Sequence<tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
-                        result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
+                        if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
+                            result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
+                        else
+                            Log::get_instance()->message(ll_warning, lc_context, "Hook file '" +
+                                    stringify((*f)->file_name()) + "' is not a regular file or has been removed");
                     continue;
 
                 case hod_grab:
                     for (Sequence<tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                     {
+                        if (! (*f)->file_name().is_regular_file_or_symlink_to_regular_file())
+                        {
+                            Log::get_instance()->message(ll_warning, lc_context, "Hook file '" +
+                                    stringify((*f)->file_name()) + "' is not a regular file or has been removed");
+                            continue;
+                        }
+
                         HookResult tmp((*f)->run(hook));
                         if (tmp > result)
                             result = tmp;
