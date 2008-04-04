@@ -73,6 +73,8 @@ case "${HOOK}" in
             "Use of elog.bash in phase \"${HOOK}\" is deprecated, see comments at beginning of file for updated instructions"
     fi
 
+    ${PRETEND} && exit 0
+
     echo
     old_pf=""
     while read line ; do
