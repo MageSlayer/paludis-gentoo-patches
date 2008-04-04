@@ -54,6 +54,8 @@ case "${HOOK}" in
             "Use of elog.bash in phase \"${HOOK}\" is deprecated, see comments at beginning of file for updated instructions"
     fi
 
+    ${PRETEND} && exit 0
+
     rm -f "${logfile}"
     touch "${logfile}" || die "Couldn't create '${logfile}' for elog hooks"
     if [[ -n "${PALUDIS_REDUCED_GID}" ]] ; then
