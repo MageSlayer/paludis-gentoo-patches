@@ -109,12 +109,6 @@ main()
             REPOSITORY"
     fi
 
-    local new_IUSE i
-    for i in ${IUSE} ; do
-        new_IUSE="${new_IUSE} ${i#[+-]}"
-    done
-    IUSE="${new_IUSE}"
-
     local v VDB_FORMAT="paludis-2" COUNTER="$(date +%s )"
     for v in ${PALUDIS_VDB_FROM_ENV_VARIABLES} ; do
         if ! paludis_rewrite_var VDB "${v}" "${!v}" > "${vdbdir}"/${v} ; then
