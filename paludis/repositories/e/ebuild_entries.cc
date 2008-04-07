@@ -338,7 +338,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When fetching '" + stringify(*id) + "':");
 
-    bool fetch_restrict(false);
+    bool fetch_restrict(false), userpriv_restrict(false);
     {
         DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
@@ -346,10 +346,14 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
+        {
             if ((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end() !=
                     std::find((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->begin(),
                         (*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end(), (*i)->text()))
                 fetch_restrict = true;
+            if ("userpriv" == (*i)->text() || "nouserpriv" == (*i)->text())
+                userpriv_restrict = true;
+        }
     }
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid() &&
@@ -421,6 +425,8 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         if (c.need_nofetch())
         {
+            bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+                    check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
             std::string use(make_use(_imp->params.environment, *id, p));
             std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
             tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
@@ -443,7 +449,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                         (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
                          _imp->params.location)
                         (k::distdir(), _imp->params.distdir)
-                        (k::userpriv(), phase->option("userpriv"))
+                        (k::userpriv(), phase->option("userpriv") && userpriv_ok)
                         (k::sandbox(), phase->option("sandbox"))
                         (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
                         (k::builddir(), _imp->params.builddir));
@@ -690,6 +696,21 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When infoing '" + stringify(*id) + "':");
 
+    bool userpriv_restrict;
+    {
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
+        userpriv_restrict =
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+    }
+    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+
     /* make use */
     std::string use(make_use(_imp->params.environment, *id, p));
 
@@ -721,7 +742,7 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
                 (k::distdir(), _imp->params.distdir)
                 (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
                 (k::sandbox(), phase->option("sandbox"))
-                (k::userpriv(), phase->option("userpriv"))
+                (k::userpriv(), phase->option("userpriv") && userpriv_ok)
                 (k::builddir(), _imp->params.builddir));
 
         FSEntry i(_imp->e_repository->layout()->info_variables_file(
@@ -759,6 +780,23 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
         throw EAPIConfigurationError("EAPI '" + (*id->eapi())[k::name()] + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
+    bool userpriv_restrict;
+    {
+        using namespace tr1::placeholders;
+
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
+        userpriv_restrict =
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+    }
+    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(EbuildCommandParams::named_create()
@@ -773,7 +811,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
              _imp->params.location)
             (k::distdir(), _imp->params.distdir)
             (k::sandbox(), phases.begin_phases()->option("sandbox"))
-            (k::userpriv(), phases.begin_phases()->option("userpriv"))
+            (k::userpriv(), phases.begin_phases()->option("userpriv") && userpriv_ok)
             (k::commands(), join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
             (k::builddir(), _imp->params.builddir),
 
@@ -864,6 +902,21 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
     if ((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend.empty())
         return true;
 
+    bool userpriv_restrict;
+    {
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
+        userpriv_restrict =
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+    }
+    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+
     std::string use(make_use(_imp->params.environment, *id, p));
     std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
@@ -886,7 +939,7 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
                 (k::portdir(), _imp->params.master_repository ? _imp->params.master_repository->params().location :
                    _imp->params.location)
                 (k::distdir(), _imp->params.distdir)
-                (k::userpriv(), phase->option("userpriv"))
+                (k::userpriv(), phase->option("userpriv") && userpriv_ok)
                 (k::sandbox(), phase->option("sandbox"))
                 (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
                 (k::builddir(), _imp->params.builddir));
