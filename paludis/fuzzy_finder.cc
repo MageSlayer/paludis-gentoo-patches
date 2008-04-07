@@ -28,6 +28,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/query.hh>
+#include <paludis/query_delegate.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -57,6 +58,71 @@ namespace
         std::transform(res.begin(), e, res2.begin(), ::tolower);
         return res2;
     }
+
+    class FuzzyPackageNameDelegate :
+        public QueryDelegate
+    {
+        private:
+            std::string _package;
+            DamerauLevenshtein _distance_calculator;
+            unsigned _threshold;
+            char _first_char;
+
+        public:
+            FuzzyPackageNameDelegate(const std::string & package) :
+                _package(package),
+                _distance_calculator(tolower_0_cost(package)),
+                _threshold(package.length() <= 4 ? 1 : 2),
+                _first_char(tolower(package[0]))
+            {
+            }
+
+            virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameSequence>,
+                    tr1::shared_ptr<const CategoryNamePartSet>) const;
+
+            std::string as_human_readable_string() const
+            {
+                return "package name fuzzy-matches '" + _package + "'";
+            }
+    };
+
+    tr1::shared_ptr<QualifiedPackageNameSet>
+    FuzzyPackageNameDelegate::packages(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameSequence> repos,
+                    tr1::shared_ptr<const CategoryNamePartSet> cats) const
+    {
+        tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()),
+                 r_end(repos->end()); r_end != r; ++r)
+        {
+            tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
+
+            for (CategoryNamePartSet::ConstIterator c(cats->begin()),
+                     c_end(cats->end()); c_end != c; ++c)
+            {
+                tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(repo->package_names(*c));
+                for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
+                         p_end(pkgs->end()); p_end != p; ++p)
+                    if (tolower(p->package.data()[0]) == _first_char &&
+                        _distance_calculator.distance_with(tolower_0_cost(p->package.data())) <= _threshold)
+                        result->insert(*p);
+            }
+        }
+
+        return result;
+    }
+
+    class FuzzyPackageName :
+        public Query
+    {
+        public:
+            FuzzyPackageName(const std::string & p) :
+                Query(tr1::shared_ptr<QueryDelegate>(new FuzzyPackageNameDelegate(p)))
+            {
+            }
+    };
 }
 
 namespace paludis
@@ -88,26 +154,11 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
             real_generator = real_generator & query::Repository(*pds.repository_ptr());
     }
 
-    DamerauLevenshtein distance_calculator(tolower_0_cost(package));
-
-    unsigned threshold(package.length() <= 4 ? 1 : 2);
-
-    QualifiedPackageNameSet potential_candidates;
-
-    tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator, qo_whatever));
+    tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator & FuzzyPackageName(package), qo_best_version_only));
 
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
             ; i != i_end ; ++i)
-    {
-        if (tolower(stringify((*i)->name().package)[0]) != tolower(package[0]))
-            continue;
-        potential_candidates.insert((*i)->name());
-    }
-
-    for (QualifiedPackageNameSet::ConstIterator p(potential_candidates.begin()), p_end(potential_candidates.end()) ;
-            p != p_end ; ++p)
-        if (distance_calculator.distance_with(tolower_0_cost(stringify(p->package))) <= threshold)
-            _imp->candidates.push_back(*p);
+        _imp->candidates.push_back((*i)->name());
 }
 
 FuzzyCandidatesFinder::~FuzzyCandidatesFinder()

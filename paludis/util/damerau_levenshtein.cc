@@ -31,13 +31,9 @@ namespace paludis
     {
         std::string name;
         unsigned n;
-        tr1::shared_ptr<std::vector<unsigned> > prevprev;
-        tr1::shared_ptr<std::vector<unsigned> > prev;
-        tr1::shared_ptr<std::vector<unsigned> > current;
 
         Implementation(const std::string & myname) :
-            name(myname), n(name.length() + 1), prevprev(new std::vector<unsigned>(n)),
-            prev(new std::vector<unsigned>(n)), current(new std::vector<unsigned>(n))
+            name(myname), n(name.length() + 1)
         {
         }
     };
@@ -53,35 +49,34 @@ DamerauLevenshtein::~DamerauLevenshtein()
 }
 
 unsigned
-DamerauLevenshtein::distance_with(const std::string & candidate)
+DamerauLevenshtein::distance_with(const std::string & candidate) const
 {
+    std::vector<unsigned> prevprev(_imp->n, 0);
+    std::vector<unsigned> prev(_imp->n);
+    std::vector<unsigned> current(_imp->n, 0);
+
     for (unsigned i(0) ; i < _imp->n ; ++i)
-        (*_imp->prev)[i]  = i;
-    _imp->prevprev->assign(0, _imp->n);
-    _imp->current->assign(0, _imp->n);
+        prev[i] = i;
 
     size_t m(candidate.length() + 1);
     for (unsigned i(1) ; i < m ; ++i)
     {
-        (*_imp->current)[0] = i;
+        current[0] = i;
         for (unsigned j(1) ; j < _imp->n ; ++j)
         {
             unsigned cost(candidate[i - 1] == _imp->name[j - 1] ? 0 : 1);
-            (*_imp->current)[j] = std::min(
-                    std::min((*_imp->prev)[j] + 1, (*_imp->current)[j - 1] + 1),
-                    (*_imp->prev)[j - 1] + cost);
+            current[j] = std::min(
+                    std::min(prev[j] + 1, current[j - 1] + 1),
+                    prev[j - 1] + cost);
             if (i > 1 && j > 1
                     && candidate[i - 1] == _imp->name[j - 2]
                     && candidate[i - 2] == _imp->name[j - 1])
-                (*_imp->current)[j] = std::min((*_imp->current)[j], (*_imp->prevprev)[j - 2] + cost);
+                current[j] = std::min(current[j], prevprev[j - 2] + cost);
         }
-        tr1::shared_ptr<std::vector<unsigned> > aux(_imp->current);
-        tr1::shared_ptr<std::vector<unsigned> > aux2(_imp->prev);
-        _imp->current = _imp->prevprev;
-        _imp->prev = aux;
-        _imp->prevprev = aux2;
+        prevprev.swap(current);
+        prevprev.swap(prev);
     }
 
-    return (*_imp->prev)[_imp->n - 1];
+    return prev[_imp->n - 1];
 }
 

@@ -49,7 +49,7 @@ namespace paludis
             /**
              * Compute the Damerau-Levenshtein to this candidate.
              */
-            unsigned distance_with(const std::string & candidate);
+            unsigned distance_with(const std::string & candidate) const;
 
             ///\}
     };
