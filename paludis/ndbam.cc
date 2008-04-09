@@ -179,8 +179,8 @@ NDBAM::package_names(const CategoryNamePart & c)
 
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(c));
-    if (_imp->category_contents_map.end() == cc_i)
-        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(c) + ") but got category_contents_map end");
+    if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
+        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(c) + ") but got category_contents_map end or zero pointer");
     CategoryContents & cc(*cc_i->second);
 
     l.acquire_then_release_old(cc.mutex);
@@ -219,8 +219,9 @@ bool
 NDBAM::has_category_named(const CategoryNamePart & c)
 {
     Lock l(_imp->category_names_mutex);
-    if (_imp->category_contents_map.end() != _imp->category_contents_map.find(c))
-        return true;
+    CategoryContentsMap::const_iterator it(_imp->category_contents_map.find(c));
+    if (_imp->category_contents_map.end() != it)
+        return it->second;
 
     if (! _imp->category_names)
     {
@@ -229,6 +230,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
             _imp->category_contents_map.insert(std::make_pair(c, new CategoryContents));
             return true;
         }
+        _imp->category_contents_map.insert(std::make_pair(c, tr1::shared_ptr<CategoryContents>()));
     }
 
     return false;
@@ -242,14 +244,15 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
 
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category));
-    if (_imp->category_contents_map.end() == cc_i)
-        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(q.category) + ") but got category_contents_map end");
+    if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
+        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(q.category) + ") but got category_contents_map end or zero pointer");
 
     CategoryContents & cc(*cc_i->second);
     l.acquire_then_release_old(cc.mutex);
 
-    if (cc.package_contents_map.end() != cc.package_contents_map.find(q))
-        return true;
+    PackageContentsMap::const_iterator it(cc.package_contents_map.find(q));
+    if (cc.package_contents_map.end() != it)
+        return it->second;
 
     if (! cc.package_names)
     {
@@ -258,6 +261,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
             cc.package_contents_map.insert(std::make_pair(q, new PackageContents));
             return true;
         }
+        cc.package_contents_map.insert(std::make_pair(q, tr1::shared_ptr<PackageContents>()));
     }
 
     return false;
@@ -280,14 +284,14 @@ NDBAM::entries(const QualifiedPackageName & q)
 
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category));
-    if (_imp->category_contents_map.end() == cc_i)
-        throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got category_contents_map end");
+    if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
+        throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got category_contents_map end or zero pointer");
     CategoryContents & cc(*cc_i->second);
     l.acquire_then_release_old(cc.mutex);
 
     PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
-    if (cc.package_contents_map.end() == pc_i)
-        throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got package_contents_map end");
+    if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
+        throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got package_contents_map end or zero pointer");
     PackageContents & pc(*pc_i->second);
     l.acquire_then_release_old(pc.mutex);
 
