@@ -422,10 +422,30 @@ END
 cp providesincrtest_src1/cat1/pkg1/pkg1-{1,1.1}.ebuild
 cp providesincrtest_src1/cat1/pkg1/pkg1-{1,2}.ebuild
 cp providesincrtest_src1/cat1/{pkg1/pkg1,pkg2/pkg2}-1.ebuild
+cp providesincrtest_src1/cat1/pkg1/pkg1-1.1.ebuild providesincrtest_src2/cat1/pkg1/pkg1-1.1-r0.ebuild
 
 cat <<END >providesincrtest_src2/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
 SLOT="${PV:0:1}"
 PROVIDE="enabled? ( virtual/bar ) disabled? ( virtual/foo )"
 END
+
+mkdir -p reinstalltest reinstalltest_src{1,2}/{eclass,profiles/profile,cat/pkg} || exit 1
+
+cat <<END > reinstalltest_src1/profiles/profile/make.defaults
+ARCH=test
+USERLAND="GNU"
+KERNEL="linux"
+CHOST="i286-badger-linux-gnu"
+END
+echo reinstalltest_src1 >reinstalltest_src1/profiles/repo_name
+echo reinstalltest_src2 >reinstalltest_src2/profiles/repo_name
+echo cat >reinstalltest_src1/profiles/categories
+echo cat >reinstalltest_src2/profiles/categories
+
+cat <<END >reinstalltest_src1/cat/pkg/pkg-1.ebuild
+KEYWORDS="test"
+SLOT="0"
+END
+cp reinstalltest_src1/cat/pkg/pkg-1.ebuild reinstalltest_src2/cat/pkg/pkg-1-r0.ebuild
 

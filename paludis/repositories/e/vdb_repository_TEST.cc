@@ -975,6 +975,17 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("reinstall equivalent", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::providesincrtest_src2",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat1/pkg1 1.1-r0 virtual/foo\n");
+            }
+
+            {
                 TestMessageSuffix suffix("downgrade", true);
                 const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
@@ -1066,5 +1077,110 @@ namespace test_cases
             return ss.str();
         }
     } test_provides_cache_incremental;
+
+    struct ReinstallTest : TestCase
+    {
+        ReinstallTest() : TestCase("reinstall") { }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest_src1");
+            keys->insert("profiles", "vdb_repository_TEST_dir/reinstalltest_src1/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo1);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest_src2");
+            keys->insert("profiles", "vdb_repository_TEST_dir/reinstalltest_src1/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(2, repo2);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            InstallAction install_action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), vdb_repo)
+                    );
+
+            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
+
+            {
+                TestMessageSuffix suffix("install", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall equivalent", true);
+                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src2",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1-r0::installed");
+            }
+        }
+    } reinstall_test;
 }
 

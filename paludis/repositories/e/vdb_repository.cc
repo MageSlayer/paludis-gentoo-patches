@@ -464,13 +464,13 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
             }
         if (only)
             _imp->names_cache->remove(id->name());
+    }
 
-        if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
-        {
-            _imp->provides_map->erase(std::make_pair(id->name(), id->version()));
-            write_provides_cache();
-            _imp->provides.reset();
-        }
+    if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
+    {
+        _imp->provides_map->erase(std::make_pair(id->name(), id->version()));
+        write_provides_cache();
+        _imp->provides.reset();
     }
 }
 
@@ -824,12 +824,16 @@ VDBRepository::merge(const MergeParams & m)
 
     if (is_replace)
     {
-        if ((vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename())).exists())
-            throw InstallActionError("Directory '" + stringify(vdb_dir.dirname() /
-                        ("-reinstalling-" + vdb_dir.basename())) + "' already exists, probably due to "
+        FSEntry old_vdb_dir(_imp->params.location);
+        old_vdb_dir /= stringify(is_replace->name().category);
+        old_vdb_dir /= (stringify(is_replace->name().package) + "-" + stringify(is_replace->version()));
+
+        if ((old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename())).exists())
+            throw InstallActionError("Directory '" + stringify(old_vdb_dir.dirname() /
+                        ("-reinstalling-" + old_vdb_dir.basename())) + "' already exists, probably due to "
                     "a previous failed upgrade. If it is safe to do so, remove this directory and try "
                     "again.");
-        vdb_dir.rename(vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename()));
+        old_vdb_dir.rename(old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename()));
     }
 
     tmp_vdb_dir.rename(vdb_dir);
