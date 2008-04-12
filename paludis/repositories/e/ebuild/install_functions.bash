@@ -36,12 +36,12 @@ keepdir()
     dodir "$@"
     if [[ "${1}" == "-R" ]] || [[ "${1}" == "-r" ]] ; then
         shift
-        find "$@" -type d -printf "${D}/%p/.keep\0" | xargs -0 touch
-        assert "Failed to create .keep files"
+        find "$@" -type d -printf "${D}/%p/.keep_${CATEGORY}_${PN}-${SLOT}\0" | xargs -0 touch
+        assert "Failed to create .keep_${CATEGORY}_${PN}-${SLOT} files"
     else
         local f
         for f in "$@" ; do
-            touch "${D}/${f}/.keep" || die "Couldn't touch .keep in ${f}"
+            touch "${D}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || die "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}"
         done
     fi
 }
