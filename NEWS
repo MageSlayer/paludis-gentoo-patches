@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_pre1:
     * paludis now rebuilds the VDB names and provides caches
       incrementally after each install and uninstall. This can give a
       significant speed-up, but it makes it more important to run
