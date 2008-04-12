@@ -640,19 +640,6 @@ EInstalledRepositoryID::fs_location_key() const
     return _imp->fs_location;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<long> >
-EInstalledRepositoryID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-EInstalledRepositoryID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-
 bool
 EInstalledRepositoryID::arbitrary_less_than_comparison(const PackageID &) const
 {
@@ -692,6 +679,10 @@ namespace
         }
 
         void visit(const SupportsActionTest<FetchAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendFetchAction> &)
         {
         }
 
@@ -754,6 +745,7 @@ namespace
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
         void visit(const PretendAction & a) PALUDIS_ATTRIBUTE((noreturn));
         void visit(const FetchAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PretendFetchAction & a) PALUDIS_ATTRIBUTE((noreturn));
     };
 
     void PerformAction::visit(const InstallAction & a)
@@ -767,6 +759,11 @@ namespace
     }
 
     void PerformAction::visit(const FetchAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+
+    void PerformAction::visit(const PretendFetchAction & a)
     {
         throw UnsupportedActionError(*id, a);
     }

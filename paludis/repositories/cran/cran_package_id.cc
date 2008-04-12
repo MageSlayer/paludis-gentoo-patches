@@ -486,6 +486,11 @@ namespace
             result = cran_repository;
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+            result = cran_repository;
+        }
+
         void visit(const SupportsActionTest<InstallAction> &)
         {
             result = cran_repository;
@@ -539,18 +544,6 @@ const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANPackageID::fs_location_key() const
 {
     return _imp->fs_location_key;
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-CRANPackageID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-CRANPackageID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 const tr1::shared_ptr<const MetadataValueKey<bool> >

@@ -43,6 +43,7 @@ namespace paludis
     class ConfigAction;
     class FetchAction;
     class InfoAction;
+    class PretendFetchAction;
 
     class SupportsActionTestBase;
     template <typename A_> class SupportsActionTest;

@@ -73,6 +73,7 @@ paludis_repositories_e_include_HEADERS = \
 	exndbam_repository.hh \
 	exndbam_repository-sr.hh \
 	fetch_visitor.hh \
+	pretend_fetch_visitor.hh \
 	fix_locked_dependencies.hh \
 	glsa-sr.hh \
 	glsa.hh \
@@ -80,7 +81,6 @@ paludis_repositories_e_include_HEADERS = \
 	make_ebuild_repository.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
-	distfiles_size_visitor.hh \
 	package_dep_spec.hh \
 	pipe_command_handler.hh \
 	source_uri_finder.hh \
@@ -128,12 +128,12 @@ libpaludiserepository_la_SOURCES = \
 	exndbam_repository.cc \
 	exheres_layout.cc \
 	fetch_visitor.cc \
+	pretend_fetch_visitor.cc \
 	fix_locked_dependencies.cc \
 	glsa.cc \
 	layout.cc \
 	make_ebuild_repository.cc \
 	manifest2_reader.cc \
-	distfiles_size_visitor.cc \
 	package_dep_spec.cc \
 	pipe_command_handler.cc \
 	registration.cc \

@@ -84,6 +84,9 @@ namespace paludis
                 virtual void fetch(const tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 
+                virtual void pretend_fetch(const tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const;
+
                 virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 

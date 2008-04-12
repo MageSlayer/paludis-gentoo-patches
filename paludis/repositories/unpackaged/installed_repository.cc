@@ -203,6 +203,11 @@ namespace
             result = false;
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+            result = false;
+        }
+
         void visit(const SupportsActionTest<InstallAction> &)
         {
             result = false;

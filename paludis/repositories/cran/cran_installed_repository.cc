@@ -538,6 +538,10 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
             result = true;

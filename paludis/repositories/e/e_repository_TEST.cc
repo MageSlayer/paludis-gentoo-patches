@@ -1628,50 +1628,6 @@ namespace test_cases
         }
     } test_e_repository_install_exheres_0;
 
-    /**
-     * \test Test ERepository Distfile Size querying (total needed to
-     * download, and amount downloaded.
-     */
-    struct ERepositoryDistSizeTest : TestCase
-    {
-        ERepositoryDistSizeTest() : TestCase("dist_size") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_TEST_dir/repo16");
-            keys->insert("profiles", "e_repository_TEST_dir/repo16/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
-                        &env, keys));
-            env.package_database()->add_repository(1, repo);
-
-            const tr1::shared_ptr<const PackageID> ida(*env.package_database()->
-                    query(query::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("category/package-a",
-                                    UserPackageDepSpecOptions()))), qo_order_by_version)->last());
-            const tr1::shared_ptr<const PackageID> idb(*env.package_database()->
-                    query(query::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("category/package-b",
-                                    UserPackageDepSpecOptions()))), qo_order_by_version)->last());
-            const tr1::shared_ptr<const PackageID> idc(*env.package_database()->
-                    query(query::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("category/package-c",
-                                    UserPackageDepSpecOptions()))), qo_order_by_version)->last());
-
-            TEST_CHECK_EQUAL(ida->size_of_download_required_key()->value(), 0);
-            TEST_CHECK_EQUAL(ida->size_of_all_distfiles_key()->value(), 10);
-            TEST_CHECK_EQUAL(idb->size_of_download_required_key()->value(),
-                    idb->size_of_all_distfiles_key()->value());
-            TEST_CHECK_EQUAL(idc->size_of_download_required_key()->value(), 12);
-            TEST_CHECK_EQUAL(idc->size_of_all_distfiles_key()->value(), 22);
-        }
-    } test_e_repository_dist_size;
-
     struct ERepositoryDependenciesRewriterTest : TestCase
     {
         ERepositoryDependenciesRewriterTest() : TestCase("dependencies_rewriter") { }

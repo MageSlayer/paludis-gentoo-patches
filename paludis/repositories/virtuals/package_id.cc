@@ -418,6 +418,13 @@ namespace
             if (! id->repository()->some_ids_might_support_action(t))
                 throw UnsupportedActionError(*id, a);
         }
+
+        void visit(const PretendFetchAction & a)
+        {
+            SupportsActionTest<PretendFetchAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
     };
 }
 
@@ -513,18 +520,6 @@ const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsPackageID::fs_location_key() const
 {
     return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-VirtualsPackageID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-VirtualsPackageID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
 const tr1::shared_ptr<const MetadataValueKey<bool> >

@@ -444,18 +444,6 @@ GemSpecification::contained_in_key() const
     return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<long> >
-GemSpecification::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-GemSpecification::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
 const tr1::shared_ptr<const MetadataValueKey<bool> >
 GemSpecification::transient_key() const
 {
@@ -578,6 +566,13 @@ namespace
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const PretendFetchAction & a)
+        {
+            SupportsActionTest<PretendFetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
                 throw UnsupportedActionError(*id, a);
         }

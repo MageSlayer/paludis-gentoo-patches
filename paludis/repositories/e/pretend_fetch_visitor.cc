@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Mike Kelly
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,27 +17,22 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/distfiles_size_visitor.hh>
-#include <paludis/repositories/e/source_uri_finder.hh>
+#include <paludis/repositories/e/pretend_fetch_visitor.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
-#include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
-#include <paludis/repository.hh>
-#include <paludis/about.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <iostream>
 #include <list>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -45,59 +40,64 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<DistfilesSizeVisitor>
+    struct Implementation<PretendFetchVisitor>
     {
         const Environment * const env;
         const tr1::shared_ptr<const PackageID> id;
+        const EAPI & eapi;
         const FSEntry distdir;
+        const bool fetch_unneeded;
         tr1::shared_ptr<const URILabel> default_label;
-        bool everything;
-        const tr1::shared_ptr<Manifest2Reader> m2r;
+        PretendFetchAction & action;
 
+        std::set<std::string> already_done;
         std::list<const URILabel *> labels;
-        size_t size;
+        Manifest2Reader manifest;
 
         Implementation(
                 const Environment * const e,
                 const tr1::shared_ptr<const PackageID> & i,
+                const EAPI & p,
                 const FSEntry & d,
+                const bool f,
                 const tr1::shared_ptr<const URILabel> & n,
-                const bool ev,
-                const tr1::shared_ptr<Manifest2Reader> mr) :
+                PretendFetchAction & a) :
             env(e),
             id(i),
+            eapi(p),
             distdir(d),
+            fetch_unneeded(f),
             default_label(n),
-            everything(ev),
-            m2r(mr),
-            size(0)
+            action(a),
+            manifest(id->fs_location_key()->value().dirname() / "Manifest")
         {
             labels.push_front(default_label.get());
         }
     };
 }
 
-DistfilesSizeVisitor::DistfilesSizeVisitor(
+PretendFetchVisitor::PretendFetchVisitor(
         const Environment * const e,
         const tr1::shared_ptr<const PackageID> & i,
+        const EAPI & p,
         const FSEntry & d,
+        const bool f,
         const tr1::shared_ptr<const URILabel> & n,
-        const bool ev,
-        const tr1::shared_ptr<Manifest2Reader> mr) :
-    PrivateImplementationPattern<DistfilesSizeVisitor>(new Implementation<DistfilesSizeVisitor>(e, i, d, n, ev, mr))
+        PretendFetchAction & a) :
+    PrivateImplementationPattern<PretendFetchVisitor>(new Implementation<PretendFetchVisitor>(e, i, p, d, f, n, a))
 {
 }
 
-DistfilesSizeVisitor::~DistfilesSizeVisitor()
+PretendFetchVisitor::~PretendFetchVisitor()
 {
 }
 
 void
-DistfilesSizeVisitor::visit_sequence(const ConditionalDepSpec & u,
+PretendFetchVisitor::visit_sequence(const ConditionalDepSpec & u,
         FetchableURISpecTree::ConstSequenceIterator cur,
         FetchableURISpecTree::ConstSequenceIterator end)
 {
-    if (u.condition_met())
+    if ((_imp->fetch_unneeded) || (u.condition_met()))
     {
         _imp->labels.push_front(* _imp->labels.begin());
         std::for_each(cur, end, accept_visitor(*this));
@@ -106,7 +106,7 @@ DistfilesSizeVisitor::visit_sequence(const ConditionalDepSpec & u,
 }
 
 void
-DistfilesSizeVisitor::visit_sequence(const AllDepSpec &,
+PretendFetchVisitor::visit_sequence(const AllDepSpec &,
         FetchableURISpecTree::ConstSequenceIterator cur,
         FetchableURISpecTree::ConstSequenceIterator end)
 {
@@ -116,7 +116,7 @@ DistfilesSizeVisitor::visit_sequence(const AllDepSpec &,
 }
 
 void
-DistfilesSizeVisitor::visit_leaf(const URILabelsDepSpec & l)
+PretendFetchVisitor::visit_leaf(const URILabelsDepSpec & l)
 {
     for (URILabelsDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
             i != i_end ; ++i)
@@ -124,25 +124,19 @@ DistfilesSizeVisitor::visit_leaf(const URILabelsDepSpec & l)
 }
 
 void
-DistfilesSizeVisitor::visit_leaf(const FetchableURIDepSpec & u)
+PretendFetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
 {
-    Context context("When visiting URI dep spec '" + stringify(u.text()) + "':");
+    if (! _imp->already_done.insert(u.filename()).second)
+        return;
 
     FSEntry destination(_imp->distdir / u.filename());
+    if (destination.exists())
+        return;
 
-    if (destination.exists() && ! _imp->everything)
+    Manifest2Reader::ConstIterator m(_imp->manifest.find("DIST", u.filename()));
+    if (_imp->manifest.end() == m)
         return;
-    Manifest2Reader::ConstIterator m(_imp->m2r->find("DIST", u.filename()));
-    if (_imp->m2r->end() == m)
-        return;
-    long s(m->size);
-    Log::get_instance()->message(ll_debug, lc_context) << "Adding " << s << " to size. Was "
-        << _imp->size << ", is now " << (_imp->size + s);
-    _imp->size += s;
+
+    _imp->action.will_fetch(destination, m->size);
 }
 
-long
-DistfilesSizeVisitor::size()
-{
-    return _imp->size;
-}

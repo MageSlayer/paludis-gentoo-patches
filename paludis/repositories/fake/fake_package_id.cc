@@ -903,6 +903,13 @@ namespace
             if (! id->repository()->some_ids_might_support_action(t))
                 throw UnsupportedActionError(*id, a);
         }
+
+        void visit(const PretendFetchAction & a)
+        {
+            SupportsActionTest<PretendFetchAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
     };
 }
 

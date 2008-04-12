@@ -158,6 +158,30 @@ PretendAction::set_failed()
     _imp->failed = true;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<PretendFetchAction>
+    {
+        const FetchActionOptions options;
+
+        Implementation(const FetchActionOptions & o) :
+            options(o)
+        {
+        }
+    };
+}
+
+PretendFetchAction::PretendFetchAction(const FetchActionOptions & o) :
+    PrivateImplementationPattern<PretendFetchAction>(new Implementation<PretendFetchAction>(o)),
+    options(_imp->options)
+{
+}
+
+PretendFetchAction::~PretendFetchAction()
+{
+}
+
 SupportsActionTestBase::~SupportsActionTestBase()
 {
 }
@@ -216,6 +240,11 @@ namespace
         void visit(const FetchAction &)
         {
             s << "fetch";
+        }
+
+        void visit(const PretendFetchAction &)
+        {
+            s << "pretend fetch";
         }
     };
 }

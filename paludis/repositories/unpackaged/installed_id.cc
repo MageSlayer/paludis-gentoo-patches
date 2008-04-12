@@ -506,18 +506,6 @@ InstalledUnpackagedID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<long> >
-InstalledUnpackagedID::size_of_download_required_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-InstalledUnpackagedID::size_of_all_distfiles_key() const
-{
-    return tr1::shared_ptr<const MetadataValueKey<long> >();
-}
-
 namespace paludis
 {
     class InstalledUnpackagedTransientKey :
@@ -594,6 +582,11 @@ namespace
         {
             result = false;
         }
+
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+            result = false;
+        }
     };
 
     struct PerformAction :
@@ -622,6 +615,11 @@ namespace
         }
 
         void visit(PretendAction & a) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(PretendFetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
             throw UnsupportedActionError(*id, a);
         }

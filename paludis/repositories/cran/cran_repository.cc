@@ -491,6 +491,11 @@ namespace
             result = true;
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }

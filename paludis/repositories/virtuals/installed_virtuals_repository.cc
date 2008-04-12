@@ -298,6 +298,10 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+        }
+
         void visit(const SupportsActionTest<InfoAction> &)
         {
         }

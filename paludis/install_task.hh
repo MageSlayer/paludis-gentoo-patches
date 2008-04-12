@@ -81,6 +81,7 @@ namespace paludis
             ///\}
 
             bool already_done(const DepListEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            FetchActionOptions & fetch_action_options() PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations

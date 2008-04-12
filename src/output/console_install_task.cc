@@ -38,6 +38,7 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -127,9 +128,11 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         tr1::shared_ptr<const DestinationsSet> d) :
     InstallTask(env, options, d),
     _download_size(0),
+    _download_size_overflow(false),
     _all_tags(new Set<DepTagEntry>),
     _all_use_descriptions(new Set<UseDescription, UseDescriptionComparator>),
     _all_expand_prefixes(new UseFlagNameSet),
+    _already_downloaded(new Set<FSEntry>),
     _resolution_finished(false)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
@@ -625,7 +628,10 @@ ConsoleInstallTask::display_merge_list_post_counts()
 
         if (get_download_size())
         {
-            s << ", at most " << pretty_print_bytes(get_download_size()) << " to download";
+            if (_download_size_overflow)
+                s << ", more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download";
+            else
+                s << ", at most " << pretty_print_bytes(get_download_size()) << " to download";
         }
     }
 
@@ -1229,6 +1235,37 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
             _all_expand_prefixes->inserter());
 }
 
+namespace
+{
+    struct FindDistfilesSize :
+        PretendFetchAction
+    {
+        tr1::shared_ptr<Set<FSEntry> > already_downloaded;
+        unsigned long size;
+        bool overflow;
+
+        FindDistfilesSize(const FetchActionOptions & o, const tr1::shared_ptr<Set<FSEntry> > & a) :
+            PretendFetchAction(o),
+            already_downloaded(a),
+            size(0),
+            overflow(false)
+        {
+        }
+
+        void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes)
+        {
+            if (already_downloaded->end() != already_downloaded->find(destination))
+                return;
+            already_downloaded->insert(destination);
+            unsigned long new_size(size + size_in_bytes);
+            if (new_size < size)
+                overflow = true;
+            else
+                size = new_size;
+        }
+    };
+}
+
 void
 ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
         const DisplayMode m)
@@ -1236,7 +1273,14 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
     if (normal_entry != m && suggested_entry != m)
         return;
 
-    if (! d.package_id->size_of_download_required_key() || d.package_id->size_of_download_required_key()->value() == 0)
+    SupportsActionTest<PretendFetchAction> action_test;
+    if (! d.package_id->supports_action(action_test))
+        return;
+
+    FindDistfilesSize action(fetch_action_options(), _already_downloaded);
+    d.package_id->perform_action(action);
+
+    if (! action.size)
         return;
 
     if (want_compact())
@@ -1247,9 +1291,22 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
         output_no_endl("    ");
     }
 
-    output_stream() << d.package_id->size_of_download_required_key()->pretty_print()
-        << " to download";
-    set_download_size(get_download_size() + d.package_id->size_of_download_required_key()->value());
+    if (action.overflow)
+        output_stream() << "more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max())
+            << " to download";
+    else
+        output_stream() << pretty_print_bytes(action.size) << " to download";
+
+    if (action.overflow)
+        _download_size_overflow = true;
+    else
+    {
+        unsigned long new_size(_download_size + action.size);
+        if (new_size < _download_size)
+            _download_size_overflow = true;
+        else
+            _download_size = new_size;
+    }
 }
 
 void

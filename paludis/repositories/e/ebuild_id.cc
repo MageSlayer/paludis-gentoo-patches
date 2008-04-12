@@ -26,7 +26,6 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_mask.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/distfiles_size_visitor.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
 
 #include <paludis/name.hh>
@@ -77,8 +76,6 @@ namespace paludis
         mutable tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> post_dependencies;
-        mutable tr1::shared_ptr<const EDistSizeKey> size_of_download_required;
-        mutable tr1::shared_ptr<const EDistSizeKey> size_of_all_distfiles;
         mutable tr1::shared_ptr<const EProvideKey> provide;
         mutable tr1::shared_ptr<const ERestrictKey> restrictions;
         mutable tr1::shared_ptr<const EFetchableURIKey> src_uri;
@@ -264,33 +261,6 @@ EbuildID::need_keys_added() const
     _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
         tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
     add_metadata_key(_imp->profile_mask);
-
-    FSEntry m2(_imp->repository->layout()->package_directory(_imp->name) / "Manifest");
-    if (_imp->src_uri && m2.exists())
-    {
-        tr1::shared_ptr<Manifest2Reader> m2r(new Manifest2Reader(m2));
-
-        tr1::shared_ptr<DistfilesSizeVisitor> dsv(new DistfilesSizeVisitor(_imp->environment,
-                shared_from_this(),
-                _imp->repository->params().distdir,
-                _imp->src_uri->initial_label(),
-                false,
-                m2r));
-        tr1::shared_ptr<DistfilesSizeVisitor> dsv2(new DistfilesSizeVisitor(_imp->environment,
-                shared_from_this(),
-                _imp->repository->params().distdir,
-                _imp->src_uri->initial_label(),
-                true,
-                m2r));
-
-        _imp->size_of_download_required.reset(new EDistSizeKey("UNDOWNLOADEDDISTFILESIZE",
-                    "Undownloaded Size", mkt_normal, _imp->src_uri, dsv));
-        add_metadata_key(_imp->size_of_download_required);
-
-        _imp->size_of_all_distfiles.reset(new EDistSizeKey("TOTALDISTFILESIZE",
-                    "Total Distfiles Size", mkt_normal, _imp->src_uri, dsv2));
-        add_metadata_key(_imp->size_of_all_distfiles);
-    }
 }
 
 namespace
@@ -654,20 +624,6 @@ EbuildID::fs_location_key() const
     return _imp->fs_location;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<long> >
-EbuildID::size_of_download_required_key() const
-{
-    need_keys_added();
-    return _imp->size_of_download_required;
-}
-
-const tr1::shared_ptr<const MetadataValueKey<long> >
-EbuildID::size_of_all_distfiles_key() const
-{
-    need_keys_added();
-    return _imp->size_of_all_distfiles;
-}
-
 bool
 EbuildID::arbitrary_less_than_comparison(const PackageID &) const
 {
@@ -836,6 +792,11 @@ namespace
             result = true;
         }
 
+        void visit(const SupportsActionTest<PretendFetchAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<InstallAction> &)
         {
             result = true;
@@ -873,7 +834,7 @@ EbuildID::supports_action(const SupportsActionTestBase & b) const
 namespace
 {
     struct PerformAction :
-        ConstVisitor<ActionVisitorTypes>
+        Visitor<ActionVisitorTypes>
     {
         const tr1::shared_ptr<const PackageID> id;
 
@@ -882,7 +843,7 @@ namespace
         {
         }
 
-        void visit(const InstallAction & a)
+        void visit(InstallAction & a)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
@@ -890,7 +851,7 @@ namespace
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(const FetchAction & a)
+        void visit(FetchAction & a)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->fetch(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
@@ -898,36 +859,44 @@ namespace
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(const PretendAction &)
+        void visit(PretendFetchAction & a)
+        {
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend_fetch(
+                    tr1::static_pointer_cast<const ERepositoryID>(id),
+                    a,
+                    tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+        }
+
+        void visit(PretendAction &)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(const InfoAction &)
+        void visit(InfoAction &)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->info(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(const InstalledAction & a) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const UninstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(InstalledAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(UninstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn));
     };
 
-    void PerformAction::visit(const InstalledAction & a)
+    void PerformAction::visit(InstalledAction & a)
     {
         throw UnsupportedActionError(*id, a);
     }
 
-    void PerformAction::visit(const UninstallAction & a)
+    void PerformAction::visit(UninstallAction & a)
     {
         throw UnsupportedActionError(*id, a);
     }
 
-    void PerformAction::visit(const ConfigAction & a)
+    void PerformAction::visit(ConfigAction & a)
     {
         throw UnsupportedActionError(*id, a);
     }

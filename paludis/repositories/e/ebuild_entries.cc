@@ -26,6 +26,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/fetch_visitor.hh>
+#include <paludis/repositories/e/pretend_fetch_visitor.hh>
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/repositories/e/e_stripper.hh>
@@ -471,6 +472,23 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         if (! c.failures()->empty())
             throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
+    }
+}
+
+void
+EbuildEntries::pretend_fetch(const tr1::shared_ptr<const ERepositoryID> & id,
+        PretendFetchAction & a, tr1::shared_ptr<const ERepositoryProfile>) const
+{
+    using namespace tr1::placeholders;
+
+    Context context("When pretending to fetch ID '" + stringify(*id) + "':");
+
+    if (id->fetches_key())
+    {
+        PretendFetchVisitor f(_imp->params.environment, id, *id->eapi(),
+                _imp->e_repository->params().distdir, a.options[k::fetch_unneeded()],
+                id->fetches_key()->initial_label(), a);
+        id->fetches_key()->value()->accept(f);
     }
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Mike Kelly
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,39 +17,36 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_FETCH_VISITOR_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_FETCH_VISITOR_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PRETEND_FETCH_VISITOR_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PRETEND_FETCH_VISITOR_HH 1
 
-#include <paludis/repositories/e/eapi-fwd.hh>
-#include <paludis/repositories/e/manifest2_reader.hh>
-#include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/action-fwd.hh>
+#include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/environment-fwd.hh>
+#include <paludis/repositories/e/eapi-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
 {
     namespace erepository
     {
-        class PALUDIS_VISIBLE DistfilesSizeVisitor :
-            private PrivateImplementationPattern<DistfilesSizeVisitor>,
+        class PALUDIS_VISIBLE PretendFetchVisitor :
+            private PrivateImplementationPattern<PretendFetchVisitor>,
             public ConstVisitor<FetchableURISpecTree>
         {
             public:
-                DistfilesSizeVisitor(
+                PretendFetchVisitor(
                         const Environment * const,
                         const tr1::shared_ptr<const PackageID> &,
-                        const FSEntry &,
-                        const tr1::shared_ptr<const URILabel> &,
-                        const bool,
-                        const tr1::shared_ptr<Manifest2Reader>);
+                        const EAPI & eapi,
+                        const FSEntry & distdir,
+                        const bool fetch_unneeded,
+                        const tr1::shared_ptr<const URILabel> & initial_label,
+                        PretendFetchAction & action);
 
-                ~DistfilesSizeVisitor();
+                ~PretendFetchVisitor();
 
                 void visit_sequence(const AllDepSpec &,
                         FetchableURISpecTree::ConstSequenceIterator,
@@ -62,9 +59,8 @@ namespace paludis
                 void visit_leaf(const URILabelsDepSpec &);
 
                 void visit_leaf(const FetchableURIDepSpec &);
-
-                long size();
         };
+
     }
 }
 

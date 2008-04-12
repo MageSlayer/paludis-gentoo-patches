@@ -1654,3 +1654,9 @@ InstallTask::already_done(const DepListEntry & e) const
     return v.result;
 }
 
+FetchActionOptions &
+InstallTask::fetch_action_options()
+{
+    return _imp->fetch_options;
+}
+

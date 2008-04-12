@@ -113,10 +113,12 @@ namespace paludis
 
         private:
             int _counts[last_count];
-            long _download_size;
+            unsigned long _download_size;
+            bool _download_size_overflow;
             tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
             tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
             tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
+            tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
 
             void _add_descriptions(tr1::shared_ptr<const UseFlagNameSet>,
                     const tr1::shared_ptr<const PackageID> &, UseDescriptionState);
@@ -282,11 +284,6 @@ namespace paludis
             long get_download_size() const
             {
                 return _download_size;
-            }
-
-            void set_download_size(const long value)
-            {
-                _download_size = value;
             }
 
             tr1::shared_ptr<Set<DepTagEntry> > all_tags()

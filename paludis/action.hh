@@ -58,7 +58,8 @@ namespace paludis
             UninstallAction,
             PretendAction,
             ConfigAction,
-            InfoAction
+            InfoAction,
+            PretendFetchAction
         >
     {
     };
@@ -80,7 +81,8 @@ namespace paludis
             SupportsActionTest<UninstallAction>,
             SupportsActionTest<PretendAction>,
             SupportsActionTest<ConfigAction>,
-            SupportsActionTest<InfoAction>
+            SupportsActionTest<InfoAction>,
+            SupportsActionTest<PretendFetchAction>
         >
     {
     };
@@ -225,6 +227,35 @@ namespace paludis
 
             /// Mark the action as failed.
             void set_failed();
+    };
+
+    /**
+     * A PretendFetchAction is used to get information about a fetch that will take
+     * place on a PackageID.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE PretendFetchAction :
+        public Action,
+        private PrivateImplementationPattern<PretendFetchAction>,
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            PretendFetchAction(const FetchActionOptions &);
+            ~PretendFetchAction();
+
+            ///\}
+
+            /// Options for the FetchAction we will use.
+            const FetchActionOptions & options;
+
+            /// Signal that we will fetch a particular file.
+            virtual void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes) = 0;
     };
 
     /**
