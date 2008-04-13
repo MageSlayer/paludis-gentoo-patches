@@ -145,10 +145,14 @@ namespace paludis
         Context context("When loading environment.conf:");
 
         tr1::shared_ptr<KeyValueConfigFile> kv;
+        tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
+                new Map<std::string, std::string>);
+        conf_vars->insert("ROOT", root);
+        conf_vars->insert("root", root);
         tr1::shared_ptr<FSEntry> world_file;
 
         if ((FSEntry(config_dir) / "environment.conf").exists())
-            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions()));
+            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
         else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
             std::stringstream s;
@@ -158,7 +162,7 @@ namespace paludis
                     .with_stderr_prefix("environment.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions()));
+            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
 
             if (exit_status != 0)
             {

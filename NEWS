@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * paludis now supports ${root} in environment.conf.  This can be
+      used when defining the "world" key, so that the configuration
+      works when the filesystem is mounted as a chroot as a seperate
+      directory.
+
 0.26.0_pre1:
     * paludis now rebuilds the VDB names and provides caches
       incrementally after each install and uninstall. This can give a
