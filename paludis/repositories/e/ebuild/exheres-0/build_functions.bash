@@ -63,9 +63,9 @@ expatch()
                 ;;
             esac
 
-            echo "${cmd} ${1} | patch -s ${patchlevel:--p1} ${options[@]}" 1>&2
-            ${cmd} "${1}" | patch -s ${patchlevel:--p1} "${options[@]}" || \
-                die "patch -s ${patchlevel:--p1} ${options[@]} ${1} failed"
+            echo "${cmd} ${1} | patch -s -f ${patchlevel:--p1} ${options[@]}" 1>&2
+            ${cmd} "${1}" | patch -s -f ${patchlevel:--p1} "${options[@]}"
+            assert "patch -s -f ${patchlevel:--p1} ${options[@]} ${1} failed"
         fi
         shift
     done
