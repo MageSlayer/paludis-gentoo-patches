@@ -112,6 +112,56 @@ namespace test_cases
                 TestMessageSuffix s4(r4.messages);
                 TEST_CHECK_EQUAL(r4.count, 1u);
             }
+
+            {
+                tr1::shared_ptr<const PackageID> id5(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-1", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r5;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r5, &env, repo, id5, "visibility"));
+                TestMessageSuffix s5(r5.messages);
+                TEST_CHECK_EQUAL(r5.count, 1u);
+            }
+
+            {
+                tr1::shared_ptr<const PackageID> id6(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-2", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r6;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r6, &env, repo, id6, "visibility"));
+                TestMessageSuffix s6(r6.messages);
+                TEST_CHECK_EQUAL(r6.count, 1u);
+            }
+
+            {
+                tr1::shared_ptr<const PackageID> id7(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-3", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r7;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r7, &env, repo, id7, "visibility"));
+                TEST_CHECK_EQUAL(r7.count, 0u);
+            }
+
+            {
+                tr1::shared_ptr<const PackageID> id8(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-4", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r8;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r8, &env, repo, id8, "visibility"));
+                TEST_CHECK_EQUAL(r8.count, 0u);
+            }
+
+            {
+                tr1::shared_ptr<const PackageID> id9(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-5", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r9;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r9, &env, repo, id9, "visibility"));
+                TEST_CHECK_EQUAL(r9.count, 0u);
+            }
+
+            {
+                tr1::shared_ptr<const PackageID> id10(*env.package_database()->query(query::Matches(parse_user_package_dep_spec(
+                                    "=cat-one/use-masking-6", UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+                TestReporter r10;
+                TEST_CHECK(visibility_check(FSEntry("/var/empty"), r10, &env, repo, id10, "visibility"));
+                TEST_CHECK_EQUAL(r10.count, 0u);
+            }
         }
     } test_visibility;
 }

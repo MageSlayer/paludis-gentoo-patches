@@ -204,8 +204,8 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             viable =
-                ((! conditional_dep_spec_is_inverse(u)) && (! repo->query_use_mask(conditional_dep_spec_flag(u), *id))) ||
-                ((conditional_dep_spec_is_inverse(u)) && (! repo->query_use_force(conditional_dep_spec_flag(u), *id)));
+                ((! conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_masked(conditional_dep_spec_flag(u), *id))) ||
+                ((conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_forced(conditional_dep_spec_flag(u), *id)));
 
             if (viable)
                 std::for_each(cur, end, accept_visitor(*this));

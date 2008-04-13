@@ -705,6 +705,10 @@ bool
 ERepositoryProfile::use_masked(const UseFlagName & u,
         const PackageID & e) const
 {
+    if (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(u) &&
+        use_enabled != use_state_ignoring_masks(u, e))
+        return true;
+
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
@@ -731,6 +735,11 @@ ERepositoryProfile::use_masked(const UseFlagName & u,
 bool
 ERepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
 {
+    if (use_masked(u, e))
+        return false;
+    if (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(u))
+        return true;
+
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
