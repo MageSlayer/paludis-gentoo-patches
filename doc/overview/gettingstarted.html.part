@@ -81,6 +81,15 @@ should usually be <code>/etc</code>:</p>
 mkdir -p /etc/paludis/repositories
 </pre>
 
+<h3>environment.conf</h3>
+
+<p>The file <code>/etc/paludis/environment.conf</code> must, at minimum, specify the location of the world file
+(other options are described elsewhere in the documentation).  The usual location for Paludis is:</p>
+
+<pre>world = /var/db/pkg/world</pre>
+
+<p>The option <code>world = /var/lib/portage/world</code> can be set if Portage's world file is to be used.</p>
+
 <h3>keywords.conf</h3>
 
 <p>You will need to make <code>/etc/paludis/keywords.conf</code>:</p>
@@ -224,9 +233,6 @@ manually if you install or uninstall any package using Portage.</p>
 <p>To disable either cache, use <code>/var/empty</code> as the value.</p>
 
 <p>You are responsible for ensuring that any cache directories you use exist and have appropriate permissions.</p>
-
-<p>The option <code>world = /var/lib/portage/world</code> can be set if Portage's world file is to be used. By default,
-Paludis uses <code>${location}/world</code>.</p>
 
 <h4>repositories/paludis-overlay.conf</h4>
 
