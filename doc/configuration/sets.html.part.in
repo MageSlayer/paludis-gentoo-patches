@@ -9,23 +9,23 @@
 <p>The following sets are always available:</p>
 
 <dl>
-    <dt>system</dt>
+    <dt><code>system</code></dt>
     <dd>Defined by repositories, system consists of core packages that make up a basic system.</dd>
 
-    <dt>world</dt>
+    <dt><code>world</code></dt>
     <dd>Consists of the system set, plus all packages that have been installed as targets (as opposed to merely pulled
     in as dependencies of a target).</dd>
 
-    <dt>everything</dt>
+    <dt><code>everything</code></dt>
     <dd>All installed packages.</dd>
 
-    <dt>security</dt>
+    <dt><code>security</code></dt>
     <dd>The set of upgrades which must be performed to resolve security holes.</dd>
 
-    <dt>insecurity</dt>
+    <dt><code>insecurity</code></dt>
     <dd>The set of insecure packages (mostly for internal use).</dd>
 
-    <dt>ununused</dt>
+    <dt><code>ununused</code></dt>
     <dd>Any packages that, although not part of system or world, should none-the-less not be considered unused (again,
     mostly for internal use).</dd>
 </dl>
