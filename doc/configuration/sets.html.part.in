@@ -42,14 +42,14 @@ the file <code>sets/foo.conf</code>, which is a standard configuration file and 
 </div>
 
 <p>Each line in a user set file consists of an operator, followed by whitespace, followed by a package dependency
-specification. Permitted operators are:</p>
+specification or, for some operators, a set name. Permitted operators are:</p>
 
 <dl>
     <dt><code>*</code></dt>
-    <dd>Indicates that the specification is part of the set.</dd>
+    <dd>Indicates that the specification or set name is part of the set.</dd>
 
     <dt><code>?</code></dt>
     <dd>Indicates that the specification is part of the set if and only if a package whose name is equal to the name
-    part of the specification is installed.</dd>
+    part of the specification is installed.  May not be used with a set name.</dd>
 </dl>
 

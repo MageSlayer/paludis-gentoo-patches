@@ -185,23 +185,34 @@ namespace
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
                         "' should start with '?' or '*', assuming '*'");
-
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(0))));
-                if (params.tag)
-                    spec->set_tag(params.tag);
-                result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                tokens.insert(tokens.begin(), "*");
             }
-            else if ("*" == tokens.at(0))
+
+            if ("*" == tokens.at(0))
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
-                if (params.tag)
-                    spec->set_tag(params.tag);
-                result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                if (std::string::npos == tokens.at(1).find('/'))
+                {
+                    tr1::shared_ptr<NamedSetDepSpec> spec(new NamedSetDepSpec(SetName(tokens.at(1))));
+                    result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                                new TreeLeaf<SetSpecTree, NamedSetDepSpec>(spec)));
+                }
+                else
+                {
+                    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
+                    if (params.tag)
+                        spec->set_tag(params.tag);
+                    result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                }
             }
             else if ("?" == tokens.at(0))
             {
+                if (std::string::npos == tokens.at(1).find('/'))
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "? operator may not be used with a set name");
+                    return;
+                }
+
                 tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                 if (params.tag)
                     spec->set_tag(params.tag);

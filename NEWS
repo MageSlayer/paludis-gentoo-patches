@@ -10,6 +10,8 @@ trunk/:
       works when the filesystem is mounted as a chroot as a seperate
       directory.
 
+    * Set names can now be specified in .conf-style set files.
+
 0.26.0_pre1:
     * paludis now rebuilds the VDB names and provides caches
       incrementally after each install and uninstall. This can give a
