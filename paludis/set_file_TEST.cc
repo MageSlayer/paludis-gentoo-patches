@@ -143,15 +143,17 @@ namespace test_cases
             {
                 SetSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set ) ");
             }
 
             f.add("foo/bar");
             f.add("moo/oink");
+            f.add("settee");
+            f.add("couch");
             {
                 SetSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set moo/oink couch ) ");
             }
 
             f.rewrite();
@@ -160,16 +162,17 @@ namespace test_cases
                 std::ifstream ff("set_file_TEST_dir/paludisconf1");
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
-                TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n# the end\n* moo/oink\n");
+                TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n* set\n? settee\n\n# the end\n* moo/oink\n* couch\n");
             }
 
             f.remove(">=bar/baz-1.23");
             f.remove("bar/cow");
+            f.remove("set");
 
             {
                 SetSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink couch ) ");
             }
 
             f.rewrite();
@@ -178,7 +181,7 @@ namespace test_cases
                 std::ifstream ff("set_file_TEST_dir/paludisconf1");
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
-                TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n\n# the end\n* moo/oink\n");
+                TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n\n? settee\n\n# the end\n* moo/oink\n* couch\n");
             }
         }
 

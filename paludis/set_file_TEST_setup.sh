@@ -19,6 +19,9 @@ cat <<"END" > paludisconf1
 ? foo/bar
   * >=bar/baz-1.23
 
+* set
+? settee
+
   # the end
 END
 
