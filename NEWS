@@ -12,6 +12,9 @@ trunk/:
 
     * Set names can now be specified in .conf-style set files.
 
+    * Sets can now contain ?: entries, which are like ? entries but also
+      consider the slot part of the dependency specification.
+
 0.26.0_pre1:
     * paludis now rebuilds the VDB names and provides caches
       incrementally after each install and uninstall. This can give a

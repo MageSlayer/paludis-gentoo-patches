@@ -231,6 +231,35 @@ namespace
                     Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
                             "' uses ? operator but does not specify an unambiguous package");
             }
+            else if ("?:" == tokens.at(0))
+            {
+                if (std::string::npos == tokens.at(1).find('/'))
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "?: operator may not be used with a set name");
+                    return;
+                }
+
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
+                if (params.tag)
+                    spec->set_tag(params.tag);
+
+                if (spec->package_ptr())
+                {
+                    if (! params.environment)
+                        Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
+                                "' uses ?: operator but no environment is available");
+                    else if (! params.environment->package_database()->query(query::Matches(
+                                    make_package_dep_spec()
+                                        .package(*spec->package_ptr())
+                                        .slot_requirement(spec->slot_requirement_ptr())) &
+                                query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
+                        result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                }
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
+                            "' uses ? operator but does not specify an unambiguous package");
+            }
             else
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(line) +
                         "' because it does not start with '?' or '*'");

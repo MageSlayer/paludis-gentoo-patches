@@ -51,5 +51,8 @@ specification or, for some operators, a set name. Permitted operators are:</p>
     <dt><code>?</code></dt>
     <dd>Indicates that the specification is part of the set if and only if a package whose name is equal to the name
     part of the specification is installed.  May not be used with a set name.</dd>
+
+    <dt><code>?:</code></dt>
+    <dd>Like <code>?</code>, but considers the slot part of the specification (if any) in addition to the name part.</dd>
 </dl>
 
