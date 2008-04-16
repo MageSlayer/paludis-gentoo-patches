@@ -7,7 +7,7 @@ of every change, see the ChangeLog.
 0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration
-      works when the filesystem is mounted as a chroot as a seperate
+      works when the filesystem is mounted as a chroot as a separate
       directory.
 
     * Set names can now be specified in .conf-style set files.
