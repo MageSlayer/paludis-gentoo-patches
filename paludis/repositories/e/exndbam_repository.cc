@@ -328,16 +328,16 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     NDBAMMerger merger(
-            NDBAMMergerParams::create()
-            .environment(_imp->params.environment)
-            .image(m[k::image_dir()])
-            .root(installed_root_key()->value())
-            .install_under(FSEntry("/"))
-            .contents_file(target_ver_dir / "contents")
-            .config_protect(config_protect)
-            .config_protect_mask(config_protect_mask)
-            .package_id(m[k::package_id()])
-            .options(m[k::options()]));
+            NDBAMMergerParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::image(), m[k::image_dir()])
+            (k::root(), installed_root_key()->value())
+            (k::install_under(), FSEntry("/"))
+            (k::contents_file(), target_ver_dir / "contents")
+            (k::config_protect(), config_protect)
+            (k::config_protect_mask(), config_protect_mask)
+            (k::package_id(), m[k::package_id()])
+            (k::options(), m[k::options()]));
 
     if (! merger.check())
     {

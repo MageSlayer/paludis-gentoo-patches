@@ -1,7 +1,6 @@
 SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
-	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
 	installed_repository-sr.hh installed_repository-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
@@ -25,7 +24,6 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	exceptions.hh \
 	unpackaged_id.hh \
 	unpackaged_repository.hh \
-	unpackaged_repository-sr.hh \
 	unpackaged_key.hh \
 	unpackaged_stripper.hh \
 	installed_repository.hh \
@@ -87,9 +85,6 @@ EXTRA_DIST = \
 	unpackaged_repository_TEST.cc \
 	unpackaged_repository_TEST_setup.sh \
 	unpackaged_repository_TEST_cleanup.sh \
-	unpackaged_repository.sr \
-	unpackaged_repository-sr.hh \
-	unpackaged_repository-sr.cc \
 	installed_repository_TEST.cc \
 	installed_repository_TEST_setup.sh \
 	installed_repository_TEST_cleanup.sh \
@@ -100,7 +95,6 @@ EXTRA_DIST = \
 	dep_parser_TEST.cc
 
 BUILT_SOURCES = \
-	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
 	installed_repository-sr.hh installed_repository-sr.cc
 
 check_SCRIPTS = \
@@ -132,12 +126,6 @@ check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-unpackaged_repository-sr.hh : unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-unpackaged_repository-sr.cc : unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 installed_repository-sr.hh : installed_repository.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/installed_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi

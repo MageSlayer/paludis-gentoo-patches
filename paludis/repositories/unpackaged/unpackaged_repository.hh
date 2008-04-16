@@ -23,12 +23,24 @@
 #include <paludis/repository.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
 
 namespace paludis
 {
     namespace unpackaged_repositories
     {
-#include <paludis/repositories/unpackaged/unpackaged_repository-sr.hh>
+        typedef kc::KeyedClass<
+            kc::Field<k::environment, Environment *>,
+            kc::Field<k::location, FSEntry>,
+            kc::Field<k::install_under, FSEntry>,
+            kc::Field<k::name, QualifiedPackageName>,
+            kc::Field<k::version, VersionSpec>,
+            kc::Field<k::slot, SlotName>,
+            kc::Field<k::build_dependencies, std::string>,
+            kc::Field<k::run_dependencies, std::string>,
+            kc::Field<k::description, std::string>
+                > UnpackagedRepositoryParams;
     }
 
     class PALUDIS_VISIBLE UnpackagedRepository :

@@ -22,10 +22,22 @@
 
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
 
 namespace paludis
 {
-#include <paludis/ndbam_merger-sr.hh>
+    typedef kc::KeyedClass<
+        kc::Field<k::environment, Environment *>,
+        kc::Field<k::image, FSEntry>,
+        kc::Field<k::root, FSEntry>,
+        kc::Field<k::install_under, FSEntry>,
+        kc::Field<k::contents_file, FSEntry>,
+        kc::Field<k::config_protect, std::string>,
+        kc::Field<k::config_protect_mask, std::string>,
+        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::options, MergerOptions>
+            > NDBAMMergerParams;
 
     /**
      * Merger subclass for NDBAM.

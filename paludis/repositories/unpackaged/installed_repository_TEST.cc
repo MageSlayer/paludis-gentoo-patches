@@ -370,16 +370,16 @@ namespace test_cases
 
                 tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .name(QualifiedPackageName("cat/pkg4a"))
-                            .version(VersionSpec("1.0"))
-                            .slot(SlotName("foo"))
-                            .location(FSEntry("installed_repository_TEST_dir/src4a"))
-                            .install_under(FSEntry("/"))
-                            .build_dependencies("")
-                            .run_dependencies("")
-                            .description("")
+                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                            (k::environment(), &env)
+                            (k::name(), QualifiedPackageName("cat/pkg4a"))
+                            (k::version(), VersionSpec("1.0"))
+                            (k::slot(), SlotName("foo"))
+                            (k::location(), FSEntry("installed_repository_TEST_dir/src4a"))
+                            (k::install_under(), FSEntry("/"))
+                            (k::build_dependencies(), "")
+                            (k::run_dependencies(), "")
+                            (k::description(), "")
                             ));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -426,16 +426,16 @@ namespace test_cases
 
                 tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .name(QualifiedPackageName("cat/pkg4b"))
-                            .version(VersionSpec("1.0"))
-                            .slot(SlotName("foo"))
-                            .location(FSEntry("installed_repository_TEST_dir/src4b1"))
-                            .install_under(FSEntry("/"))
-                            .build_dependencies("")
-                            .run_dependencies("")
-                            .description("")
+                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                            (k::environment(), &env)
+                            (k::name(), QualifiedPackageName("cat/pkg4b"))
+                            (k::version(), VersionSpec("1.0"))
+                            (k::slot(), SlotName("foo"))
+                            (k::location(), FSEntry("installed_repository_TEST_dir/src4b1"))
+                            (k::install_under(), FSEntry("/"))
+                            (k::build_dependencies(), "")
+                            (k::run_dependencies(), "")
+                            (k::description(), "")
                             ));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -484,16 +484,16 @@ namespace test_cases
 
                 tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .name(QualifiedPackageName("cat/pkg4b"))
-                            .version(VersionSpec("1.0"))
-                            .slot(SlotName("foo"))
-                            .location(FSEntry("installed_repository_TEST_dir/src4b2"))
-                            .install_under(FSEntry("/"))
-                            .build_dependencies("")
-                            .run_dependencies("")
-                            .description("")
+                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                            (k::environment(), &env)
+                            (k::name(), QualifiedPackageName("cat/pkg4b"))
+                            (k::version(), VersionSpec("1.0"))
+                            (k::slot(), SlotName("foo"))
+                            (k::location(), FSEntry("installed_repository_TEST_dir/src4b2"))
+                            (k::install_under(), FSEntry("/"))
+                            (k::build_dependencies(), "")
+                            (k::run_dependencies(), "")
+                            (k::description(), "")
                             ));
                 env.package_database()->add_repository(1, source_repo);
 

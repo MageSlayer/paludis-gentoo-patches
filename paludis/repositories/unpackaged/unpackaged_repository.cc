@@ -32,8 +32,6 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/unpackaged_repository-sr.cc>
-
 namespace paludis
 {
     template <>
@@ -57,27 +55,27 @@ namespace paludis
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
-            id(new UnpackagedID(params.environment, params.name, params.version, params.slot, n, params.location,
-                        params.build_dependencies, params.run_dependencies, params.description)),
+            id(new UnpackagedID(params[k::environment()], params[k::name()], params[k::version()], params[k::slot()], n, params[k::location()],
+                        params[k::build_dependencies()], params[k::run_dependencies()], params[k::description()])),
             ids(new PackageIDSequence),
             package_names(new QualifiedPackageNameSet),
             category_names(new CategoryNamePartSet),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params.location)),
+                        mkt_significant, params[k::location()])),
             install_under_key(new LiteralMetadataValueKey<FSEntry> ("install_under", "install_under",
-                        mkt_significant, params.install_under)),
+                        mkt_significant, params[k::install_under()])),
             name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
-                        mkt_normal, stringify(params.name))),
+                        mkt_normal, stringify(params[k::name()]))),
             slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
-                        mkt_normal, stringify(params.slot))),
+                        mkt_normal, stringify(params[k::slot()]))),
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "unpackaged")),
             build_dependencies_key(new LiteralMetadataValueKey<std::string> (
-                        "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies)),
+                        "build_dependencies", "build_dependencies", mkt_normal, params[k::build_dependencies()])),
             run_dependencies_key(new LiteralMetadataValueKey<std::string> (
-                        "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies)),
+                        "run_dependencies", "run_dependencies", mkt_normal, params[k::run_dependencies()])),
             description_key(new LiteralMetadataValueKey<std::string> (
-                        "description", "description", mkt_normal, params.description))
+                        "description", "description", mkt_normal, params[k::description()]))
         {
             ids->push_back(id);
             package_names->insert(id->name());

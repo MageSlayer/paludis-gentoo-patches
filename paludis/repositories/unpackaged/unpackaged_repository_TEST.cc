@@ -48,16 +48,16 @@ namespace test_cases
             TestEnvironment env;
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
-                        .install_under(FSEntry("/"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        (k::install_under(), FSEntry("/"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -77,16 +77,16 @@ namespace test_cases
             TestEnvironment env;
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
-                        .install_under(FSEntry("/"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        (k::install_under(), FSEntry("/"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -111,16 +111,16 @@ namespace test_cases
             TestEnvironment env;
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
-                        .install_under(FSEntry("/"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        (k::install_under(), FSEntry("/"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -140,16 +140,16 @@ namespace test_cases
             TestEnvironment env;
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
-                        .install_under(FSEntry("/"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        (k::install_under(), FSEntry("/"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -182,16 +182,16 @@ namespace test_cases
 
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
-                        .install_under(FSEntry("/"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        (k::install_under(), FSEntry("/"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -236,16 +236,16 @@ namespace test_cases
 
             tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
-                        unpackaged_repositories::UnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .name(QualifiedPackageName("cat/pkg"))
-                        .version(VersionSpec("1.0"))
-                        .slot(SlotName("foo"))
-                        .location(FSEntry("unpackaged_repository_TEST_dir/under_pkg"))
-                        .install_under(FSEntry("/magic/pixie"))
-                        .build_dependencies("")
-                        .run_dependencies("")
-                        .description("")
+                        unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                        (k::environment(), &env)
+                        (k::name(), QualifiedPackageName("cat/pkg"))
+                        (k::version(), VersionSpec("1.0"))
+                        (k::slot(), SlotName("foo"))
+                        (k::location(), FSEntry("unpackaged_repository_TEST_dir/under_pkg"))
+                        (k::install_under(), FSEntry("/magic/pixie"))
+                        (k::build_dependencies(), "")
+                        (k::run_dependencies(), "")
+                        (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
 

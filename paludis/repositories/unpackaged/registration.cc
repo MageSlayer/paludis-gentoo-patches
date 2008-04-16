@@ -69,16 +69,16 @@ namespace
             description = m->find("description")->second;
 
         return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
-                    unpackaged_repositories::UnpackagedRepositoryParams::create()
-                    .environment(env)
-                    .location(location)
-                    .install_under(install_under)
-                    .name(QualifiedPackageName(name))
-                    .version(VersionSpec(version))
-                    .slot(SlotName(slot))
-                    .build_dependencies(build_dependencies)
-                    .run_dependencies(run_dependencies)
-                    .description(description)));
+                    unpackaged_repositories::UnpackagedRepositoryParams::named_create()
+                    (k::environment(), env)
+                    (k::location(), location)
+                    (k::install_under(), install_under)
+                    (k::name(), QualifiedPackageName(name))
+                    (k::version(), VersionSpec(version))
+                    (k::slot(), SlotName(slot))
+                    (k::build_dependencies(), build_dependencies)
+                    (k::run_dependencies(), run_dependencies)
+                    (k::description(), description)));
     }
 
     tr1::shared_ptr<Repository>

@@ -154,6 +154,11 @@ namespace paludis
         typedef kc::Key<125> debug_dir;
         typedef kc::Key<126> use_ebuild_file;
         typedef kc::Key<127> install_under;
+        typedef kc::Key<128> location;
+        typedef kc::Key<129> version;
+        typedef kc::Key<130> build_dependencies;
+        typedef kc::Key<131> run_dependencies;
+        typedef kc::Key<132> description;
     }
 }
 

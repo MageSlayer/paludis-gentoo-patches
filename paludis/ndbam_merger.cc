@@ -40,8 +40,6 @@
 
 using namespace paludis;
 
-#include <paludis/ndbam_merger-sr.cc>
-
 namespace paludis
 {
     template<>
@@ -56,22 +54,22 @@ namespace paludis
 
         Implementation(const NDBAMMergerParams & p) :
             params(p),
-            realroot(params.root.realpath())
+            realroot(params[k::root()].realpath())
         {
-            tokenise_whitespace(p.config_protect, std::back_inserter(config_protect));
-            tokenise_whitespace(p.config_protect_mask, std::back_inserter(config_protect_mask));
+            tokenise_whitespace(p[k::config_protect()], std::back_inserter(config_protect));
+            tokenise_whitespace(p[k::config_protect_mask()], std::back_inserter(config_protect_mask));
         }
     };
 }
 
 NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
     Merger(MergerParams::named_create()
-            (k::environment(), p.environment)
-            (k::image(), p.image)
-            (k::root(), p.root)
+            (k::environment(), p[k::environment()])
+            (k::image(), p[k::image()])
+            (k::root(), p[k::root()])
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
-            (k::install_under(), p.install_under)
-            (k::options(), p.options)),
+            (k::install_under(), p[k::install_under()])
+            (k::options(), p[k::options()])),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p))
 {
 }
@@ -83,33 +81,33 @@ NDBAMMerger::~NDBAMMerger()
 Hook
 NDBAMMerger::extend_hook(const Hook & h)
 {
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params[k::environment()]->bashrc_files());
 
-    if (_imp->params.package_id)
+    if (_imp->params[k::package_id()])
     {
-        std::string cat(stringify(_imp->params.package_id->name().category));
-        std::string pn(stringify(_imp->params.package_id->name().package));
-        std::string pvr(stringify(_imp->params.package_id->version()));
-        std::string pv(stringify(_imp->params.package_id->version().remove_revision()));
-        std::string slot(stringify(_imp->params.package_id->slot()));
+        std::string cat(stringify(_imp->params[k::package_id()]->name().category));
+        std::string pn(stringify(_imp->params[k::package_id()]->name().package));
+        std::string pvr(stringify(_imp->params[k::package_id()]->version()));
+        std::string pv(stringify(_imp->params[k::package_id()]->version().remove_revision()));
+        std::string slot(stringify(_imp->params[k::package_id()]->slot()));
 
         return Merger::extend_hook(h)
             ("P", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
-            ("PR", _imp->params.package_id->version().revision_only())
+            ("PR", _imp->params[k::package_id()]->version().revision_only())
             ("PV", pv)
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
             ("SLOT", slot)
-            ("CONFIG_PROTECT", _imp->params.config_protect)
-            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask)
+            ("CONFIG_PROTECT", _imp->params[k::config_protect()])
+            ("CONFIG_PROTECT_MASK", _imp->params[k::config_protect_mask()])
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
     }
     else
         return Merger::extend_hook(h)
-            ("CONFIG_PROTECT", _imp->params.config_protect)
-            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask)
+            ("CONFIG_PROTECT", _imp->params[k::config_protect()])
+            ("CONFIG_PROTECT_MASK", _imp->params[k::config_protect_mask()])
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
@@ -326,15 +324,15 @@ NDBAMMerger::make_arrows(const MergeStatusFlags & flags) const
 void
 NDBAMMerger::merge()
 {
-    display_override(">>> Merging to " + stringify(_imp->params.root));
-    _imp->contents_file.reset(new std::ofstream(stringify(_imp->params.contents_file).c_str()));
+    display_override(">>> Merging to " + stringify(_imp->params[k::root()]));
+    _imp->contents_file.reset(new std::ofstream(stringify(_imp->params[k::contents_file()]).c_str()));
     Merger::merge();
 }
 
 bool
 NDBAMMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->params.root << " ";
+    std::cout << ">>> Checking whether we can merge to " << _imp->params[k::root()] << " ";
     bool result(Merger::check());
     std::cout << std::endl;
     return result;

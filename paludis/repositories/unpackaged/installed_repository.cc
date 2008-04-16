@@ -312,16 +312,16 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     }
 
     NDBAMMerger merger(
-            NDBAMMergerParams::create()
-            .environment(_imp->params.environment)
-            .image(m[k::image_dir()])
-            .install_under(install_under)
-            .root(installed_root_key()->value())
-            .contents_file(target_ver_dir / "contents")
-            .config_protect(getenv_with_default("CONFIG_PROTECT", ""))
-            .config_protect_mask(getenv_with_default("CONFIG_PROTECT_MASK", ""))
-            .package_id(m[k::package_id()])
-            .options(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs));
+            NDBAMMergerParams::named_create()
+            (k::environment(), _imp->params.environment)
+            (k::image(), m[k::image_dir()])
+            (k::install_under(), install_under)
+            (k::root(), installed_root_key()->value())
+            (k::contents_file(), target_ver_dir / "contents")
+            (k::config_protect(), getenv_with_default("CONFIG_PROTECT", ""))
+            (k::config_protect_mask(), getenv_with_default("CONFIG_PROTECT_MASK", ""))
+            (k::package_id(), m[k::package_id()])
+            (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs));
 
     if (! merger.check())
     {
