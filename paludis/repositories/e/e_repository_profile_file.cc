@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/mask.hh>
 #include <list>
+#include <set>
 #include <algorithm>
 
 using namespace paludis;
@@ -82,6 +83,8 @@ namespace paludis
         typedef std::list<typename tr1::remove_const<typename tr1::remove_reference<
             typename F_::ConstIterator::value_type>::type>::type> Lines;
         Lines lines;
+
+        std::set<std::string> removed;
     };
 }
 
@@ -105,14 +108,25 @@ ProfileFile<F_>::add_file(const FSEntry & f)
                 std::find_if(this->_imp->lines.begin(), this->_imp->lines.end(),
                              MatchesKey<std::string>(key.substr(1))));
             if (this->_imp->lines.end() == i)
-                Log::get_instance()->message(ll_qa, lc_context, "No match for '" + key + "'");
+            {
+                /* annoying: Gentoo profiles like to remove the same mask entry
+                 * more than once, especially when a particular subprofile
+                 * section is inherited more than once. Don't warn when this
+                 * happens. */
+                if (this->_imp->removed.end() == this->_imp->removed.find(key.substr(1)))
+                    Log::get_instance()->message(ll_qa, lc_context, "No match for '" + key + "'. This usually indicates a "
+                            "bug in your profile.");
+            }
             else
+            {
+                this->_imp->removed.insert(key.substr(1));
                 while (this->_imp->lines.end() != i)
                 {
                     this->_imp->lines.erase(i++);
                     i = std::find_if(i, this->_imp->lines.end(),
                                      MatchesKey<std::string>(key.substr(1)));
                 }
+            }
         }
         else
             this->_imp->lines.push_back(*line);

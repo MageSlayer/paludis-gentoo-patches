@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration
       works when the filesystem is mounted as a chroot as a seperate
@@ -14,6 +14,9 @@ trunk/:
 
     * Sets can now contain ?: entries, which are like ? entries but also
       consider the slot part of the dependency specification.
+
+    * We no longer issue a QA warning for E repository profiles that attempt to
+      remove the same line more than once from a parent profile's files.
 
 0.26.0_pre1:
     * paludis now rebuilds the VDB names and provides caches
