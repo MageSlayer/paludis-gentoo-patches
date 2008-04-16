@@ -151,9 +151,8 @@ ERepositorySets::sets_list() const
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Skipping set '"
-                        + stringify(*f) + "' due to exception '" + stringify(e.message()) + "' ("
-                        + stringify(e.what()) + ")");
+                Log::get_instance()->message("e.sets.failure", ll_warning, lc_context) << "Skipping set '"
+                    << *f << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
     }
     catch (const paludis::DirOpenError &)
@@ -303,8 +302,8 @@ ERepositorySets::security_set(bool insecurity) const
                         {
                             if (is_vulnerable(*glsa_pkg, **r))
                             {
-                                Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(**r)
-                                        + "' due to is_vulnerable match");
+                                Log::get_instance()->message("e.glsa.skipping_vulnerable", ll_debug, lc_context)
+                                    << "Skipping '" << **r << "' due to is_vulnerable match";
                                 continue;
                             }
 
@@ -329,13 +328,13 @@ ERepositorySets::security_set(bool insecurity) const
         }
         catch (const GLSAError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot use GLSA '" +
-                    stringify(*f) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message("e.glsa.failure", ll_warning, lc_context)
+                << "Cannot use GLSA '" << *f << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
         catch (const NameError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot use GLSA '" +
-                    stringify(*f) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message("e.glsa.failure", ll_warning, lc_context)
+                << "Cannot use GLSA '" << *f << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
     }
 

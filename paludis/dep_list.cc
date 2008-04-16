@@ -371,7 +371,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
         if (v.result)
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Skipping dep '"
+            Log::get_instance()->message("dep_list.skipping_suggested", ll_debug, lc_context) << "Skipping dep '"
                 << a << "' because suggested label is active";
             return;
         }
@@ -423,8 +423,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
             if (d->_imp->opts->circular == dl_circular_discard)
             {
-                Log::get_instance()->message(ll_qa, lc_context, "Dropping circular dependency on '"
-                        + stringify(*existing_merge_list_entry->package_id) + "'");
+                Log::get_instance()->message("dep_list.dropping_circular", ll_qa, lc_context)
+                    << "Dropping circular dependency on '" << *existing_merge_list_entry->package_id << "'";
                 return;
             }
             else if (d->_imp->opts->circular == dl_circular_discard_silently)
@@ -544,9 +544,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
-                    + stringify(a) + "', falling back to installed package '"
-                    + stringify(**already_installed->last()) + "'");
+            Log::get_instance()->message("dep_list.no_visible", ll_warning, lc_context) << "No visible packages matching '"
+                << a << "', falling back to installed package '" << **already_installed->last() << "'";
             d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
@@ -565,16 +564,16 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     {
         if (d->prefer_installed_over_uninstalled(**already_installed_in_same_slot->last(), *best_visible_candidate))
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(**already_installed_in_same_slot->last()) + "' over '" +
-                    stringify(*best_visible_candidate) + "'");
+            Log::get_instance()->message("dep_list.installed_over_best_visible", ll_debug, lc_context)
+                << "Taking installed package '" << **already_installed_in_same_slot->last() << "' over '"
+                << *best_visible_candidate << "'";
             d->add_already_installed_package(*already_installed_in_same_slot->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
-            Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(**already_installed_in_same_slot->last()) + "' over '" +
-                    stringify(*best_visible_candidate) + "'");
+            Log::get_instance()->message("dep_list.best_visible_over_installed", ll_debug, lc_context)
+                << "Not taking installed package '" << **already_installed_in_same_slot->last() << "' over '"
+                << *best_visible_candidate << "'";
     }
     else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts->new_slots))
     {
@@ -582,19 +581,19 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
          * allow us to take this. */
         if (d->prefer_installed_over_uninstalled(**already_installed->last(), *best_visible_candidate))
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(**already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
-                    + "' (in different slot)");
+            Log::get_instance()->message("dep_list.installed_over_slot", ll_debug, lc_context) <<
+                "Taking installed package '" << **already_installed->last() << "' over '" << *best_visible_candidate <<
+                "' (in different slot)";
             d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
-            Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(**already_installed->last()) + "' over '" +
-                    stringify(*best_visible_candidate) + "' (in different slot)");
+            Log::get_instance()->message("dep_list.slot_over_installed", ll_debug, lc_context) <<
+                "Not taking installed package '" << **already_installed->last() << "' over '" <<
+                *best_visible_candidate << "' (in different slot)";
     }
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "No installed packages in SLOT '"
+        Log::get_instance()->message("dep_list.no_installed", ll_debug, lc_context) << "No installed packages in SLOT '"
             << best_visible_candidate->slot() << "', taking uninstalled package '"
             << *best_visible_candidate << "'";
 
@@ -626,7 +625,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     throw DowngradeNotAllowedError(stringify(*best_visible_candidate),
                             stringify(**are_we_downgrading->last()));
 
-                Log::get_instance()->message(ll_warning, lc_context) << "Downgrade to '"
+                Log::get_instance()->message("dep_list.downgrade", ll_warning, lc_context) << "Downgrade to '"
                     << *best_visible_candidate << "' from '" << **are_we_downgrading->last() << "' forced";
             }
             break;
@@ -650,7 +649,7 @@ DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
 
     if (! recursing_sets.insert(a.name()).second)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << a.name() << "'";
+        Log::get_instance()->message("dep_list.recursive_set", ll_warning, lc_context) << "Recursively defined set '" << a.name() << "'";
         throw RecursivelyDefinedSetError(stringify(a.name()));
     }
 
@@ -784,8 +783,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         }
     }
 
-    Log::get_instance()->message(ll_debug, lc_context, "No resolvable item in || ( ) block. Using "
-            "first item for error message");
+    Log::get_instance()->message("dep_list.using_first_any_item", ll_debug, lc_context)
+        << "No resolvable item in || ( ) block. Using first item for error message";
     {
         Context block_context("Inside || ( ) block with other options:");
         for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
@@ -897,8 +896,8 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 throw BlockError(stringify(*a.blocked_spec()));
 
             case dl_blocks_discard:
-                Log::get_instance()->message(ll_warning, lc_context, "Discarding block '!"
-                        + stringify(*a.blocked_spec()) + "'");
+                Log::get_instance()->message("dep_list.discarding_block", ll_warning, lc_context) << "Discarding block '!"
+                    << *a.blocked_spec() << "'";
                 break;
 
             case dl_blocks_discard_completely:
@@ -1267,8 +1266,9 @@ DepList::add_predeps(DependencySpecTree::ConstItem & d, const DepListDepsOption 
             if (dl_deps_pre == opt)
                 throw;
             else
-                Log::get_instance()->message(ll_warning, lc_context, "Dropping " + s + " dependencies to "
-                        "post dependencies because of exception '" + e.message() + "' (" + e.what() + ")");
+                Log::get_instance()->message("dep_list.dropping_dependencies", ll_warning, lc_context)
+                    << "Dropping " << s << " dependencies to post dependencies because of exception '"
+                    << e.message() << "' (" << e.what() << ")";
         }
     }
 }
@@ -1300,8 +1300,8 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
             if (dl_deps_try_post != opt)
                 throw;
             else
-                Log::get_instance()->message(ll_warning, lc_context, "Ignoring " + s +
-                        " dependencies due to exception '" + e.message() + "' (" + e.what() + ")");
+                Log::get_instance()->message("dep_list.ignoring_dependencies", ll_warning, lc_context)
+                    << "Ignoring " << s << " dependencies due to exception '" << e.message() << "' (" << e.what() << ")";
         }
     }
 }

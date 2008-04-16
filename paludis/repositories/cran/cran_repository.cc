@@ -220,14 +220,15 @@ CRANRepository::need_ids() const
             tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment,
                         shared_from_this(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
-                Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << *id << "' due to name collision";
+                Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context)
+                    << "Couldn't insert package '" << *id << "' due to name collision";
 
             if (id->contains_key())
                 for (PackageIDSequence::ConstIterator i(id->contains_key()->value()->begin()),
                         i_end(id->contains_key()->value()->end()) ; i != i_end ; ++i)
                     if (! _imp->ids.insert(std::make_pair((*i)->name(),
                                     tr1::static_pointer_cast<const cranrepository::CRANPackageID>(*i))).second)
-                        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << **i
+                        Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context) << "Couldn't insert package '" << **i
                             << "', which is contained in '" << *id << "', due to name collision";
         }
 
@@ -425,7 +426,8 @@ CRANRepository::make_cran_repository(
         if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
             builddir = "/var/tmp/paludis";
         else
-            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+            Log::get_instance()->message("cran.configuration.deprecated", ll_warning, lc_context)
+                << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
     return tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()

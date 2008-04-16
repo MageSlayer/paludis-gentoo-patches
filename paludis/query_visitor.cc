@@ -111,14 +111,15 @@ QueryVisitor::visit_leaf(const NamedSetDepSpec & s)
 
     if (! set)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+        Log::get_instance()->message("dep_list.query_visitor.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
         _imp->result = false;
         return;
     }
 
     if (! _imp->recursing_sets.insert(s.name()).second)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+        Log::get_instance()->message("dep_list.query_visitor.recursive_set", ll_warning, lc_context)
+            << "Recursively defined set '" << s.name() << "'";
         return;
     }
 

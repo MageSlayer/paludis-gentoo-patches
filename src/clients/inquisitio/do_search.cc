@@ -146,8 +146,8 @@ namespace
                 }
                 catch (const Exception & ex)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context,
-                            "Caught exception while handling '" + stringify(**i) + "': '" + ex.message() + "' (" + ex.what() + ")");
+                    Log::get_instance()->message("inquisitio.failure", ll_warning, lc_context)
+                        << "Caught exception while handling '" << **i << "': '" << ex.message() << "' (" << ex.what() << ")";
                 }
             }
 

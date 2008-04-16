@@ -148,7 +148,7 @@ VirtualsRepository::need_names() const
 
     Context context("When loading names for virtuals repository:");
 
-    Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_names");
+    Log::get_instance()->message("virtuals.need_names", ll_debug, lc_context) << "VirtualsRepository need_names";
 
     /* Determine our virtual name -> package mappings. */
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
@@ -213,7 +213,7 @@ VirtualsRepository::need_ids() const
     Context context("When loading entries for virtuals repository:");
     need_names();
 
-    Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_entries");
+    Log::get_instance()->message("virtuals.need_entries", ll_debug, lc_context) << "VirtualsRepository need_entries";
 
     IDMap my_ids;
 
@@ -227,9 +227,8 @@ VirtualsRepository::need_ids() const
                     qo_order_by_version));
 
         if (matches->empty())
-            Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"
-                    + stringify(*v->second) + "' for virtual '"
-                    + stringify(v->first) + "'");
+            Log::get_instance()->message("virtuals.no_match", ll_warning, lc_context) << "No packages matching '"
+                    << *v->second << "' for virtual '" << v->first << "'";
 
         for (PackageIDSequence::ConstIterator m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)

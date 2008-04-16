@@ -164,7 +164,8 @@ EInstalledRepositoryID::need_keys_added() const
 
     if (! (*eapi())[k::supported()])
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Not loading further keys for '" << *this << "' because EAPI '"
+        Log::get_instance()->message("e.eapi.unsupported", ll_debug, lc_context)
+            << "Not loading further keys for '" << *this << "' because EAPI '"
             << (*eapi())[k::name()] << "' is not supported";
         return;
     }
@@ -439,7 +440,7 @@ EInstalledRepositoryID::slot() const
         _imp->slot.reset(new SlotName(file_contents(_imp->dir / "SLOT")));
     else
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "No SLOT entry in '" << _imp->dir << "', pretending '0'";
+        Log::get_instance()->message("e.no_slot", ll_warning, lc_context) << "No SLOT entry in '" << _imp->dir << "', pretending '0'";
         _imp->slot.reset(new SlotName("0"));
     }
 
@@ -466,7 +467,7 @@ EInstalledRepositoryID::eapi() const
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(_imp->dir / "EAPI"));
     else
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
+        Log::get_instance()->message("e.no_eapi", ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
             << _imp->environment->default_distribution() << "'";
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(
                 (*DistributionData::get_instance()->distribution_from_string(

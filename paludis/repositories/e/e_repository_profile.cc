@@ -192,7 +192,7 @@ namespace paludis
 
                     if (! p->params().ignore_deprecated_profiles)
                         if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
-                            Log::get_instance()->message(ll_warning, lc_context) << "Profile directory '" << *d
+                            Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
                                 << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
 
                     load_profile_directory_recursively(*d);
@@ -227,8 +227,8 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
 
     if (! dir.is_directory_or_symlink_to_directory())
     {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "Profile component '" + stringify(dir) + "' is not a directory");
+        Log::get_instance()->message("e.profile.not_a_directory", ll_warning, lc_context)
+            << "Profile component '" << dir << "' is not a directory";
         return;
     }
 
@@ -262,14 +262,15 @@ Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
     LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
     bool once(false);
     if (i == i_end)
-        Log::get_instance()->message(ll_warning, lc_context, "parent file is empty");
+        Log::get_instance()->message("e.profile.parent.empty", ll_warning, lc_context) << "parent file is empty";
     else
         for ( ; i != i_end ; ++i)
         {
             if ('#' == i->at(0))
             {
                 if (! once)
-                    Log::get_instance()->message(ll_qa, lc_context, "Comments not allowed in '" + stringify(dir / "parent") + "'");
+                    Log::get_instance()->message("e.profile.parent.no_comments", ll_qa, lc_context)
+                        << "Comments not allowed in '" << (dir / "parent") << "'";
                 once = true;
                 continue;
             }
@@ -283,8 +284,8 @@ Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
                 }
                 catch (const FSError & e)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "Skipping parent '"
-                            + *i + "' due to exception: " + e.message() + " (" + e.what() + ")");
+                    Log::get_instance()->message("e.profile.parent.skipping", ll_warning, lc_context)
+                        << "Skipping parent '" << *i << "' due to exception: " << e.message() << " (" << e.what() << ")";
                     continue;
                 }
 
@@ -348,8 +349,8 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
-                + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
+            << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 }
 
@@ -371,8 +372,8 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_var + "' failed due to exception: "
-                + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message("e.profile.make_defaults.use_failure", ll_warning, lc_context)
+            << "Loading '" << use_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 
     std::string use_expand_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
@@ -390,8 +391,8 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
-                + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
+            << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 
     std::string use_expand_hidden_var((*(*erepository::EAPIData::get_instance()->eapi_from_string(
@@ -409,8 +410,9 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_hidden_var + "' failed due to exception: "
-                + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message("e.profile.make_defaults.use_expand_hidden_failure", ll_warning, lc_context)
+            << "Loading '" << use_expand_hidden_var << "' failed due to exception: "
+            << e.message() << " (" << e.what() << ")";
     }
 }
 
@@ -437,7 +439,8 @@ Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
     }
     catch (const Exception & x)
     {
-        Log::get_instance()->message(ll_qa, lc_context) << "Caught exception '" << x.message() << "' (" << x.what()
+        Log::get_instance()->message("e.profile.make_defaults.incremental_check_failure", ll_qa, lc_context)
+            << "Caught exception '" << x.message() << "' (" << x.what()
             << "), possibly due to weird variable name being used in profile";
 
         return (! s.empty()) &&
@@ -476,8 +479,8 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading packages "
-                " failed due to exception: " + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message("e.profile.packages.failure", ll_warning, lc_context) << "Loading packages "
+                " failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 
     if ((*DistributionData::get_instance()->distribution_from_string(
@@ -505,8 +508,8 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
-                    " failed due to exception: " + e.message() + " (" + e.what() + ")");
+            Log::get_instance()->message("e.profile.virtuals.failure", ll_warning, lc_context)
+                << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
 
     for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
@@ -524,9 +527,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
             else
-                Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
-                        + stringify(line->first) + "' failed because specification does not restrict to a "
-                        "unique package");
+                Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                    << "Loading package.mask spec '" << line->first << "' failed because specification does not restrict to a "
+                    "unique package";
         }
         catch (const InternalError &)
         {
@@ -534,9 +537,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
-                    + stringify(line->first) + "' failed due to exception '" + e.message() + "' ("
-                    + e.what() + ")");
+            Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                << "Loading package.mask spec '" << line->first << "' failed due to exception '" << e.message() << "' ("
+                << e.what() << ")";
         }
     }
 }
@@ -573,8 +576,8 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
-                        + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+                Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring token '"
+                    << *t << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
         }
     }
@@ -622,15 +625,15 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
                 }
                 catch (const Exception & e)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
-                            + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+                    Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring token '"
+                        << *t << "' due to exception '" << e.message() << "' (" << e.what() << ")";
                 }
             }
         }
         catch (const PackageDepSpecError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '"
-                    + *line + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring line '"
+                << *line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
     }
 }

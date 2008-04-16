@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ paludis::erepository::categories_check(
 {
     Context context("When performing check '" + name + "':");
     FSEntry cats(repo->layout()->categories_file());
-    Log::get_instance()->message(ll_debug, lc_context) << "categories_check '"
+    Log::get_instance()->message("e.qa.categories_check", ll_debug, lc_context) << "categories_check '"
         << cats << "', " << name << "'";
 
     try

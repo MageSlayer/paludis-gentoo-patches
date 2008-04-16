@@ -176,7 +176,8 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
         std::string protocol(i->first.substr(0, protocol_pos));
         if (protocol.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "URI part '" << i->first << "' has empty protocol";
+            Log::get_instance()->message("e.fetch_visitor.no_protocol", ll_warning, lc_context)
+                << "URI part '" << i->first << "' has empty protocol";
             continue;
         }
 
@@ -238,7 +239,8 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
             }
 
         if (! found)
-            Log::get_instance()->message(ll_warning, lc_context) << "URI part '" << i->first << "' uses unknown protocol '"
+            Log::get_instance()->message("e.fetch_visitor.unknown_protocol", ll_warning, lc_context)
+                << "URI part '" << i->first << "' uses unknown protocol '"
                 << protocol << "'";
     }
 }

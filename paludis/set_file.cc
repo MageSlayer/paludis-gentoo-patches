@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -183,8 +183,8 @@ namespace
 
             if (tokens.size() == 1)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
-                        "' should start with '?' or '*', assuming '*'");
+                Log::get_instance()->message("set_file.no_operator", ll_warning, lc_context)
+                    << "Line '" << line << "' should start with '?' or '*', assuming '*'";
                 tokens.insert(tokens.begin(), "*");
             }
 
@@ -209,7 +209,8 @@ namespace
             {
                 if (std::string::npos == tokens.at(1).find('/'))
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "? operator may not be used with a set name");
+                    Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                        << "? operator may not be used with a set name";
                     return;
                 }
 
@@ -220,22 +221,23 @@ namespace
                 if (spec->package_ptr())
                 {
                     if (! params.environment)
-                        Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
-                                "' uses ? operator but no environment is available");
+                        Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                            << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! params.environment->package_database()->query(query::Package(*spec->package_ptr()) &
                                 query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
                         result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
-                            "' uses ? operator but does not specify an unambiguous package");
+                    Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                        << "Line '" << line << "' uses ? operator but does not specify an unambiguous package";
             }
             else if ("?:" == tokens.at(0))
             {
                 if (std::string::npos == tokens.at(1).find('/'))
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "?: operator may not be used with a set name");
+                    Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                        << "?: operator may not be used with a set name";
                     return;
                 }
 
@@ -246,8 +248,8 @@ namespace
                 if (spec->package_ptr())
                 {
                     if (! params.environment)
-                        Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
-                                "' uses ?: operator but no environment is available");
+                        Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                            << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! params.environment->package_database()->query(query::Matches(
                                     make_package_dep_spec()
                                         .package(*spec->package_ptr())
@@ -257,12 +259,12 @@ namespace
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
-                            "' uses ? operator but does not specify an unambiguous package");
+                    Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
+                        << "Line '" << line << "' uses ? operator but does not specify an unambiguous package";
             }
             else
-                Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(line) +
-                        "' because it does not start with '?' or '*'");
+                Log::get_instance()->message("set_file.ignoring_line", ll_warning, lc_context)
+                    << "Ignoring line '" << line << "' because it does not start with '?' or '*'";
         }
         catch (const InternalError &)
         {
@@ -270,8 +272,8 @@ namespace
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(line) +
-                    "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message("set_file.ignoring_line", ll_warning, lc_context)
+                << "Ignoring line '" << line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
     }
 }
@@ -336,8 +338,8 @@ SimpleHandler::_create_contents() const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(*i) +
-                    "' due to exception '" + e.message() + "' (" + e.what() + "'");
+            Log::get_instance()->message("set_file.ignoring_line", ll_warning, lc_context)
+                << "Ignoring line '" << *i << "' due to exception '" << e.message() << "' (" << e.what() << "'";
         }
     }
 }
@@ -488,8 +490,9 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
 
     if (exit_status != 0)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Set file script '" + stringify(_p.file_name) +
-                "' returned non-zero exit status '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("set_file.script.failure", ll_warning, lc_context)
+            << "Set file script '" << _p.file_name << "' returned non-zero exit status '"
+            << exit_status << "'";
         _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 }

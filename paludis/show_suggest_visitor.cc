@@ -174,8 +174,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
 
         if (! v.result)
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Skipping dep '"
-                << a << "' because no suggested label is active";
+            Log::get_instance()->message("dep_list.show_suggest_visitor.skipping_suggested", ll_debug, lc_context)
+                << "Skipping dep '" << a << "' because no suggested label is active";
             return;
         }
     }
@@ -189,7 +189,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
                 query::Matches(a), qo_order_by_version));
     if (! installed_matches->empty())
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Suggestion '" << a << "' already matched by installed packages '"
+        Log::get_instance()->message("dep_list.show_suggest_visitor.already_installed", ll_debug, lc_context)
+            << "Suggestion '" << a << "' already matched by installed packages '"
             << join(indirect_iterator(installed_matches->begin()), indirect_iterator(installed_matches->end()), ", ")
             << "', not suggesting it";
         return;
@@ -200,7 +201,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
                 query::Matches(a), qo_order_by_version));
     if (matches->empty())
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Nothing found for '" + stringify(a) + "'");
+        Log::get_instance()->message("dep_list.show_suggest_visitor.nothing_found", ll_warning, lc_context)
+            << "Nothing found for '" << a << "'";
         return;
     }
 
@@ -214,7 +216,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         return;
     }
 
-    Log::get_instance()->message(ll_warning, lc_context, "Nothing visible found for '" + stringify(a) + "'");
+    Log::get_instance()->message("dep_list.show_suggest_visitor.nothing_visible_found", ll_warning, lc_context)
+        << "Nothing visible found for '" << a << "'";
 }
 
 void
@@ -232,13 +235,15 @@ ShowSuggestVisitor::visit_leaf(const NamedSetDepSpec & s)
 
     if (! set)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+        Log::get_instance()->message("dep_list.show_suggest_visitor.unknown_set", ll_warning, lc_context)
+            << "Unknown set '" << s.name() << "'";
         return;
     }
 
     if (! _imp->recursing_sets.insert(s.name()).second)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+        Log::get_instance()->message("dep_list.show_suggest_visitor.recursive_set", ll_warning, lc_context)
+            << "Recursively defined set '" << s.name() << "'";
         return;
     }
 

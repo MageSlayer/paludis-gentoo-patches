@@ -148,9 +148,9 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
             std::find_if(search_dirs_pruned.begin(), search_dirs_pruned.end(),
                          ParentOf(*it)))
             search_dirs_pruned.push_back(*it);
-    Log::get_instance()->message(
-        ll_debug, lc_context, "After resolving symlinks and pruning subdirectories, SEARCH_DIRS=\"" +
-        join(search_dirs_pruned.begin(), search_dirs_pruned.end(), " ") + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
+            ll_debug, lc_context) << "After resolving symlinks and pruning subdirectories, SEARCH_DIRS=\"" <<
+        join(search_dirs_pruned.begin(), search_dirs_pruned.end(), " ") << "\"";
 
     std::transform(_imp->config.begin_ld_so_conf(), _imp->config.end_ld_so_conf(),
                    std::inserter(_imp->extra_lib_dirs, _imp->extra_lib_dirs.begin()),
@@ -162,7 +162,8 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
     for (Configuration::DirsIterator it(_imp->extra_lib_dirs.begin()),
              it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
     {
-        Log::get_instance()->message(ll_debug, lc_context, "Need to check for extra libraries in '" + stringify(env->root() / *it) + "'");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+            << "Need to check for extra libraries in '" << (env->root() / *it) << "'";
 #ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
         std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
                 tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
@@ -198,7 +199,8 @@ Implementation<BrokenLinkageFinder>::search_directory(const FSEntry & directory)
         dir = dir.dirname();
         if (config.dir_is_masked(dir))
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(directory) + "' because '" + stringify(dir) + "' is search-masked");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.skipping", ll_debug, lc_context)
+                << "Skipping '" << directory << "' because '" << dir << "' is search-masked";
             return;
         }
     }
@@ -208,7 +210,8 @@ Implementation<BrokenLinkageFinder>::search_directory(const FSEntry & directory)
     if (with_root.is_directory())
         walk_directory(with_root);
     else
-        Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(directory) + "' is missing or not a directory");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.missing", ll_debug, lc_context)
+            << "'" << directory << "' is missing or not a directory";
 }
 
 void
@@ -219,11 +222,13 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
     FSEntry without_root(directory.strip_leading(env->root()));
     if (config.dir_is_masked(without_root))
     {
-        Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(directory) + "' is search-masked");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.masked", ll_debug, lc_context)
+            << "'" << directory << "' is search-masked";
         return;
     }
 
-    Log::get_instance()->message(ll_debug, lc_context, "Entering directory '" + stringify(directory) + "'");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.entering", ll_debug, lc_context)
+        << "Entering directory '" << directory << "'";
     {
         Lock l(mutex);
         extra_lib_dirs.erase(without_root);
@@ -236,7 +241,7 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
     }
     catch (const FSError & ex)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, ex.message());
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_no_context) << ex.message();
     }
 }
 
@@ -271,18 +276,20 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
             if (checkers.end() ==
                     std::find_if(checkers.begin(), checkers.end(),
                         tr1::bind(&LinkageChecker::check_file, _1, file)))
-                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a recognised file type");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.unrecognised", ll_debug, lc_context)
+                    << "'" << file << "' is not a recognised file type";
 #else
             if (indirect_iterator(checkers.end()) ==
                     std::find_if(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
                         tr1::bind(&LinkageChecker::check_file, _1, file)))
-                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a recognised file type");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.unrecognised", ll_debug, lc_context)
+                    << "'" << file << "' is not a recognised file type";
 #endif
         }
     }
     catch (const FSError & ex)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, ex.message());
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_no_context) << ex.message();
     }
 }
 

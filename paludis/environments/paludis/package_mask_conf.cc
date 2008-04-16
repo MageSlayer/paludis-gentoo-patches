@@ -111,7 +111,7 @@ PackageMaskConf::query(const PackageID & e) const
                 it->second = _imp->env->set(it->first);
                 if (! it->second)
                 {
-                    Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
+                    Log::get_instance()->message("paludis_environment.package_mask.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << it->first << "' does not exist";
                     it->second.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));

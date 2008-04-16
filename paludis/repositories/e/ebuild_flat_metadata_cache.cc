@@ -165,13 +165,13 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                     id->set_slot(SlotName("UNKNOWN"));
 
                 if (! ok)
-                    Log::get_instance()->message(ll_warning, lc_no_context) << "Stale cache file at '"
+                    Log::get_instance()->message("e.cache.stale", ll_warning, lc_no_context) << "Stale cache file at '"
                         << _filename << "'";
                 return ok;
             }
             else
             {
-                Log::get_instance()->message(ll_warning, lc_no_context) << "Incomplete cache file at '"
+                Log::get_instance()->message("e.cache.incomplete", ll_warning, lc_no_context) << "Incomplete cache file at '"
                     << _filename << "'";
                 return false;
             }
@@ -182,15 +182,15 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context) << "Not using cache file at '"
+            Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
                 << _filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             return false;
         }
     }
     else
     {
-        Log::get_instance()->message(_silent ? ll_debug : ll_warning, lc_no_context,
-                "Couldn't use the cache file at '" + stringify(_filename) + "'");
+        Log::get_instance()->message("e.cache.failure", _silent ? ll_debug : ll_warning, lc_no_context)
+                << "Couldn't use the cache file at '" << _filename << "'";
         return false;
     }
 }
@@ -227,13 +227,13 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
     }
     catch (const FSError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't create cache directory: " << e.message();
+        Log::get_instance()->message("e.cache.save.failure", ll_warning, lc_no_context) << "Couldn't create cache directory: " << e.message();
         return;
     }
 
     if (! (*id->eapi())[k::supported()])
     {
-        Log::get_instance()->message(ll_warning, lc_no_context) << "Not writing cache file to '"
+        Log::get_instance()->message("e.cache.save.eapi_unsupoprted", ll_warning, lc_no_context) << "Not writing cache file to '"
             << _filename << "' because EAPI '" << (*id->eapi())[k::name()] << "' is not supported";
         return;
     }
@@ -374,7 +374,7 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context) << "Not writing cache file to '"
+        Log::get_instance()->message("e.cache.save.failure", ll_warning, lc_no_context) << "Not writing cache file to '"
             << _filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         return;
     }
@@ -385,7 +385,7 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
         cache_file << cache.str();
     else
     {
-        Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't write cache file to '"
+        Log::get_instance()->message("e.cache.save.failure", ll_warning, lc_no_context) << "Couldn't write cache file to '"
             << _filename << "': " << std::strerror(errno);
     }
 }

@@ -431,8 +431,8 @@ namespace
                 if (o[iufpo_strict_parsing])
                     throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
                 else
-                    Log::get_instance()->message(ll_warning, lc_context,
-                            "+/- prefixed IUSE flag names not allowed in this EAPI");
+                    Log::get_instance()->message("name.iuse.prefix_not_allowed", ll_warning, lc_context)
+                        << "+/- prefixed IUSE flag names not allowed in this EAPI";
             }
 
             return '-' == s[0] ? use_disabled : use_enabled;

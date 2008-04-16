@@ -81,7 +81,8 @@ namespace
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+                << "Got " << varname << "=\"" + str << "\"";
             tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(str, ":", "", std::back_inserter(vec));
         }
     }
@@ -94,7 +95,8 @@ namespace
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+                << "Got " << varname << "=\"" << str << "\"";
             tokenise_whitespace(str, std::back_inserter(vec));
         }
     }
@@ -128,9 +130,9 @@ namespace
         std::sort(vec.begin(), vec.end());
         vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 
-        Log::get_instance()->message(
-            ll_debug, lc_context, "Final " + varname + "=\""  +
-            join(vec.begin(), vec.end(),  " ") + "\"");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
+                ll_debug, lc_context) << "Final " << varname << "=\"" <<
+            join(vec.begin(), vec.end(),  " ") << "\"";
     }
 }
 
@@ -153,9 +155,9 @@ Configuration::Configuration(const FSEntry & root) :
     std::sort(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end());
     _imp->ld_so_conf.erase(std::unique(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end()),
                            _imp->ld_so_conf.end());
-    Log::get_instance()->message(
-        ll_debug, lc_context, "Final ld.so.conf contents is \"" +
-        join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
+            ll_debug, lc_context) << "Final ld.so.conf contents is \"" <<
+        join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") << "\"";
 }
 
 Configuration::~Configuration()
@@ -215,11 +217,13 @@ Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root
                 from_string(fromfile, "SEARCH_DIRS_MASK", search_dirs_mask);
             }
             else
-                Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(*it) + "' is not a regular file");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_context)
+                    << "'" << *it << "' is not a regular file";
         }
     }
     else if (etc_revdep_rebuild.exists())
-        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_revdep_rebuild) + "' exists but is not a directory");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_revdep_rebuild.not_a_directory", ll_warning, lc_context)
+            << "'" << etc_revdep_rebuild << "' exists but is not a directory";
 }
 
 void
@@ -246,7 +250,8 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
         from_colon_string(fromfile, "ROOTPATH", search_dirs);
     }
     else if (etc_profile_env.exists())
-        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_profile_env) + "' exists but is not a regular file");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_profile_env.not_a_file", ll_warning, lc_context)
+            << "'" << etc_profile_env << "' exists but is not a regular file";
 }
 
 void
@@ -263,13 +268,15 @@ Implementation<Configuration>::load_from_etc_ld_so_conf(const FSEntry & root)
         LineConfigFile lines(etc_ld_so_conf, opts);
         if (lines.begin() != lines.end())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Got " + join(lines.begin(), lines.end(), " "));
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.got", ll_debug, lc_context)
+                << "Got " << join(lines.begin(), lines.end(), " ");
             std::copy(lines.begin(), lines.end(), std::back_inserter(search_dirs));
             std::copy(lines.begin(), lines.end(), std::back_inserter(ld_so_conf));
         }
     }
     else if (etc_ld_so_conf.exists())
-        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_ld_so_conf) + "' exists but is not a regular file");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
+            << "'" << etc_ld_so_conf << "' exists but is not a regular file";
 }
 
 void
@@ -285,19 +292,23 @@ Implementation<Configuration>::add_defaults()
         "/opt/OpenOffice /usr/lib*/openoffice /lib*/modules");
     static const std::string default_ld_so_conf("/lib /usr/lib");
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + default_ld_library_mask + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+        << "Got LD_LIBRARY_MASK=\"" << default_ld_library_mask << "\"";
     tokenise_whitespace(
             default_ld_library_mask, std::back_inserter(ld_library_mask));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + default_search_dirs + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+        << "Got SEARCH_DIRS=\"" << default_search_dirs << "\"";
     tokenise_whitespace(
             default_search_dirs, std::back_inserter(search_dirs));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + default_search_dirs_mask + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+        << "Got SEARCH_DIRS_MASK=\"" << default_search_dirs_mask << "\"";
     tokenise_whitespace(
             default_search_dirs_mask, std::back_inserter(search_dirs_mask));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Default ld.so.conf contents is \"" + default_ld_so_conf + "\"");
+    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+        << "Default ld.so.conf contents is \"" << default_ld_so_conf << "\"";
     tokenise_whitespace(
             default_ld_so_conf, std::back_inserter(ld_so_conf));
 }

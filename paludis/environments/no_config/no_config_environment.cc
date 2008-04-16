@@ -92,7 +92,8 @@ namespace
 
         if ((location / "profiles").is_directory())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Found profiles/, looks like Ebuild format");
+            Log::get_instance()->message("no_config_environment.ebuild_detected", ll_debug, lc_context)
+                << "Found profiles/, looks like Ebuild format";
             return false;
         }
 
@@ -110,8 +111,8 @@ namespace
 
                 if ((*e / "CONTENTS").exists())
                 {
-                    Log::get_instance()->message(ll_debug, lc_context, "Found '" + stringify(*e) +
-                            "/CONTENTS', looks like VDB format");
+                    Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context)
+                        << "Found '" << stringify(*e) << "/CONTENTS', looks like VDB format";
                     return true;
                 }
 
@@ -149,8 +150,9 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if (FSEntry("/var/empty") != params.master_repository_dir)
         {
             if (params.repository_dir.realpath() == params.master_repository_dir.realpath())
-                Log::get_instance()->message(ll_warning, lc_context, "Ignoring master_repository_dir '" +
-                        stringify(params.master_repository_dir) + "' because it is the same as repository_dir");
+                Log::get_instance()->message("no_config_environment.master_repository.ignoring", ll_warning, lc_context)
+                    << "Ignoring master_repository_dir '" << params.master_repository_dir
+                    << "' because it is the same as repository_dir";
 
             else
             {
@@ -203,7 +205,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     }
     else
     {
-        Log::get_instance()->message(ll_debug, lc_context, "VDB, using vdb_db");
+        Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context) << "VDB, using vdb_db";
 
         tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         if (params.extra_params)

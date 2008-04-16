@@ -92,7 +92,7 @@ EnvironmentImplementation::set(const SetName & s) const
         tr1::shared_ptr<SetSpecTree::ConstItem> l(local_set(s));
         if (l)
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' is a local set";
+            Log::get_instance()->message("environment_implementation.local_set", ll_debug, lc_context) << "Set '" << s << "' is a local set";
             return l;
         }
     }
@@ -103,7 +103,7 @@ EnvironmentImplementation::set(const SetName & s) const
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security"
             || s.data() == "ununused")
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' is a standard set";
+        Log::get_instance()->message("environment_implementation.standard_set", ll_debug, lc_context) << "Set '" << s << "' is a standard set";
         result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 
@@ -117,7 +117,8 @@ EnvironmentImplementation::set(const SetName & s) const
         tr1::shared_ptr<SetSpecTree::ConstItem> add((**r)[k::sets_interface()]->package_set(s));
         if (add)
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' found in '" << (*r)->name() << "'";
+            Log::get_instance()->message("environment_implementation.set_found_in_repository", ll_debug, lc_context)
+                << "Set '" << s << "' found in '" << (*r)->name() << "'";
             if (! result)
                 result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             result->add(add);
@@ -136,7 +137,7 @@ EnvironmentImplementation::set(const SetName & s) const
     }
 
     if (! result)
-        Log::get_instance()->message(ll_debug, lc_context) << "No match for set '" << s << "'";
+        Log::get_instance()->message("environment_implementation.no_match_for_set", ll_debug, lc_context) << "No match for set '" << s << "'";
     return result;
 }
 

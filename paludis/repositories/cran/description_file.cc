@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -82,7 +82,7 @@ DescriptionFile::_line(const std::string & l)
 {
     std::string::size_type p(l.find(':'));
     if (std::string::npos == p)
-        Log::get_instance()->message(ll_warning, lc_context) << "No colon on line '" << l << "'";
+        Log::get_instance()->message("cran.description.malformed", ll_warning, lc_context) << "No colon on line '" << l << "'";
     else
     {
         std::string key(strip_leading(strip_trailing(l.substr(0, p), " \t"), " \t")),
@@ -96,7 +96,7 @@ DescriptionFile::_line(const std::string & l)
         {
             std::pair<std::map<std::string, std::string>::iterator, bool> r(_imp->values.insert(std::make_pair(key, value)));
             if ((! r.second) && (r.first->second != value))
-                Log::get_instance()->message(ll_qa, lc_context) << "Key '" << key << "' already set to '"
+                Log::get_instance()->message("cran.description.duplicate", ll_qa, lc_context) << "Key '" << key << "' already set to '"
                     << r.first->second << "', ignoring duplicate key value '" << value << "'";
         }
     }

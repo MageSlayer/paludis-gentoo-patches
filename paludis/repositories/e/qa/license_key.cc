@@ -85,7 +85,7 @@ paludis::erepository::license_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using license_key_check on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "license_key_check '"
+    Log::get_instance()->message("e.qa.license_key_check", ll_debug, lc_context) << "license_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     if (id->license_key())

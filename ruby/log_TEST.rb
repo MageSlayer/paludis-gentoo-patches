@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh
+# Copyright (c) 2006, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -72,7 +72,7 @@ module Paludis
 
     class TestCase_LogMessage < Test::Unit::TestCase
         def test_log_message
-            Log.instance.message LogLevel::Warning, "This is a test warning message"
+            Log.instance.message "ruby.test", LogLevel::Warning, "This is a test warning message"
         end
 
         def test_log_message_bad
@@ -81,11 +81,11 @@ module Paludis
             end
 
             assert_raise TypeError do
-                Log.instance.message "Warning", "This should fail"
+                Log.instance.message "ruby.test", "Warning", "This should fail"
             end
 
             assert_raise TypeError do
-                Log.instance.message 456, "This should fail"
+                Log.instance.message "ruby.test", 456, "This should fail"
             end
         end
     end

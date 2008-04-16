@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,7 +36,7 @@ paludis::erepository::ebuild_count_check(
         )
 {
     Context context("When performing check '" + name + "' using ebuild_count_check on directory '" + stringify(dir) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "ebuild_count_check '"
+    Log::get_instance()->message("e.qa.ebuild_count_check", ll_debug, lc_context) << "ebuild_count_check '"
         << dir << "', " << name << "'";
 
     tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));

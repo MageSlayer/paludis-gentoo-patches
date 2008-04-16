@@ -234,10 +234,9 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
         if ('*' == s.at(s.length() - 1))
         {
             if (op != vo_equal)
-                Log::get_instance()->message(ll_qa, lc_context,
-                        "Package dep spec '" + ss + "' uses * "
-                        "with operator '" + stringify(op) +
-                        "', pretending it uses the equals operator instead");
+                Log::get_instance()->message("user_dep_spec.bad_operator", ll_qa, lc_context) <<
+                    "Package dep spec '" << ss << "' uses * "
+                    "with operator '" << op << "', pretending it uses the equals operator instead";
             op = vo_equal_star;
 
             result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));

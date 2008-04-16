@@ -256,7 +256,7 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
                 options.override_masks->push_back(tr1::bind(&override_license, _2));
             else if (*a == "profile")
             {
-                Log::get_instance()->message(ll_warning, lc_no_context) <<
+                Log::get_instance()->message("paludis.args.deprecated", ll_warning, lc_no_context) <<
                     "--dl-override-masks profile is deprecated, use --dl-override-masks repository";
                 options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
             }

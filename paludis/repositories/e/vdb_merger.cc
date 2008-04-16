@@ -177,7 +177,7 @@ void
 VDBMerger::on_warn(bool is_check, const std::string & s)
 {
     if (is_check)
-        Log::get_instance()->message(ll_warning, lc_context, s);
+        Log::get_instance()->message("e.vdb_merger.warning", ll_warning, lc_context) << s;
 }
 
 bool

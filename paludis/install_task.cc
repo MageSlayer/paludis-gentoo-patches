@@ -403,7 +403,7 @@ InstallTask::_add_target(const std::string & target)
 
     if (! done)
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "target '" << target << "' is a package";
+        Log::get_instance()->message("install_task.target_is_package", ll_debug, lc_context) << "target '" << target << "' is a package";
 
         if (_imp->had_set_targets)
         {
@@ -1331,13 +1331,14 @@ namespace
 
             if (! set)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
                 return;
             }
 
             if (! recursing_sets.insert(s.name()).second)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.recursive_set", ll_warning, lc_context)
+                    << "Recursively defined set '" << s.name() << "'";
                 return;
             }
 
@@ -1542,13 +1543,14 @@ namespace
 
             if (! set)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
                 return;
             }
 
             if (! recursing_sets.insert(s.name()).second)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.recursive_set", ll_warning, lc_context)
+                    << "Recursively defined set '" << s.name() << "'";
                 return;
             }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,9 +89,9 @@ main(int argc, char *argv[])
         std::string paludis_command(argv[0]), env_spec;
         if (CommandLine::get_instance()->a_config_suffix.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "--config-suffix is deprecated, use --environment ':" +
-                    CommandLine::get_instance()->a_config_suffix.argument() + "'");
+            Log::get_instance()->message("inquisitio.command_line.deprecated", ll_warning, lc_no_context)
+                << "--config-suffix is deprecated, use --environment ':" <<
+                CommandLine::get_instance()->a_config_suffix.argument() << "'";
             env_spec = ":" + CommandLine::get_instance()->a_config_suffix.argument();
             paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
                     CommandLine::get_instance()->a_config_suffix.argument());

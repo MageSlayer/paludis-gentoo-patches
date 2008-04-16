@@ -170,7 +170,8 @@ namespace
                     }
                     else
                     {
-                        Log::get_instance()->message(ll_warning, lc_context) << "Probably a bug: don't know how to get masks for '"
+                        Log::get_instance()->message("e.qa.visibility_check.no_masks", ll_warning, lc_context)
+                            << "Probably a bug: don't know how to get masks for '"
                             << **i << "' from '" << orig_p << "' -> '" << *p << "'";
                         continue;
                     }
@@ -268,7 +269,7 @@ paludis::erepository::visibility_check(
 {
     Context context("When performing check '" + name + "' using visibility_check on ID '" + stringify(*id) + "':");
 
-    Log::get_instance()->message(ll_debug, lc_context) << "visibility_check '"
+    Log::get_instance()->message("e.qa.visibility_check", ll_debug, lc_context) << "visibility_check '"
         << entry << "', '" << *id << "', '" << name << "'";
 
     if (repo->repository_masked(*id) || ! id->keywords_key())

@@ -47,10 +47,10 @@ paludis::erepository::header_check(
     Context context("When performing check '" + name + "' using default_functions on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
     if (id)
-        Log::get_instance()->message(ll_debug, lc_context) << "header '"
+        Log::get_instance()->message("e.qa.header_check", ll_debug, lc_context) << "header '"
             << entry << "', '" << *id << "', '" << name << "'";
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "header '"
+        Log::get_instance()->message("e.qa.header_check", ll_debug, lc_context) << "header '"
             << entry << "', '" << name << "'";
 
     pcrepp::Pcre::Pcre r_licence("^# Distributed under the terms of the GNU General Public License v2$");
@@ -90,7 +90,7 @@ paludis::erepository::header_check(
             break;
         }
 
-        Log::get_instance()->message(ll_debug, lc_context, "Expected copyright year is " + year);
+        Log::get_instance()->message("e.qa.header_check.year", ll_debug, lc_context) << "Expected copyright year is " << year;
         pcrepp::Pcre::Pcre r_copyright("^# Copyright ((1999|200\\d)-)?" + year + " Gentoo Foundation$");
 
         if (! r_copyright.search(lines[0]))

@@ -61,7 +61,7 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     if (q < p)
         _remote = _remote.substr(q < p ? q + 1 : 0);
 
-    Log::get_instance()->message(ll_debug, lc_context) << "looking for syncer protocol '"
+    Log::get_instance()->message("syncer.protocol", ll_debug, lc_context) << "looking for syncer protocol '"
         + stringify(format) << "'";
 
     tr1::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
@@ -74,8 +74,8 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
         if (syncer.exists() && syncer.has_permission(fs_ug_owner, fs_perm_execute))
             ok = true;
 
-        Log::get_instance()->message(ll_debug, lc_no_context, "Trying '" + stringify(syncer) + "': "
-                + (ok ? "ok" : "not ok"));
+        Log::get_instance()->message("syncer.trying_file", ll_debug, lc_no_context)
+            << "Trying '" << syncer << "': " << (ok ? "ok" : "not ok");
     }
 
     if (! ok)

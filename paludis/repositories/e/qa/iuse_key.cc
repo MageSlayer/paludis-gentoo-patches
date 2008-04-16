@@ -59,7 +59,8 @@ namespace
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
+                Log::get_instance()->message("e.qa.iuse_key_check.configuration_error", ll_warning, lc_context)
+                    << "Got error '" << e.message() << "' (" << e.what()
                     << ") when loading iuse_blacklist.conf for QA iuse_key";
             }
         }
@@ -75,7 +76,7 @@ paludis::erepository::iuse_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using iuse_key_check on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "iuse_key_check '"
+    Log::get_instance()->message("e.qa.iuse_key_check", ll_debug, lc_context) << "iuse_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     if (id->iuse_key())

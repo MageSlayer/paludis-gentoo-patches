@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,10 +46,10 @@ paludis::erepository::whitespace_check(
     Context context("When performing check '" + name + "' using whitespace_check on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
     if (id)
-        Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
+        Log::get_instance()->message("e.qa.whitespace_check", ll_debug, lc_context) << "whitespace '"
             << entry << "', '" << *id << "', '" << name << "'";
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "whitespace '"
+        Log::get_instance()->message("e.qa.whitespace_check", ll_debug, lc_context) << "whitespace '"
             << entry << "', '" << name << "'";
 
     std::stringstream ff(content);

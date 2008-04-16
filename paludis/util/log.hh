@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,7 +57,7 @@ namespace paludis
         private:
             Log();
 
-            void _message(const LogLevel, const LogContext, const std::string &);
+            void _message(const std::string & id, const LogLevel, const LogContext, const std::string &);
 
         public:
             /**
@@ -77,11 +77,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Log a message at the specified level.
-             */
-            void message(const LogLevel, const LogContext, const std::string &);
-
-            /**
              * Log a message.
              *
              * The return value can be appended to using
@@ -89,7 +84,8 @@ namespace paludis
              * destroyed (that is to say, at the end of the statement), the log
              * message is written.
              */
-            LogMessageHandler message(const LogLevel, const LogContext) PALUDIS_ATTRIBUTE((warn_unused_result));
+            LogMessageHandler message(const std::string & id,
+                    const LogLevel, const LogContext) PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Change the log stream.
@@ -115,16 +111,17 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LogMessageHandler
     {
-        friend LogMessageHandler Log::message(const LogLevel, const LogContext);
+        friend LogMessageHandler Log::message(const std::string &, const LogLevel, const LogContext);
 
         private:
             Log * _log;
+            std::string _id;
             std::string _message;
             LogLevel _log_level;
             LogContext _log_context;
 
             LogMessageHandler(const LogMessageHandler &);
-            LogMessageHandler(Log * const, const LogLevel, const LogContext);
+            LogMessageHandler(Log * const, const std::string &, const LogLevel, const LogContext);
             void operator= (const LogMessageHandler &);
 
             void _append(const std::string & s);

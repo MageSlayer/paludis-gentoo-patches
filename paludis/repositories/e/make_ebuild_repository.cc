@@ -200,9 +200,9 @@ paludis::make_ebuild_repository(
                 env->default_distribution()))[k::default_ebuild_names_cache()];
         if (names_cache.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
-                    + repo_file + "'. You should read the Paludis documentation and select an "
-                    "appropriate value.");
+            Log::get_instance()->message("e.ebuild.configuration.no_names_cache", ll_warning, lc_no_context)
+                << "The names_cache key is not set in '" << repo_file
+                << "'. You should read the Paludis documentation and select an appropriate value.";
             names_cache = "/var/empty";
         }
     }
@@ -217,8 +217,8 @@ paludis::make_ebuild_repository(
 
     if (m->end() != m->find("sync_exclude"))
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "The sync_exclude key in '"
-                + repo_file + "' is deprecated in favour of sync_options = --exclude-from=");
+        Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_no_context)
+            << "The sync_exclude key in '" << repo_file << "' is deprecated in favour of sync_options = --exclude-from=";
         if (! sync_options.empty())
             sync_options += " ";
         sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
@@ -231,7 +231,8 @@ paludis::make_ebuild_repository(
             builddir = (*DistributionData::get_instance()->distribution_from_string(
                     env->default_distribution()))[k::default_ebuild_builddir()];
         else
-            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+            Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_context)
+                << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
     std::string layout;

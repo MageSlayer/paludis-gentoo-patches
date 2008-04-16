@@ -119,14 +119,15 @@ PyHookFile::PyHookFile(const FSEntry & f, const bool r, const Environment * cons
         }
         catch (const bp::error_already_set &)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Initializing Python interpreter failed:");
+            Log::get_instance()->message("hook.python.interpreter_failure", ll_warning, lc_no_context)
+                << "Initializing Python interpreter failed:";
             PyErr_Print();
             return;
         }
         catch (const std::exception & ex)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    std::string("Initializing Python interpreter failed: '") + ex.what() + "'");
+            Log::get_instance()->message("hook.python.interpreter_failure", ll_warning, lc_no_context)
+                << "Initializing Python interpreter failed: '" << ex.what() << "'";
             return;
         }
     }
@@ -139,13 +140,13 @@ PyHookFile::PyHookFile(const FSEntry & f, const bool r, const Environment * cons
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Loading hook '" + stringify(f) + "' failed: '"
-                    + _get_traceback() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context)
+            << "Loading hook '" << f << "' failed: '" << _get_traceback() << "'";
     }
     catch (const std::exception & ex)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Loading hook '" + stringify(f) + "' failed: '"
-                + ex.what() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context)
+            << "Loading hook '" << f << "' failed: '" << ex.what() << "'";
     }
 }
 
@@ -169,16 +170,16 @@ PyHookFile::run(const Hook & hook) const
     {
         if (PyErr_ExceptionMatches(PyExc_KeyError))
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "' does not define the hook_run_"
-                    + hook.name() + " function");
+            Log::get_instance()->message("hook.python.undefined", ll_warning, lc_no_context)
+                << "Hook '" << file_name() << "' does not define the hook_run_"
+                << hook.name() << " function";
             PyErr_Clear();
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "' failed unexpectedly: '"
-                    + _get_traceback() + "'");
+            Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context) <<
+                "Hook '" << file_name() << "' failed unexpectedly: '"
+                << _get_traceback() << "'";
         }
 
         return HookResult(1, "");
@@ -186,8 +187,8 @@ PyHookFile::run(const Hook & hook) const
 
     Prefix p(this, _run_prefixed ? strip_trailing_string(file_name().basename(), ".py") + "> " : "");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" +
-            stringify(file_name()) + "' for '" + hook.name() + "'");
+    Log::get_instance()->message("hook.python.starting", ll_debug, lc_no_context)
+        << "Starting hook '" << file_name() << "' for '" << hook.name() << "'";
 
     bp::dict hook_env;
     hook_env["HOOK"] = hook.name();
@@ -203,9 +204,9 @@ PyHookFile::run(const Hook & hook) const
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Hook '" + stringify(file_name()) + "': running hook_run_" + hook.name()
-                + " function failed: '" + _get_traceback() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context) <<
+            "Hook '" << file_name() << "': running hook_run_" << hook.name()
+            << " function failed: '" << _get_traceback() << "'";
         return HookResult(1, "");
     }
 
@@ -215,17 +216,17 @@ PyHookFile::run(const Hook & hook) const
         {
             std::string result_s = bp::extract<std::string>(result);
 
-            Log::get_instance()->message(ll_debug, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "':  hook_run_" + hook.name()
-                    + " function returned '" + result_s + "'");
+            Log::get_instance()->message("hook.python.output", ll_debug, lc_no_context)
+                << "Hook '" << file_name() << "':  hook_run_" << hook.name()
+                << " function returned '" << result_s << "'";
 
             return HookResult(0, result_s);
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "':  hook_run_" + hook.name()
-                    + " function returned not a string.");
+            Log::get_instance()->message("hook.python.bad_output", ll_warning, lc_no_context)
+                << "Hook '" << file_name() << "':  hook_run_" << hook.name()
+                << " function returned not a string.";
             return HookResult(1, "");
         }
     }
@@ -265,16 +266,15 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
     {
         if (PyErr_ExceptionMatches(PyExc_KeyError))
         {
-            Log::get_instance()->message(ll_debug, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "' does not define the hook_"
-                    + stringify(depend ? "depend" : "after") + "_" + hook.name() + " function");
+            Log::get_instance()->message("hook.python.undefined", ll_debug, lc_no_context)
+                << "Hook '" << file_name() << "' does not define the hook_"
+                << (depend ? "depend" : "after") << "_" << hook.name() << " function";
             PyErr_Clear();
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Hook '" + stringify(file_name()) + "' failed unexpectedly: '"
-                    + _get_traceback() + "'");
+            Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context)
+                << "Hook '" << file_name() << "' failed unexpectedly: '" << _get_traceback() << "'";
         }
 
         return;
@@ -294,10 +294,10 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Hook '" + stringify(file_name()) + "': running hook_"
-                + stringify(depend ? "depend" : "after") + "_" + hook.name() + " function failed: '"
-                + _get_traceback() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context) <<
+                "Hook '" << file_name() << "': running hook_"
+                << (depend ? "depend" : "after") << "_" << hook.name() << " function failed: '"
+                << _get_traceback() << "'";
         return;
     }
 
@@ -319,26 +319,26 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
             }
             else
             {
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "Hook '" + stringify(file_name()) + "':  hook_"
-                        + stringify(depend ? "depend" : "after") + "_" + hook.name()
-                        + " function returned not a list of strings: '" + deps + "'");
+                Log::get_instance()->message("hook.python.bad_output", ll_warning, lc_no_context)
+                    << "Hook '" << file_name() << "':  hook_"
+                    << stringify(depend ? "depend" : "after") << "_" << hook.name()
+                    << " function returned not a list of strings: '" << deps << "'";
                 return;
             }
         }
     }
     else
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Hook '" + stringify(file_name()) + "':  hook_"
-                + stringify(depend ? "depend" : "after") + "_" + hook.name()
-                + " function returned not a list: '" + deps + "'");
+        Log::get_instance()->message("hook.python.bad_output", ll_warning, lc_no_context)
+            << "Hook '" << file_name() << "':  hook_"
+            << (depend ? "depend" : "after") << "_" << hook.name()
+            << " function returned not a list: '" << deps << "'";
         return;
     }
 
-    Log::get_instance()->message(ll_debug, lc_no_context,
-            "Hook '" + stringify(file_name()) + "':  hook_"
-            + stringify(depend ? "depend" : "after") + "_" + hook.name() + " function returned '" + deps + "'");
+    Log::get_instance()->message("hook.python.output", ll_debug, lc_no_context)
+        << "Hook '" << file_name() <<  "':  hook_"
+        << stringify(depend ? "depend" : "after") << "_" << hook.name() << " function returned '" << deps << "'";
 
     for (std::set<std::string>::const_iterator d(deps_s.begin()), d_end(deps_s.end()) ;
             d != d_end ; ++d)
@@ -346,11 +346,11 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
         if (g.has_node(*d))
             g.add_edge(strip_trailing_string(file_name().basename(), ".py"), *d, 0);
         else if (depend)
-            Log::get_instance()->message(ll_warning, lc_context, "Hook dependency '" + stringify(*d) +
-                    "' for '" + stringify(file_name()) + "' not found");
+            Log::get_instance()->message("hook.python.dependency_not_found", ll_warning, lc_context)
+                << "Hook dependency '" << *d << "' for '" << file_name() << "' not found";
         else
-            Log::get_instance()->message(ll_debug, lc_context, "Hook after '" + stringify(*d) +
-                    "' for '" + stringify(file_name()) + "' not found");
+            Log::get_instance()->message("hook.python.after_not_found", ll_debug, lc_context)
+                << "Hook after '" << *d << "' for '" << file_name() << "' not found";
     }
 }
 
@@ -363,9 +363,9 @@ PyHookFile::Prefix::Prefix(const PyHookFile * const f, const std::string & prefi
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Hook '" + stringify(phf->file_name()) + "' failed unexpectedly: '"
-                + phf->_get_traceback() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context)
+            << "Hook '" << phf->file_name() << "' failed unexpectedly: '"
+            << phf->_get_traceback() << "'";
     }
 }
 
@@ -377,9 +377,9 @@ PyHookFile::Prefix::~Prefix()
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Hook '" + stringify(phf->file_name()) + "' failed unexpectedly: '"
-                + phf->_get_traceback() + "'");
+        Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context)
+            << "Hook '" << phf->file_name() << "' failed unexpectedly: '"
+            << phf->_get_traceback() << "'";
     }
 }
 
@@ -405,8 +405,8 @@ PyHookFile::_get_traceback() const
 
     if (result == NULL)
     {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "Hook '" + stringify(file_name()) + "': _get_traceback(): traceback.format_exception failed");
+        Log::get_instance()->message("hook.python.traceback_failed", ll_warning, lc_context) <<
+            "Hook '" << file_name() << "': _get_traceback(): traceback.format_exception failed";
         return "Getting traceback failed";
     }
 
@@ -417,8 +417,8 @@ PyHookFile::_get_traceback() const
     }
     else
     {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "Hook '" + stringify(file_name()) + "': _get_traceback(): cannot extract list of lines");
+        Log::get_instance()->message("hook.python.traceback_failed", ll_warning, lc_context) <<
+            "Hook '" << file_name() << "': _get_traceback(): cannot extract list of lines";
         return "Getting traceback failed";
     }
 
@@ -429,8 +429,8 @@ PyHookFile::_get_traceback() const
     }
     catch (const bp::error_already_set &)
     {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "Hook '" + stringify(file_name()) + "': _get_traceback(): joining list of lines failed");
+        Log::get_instance()->message("hook.python.traceback_failed", ll_warning, lc_context) <<
+            "Hook '" << file_name() << "': _get_traceback(): joining list of lines failed";
         return "Getting traceback failed";
     }
 

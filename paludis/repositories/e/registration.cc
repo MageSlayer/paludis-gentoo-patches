@@ -48,8 +48,8 @@ namespace
 
         Context context("When creating repository using '" + repo_file + "':");
 
-        Log::get_instance()->message(ll_warning, lc_context, "Format 'portage' is "
-                "deprecated, use 'ebuild' instead");
+        Log::get_instance()->message("e.portage.configuration.deprecated", ll_warning, lc_context)
+            << "Format 'portage' is deprecated, use 'ebuild' instead";
 
         return make_ebuild_repository_wrapped(env, m);
     }

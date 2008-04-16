@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -313,7 +313,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
                     first_iterator(result->end()));
         } while (false);
 
-        Log::get_instance()->message(ll_warning, lc_context)
+        Log::get_instance()->message("package_database.ambiguous_name", ll_warning, lc_context)
             << "Package name '" << p << "' is ambiguous, assuming you meant '" << *qpns.begin()
             << "' (candidates were '"
             << join(first_iterator(result->begin()), first_iterator(result->end()), "', '") << "')";

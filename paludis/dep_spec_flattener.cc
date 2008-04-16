@@ -126,13 +126,13 @@ dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::vis
 
     if (! set)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+        Log::get_instance()->message("flattener.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
         return;
     }
 
     if (! this->_imp->recursing_sets.insert(s.name()).second)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+        Log::get_instance()->message("flattener.recursive_set", ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
         return;
     }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -114,14 +114,16 @@ main(int argc, char *argv[])
         /* deprecated args */
         if (CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-no-unnecessary-upgrades / -U is deprecated");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--dl-no-unnecessary-upgrades / -U is deprecated";
             CommandLine::get_instance()->dl_args.dl_upgrade.set_argument("as-needed");
             CommandLine::get_instance()->dl_args.dl_upgrade.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_dl_drop_all.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-drop-all / -0 is deprecated");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--dl-drop-all / -0 is deprecated";
             CommandLine::get_instance()->dl_args.dl_installed_deps_pre.set_argument("discard");
             CommandLine::get_instance()->dl_args.dl_installed_deps_pre.set_specified(true);
             CommandLine::get_instance()->dl_args.dl_installed_deps_post.set_argument("discard");
@@ -138,14 +140,16 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_dl_ignore_installed.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-ignore-installed / -e is deprecated");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--dl-ignore-installed / -e is deprecated";
             CommandLine::get_instance()->dl_args.dl_reinstall.set_argument("always");
             CommandLine::get_instance()->dl_args.dl_reinstall.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_show_install_reasons.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "--show-install-reasons is deprecated, use --show-reasons");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--show-install-reasons is deprecated, use --show-reasons";
             CommandLine::get_instance()->install_args.a_show_reasons.set_argument(
                     CommandLine::get_instance()->a_show_install_reasons.argument());
             CommandLine::get_instance()->install_args.a_show_reasons.set_specified(true);
@@ -153,7 +157,8 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_add_to_world_atom.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "--add-to-world-atom is deprecated, use --add-to-world-spec");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--add-to-world-atom is deprecated, use --add-to-world-spec";
             CommandLine::get_instance()->install_args.a_add_to_world_spec.set_argument(
                     CommandLine::get_instance()->a_add_to_world_atom.argument());
             CommandLine::get_instance()->install_args.a_add_to_world_spec.set_specified(true);
@@ -161,8 +166,8 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_safe_resume.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context) <<
-                    "Safe resume support is now enabled by default; there is no need to pass --safe-resume";
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "Safe resume support is now enabled by default; there is no need to pass --safe-resume";
         }
 
         /* need an action */
@@ -265,9 +270,9 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_config_suffix.specified())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "--config-suffix is deprecated, use --environment ':" +
-                    CommandLine::get_instance()->a_config_suffix.argument() + "'");
+            Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                << "--config-suffix is deprecated, use --environment ':" <<
+                CommandLine::get_instance()->a_config_suffix.argument() << "'";
 
             env_spec = ":" + CommandLine::get_instance()->a_config_suffix.argument();
             paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
@@ -467,8 +472,8 @@ main(int argc, char *argv[])
 
             if (CommandLine::get_instance()->a_update_news.specified())
             {
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "Calling --update-news is no longer useful or necessary");
+                Log::get_instance()->message("paludis.command_line.deprecated", ll_warning, lc_no_context)
+                    << "Calling --update-news is no longer useful or necessary";
                 return EXIT_SUCCESS;
             }
 

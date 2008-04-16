@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,7 +36,7 @@ paludis::erepository::files_dir_size_check(
         )
 {
     Context context("When performing check '" + name + "' using files_dir_size_check on directory '" + stringify(dir) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "files_dir_size_check '"
+    Log::get_instance()->message("e.qa.files_dir_size_check", ll_debug, lc_context) << "files_dir_size_check '"
         << dir << "', " << name << "'";
 
     struct SizeFinder

@@ -412,8 +412,8 @@ namespace paludis
                 }
                 catch (const Exception & e)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "Not loading profile '" +
-                            tokens.at(1) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+                    Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Not loading profile '"
+                        << tokens.at(1) << "' due to exception '" << e.message() << "' (" << e.what() << ")";
                 }
             }
         }
@@ -455,9 +455,9 @@ namespace
         std::string modified_location(tree_root.basename());
         std::replace(modified_location.begin(), modified_location.end(), '/', '-');
 
-        Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open repo_name file in '"
-                + stringify(tree_root) + "/profiles/', falling back to generated name 'x-" + modified_location +
-                "' (ignore this message if you have yet to sync this repository).");
+        Log::get_instance()->message("e.repo_name.unusable", ll_qa, lc_no_context)
+            << "Couldn't open repo_name file in '" << tree_root << "/profiles/', falling back to generated name 'x-"
+            << modified_location << "' (ignore this message if you have yet to sync this repository).";
 
         return RepositoryName("x-" + modified_location);
     }
@@ -587,9 +587,9 @@ ERepository::repository_masked(const PackageID & id) const
                 if (a->package_ptr())
                     _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                            + stringify(line->first) + "' failed because specification does not restrict to a "
-                            "unique package");
+                    Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
+                        << "Loading package mask spec '" << line->first << "' failed because specification does not restrict to a "
+                        "unique package";
             }
             catch (const InternalError &)
             {
@@ -597,9 +597,9 @@ ERepository::repository_masked(const PackageID & id) const
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                        + stringify(line->first) + "' failed due to exception '" + e.message() + "' ("
-                        + e.what() + ")");
+                Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context) << "Loading package mask spec '"
+                    << line->first << "' failed due to exception '" << e.message() << "' ("
+                    << e.what() << ")";
             }
         }
 
@@ -704,8 +704,9 @@ ERepository::arch_flags() const
 
         if (! found_one)
         {
-            Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't find arch.list file for repository '"
-                    + stringify(name()) + "', arch flags may incorrectly show up as unmasked");
+            Log::get_instance()->message("e.arch_list.missing", ll_qa, lc_no_context)
+                << "Couldn't find arch.list file for repository '"
+                << stringify(name()) << "', arch flags may incorrectly show up as unmasked";
         }
     }
 
@@ -749,10 +750,10 @@ ERepository::need_mirrors() const
         }
 
         if (! found_one)
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "No thirdpartymirrors file found in '"
-                    + stringify(_imp->params.location / "profiles") + "', so mirror:// SRC_URI "
-                    "components cannot be fetched");
+            Log::get_instance()->message("e.thirdpartymirrors.missing", ll_warning, lc_no_context) <<
+                "No thirdpartymirrors file found in '"
+                << (_imp->params.location / "profiles") << "', so mirror:// SRC_URI "
+                "components cannot be fetched";
 
         _imp->has_mirrors = true;
     }
@@ -1041,7 +1042,8 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 {
     Context context("When setting profile by iterator:");
 
-    Log::get_instance()->message(ll_debug, lc_context, "Using profile '" + stringify((*iter)[k::path()]) + "'");
+    Log::get_instance()->message("e.profile.using", ll_debug, lc_context)
+        << "Using profile '" << ((*iter)[k::path()]) << "'";
     _imp->profile_ptr = (*iter)[k::profile()];
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))

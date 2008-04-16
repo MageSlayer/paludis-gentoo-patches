@@ -210,7 +210,7 @@ void
 NDBAMMerger::on_warn(bool is_check, const std::string & s)
 {
     if (is_check)
-        Log::get_instance()->message(ll_warning, lc_context, s);
+        Log::get_instance()->message("merger.ndbam.warning", ll_warning, lc_context) << s;
 }
 
 bool

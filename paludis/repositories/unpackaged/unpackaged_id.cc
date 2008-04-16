@@ -311,7 +311,7 @@ UnpackagedID::perform_action(Action & action) const
             libdir = "lib";
     }
 
-    Log::get_instance()->message(ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
+    Log::get_instance()->message("unpackaged.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
     UnpackagedStripper stripper(UnpackagedStripperOptions::named_create()
             (k::image_dir(), fs_location_key()->value())

@@ -114,8 +114,8 @@ ProfileFile<F_>::add_file(const FSEntry & f)
                  * section is inherited more than once. Don't warn when this
                  * happens. */
                 if (this->_imp->removed.end() == this->_imp->removed.find(key.substr(1)))
-                    Log::get_instance()->message(ll_qa, lc_context, "No match for '" + key + "'. This usually indicates a "
-                            "bug in your profile.");
+                    Log::get_instance()->message("e.profile.no_match", ll_qa, lc_context)
+                        << "No match for '" << key << "'. This usually indicates a bug in your profile.";
             }
             else
             {

@@ -122,7 +122,8 @@ Stripper::file_type(const FSEntry & f)
 
     std::stringstream s;
     if (0 != run_command(Command("file '" + stringify(f) + "'").with_captured_stdout_stream(&s)))
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't work out the file type of '" << f << "'";
+        Log::get_instance()->message("strip.identification_failed", ll_warning, lc_context)
+            << "Couldn't work out the file type of '" << f << "'";
 
     return s.str();
 }
@@ -133,7 +134,7 @@ Stripper::do_strip(const FSEntry & f, const std::string & options)
     Context context("When stripping '" + stringify(f) + "':");
     on_strip(f);
     if (0 != run_command(Command("strip " + options + " '" + stringify(f) + "'")))
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't strip '" << f << "'";
+        Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't strip '" << f << "'";
 }
 
 void
@@ -167,9 +168,9 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
     }
 
     if (0 != run_command(Command("objcopy --only-keep-debug '" + stringify(f) + "' '" + stringify(g) + "'")))
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";
+        Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";
     else if (0 != run_command(Command("objcopy --add-gnu-debuglink='" + stringify(g) + "' '" + stringify(f) + "'")))
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't add debug link for '" << f << "'";
+        Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't add debug link for '" << f << "'";
     else
     {
         FSEntry(g).chmod(g.permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));

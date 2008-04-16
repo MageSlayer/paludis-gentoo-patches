@@ -89,7 +89,8 @@ World::_add_string_to_world(const std::string & n) const
 
     if (! _imp->maybe_world_file)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Not adding '" << n << "' to world because "
+        Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
+            << "Not adding '" << n << "' to world because "
             "no world file has been configured. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";
         return;
@@ -104,8 +105,8 @@ World::_add_string_to_world(const std::string & n) const
         std::ofstream f(stringify(*_imp->maybe_world_file).c_str());
         if (! f)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
-                    + stringify(*_imp->maybe_world_file) + "'");
+            Log::get_instance()->message("paludis_environment.world.cannot_create", ll_warning, lc_no_context)
+                << "Cannot create world file '" << *_imp->maybe_world_file << "'";
             return;
         }
     }
@@ -127,8 +128,8 @@ World::_remove_string_from_world(const std::string & n) const
 
     if (! _imp->maybe_world_file)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Not removing '" << n << "' from world because "
-            "no world file has been configured";
+        Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
+            << "Not removing '" << n << "' from world because no world file has been configured";
         return;
     }
 
@@ -170,8 +171,8 @@ World::world_set() const
             return world.contents();
         }
         else
-            Log::get_instance()->message(ll_warning, lc_no_context) << "World file '" << *_imp->maybe_world_file
-                    << "' doesn't exist";
+            Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_no_context)
+                << "World file '" << *_imp->maybe_world_file << "' doesn't exist";
     }
 
     return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(

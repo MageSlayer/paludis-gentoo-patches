@@ -245,8 +245,8 @@ tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & p
     security_context_t context;
     if (0 != libselinux.matchpathcon(path.c_str(), mode, &context))
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Couldn't get default security context for '" + path + "'.");
+        Log::get_instance()->message("selinux.get_context", ll_warning, lc_no_context) <<
+                "Couldn't get default security context for '" << path << "'.";
 //        throw SELinuxException("Couldn't get default security context for '" + path + "'.");
     }
     else

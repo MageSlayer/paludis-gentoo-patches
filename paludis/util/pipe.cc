@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,7 +34,7 @@ Pipe::Pipe()
     if (-1 == pipe(_fds))
         throw InternalError(PALUDIS_HERE, "pipe(2) failed");
 
-    Log::get_instance()->message(ll_debug, lc_context) << "Pipe FDs are '" << read_fd() << "', '"
+    Log::get_instance()->message("util.pipe.fds", ll_debug, lc_context) << "Pipe FDs are '" << read_fd() << "', '"
         << write_fd() << "'";
 }
 
@@ -43,9 +43,9 @@ Pipe::~Pipe()
     Context context("When destroying pipe FDs '" + stringify(read_fd()) + "', '" + stringify(write_fd()) + "'");
     if (-1 != _fds[0])
         if (-1 == close(_fds[0]))
-            Log::get_instance()->message(ll_warning, lc_context) << "close(" << _fds[0] << ") -> " << strerror(errno);
+            Log::get_instance()->message("util.pipe.close", ll_warning, lc_context) << "close(" << _fds[0] << ") -> " << strerror(errno);
     if (-1 != _fds[1])
         if (-1 == close(_fds[1]))
-            Log::get_instance()->message(ll_warning, lc_context) << "close(" << _fds[1] << ") -> " << strerror(errno);
+            Log::get_instance()->message("util.pipe.close", ll_warning, lc_context) << "close(" << _fds[1] << ") -> " << strerror(errno);
 }
 

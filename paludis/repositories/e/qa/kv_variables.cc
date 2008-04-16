@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,7 @@ paludis::erepository::kv_variables_check(
     pcrepp::Pcre::Pcre r_global("^[a-zA-Z0-9\\_]+=.*\\$[{}]?KV");
     pcrepp::Pcre::Pcre r_detect_version("^detect_version$");
 
-    Log::get_instance()->message(ll_debug, lc_context) << "kv_variables '"
+    Log::get_instance()->message("e.qa.kv_variables_check", ll_debug, lc_context) << "kv_variables '"
         << entry << "', '" << *id << "', '" << name << "'";
 
     std::stringstream ff(content);

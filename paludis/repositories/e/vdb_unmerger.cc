@@ -208,7 +208,7 @@ VDBUnmerger::populate_unmerge_set()
         std::vector<std::string> tokens;
         if (! erepository::VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
+            Log::get_instance()->message("e.vdb.contents.malformed", ll_warning, lc_no_context) << "Malformed VDB entry '" << line << "'";
             continue;
         }
 
@@ -241,7 +241,8 @@ VDBUnmerger::populate_unmerge_set()
             add_unmerge_entry(tokens.at(1), et_dir, tr1::shared_ptr<ExtraInfo>());
         }
         else
-            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
+            Log::get_instance()->message("e.vdb.contents.malformed", ll_warning, lc_no_context)
+                << "Malformed VDB entry '" << line << "'";
     }
 }
 
@@ -259,8 +260,8 @@ VDBUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
         std::ifstream md5_file(stringify(_imp->options[k::root()] / f).c_str());
         if (! md5_file)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot get md5 for '" +
-                    stringify(_imp->options[k::root()] / f) + "'");
+            Log::get_instance()->message("e.vdb.contents.md5_failed", ll_warning, lc_no_context)
+                << "Cannot get md5 for '" << (_imp->options[k::root()] / f) << "'";
             display("--- [!md5?] " + stringify(f));
         }
         else if (MD5(md5_file).hexsum() != fie->_md5sum)

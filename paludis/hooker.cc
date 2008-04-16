@@ -150,8 +150,8 @@ BashHookFile::run(const Hook & hook) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
-            stringify(file_name()) + "' for '" + hook.name() + "'");
+    Log::get_instance()->message("hook.bash.starting", ll_debug, lc_no_context) << "Starting hook script '" <<
+        file_name() << "' for '" << hook.name() << "'";
 
     Command cmd(Command("bash '" + stringify(file_name()) + "'")
             .with_setenv("ROOT", stringify(_env->root()))
@@ -185,11 +185,11 @@ BashHookFile::run(const Hook & hook) const
         exit_status = run_command(cmd);
 
     if (0 == exit_status)
-        Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(file_name())
-                + "' returned success '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("hook.bash.success", ll_debug, lc_no_context) << "Hook '" << file_name()
+                << "' returned success '" << exit_status << "'";
     else
-        Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
-                + "' returned failure '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("hook.bash.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
+            << "' returned failure '" << exit_status << "'";
 
     return HookResult(exit_status, output);
 }
@@ -199,8 +199,8 @@ FancyHookFile::run(const Hook & hook) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
-            stringify(file_name()) + "' for '" + hook.name() + "'");
+    Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '"
+        << file_name() << "' for '" << hook.name() << "'";
 
     Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'");
@@ -236,11 +236,11 @@ FancyHookFile::run(const Hook & hook) const
         exit_status = run_command(cmd);
 
     if (0 == exit_status)
-        Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(file_name())
-                + "' returned success '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("hook.fancy.success", ll_debug, lc_no_context) << "Hook '" << file_name()
+            << "' returned success '" << exit_status << "'";
     else
-        Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
-                + "' returned failure '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("hook.fancy.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
+            << "' returned failure '" << exit_status << "'";
 
     return HookResult(exit_status, output);
 }
@@ -250,8 +250,8 @@ FancyHookFile::auto_hook_names() const
 {
     Context c("When querying auto hook names for fancy hook '" + stringify(file_name()) + "':");
 
-    Log::get_instance()->message(ll_debug, lc_no_context) << "Starting hook script '" <<
-            file_name() << "' for auto hook names";
+    Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '" <<
+        file_name() << "' for auto hook names";
 
     Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'");
@@ -278,15 +278,15 @@ FancyHookFile::auto_hook_names() const
     {
         tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
         tokenise_whitespace(output, result->back_inserter());
-        Log::get_instance()->message(ll_debug, lc_no_context) << "Hook '" << file_name()
+        Log::get_instance()->message("hook.fancy.success", ll_debug, lc_no_context) << "Hook '" << file_name()
             << "' returned success '" << exit_status << "' for auto hook names, result ("
             << join(result->begin(), result->end(), ", ") << ")";
         return result;
     }
     else
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
-                + "' returned failure '" + stringify(exit_status) + "' for auto hook names");
+        Log::get_instance()->message("hook.fancy.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
+            << "' returned failure '" << exit_status << "' for auto hook names";
         return make_shared_ptr(new Sequence<std::string>);
     }
 }
@@ -306,8 +306,8 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
     Context context("When adding dependency class '" + stringify(depend ? "depend" : "after") + "' for hook '"
             + stringify(hook.name()) + "' file '" + stringify(file_name()) + "':");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
-            stringify(file_name()) + "' for dependencies of '" + hook.name() + "'");
+    Log::get_instance()->message("hook.fancy.starting_dependencies", ll_debug, lc_no_context)
+        << "Starting hook script '" << file_name() << "' for dependencies of '" << hook.name() << "'";
 
     Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_" + (depend ? "depend" : "after") + "_" +
@@ -337,8 +337,8 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
 
     if (0 == exit_status)
     {
-        Log::get_instance()->message(ll_debug, lc_no_context, "Hook dependencies for '" + stringify(file_name())
-                + "' returned success '" + stringify(exit_status) + "', result '" + deps + "'");
+        Log::get_instance()->message("hook.fancy.success_dependencies", ll_debug, lc_no_context)
+            << "Hook dependencies for '" << file_name() << "' returned success '" << exit_status << "', result '" << deps << "'";
 
         std::set<std::string> deps_s;
         tokenise_whitespace(deps, std::inserter(deps_s, deps_s.end()));
@@ -349,16 +349,16 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
             if (g.has_node(*d))
                 g.add_edge(strip_trailing_string(file_name().basename(), ".hook"), *d, 0);
             else if (depend)
-                Log::get_instance()->message(ll_warning, lc_context, "Hook dependency '" + stringify(*d) +
-                        "' for '" + stringify(file_name()) + "' not found");
+                Log::get_instance()->message("hook.fancy.dependency_not_found", ll_warning, lc_context)
+                    << "Hook dependency '" << *d << "' for '" << file_name() << "' not found";
             else
-                Log::get_instance()->message(ll_debug, lc_context, "Hook after '" + stringify(*d) +
-                        "' for '" + stringify(file_name()) + "' not found");
+                Log::get_instance()->message("hook.fancy.after_not_found", ll_debug, lc_context)
+                    << "Hook after '" << *d << "' for '" << file_name() << "' not found";
         }
     }
     else
-        Log::get_instance()->message(ll_warning, lc_no_context, "Hook dependencies for '" + stringify(file_name())
-                + "' returned failure '" + stringify(exit_status) + "'");
+        Log::get_instance()->message("hook.fancy.failure_dependencies", ll_warning, lc_no_context)
+            << "Hook dependencies for '" << file_name() << "' returned failure '" << exit_status << "'";
 }
 
 SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const e) :
@@ -379,7 +379,8 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_run")));
 
         if (! _run)
-            Log::get_instance()->message(ll_warning, lc_no_context, ".so hook '" + stringify(f) + "' does not define the paludis_hook_run function");
+            Log::get_instance()->message("hook.so.no_paludis_hook_run", ll_warning, lc_no_context)
+                << ".so hook '" << f << "' does not define the paludis_hook_run function";
 
         _add_dependencies = reinterpret_cast<void (*)(
             const Environment *, const Hook &, DirectedGraph<std::string, int> &)>(
@@ -390,7 +391,8 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_auto_phases")));
     }
     else
-        Log::get_instance()->message(ll_warning, lc_no_context, "Opening .so hook '" + stringify(f) + "' failed: " + dlerror());
+        Log::get_instance()->message("hook.so.dlopen_failed", ll_warning, lc_no_context)
+            << "Opening .so hook '" << f << "' failed: " << dlerror();
 }
 
 HookResult
@@ -401,8 +403,8 @@ SoHookFile::run(const Hook & hook) const
     if (! _run)
         return HookResult(0, "");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting .so hook '" +
-            stringify(file_name()) + "' for '" + hook.name() + "'");
+    Log::get_instance()->message("hook.so.starting", ll_debug, lc_no_context) << "Starting .so hook '" <<
+        file_name() << "' for '" << hook.name() << "'";
 
     return _run(_env, hook);
 }
@@ -485,7 +487,7 @@ namespace paludis
                             n != n_end ; ++n)
                     {
                         if (! auto_hook_files[*n].insert(std::make_pair(name, hook_file)).second)
-                            Log::get_instance()->message(ll_warning, lc_context) << "Discarding hook file '" << *e
+                            Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                                 << "' in phase '" << *n << "' because of naming conflict with '"
                                 << auto_hook_files[*n].find(name)->second->file_name() << "'";
                     }
@@ -563,23 +565,23 @@ Hooker::_find_hooks(const Hook & hook) const
             if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
                                 tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
-                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                            + "' because of naming conflict with '" + stringify(
-                                hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name()) + "'");
+                    Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
+                        << "' because of naming conflict with '" <<
+                        hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
                                 tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
-                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                            + "' because of naming conflict with '" + stringify(
-                                hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name()) + "'");
+                    Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
+                        << "' because of naming conflict with '" <<
+                        hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
                  if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
                                  tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
-                    Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
-                            + "' because of naming conflict with '" + stringify(
-                                hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
+                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
+                         << "' because of naming conflict with '" <<
+                         hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name() << "'";
 
 #ifdef ENABLE_PYTHON_HOOKS
             if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
@@ -608,16 +610,15 @@ Hooker::_find_hooks(const Hook & hook) const
                             }
                             else
                             {
-                                Log::get_instance()->message(ll_warning, lc_context,
-                                        "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
-                                        "failed due to error '" + stringify(dlerror()) + "'");
+                                Log::get_instance()->message("hook.python.dlerror", ll_warning, lc_context) <<
+                                    "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
+                                    "failed due to error '" << dlerror() << "'";
                             }
                         }
                         else
                         {
-                            Log::get_instance()->message(ll_warning, lc_context,
-                                    "dlopen(libpaludispythonhooks.so) "
-                                    "failed due to error '" + stringify(dlerror()) + "'");
+                            Log::get_instance()->message("hook.python.dlerror", ll_warning, lc_context) <<
+                                "dlopen(libpaludispythonhooks.so) failed due to error '" << dlerror() << "'";
                         }
                     }
                 }
@@ -626,23 +627,23 @@ Hooker::_find_hooks(const Hook & hook) const
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
                                     tr1::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
                                              *e, d->second, _imp->env)))).second)
-                        Log::get_instance()->message(ll_warning, lc_context,
-                                "Discarding hook file '" + stringify(*e)
-                                + "' because of naming conflict with '"
-                                + stringify(hook_files.find(stringify(strip_trailing_string(
-                                                e->basename(), ".py")))->second->file_name()) + "'");
+                        Log::get_instance()->message("hook.discarding", ll_warning, lc_context) <<
+                            "Discarding hook file '" << *e
+                            << "' because of naming conflict with '"
+                            << hook_files.find(stringify(strip_trailing_string(e->basename(), ".py")))->second->file_name()
+                            << "'";
                 }
             }
 #elif ENABLE_PYTHON
             if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                Log::get_instance()->message("hook.python.ignoring", ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
                     << " Paludis was built using a dev-libs/boost version older than 1.34.0.";
             }
 #else
             if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
+                Log::get_instance()->message("hook.python.ignoring", ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
                     << " Paludis was built without Python support (also needs >=dev-libs/boost-1.34.0).";
             }
 #endif
@@ -670,10 +671,10 @@ Hooker::_find_hooks(const Hook & hook) const
         }
         catch (const NoGraphTopologicalOrderExistsError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Could not resolve dependency order for hook '"
-                    + hook.name() + "' due to exception '" + e.message() + "' (" + e.what() + "'), skipping hooks '" +
-                    join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") + "' and using hooks '" + join(ordered.begin(),
-                        ordered.end(), "', '") + "' in that order");;
+            Log::get_instance()->message("hook.cycles", ll_warning, lc_context) << "Could not resolve dependency order for hook '"
+                << hook.name() << "' due to exception '" << e.message() << "' (" << e.what() << "'), skipping hooks '" <<
+                join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") << "' and using hooks '" << join(ordered.begin(),
+                        ordered.end(), "', '") << "' in that order";
         }
     }
 
@@ -691,7 +692,7 @@ Hooker::perform_hook(const Hook & hook) const
     HookResult result(0, "");
 
     Context context("When triggering hook '" + hook.name() + "':");
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
+    Log::get_instance()->message("hook.starting", ll_debug, lc_no_context) << "Starting hook '" << hook.name() << "'";
 
     /* repo hooks first */
 
@@ -723,7 +724,7 @@ Hooker::perform_hook(const Hook & hook) const
                                     return tmp;
                             }
                             else
-                                Log::get_instance()->message(ll_warning, lc_context)
+                                Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
                                     << "Hook returned invalid output: '" << tmp.output << "'";
                         }
                     }
@@ -756,8 +757,8 @@ Hooker::perform_hook(const Hook & hook) const
                         if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
                             result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
                         else
-                            Log::get_instance()->message(ll_warning, lc_context, "Hook file '" +
-                                    stringify((*f)->file_name()) + "' is not a regular file or has been removed");
+                            Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
+                                (*f)->file_name() << "' is not a regular file or has been removed";
                     continue;
 
                 case hod_grab:
@@ -766,8 +767,8 @@ Hooker::perform_hook(const Hook & hook) const
                     {
                         if (! (*f)->file_name().is_regular_file_or_symlink_to_regular_file())
                         {
-                            Log::get_instance()->message(ll_warning, lc_context, "Hook file '" +
-                                    stringify((*f)->file_name()) + "' is not a regular file or has been removed");
+                            Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
+                                (*f)->file_name() << "' is not a regular file or has been removed";
                             continue;
                         }
 
@@ -782,7 +783,7 @@ Hooker::perform_hook(const Hook & hook) const
                                     return tmp;
                             }
                             else
-                                Log::get_instance()->message(ll_warning, lc_context)
+                                Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
                                     << "Hook returned invalid output: '" << tmp.output << "'";
                         }
                     }

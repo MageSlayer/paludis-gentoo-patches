@@ -136,7 +136,7 @@ ExheresLayout::need_category_names() const
 
     Context context("When loading category names for " + stringify(_imp->repository->name()) + ":");
 
-    Log::get_instance()->message(ll_debug, lc_context, "need_category_names");
+    Log::get_instance()->message("e.exheres_layout.need_category_names", ll_debug, lc_context) << "need_category_names";
 
     bool found_one(false);
 
@@ -162,9 +162,9 @@ ExheresLayout::need_category_names() const
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Skipping line '"
-                        + *line + "' in '" + stringify(*i) + "' due to exception '"
-                        + stringify(e.message()) + "' ('" + e.what() + ")");
+                Log::get_instance()->message("e.exheres_layout.categories.skipping", ll_warning, lc_context)
+                    << "Skipping line '" << *line << "' in '" << *i << "' due to exception '"
+                    << e.message() << "' ('" << e.what() << ")";
             }
         }
 
@@ -205,9 +205,9 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
             tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
                         tr1::bind(std::equal_to<VersionSpec>(), id->version(), tr1::bind(tr1::mem_fn(&PackageID::version), _1))))
-                Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
-                        + "' for '" + stringify(n) + "' in repository '" + stringify(_imp->repository->name())
-                        + "' because another equivalent version already exists");
+                Log::get_instance()->message("e.exheres_layout.id.duplicate", ll_warning, lc_context)
+                    << "Ignoring entry '" << *e << "' for '" << n << "' in repository '" << _imp->repository->name()
+                    << "' because another equivalent version already exists";
             else
                 v->push_back(id);
         }
@@ -217,10 +217,10 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
         }
         catch (const Exception & ee)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
-                    + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
-                    + stringify(_imp->repository->name()) + "' due to exception '" + ee.message() + "' ("
-                    + ee.what() + ")'");
+            Log::get_instance()->message("e.exheres_layout.id.failure", ll_warning, lc_context) << "Skipping entry '"
+                << *e << "' for '" << n << "' in repository '"
+                << _imp->repository->name() << "' due to exception '" << ee.message() << "' ("
+                << ee.what() << ")'";
         }
     }
 
@@ -338,9 +338,9 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '" +
-                        d->basename() + "' in category '" + stringify(c) + "' in repository '"
-                        + stringify(_imp->repository->name()) + "' (" + e.message() + ")");
+                Log::get_instance()->message("e.exheres_layout.packages.failure", ll_warning, lc_context)
+                    << "Skipping entry '" << d->basename() << "' in category '" << c << "' in repository '"
+                    << _imp->repository->name() << "' (" << e.message() << ")";
             }
         }
 

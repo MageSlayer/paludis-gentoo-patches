@@ -208,10 +208,10 @@ int do_best_version(tr1::shared_ptr<Environment> env)
         if (! (*entries->last())->virtual_for_key())
             break;
 
-        Log::get_instance()->message(ll_qa, lc_context) << "best-version of '" << query <<
-                "' resolves to '" << **entries->last() << "', which is a virtual for '"
-                << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
-                "new style virtuals.";
+        Log::get_instance()->message("paludis.best_version.is_virtual", ll_qa, lc_context) << "best-version of '" << query <<
+            "' resolves to '" << **entries->last() << "', which is a virtual for '"
+            << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
+            "new style virtuals.";
         tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
@@ -247,7 +247,7 @@ int do_match(tr1::shared_ptr<Environment> env)
         if (! (*entries->last())->virtual_for_key())
             break;
 
-        Log::get_instance()->message(ll_qa, lc_context) << "match of '" << query <<
+        Log::get_instance()->message("paludis.match.is_virtual", ll_qa, lc_context) << "match of '" << query <<
                 "' resolves to '" << **entries->last() << "', which is a virtual for '"
                 << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                 "new style virtuals.";
@@ -380,8 +380,8 @@ int do_list_sync_protocols(tr1::shared_ptr<Environment> env)
             if (0 != run_command(Command(s->second + " --help")
                         .with_setenv("PALUDIS_FETCHERS_DIRS", join(sd->begin(), sd->end(), " "))
                         .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))))
-                Log::get_instance()->message(ll_warning, lc_context, "Syncer help command '" +
-                        s->second + " --help' failed");
+                Log::get_instance()->message("paludis.syncer_help.failure", ll_warning, lc_context)
+                    << "Syncer help command '" << s->second << " --help' failed";
             std::cout << std::endl;
         }
     }

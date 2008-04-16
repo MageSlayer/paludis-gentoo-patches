@@ -75,7 +75,8 @@ namespace
                     std::copy(ff.begin(), ff.end(), create_inserter<QualifiedPackageName>(r->inserter()));
                 }
                 else
-                    Log::get_instance()->message(ll_warning, lc_context) << "Blacklist data file '" << f << "' does not exist";
+                    Log::get_instance()->message("e.qa.spec_keys_check.configuration_error", ll_warning, lc_context)
+                        << "Blacklist data file '" << f << "' does not exist";
 
                 map.insert(std::make_pair(s, r));
                 return r;
@@ -517,7 +518,7 @@ paludis::erepository::spec_keys_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using spec_keys_check on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "spec_keys_check '"
+    Log::get_instance()->message("e.qa.spec_keys_check", ll_debug, lc_context) << "spec_keys_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     using namespace tr1::placeholders;

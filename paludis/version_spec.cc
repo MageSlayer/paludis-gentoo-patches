@@ -123,7 +123,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
 
             if (number_part.size() > 8)
-                Log::get_instance()->message(ll_qa, lc_context) <<
+                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
                     "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
                     "(Paludis supports arbitrary lengths, but other package managers do not)";
 
@@ -183,7 +183,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     p = std::string::npos == q ? text.length() : q;
 
                     if (number_part.size() > 8)
-                        Log::get_instance()->message(ll_qa, lc_context) <<
+                        Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
                             "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
                             "(Paludis supports arbitrary lengths, but other package managers do not)";
 
@@ -208,7 +208,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             p = std::string::npos == q ? text.length() : q;
 
             if (number_part.size() > 8)
-                Log::get_instance()->message(ll_qa, lc_context) <<
+                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
                     "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
                     "(Paludis supports arbitrary lengths, but other package managers do not)";
 
@@ -250,7 +250,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                 p = std::string::npos == q ? text.length() : q;
 
                 if (number_part.size() > 8)
-                    Log::get_instance()->message(ll_qa, lc_context) <<
+                    Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
                         "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
                         "(Paludis supports arbitrary lengths, but other package managers do not)";
 

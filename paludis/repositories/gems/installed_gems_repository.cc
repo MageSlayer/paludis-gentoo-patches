@@ -237,7 +237,7 @@ InstalledGemsRepository::need_ids() const
         std::string::size_type h(s.rfind('-'));
         if (std::string::npos == h)
         {
-            Log::get_instance()->message(ll_qa, lc_context) << "Unrecognised file name format '"
+            Log::get_instance()->message("gems.id.unrecognised", ll_qa, lc_context) << "Unrecognised file name format '"
                 << *d << "' (no hyphen)";
             continue;
         }

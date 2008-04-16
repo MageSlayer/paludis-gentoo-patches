@@ -117,8 +117,9 @@ Repository::Repository(
     std::map<std::string, std::string>::const_iterator i(
             RepositoryBlacklist::get_instance()->items.find(stringify(name())));
     if (RepositoryBlacklist::get_instance()->items.end() != i)
-        Log::get_instance()->message(ll_warning, lc_no_context, "Repository '" + stringify(name()) +
-                "' is blacklisted with reason '" + i->second + "'. Consult the FAQ for more details.");
+        Log::get_instance()->message("repository.blacklisted", ll_warning, lc_no_context)
+            << "Repository '" << stringify(name())
+            << "' is blacklisted with reason '" << i->second << "'. Consult the FAQ for more details.";
 }
 
 Repository::~Repository()

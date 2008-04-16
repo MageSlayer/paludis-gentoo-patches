@@ -92,8 +92,8 @@ namespace
             std::string result(file.get("manifest_key_" + s));
             if (result.empty())
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Don't know what the manifest key for files with "
-                    "suffix '" << s << "' is, guessing 'MISC'";
+                Log::get_instance()->message("e.ebuild.unknown_manifest_key", ll_warning, lc_context)
+                    << "Don't know what the manifest key for files with suffix '" << s << "' is, guessing 'MISC'";
                 return "MISC";
             }
             else
@@ -311,18 +311,15 @@ namespace
         {
             if (f.group() != env->reduced_gid())
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' owned by group '" +
-                        stringify(get_group_name(f.group())) + "', not '" +
-                        stringify(get_group_name(env->reduced_gid())) +
-                        "', so cannot enable userpriv");
+                Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
+                        f << "' owned by group '" << get_group_name(f.group()) << "', not '"
+                        << get_group_name(env->reduced_gid()) << "', so cannot enable userpriv";
                 return false;
             }
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(f) + "' does not have group write permission," +
-                        "cannot enable userpriv");
+                Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
+                        f << "' does not have group write permission, cannot enable userpriv";
                 return false;
             }
         }
@@ -623,7 +620,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                         libdir = "lib";
                 }
 
-                Log::get_instance()->message(ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
+                Log::get_instance()->message("e.ebuild.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
                 EStripper stripper(EStripperOptions::named_create()
                         (k::package_id(), id)

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,8 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
 
         if (exit_status != 0)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(f)
-                    + "' returned non-zero exit status '" + stringify(exit_status) + "'");
+            Log::get_instance()->message("paludis_environment.bash_conf.failure", ll_warning, lc_context)
+                << "Script '" << f <<"' returned non-zero exit status '" << exit_status << "'";
             result.reset();
         }
     }

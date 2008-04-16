@@ -49,10 +49,10 @@ paludis::erepository::subshell_die_check(
     pcrepp::Pcre::Pcre r_subshell_die("\\([^\\)]*\\bdie\\b");
 
     if (id)
-        Log::get_instance()->message(ll_debug, lc_context) << "subshell_die '"
+        Log::get_instance()->message("e.qa.subshell_die_check", ll_debug, lc_context) << "subshell_die '"
             << entry << "', '" << *id << "', '" << name << "'";
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "subshell_die '"
+        Log::get_instance()->message("e.qa.subshell_die_check", ll_debug, lc_context) << "subshell_die '"
             << entry << "', '" << name << "'";
 
     std::stringstream ff(content);

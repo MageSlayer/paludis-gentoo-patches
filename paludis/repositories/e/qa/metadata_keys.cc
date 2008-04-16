@@ -152,7 +152,7 @@ paludis::erepository::metadata_keys_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "extractors_check '"
+    Log::get_instance()->message("e.qa.metadata_keys_check", ll_debug, lc_context) << "extractors_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     bool retval(true);

@@ -60,7 +60,8 @@ namespace
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
+                Log::get_instance()->message("e.metadata_key.extractors.configuration_error", ll_warning, lc_context)
+                    << "Got error '" << e.message() << "' (" << e.what()
                     << ") when loading extractors.conf for QA extractors_check";
                 file.reset(new KeyValueConfigFile(std::string(), KeyValueConfigFileOptions()));
             }
@@ -256,7 +257,7 @@ paludis::erepository::extractors_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "extractors_check '"
+    Log::get_instance()->message("e.qa.extractors_check", ll_debug, lc_context) << "extractors_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     if (id->fetches_key())

@@ -118,7 +118,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
             else if ("MD5" == checksum_type)
                 md5 = (*t);
             else
-                Log::get_instance()->message(ll_debug, lc_no_context)
+                Log::get_instance()->message("e.manifest.unknown_checksum", ll_debug, lc_no_context)
                     << "Skipping unknown checksum type " << checksum_type;
         }
 

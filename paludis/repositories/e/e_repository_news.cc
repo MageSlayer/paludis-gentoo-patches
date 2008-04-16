@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -112,8 +112,9 @@ ERepositoryNews::update_news() const
 
         if (0 == stringify(_imp->e_repository->name()).compare(0, 2, "x-"))
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot enable GLEP 42 news items for repository '"
-                    + stringify(_imp->e_repository->name()) + "' because it is using a generated repository name");
+            Log::get_instance()->message("e.news.no_repo_name", ll_warning, lc_context)
+                << "Cannot enable GLEP 42 news items for repository '"
+                << _imp->e_repository->name() << "' because it is using a generated repository name";
             return;
         }
 
@@ -165,8 +166,8 @@ ERepositoryNews::update_news() const
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
                                     stringify(p->realpath())), "/"), "/"));
-                    Log::get_instance()->message(ll_debug, lc_no_context,
-                            "Profile path is '" + profile + "'");
+                    Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
+                        "Profile path is '" << profile << "'";
                     for (NewsFile::DisplayIfProfileConstIterator i(news.begin_display_if_profile()),
                             i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
                         if (profile == *i)
@@ -180,18 +181,16 @@ ERepositoryNews::update_news() const
                 std::ofstream s(stringify(_imp->skip_file).c_str(),
                         std::ios::out | std::ios::app);
                 if (! s)
-                    Log::get_instance()->message(ll_warning, lc_no_context,
-                            "Cannot append to news skip file '"
-                            + stringify(_imp->skip_file) +
-                            "', skipping news item '" + stringify(*d) + "'");
+                    Log::get_instance()->message("e.news.skip_file.append_failure", ll_warning, lc_no_context) <<
+                        "Cannot append to news skip file '" << _imp->skip_file <<
+                        "', skipping news item '" << *d << "'";
 
                 std::ofstream t(stringify(_imp->unread_file).c_str(),
                         std::ios::out | std::ios::app);
                 if (! t)
-                    Log::get_instance()->message(ll_warning, lc_no_context,
-                            "Cannot append to unread file '"
-                            + stringify(_imp->unread_file) +
-                            "', skipping news item '" + stringify(*d) + "'");
+                    Log::get_instance()->message("e.news.unread_file.append_failure", ll_warning, lc_no_context) <<
+                        "Cannot append to unread file '" << _imp->unread_file <<
+                        "', skipping news item '" << *d << "'";
 
                 if (s && t)
                 {
@@ -206,10 +205,9 @@ ERepositoryNews::update_news() const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Skipping news item '"
-                    + stringify(*d) + "' because of exception '" + e.message() + "' ("
-                    + e.what() + ")");
+            Log::get_instance()->message("e.news.skipping", ll_warning, lc_no_context) <<
+                "Skipping news item '" << *d << "' because of exception '" << e.message() << "' ("
+                << e.what() << ")";
         }
     }
 
@@ -247,7 +245,8 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
         std::string::size_type p(line->find(':'));
         if (std::string::npos == p)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Bad header line '" + *line + "'");
+            Log::get_instance()->message("e.news.bad_header", ll_warning, lc_context)
+                << "Bad header line '" << *line << "'";
             break;
         }
         else

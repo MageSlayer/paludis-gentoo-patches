@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,7 +59,8 @@ namespace
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
+                Log::get_instance()->message("e.qa.inherited_key_check.configuration_error", ll_warning, lc_context)
+                    << "Got error '" << e.message() << "' (" << e.what()
                     << ") when loading inherited_blacklist.conf for QA inherited_key";
             }
         }
@@ -74,7 +75,7 @@ paludis::erepository::inherited_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using inherited_key_check on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "inherited_key_check '"
+    Log::get_instance()->message("e.qa.inherited_key_check", ll_debug, lc_context) << "inherited_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     if (id->inherited_key())

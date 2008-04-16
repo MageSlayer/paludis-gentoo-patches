@@ -98,7 +98,8 @@ namespace
                  * that doesn't exist. */
                 if (! set)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << spec << "'";
+                    Log::get_instance()->message("example_set.unknown_set", ll_warning, lc_context)
+                        << "Unknown set '" << spec << "'";
                     return;
                 }
 
@@ -108,7 +109,8 @@ namespace
                  * other sets inbetween (a includes b includes a). */
                 if (! _recursing_sets.insert(spec.name()).second)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << spec << "'";
+                    Log::get_instance()->message("example_set.recursive_set", ll_warning, lc_context)
+                        << "Recursively defined set '" << spec << "'";
                     return;
                 }
 

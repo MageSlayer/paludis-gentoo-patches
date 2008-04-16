@@ -786,7 +786,8 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
         Set<UseDescription, UseDescriptionComparator>::ConstIterator i,
         Set<UseDescription, UseDescriptionComparator>::ConstIterator i_end)
 {
-    Log::get_instance()->message(ll_debug, lc_context) << "display_use_summary_flag: prefix is '" << prefix
+    Log::get_instance()->message("console_install_task.display_use_summary_flag.prefix", ll_debug, lc_context)
+        << "display_use_summary_flag: prefix is '" << prefix
         << "', i->flag is '" << i->flag << "', i->package_id is '" << *i->package_id << "', i->state is '" << i->state
         << "', i->description is '" << i->description << "'";
 
@@ -1684,7 +1685,8 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
     }
     catch (...)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Couldn't work out a friendly error message for mask reasons");
+        Log::get_instance()->message("console_install_task.on_all_masked_error.no_friendly", ll_warning, lc_context)
+            << "Couldn't work out a friendly error message for mask reasons";
         throw e;
     }
 }

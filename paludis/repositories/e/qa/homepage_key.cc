@@ -94,7 +94,7 @@ paludis::erepository::homepage_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "homepage_key_check '"
+    Log::get_instance()->message("e.qa.homepage_key_check", ll_debug, lc_context) << "homepage_key_check '"
         << entry << "', " << *id << "', " << name << "'";
 
     if (! id->homepage_key())

@@ -226,7 +226,7 @@ paludis::erepository::manifest_check(
     using namespace tr1::placeholders;
 
     Context context("When performing check '" + name + "' using manifest_check on directory '" + stringify(dir) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "manifest_check '"
+    Log::get_instance()->message("e.qa.manifest_check", ll_debug, lc_context) << "manifest_check '"
         << dir << "', " << name << "'";
 
     try

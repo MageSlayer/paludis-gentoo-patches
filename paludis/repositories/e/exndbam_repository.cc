@@ -152,7 +152,8 @@ ExndbamRepository::make_exndbam_repository(
             builddir = (*DistributionData::get_instance()->distribution_from_string(
                     env->default_distribution()))[k::default_ebuild_builddir()];
         else
-            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+            Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context)
+                << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
     std::string name;
@@ -163,7 +164,7 @@ ExndbamRepository::make_exndbam_repository(
     if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
         deprecated_world = "/DOESNOTEXIST";
     else
-        Log::get_instance()->message(ll_warning, lc_context) << "Specifying world location " <<
+        Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context) << "Specifying world location " <<
             "in repository configuration files is deprecated. File '" << deprecated_world << "' will be "
             "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";

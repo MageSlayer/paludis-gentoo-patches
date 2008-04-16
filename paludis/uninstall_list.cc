@@ -327,13 +327,14 @@ namespace
 
             if (! set)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("uninstall_list.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
                 return;
             }
 
             if (! recursing_sets.insert(s.name()).second)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                Log::get_instance()->message("uninstall_list.recursive_set", ll_warning, lc_context)
+                    << "Recursively defined set '" << s.name() << "'";
                 return;
             }
 
@@ -412,9 +413,10 @@ UninstallList::add_unused_dependencies()
                 everything_except_uninstall_list_targets->inserter(),
                 PackageIDSetComparator());
 
-        Log::get_instance()->message(ll_debug, lc_context, "everything_except_uninstall_list_targets is '"
-                + join(indirect_iterator(everything_except_uninstall_list_targets->begin()),
-                    indirect_iterator(everything_except_uninstall_list_targets->end()), " ") + "'");
+        Log::get_instance()->message("uninstall_list.everything_except_uninstall_list_targets", ll_debug, lc_context)
+            << "everything_except_uninstall_list_targets is '"
+            << join(indirect_iterator(everything_except_uninstall_list_targets->begin()),
+                    indirect_iterator(everything_except_uninstall_list_targets->end()), " ") << "'";
 
         tr1::shared_ptr<const PackageIDSet> depped_upon_not_list(
                 collect_depped_upon(everything_except_uninstall_list_targets));
@@ -486,7 +488,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
             {
                 if (! logged)
                 {
-                    Log::get_instance()->message(ll_debug, lc_context) << "Adding '" << **i <<
+                    Log::get_instance()->message("uninstall_list.adding", ll_debug, lc_context) << "Adding '" << **i <<
                             "' because it depends upon '" << e << "'";
                     logged = true;
                 }

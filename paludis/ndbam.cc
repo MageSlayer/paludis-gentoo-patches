@@ -162,8 +162,8 @@ NDBAM::category_names()
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
-                    << e.message() << "' (" << e.what() << ")";
+                Log::get_instance()->message("ndbam.categories.skipping", ll_warning, lc_context) <<
+                    "Skipping directory '" << *d << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
         }
     }
@@ -207,8 +207,8 @@ NDBAM::package_names(const CategoryNamePart & c)
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
-                    << e.message() << "' (" << e.what() << ")";
+                Log::get_instance()->message("ndbam.packages.skipping", ll_warning, lc_context)
+                    << "Skipping directory '" << *d << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
         }
     }
@@ -314,7 +314,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                 tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(d->basename(), ":", "", std::back_inserter(tokens));
                 if (tokens.size() < 3)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Not using '" << *d <<
+                    Log::get_instance()->message("ndbam.ids.ignoring", ll_warning, lc_context) << "Not using '" << *d <<
                         "', since it contains less than three ':'s";
                     continue;
                 }
@@ -337,7 +337,7 @@ NDBAM::entries(const QualifiedPackageName & q)
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
+                Log::get_instance()->message("ndbam.ids.skipping", ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
                     << e.message() << "' (" << e.what() << ")";
             }
         }
@@ -368,7 +368,8 @@ NDBAM::parse_contents(const PackageID & id,
     FSEntry ff(id.fs_location_key()->value() / "contents");
     if (! ff.is_regular_file_or_symlink_to_regular_file())
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Contents file '" << ff << "' not a regular file, skipping";
+        Log::get_instance()->message("ndbam.contents.skipping", ll_warning, lc_context)
+            << "Contents file '" << ff << "' not a regular file, skipping";
         return;
     }
 
@@ -384,7 +385,8 @@ NDBAM::parse_contents(const PackageID & id,
             std::string::size_type q(line->find('=', p));
             if (std::string::npos == q)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Malformed line '" << *line << "' in '" << ff << "'";
+                Log::get_instance()->message("ndbam.contents.invalid", ll_warning, lc_context)
+                    << "Malformed line '" << *line << "' in '" << ff << "'";
                 error = true;
                 continue;
             }
@@ -398,7 +400,8 @@ NDBAM::parse_contents(const PackageID & id,
                     ++p;
                     if (p >= line->length() || std::string::npos == p)
                     {
-                        Log::get_instance()->message(ll_warning, lc_context) << "Malformed line '" << *line << "' in '" << ff << "'";
+                        Log::get_instance()->message("ndbam.contents.invalid", ll_warning, lc_context)
+                            << "Malformed line '" << *line << "' in '" << ff << "'";
                         error = true;
                         break;
                     }
@@ -411,8 +414,8 @@ NDBAM::parse_contents(const PackageID & id,
                 else if (' ' == (*line)[p])
                 {
                     if (! tokens.insert(std::make_pair(key, value)).second)
-                        Log::get_instance()->message(ll_warning, lc_context) << "Duplicate token '" << key << "' on line '"
-                            << *line << "' in '" << ff << "'";
+                        Log::get_instance()->message("ndbam.contents.duplicate", ll_warning, lc_context)
+                            << "Duplicate token '" << key << "' on line '" << *line << "' in '" << ff << "'";
                     key.clear();
                     value.clear();
                     ++p;
@@ -428,8 +431,8 @@ NDBAM::parse_contents(const PackageID & id,
             if ((! error) && (! key.empty()))
             {
                 if (! tokens.insert(std::make_pair(key, value)).second)
-                    Log::get_instance()->message(ll_warning, lc_context) << "Duplicate token '" << key << "' on line '"
-                        << *line << "' in '" << ff << "'";
+                    Log::get_instance()->message("ndbam.contents.duplicate", ll_warning, lc_context)
+                        << "Duplicate token '" << key << "' on line '" << *line << "' in '" << ff << "'";
             }
         }
 
@@ -438,7 +441,7 @@ NDBAM::parse_contents(const PackageID & id,
 
         if (! tokens.count("type"))
         {
-            Log::get_instance()->message(ll_warning, lc_context) <<
+            Log::get_instance()->message("ndbam.contents.no_key.type", ll_warning, lc_context) <<
                 "No key 'type' found on line '" << *line << "' in '" << ff << "'";
             continue;
         }
@@ -446,7 +449,7 @@ NDBAM::parse_contents(const PackageID & id,
 
         if (! tokens.count("path"))
         {
-            Log::get_instance()->message(ll_warning, lc_context) <<
+            Log::get_instance()->message("ndbam.contents.no_key.path", ll_warning, lc_context) <<
                 "No key 'path' found on line '" << *line << "' in '" << ff << "'";
             continue;
         }
@@ -456,7 +459,7 @@ NDBAM::parse_contents(const PackageID & id,
         {
             if (! tokens.count("md5"))
             {
-                Log::get_instance()->message(ll_warning, lc_context) <<
+                Log::get_instance()->message("ndbam.contents.no_key.md5", ll_warning, lc_context) <<
                     "No key 'md5' found on sym line '" << *line << "' in '" << ff << "'";
                 continue;
             }
@@ -464,7 +467,7 @@ NDBAM::parse_contents(const PackageID & id,
 
             if (! tokens.count("mtime"))
             {
-                Log::get_instance()->message(ll_warning, lc_context) <<
+                Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
                     "No key 'mtime' found on sym line '" << *line << "' in '" << ff << "'";
                 continue;
             }
@@ -480,7 +483,7 @@ NDBAM::parse_contents(const PackageID & id,
         {
             if (! tokens.count("target"))
             {
-                Log::get_instance()->message(ll_warning, lc_context) <<
+                Log::get_instance()->message("ndbam.contents.no_key.target", ll_warning, lc_context) <<
                     "No key 'target' found on sym line '" << *line << "' in '" << ff << "'";
                 continue;
             }
@@ -488,7 +491,7 @@ NDBAM::parse_contents(const PackageID & id,
 
             if (! tokens.count("mtime"))
             {
-                Log::get_instance()->message(ll_warning, lc_context) <<
+                Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
                     "No key 'mtime' found on sym line '" << *line << "' in '" << ff << "'";
                 continue;
             }
@@ -497,7 +500,7 @@ NDBAM::parse_contents(const PackageID & id,
             on_sym(path, target, mtime);
         }
         else
-            Log::get_instance()->message(ll_warning, lc_context) <<
+            Log::get_instance()->message("ndbam.contents.unknown_type", ll_warning, lc_context) <<
                 "Unknown type '" << type << "' found on line '" << *line << "' in '" << ff << "'";
     }
 }
@@ -539,7 +542,8 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
                 }
                 catch (const Exception & e)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Skipping directory '" << *d << "' due to exception '"
+                    Log::get_instance()->message("ndbam.categories.skipping", ll_warning, lc_context)
+                        << "Skipping directory '" << *d << "' due to exception '"
                         << e.message() << "' (" << e.what() << ")";
                 }
             }

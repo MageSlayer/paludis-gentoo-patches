@@ -117,19 +117,19 @@ namespace paludis
             {
                 if (r.is_directory())
                 {
-                    Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
-                            + stringify(r) + "'");
+                    Log::get_instance()->message("portage_environment.hooks.add_dir", ll_debug, lc_no_context)
+                        << "Adding hook directory '" << r << "'";
                     hook_dirs.push_back(r);
                 }
                 else
-                    Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
-                            + stringify(r) + "'");
+                    Log::get_instance()->message("portage_environment.hooks.skipping", ll_debug, lc_no_context)
+                        << "Skipping hook directory candidate '" << r << "'";
             }
             catch (const FSError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
-                        e.message() + "' (" + e.what() + ") when checking hook "
-                        "directory '" + stringify(r) + "'");
+                Log::get_instance()->message("portage_environment.hooks.failure", ll_warning, lc_no_context)
+                    << "Caught exception '" << e.message() << "' (" << e.what() << ") when checking hook "
+                    "directory '" << r << "'";
             }
         }
 
@@ -178,11 +178,10 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     Context context("When creating PortageEnvironment using config root '" + s + "':");
 
-    Log::get_instance()->message(ll_warning, lc_no_context,
-            "Use of Portage configuration files will lead to sub-optimal performance and loss of "
-            "functionality. Full support for Portage configuration formats is not "
-            "guaranteed; issues should be reported via trac. You are strongly encouraged "
-            "to migrate to a Paludis configuration.");
+    Log::get_instance()->message("portage_environment.dodgy", ll_warning, lc_no_context) <<
+        "Use of Portage configuration files will lead to sub-optimal performance and loss of "
+        "functionality. Full support for Portage configuration formats is not "
+        "guaranteed; issues should be reported via trac.";
 
     _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions()));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
@@ -448,7 +447,7 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     PALUDIS_TLS bool recursive(false);
     if (recursive)
     {
-        Log::get_instance()->message(ll_warning, lc_context) <<
+        Log::get_instance()->message("portage_environment.query_use.recursive", ll_warning, lc_context) <<
             "use flag state is defined recursively, forcing it to disabled instead";
         return false;
     }
@@ -600,8 +599,9 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
             result->insert(UseFlagName(i->second));
     }
 
-    Log::get_instance()->message(ll_debug, lc_no_context) << "PortageEnvironment::known_use_expand_names("
-            << prefix << ", " << pde << ") -> (" << join(result->begin(), result->end(), ", ") << ")";
+    Log::get_instance()->message("portage_environment.known_use_expand_names", ll_debug, lc_no_context)
+        << "PortageEnvironment::known_use_expand_names("
+        << prefix << ", " << pde << ") -> (" << join(result->begin(), result->end(), ", ") << ")";
 
     return result;
 }
@@ -784,8 +784,8 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
         std::ofstream f(stringify(_imp->world_file).c_str());
         if (! f)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
-                    + stringify(_imp->world_file) + "'");
+            Log::get_instance()->message("portage_environment.world.write_failed", ll_warning, lc_no_context)
+                << "Cannot create world file '" << _imp->world_file << "'";
             return;
         }
     }
@@ -845,9 +845,8 @@ PortageEnvironment::world_set() const
         return world.contents();
     }
     else
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "World file '" + stringify(_imp->world_file) +
-                "' doesn't exist");
+        Log::get_instance()->message("portage_environment.world_file.does_not_exist", ll_warning, lc_no_context) <<
+            "World file '" << _imp->world_file << "' doesn't exist";
 
     return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));

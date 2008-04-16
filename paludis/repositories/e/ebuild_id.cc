@@ -195,7 +195,8 @@ EbuildID::need_keys_added() const
     if (! ok)
     {
         if (_imp->repository->params().cache.basename() != "empty")
-            Log::get_instance()->message(ll_qa, lc_no_context) << "No usable cache entry for '" + canonical_form(idcf_full);
+            Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
+                << "No usable cache entry for '" + canonical_form(idcf_full);
 
         std::string eapi_str(_imp->guessed_eapi);
         if (eapi_str.empty())
@@ -204,7 +205,7 @@ EbuildID::need_keys_added() const
 
         if ((*_imp->eapi)[k::supported()])
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Generating metadata command for '"
+            Log::get_instance()->message("e.ebuild.metadata.using_eapi", ll_debug, lc_context) << "Generating metadata command for '"
                 << canonical_form(idcf_full) << "' using EAPI '" << (*_imp->eapi)[k::name()] << "'";
 
             EAPIPhases phases((*(*_imp->eapi)[k::supported()])[k::ebuild_phases()].ebuild_metadata);
@@ -231,12 +232,12 @@ EbuildID::need_keys_added() const
                     (k::userpriv(), phases.begin_phases()->option("userpriv")));
 
             if (! cmd())
-                Log::get_instance()->message(ll_warning, lc_no_context) << "No usable metadata for '" +
+                Log::get_instance()->message("e.ebuild.metadata.unusable", ll_warning, lc_no_context) << "No usable metadata for '" +
                     stringify(canonical_form(idcf_full)) << "'";
 
             cmd.load(shared_from_this());
 
-            Log::get_instance()->message(ll_debug, lc_context) << "Generated metadata for '"
+            Log::get_instance()->message("e.ebuild.metadata.generated_eapi", ll_debug, lc_context) << "Generated metadata for '"
                 << canonical_form(idcf_full) << "' has EAPI '" << (*_imp->eapi)[k::name()] << "'";
 
             if (_imp->repository->params().write_cache.basename() != "empty" && (*_imp->eapi)[k::supported()])
@@ -248,7 +249,7 @@ EbuildID::need_keys_added() const
         }
         else
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Can't run metadata command for '"
+            Log::get_instance()->message("e.ebuild.metadata.unknown_eapi", ll_debug, lc_context) << "Can't run metadata command for '"
                 << canonical_form(idcf_full) << "' because EAPI '" << (*_imp->eapi)[k::name()] << "' is unknown";
         }
     }

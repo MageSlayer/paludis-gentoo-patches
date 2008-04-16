@@ -130,11 +130,12 @@ SourceURIFinder::add_local_mirrors()
 
     tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors("*"));
     if (mirrors->empty())
-        Log::get_instance()->message(ll_debug, lc_context) << "Mirrors set is empty";
+        Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Mirrors set is empty";
 
     for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
+        Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
+            << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
         _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
     }
 }
@@ -146,11 +147,12 @@ SourceURIFinder::add_mirrors()
 
     tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(_imp->mirrors_name));
     if (mirrors->empty())
-        Log::get_instance()->message(ll_debug, lc_context) << "Environment mirrors set is empty";
+        Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Environment mirrors set is empty";
 
     for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
+        Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
+            << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
         _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
     }
 
@@ -161,7 +163,8 @@ SourceURIFinder::add_mirrors()
                     m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(_imp->mirrors_name)) ;
                     m != m_end ; ++m)
             {
-                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/") << "/" << _imp->filename;
+                Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
+                    << "Adding " << strip_trailing(m->second, "/") << "/" << _imp->filename;
                 _imp->items.push_back(std::make_pair(strip_trailing(m->second, "/") + "/" + _imp->filename, _imp->filename));
             }
     }
@@ -185,10 +188,11 @@ SourceURIFinder::add_listed()
             Context local_context("When adding from environment for listed mirror '" + mirror + "':");
             tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror));
             if (mirrors->empty())
-                Log::get_instance()->message(ll_debug, lc_context) << "Mirrors set is empty";
+                Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Mirrors set is empty";
             for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
             {
-                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << original_name;
+                Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
+                    << "Adding " << strip_trailing(*m, "/") << "/" << original_name;
                 _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + original_name, _imp->filename));
             }
         }
@@ -200,7 +204,8 @@ SourceURIFinder::add_listed()
                         m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(mirror)) ;
                         m != m_end ; ++m)
                 {
-                    Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/")
+                    Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
+                        << "Adding " << strip_trailing(m->second, "/")
                         << "/" << original_name;
                     _imp->items.push_back(std::make_pair(strip_trailing(m->second, "/") + "/" + original_name, _imp->filename));
                 }
@@ -208,7 +213,7 @@ SourceURIFinder::add_listed()
     }
     else
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << _imp->url;
+        Log::get_instance()->message("e.source_uri_finder.adding", ll_debug, lc_context) << "Adding " << _imp->url;
         _imp->items.push_back(std::make_pair(_imp->url, _imp->filename));
     }
 }

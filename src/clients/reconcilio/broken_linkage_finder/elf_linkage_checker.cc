@@ -172,7 +172,8 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream
         ElfObject<ElfType_> elf(stream);
         if (ET_EXEC != elf.get_type() && ET_DYN != elf.get_type())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "File is not an executable or shared library");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.not_interesting", ll_debug, lc_context)
+                << "File is not an executable or shared library";
             return true;
         }
 
@@ -200,7 +201,8 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream
                         const std::string & req((*ent_str)());
                         if (library.empty() || library == req)
                         {
-                            Log::get_instance()->message(ll_debug, lc_context, "File depends on " + req);
+                            Log::get_instance()->message("reconcilio.broken_linkage_finder.depends", ll_debug, lc_context)
+                                << "File depends on " << req;
                             needed[arch][req].push_back(file);
                         }
                     }
@@ -209,7 +211,8 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream
     }
     catch (const InvalidElfFileError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted: " + e.message());
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.invalid", ll_warning, lc_no_context)
+            << "'" << file << "' appears to be invalid or corrupted: " << e.message();
     }
 
     return true;
@@ -224,9 +227,9 @@ Implementation<ElfLinkageChecker>::handle_library(const FSEntry & file, const El
 
     if (range.first != range.second)
     {
-        Log::get_instance()->message(
-            ll_debug, lc_context, "Known symlinks are " +
-            join(second_iterator(range.first), second_iterator(range.second), " "));
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.known_symlinks_are",
+                ll_debug, lc_context) << "Known symlinks are " <<
+            join(second_iterator(range.first), second_iterator(range.second), " ");
         std::transform(second_iterator(range.first), second_iterator(range.second),
                        std::back_inserter(libraries[arch]), tr1::mem_fn(&FSEntry::basename));
     }
@@ -242,7 +245,8 @@ ElfLinkageChecker::note_symlink(const FSEntry & link, const FSEntry & target)
         std::map<FSEntry, ElfArchitecture>::const_iterator it(_imp->seen.find(target));
         if (_imp->seen.end() != it)
         {
-            Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(link) + "' is a symlink to known library '" + stringify(target) + "'");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.note_symlink", ll_debug, lc_context)
+                << "'" << link << "' is a symlink to known library '" << target << "'";
             _imp->libraries[it->second].push_back(link.basename());
         }
         else
@@ -299,20 +303,23 @@ ElfLinkageChecker::need_breakage_added(
             FSEntry file(dereference_with_root(*dir_it / missing_it->first, _imp->root));
             if (! file.is_regular_file())
             {
-                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is missing or not a regular file");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.missing", ll_debug, lc_context)
+                    << "'" << file << "' is missing or not a regular file";
                 continue;
             }
 
             std::ifstream stream(stringify(file).c_str());
             if (! stream)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Error opening '" + stringify(file) + "': " + std::strerror(errno));
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_no_context)
+                    << "Error opening '" << file << "': " << std::strerror(errno);
                 continue;
             }
 
             if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing_it->second) ||
                    _imp->check_extra_elf<Elf64Type>(file, stream, missing_it->second)))
-                Log::get_instance()->message(ll_debug, lc_no_context, "'" + stringify(file) + "' is not an ELF file");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.not_an_elf", ll_debug, lc_no_context)
+                    << "'" << file << "' is not an ELF file";
         }
     }
 
@@ -340,15 +347,18 @@ Implementation<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::is
         ElfObject<ElfType_> elf(stream);
         if (ET_DYN == elf.get_type())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is a library");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.is_library", ll_debug, lc_context)
+                << "'" << file << "' is a library";
             arches.erase(ElfArchitecture(elf));
         }
         else
-            Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a library");
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.is_not_library", ll_debug, lc_context)
+                << "'" << file << "' is not a library";
     }
     catch (const InvalidElfFileError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted: " + e.message());
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.invalid", ll_warning, lc_no_context)
+            << "'" << file << "' appears to be invalid or corrupted: " << e.message();
     }
 
     return true;

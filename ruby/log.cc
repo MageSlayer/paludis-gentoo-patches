@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,18 +74,18 @@ namespace
 
     /*
      * call-seq:
-     *     message(log_level, message)
+     *     message(id, log_level, message)
      *
      * Log a message at the specified level.
      */
     VALUE
-    log_message(VALUE self, VALUE log_level, VALUE message)
+    log_message(VALUE self, VALUE id, VALUE log_level, VALUE message)
     {
         int l = NUM2INT(log_level);
         if (l < 0 || l >= last_ll)
             rb_raise(rb_eTypeError, "Log.log_message expects a valid LogLevel as the first parameter");
-        Log::get_instance()->message(static_cast<LogLevel>(l), lc_no_context,
-                stringify(StringValuePtr(message)));
+        Log::get_instance()->message(stringify(StringValuePtr(id)), static_cast<LogLevel>(l), lc_no_context)
+            << stringify(StringValuePtr(message));
         return self;
     }
 
@@ -103,7 +103,7 @@ namespace
         rb_define_method(c_log, "log_level", RUBY_FUNC_CAST(&log_log_level), 0);
         rb_define_method(c_log, "log_level=", RUBY_FUNC_CAST(&log_log_level_set), 1);
         rb_define_method(c_log, "program_name=", RUBY_FUNC_CAST(&log_set_program_name), 1);
-        rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 2);
+        rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 3);
 
         /*
          * Document-module: Paludis::LogLevel

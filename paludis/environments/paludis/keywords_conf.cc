@@ -99,7 +99,8 @@ KeywordsConf::add(const FSEntry & filename)
 
         if ("*" == tokens.at(0))
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Use of token '*' is deprecated, use '*/*' instead";
+            Log::get_instance()->message("paludis_environment.keywords_conf.deprecated", ll_warning, lc_context)
+                << "Use of token '*' is deprecated, use '*/*' instead";
             tokens.at(0) = "*/*";
         }
 
@@ -186,7 +187,7 @@ KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e
                 i->second.first = _imp->env->set(i->first);
                 if (! i->second.first)
                 {
-                    Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
+                    Log::get_instance()->message("paludis_environment.keywords_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
                     i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));

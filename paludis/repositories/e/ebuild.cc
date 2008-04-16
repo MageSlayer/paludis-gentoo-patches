@@ -321,16 +321,16 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
-                stringify(e.message()) + "' (" + stringify(e.what()) +
-                ") when generating cache for '" + stringify(*params[k::package_id()]) + "', input is '" + purdy(input) + "'");
+        Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Caught exception '"
+                << e.message() << "' (" << e.what() << ") when generating cache for '"
+                << *params[k::package_id()] << "', input is '" << purdy(input) << "'";
     }
 
     if (ok)
         return true;
     else
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Could not generate cache for '"
+        Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Could not generate cache for '"
             << *params[k::package_id()] << "'";
         keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", (*EAPIData::get_instance()->unknown_eapi())[k::name()]);
@@ -360,12 +360,14 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
 
     if (! (*id->eapi())[k::supported()])
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "ID pre-load EAPI '" << (*id->eapi())[k::name()] << "' not supported";
+        Log::get_instance()->message("e.ebuild.preload_eapi.unsupported", ll_debug, lc_context)
+            << "ID pre-load EAPI '" << (*id->eapi())[k::name()] << "' not supported";
         id->set_slot(SlotName("UNKNOWN"));
         return;
     }
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "ID pre-load EAPI '" << (*id->eapi())[k::name()] << "' is supported";
+        Log::get_instance()->message("e.ebuild.preload_eapi.supported", ll_debug, lc_context)
+            << "ID pre-load EAPI '" << (*id->eapi())[k::name()] << "' is supported";
 
     std::string s;
     if (! ((s = get(keys, (*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()].metadata_eapi))).empty())
@@ -375,12 +377,14 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
 
     if (! (*id->eapi())[k::supported()])
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "ID post-load EAPI '" << (*id->eapi())[k::name()] << "' not supported";
+        Log::get_instance()->message("e.ebuild.postload_eapi.unsupported", ll_debug, lc_context)
+            << "ID post-load EAPI '" << (*id->eapi())[k::name()] << "' not supported";
         id->set_slot(SlotName("UNKNOWN"));
         return;
     }
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "ID post-load EAPI '" << (*id->eapi())[k::name()] << "' is supported";
+        Log::get_instance()->message("e.ebuild.postload_eapi.supported", ll_debug, lc_context)
+            << "ID post-load EAPI '" << (*id->eapi())[k::name()] << "' is supported";
 
     const EAPIEbuildMetadataVariables & m((*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()]);
 
@@ -416,7 +420,8 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
             std::string slot(get(keys, m.metadata_slot));
             if (slot.empty())
             {
-                Log::get_instance()->message(ll_qa, lc_context) << "Package '" << *id << "' set SLOT=\"\", using SLOT=\"0\" instead";
+                Log::get_instance()->message("e.ebuild.no_slot", ll_qa, lc_context)
+                    << "Package '" << *id << "' set SLOT=\"\", using SLOT=\"0\" instead";
                 slot = "0";
             }
             id->set_slot(SlotName(slot));
@@ -427,7 +432,8 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Setting SLOT for '" << *id << "' failed due to exception '"
+            Log::get_instance()->message("e.ebuild.bad_slot", ll_warning, lc_context)
+                << "Setting SLOT for '" << *id << "' failed due to exception '"
                 << e.message() << "' (" << e.what() << ")";
             id->set_slot(SlotName("0"));
         }

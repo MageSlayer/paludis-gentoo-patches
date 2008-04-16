@@ -118,7 +118,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
     if (! f.is_regular_file())
     {
         add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "DESCRIPTION file not a file")));
-        Log::get_instance()->message(ll_warning, lc_context) << "Unexpected irregular file: '" << stringify(f) << "'";
+        Log::get_instance()->message("cran.id.not_a_file", ll_warning, lc_context) << "Unexpected irregular file: '" << stringify(f) << "'";
         return;
     }
 
@@ -145,7 +145,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "No Package: or Bundle: key in '" << stringify(f) << "'";
+            Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Package: or Bundle: key in '" << stringify(f) << "'";
             add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "No Package: or Bundle: key")));
             return;
         }
@@ -153,7 +153,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (file.get("Version").empty())
         {
             Context local_context("When handling Version: key:");
-            Log::get_instance()->message(ll_warning, lc_context) << "No Version: key in '" << stringify(f) << "'";
+            Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Version: key in '" << stringify(f) << "'";
             _imp->version = VersionSpec("0");
             add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "No Version: key")));
             return;
@@ -234,8 +234,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
                 else
                 {
                     /* yay CRAN... */
-                    Log::get_instance()->message(ll_qa, lc_context) << "Bundle '" << stringify(*this) << "' contains itself, but is "
-                        "not a Klein bundle";
+                    Log::get_instance()->message("cran.bundle.recursive", ll_qa, lc_context)
+                        << "Bundle '" << stringify(*this) << "' contains itself, but is not a Klein bundle";
                 }
             }
         }
@@ -271,7 +271,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Broken CRAN description file '" << stringify(f) << "': '"
+        Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "Broken CRAN description file '" << stringify(f) << "': '"
             << e.message() << "' (" << e.what() << ")";
         add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "Got exception '" + stringify(e.message()) + "' (" + e.what() + "')")));
     }

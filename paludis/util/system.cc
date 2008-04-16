@@ -261,11 +261,11 @@ Command::with_sandbox()
 {
 #if HAVE_SANDBOX
     if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
-        Log::get_instance()->message(ll_debug, lc_no_context,
-                "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox");
+        Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
+            << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox";
     else if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Already inside sandbox, not spawning another sandbox instance");
+        Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
+            << "Already inside sandbox, not spawning another sandbox instance";
     else
         _imp->command = "sandbox " + _imp->command;
 #endif
@@ -322,8 +322,8 @@ paludis::run_command(const Command & cmd)
             + " -- " + command;
 
     cmd.echo_to_stderr();
-    Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + command
-            + " " + extras);
+    Log::get_instance()->message("util.system.execl", ll_debug, lc_no_context) << "execl /bin/sh -c " << command
+        << " " << extras;
 
     tr1::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader, pipe_command_response, captured_stdout;
     if (cmd.pipe_command_handler())
@@ -618,7 +618,7 @@ paludis::run_command(const Command & cmd)
                 throw RunCommandError("select failed: " + stringify(strerror(errno)));
             else if (0 == retval)
             {
-                Log::get_instance()->message(ll_debug, lc_context) << "Waiting for child " << child << " to finish";
+                Log::get_instance()->message("util.system.wait", ll_debug, lc_context) << "Waiting for child " << child << " to finish";
                 continue;
             }
             else
@@ -653,9 +653,11 @@ paludis::run_command(const Command & cmd)
             }
 
             if (! pipe_command_buffer.empty())
-                Log::get_instance()->message(ll_debug, lc_context) << "pipe_command_buffer is '" << pipe_command_buffer << "'";
+                Log::get_instance()->message("util.system.pipe_command_buffer", ll_debug, lc_context) <<
+                    "pipe_command_buffer is '" << pipe_command_buffer << "'";
             if (! internal_command_buffer.empty())
-                Log::get_instance()->message(ll_debug, lc_context) << "internal_command_buffer is '" << internal_command_buffer << "'";
+                Log::get_instance()->message("util.system.internal_command_buffer", ll_debug, lc_context) <<
+                    "internal_command_buffer is '" << internal_command_buffer << "'";
 
             while (! pipe_command_buffer.empty())
             {
@@ -670,12 +672,12 @@ paludis::run_command(const Command & cmd)
                 if (cmd.pipe_command_handler())
                 {
                     response = cmd.pipe_command_handler()(op);
-                    Log::get_instance()->message(ll_debug, lc_context) << "Pipe command op '" << op << "' response '"
-                        << response << "'";
+                    Log::get_instance()->message("util.system.pipe_command_op", ll_debug, lc_context)
+                        << "Pipe command op '" << op << "' response '" << response << "'";
                 }
                 else
-                    Log::get_instance()->message(ll_warning, lc_context) << "Pipe command op '" << op <<
-                        "' was requested but no handler defined. This is probably a bug...";
+                    Log::get_instance()->message("util.system.no_pipe_op_handler", ll_warning, lc_context)
+                        << "Pipe command op '" << op << "' was requested but no handler defined. This is probably a bug...";
 
                 ssize_t n(0);
                 while (! response.empty())
@@ -705,7 +707,7 @@ paludis::run_command(const Command & cmd)
                 {
                     op.erase(0, 4);
                     int status(-1);
-                    Log::get_instance()->message(ll_debug, lc_context) << "Got exit op '" << op << "'";
+                    Log::get_instance()->message("util.system.exit_op", ll_debug, lc_context) << "Got exit op '" << op << "'";
                     if (-1 == waitpid(child, &status, 0))
                         std::cerr << "wait failed: " + stringify(strerror(errno)) + "'" << std::endl;
                     return destringify<int>(strip_leading(strip_trailing(op, " \r\n\t"), " \r\n\t"));
@@ -839,8 +841,8 @@ paludis::get_user_name(const uid_t u)
     else
     {
         Context c("When getting user name for uid '" + stringify(u) + "':");
-        Log::get_instance()->message(ll_warning, lc_context, "getpwuid("
-                + stringify(u) + ") returned null");
+        Log::get_instance()->message("util.system.getpwuid", ll_warning, lc_context) <<
+            "getpwuid(" << u << ") returned null";
         return stringify(u);
     }
 }
@@ -854,8 +856,8 @@ paludis::get_group_name(const gid_t u)
     else
     {
         Context c("When getting group name for gid '" + stringify(u) + "':");
-        Log::get_instance()->message(ll_warning, lc_context, "getgrgid("
-                + stringify(u) + ") returned null");
+        Log::get_instance()->message("util.system.getgrgid", ll_warning, lc_context) <<
+            "getgrgid(" << u << + ") returned null";
         return stringify(u);
     }
 }

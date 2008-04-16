@@ -102,13 +102,15 @@ namespace
 
                 if (! set)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    Log::get_instance()->message("adjutrix.find_insecure_packages.unknown_set", ll_warning, lc_context)
+                        << "Unknown set '" << s.name() << "'";
                     return;
                 }
 
                 if (! recursing_sets.insert(s.name()).second)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    Log::get_instance()->message("adjutrix.find_insecure_packages.recursive_set", ll_warning, lc_context)
+                        << "Recursively defined set '" << s.name() << "'";
                     return;
                 }
 

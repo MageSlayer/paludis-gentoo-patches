@@ -101,7 +101,8 @@ UseConf::add(const FSEntry & filename)
 
         if ("*" == tokens.at(0))
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Use of token '*' is deprecated, use '*/*' instead";
+            Log::get_instance()->message("paludis_environment.use_conf.deprecated", ll_warning, lc_context)
+                << "Use of token '*' is deprecated, use '*/*' instead";
             tokens.at(0) = "*/*";
         }
 
@@ -136,7 +137,8 @@ UseConf::add(const FSEntry & filename)
 
             if (d->additional_requirements_ptr())
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Dependency specification '" << stringify(*d)
+                Log::get_instance()->message("paludis_environment.use_conf.bad_spec", ll_warning, lc_context)
+                    << "Dependency specification '" << stringify(*d)
                     << "' includes use requirements, which cannot be used in use.conf";
                 continue;
             }
@@ -255,7 +257,7 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
             r->second.first = _imp->env->set(r->first);
             if (! r->second.first)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
+                Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                     << r->first << "' does not exist";
                 r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                             tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
@@ -348,7 +350,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e)
                 r->second.first = _imp->env->set(r->first);
                 if (! r->second.first)
                 {
-                    Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
+                    Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << r->first << "' does not exist";
                     r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));

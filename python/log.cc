@@ -25,6 +25,14 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
+namespace
+{
+    void log_message(Log * const log, const std::string & id, const LogLevel l, const LogContext c, const std::string & s)
+    {
+        log->message(id, l, c) << s;
+    }
+}
+
 void expose_log()
 {
     /**
@@ -38,8 +46,6 @@ void expose_log()
     /**
      * Log
      */
-    void (Log::*message_ptr)(const LogLevel l, const LogContext c, const std::string & s) =
-        &Log::message;
     bp::class_<Log, boost::noncopyable>
         (
          "Log",
@@ -52,8 +58,8 @@ void expose_log()
                 "Singleton instance."
                 )
 
-        .def("message", message_ptr,
-                "message(LogLevel, LogContext, string) -> None\n"
+        .def("message", log_message,
+                "message(string, LogLevel, LogContext, string) -> None\n"
                 "Log a message at the specified leve."
             )
 

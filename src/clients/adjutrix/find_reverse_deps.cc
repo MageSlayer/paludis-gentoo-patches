@@ -119,13 +119,15 @@ namespace
 
                 if (! set)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    Log::get_instance()->message("adjutrix.find_reverse_deps.unknown_set", ll_warning, lc_context)
+                        << "Unknown set '" << s.name() << "'";
                     return;
                 }
 
                 if (! _recursing_sets.insert(s.name()).second)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    Log::get_instance()->message("adjutrix.find_reverse_deps.recursive_set", ll_warning, lc_context)
+                        << "Recursively defined set '" << s.name() << "'";
                     return;
                 }
 
@@ -317,8 +319,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 
     if (entries->empty())
     {
-        Log::get_instance()->message(ll_warning, lc_context, "No matches in package database for '"
-                + stringify(*spec) + "'");
+        Log::get_instance()->message("adjutrix.find_reverse_deps.no_matches", ll_warning, lc_context)
+            << "No matches in package database for '" << *spec << "'";
         return 1;
     }
 

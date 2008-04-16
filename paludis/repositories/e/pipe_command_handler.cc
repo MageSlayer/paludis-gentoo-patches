@@ -63,7 +63,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         tokenise_whitespace(s, std::back_inserter(tokens));
         if (tokens.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Got empty pipe command";
+            Log::get_instance()->message("e.pipe_commands.empty", ll_warning, lc_context) << "Got empty pipe command";
             return "Eempty pipe command";
         }
 
@@ -71,7 +71,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad PING command";
+                Log::get_instance()->message("e.pipe_commands.ping.bad", ll_warning, lc_context) << "Got bad PING command";
                 return "Ebad PING command";
             }
             else
@@ -81,13 +81,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() < 4)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got too short LOG pipe command";
+                Log::get_instance()->message("e.pipe_commands.log.bad", ll_warning, lc_context) << "Got too short LOG pipe command";
                 return "Ebad LOG command";
             }
             else
             {
-                Log::get_instance()->message(destringify<LogLevel>(tokens[2]), lc_context) << join(next(next(next(tokens.begin()))),
-                        tokens.end(), " ");
+                Log::get_instance()->message("e.child.message", destringify<LogLevel>(tokens[2]), lc_context)
+                    << join(next(next(next(tokens.begin()))), tokens.end(), " ");
                 return "O";
             }
         }
@@ -95,7 +95,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad BEST_VERSION pipe command";
+                Log::get_instance()->message("e.pipe_commands.best_version.bad", ll_warning, lc_context) << "Got bad BEST_VERSION pipe command";
                 return "Ebad BEST_VERSION command";
             }
             else
@@ -110,7 +110,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
-                    Log::get_instance()->message(ll_qa, lc_context) << "best-version of '" << spec <<
+                    Log::get_instance()->message("e.pipe_commands.best_version.is_virtual", ll_qa, lc_context) << "best-version of '" << spec <<
                         "' resolves to '" << **entries->last() << "', which is a virtual for '"
                         << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                         "new style virtuals.";
@@ -134,7 +134,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad HAS_VERSION pipe command";
+                Log::get_instance()->message("e.pipe_commands.has_version.bad", ll_warning, lc_context) << "Got bad HAS_VERSION pipe command";
                 return "Ebad HAS_VERSION command";
             }
             else
@@ -156,7 +156,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad MATCH pipe command";
+                Log::get_instance()->message("e.pipe_commands.match.bad", ll_warning, lc_context) << "Got bad MATCH pipe command";
                 return "Ebad MATCH command";
             }
             else
@@ -176,7 +176,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     {
                         if ((*i)->virtual_for_key())
                         {
-                            Log::get_instance()->message(ll_qa, lc_context) << "match of '" << spec <<
+                            Log::get_instance()->message("e.pipe_commands.match.is_virtual", ll_qa, lc_context) << "match of '" << spec <<
                                 "' resolves to '" << **i << "', which is a virtual for '"
                                 << *(*i)->virtual_for_key()->value() << "'. This will break with "
                                 "new style virtuals.";
@@ -203,7 +203,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 2)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad VDB_PATH pipe command";
+                Log::get_instance()->message("e.pipe_commands.vdb_path.bad", ll_warning, lc_context) << "Got bad VDB_PATH pipe command";
                 return "Ebad VDB_PATH command";
             }
             else
@@ -223,7 +223,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() < 4)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad REWRITE_VAR pipe command";
+                Log::get_instance()->message("e.pipe_commands.rewrite_var.bad", ll_warning, lc_context) << "Got bad REWRITE_VAR pipe command";
                 return "Ebad REWRITE_VAR command";
             }
 
@@ -254,7 +254,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() < 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got bad EVER pipe command";
+                Log::get_instance()->message("e.pipe_commands.ever.bad", ll_warning, lc_context) << "Got bad EVER pipe command";
                 return "Ebad EVER command";
             }
 
@@ -262,7 +262,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             {
                 if (tokens.size() != 5)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Got bad EVER AT_LEAST pipe command";
+                    Log::get_instance()->message("e.pipe_commands.ever.at_least.bad", ll_warning, lc_context) << "Got bad EVER AT_LEAST pipe command";
                     return "Ebad EVER AT_LEAST command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
@@ -271,13 +271,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got unknown EVER pipe subcommand";
+                Log::get_instance()->message("e.pipe_commands.ever.unknown", ll_warning, lc_context) << "Got unknown EVER pipe subcommand";
                 return "Ebad EVER subcommand";
             }
         }
         else
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Got unknown ebuild pipe command '" + s + "'";
+            Log::get_instance()->message("e.pipe_commands.unknown", ll_warning, lc_context) << "Got unknown ebuild pipe command '" + s + "'";
             return "Eunknown pipe command";
         }
     }

@@ -132,25 +132,15 @@ TargetConfig::TargetConfig() :
     _parse_defaults();
 
     _binutils = "cross-" + stringify(_target) + "/" + _find_match(_binutils_list);
-     Log::get_instance()->message(ll_debug, lc_no_context, "Using configuration:\n"
-            "  binutils: " + _binutils + "\n");
 
     _gcc = "cross-" + stringify(_target) + "/" + _find_match(_gcc_list);
-    Log::get_instance()->message(ll_debug, lc_no_context, "Using configuration:\n"
-            "  gcc:      " + _gcc + "\n");
 
     _headers = _find_match(_headers_list);
     if (! _headers.empty())
         _headers = "cross-" + stringify(_target) + "/" + _find_match(_headers_list);
-    Log::get_instance()->message(ll_debug, lc_no_context, "Using configuration:\n"
-            "  headers:  " + (_headers.empty() ? "[none]" : _headers) + "\n");
 
     _libc = "cross-" + stringify(_target) + "/" + _find_match(_libc_list);
-    Log::get_instance()->message(ll_debug, lc_no_context, "Using configuration:\n"
-            "  libc:     " + _libc + "\n");
 
     _aux = _find_match(_aux_list);
-    Log::get_instance()->message(ll_debug, lc_no_context, "Using configuration:\n"
-            "  aux:      " + _aux + "\n");
 }
 

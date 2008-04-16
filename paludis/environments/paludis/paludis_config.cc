@@ -166,26 +166,20 @@ namespace paludis
 
             if (exit_status != 0)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(FSEntry(config_dir) / "environment.bash")
-                        + "' returned non-zero exit status '" + stringify(exit_status) + "'");
+                Log::get_instance()->message("paludis_environment.environment_bash.failure", ll_warning, lc_context)
+                    << "Script '" << (FSEntry(config_dir) / "environment.bash") <<
+                    "' returned non-zero exit status '" << exit_status << "'";
                 kv.reset();
             }
         }
         else
-            Log::get_instance()->message(ll_debug, lc_context, "No environment.conf or environment.bash in '"
-                    + config_dir + "'");
+            Log::get_instance()->message("paludis_environment.no_environment_conf", ll_debug, lc_context)
+                << "No environment.conf or environment.bash in '" << config_dir << "'";
 
         if (kv)
         {
             if (! kv->get("reduced_username").empty())
-            {
                 reduced_username = kv->get("reduced_username");
-                Log::get_instance()->message(ll_debug, lc_context,
-                        "loaded key 'reduced_username' = '" + reduced_username + "'");
-            }
-            else
-                Log::get_instance()->message(ll_debug, lc_context,
-                        "Key 'reduced_username' is unset, using '" + reduced_username + "'");
 
             accept_breaks_portage = kv->get("portage_compatible").empty();
             distribution = kv->get("distribution");
@@ -195,8 +189,9 @@ namespace paludis
         }
 
         if (! world_file)
-            Log::get_instance()->message(ll_warning, lc_context) << "No world file specified. You should "
-                "specify 'world = /path/to/world/file' in " << (FSEntry(config_dir) / "environment.conf")
+            Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
+                << "No world file specified. You should specify 'world = /path/to/world/file' in "
+                << (FSEntry(config_dir) / "environment.conf")
                 << ". Any attempted updates to world will not be saved.";
         world.reset(new World(env, world_file));
 
@@ -243,8 +238,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
                 + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig initial directory is '"
-            + stringify(local_config_dir) + "'");
+    Log::get_instance()->message("paludis_environment.paludis_config.initial_dir", ll_debug, lc_no_context)
+        << "PaludisConfig initial directory is '" << local_config_dir << "'";
 
     // Prefer specpath.conf over specpath. Warn if specpath is used.
     if ((local_config_dir / "specpath.conf").exists() || (local_config_dir / "specpath").exists())
@@ -255,7 +250,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         else
         {
             specpath = new KeyValueConfigFile(local_config_dir / "specpath", KeyValueConfigFileOptions());
-            Log::get_instance()->message(ll_warning, lc_no_context, "Using specpath is deprecated, use specpath.conf instead");
+            Log::get_instance()->message("paludis_environment.paludis_config.specpath.deprecated", ll_warning, lc_no_context)
+                << "Using specpath is deprecated, use specpath.conf instead";
         }
         root_prefix = specpath->get("root");
         local_config_suffix = specpath->get("config-suffix");
@@ -277,8 +273,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 .with_uid_gid(reduced_uid(), reduced_gid()));
         if (0 != run_command(cmd))
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot access configuration directory '"
-                    + stringify(local_config_dir) + "' using userpriv, so userpriv will be disabled");
+            Log::get_instance()->message("paludis_environment.userpriv.disabled", ll_warning, lc_context)
+                << "Cannot access configuration directory '" << local_config_dir
+                << "' using userpriv, so userpriv will be disabled. Generally Paludis "
+                "configuration directories and files should be world readable.";
             _imp->reduced_uid.reset(new uid_t(getuid()));
             _imp->reduced_gid.reset(new gid_t(getgid()));
         }
@@ -289,9 +287,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     conf_vars->insert("ROOT", root_prefix);
     conf_vars->insert("root", root_prefix);
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig real directory is '"
-            + stringify(local_config_dir) + "', root prefix is '" + root_prefix +
-            "', config suffix is '" + local_config_suffix + "'");
+    Log::get_instance()->message("paludis_environment.paludis_config.real_dir", ll_debug, lc_no_context)
+        << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << root_prefix
+        << "', config suffix is '" << local_config_suffix << "'";
 
     /* repositories */
     {
@@ -328,8 +326,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
             if (exit_status != 0)
-                Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(local_config_dir / "repository_defaults.bash")
-                        + "' returned non-zero exit status '" + stringify(exit_status) + "'");
+                Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)
+                    << "Script '" << (local_config_dir / "repository_defaults.bash")
+                    << "' returned non-zero exit status '" << exit_status << "'";
         }
 
         std::list<FSEntry> dirs;
@@ -368,8 +367,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
                 if (exit_status != 0)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*repo_file)
-                            + "' returned non-zero exit status '" + stringify(exit_status) + "'");
+                    Log::get_instance()->message("paludis_environment.repositories.failure", ll_warning, lc_context)
+                        << "Script '" << *repo_file << "' returned non-zero exit status '" << exit_status << "'";
                     kv.reset();
                 }
             }
@@ -401,13 +400,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             if (! kv->get("master_repository").empty())
             {
-                Log::get_instance()->message(ll_debug, lc_context, "Delaying '" + stringify(*repo_file) +
-                        "' because it uses master_repository");
+                Log::get_instance()->message("paludis_environment.repositories.delaying", ll_debug, lc_context)
+                    << "Delaying '" << *repo_file << "' because it uses master_repository";
                 later_keys.push_back(keys);
             }
             else
             {
-                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + stringify(*repo_file) + "'");
+                Log::get_instance()->message("paludis_environment.repositories.not_delaying", ll_debug, lc_context)
+                    << "Not delaying '" << *repo_file << "'";
                 _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
             }
         }
@@ -624,16 +624,16 @@ PaludisConfig::reduced_uid() const
             struct passwd * p(getpwnam(reduced_username().c_str()));
             if (! p)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "Couldn't determine uid for user '" + reduced_username() + "'");
+                Log::get_instance()->message("paludis_environment.reduced_uid.unknown", ll_warning, lc_no_context)
+                    << "Couldn't determine uid for user '" << reduced_username() << "'";
                 _imp->reduced_uid.reset(new uid_t(getuid()));
             }
             else
                 _imp->reduced_uid.reset(new uid_t(p->pw_uid));
         }
 
-        Log::get_instance()->message(ll_debug, lc_context, "Reduced uid is '"
-                + stringify(*_imp->reduced_uid) + "'");
+        Log::get_instance()->message("paludis_environment.reduced_uid.value", ll_debug, lc_context)
+            << "Reduced uid is '" << *_imp->reduced_uid << "'";
     }
 
     return *_imp->reduced_uid;
@@ -653,8 +653,8 @@ PaludisConfig::reduced_gid() const
             struct passwd * p(getpwnam(reduced_username().c_str()));
             if (! p)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "Couldn't determine gid for user '" + reduced_username() + "'");
+                Log::get_instance()->message("paludis_environment.reduced_gid.unknown", ll_warning, lc_no_context)
+                    << "Couldn't determine gid for user '" << reduced_username() << "'";
                 _imp->reduced_gid.reset(new gid_t(getgid()));
             }
             else
@@ -671,8 +671,8 @@ PaludisConfig::reduced_username() const
     Context context("When determining reduced username:");
     _imp->need_environment_conf();
 
-    Log::get_instance()->message(ll_debug, lc_context,
-            "Reduced username is '" + _imp->reduced_username + "'");
+    Log::get_instance()->message("paludis_environment.reduced_username", ll_debug, lc_context)
+        << "Reduced username is '" << _imp->reduced_username << "'";
 
     return _imp->reduced_username;
 }

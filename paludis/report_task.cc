@@ -67,13 +67,14 @@ namespace
                 tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
                 if (! set)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    Log::get_instance()->message("report_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
                     return;
                 }
 
                 if (! _recursing_sets.insert(s.name()).second)
                 {
-                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    Log::get_instance()->message("report_task.recursive_set", ll_warning, lc_context)
+                        << "Recursively defined set '" << s.name() << "'";
                     return;
                 }
 
@@ -154,8 +155,8 @@ ReportTask::execute()
         {
             if (once)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "Skipping GLSA checks because Paludis was built without XML support");
+                Log::get_instance()->message("report_task.skipping_glsas", ll_warning, lc_no_context)
+                        << "Skipping GLSA checks because Paludis was built without XML support";
                 once = false;
             }
         }

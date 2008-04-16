@@ -48,7 +48,7 @@ class TestCase_Log(unittest.TestCase):
         l = Log.instance
         l.log_level = LogLevel.SILENT
 
-        l.message(LogLevel.DEBUG, LogContext.CONTEXT, "foooo")
+        l.message("python.test", LogLevel.DEBUG, LogContext.CONTEXT, "foooo")
 
 
 if __name__ == "__main__":

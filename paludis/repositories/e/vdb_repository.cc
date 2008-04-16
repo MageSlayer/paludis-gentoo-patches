@@ -296,7 +296,7 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
         deprecated_world = "/DOESNOTEXIST";
     else
-        Log::get_instance()->message(ll_warning, lc_context) << "Specifying world location " <<
+        Log::get_instance()->message("e.vdb.configuration.deprecated", ll_warning, lc_context) << "Specifying world location " <<
             "in repository configuration files is deprecated. File '" << deprecated_world << "' will be "
             "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";
@@ -308,9 +308,9 @@ VDBRepository::make_vdb_repository(
                 env->default_distribution()))[k::default_vdb_provides_cache()];
         if (provides_cache.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
-                    + repo_file + "'. You should read the Paludis documentation and select an "
-                    "appropriate value.");
+            Log::get_instance()->message("e.vdb.configuration.no_provides_cache", ll_warning, lc_no_context)
+                << "The provides_cache key is not set in '" << repo_file
+                << "'. You should read the Paludis documentation and select an appropriate value.";
             provides_cache = "/var/empty";
         }
     }
@@ -322,9 +322,9 @@ VDBRepository::make_vdb_repository(
                 env->default_distribution()))[k::default_vdb_names_cache()];
         if (names_cache.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
-                    + repo_file + "'. You should read the Paludis documentation and select an "
-                    "appropriate value.");
+            Log::get_instance()->message("e.vdb.configuration.no_names_cache", ll_warning, lc_no_context)
+                << "The names_cache key is not set in '" << repo_file
+                <<"'. You should read the Paludis documentation and select an appropriate value.";
             names_cache = "/var/empty";
         }
     }
@@ -336,7 +336,8 @@ VDBRepository::make_vdb_repository(
             builddir = (*DistributionData::get_instance()->distribution_from_string(
                     env->default_distribution()))[k::default_ebuild_builddir()];
         else
-            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+            Log::get_instance()->message("e.vdb.configuration.deprecated", ll_warning, lc_context)
+                << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
     std::string name;
@@ -510,7 +511,7 @@ VDBRepository::provided_packages() const
         tr1::shared_ptr<const ERepositoryID> id(package_id_if_exists(it->first.first, it->first.second));
         if (! id)
         {
-            Log::get_instance()->message(ll_warning, lc_context) <<
+            Log::get_instance()->message("e.vdb.provides.no_package", ll_warning, lc_context) <<
                 "No package available for '" << it->first.first <<  " " << it->first.second << "'";
             continue;
         }
@@ -538,8 +539,8 @@ VDBRepository::load_provided_using_cache() const
 
     if (! _imp->params.provides_cache.is_regular_file())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Provides cache at '"
-                + stringify(_imp->params.provides_cache) + "' is not a regular file.");
+        Log::get_instance()->message("e.vdb.provides_cache.not_regular_file", ll_warning, lc_no_context)
+            << "Provides cache at '" << _imp->params.provides_cache << "' is not a regular file.";
         return false;
     }
 
@@ -550,8 +551,8 @@ VDBRepository::load_provided_using_cache() const
 
     if (version != "paludis-3")
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Can't use provides cache at '"
-                + stringify(_imp->params.provides_cache) + "' because format '" + version + "' is not 'paludis-3'");
+        Log::get_instance()->message("e.vdb.provides_cache.unsupported", ll_warning, lc_no_context) << "Can't use provides cache at '"
+            << _imp->params.provides_cache << "' because format '" << version << "' is not 'paludis-3'";
         return false;
     }
 
@@ -559,9 +560,9 @@ VDBRepository::load_provided_using_cache() const
     std::getline(provides_cache, for_name);
     if (for_name != stringify(name()))
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Can't use provides cache at '"
-                + stringify(_imp->params.provides_cache) + "' because it was generated for repository '"
-                + for_name + "'. You must not have multiple provides caches at the same location.");
+        Log::get_instance()->message("e.vdb.provides_cache.unusable", ll_warning, lc_no_context)
+            << "Can't use provides cache at '" << _imp->params.provides_cache << "' because it was generated for repository '"
+            << for_name << "'. You must not have multiple provides caches at the same location.";
         return false;
     }
 
@@ -576,8 +577,8 @@ VDBRepository::load_provided_using_cache() const
             tokenise_whitespace(line, std::back_inserter(tokens));
             if (tokens.size() < 3)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
-                        line + "' as it contains fewer than three tokens");
+                Log::get_instance()->message("e.vdb.provides_cache.malformed", ll_warning, lc_context)
+                    << "Not using PROVIDES cache line '" << line << "' as it contains fewer than three tokens";
                 continue;
             }
 
@@ -588,8 +589,8 @@ VDBRepository::load_provided_using_cache() const
             std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(qpns->back_inserter()));
 
             if (_imp->provides_map->end() != _imp->provides_map->find(std::make_pair(q, v)))
-                Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
-                        line + "' as it names a package that has already been specified");
+                Log::get_instance()->message("e.vdb.provides_cache.duplicate", ll_warning, lc_context)
+                    << "Not using PROVIDES cache line '" << line << "' as it names a package that has already been specified";
             else
                 _imp->provides_map->insert(std::make_pair(std::make_pair(q, v), qpns));
         }
@@ -599,8 +600,8 @@ VDBRepository::load_provided_using_cache() const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Not using PROVIDES cache line '" +
-                    line + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message("e.vdb.provides_cache.unusable", ll_warning, lc_context)
+                << "Not using PROVIDES cache line '" << line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
     }
 
@@ -630,8 +631,8 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
             QualifiedPackageName pp((*p)->text());
 
             if (pp.category != CategoryNamePart("virtual"))
-                Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
-                        + stringify(pp) + "' from '" + stringify(id) + "' will not work as expected");
+                Log::get_instance()->message("e.vdb.provide.non_virtual", ll_warning, lc_no_context)
+                    << "PROVIDE of non-virtual '" << pp << "' from '" << id << "' will not work as expected";
 
             qpns->push_back(pp);
         }
@@ -656,9 +657,8 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
     }
     catch (const Exception & ee)
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
-                + stringify(id) + "' due to exception '"
-                + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
+        Log::get_instance()->message("e.vdb.provides.failure", ll_warning, lc_no_context) << "Skipping VDB PROVIDE entry for '"
+            << id << "' due to exception '" << ee.message() << "' (" << ee.what() << ")";
     }
 }
 
@@ -671,7 +671,7 @@ VDBRepository::load_provided_the_slow_way() const
 
     Context context("When loading VDB PROVIDEs map the slow way:");
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
+    Log::get_instance()->message("e.vdb.provides.starting", ll_debug, lc_no_context) << "Starting VDB PROVIDEs map creation";
     _imp->provides_map.reset(new ProvidesMap);
 
     need_category_names();
@@ -687,7 +687,7 @@ VDBRepository::load_provided_the_slow_way() const
                 e != e_end ; ++e)
             provides_from_package_id(**e);
 
-    Log::get_instance()->message(ll_debug, lc_no_context) << "Done VDB PROVIDEs map creation";
+    Log::get_instance()->message("e.vdb.provides.done", ll_debug, lc_no_context) << "Done VDB PROVIDEs map creation";
 }
 
 void
@@ -698,7 +698,7 @@ VDBRepository::write_provides_cache() const
     std::ofstream f(stringify(_imp->params.provides_cache).c_str());
     if (! f)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Cannot write to '" <<
+        Log::get_instance()->message("e.vdb.provides.write_failed", ll_warning, lc_context) << "Cannot write to '" <<
                 _imp->params.provides_cache << "': " << std::strerror(errno);
         return;
     }
@@ -884,7 +884,7 @@ VDBRepository::need_category_names() const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Skipping VDB category dir '"
+            Log::get_instance()->message("e.vdb.categories.failure", ll_warning, lc_context) << "Skipping VDB category dir '"
                 << *d << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
 
@@ -927,7 +927,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context) << "Skipping VDB package dir '"
+            Log::get_instance()->message("e.vdb.packages.failure", ll_warning, lc_context) << "Skipping VDB package dir '"
                 << *d << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         }
 

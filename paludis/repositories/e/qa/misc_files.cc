@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,7 +34,7 @@ paludis::erepository::misc_files_check(
         )
 {
     Context context("When performing check '" + name + "' using misc_files_check on directory '" + stringify(dir) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "misc_files_check '"
+    Log::get_instance()->message("e.qa.misc_files_check", ll_debug, lc_context) << "misc_files_check '"
         << dir << "', " << name << "'";
 
     if (! (dir / "metadata.xml").is_regular_file())

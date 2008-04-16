@@ -183,7 +183,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         {
             case manifest_use:
             case manifest_ignore:
-                Log::get_instance()->message(ll_debug, lc_context) << "Empty or non-existent Manifest file";
+                Log::get_instance()->message("e.manifest.empty", ll_debug, lc_context) << "Empty or non-existent Manifest file";
                 return true;
 
             case manifest_require:
@@ -211,12 +211,12 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             continue;
         found = true;
 
-        Log::get_instance()->message(ll_debug, lc_context)
+        Log::get_instance()->message("e.manifest.size", ll_debug, lc_context)
             << "Actual size = " << distfile.file_size()
             << "; Manifest file size = " << m->size;
         if (distfile.file_size() != m->size)
         {
-            Log::get_instance()->message(ll_debug, lc_context)
+            Log::get_instance()->message("e.manifest.no_size", ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
             std::cout << "incorrect size";
             _imp->failures->push_back(FetchActionFailure::named_create()
@@ -246,7 +246,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             RMD160 rmd160sum(file_stream);
             if (rmd160sum.hexsum() != m->rmd160)
             {
-                Log::get_instance()->message(ll_debug, lc_context)
+                Log::get_instance()->message("e.manifest.rmd160.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed RMD160 checksum";
                 std::cout << "failed RMD160";
                 _imp->failures->push_back(FetchActionFailure::named_create()
@@ -257,7 +257,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
-            Log::get_instance()->message(ll_debug, lc_context)
+            Log::get_instance()->message("e.manifest.rmd160.result", ll_debug, lc_context)
                 << "Actual RMD160 = " << rmd160sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -268,7 +268,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             SHA1 sha1sum(file_stream);
             if (sha1sum.hexsum() != m->sha1)
             {
-                Log::get_instance()->message(ll_debug, lc_context)
+                Log::get_instance()->message("e.manifest.sha1.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA1 checksum";
                 std::cout << "failed SHA1";
                 _imp->failures->push_back(FetchActionFailure::named_create()
@@ -279,7 +279,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
-            Log::get_instance()->message(ll_debug, lc_context)
+            Log::get_instance()->message("e.manifest.sha1.result", ll_debug, lc_context)
                 << "Actual SHA1 = " << sha1sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -290,7 +290,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             SHA256 sha256sum(file_stream);
             if (sha256sum.hexsum() != m->sha256)
             {
-                Log::get_instance()->message(ll_debug, lc_context)
+                Log::get_instance()->message("e.manifest.sha256.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA256 checksum";
                 std::cout << "failed SHA256";
                 _imp->failures->push_back(FetchActionFailure::named_create()
@@ -301,7 +301,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
-            Log::get_instance()->message(ll_debug, lc_context)
+            Log::get_instance()->message("e.manifest.sha256.result", ll_debug, lc_context)
                 << "Actual SHA256 = " << sha256sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -312,7 +312,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             MD5 md5sum(file_stream);
             if (md5sum.hexsum() != m->md5)
             {
-                Log::get_instance()->message(ll_debug, lc_context)
+                Log::get_instance()->message("e.manifest.md5.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed MD5 checksum";
                 std::cout << "failed MD5";
                 _imp->failures->push_back(FetchActionFailure::named_create()
@@ -323,7 +323,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
-            Log::get_instance()->message(ll_debug, lc_context)
+            Log::get_instance()->message("e.manifest.md5.result", ll_debug, lc_context)
                 << "Actual MD5 = " << md5sum.hexsum();
         }
     }
@@ -350,7 +350,8 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
 
     if (_imp->done.end() != _imp->done.find(u.filename()))
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Already checked '" << u.filename() << "'";
+        Log::get_instance()->message("e.check_fetched_files.already_checked", ll_debug, lc_context)
+            << "Already checked '" << u.filename() << "'";
         return;
     }
     _imp->done.insert(u.filename());
@@ -361,7 +362,8 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     {
         if (_imp->in_nofetch)
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Manual fetch required for '" << u.filename() << "'";
+            Log::get_instance()->message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
+                << "Manual fetch required for '" << u.filename() << "'";
             std::cout << "requires manual fetch";
             _imp->need_nofetch = true;
             _imp->failures->push_back(FetchActionFailure::named_create()
@@ -373,7 +375,8 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
         }
         else
         {
-            Log::get_instance()->message(ll_debug, lc_context) << "Automatic fetch failed for '" << u.filename() << "'";
+            Log::get_instance()->message("e.check_fetched_files.does_not_exist", ll_debug, lc_context)
+                << "Automatic fetch failed for '" << u.filename() << "'";
             std::cout << "does not exist";
             _imp->failures->push_back(FetchActionFailure::named_create()
                     (k::target_file(), u.filename())
@@ -385,7 +388,7 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     }
     else if (0 == (_imp->distdir / u.filename()).file_size())
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Empty file for '" << u.filename() << "'";
+        Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << u.filename() << "'";
         std::cout << "empty file";
         _imp->failures->push_back(FetchActionFailure::named_create()
                 (k::target_file(), u.filename())
@@ -396,12 +399,12 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     }
     else if (! check_distfile_manifest(_imp->distdir / u.filename()))
     {
-        Log::get_instance()->message(ll_debug, lc_context)
+        Log::get_instance()->message("e.check_fetched_files.failure", ll_debug, lc_context)
             << "Manifest check failed for '" << u.filename() << "'";
     }
     else
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Success for '" << u.filename() << "'";
+        Log::get_instance()->message("e.check_fetched_files.success", ll_debug, lc_context) << "Success for '" << u.filename() << "'";
         std::cout << "ok";
     }
 

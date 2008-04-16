@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,7 +76,7 @@ namespace test_cases
             Log::get_instance()->set_log_level(ll_debug);
 
             TEST_CHECK(s.str().empty());
-            Log::get_instance()->message(ll_debug, lc_no_context) << "one";
+            Log::get_instance()->message("test.log", ll_debug, lc_no_context) << "one";
             Log::get_instance()->complete_pending();
             TEST_CHECK(! s.str().empty());
             TEST_CHECK(std::string::npos != s.str().find("one"));
@@ -86,10 +86,10 @@ namespace test_cases
             TEST_CHECK(t.str().empty());
 
             Log::get_instance()->set_log_level(ll_warning);
-            Log::get_instance()->message(ll_debug, lc_no_context) << "two";
+            Log::get_instance()->message("test.log", ll_debug, lc_no_context) << "two";
             Log::get_instance()->complete_pending();
             TEST_CHECK(t.str().empty());
-            Log::get_instance()->message(ll_warning, lc_no_context) << "three" << "." << 14;
+            Log::get_instance()->message("test.log", ll_warning, lc_no_context) << "three" << "." << 14;
             Log::get_instance()->complete_pending();
             TEST_CHECK(! t.str().empty());
             TEST_CHECK(std::string::npos == t.str().find("one"));
@@ -111,18 +111,18 @@ namespace test_cases
             Log::get_instance()->set_log_level(ll_debug);
             TEST_CHECK(s.str().empty());
 
-            TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context) << throws_a_monkey(), Monkey);
+            TEST_CHECK_THROWS(Log::get_instance()->message("test.log", ll_debug, lc_no_context) << throws_a_monkey(), Monkey);
             Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
-            TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context)
+            TEST_CHECK_THROWS(Log::get_instance()->message("test.log", ll_debug, lc_no_context)
                     << "one" << throws_a_monkey() << "two", Monkey);
             Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
 
-            TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context) << throws_a_monkey_when_stringified(), Monkey);
+            TEST_CHECK_THROWS(Log::get_instance()->message("test.log", ll_debug, lc_no_context) << throws_a_monkey_when_stringified(), Monkey);
             Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
-            TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context)
+            TEST_CHECK_THROWS(Log::get_instance()->message("test.log", ll_debug, lc_no_context)
                     << "one" << throws_a_monkey_when_stringified() << "two", Monkey);
             Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());

@@ -48,10 +48,10 @@ paludis::erepository::function_keyword_check(
     pcrepp::Pcre::Pcre r_function("^function +[^ ]+ *(\\(\\))? *{?");
 
     if (id)
-        Log::get_instance()->message(ll_debug, lc_context) << "function_keyword '"
+        Log::get_instance()->message("e.qa.function_keyword_check", ll_debug, lc_context) << "function_keyword '"
             << entry << "', '" << *id << "', '" << name << "'";
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "function_keyword '"
+        Log::get_instance()->message("e.qa.function_keyword_check", ll_debug, lc_context) << "function_keyword '"
             << entry << "', '" << name << "'";
 
     std::stringstream ff(content);

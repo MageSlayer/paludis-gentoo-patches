@@ -107,14 +107,15 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
     }
     catch (const ConfigFileError & ex)
     {
-        Log::get_instance()->message(ll_warning, lc_context, ex.message());
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_context) << ex.message();
         return true;
     }
 
     deps.erase(std::remove_if(deps.begin(), deps.end(), IsNotAbsolutePath()), deps.end());
     if (deps.empty())
     {
-        Log::get_instance()->message(ll_debug, lc_context, "No libtool library dependencies found");
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.no_libtool", ll_debug, lc_context)
+            << "No libtool library dependencies found";
         return true;
     }
 
@@ -126,22 +127,22 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
             FSEntry dep(_imp->root / *it);
             if (! dereference_with_root(dep, _imp->root).is_regular_file())
             {
-                Log::get_instance()->message(
-                    ll_debug, lc_context, "Dependency '" + *it +
-                    "' is missing or not a regular file in '" + stringify(_imp->root) + "'");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.dependency_missing",
+                    ll_debug, lc_context) << "Dependency '" << *it <<
+                    "' is missing or not a regular file in '" << _imp->root << "'";
 
                 Lock l(_imp->mutex);
                 _imp->breakage.push_back(std::make_pair(file, *it));
             }
 
             else
-                Log::get_instance()->message(ll_debug, lc_context, "Dependency '" + *it +
-                                             "' exists in '" + stringify(_imp->root) + "'");
+                Log::get_instance()->message("reconcilio.broken_linkage_finder.dependency_exists", ll_debug, lc_context)
+                    << "Dependency '" << *it << "' exists in '" << _imp->root << "'";
         }
 
         catch (const FSError & ex)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, ex.message());
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_no_context) << ex.message();
         }
     }
 

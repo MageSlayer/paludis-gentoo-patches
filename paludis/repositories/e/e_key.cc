@@ -997,7 +997,7 @@ EContentsKey::value() const
     FSEntry f(_imp->filename);
     if (! f.is_regular_file_or_symlink_to_regular_file())
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "CONTENTS lookup failed for request for '" <<
+        Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "CONTENTS lookup failed for request for '" <<
                 *_imp->id << "' using '" << _imp->filename << "'";
         return _imp->value;
     }
@@ -1015,7 +1015,7 @@ EContentsKey::value() const
         std::vector<std::string> tokens;
         if (! VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
         {
-            Log::get_instance()->message(ll_warning, lc_no_context) << "CONTENTS has broken line " <<
+            Log::get_instance()->message("e.contents.broken", ll_warning, lc_no_context) << "CONTENTS has broken line " <<
                 line_number << ", skipping";
             continue;
         }
@@ -1083,7 +1083,7 @@ EMTimeKey::value() const
     }
     catch (const FSError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't get mtime for '"
+        Log::get_instance()->message("e.contents.mtime_failure", ll_warning, lc_context) << "Couldn't get mtime for '"
             << _imp->filename << "' for ID '" << *_imp->id << "' due to exception '" << e.message()
             << "' (" << e.what() << ")";
     }

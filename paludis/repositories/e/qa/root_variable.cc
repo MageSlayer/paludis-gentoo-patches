@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +50,7 @@ paludis::erepository::root_variable_check(
     pcrepp::Pcre::Pcre r_start("^src_");
     pcrepp::Pcre::Pcre r_end("^}");
 
-    Log::get_instance()->message(ll_debug, lc_context) << "root_variable '"
+    Log::get_instance()->message("e.qa.root_variable_check", ll_debug, lc_context) << "root_variable '"
         << entry << "', '" << *id << "', '" << name << "'";
 
     std::stringstream ff(content);

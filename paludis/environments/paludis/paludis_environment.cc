@@ -97,19 +97,19 @@ namespace paludis
             {
                 if (r.is_directory())
                 {
-                    Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
-                            + stringify(r) + "'");
+                    Log::get_instance()->message("paludis_environment.hooks.add_dir", ll_debug, lc_no_context)
+                        << "Adding hook directory '" << r << "'";
                     hook_dirs.push_back(std::make_pair(r, v));
                 }
                 else
-                    Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
-                            + stringify(r) + "'");
+                    Log::get_instance()->message("paludis_environment.hook.skipping", ll_debug, lc_no_context)
+                        << "Skipping hook directory candidate '" << r << "'";
             }
             catch (const FSError & e)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
-                        e.message() + "' (" + e.what() + ") when checking hook "
-                        "directory '" + stringify(r) + "'");
+                Log::get_instance()->message("paludis_environment.hook.failure", ll_warning, lc_no_context)
+                    << "Caught exception '" << e.message() << "' (" << e.what() << ") when checking hook "
+                    "directory '" << r << "'";
             }
         }
 
@@ -153,9 +153,9 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
             else
                 keys = "empty";
 
-            Log::get_instance()->message(ll_debug, lc_context,
-                    "Creating repository with format='" + r->format + "', importance='"
-                    + stringify(r->importance) + "', keys " + keys);
+            Log::get_instance()->message("paludis_environment.making_repository", ll_debug, lc_context) <<
+                "Creating repository with format='" << r->format << "', importance='" << r->importance
+                << "', keys " << keys;
         }
 
         _imp->package_database->add_repository(r->importance,
@@ -176,7 +176,7 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     PALUDIS_TLS bool recursive(false);
     if (recursive)
     {
-        Log::get_instance()->message(ll_warning, lc_context) <<
+        Log::get_instance()->message("paludis_environment.query_use.recursive", ll_warning, lc_context) <<
             "use flag state is defined recursively, forcing it to disabled instead";
         return false;
     }

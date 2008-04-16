@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,7 +61,7 @@ namespace paludis
         {
         }
 
-        void message(const LogLevel l, const LogContext c, const std::string cs, const std::string s)
+        void message(const std::string id, const LogLevel l, const LogContext c, const std::string cs, const std::string s)
         {
             if (l >= log_level)
             {
@@ -71,15 +71,15 @@ namespace paludis
                     switch (l)
                     {
                         case ll_debug:
-                            *stream << "[DEBUG] ";
+                            *stream << "[DEBUG " << id << "] ";
                             continue;
 
                         case ll_qa:
-                            *stream << "[QA] ";
+                            *stream << "[QA " << id << "] ";
                             continue;
 
                         case ll_warning:
-                            *stream << "[WARNING] ";
+                            *stream << "[WARNING " << id << "] ";
                             continue;
 
                         case ll_silent:
@@ -153,10 +153,10 @@ Log::log_level() const
 }
 
 void
-Log::_message(const LogLevel l, const LogContext c, const std::string & s)
+Log::_message(const std::string & id, const LogLevel l, const LogContext c, const std::string & s)
 {
     if (lc_context == c)
-        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c,
+        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), id, l, c,
 #ifdef PALUDIS_ENABLE_THREADS
 #  ifdef __linux__
                     "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
@@ -166,26 +166,21 @@ Log::_message(const LogLevel l, const LogContext c, const std::string & s)
 #endif
                     Context::backtrace("\n  ... "), s));
     else
-        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, "", s));
+        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), id, l, c, "", s));
 }
 
 LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :
+    _id(o._id),
     _message(o._message),
     _log_level(o._log_level),
     _log_context(o._log_context)
 {
 }
 
-void
-Log::message(const LogLevel l, const LogContext c, const std::string & s)
-{
-    _message(l, c, s);
-}
-
 LogMessageHandler
-Log::message(const LogLevel l, const LogContext c)
+Log::message(const std::string & id, const LogLevel l, const LogContext c)
 {
-    return LogMessageHandler(this, l, c);
+    return LogMessageHandler(this, id, l, c);
 }
 
 void
@@ -206,8 +201,9 @@ Log::set_program_name(const std::string & s)
     _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::set_program_name), _imp.get(), s));
 }
 
-LogMessageHandler::LogMessageHandler(Log * const ll, const LogLevel l, const LogContext c) :
+LogMessageHandler::LogMessageHandler(Log * const ll, const std::string & id, const LogLevel l, const LogContext c) :
     _log(ll),
+    _id(id),
     _log_level(l),
     _log_context(c)
 {
@@ -222,6 +218,6 @@ LogMessageHandler::_append(const std::string & s)
 LogMessageHandler::~LogMessageHandler()
 {
     if (! std::uncaught_exception() && ! _message.empty())
-        _log->_message(_log_level, _log_context, _message);
+        _log->_message(_id, _log_level, _log_context, _message);
 }
 

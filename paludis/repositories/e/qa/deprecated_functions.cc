@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,7 +61,8 @@ namespace
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message(ll_warning, lc_context) << "Got error '" << e.message() << "' (" << e.what()
+                Log::get_instance()->message("e.qa.deprecated_functions_check.configuration_error", ll_warning, lc_context)
+                    << "Got error '" << e.message() << "' (" << e.what()
                     << ") when loading deprecated_functions.conf for QA deprecated_functions";
             }
         }
@@ -93,10 +94,10 @@ paludis::erepository::deprecated_functions_check(
         deprecated_functions.push_back(std::make_pair(*it, pcrepp::Pcre::Pcre(*it)));
 
     if (id)
-        Log::get_instance()->message(ll_debug, lc_context) << "deprecated_functions '"
+        Log::get_instance()->message("e.qa.deprecated_functions_check", ll_debug, lc_context) << "deprecated_functions '"
             << entry << "', '" << *id << "', '" << name << "'";
     else
-        Log::get_instance()->message(ll_debug, lc_context) << "deprecated_functions '"
+        Log::get_instance()->message("e.qa.deprecated_functions_check", ll_debug, lc_context) << "deprecated_functions '"
             << entry << "', '" << name << "'";
 
     std::stringstream ff(content);

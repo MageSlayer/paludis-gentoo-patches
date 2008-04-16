@@ -53,7 +53,7 @@ namespace
             id(i)
         {
             if (! i)
-                Log::get_instance()->message(ll_warning, lc_context) << "! i";
+                Log::get_instance()->message("e.conditional_dep_spec.no_id", ll_warning, lc_context) << "! i";
 
             if (s.empty())
                 throw DepStringParseError(s, "missing use flag name");

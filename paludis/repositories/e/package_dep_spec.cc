@@ -57,7 +57,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
             if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                 throw PackageDepSpecError("[] dependencies not safe for use with this EAPI");
             else
-                Log::get_instance()->message(ll_warning, lc_context, "[] dependencies not safe for use with this EAPI");
+                Log::get_instance()->message("e.package_dep_spec.brackets_not_allowed", ll_warning, lc_context)
+                    << "[] dependencies not safe for use with this EAPI";
         }
 
         if (s.at(s.length() - 1) != ']')
@@ -222,7 +223,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
             if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                 throw PackageDepSpecError("Repository dependencies not safe for use with this EAPI");
             else
-                Log::get_instance()->message(ll_warning, lc_context, "Repository dependencies not safe for use with this EAPI");
+                Log::get_instance()->message("e.package_dep_spec.repository_not_allowed", ll_warning, lc_context)
+                    << "Repository dependencies not safe for use with this EAPI";
         }
 
         result.repository(RepositoryName(s.substr(repo_p + 2)));
@@ -243,7 +245,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                 if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                     throw PackageDepSpecError("Slot '*' dependencies not safe for use with this EAPI");
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Slot '*' dependencies not safe for use with this EAPI");
+                    Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
+                        << "Slot '*' dependencies not safe for use with this EAPI";
             }
             result.slot_requirement(make_shared_ptr(new ESlotAnyUnlockedRequirement));
         }
@@ -254,7 +257,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                 if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                     throw PackageDepSpecError("Slot '=' dependencies not safe for use with this EAPI");
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Slot '=' dependencies not safe for use with this EAPI");
+                    Log::get_instance()->message("e.package_dep_spec.slot_equals_not_allowed", ll_warning, lc_context)
+                        << "Slot '=' dependencies not safe for use with this EAPI";
             }
 
             if (1 == match.length())
@@ -269,7 +273,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                 if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                     throw PackageDepSpecError("Slot dependencies not safe for use with this EAPI");
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "Slot dependencies not safe for use with this EAPI");
+                    Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
+                        << "Slot dependencies not safe for use with this EAPI";
             }
             result.slot_requirement(make_shared_ptr(new ESlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
         }
@@ -292,7 +297,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                 if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
                     throw PackageDepSpecError("~> dependencies not safe for use with this EAPI");
                 else
-                    Log::get_instance()->message(ll_warning, lc_context, "~> dependencies not safe for use with this EAPI");
+                    Log::get_instance()->message("e.package_dep_spec.tilde_greater_not_allowed", ll_warning, lc_context)
+                        << "~> dependencies not safe for use with this EAPI";
             }
 
         std::string::size_type q(p);
@@ -350,10 +356,9 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                                 "Package dep spec '" + ss + "' uses * "
                                 "with operator '" + stringify(op) + "'");
                     else
-                        Log::get_instance()->message(ll_qa, lc_context,
-                                "Package dep spec '" + ss + "' uses * "
-                                "with operator '" + stringify(op) +
-                                "', pretending it uses the equals operator instead");
+                        Log::get_instance()->message("e.package_dep_spec.bad_operator", ll_qa, lc_context)
+                            << "Package dep spec '" << ss << "' uses * with operator '" << op <<
+                            "', pretending it uses the equals operator instead";
                 }
             }
             op = vo_equal_star;

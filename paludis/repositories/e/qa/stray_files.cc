@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ paludis::erepository::stray_files_check(
         )
 {
     Context context("When performing check '" + name + "' using stray_files_check on directory '" + stringify(dir) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "stray_files_check '"
+    Log::get_instance()->message("e.qa.stray_files_check", ll_debug, lc_context) << "stray_files_check '"
         << repo->name() << "', '" << dir << "', " << name << "'";
 
     if (dir.exists())

@@ -226,8 +226,8 @@ NDBAMUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) cons
         std::ifstream md5_file(stringify(_imp->options.root / f).c_str());
         if (! md5_file)
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot get md5 for '" +
-                    stringify(_imp->options.root / f) + "'");
+            Log::get_instance()->message("ndbam.unmerger.md5_failed", ll_warning, lc_no_context) << "Cannot get md5 for '" <<
+                (_imp->options.root / f) << "'";
             display("--- [!md5?] " + stringify(f));
         }
         else if (MD5(md5_file).hexsum() != fie->_md5sum)
