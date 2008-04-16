@@ -88,7 +88,8 @@ Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
                 {
                     Log::get_instance()->message("repository.names_cache.unsupported", ll_warning, lc_context)
                         << "Names cache for '" << repo->name() << "' has version string '" << line
-                        << "', which is not supported. Was it generated using a different Paludis version?";
+                        << "', which is not supported. Was it generated using a different Paludis version? Perhaps you need to regenerate "
+                        "the cache using 'paludis --regenerate-installed-cache' or 'paludis --regenerate-installable-cache'?";
                     usable = false;
                     return name_cache_map.end();
                 }
@@ -120,7 +121,8 @@ Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
                 Log::get_instance()->message("repository.names_cache.unversioned", ll_warning, lc_context)
                     << "Names cache for '" << repo->name()
                     << "' has no version information, so cannot be used. Either it was generated using "
-                    "an older Paludis version or it has not yet been generated.";
+                    "an older Paludis version or it has not yet been generated. Perhaps you need to regenerate "
+                    "the cache using 'paludis --regenerate-installed-cache' or 'paludis --regenerate-installable-cache'?";
                 usable = false;
                 return name_cache_map.end();
             }
