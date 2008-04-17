@@ -125,11 +125,11 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
     {
-        Lock l(*e->mutex);
-        if (! e->package_id)
-            e->package_id.reset(new InstalledUnpackagedID(_imp->params.environment, e->name, e->version,
-                        e->slot, name(), e->fs_location, e->magic, installed_root_key()->value(), &_imp->ndbam));
-        result->push_back(e->package_id);
+        Lock l(*(*e)[k::mutex()]);
+        if (! (*e)[k::package_id()])
+            (*e)[k::package_id()].reset(new InstalledUnpackagedID(_imp->params.environment, (*e)[k::name()], (*e)[k::version()],
+                        (*e)[k::slot()], name(), (*e)[k::fs_location()], (*e)[k::magic()], installed_root_key()->value(), &_imp->ndbam));
+        result->push_back((*e)[k::package_id()]);
     }
 
     return result;

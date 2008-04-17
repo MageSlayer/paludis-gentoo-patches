@@ -200,11 +200,11 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
     {
-        Lock l(*e->mutex);
-        if (! e->package_id)
-            e->package_id.reset(new ExndbamID(e->name, e->version, _imp->params.environment,
-                        shared_from_this(), e->fs_location, &_imp->ndbam));
-        result->push_back(e->package_id);
+        Lock l(*(*e)[k::mutex()]);
+        if (! (*e)[k::package_id()])
+            (*e)[k::package_id()].reset(new ExndbamID((*e)[k::name()], (*e)[k::version()], _imp->params.environment,
+                        shared_from_this(), (*e)[k::fs_location()], &_imp->ndbam));
+        result->push_back((*e)[k::package_id()]);
     }
 
     return result;

@@ -28,6 +28,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/package_id.hh>
@@ -39,8 +40,6 @@
 #include <fstream>
 
 using namespace paludis;
-
-#include <paludis/ndbam-sr.cc>
 
 template class Sequence<tr1::shared_ptr<NDBAMEntry> >;
 
@@ -269,11 +268,13 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
 
 namespace
 {
-    template <typename T_>
-    T_ * desptr(const tr1::shared_ptr<T_> & p)
+    struct NDBAMEntryVersionComparator
     {
-        return p.get();
-    }
+        bool operator() (const tr1::shared_ptr<const NDBAMEntry> & a, const tr1::shared_ptr<const NDBAMEntry> & b) const
+        {
+            return (*a)[k::version()] < (*b)[k::version()];
+        }
+    };
 }
 
 tr1::shared_ptr<NDBAMEntrySequence>
@@ -322,14 +323,14 @@ NDBAM::entries(const QualifiedPackageName & q)
                 VersionSpec v(tokens[0]);
                 SlotName s(tokens[1]);
                 std::string m(tokens[2]);
-                pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry::create()
-                                .name(q)
-                                .version(v)
-                                .slot(s)
-                                .fs_location(d->realpath())
-                                .package_id(tr1::shared_ptr<PackageID>())
-                                .magic(m)
-                                .mutex(make_shared_ptr(new Mutex)))));
+                pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry::named_create()
+                                (k::name(), q)
+                                (k::version(), v)
+                                (k::slot(), s)
+                                (k::fs_location(), d->realpath())
+                                (k::package_id(), tr1::shared_ptr<PackageID>())
+                                (k::magic(), m)
+                                (k::mutex(), make_shared_ptr(new Mutex)))));
             }
             catch (const InternalError &)
             {
@@ -343,11 +344,7 @@ NDBAM::entries(const QualifiedPackageName & q)
         }
 
         using namespace tr1::placeholders;
-        pc.entries->sort(
-                tr1::bind(std::less<VersionSpec>(),
-                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), tr1::bind(&desptr<const NDBAMEntry>, _1)),
-                    tr1::bind<VersionSpec>(tr1::mem_fn(&NDBAMEntry::version), tr1::bind(&desptr<const NDBAMEntry>, _2))
-                ));
+        pc.entries->sort(NDBAMEntryVersionComparator());
     }
 
     return pc.entries;

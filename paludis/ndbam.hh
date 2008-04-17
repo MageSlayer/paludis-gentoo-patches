@@ -34,9 +34,6 @@
 
 namespace paludis
 {
-
-#include <paludis/ndbam-sr.hh>
-
     /**
      * NDBAM provides a partial implementation of a Repository for installed packages using
      * a Paludis-defined on-disk format. It is used by unpackaged repositories and exndbam,

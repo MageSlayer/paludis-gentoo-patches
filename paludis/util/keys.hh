@@ -159,6 +159,9 @@ namespace paludis
         typedef kc::Key<130> build_dependencies;
         typedef kc::Key<131> run_dependencies;
         typedef kc::Key<132> description;
+        typedef kc::Key<133> fs_location;
+        typedef kc::Key<134> magic;
+        typedef kc::Key<135> mutex;
     }
 }
 
