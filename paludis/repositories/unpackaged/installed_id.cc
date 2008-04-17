@@ -703,14 +703,14 @@ InstalledUnpackagedID::uninstall(const UninstallActionOptions &, const bool repl
     FSEntry ver_dir(fs_location_key()->value());
 
     NDBAMUnmerger unmerger(
-            NDBAMUnmergerOptions::create()
-            .environment(_imp->env)
-            .root(_imp->root)
-            .contents_file(ver_dir / "contents")
-            .config_protect(getenv_with_default("CONFIG_PROTECT", ""))
-            .config_protect_mask(getenv_with_default("CONFIG_PROTECT_MASK", ""))
-            .ndbam(_imp->ndbam)
-            .package_id(shared_from_this()));
+            NDBAMUnmergerOptions::named_create()
+            (k::environment(), _imp->env)
+            (k::root(), _imp->root)
+            (k::contents_file(), ver_dir / "contents")
+            (k::config_protect(), getenv_with_default("CONFIG_PROTECT", ""))
+            (k::config_protect_mask(), getenv_with_default("CONFIG_PROTECT_MASK", ""))
+            (k::ndbam(), _imp->ndbam)
+            (k::package_id(), shared_from_this()));
 
     unmerger.unmerge();
 

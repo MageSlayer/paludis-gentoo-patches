@@ -414,14 +414,14 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
 
             /* unmerge */
             NDBAMUnmerger unmerger(
-                    NDBAMUnmergerOptions::create()
-                    .environment(_imp->params.environment)
-                    .root(installed_root_key()->value())
-                    .contents_file(ver_dir / "contents")
-                    .config_protect(config_protect)
-                    .config_protect_mask(config_protect_mask)
-                    .ndbam(&_imp->ndbam)
-                    .package_id(id));
+                    NDBAMUnmergerOptions::named_create()
+                    (k::environment(), _imp->params.environment)
+                    (k::root(), installed_root_key()->value())
+                    (k::contents_file(), ver_dir / "contents")
+                    (k::config_protect(), config_protect)
+                    (k::config_protect_mask(), config_protect_mask)
+                    (k::ndbam(), &_imp->ndbam)
+                    (k::package_id(), id));
 
             unmerger.unmerge();
         }

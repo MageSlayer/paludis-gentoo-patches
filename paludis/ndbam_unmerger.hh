@@ -22,8 +22,9 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_UNMERGER_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/kc-fwd.hh>
+#include <paludis/util/keys.hh>
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -32,7 +33,15 @@ namespace paludis
 {
     class NDBAM;
 
-#include <paludis/ndbam_unmerger-sr.hh>
+    typedef kc::KeyedClass<
+        kc::Field<k::environment, const Environment *>,
+        kc::Field<k::root, FSEntry>,
+        kc::Field<k::contents_file, FSEntry>,
+        kc::Field<k::config_protect, std::string>,
+        kc::Field<k::config_protect_mask, std::string>,
+        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::ndbam, const NDBAM *>
+            > NDBAMUnmergerOptions;
 
     class PALUDIS_VISIBLE NDBAMUnmergerError :
         public UnmergerError
