@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/validated-fwd.hh>
 #include <sstream>
 #include <string>
 
@@ -188,6 +189,18 @@ namespace paludis
     stringify(const char * const item)
     {
         return std::string(item);
+    }
+
+    /**
+     * Convert item to a string (overload for Validated).
+     *
+     * \ingroup g_strings
+     */
+    template <typename D_, typename V_, bool c_, typename C_>
+    inline std::string
+    stringify(const Validated<D_, V_, c_, C_> & v)
+    {
+        return stringify(v.data());
     }
 }
 
