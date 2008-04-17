@@ -464,6 +464,7 @@ ebuild_main()
                 die "${action} failed"
             fi
             if [[ ${action} == "init" ]] ; then
+                # source again with WORKDIR set, so S=${WORKDIR}/blahblahblah works
                 ebuild_load_ebuild "${ebuild}"
             fi
             perform_hook ebuild_${action}_post
