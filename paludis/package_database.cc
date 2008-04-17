@@ -110,8 +110,8 @@ AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_nam
     _name_data(new NameData)
 {
     _name_data->name = our_name;
-    while (begin != end)
-        _name_data->names.push_back(stringify(*begin++));
+    std::transform(begin, end, std::back_inserter(_name_data->names),
+            &stringify<typename std::iterator_traits<I_>::value_type>);
 }
 
 AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameError & other) :

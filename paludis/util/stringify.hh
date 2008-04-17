@@ -112,95 +112,84 @@ namespace paludis
     }
 #endif
 
+    template <typename T_> inline std::string stringify(const T_ & item);
+
+    namespace stringify_internals
+    {
+        /**
+         * Internal function to convert item to a string, to make
+         * function pointers work more sensibly.  May be overloaded,
+         * but should not be called directly.
+         *
+         * \ingroup g_strings
+         */
+        template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+            requires IsStreamStringifiable<T_>
+#endif
+        std::string
+        real_stringify(const T_ & item)
+        {
+#ifndef PALUDIS_HAVE_CONCEPTS
+            /* check that we're not trying to stringify a pointer or somesuch */
+            int check_for_stringifying_silly_things
+                PALUDIS_ATTRIBUTE((unused)) = CheckType<T_>::value;
+#endif
+
+            std::ostringstream s;
+            s << item;
+            return s.str();
+        }
+
+        inline std::string
+        real_stringify(const std::string & item)
+        {
+            return item;
+        }
+
+        inline std::string
+        real_stringify(const char & item)
+        {
+            return std::string(1, item);
+        }
+
+        inline std::string
+        real_stringify(const unsigned char & item)
+        {
+            return std::string(1, item);
+        }
+
+        inline std::string
+        real_stringify(const bool & item)
+        {
+            return item ? "true" : "false";
+        }
+
+        inline std::string
+        real_stringify(const char * const item)
+        {
+            return std::string(item);
+        }
+
+        template <typename D_, typename V_, bool c_, typename C_>
+        inline std::string
+        real_stringify(const Validated<D_, V_, c_, C_> & v)
+        {
+            return stringify(v.data());
+        }
+    }
+
     /**
-     * Convert item to a string.
+     * Convert item to a string.  To customise for new types, overload
+     * stringify_internals::real_stringify, not this function.
      *
      * \ingroup g_strings
      */
     template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires IsStreamStringifiable<T_>
-#endif
-    std::string
+    inline std::string
     stringify(const T_ & item)
     {
-#ifndef PALUDIS_HAVE_CONCEPTS
-        /* check that we're not trying to stringify a pointer or somesuch */
-        int check_for_stringifying_silly_things
-            PALUDIS_ATTRIBUTE((unused)) = stringify_internals::CheckType<T_>::value;
-#endif
-
-        std::ostringstream s;
-        s << item;
-        return s.str();
-    }
-
-    /**
-     * Convert item to a string (overload for std::string).
-     *
-     * \ingroup g_strings
-     */
-    inline std::string
-    stringify(const std::string & item)
-    {
-        return item;
-    }
-
-    /**
-     * Convert item to a string (overload for char).
-     *
-     * \ingroup g_strings
-     */
-    inline std::string
-    stringify(const char & item)
-    {
-        return std::string(1, item);
-    }
-
-    /**
-     * Convert item to a string (overload for unsigned char).
-     *
-     * \ingroup g_strings
-     */
-    inline std::string
-    stringify(const unsigned char & item)
-    {
-        return std::string(1, item);
-    }
-
-    /**
-     * Convert item to a string (overload for bool).
-     *
-     * \ingroup g_strings
-     */
-    inline std::string
-    stringify(const bool & item)
-    {
-        return item ? "true" : "false";
-    }
-
-    /**
-     * Convert item to a string (overload for char *, which isn't a
-     * screwup like other pointers).
-     *
-     * \ingroup g_strings
-     */
-    inline std::string
-    stringify(const char * const item)
-    {
-        return std::string(item);
-    }
-
-    /**
-     * Convert item to a string (overload for Validated).
-     *
-     * \ingroup g_strings
-     */
-    template <typename D_, typename V_, bool c_, typename C_>
-    inline std::string
-    stringify(const Validated<D_, V_, c_, C_> & v)
-    {
-        return stringify(v.data());
+        return stringify_internals::real_stringify(item);
     }
 }
 
