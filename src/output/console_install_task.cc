@@ -631,7 +631,7 @@ ConsoleInstallTask::display_merge_list_post_counts()
             if (_download_size_overflow)
                 s << ", more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download";
             else
-                s << ", at most " << pretty_print_bytes(get_download_size()) << " to download";
+                s << ", " << pretty_print_bytes(get_download_size()) << " to download";
         }
     }
 
