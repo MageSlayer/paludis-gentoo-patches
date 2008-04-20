@@ -47,7 +47,6 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
 {
     Context ctx("When performing the Fix Linkage action:");
 
-    bool verbose(CommandLine::get_instance()->a_verbose.specified());
     std::string library(CommandLine::get_instance()->a_library.argument());
 
     if (library.empty())
@@ -70,16 +69,13 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
             std::cout << std::endl << colour(cl_heading, "Broken packages:") << std::endl;
         else
             std::cout << std::endl << colour(cl_heading, "Packages that depend on " +  library + ":") << std::endl;
-        if (! verbose)
-            std::cout << std::endl;
     }
 
     tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder.begin_broken_packages()),
              pkg_it_end(finder.end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
     {
-        if (verbose)
-            std::cout << std::endl;
+        std::cout << std::endl;
 
         std::string pkgname(stringify((*pkg_it)->name()));
         std::string fullname((*pkg_it)->canonical_form(idcf_full));
@@ -88,18 +84,17 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
             fullname.replace(pos, pkgname.length(), colour(cl_package_name, pkgname));
         std::cout << "* " << fullname << std::endl;
 
-        if (verbose)
-            for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder.begin_broken_files(*pkg_it)),
-                     file_it_end(finder.end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
-            {
-                std::cout << "    " << *file_it;
-                if (library.empty())
-                    std::cout << " (requires "
-                              << join(finder.begin_missing_requirements(*pkg_it, *file_it),
-                                      finder.end_missing_requirements(*pkg_it, *file_it),
-                                      " ") << ")";
-                std::cout << std::endl;
-            }
+        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder.begin_broken_files(*pkg_it)),
+                 file_it_end(finder.end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
+        {
+            std::cout << "    " << *file_it;
+            if (library.empty())
+                std::cout << " (requires "
+                          << join(finder.begin_missing_requirements(*pkg_it, *file_it),
+                                  finder.end_missing_requirements(*pkg_it, *file_it),
+                                  " ") << ")";
+            std::cout << std::endl;
+        }
 
         if (CommandLine::get_instance()->a_exact.specified())
             targets->push_back(stringify(make_package_dep_spec()
@@ -113,7 +108,7 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
     }
 
     tr1::shared_ptr<const PackageID> orphans;
-    if (verbose && finder.begin_broken_files(orphans) != finder.end_broken_files(orphans))
+    if (finder.begin_broken_files(orphans) != finder.end_broken_files(orphans))
     {
         if (library.empty())
             std::cout << std::endl << "The following broken files are not owned by any installed package:" << std::endl;

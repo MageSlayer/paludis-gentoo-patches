@@ -53,7 +53,6 @@ class CommandLine :
         paludis::args::AliasArg a_no_color;
         paludis::args::StringArg a_environment;
         paludis::args::SwitchArg a_exact;
-        paludis::args::SwitchArg a_verbose;
         paludis::args::StringArg a_resume_command_template;
         paludis::args::SwitchArg a_compact;
 

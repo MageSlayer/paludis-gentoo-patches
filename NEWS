@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * reconcilio no longer accepts the --verbose switch; verbose display is
+      now turned on unconditionally.
+
 0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration

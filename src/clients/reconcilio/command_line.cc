@@ -42,7 +42,6 @@ CommandLine::CommandLine() :
     a_no_color(&a_no_colour,   "no-color"),
     a_environment(&general_args,    "environment",    'E',  "Environment specification (class:suffix, both parts optional)"),
     a_exact(&general_args,     "exact",               '\0', "Rebuild the same package version that is currently installed", true),
-    a_verbose(&general_args,        "verbose",        'v',  "Display more detailed output", true),
     a_resume_command_template(&general_args, "resume-command-template", '\0',
             "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
     a_compact(&general_args, "compact", '\0', "Display output using one line per entry", true),
