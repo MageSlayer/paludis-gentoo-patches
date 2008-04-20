@@ -6,7 +6,8 @@
 
 <p>The <code>package_mask.conf</code> file allows a package to be explicitly masked. The
 <code>package_unmask.conf</code> file allows repository and profile masked packages to be unmasked. Both are standard
-configuration files which may be bash files and which may use a <code>.conf.d/</code> directory.</p>
+configuration files which may be bash files (<code>package_mask.bash</code> etc) and which may use a
+<code>.conf.d/</code> directory.</p>
 
 <p>Each line in the file consists of a specification.</p>
 

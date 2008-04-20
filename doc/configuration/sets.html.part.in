@@ -35,7 +35,8 @@
 ###PALUDISENVIRONMENTONLY###
 
 <p>When using the Paludis environment, the user can create their own sets. A set named <code>foo</code> is defined in
-the file <code>sets/foo.conf</code>, which is a standard configuration file and which may be a bash file.</p>
+the file <code>sets/foo.conf</code>, which is a standard configuration file, or in the file <code>sets/foo.bash</code>,
+which is a dynamic standard configuration file.</p>
 
 <div class="note">
     <p>Overriding built-in sets in this manner is not recommended. Strange things will happen.</p>

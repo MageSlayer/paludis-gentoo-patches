@@ -4,8 +4,9 @@
 
 ###PALUDISENVIRONMENTONLY###
 
-<p>The <code>mirrors.conf</code> file controls where Paludis looks when downloading files. It is a standard configuration
-file which may be a bash file and which may use the <code>mirrors.conf.d/</code> directory.</p>
+<p>The <code>mirrors.conf</code> file controls where Paludis looks when downloading files. It is a standard
+configuration file which may be a bash file (<code>mirrors.bash</code>) and which may use the
+<code>mirrors.conf.d/</code> directory.</p>
 
 <p>Each line consists of a mirror name followed by one or more URLs. The special mirror name <code>*</code> can be used
 to indicate a mirror that should be tried for all URLs (even those that are marked as 'not for mirroring'). Ebuild

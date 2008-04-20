@@ -5,7 +5,8 @@
 ###PALUDISENVIRONMENTONLY###
 
 <p>Each file in <code>repositories/</code> named <code>*.conf</code> defines a repository. A repository configuration
-file is a standard key=value config file, and it may be in bash format. The <code>repository_defaults.conf</code> file
+file is a standard key=value config file, and it may be in bash format (in which case it has a <code>.bash</code>
+extension rather than <code>.conf</code). The <code>repository_defaults.conf</code> file
 (which does <em>not</em> live in the <code>repositories</code> subdirectory), if it exists, is treated as if it were
 prepended to each individual file.</p>
 

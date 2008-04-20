@@ -5,7 +5,7 @@
 ###PALUDISENVIRONMENTONLY###
 
 <p>The <code>use.conf</code> file controls which use flags are and are not enabled. It is a standard configuration
-file which may be a bash file and which may use the <code>use.conf.d/</code> directory.</p>
+file which may be a bash file (<code>use.bash</code>) and which may use the <code>use.conf.d/</code> directory.</p>
 
 <p>Each line in the file consists of a specification followed by one or more use flags and labels. A specification may be
 any of:</p>
