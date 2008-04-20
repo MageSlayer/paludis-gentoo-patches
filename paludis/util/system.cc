@@ -476,14 +476,20 @@ paludis::run_command(const Command & cmd)
             /* The pid that waits for the exec pid and then writes to the done pipe. */
 
             /* On SIGINT or SIGTERM, just output a notice. */
-            struct sigaction act;
+            struct sigaction act, old_act;
             act.sa_handler = &wait_handler;
-            act.sa_flags = 0;
+            act.sa_flags = SA_RESTART;
             sigemptyset(&act.sa_mask);
             sigaddset(&act.sa_mask, SIGINT);
             sigaddset(&act.sa_mask, SIGTERM);
-            sigaction(SIGINT, &act, 0);
-            sigaction(SIGTERM, &act, 0);
+
+            sigaction(SIGINT, 0, &old_act);
+            if (SIG_DFL != old_act.sa_handler && SIG_IGN != old_act.sa_handler)
+                sigaction(SIGINT, &act, 0);
+            sigaction(SIGTERM, 0, &old_act);
+            if (SIG_DFL != old_act.sa_handler && SIG_IGN != old_act.sa_handler)
+                sigaction(SIGTERM, &act, 0);
+
 #ifdef PALUDIS_ENABLE_THREADS
             if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
                 std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
@@ -524,16 +530,12 @@ paludis::run_command(const Command & cmd)
             stderr_close_fd = -1;
 
             int ret(-1);
-            bool repeat(true);
-            while (repeat)
+            while (true)
             {
                 if (-1 == waitpid(child_child, &status, 0))
                 {
                     if (errno == EINTR)
-                    {
                         std::cerr << "wait failed: '" + stringify(strerror(errno)) + "', trying once more" << std::endl;
-                        repeat = false;
-                    }
                     else
                     {
                         std::cerr << "wait failed: '" + stringify(strerror(errno)) + "'" << std::endl;

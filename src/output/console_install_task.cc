@@ -95,7 +95,7 @@ namespace
         }
         cerr << endl;
         cerr << "Exiting with failure" << endl;
-        std::exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
     }
 }
 
