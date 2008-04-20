@@ -872,10 +872,23 @@ EUseKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     std::list<std::string> tokens;
     tokenise_whitespace(_imp->string_value, std::back_inserter(tokens));
-    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
-        if ('-' != t->at(0))
-            _imp->value->insert(UseFlagName(*t));
+    try
+    {
+        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
+            if ('-' != t->at(0))
+                _imp->value->insert(UseFlagName(*t));
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.use.malformed", ll_warning, lc_context) << "Error loading " << raw_name() << " for '" << *_imp->id << "' due to exception '"
+                << e.message() << "' (" << e.what() << "), pretending " << raw_name() << " is empty for this package";
+    }
+
     return _imp->value;
 }
 
