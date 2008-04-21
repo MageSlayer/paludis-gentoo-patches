@@ -303,12 +303,18 @@ namespace
 
         void visit(const DepListEntryHandledSkippedUnsatisfied & s)
         {
-            result = "U" + stringify(s.spec());
+            if (undo_failures)
+                result = "P";
+            else
+                result = "U" + stringify(s.spec());
         }
 
         void visit(const DepListEntryHandledSkippedDependent & s)
         {
-            result = "D=" + stringify(*s.id());
+            if (undo_failures)
+                result = "P";
+            else
+                result = "D=" + stringify(*s.id());
         }
     };
 }
