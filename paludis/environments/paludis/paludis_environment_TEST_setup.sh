@@ -5,6 +5,10 @@ mkdir paludis_environment_TEST_dir || exit 2
 cd paludis_environment_TEST_dir || exit 3
 
 mkdir -p repo/{profile,profiles,cat-one/pkg-one,cat-one/pkg-two}
+cat <<END > repo/profiles/arch.list
+foo
+keyword
+END
 cat <<END > repo/profiles/repo_name
 foo
 END
@@ -19,33 +23,63 @@ EXP="one"
 MORE_EXP="one"
 THIRD_EXP="one"
 END
-touch repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
-touch repo/cat-one/pkg-two/pkg-two-3.ebuild || exit 4
+cat <<"END" > repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+SLOT="0"
+IUSE="moo foofoo quoted-name"
+END
+cat <<"END" > repo/cat-one/pkg-two/pkg-two-3.ebuild || exit 4
+SLOT="0"
+IUSE="moo foofoo quoted-name"
+END
 
 mkdir -p firstrepo/profiles
 cat <<END > firstrepo/profiles/repo_name
 first
 END
+cat <<END > firstrepo/profiles/arch.list
+foo
+keyword
+END
 mkdir -p secondrepo/profiles
 cat <<END > secondrepo/profiles/repo_name
 second
+END
+cat <<END > secondrepo/profiles/arch.list
+foo
+keyword
 END
 mkdir -p thirdrepo/profiles
 cat <<END > thirdrepo/profiles/repo_name
 third
 END
+cat <<END > thirdrepo/profiles/arch.list
+foo
+keyword
+END
 mkdir -p fourthrepo/profiles
 cat <<END > fourthrepo/profiles/repo_name
 fourth
+END
+cat <<END > fourthrepo/profiles/arch.list
+foo
+keyword
 END
 mkdir -p fifthrepo/profiles
 cat <<END > fifthrepo/profiles/repo_name
 fifth
 END
+cat <<END > fifthrepo/profiles/arch.list
+foo
+keyword
+END
 
 mkdir -p sixthrepo/{profile,profiles,cat-one/pkg-one}
 cat <<END > sixthrepo/profiles/repo_name
 foo
+END
+cat <<END > sixthrepo/profiles/arch.list
+foo
+keyword
 END
 cat <<END > sixthrepo/profiles/categories
 cat-one
@@ -56,7 +90,10 @@ USE="foo_c"
 USE_EXPAND="FOO_CARDS"
 FOO_CARDS="four"
 END
-touch sixthrepo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+cat <<END > sixthrepo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+SLOT="0"
+IUSE="moo foofoo quoted-name"
+END
 
 mkdir -p home1/.paludis/repositories
 cat <<END > home1/.paludis/use.conf

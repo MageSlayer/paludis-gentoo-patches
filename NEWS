@@ -8,6 +8,9 @@ trunk/:
     * reconcilio no longer accepts the --verbose switch; verbose display is
       now turned on unconditionally.
 
+    * env->query_use(...) now issues a QA notice and returns false for E
+      repository IDs when the flag isn't in IUSE / USE_EXPAND / arch.list.
+
 0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration

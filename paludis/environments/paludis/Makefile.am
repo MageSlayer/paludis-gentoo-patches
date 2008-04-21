@@ -70,14 +70,24 @@ EXTRA_DIST = \
 TESTS = paludis_environment_TEST
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
+	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
 	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_NO_CHOWN="yes" \
+	PALUDIS_TESTS_KEEP_STDERR="yes" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
 check_PROGRAMS = $(TESTS)

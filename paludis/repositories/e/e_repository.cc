@@ -625,6 +625,15 @@ ERepository::query_use(const UseFlagName & f, const PackageID & e) const
         return use_unspecified;
 
     const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+
+    if (! (*id.eapi())[k::supported()])
+    {
+        Log::get_instance()->message("e.query_use.unsupported_eapi", ll_qa, lc_no_context)
+            << "Was asked for the state of USE flag '" << f << "' for ID '" << e
+            << "', but this ID has an unsupported EAPI";
+        return use_disabled;
+    }
+
     if (id.use_key())
     {
         if (id.use_key()->value()->end() != id.use_key()->value()->find(f))
@@ -635,6 +644,45 @@ ERepository::query_use(const UseFlagName & f, const PackageID & e) const
     else
     {
         _imp->need_profiles();
+
+        /* Check that the value is in iuse, and return false if it isn't. Otherwise weird stuff
+         * happens, like ticket:560. But don't for USE_EXPAND and ARCH things on EAPIs where
+         * they don't have to be listed. */
+        do
+        {
+            if (! id.iuse_key())
+                break;
+
+            if (id.iuse_key()->value()->end() != id.iuse_key()->value()->find(IUseFlag(f, use_disabled, 0)))
+                break;
+
+            if (! (*(*id.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
+            {
+                if (arch_flags()->end() != arch_flags()->find(f))
+                    break;
+
+                bool is_expand(false);
+                const tr1::shared_ptr<const UseFlagNameSet> prefixes(use_expand_prefixes());
+                for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
+                        p != p_end && ! is_expand ; ++p)
+                    if (0 == stringify(*p).compare(0, stringify(*p).length(), stringify(f), 0, stringify(*p).length()))
+                        is_expand = true;
+
+                if (is_expand)
+                    break;
+
+                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_no_context)
+                    << "Was asked for the state of USE flag '" << f << "' for ID '" << e
+                    << "', but that flag is not listed in IUSE and is not a USE_EXPAND or ARCH value";
+            }
+            else
+                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_no_context)
+                    << "Was asked for the state of USE flag '" << f << "' for ID '" << e
+                    << "', but that flag is not listed in IUSE";
+
+            return use_disabled;
+        } while (false);
+
         if (query_use_mask(f, e))
             return use_disabled;
         else if (query_use_force(f, e))

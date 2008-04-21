@@ -699,12 +699,15 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", 
-                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-two/pkg-two-1", 
-                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2", 
-                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    parse_user_package_dep_spec("=cat-two/pkg-two-1", UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    parse_user_package_dep_spec("=cat-one/pkg-one-2", UserPackageDepSpecOptions()))),
+                            qo_require_exactly_one)->begin());
 
                 TEST_CHECK(repo->query_use(UseFlagName("flag1"), *p1) == use_enabled);
                 TEST_CHECK(repo->query_use(UseFlagName("flag2"), *p1) == use_disabled);
