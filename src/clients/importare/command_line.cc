@@ -61,8 +61,6 @@ CommandLine::CommandLine() :
 {
     add_usage_line("[ --install ] [ --location path/ ] category/package [ version ] [ slot ]");
 
-    install_args.a_preserve_world.remove();
-    install_args.a_preserve_world.set_specified(true);
     install_args.a_add_to_world_spec.remove();
     install_args.a_debug_build.remove();
     install_args.a_checks.remove();

@@ -24,10 +24,6 @@
 
     <dt><code>insecurity</code></dt>
     <dd>The set of insecure packages (mostly for internal use).</dd>
-
-    <dt><code>ununused</code></dt>
-    <dd>Any packages that, although not part of system or world, should none-the-less not be considered unused (again,
-    mostly for internal use).</dd>
 </dl>
 
 <h2>User Defined Sets</h2>

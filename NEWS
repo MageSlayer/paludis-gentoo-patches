@@ -11,6 +11,11 @@ trunk/:
     * env->query_use(...) now issues a QA notice and returns false for E
       repository IDs when the flag isn't in IUSE / USE_EXPAND / arch.list.
 
+    * importare now adds packages to the world file unless the --preserve-world
+      option is specified; any packages previously installed with importare
+      should be added manually if appropriate.  The special "ununused" set no
+      longer exists.
+
 0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration

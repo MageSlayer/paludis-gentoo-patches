@@ -100,8 +100,7 @@ EnvironmentImplementation::set(const SetName & s) const
     tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result;
 
     /* these sets always exist, even if empty */
-    if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security"
-            || s.data() == "ununused")
+    if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
     {
         Log::get_instance()->message("environment_implementation.standard_set", ll_debug, lc_context) << "Set '" << s << "' is a standard set";
         result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));

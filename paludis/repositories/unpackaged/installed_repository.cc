@@ -388,7 +388,7 @@ InstalledUnpackagedRepository::package_set(const SetName & s) const
     Context context("When fetching package set '" + stringify(s) + "' from '" +
             stringify(name()) + "':");
 
-    if ("ununused" == s.data())
+    if ("everything" == s.data())
     {
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                     make_shared_ptr(new AllDepSpec)));
@@ -421,7 +421,6 @@ InstalledUnpackagedRepository::sets_list() const
 
     tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
-    result->insert(SetName("ununused"));
     return result;
 }
 

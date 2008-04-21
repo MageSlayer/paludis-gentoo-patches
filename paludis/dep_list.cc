@@ -454,6 +454,16 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             break;
         }
 
+    if (! best_visible_candidate && ! already_installed->empty() &&
+        (*already_installed->last())->transient_key() && (*already_installed->last())->transient_key()->value() &&
+        (dl_target_package != d->_imp->opts->target_type || ! d->is_top_level_target(**already_installed->last())))
+    {
+            Log::get_instance()->message("dep_list.no_visible.transient", ll_debug, lc_context) << "No visible packages matching '"
+                << a << "', silently falling back to installed package '" << **already_installed->last() << "' as it is transient";
+            d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
+            return;
+    }
+
     /* are we allowed to override mask reasons? */
     if (! best_visible_candidate && d->_imp->opts->override_masks)
     {
