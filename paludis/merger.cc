@@ -927,7 +927,6 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         /* pick up set*id bits */
         ::fchmod(dst_fd, mode);
         try_to_copy_xattrs(src, dst_fd, result);
-        ::close(dst_fd);
     }
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
