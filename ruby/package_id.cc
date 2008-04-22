@@ -230,22 +230,34 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     breaks_portage -> [:reason, :reason, ...]
+     *
+     *  Do we break Portage, and if so, why?
+     *
+     *  This method may be used by Environment implementations to apply a "we don't want packages that break Portage" mask.
+     */
+    VALUE
+    package_id_breaks_portage(VALUE self)
+    {
+        VALUE result(rb_ary_new());
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        tr1::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
+        if (breakages)
+            for (Set<std::string>::ConstIterator it(breakages->begin()),
+                     it_end(breakages->end()); it_end != it; ++it)
+                rb_ary_push(result, ID2SYM(rb_intern(it->c_str())));
+        return result;
+    }
+
+    /*
      * Document-method: masked?
      *
      * call-seq:
      *     masked? -> true or false
      *
      * Do we have any masks?
-     */
-    /*
-     * Document-method: breaks_portage?
-     *
-     * call-seq:
-     *     breaks_portage? -> true or false
-     *
-     *  Do we break Portage?
-     *
-     *  This method may be used by Environment implementations to apply a "we don't want packages that break Portage" mask.
      */
     template <bool (PackageID::* m_) () const>
     struct PackageIDBool
@@ -431,7 +443,7 @@ namespace
         rb_define_method(c_package_id, "masks", RUBY_FUNC_CAST(&package_id_masks), 0);
         rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
         rb_define_method(c_package_id, "invalidate_masks", RUBY_FUNC_CAST(&package_id_invalidate_masks), 0);
-        rb_define_method(c_package_id, "breaks_portage?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::breaks_portage>::fetch)), 0);
+        rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
         rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<tr1::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);

@@ -283,6 +283,35 @@ namespace test_cases
         }
     } test_version_is_scm;
 
+    /**
+     * \test VersionSpec has_*
+     *
+     */
+    struct VersionHasStuffTest : TestCase
+    {
+        VersionHasStuffTest() : TestCase("version spec has_*") {}
+
+        void run()
+        {
+            TEST_CHECK(! VersionSpec("1.2").has_scm_part());
+            TEST_CHECK(VersionSpec("1.2-scm").has_scm_part());
+            TEST_CHECK(VersionSpec("1.2-scm-r99").has_scm_part());
+            TEST_CHECK(! VersionSpec("9999").has_scm_part());
+            TEST_CHECK(VersionSpec("scm").has_scm_part());
+
+            TEST_CHECK(! VersionSpec("1").has_try_part());
+            TEST_CHECK(VersionSpec("1-try2").has_try_part());
+            TEST_CHECK(VersionSpec("1.2-try3-r4").has_try_part());
+
+            TEST_CHECK(! VersionSpec("1.2").has_local_revision());
+            TEST_CHECK(! VersionSpec("1.2-r0").has_local_revision());
+            TEST_CHECK(! VersionSpec("1.2-r3").has_local_revision());
+            TEST_CHECK(VersionSpec("1.2-r3.0").has_local_revision());
+            TEST_CHECK(VersionSpec("1.2-r3.4").has_local_revision());
+            TEST_CHECK(VersionSpec("1.2-r3.4.5").has_local_revision());
+        }
+    } test_version_has_stuff;
+
     struct VersionSpecHashTest : TestCase
     {
         VersionSpecHashTest() : TestCase("version spec hash_value()") { }

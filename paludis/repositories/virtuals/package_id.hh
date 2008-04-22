@@ -113,7 +113,7 @@ namespace paludis
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void invalidate_masks() const;
         };

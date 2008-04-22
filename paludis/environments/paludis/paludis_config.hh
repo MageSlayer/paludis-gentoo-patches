@@ -147,9 +147,14 @@ namespace paludis
                 std::string root() const;
 
                 /**
-                 * Whether it's ok to unmask things that break Portage.
+                 * Whether it's ok to unmask things that break Portage, regardless of the reason.
                  */
-                bool accept_breaks_portage() const;
+                bool accept_all_breaks_portage() const;
+
+                /**
+                 * Specific reasons why a package might break Portage that it's ok to ignore.
+                 */
+                const Set<std::string> & accept_breaks_portage() const;
 
                 ///\name Userpriv
                 ///\{

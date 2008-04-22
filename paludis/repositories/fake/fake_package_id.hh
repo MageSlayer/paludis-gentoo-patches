@@ -265,7 +265,7 @@ namespace paludis
             virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void perform_action(Action &) const;
 
-            virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void invalidate_masks() const;
 

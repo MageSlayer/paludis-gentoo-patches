@@ -434,10 +434,12 @@ CRANPackageID::arbitrary_less_than_comparison(const PackageID &) const
     return false;
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 CRANPackageID::breaks_portage() const
 {
-    return true;
+    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    why->insert("format");
+    return why;
 }
 
 const std::string

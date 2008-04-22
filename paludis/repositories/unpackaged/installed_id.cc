@@ -660,10 +660,12 @@ InstalledUnpackagedID::invalidate_masks() const
 {
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 InstalledUnpackagedID::breaks_portage() const
 {
-    return true;
+    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    why->insert("format");
+    return why;
 }
 
 bool

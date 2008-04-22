@@ -325,12 +325,12 @@ namespace paludis
             virtual void invalidate_masks() const;
 
             /**
-             * Do we break Portage?
+             * Do we break Portage, and if so, why?
              *
              * This method may be used by Environment implementations to apply a "we don't
              * want packages that break Portage" mask.
              */
-            virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 

@@ -506,20 +506,29 @@ namespace
     class BreaksPortageMask :
         public UnsupportedMask
     {
-        char key() const
-        {
-            return 'B';
-        }
+        private:
+            std::string breakages;
 
-        const std::string description() const
-        {
-            return "breaks Portage";
-        }
+        public:
+            BreaksPortageMask(const std::string & b) :
+                breakages(b)
+            {
+            }
 
-        const std::string explanation() const
-        {
-            return "";
-        }
+            char key() const
+            {
+                return 'B';
+            }
+
+            const std::string description() const
+            {
+                return "breaks Portage";
+            }
+
+            const std::string explanation() const
+            {
+                return breakages;
+            }
     };
 
     class UserConfigMask :
@@ -540,8 +549,19 @@ namespace
 const tr1::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 {
-    if ((! _imp->config->accept_breaks_portage()) && id.breaks_portage())
-        return make_shared_ptr(new BreaksPortageMask);
+    if (! _imp->config->accept_all_breaks_portage())
+    {
+        tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        if (breakages)
+        {
+            std::list<std::string> bad_breakages;
+            std::set_difference(breakages->begin(), breakages->end(),
+                     _imp->config->accept_breaks_portage().begin(), _imp->config->accept_breaks_portage().end(),
+                     std::back_inserter(bad_breakages));
+            if (! bad_breakages.empty())
+                return make_shared_ptr(new BreaksPortageMask(join(breakages->begin(), breakages->end(), " ")));
+        }
+    }
 
     return tr1::shared_ptr<const Mask>();
 }

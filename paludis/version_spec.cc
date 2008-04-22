@@ -649,6 +649,12 @@ VersionSpec::has_scm_part() const
     return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
 }
 
+bool
+VersionSpec::has_local_revision() const
+{
+    return 1 < std::count_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
+}
+
 VersionSpec
 VersionSpec::bump() const
 {

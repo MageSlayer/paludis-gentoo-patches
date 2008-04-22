@@ -89,6 +89,9 @@ namespace paludis
         PackageMask package_mask;
         PackageUnmask package_unmask;
 
+        std::set<std::string> ignore_breaks_portage;
+        bool ignore_all_breaks_portage;
+
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
         mutable tr1::shared_ptr<Hooker> hooker;
@@ -104,6 +107,7 @@ namespace paludis
         Implementation(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
+            ignore_all_breaks_portage(false),
             done_hooks(false),
             overlay_importance(10),
             package_database(new PackageDatabase(e)),
@@ -264,6 +268,18 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                 _imp->mirrors.insert(std::make_pair(tokens.at(0), *t));
         }
     }
+
+    std::list<std::string> ignore_breaks_portage;
+    tokenise_whitespace(_imp->vars->get("PALUDIS_IGNORE_BREAKS_PORTAGE"), std::back_inserter(ignore_breaks_portage));
+    for (std::list<std::string>::const_iterator it(ignore_breaks_portage.begin()),
+             it_end(ignore_breaks_portage.end()); it_end != it; ++it)
+        if ("*" == *it)
+        {
+            _imp->ignore_all_breaks_portage = true;
+            break;
+        }
+        else
+            _imp->ignore_breaks_portage.insert(*it);
 }
 
 template<typename I_>
@@ -683,20 +699,29 @@ namespace
     class BreaksPortageMask :
         public UnsupportedMask
     {
-        char key() const
-        {
-            return 'B';
-        }
+        private:
+            std::string breakages;
 
-        const std::string description() const
-        {
-            return "breaks Portage";
-        }
+        public:
+            BreaksPortageMask(const std::string & b) :
+                breakages(b)
+            {
+            }
 
-        const std::string explanation() const
-        {
-            return "";
-        }
+            char key() const
+            {
+                return 'B';
+            }
+
+            const std::string description() const
+            {
+                return "breaks Portage";
+            }
+
+            const std::string explanation() const
+            {
+                return breakages;
+            }
     };
 
     class UserConfigMask :
@@ -717,8 +742,19 @@ namespace
 const tr1::shared_ptr<const Mask>
 PortageEnvironment::mask_for_breakage(const PackageID & id) const
 {
-    if (id.breaks_portage())
-        return make_shared_ptr(new BreaksPortageMask);
+    if (! _imp->ignore_all_breaks_portage)
+    {
+        tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        if (breakages)
+        {
+            std::set<std::string> bad_breakages;
+            std::set_difference(breakages->begin(), breakages->end(),
+                    _imp->ignore_breaks_portage.begin(), _imp->ignore_breaks_portage.end(),
+                    std::inserter(bad_breakages, bad_breakages.end()));
+            if (! bad_breakages.empty())
+                return make_shared_ptr(new BreaksPortageMask(join(breakages->begin(), breakages->end(), " ")));
+        }
+    }
 
     return tr1::shared_ptr<const Mask>();
 }

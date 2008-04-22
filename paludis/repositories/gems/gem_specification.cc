@@ -624,9 +624,11 @@ GemSpecification::invalidate_masks() const
     PackageID::invalidate_masks();
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 GemSpecification::breaks_portage() const
 {
-    return true;
+    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    why->insert("format");
+    return why;
 }
 

@@ -498,10 +498,10 @@ VirtualsPackageID::invalidate_masks() const
     PackageID::invalidate_masks();
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 VirtualsPackageID::breaks_portage() const
 {
-    return (version().has_try_part() || version().has_scm_part());
+    return tr1::shared_ptr<const Set<std::string> >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >

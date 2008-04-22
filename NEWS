@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * portage_compatible in environment.conf is deprecated in favour of the new,
+      more fine-grained accept_breaks_portage.  When using Portage configuration
+      files, this is also supported as PALUDIS_IGNORE_BREAKS_PORTAGE in
+      make.conf, for the convenience of users who prefer to use
+      Portage-compatible configuration files without caring about Portage
+      compatibility.
+
 0.26.0_pre3:
     * reconcilio no longer accepts the --verbose switch; verbose display is
       now turned on unconditionally.

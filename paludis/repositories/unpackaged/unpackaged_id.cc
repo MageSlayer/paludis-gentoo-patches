@@ -336,10 +336,12 @@ UnpackagedID::invalidate_masks() const
 {
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 UnpackagedID::breaks_portage() const
 {
-    return true;
+    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    why->insert("format");
+    return why;
 }
 
 bool

@@ -21,14 +21,19 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/set.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 ERepositoryID::breaks_portage() const
 {
-    return (version().has_try_part() || version().has_scm_part()
-            || (! (*eapi())[k::supported()]) || (*((*eapi())[k::supported()]))[k::breaks_portage()]);
+    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    if (version().has_try_part() || version().has_scm_part() || version().has_local_revision())
+        why->insert("version");
+    if ((! (*eapi())[k::supported()]) || (*((*eapi())[k::supported()]))[k::breaks_portage()])
+        why->insert("eapi");
+    return why;
 }
 

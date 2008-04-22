@@ -167,6 +167,11 @@ namespace paludis
              * Use is_scm() if -9999 etc is desired.
              */
             bool has_scm_part() const;
+
+            /**
+             * Do we have a local revision (-r1.2...)?
+             */
+            bool has_local_revision() const;
     };
 }
 

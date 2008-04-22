@@ -119,7 +119,7 @@ namespace paludis
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const;
                 virtual std::size_t extra_hash_value() const;
 
-                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void invalidate_masks() const;
         };

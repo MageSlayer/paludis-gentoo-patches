@@ -109,7 +109,8 @@ namespace paludis
 
         mutable Mutex environment_conf_mutex;
         mutable bool has_environment_conf;
-        mutable bool accept_breaks_portage;
+        mutable bool accept_all_breaks_portage;
+        mutable Set<std::string> accept_breaks_portage;
         mutable std::string reduced_username;
 
         Implementation(PaludisEnvironment * const);
@@ -129,7 +130,7 @@ namespace paludis
         package_unmask_conf(new PackageMaskConf(e)),
         mirrors_conf(new MirrorsConf(e)),
         has_environment_conf(false),
-        accept_breaks_portage(true),
+        accept_all_breaks_portage(false),
         reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild"))
     {
     }
@@ -149,6 +150,7 @@ namespace paludis
                 new Map<std::string, std::string>);
         conf_vars->insert("ROOT", root);
         conf_vars->insert("root", root);
+        conf_vars->insert("accept_breaks_portage", "*");
         tr1::shared_ptr<FSEntry> world_file;
 
         if ((FSEntry(config_dir) / "environment.conf").exists())
@@ -181,7 +183,25 @@ namespace paludis
             if (! kv->get("reduced_username").empty())
                 reduced_username = kv->get("reduced_username");
 
-            accept_breaks_portage = kv->get("portage_compatible").empty();
+            if (! kv->get("portage_compatible").empty())
+                Log::get_instance()->message("paludis_environment.portage_compatible.deprecated", ll_warning, lc_context)
+                    << "The 'portage_compatible' variable in environment.conf is deprecated,"
+                    << " set 'accept_breaks_portage' to empty instead.";
+            else
+            {
+                std::list<std::string> breakages;
+                tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
+                for (std::list<std::string>::const_iterator it(breakages.begin()),
+                         it_end(breakages.end()); it_end != it; ++it)
+                    if ("*" == *it)
+                    {
+                        accept_all_breaks_portage = true;
+                        break;
+                    }
+                    else
+                        accept_breaks_portage.insert(*it);
+            }
+
             distribution = kv->get("distribution");
 
             if (! kv->get("world").empty())
@@ -678,6 +698,14 @@ PaludisConfig::reduced_username() const
 }
 
 bool
+PaludisConfig::accept_all_breaks_portage() const
+{
+    _imp->need_environment_conf();
+
+    return _imp->accept_all_breaks_portage;
+}
+
+const Set<std::string> &
 PaludisConfig::accept_breaks_portage() const
 {
     _imp->need_environment_conf();

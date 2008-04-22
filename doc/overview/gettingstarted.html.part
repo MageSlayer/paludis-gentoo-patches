@@ -18,9 +18,6 @@
         is less widely used, and so may not support all Portage options perfectly.</li>
 
         <li>It is only available on Gentoo and Gentoo-derived distributions.</li>
-
-        <li>You will be unable to use packages that use EAPIs that Portage does not support. The packages in the Paludis
-        overlay fall into this category.</li>
     </ul>
     </li>
 
@@ -44,6 +41,12 @@ Paludis configuration can be detected, Paludis will try to fall back to using th
 All Paludis clients that use configuration can also be told explicitly to use Portage configuration by using
 <code>--environment portage</code> (or <code>--environment portage:/other/root</code> to use configuration files in
 another filesystem root).</p>
+
+<p>By default, will be unable to use packages that use EAPIs that Portage does not support. The packages in the Paludis
+overlay fall into this category.  You may override this by setting the <code>PALUDIS_IGNORE_BREAKS_PORTAGE</code>
+in <code>make.conf</code>; the allowed values are the same as for the <code>accept_breaks_portage</code>
+key in Paludis's <a href="../configuration/environment.html"><code>environment.conf</code></a>,
+except that the default is an empty string.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 

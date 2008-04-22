@@ -920,10 +920,10 @@ FakePackageID::perform_action(Action & a) const
     a.accept(b);
 }
 
-bool
+tr1::shared_ptr<const Set<std::string> >
 FakePackageID::breaks_portage() const
 {
-    return (version().has_try_part() || version().has_scm_part());
+    return tr1::shared_ptr<const Set<std::string> >();
 }
 
 const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
