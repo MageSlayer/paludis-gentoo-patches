@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_pre3:
     * reconcilio no longer accepts the --verbose switch; verbose display is
       now turned on unconditionally.
 
