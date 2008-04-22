@@ -311,6 +311,10 @@ NDBAMMerger::make_arrows(const MergeStatusFlags & flags) const
                 result[2] = '*';
                 continue;
 
+            case msi_xattr:
+                result[2] = '+';
+                continue;
+
             case last_msi:
                 break;
         }

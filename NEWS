@@ -12,6 +12,8 @@ trunk/:
       Portage-compatible configuration files without caring about Portage
       compatibility.
 
+    * Extended attributes are now preserved when merging, where supported.
+
 0.26.0_pre3:
     * reconcilio no longer accepts the --verbose switch; verbose display is
       now turned on unconditionally.

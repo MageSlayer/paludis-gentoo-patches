@@ -35,6 +35,11 @@
 #include <cstring>
 #include <list>
 
+#include "config.h"
+#ifdef HAVE_XATTRS
+#  include <attr/xattr.h>
+#endif
+
 using namespace paludis;
 
 #include <paludis/merger-se.cc>
@@ -721,6 +726,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         /* set*id bits */
         if (0 != ::fchmod(output_fd, src_perms))
             throw MergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+        try_to_copy_xattrs(src, output_fd, result);
 
         char buf[4096];
         ssize_t count;
@@ -910,11 +916,18 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     {
         Log::get_instance()->message("merger.dir.rename_failed", ll_debug, lc_context) <<
             "rename failed. Falling back to recursive copy.";
+
         dst.mkdir(mode);
+        FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY | O_DIRECTORY));
+        if (-1 == dst_fd)
+            throw MergerError("Could not get an FD for the directory '"
+                    + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
         if (! _params[k::no_chown()])
-            dst.chown(dest_uid, dest_gid);
+            ::fchown(dst_fd, dest_uid, dest_gid);
         /* pick up set*id bits */
-        dst.chmod(mode);
+        ::fchmod(dst_fd, mode);
+        try_to_copy_xattrs(src, dst_fd, result);
+        ::close(dst_fd);
     }
 
     if (0 != _params[k::environment()]->perform_hook(extend_hook(
@@ -1088,4 +1101,84 @@ Merger::extend_hook(const Hook & h)
         ("ROOT", stringify(_params[k::root()]))
         ("IMAGE", stringify(_params[k::image()]));
 }
+
+#ifdef HAVE_XATTRS
+
+void
+Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & flags)
+{
+    FDHolder src_fd(::open(stringify(src).c_str(), O_RDONLY));
+
+    ssize_t list_sz(flistxattr(src_fd, 0, 0));
+    if (-1 == list_sz)
+    {
+        if (ENOTSUP != errno)
+            Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+                "Got error '" << ::strerror(errno) << "' when trying to find extended attributes size for '" << src << "'";
+        return;
+    }
+
+    tr1::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
+    list_sz = flistxattr(src_fd, list_holder.get(), list_sz);
+    if (-1 == list_sz)
+    {
+        Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+            "Got error '" << ::strerror(errno) << "' when trying to find extended attributes for '" << src << "'";
+        return;
+    }
+
+    for (int offset(0) ; list_sz > 0 ; )
+    {
+        std::string key(list_holder.get() + offset);
+        do
+        {
+            ssize_t value_sz(fgetxattr(src_fd, key.c_str(), 0, 0));
+            if (-1 == value_sz)
+            {
+                Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+                    "Got error '" << ::strerror(errno) << "' when trying to read size of extended attribute '" <<
+                    key << "' for '" << src << "'";
+                break;
+            }
+
+            tr1::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
+            value_sz = fgetxattr(src_fd, key.c_str(), value_holder.get(), value_sz);
+            if (-1 == value_sz)
+            {
+                Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+                    "Got error '" << ::strerror(errno) << "' when trying to read extended attribute '" <<
+                    key << "' for '" << src << "'";
+            }
+
+            if (-1 == fsetxattr(dst_fd, key.c_str(), value_holder.get(), value_sz, 0))
+            {
+                if (ENOTSUP == errno)
+                {
+                    Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+                        "Could not copy extended attributes from source file '" << src << "'";
+                    return;
+                }
+                else
+                    Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
+                        "Got error '" << ::strerror(errno) << "' when trying to set extended attribute '" <<
+                        key << "' taken from source file '" << src << "'";
+            }
+
+            flags += msi_xattr;
+
+        } while (false);
+
+        list_sz -= (key.length() + 1);
+        offset += (key.length() + 1);
+    }
+}
+
+#else
+
+void
+Merger::try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &)
+{
+}
+
+#endif
 

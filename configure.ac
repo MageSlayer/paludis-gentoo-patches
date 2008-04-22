@@ -473,6 +473,28 @@ AC_CHECK_FUNCS([lchflags])
 AM_CONDITIONAL(HAVE_LCHFLAGS, test x$ac_cv_func_lchflags = xyes)
 dnl }}}
 
+dnl {{{ check for listxattrf etc
+AC_MSG_CHECKING([for f*xattr function family])
+AC_COMPILE_IFELSE([
+#include <sys/types.h>
+#include <attr/xattr.h>
+
+int main(int, char **)
+{
+	flistxattr(0, 0, 0);
+	fgetxattr(0, 0, 0, 0);
+	fsetxattr(0, 0, 0, 0, 0);
+}
+],
+	[AC_MSG_RESULT([yes])
+	 HAVE_XATTRS=yes],
+	[AC_MSG_RESULT([no])
+	 HAVE_XATTRS=])
+if test "x$HAVE_XATTRS" = "xyes"; then
+    AC_DEFINE([HAVE_XATTRS], [1], [Have xattrs support])
+fi
+dnl }}}
+
 dnl {{{ check for canonicalize_file_name function
 AC_CHECK_FUNCS([canonicalize_file_name])
 AM_CONDITIONAL(HAVE_CANONICALIZE_FILE_NAME, test x$ac_cv_func_canonicalize_file_name = xyes)

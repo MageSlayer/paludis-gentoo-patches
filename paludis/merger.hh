@@ -84,6 +84,7 @@ namespace paludis
             void record_renamed_dir_recursive(const FSEntry &);
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
+            void try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &);
             bool symlink_needs_rewriting(const FSEntry & sym);
 
         protected:

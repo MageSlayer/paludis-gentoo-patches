@@ -11,6 +11,7 @@ make_enum_MergeStatusFlag()
     key msi_used_existing           "We used the existing entry (e.g. dir over dir)"
     key msi_fixed_ownership         "We fixed owner or group from the reduced id"
     key msi_setid_bits              "The source file had set*id bits"
+    key msi_xattr                   "The source file had xattr bits"
     key msi_as_hardlink             "We detected a hardlink and merged it as such"
 
     doxygen_comment << "END"
