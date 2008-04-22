@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dorsync dorsync+ssh dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
+CLEANFILES = *~ .keep dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dorsync dorsync+ssh dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
 SUBDIRS = .
 
 .keep :
@@ -8,6 +8,14 @@ SUBDIRS = .
 libexecprogdir = $(libexecdir)/paludis/syncers/
 
 libexecprog_SCRIPTS = \
+	dobzr \
+	dobzr+aftp \
+	dobzr+file \
+	dobzr+ftp \
+	dobzr+http \
+	dobzr+https \
+	dobzr+sftp \
+	dobzr+ssh \
 	docvs+ext \
 	docvs+pserver \
 	docvs+ssh \
@@ -52,6 +60,8 @@ check_PROGRAMS = $(TESTS)
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
+dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh : dobzr.in
+	cat $? > $@
 docvs+ext docvs+pserver docvs+ssh : docvs.in
 	cat $? > $@
 dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh : dodarcs.in

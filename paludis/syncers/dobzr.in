@@ -1,0 +1,90 @@
+#!/bin/bash
+
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+
+old_set=$-
+set -a
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+[[ "${old_set}" == *a* ]] || set +a
+
+LOCAL=
+REMOTE=
+
+BZR_CHECKOUT_OPTIONS=( )
+BZR_SWITCH_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --bzr-checkout-option=*)
+            BZR_CHECKOUT_OPTIONS[${#BZR_CHECKOUT_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --bzr-switch-option=*)
+            BZR_SWITCH_OPTIONS[${#BZR_SWITCH_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == bzr ]]; then
+                echo "    URL syntax: ${PROTO}://SERVER/PATH"
+            elif [[ "${PROTO}" == bzr+file ]]; then
+                echo "    URL syntax: ${PROTO}:///PATH"
+            elif [[ "${PROTO}" == bzr+ssh || "${PROTO}" == bzr+sftp ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER/PATH"
+            elif [[ "${PROTO}" == bzr+ftp || "${PROTO}" == bzr+aftp ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER/PATH"
+            elif [[ "${PROTO}" == bzr+http || "${PROTO}" == bzr+https ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+
+            echo "    Options:"
+            echo "        --bzr-checkout-option=OPTION       Pass OPTION to bzr checkout"
+            echo "        --bzr-switch-option=OPTION         Pass OPTION to bzr switch"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+[[ "${REMOTE}" != bzr+ssh://* ]] && REMOTE="${REMOTE#bzr+}"
+
+if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.bzr" ]]; then
+    eerror "'${LOCAL}' exists but it is not a Bzr repository"
+    exit 1
+fi
+
+if [[ -d "${LOCAL}/.bzr" ]]; then
+    cd "${LOCAL}" && ${BZR_WRAPPER} bzr switch "${BZR_SWITCH_OPTIONS[@]}" "${REMOTE}"
+else
+    ${BZR_WRAPPER} bzr checkout --lightweight "${BZR_CHECKOUT_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
+fi
+

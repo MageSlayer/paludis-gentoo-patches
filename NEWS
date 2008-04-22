@@ -14,6 +14,8 @@ trunk/:
 
     * Extended attributes are now preserved when merging, where supported.
 
+    * paludis now supports syncing from bzr repositories.
+
 0.26.0_pre3:
     * reconcilio no longer accepts the --verbose switch; verbose display is
       now turned on unconditionally.
