@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -46,6 +46,12 @@ template class WrappedForwardIterator<KeyValueConfigFile::Defaults::ConstIterato
          const std::pair<const std::string, std::string> >;
 template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag,
          const std::pair<const std::string, std::string> >;
+
+template class InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>;
+template class PrivateImplementationPattern<ConfigFile::Source>;
+template class PrivateImplementationPattern<LineConfigFile>;
+template class PrivateImplementationPattern<KeyValueConfigFile>;
+template class PrivateImplementationPattern<KeyValueConfigFile::Defaults>;
 
 ConfigFileError::ConfigFileError(const std::string & f, const std::string & m) throw () :
     ConfigurationError("Configuration file error: " + (f.empty() ? m : f + ": " + m))

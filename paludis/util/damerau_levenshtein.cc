@@ -24,6 +24,8 @@
 
 using namespace paludis;
 
+template class PrivateImplementationPattern<DamerauLevenshtein>;
+
 namespace paludis
 {
     template <>

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/options.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

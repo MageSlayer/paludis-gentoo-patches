@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,10 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH 1
 
-#include <iterator>
+#include <paludis/util/dir_iterator-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <iterator>
 
 #ifdef PALUDIS_HAVE_CONCEPTS
 #  include <concepts>
@@ -59,16 +60,6 @@ namespace paludis
 
             ///\}
     };
-
-#include <paludis/util/dir_iterator-se.hh>
-
-    /**
-     * Options for a DirIterator.
-     *
-     * \see DirIteratorOption
-     * \see DirIterator
-     */
-    typedef Options<DirIteratorOption> DirIteratorOptions;
 
     /**
      * An iterator that iterates over the contents of a directory.
@@ -142,6 +133,10 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<DirIterator>;
+#endif
 }
 
 #ifdef PALUDIS_HAVE_CONCEPTS

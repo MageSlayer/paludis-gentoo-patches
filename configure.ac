@@ -500,6 +500,21 @@ if test "x$have_dirent_dtype" = "xyes"; then
 fi
 dnl }}}
 
+dnl {{{ check whether we can do extern template
+CAN_USE_EXTERN_TEMPLATE=
+AC_MSG_CHECKING([whether we can use extern template])
+AC_COMPILE_IFELSE([
+template <typename T_> struct S { };
+extern template struct S<int>;
+],
+	[AC_MSG_RESULT([yes])
+	 CAN_USE_EXTERN_TEMPLATE=yes
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+	 ],
+	[AC_MSG_RESULT([no])])
+dnl }}}
+
 dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then
@@ -590,6 +605,8 @@ AC_DEFUN([CHECK_CXXFLAG], [
 	CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS $1 -Werror"
 	AC_COMPILE_IFELSE([
 #include <string>
+template <typename T_> struct S { };
+extern template struct S<int>;
 #include <iostream>
 int main(int, char **)
 {
@@ -653,7 +670,6 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	if test "x$cxxflag_success" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WSHADOW=-Wno-shadow
 	fi
-	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 	CHECK_CXXFLAG([-Wlogical-op])
 	CHECK_CXXFLAG([-Wvla])
 	CHECK_CXXFLAG([-Wwrite-strings])
@@ -663,11 +679,29 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
 	fi
 	CHECK_CXXFLAG([-Wno-ignored-qualifiers])
-	CHECK_CXXFLAG([-pedantic])
+	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 else
 	CHECK_CXXFLAG([-Wall])
+	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 fi
 AC_MSG_RESULT([${cxxflags_message}])
+
+if test x$CAN_USE_EXTERN_TEMPLATE = xyes ; then
+	AC_MSG_CHECKING([whether -pedantic works if we use extern template])
+	save_CXXFLAGS=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS -pedantic"
+	AC_COMPILE_IFELSE([
+template <typename T_> struct S { };
+extern template struct S<int>;
+],
+	[AC_MSG_RESULT([yes])
+	 CHECK_CXXFLAG([-pedantic])],
+	[AC_MSG_RESULT([no])])
+else
+	CHECK_CXXFLAG([-pedantic])
+fi
+CXXFLAGS=$save_CXXFLAGS
+
 AC_SUBST([PALUDIS_CXXFLAGS])
 AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])

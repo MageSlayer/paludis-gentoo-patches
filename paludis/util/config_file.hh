@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,12 +20,14 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
+#include <paludis/util/config_file-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 #include <iosfwd>
 #include <string>
@@ -43,10 +45,6 @@
 
 namespace paludis
 {
-#include <paludis/util/config_file-se.hh>
-
-    class FSEntry;
-
     /**
      * Raised if an error is encountered parsing a configuration file.
      *
@@ -369,6 +367,15 @@ namespace paludis
      */
     template<>
     KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> >);
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>;
+    extern template class PrivateImplementationPattern<ConfigFile::Source>;
+    extern template class PrivateImplementationPattern<LineConfigFile>;
+    extern template class PrivateImplementationPattern<KeyValueConfigFile>;
+    extern template class PrivateImplementationPattern<KeyValueConfigFile::Defaults>;
+#endif
+
 }
 
 #endif
