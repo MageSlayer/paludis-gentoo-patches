@@ -267,7 +267,11 @@ Command::with_sandbox()
         Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
             << "Already inside sandbox, not spawning another sandbox instance";
     else
+    {
         _imp->command = "sandbox " + _imp->command;
+        if (getenv_with_default("BASH_ENV", "").empty())
+            with_setenv("BASH_ENV", "/dev/null");
+    }
 #endif
 
     return *this;
@@ -402,8 +406,6 @@ paludis::run_command(const Command & cmd)
 
                 for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
                     setenv(s->first.c_str(), s->second.c_str(), 1);
-
-                setenv("PATH_NOT_CLOBBERED_BY_SANDBOX", getenv_with_default("PATH", "").c_str(), 1);
 
                 if (cmd.pipe_command_handler())
                 {
