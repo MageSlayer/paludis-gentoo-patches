@@ -11,6 +11,10 @@ configuration files which may be bash files (<code>package_mask.bash</code> etc)
 
 <p>Each line in the file consists of a specification.</p>
 
+<p>The specifications in <code>package_unmask.conf</code> override the
+specifications in <code>package_mask.conf</code>. If a package version is
+matched by entries in both files, it is unmasked.</p>
+
 <h2>Example</h2>
 
 <p>An example <code>package_mask.conf</code>:</p>
