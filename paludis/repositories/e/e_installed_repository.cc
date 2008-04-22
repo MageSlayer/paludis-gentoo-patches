@@ -253,6 +253,7 @@ EInstalledRepository::package_set(const SetName & s) const
                     .type(sft_simple)
                     .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tag)
+                    .set_operator_mode(sfsmo_natural)
                     .environment(_imp->params.environment));
             return world.contents();
         }

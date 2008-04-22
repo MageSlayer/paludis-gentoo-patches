@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -119,6 +119,16 @@ namespace paludis
              */
             void remove(const std::string &);
     };
+
+    /**
+     * Split a SetName into a SetName and a SetFileSetOperatorMode.
+     *
+     * \see SetName
+     * \ingroup g_repository
+     * \since 0.26
+     */
+    std::pair<SetName, SetFileSetOperatorMode> find_base_set_name_and_suffix_mode(const SetName &)
+        PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif

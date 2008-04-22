@@ -188,11 +188,31 @@ namespace
                 tokens.insert(tokens.begin(), "*");
             }
 
-            if ("*" == tokens.at(0))
+            if ("*" == tokens.at(0) || ((sfsmo_star == params.set_operator_mode) &&
+                        ("?" == tokens.at(0) || "?:" == tokens.at(0))))
             {
                 if (std::string::npos == tokens.at(1).find('/'))
                 {
-                    tr1::shared_ptr<NamedSetDepSpec> spec(new NamedSetDepSpec(SetName(tokens.at(1))));
+                    tr1::shared_ptr<NamedSetDepSpec> spec;
+                    switch (params.set_operator_mode)
+                    {
+                        case sfsmo_natural:
+                            spec.reset(new NamedSetDepSpec(SetName(tokens.at(1))));
+                            break;
+
+                        case sfsmo_star:
+                            {
+                                std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(SetName(tokens.at(1))));
+                                spec.reset(new NamedSetDepSpec(SetName(stringify(s.first) + "*")));
+                            }
+                            break;
+
+                        case last_sfsmo:
+                            break;
+                    }
+                    if (! spec)
+                        throw InternalError(PALUDIS_HERE, "Bad params.set_name_suffix");
+
                     result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
                                 new TreeLeaf<SetSpecTree, NamedSetDepSpec>(spec)));
                 }
@@ -568,5 +588,16 @@ void
 SetFile::remove(const std::string & p)
 {
     return _imp->handler->remove(p);
+}
+
+std::pair<SetName, SetFileSetOperatorMode>
+paludis::find_base_set_name_and_suffix_mode(const SetName & s)
+{
+    Context context("When working out whether '" + stringify(s) + "' has operators:");
+    std::string ss(stringify(s));
+    if (ss.length() >= 2 && '*' == ss[ss.length() - 1])
+        return std::make_pair(SetName(ss.substr(0, ss.length() - 1)), sfsmo_star);
+    else
+        return std::make_pair(s, sfsmo_natural);
 }
 

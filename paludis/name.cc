@@ -388,6 +388,13 @@ SetNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
+        if (s.length() > 1 && '*' == s[s.length() - 1] && '*' != s[s.length() - 2])
+        {
+            Context c("When validating set name '" + s + "':");
+            validate(s.substr(0, s.length() - 1));
+            return;
+        }
+
         if ('-' == s[0] || '.' == s[0])
             break;
 

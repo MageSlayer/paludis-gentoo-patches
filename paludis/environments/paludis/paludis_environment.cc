@@ -341,48 +341,52 @@ PaludisEnvironment::syncers_dirs() const
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-PaludisEnvironment::local_set(const SetName & s) const
+PaludisEnvironment::local_set(const SetName & ss) const
 {
     using namespace tr1::placeholders;
 
-    Context context("When looking for package set '" + stringify(s) + "' in paludis environment:");
+    Context context("When looking for package set '" + stringify(ss) + "' in paludis environment:");
 
     Lock l(_imp->sets_mutex);
 
-    std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(s));
+    std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(ss));
     if (i != _imp->sets.end())
         return i->second;
 
-    FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
-    tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
+    std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
-    if ((dir / (stringify(s) + ".bash")).exists())
+    FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
+    tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(s.first) + ".conf"));
+
+    if ((dir / (stringify(s.first) + ".bash")).exists())
     {
         SetFile f(SetFileParams::create()
-                .file_name(dir / (stringify(s) + ".bash"))
+                .file_name(dir / (stringify(s.first) + ".bash"))
                 .type(sft_paludis_bash)
                 .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
+                .set_operator_mode(s.second)
                 .environment(this));
 
-        _imp->sets.insert(std::make_pair(s, f.contents()));
+        _imp->sets.insert(std::make_pair(ss, f.contents()));
         return f.contents();
     }
-    else if ((dir / (stringify(s) + ".conf")).exists())
+    else if ((dir / (stringify(s.first) + ".conf")).exists())
     {
         SetFile f(SetFileParams::create()
-                .file_name(dir / (stringify(s) + ".conf"))
+                .file_name(dir / (stringify(s.first) + ".conf"))
                 .type(sft_paludis_conf)
                 .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
+                .set_operator_mode(s.second)
                 .environment(this));
 
-        _imp->sets.insert(std::make_pair(s, f.contents()));
+        _imp->sets.insert(std::make_pair(ss, f.contents()));
         return f.contents();
     }
     else
     {
-        _imp->sets.insert(std::make_pair(s, tr1::shared_ptr<SetSpecTree::ConstItem>()));
+        _imp->sets.insert(std::make_pair(ss, tr1::shared_ptr<SetSpecTree::ConstItem>()));
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
     }
 }

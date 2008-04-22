@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -343,7 +343,27 @@ namespace test_cases
         }
     } test_keyword_name_validation;
 
+    struct SetNameValidationTest : public TestCase
+    {
+        SetNameValidationTest() : TestCase("validation") { }
 
-
+        void run()
+        {
+            SetName k("set0_-");
+            SetName k1("set0_-");
+            SetName k2("set0*");
+            TEST_CHECK_THROWS(k = SetName(""), NameError);
+            TEST_CHECK_THROWS(k = SetName("!!!"), NameError);
+            TEST_CHECK_THROWS(k = SetName("~"), NameError);
+            TEST_CHECK_THROWS(k = SetName("-"), NameError);
+            TEST_CHECK_THROWS(k = SetName("f?oo"), NameError);
+            TEST_CHECK_THROWS(k = SetName("*"), NameError);
+            TEST_CHECK_THROWS(k = SetName("?"), NameError);
+            TEST_CHECK_THROWS(k = SetName("*set"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set**"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set*?"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set?"), NameError);
+        }
+    } test_set_name_validator;
 }
 

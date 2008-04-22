@@ -19,5 +19,20 @@ make_enum_SetFileType()
 END
 }
 
+make_enum_SetFileSetOperatorMode()
+{
+    prefix sfsmo
 
+    key sfsmo_natural              "Do not change operators"
+    key sfsmo_star                 "Change operators to * and make set names end in *"
+
+    doxygen_comment << "END"
+        /**
+         * Whether to change operators and set name suffixes.
+         *
+         * \see SetFile
+         * \ingroup g_repository
+         */
+END
+}
 

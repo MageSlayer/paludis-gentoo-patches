@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -285,7 +285,7 @@ module Paludis
 
         def test_package_set_error
             assert_raise SetNameError do
-                env.set('broken*')
+                env.set('broken#')
             end
         end
     end
@@ -301,7 +301,7 @@ module Paludis
 
         def test_package_set_error
             assert_raise SetNameError do
-                env.set('broken*')
+                env.set('broken#')
             end
         end
     end

@@ -25,3 +25,11 @@ cat <<"END" > paludisconf1
   # the end
 END
 
+cat <<"END" > override
+? foo/foo
+* >=bar/bar-1.23
+? >=baz/baz-1.23
+* set
+* set2*
+END
+

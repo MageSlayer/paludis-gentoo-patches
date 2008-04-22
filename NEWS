@@ -16,6 +16,9 @@ trunk/:
       should be added manually if appropriate.  The special "ununused" set no
       longer exists.
 
+    * If 'foo' is a user defined set, we automatically create 'foo*' which is
+      like 'foo' but with all operators treated as '*' recursively.
+
 0.26.0_pre2:
     * paludis now supports ${root} in environment.conf.  This can be
       used when defining the "world" key, so that the configuration

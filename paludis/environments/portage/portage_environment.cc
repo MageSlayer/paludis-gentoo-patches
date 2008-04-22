@@ -795,6 +795,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
             .type(sft_simple)
             .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
             .tag(tr1::shared_ptr<DepTag>())
+            .set_operator_mode(sfsmo_natural)
             .environment(this));
     world.add(s);
     world.rewrite();
@@ -816,6 +817,7 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
                 .type(sft_simple)
                 .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tr1::shared_ptr<DepTag>())
+                .set_operator_mode(sfsmo_natural)
                 .environment(this));
 
         world.remove(s);
@@ -841,6 +843,7 @@ PortageEnvironment::world_set() const
                 .type(sft_simple)
                 .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tag)
+                .set_operator_mode(sfsmo_natural)
                 .environment(this));
         return world.contents();
     }

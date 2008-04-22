@@ -90,28 +90,31 @@ ERepositorySets::~ERepositorySets()
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-ERepositorySets::package_set(const SetName & s) const
+ERepositorySets::package_set(const SetName & ss) const
 {
     using namespace tr1::placeholders;
 
-    if ("system" == s.data())
-        throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
-    else if ("security" == s.data())
-        return security_set(false);
-    else if ("insecurity" == s.data())
-        return security_set(true);
-    else if ((_imp->params.setsdir / (stringify(s) + ".conf")).exists())
-    {
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->e_repository->name())));
+    std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
-        FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
-        Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
+    if ("system" == s.first.data())
+        throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
+    else if ("security" == s.first.data())
+        return security_set(false);
+    else if ("insecurity" == s.first.data())
+        return security_set(true);
+    else if ((_imp->params.setsdir / (stringify(s.first) + ".conf")).exists())
+    {
+        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
+
+        FSEntry ff(_imp->params.setsdir / (stringify(s.first) + ".conf"));
+        Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
         SetFile f(SetFileParams::create()
                 .file_name(ff)
                 .environment(_imp->environment)
                 .type(sft_paludis_conf)
                 .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .set_operator_mode(s.second)
                 .tag(tag));
 
         return f.contents();

@@ -75,6 +75,7 @@ namespace test_cases
                     .type(sft_simple)
                     .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tr1::shared_ptr<DepTag>())
+                    .set_operator_mode(sfsmo_natural)
                     .environment(0));
 
             {
@@ -138,6 +139,7 @@ namespace test_cases
                     .type(sft_paludis_conf)
                     .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tr1::shared_ptr<DepTag>())
+                    .set_operator_mode(sfsmo_natural)
                     .environment(0));
 
             {
@@ -190,5 +192,44 @@ namespace test_cases
             return false;
         }
     } test_paludis_conf;
+
+    struct OverrideTest : TestCase
+    {
+        OverrideTest() : TestCase("operator overrides") { }
+
+        void run()
+        {
+            using namespace tr1::placeholders;
+
+            SetFile f(SetFileParams::create()
+                    .file_name(FSEntry("set_file_TEST_dir/override"))
+                    .type(sft_paludis_conf)
+                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(tr1::shared_ptr<DepTag>())
+                    .set_operator_mode(sfsmo_natural)
+                    .environment(0));
+
+            {
+                SetSpecStringifier p;
+                f.contents()->accept(p);
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/bar-1.23 set set2* ) ");
+            }
+
+            SetFile fstar(SetFileParams::create()
+                    .file_name(FSEntry("set_file_TEST_dir/override"))
+                    .type(sft_paludis_conf)
+                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(tr1::shared_ptr<DepTag>())
+                    .set_operator_mode(sfsmo_star)
+                    .environment(0));
+
+            {
+                SetSpecStringifier p;
+                fstar.contents()->accept(p);
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/foo >=bar/bar-1.23 >=baz/baz-1.23 set* set2* ) ");
+            }
+
+        }
+    } test_overrides;
 }
 
