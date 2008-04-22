@@ -53,7 +53,7 @@ installusersyncersdir = $(datadir)/paludis/syncers
 installusersyncers_DATA = .keep
 
 TESTS =
-EXTRA_DIST = $(libexecprog_SCRIPTS) docvs.in dodarcs.in dogit.in dorsync.in dosvn.in dotar.in
+EXTRA_DIST = $(libexecprog_SCRIPTS) dobzr.in docvs.in dodarcs.in dogit.in dorsync.in dosvn.in dotar.in
 
 check_SCRIPTS =
 check_PROGRAMS = $(TESTS)
