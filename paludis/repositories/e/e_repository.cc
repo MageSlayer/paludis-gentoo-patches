@@ -671,14 +671,20 @@ ERepository::query_use(const UseFlagName & f, const PackageID & e) const
                 if (is_expand)
                     break;
 
-                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_no_context)
-                    << "Was asked for the state of USE flag '" << f << "' for ID '" << e
-                    << "', but that flag is not listed in IUSE and is not a USE_EXPAND or ARCH value";
+                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_context)
+                    << "Was asked for the state of "
+                    << (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_use()]
+                    << " flag '" << f << "' for ID '" << e
+                    << "', but that flag is not listed in " << id.iuse_key()->raw_name() << " and is not a "
+                    << (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_use_expand()] << " or "
+                    << (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()] << " value";
             }
             else
-                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_no_context)
-                    << "Was asked for the state of USE flag '" << f << "' for ID '" << e
-                    << "', but that flag is not listed in IUSE";
+                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_context)
+                    << "Was asked for the state of "
+                    << (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_use()]
+                    << " flag '" << f << "' for ID '" << e
+                    << "', but that flag is not listed in " << id.iuse_key()->raw_name();
 
             return use_disabled;
         } while (false);
