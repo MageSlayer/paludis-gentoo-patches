@@ -94,15 +94,16 @@ ERepositorySets::package_set(const SetName & ss) const
 {
     using namespace tr1::placeholders;
 
+    if ("system" == ss.data())
+        throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
+    else if ("security" == ss.data())
+        return security_set(false);
+    else if ("insecurity" == ss.data())
+        return security_set(true);
+
     std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
-    if ("system" == s.first.data())
-        throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
-    else if ("security" == s.first.data())
-        return security_set(false);
-    else if ("insecurity" == s.first.data())
-        return security_set(true);
-    else if ((_imp->params.setsdir / (stringify(s.first) + ".conf")).exists())
+    if ((_imp->params.setsdir / (stringify(s.first) + ".conf")).exists())
     {
         tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
 
