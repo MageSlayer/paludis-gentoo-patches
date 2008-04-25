@@ -713,21 +713,25 @@ else
 fi
 AC_MSG_RESULT([${cxxflags_message}])
 
-if test x$CAN_USE_EXTERN_TEMPLATE = xyes ; then
-	AC_MSG_CHECKING([whether -pedantic works if we use extern template])
-	save_CXXFLAGS=$CXXFLAGS
-	CXXFLAGS="$CXXFLAGS -pedantic"
-	AC_COMPILE_IFELSE([
+AC_MSG_CHECKING([whether -pedantic works if we use extern template])
+if test "x${cxx_compiler_icc}" = "xyes" ; then
+	AC_MSG_RESULT([no, icc doesn't do pedantic])
+else
+	if test x$CAN_USE_EXTERN_TEMPLATE = xyes ; then
+		save_CXXFLAGS=$CXXFLAGS
+		CXXFLAGS="$CXXFLAGS -pedantic"
+		AC_COMPILE_IFELSE([
 template <typename T_> struct S { };
 extern template struct S<int>;
-],
-	[AC_MSG_RESULT([yes])
-	 CHECK_CXXFLAG([-pedantic])],
-	[AC_MSG_RESULT([no])])
-else
-	CHECK_CXXFLAG([-pedantic])
+	],
+		[AC_MSG_RESULT([yes])
+		 CHECK_CXXFLAG([-pedantic])],
+		[AC_MSG_RESULT([no])])
+	else
+		CHECK_CXXFLAG([-pedantic])
+	fi
+	CXXFLAGS=$save_CXXFLAGS
 fi
-CXXFLAGS=$save_CXXFLAGS
 
 AC_SUBST([PALUDIS_CXXFLAGS])
 AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
