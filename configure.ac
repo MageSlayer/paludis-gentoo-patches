@@ -526,8 +526,13 @@ dnl {{{ check whether we can do extern template
 CAN_USE_EXTERN_TEMPLATE=
 AC_MSG_CHECKING([whether we can use extern template])
 AC_COMPILE_IFELSE([
-template <typename T_> struct S { };
+template <typename T_> class S
+{
+	private:
+		S & operator= (const S &);
+};
 extern template struct S<int>;
+template struct S<int>;
 ],
 	[AC_MSG_RESULT([yes])
 	 CAN_USE_EXTERN_TEMPLATE=yes
