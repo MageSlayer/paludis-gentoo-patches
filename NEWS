@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.26.0:
+    * Fixed gcc-3.4 compile.
+
 0.26.0_pre4:
     * portage_compatible in environment.conf is deprecated in favour of the new,
       more fine-grained accept_breaks_portage.  When using Portage configuration
