@@ -51,7 +51,7 @@ RepositoryInfoModel::set_repository(const RepositoryName &)
 void
 RepositoryInfoModel::set_repository_in_paludis_thread(const RepositoryName & name)
 {
-    tr1::shared_ptr<const RepositoryInfo> info(
+    std::tr1::shared_ptr<const RepositoryInfo> info(
             _imp->main_window->environment()->package_database()->fetch_repository(name)->info(true));
 
     _imp->main_window->gui_thread_action(
@@ -59,7 +59,7 @@ RepositoryInfoModel::set_repository_in_paludis_thread(const RepositoryName & nam
 }
 
 void
-RepositoryInfoModel::set_repository_in_gui_thread(tr1::shared_ptr<const RepositoryInfo> info)
+RepositoryInfoModel::set_repository_in_gui_thread(std::tr1::shared_ptr<const RepositoryInfo> info)
 {
     clear();
     for (IndirectIterator<RepositoryInfo::SectionConstIterator>

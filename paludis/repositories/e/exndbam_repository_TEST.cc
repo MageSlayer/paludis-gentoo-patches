@@ -38,10 +38,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exndbam");
             keys->insert("location", "exndbam_repository_TEST_dir/repo1");
-            tr1::shared_ptr<Repository> repo(ExndbamRepository::make_exndbam_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> repo(ExndbamRepository::make_exndbam_repository(&env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_exndbam_repository_repo_name;

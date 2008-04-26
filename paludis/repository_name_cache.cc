@@ -19,9 +19,7 @@
 
 #include "repository_name_cache.hh"
 #include <paludis/repository.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -30,6 +28,9 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
+#include <tr1/memory>
 #include <set>
 #include <fstream>
 #include <cstring>
@@ -39,7 +40,7 @@ using namespace paludis;
 
 namespace paludis
 {
-    typedef MakeHashedMap<PackageNamePart, std::set<CategoryNamePart> >::Type NameCacheMap;
+    typedef std::tr1::unordered_map<PackageNamePart, std::set<CategoryNamePart>, Hash<PackageNamePart> > NameCacheMap;
 
     template<>
     struct Implementation<RepositoryNameCache>
@@ -187,20 +188,20 @@ RepositoryNameCache::~RepositoryNameCache()
 {
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
     Lock l(_imp->mutex);
 
     if (! usable())
-        return tr1::shared_ptr<const CategoryNamePartSet>();
+        return std::tr1::shared_ptr<const CategoryNamePartSet>();
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(p));
     if (_imp->name_cache_map.end() == r)
-        return tr1::shared_ptr<const CategoryNamePartSet>();
+        return std::tr1::shared_ptr<const CategoryNamePartSet>();
 
     std::copy(r->second.begin(), r->second.end(), result->inserter());
     return result;
@@ -226,19 +227,19 @@ RepositoryNameCache::regenerate_cache() const
         FSEntry(_imp->location).unlink();
     FSEntry(_imp->location).mkdir();
 
-    MakeHashedMap<std::string, std::string>::Type m;
+    std::tr1::unordered_map<std::string, std::string, Hash<std::string> > m;
 
-    tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
+    std::tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
+        std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
             m[stringify(p->package)].append(stringify(*c) + "\n");
     }
 
-    for (MakeHashedMap<std::string, std::string>::Type::const_iterator e(m.begin()), e_end(m.end()) ;
+    for (std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
             e != e_end ; ++e)
     {
         std::ofstream f(stringify(_imp->location / stringify(e->first)).c_str());
@@ -272,7 +273,7 @@ RepositoryNameCache::add(const QualifiedPackageName & q)
 
     Context context("When adding '" + stringify(q) + "' to name cache at '" + stringify(_imp->location) + "':");
 
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(q.package));
     if (_imp->name_cache_map.end() == r)
         return;
@@ -291,7 +292,7 @@ RepositoryNameCache::remove(const QualifiedPackageName & q)
 
     Context context("When removing '" + stringify(q) + "' from name cache at '" + stringify(_imp->location) + "':");
 
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(q.package));
     if (_imp->name_cache_map.end() == r)
         return;

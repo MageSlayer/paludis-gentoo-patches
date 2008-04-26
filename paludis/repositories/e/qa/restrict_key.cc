@@ -63,17 +63,17 @@ namespace
 
         const std::set<std::string> & allowed_restricts;
 
-        const tr1::shared_ptr<const MetadataKey> & key;
+        const std::tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
         QAReporter & reporter;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         const std::string name;
 
         RestrictChecker(
-                const tr1::shared_ptr<const MetadataKey> & k,
+                const std::tr1::shared_ptr<const MetadataKey> & k,
                 const FSEntry & f,
                 QAReporter & r,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const std::string & n) :
             allowed_restricts(AllowedRestricts::get_instance()->allowed_restricts),
             key(k),
@@ -105,7 +105,7 @@ bool
 paludis::erepository::restrict_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepositoryID> & id,
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using restrict_key_check on ID '" + stringify(*id) + "':");

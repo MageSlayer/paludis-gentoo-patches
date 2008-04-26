@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -32,7 +33,6 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/formatter.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
@@ -49,11 +49,11 @@ namespace paludis
     struct Implementation<VirtualsDepKey>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
-        const tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
+        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
-        Implementation(const Environment * const e, const tr1::shared_ptr<const PackageID> & v,
-                const tr1::shared_ptr<const DependencyLabelSequence> & l,
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & v,
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
                 bool exact) :
             env(e),
             value(exact ?
@@ -76,8 +76,8 @@ namespace paludis
 }
 
 VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & r, const std::string & h,
-        const tr1::shared_ptr<const PackageID> & v,
-        const tr1::shared_ptr<const DependencyLabelSequence> & l,
+        const std::tr1::shared_ptr<const PackageID> & v,
+        const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
         const bool exact) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
     PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact)),
@@ -89,7 +89,7 @@ VirtualsDepKey::~VirtualsDepKey()
 {
 }
 
-const tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
 VirtualsDepKey::value() const
 {
     return _imp->value;
@@ -131,7 +131,7 @@ VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
         return f.format(*_imp->value->item(), format::Plain());
 }
 
-const tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependencyLabelSequence>
 VirtualsDepKey::initial_labels() const
 {
     return _imp->labels;
@@ -143,22 +143,22 @@ namespace paludis
     struct Implementation<VirtualsPackageID>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const Repository> repository;
+        const std::tr1::shared_ptr<const Repository> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
-        tr1::shared_ptr<DependencyLabelSequence> bdep_labels;
-        tr1::shared_ptr<DependencyLabelSequence> rdep_labels;
-        const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > virtual_for;
-        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
-        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
+        std::tr1::shared_ptr<DependencyLabelSequence> bdep_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> rdep_labels;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for;
+        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
+        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
         mutable bool has_masks;
         mutable Mutex mutex;
 
         Implementation(
                 const Environment * const e,
-                const tr1::shared_ptr<const Repository> & o,
+                const std::tr1::shared_ptr<const Repository> & o,
                 const QualifiedPackageName & n,
-                const tr1::shared_ptr<const PackageID> & p,
+                const std::tr1::shared_ptr<const PackageID> & p,
                 const bool b) :
             env(e),
             repository(o),
@@ -166,7 +166,7 @@ namespace paludis
             version(p->version()),
             bdep_labels(new DependencyLabelSequence),
             rdep_labels(new DependencyLabelSequence),
-            virtual_for(new LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > ("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
+            virtual_for(new LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > ("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
             bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
@@ -179,9 +179,9 @@ namespace paludis
 
 VirtualsPackageID::VirtualsPackageID(
         const Environment * const e,
-        const tr1::shared_ptr<const Repository> & owner,
+        const std::tr1::shared_ptr<const Repository> & owner,
         const QualifiedPackageName & virtual_name,
-        const tr1::shared_ptr<const PackageID> & virtual_for,
+        const std::tr1::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
     PrivateImplementationPattern<VirtualsPackageID>(
             new Implementation<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact)),
@@ -237,106 +237,106 @@ VirtualsPackageID::slot() const
     return _imp->virtual_for->value()->slot();
 }
 
-const tr1::shared_ptr<const Repository>
+const std::tr1::shared_ptr<const Repository>
 VirtualsPackageID::repository() const
 {
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 VirtualsPackageID::virtual_for_key() const
 {
     return _imp->virtual_for;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 VirtualsPackageID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 VirtualsPackageID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 VirtualsPackageID::provide_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 VirtualsPackageID::build_dependencies_key() const
 {
     return _imp->bdep;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 VirtualsPackageID::run_dependencies_key() const
 {
     return _imp->rdep;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 VirtualsPackageID::post_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 VirtualsPackageID::suggested_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::short_description_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 VirtualsPackageID::fetches_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 VirtualsPackageID::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 VirtualsPackageID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
 }
 
-const tr1::shared_ptr<const MetadataTimeKey>
+const std::tr1::shared_ptr<const MetadataTimeKey>
 VirtualsPackageID::installed_time_key() const
 {
-    return tr1::shared_ptr<const MetadataTimeKey>();
+    return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsPackageID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 bool
@@ -350,7 +350,7 @@ VirtualsPackageID::arbitrary_less_than_comparison(const PackageID & a) const
 std::size_t
 VirtualsPackageID::extra_hash_value() const
 {
-    return CRCHash<PackageID>()(*_imp->virtual_for->value());
+    return Hash<PackageID>()(*_imp->virtual_for->value());
 }
 
 void
@@ -447,10 +447,10 @@ namespace
         public AssociationMask
     {
         private:
-            const tr1::shared_ptr<const PackageID> _id;
+            const std::tr1::shared_ptr<const PackageID> _id;
 
         public:
-            VirtualsAssociationMask(const tr1::shared_ptr<const PackageID> & i) :
+            VirtualsAssociationMask(const std::tr1::shared_ptr<const PackageID> & i) :
                 _id(i)
             {
             }
@@ -465,7 +465,7 @@ namespace
                 return "by association";
             }
 
-            const tr1::shared_ptr<const PackageID> associated_package() const
+            const std::tr1::shared_ptr<const PackageID> associated_package() const
             {
                 return _id;
             }
@@ -498,33 +498,33 @@ VirtualsPackageID::invalidate_masks() const
     PackageID::invalidate_masks();
 }
 
-tr1::shared_ptr<const Set<std::string> >
+std::tr1::shared_ptr<const Set<std::string> >
 VirtualsPackageID::breaks_portage() const
 {
-    return tr1::shared_ptr<const Set<std::string> >();
+    return std::tr1::shared_ptr<const Set<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 VirtualsPackageID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 VirtualsPackageID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsPackageID::fs_location_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<bool> >
+const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 VirtualsPackageID::transient_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
 }
 

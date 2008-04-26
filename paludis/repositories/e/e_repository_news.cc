@@ -140,7 +140,7 @@ ERepositoryNews::update_news() const
                                 query::Matches(PackageDepSpec(erepository::parse_e_package_dep_spec(*i,
                                             *erepository::EAPIData::get_instance()->eapi_from_string(
                                                 _imp->e_repository->params().profile_eapi),
-                                            tr1::shared_ptr<const PackageID>()))) &
+                                            std::tr1::shared_ptr<const PackageID>()))) &
                                 query::SupportsAction<InstalledAction>(),
                                 qo_whatever)->empty())
                         local_show = true;
@@ -160,7 +160,7 @@ ERepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles);
+                std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles);
                 for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

@@ -26,11 +26,11 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/contents-fwd.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -51,7 +51,7 @@ namespace paludis
             ///\{
 
             NDBAM(const FSEntry &,
-                    const tr1::function<bool (const std::string &)> & check_format,
+                    const std::tr1::function<bool (const std::string &)> & check_format,
                     const std::string & preferred_format);
             ~NDBAM();
 
@@ -60,14 +60,14 @@ namespace paludis
             ///\name Repository method implementations
             ///\{
 
-            tr1::shared_ptr<const CategoryNamePartSet> category_names()
+            std::tr1::shared_ptr<const CategoryNamePartSet> category_names()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart & c)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -77,7 +77,7 @@ namespace paludis
             bool has_category_named(const CategoryNamePart &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            tr1::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
+            std::tr1::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
@@ -86,9 +86,9 @@ namespace paludis
              * Parse the contents file for a given ID, using the provided callbacks.
              */
             void parse_contents(const PackageID &,
-                    const tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
-                    const tr1::function<void (const FSEntry &)> & on_dir,
-                    const tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
+                    const std::tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
+                    const std::tr1::function<void (const FSEntry &)> & on_dir,
+                    const std::tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
                     ) const;
 
             /**

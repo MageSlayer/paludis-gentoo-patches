@@ -36,17 +36,17 @@ int main(int argc, char * argv[])
                 "example_match_package", "EXAMPLE_MATCH_PACKAGE_OPTIONS", "EXAMPLE_MATCH_PACKAGE_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch all installed packages. */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
                     query::SupportsAction<InstalledAction>(),
                     qo_order_by_version));
 
         /* Fetch the 'system' and 'world' sets. Ordinarily we should check for
          * zero pointers here, but these two sets will always exist. */
-        tr1::shared_ptr<const SetSpecTree::ConstItem> system(env->set(SetName("system"))),
+        std::tr1::shared_ptr<const SetSpecTree::ConstItem> system(env->set(SetName("system"))),
             world(env->set(SetName("world")));
 
         /* For each ID: */

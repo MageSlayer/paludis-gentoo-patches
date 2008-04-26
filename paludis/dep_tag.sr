@@ -2,7 +2,7 @@ make_class_DepTagEntry()
 {
     visible
 
-    key tag "tr1::shared_ptr<const DepTag>"
+    key tag "std::tr1::shared_ptr<const DepTag>"
     key generation long
 
     allow_named_args

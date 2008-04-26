@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -131,7 +131,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE EnvironmentMaker :
         public VirtualConstructor<std::string,
-            tr1::shared_ptr<Environment> (*) (const std::string &),
+            std::tr1::shared_ptr<Environment> (*) (const std::string &),
             virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >,
         public InstantiationPolicy<EnvironmentMaker, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<EnvironmentMaker>
@@ -171,7 +171,7 @@ namespace paludis
              * \see Environment
              * \ingroup g_environment
              */
-            tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
+            std::tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
     };
 }
 

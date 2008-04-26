@@ -43,9 +43,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
-
+#include <tr1/functional>
 #include <algorithm>
 #include <list>
 #include <map>
@@ -89,10 +88,10 @@ ERepositorySets::~ERepositorySets()
 {
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepositorySets::package_set(const SetName & ss) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if ("system" == ss.data())
         throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
@@ -105,7 +104,7 @@ ERepositorySets::package_set(const SetName & ss) const
 
     if ((_imp->params.setsdir / (stringify(s.first) + ".conf")).exists())
     {
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
 
         FSEntry ff(_imp->params.setsdir / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
@@ -114,36 +113,36 @@ ERepositorySets::package_set(const SetName & ss) const
                 .file_name(ff)
                 .environment(_imp->environment)
                 .type(sft_paludis_conf)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .set_operator_mode(s.second)
                 .tag(tag));
 
         return f.contents();
     }
     else
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 ERepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
 
     try
     {
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
 
         std::list<FSEntry> repo_sets;
         std::remove_copy_if(
                 DirIterator(_imp->params.setsdir),
                 DirIterator(),
                 std::back_inserter(repo_sets),
-                tr1::bind(std::logical_not<bool>(), tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
 
         std::list<FSEntry>::const_iterator f(repo_sets.begin()),
             f_end(repo_sets.end());
@@ -227,17 +226,17 @@ namespace
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(
-            new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(
+            new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     if (!_imp->params.securitydir.is_directory_or_symlink_to_directory())
         return security_packages;
 
-    std::map<std::string, tr1::shared_ptr<GLSADepTag> > glsa_tags;
+    std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;
 
     for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
     {
@@ -248,14 +247,14 @@ ERepositorySets::security_set(bool insecurity) const
 
         try
         {
-            tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
+            std::tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
             Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
                     stringify(*f) + "':");
 
             for (GLSA::PackagesConstIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                tr1::shared_ptr<const PackageIDSequence> candidates;
+                std::tr1::shared_ptr<const PackageIDSequence> candidates;
                 if (insecurity)
                     candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
                 else
@@ -271,18 +270,18 @@ ERepositorySets::security_set(bool insecurity) const
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
-                        glsa_tags.insert(std::make_pair(glsa->id(), tr1::shared_ptr<GLSADepTag>(
+                        glsa_tags.insert(std::make_pair(glsa->id(), std::tr1::shared_ptr<GLSADepTag>(
                                         new GLSADepTag(glsa->id(), glsa->title(), *f))));
 
                     if (insecurity)
                     {
-                        tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                     make_package_dep_spec()
                                     .package((*c)->name())
                                     .version_requirement(VersionRequirement(vo_equal, (*c)->version()))
                                     .repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
-                        security_packages->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        security_packages->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                     }
                     else
@@ -293,7 +292,7 @@ ERepositorySets::security_set(bool insecurity) const
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
                         bool ok(false);
-                        tr1::shared_ptr<const PackageIDSequence> available(
+                        std::tr1::shared_ptr<const PackageIDSequence> available(
                                 _imp->environment->package_database()->query(
                                     query::Matches(make_package_dep_spec()
                                         .package(glsa_pkg->name())
@@ -311,12 +310,12 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                                         .package((*r)->name())
                                         .version_requirement(VersionRequirement(vo_equal, (*r)->version()))
                                         .repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
-                            security_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(
+                            security_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(
                                         new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                             ok = true;
                             break;

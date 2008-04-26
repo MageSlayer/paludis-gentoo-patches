@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_THREAD_POOL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_THREAD_POOL_HH 1
 
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <tr1/functional>
 
 /** \file
  * Declarations for the ThreadPool class.
@@ -57,7 +57,7 @@ namespace paludis
             /**
              * Create a new thread in our pool.
              */
-            void create_thread(const tr1::function<void () throw ()> &);
+            void create_thread(const std::tr1::function<void () throw ()> &);
 
             /**
              * How many threads does our pool contain?

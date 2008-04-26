@@ -46,7 +46,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/kc.hh>
 
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 #include <fstream>
 #include <algorithm>
 #include <sstream>
@@ -91,21 +91,21 @@ namespace paludis
         std::string config_dir;
         mutable Mutex distribution_mutex;
         mutable std::string distribution;
-        tr1::shared_ptr<FSEntrySequence> bashrc_files;
+        std::tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
         std::list<RepositoryConfigEntry> repos;
 
-        tr1::shared_ptr<KeywordsConf> keywords_conf;
-        tr1::shared_ptr<UseConf> use_conf;
-        tr1::shared_ptr<LicensesConf> licenses_conf;
-        tr1::shared_ptr<PackageMaskConf> package_mask_conf;
-        tr1::shared_ptr<PackageMaskConf> package_unmask_conf;
-        tr1::shared_ptr<MirrorsConf> mirrors_conf;
-        mutable tr1::shared_ptr<World> world;
+        std::tr1::shared_ptr<KeywordsConf> keywords_conf;
+        std::tr1::shared_ptr<UseConf> use_conf;
+        std::tr1::shared_ptr<LicensesConf> licenses_conf;
+        std::tr1::shared_ptr<PackageMaskConf> package_mask_conf;
+        std::tr1::shared_ptr<PackageMaskConf> package_unmask_conf;
+        std::tr1::shared_ptr<MirrorsConf> mirrors_conf;
+        mutable std::tr1::shared_ptr<World> world;
 
         mutable Mutex reduced_mutex;
-        mutable tr1::shared_ptr<uid_t> reduced_uid;
-        mutable tr1::shared_ptr<gid_t> reduced_gid;
+        mutable std::tr1::shared_ptr<uid_t> reduced_uid;
+        mutable std::tr1::shared_ptr<gid_t> reduced_gid;
 
         mutable Mutex environment_conf_mutex;
         mutable bool has_environment_conf;
@@ -145,13 +145,13 @@ namespace paludis
 
         Context context("When loading environment.conf:");
 
-        tr1::shared_ptr<KeyValueConfigFile> kv;
-        tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
+        std::tr1::shared_ptr<KeyValueConfigFile> kv;
+        std::tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
                 new Map<std::string, std::string>);
         conf_vars->insert("ROOT", root);
         conf_vars->insert("root", root);
         conf_vars->insert("accept_breaks_portage", "*");
-        tr1::shared_ptr<FSEntry> world_file;
+        std::tr1::shared_ptr<FSEntry> world_file;
 
         if ((FSEntry(config_dir) / "environment.conf").exists())
             kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
@@ -232,7 +232,7 @@ PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string &
 PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & suffix) :
     PrivateImplementationPattern<PaludisConfig>(new Implementation<PaludisConfig>(e))
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When loading paludis configuration:");
 
@@ -302,7 +302,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
+    std::tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
             new Map<std::string, std::string>);
     conf_vars->insert("ROOT", root_prefix);
     conf_vars->insert("root", root_prefix);
@@ -317,13 +317,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((*DistributionData::get_instance()->distribution_from_string(distribution()))[k::support_old_style_virtuals()])
         {
-            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                     new Map<std::string, std::string>);
             iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
             _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
 
             _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                        tr1::shared_ptr<Map<std::string, std::string> >()));
+                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
         }
 
         /* add normal repositories */
@@ -362,18 +362,18 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 continue;
 
             std::remove_copy_if(DirIterator(*dir), DirIterator(), std::back_inserter(repo_files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(*dir), DirIterator(), std::back_inserter(repo_files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        std::list<tr1::shared_ptr<Map<std::string, std::string> > > later_keys;
+        std::list<std::tr1::shared_ptr<Map<std::string, std::string> > > later_keys;
         for (std::list<FSEntry>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
                 repo_file != repo_file_end ; ++repo_file)
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            tr1::shared_ptr<KeyValueConfigFile> kv;
+            std::tr1::shared_ptr<KeyValueConfigFile> kv;
             if (is_file_with_extension(*repo_file, ".bash", IsFileWithOptions()))
             {
                 std::stringstream s;
@@ -406,7 +406,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! kv->get("importance").empty())
                 importance = destringify<int>(kv->get("importance"));
 
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             std::copy(kv->begin(), kv->end(), keys->inserter());
 
             keys->erase(stringify("importance"));
@@ -432,7 +432,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             }
         }
 
-        for (std::list<tr1::shared_ptr<Map<std::string, std::string> > >::const_iterator
+        for (std::list<std::tr1::shared_ptr<Map<std::string, std::string> > >::const_iterator
                 k(later_keys.begin()), k_end(later_keys.end()) ; k != k_end ; ++k)
             _imp->repos.push_back(RepositoryConfigEntry((*k)->find("format")->second,
                         destringify<int>((*k)->find("importance")->second), *k));
@@ -449,9 +449,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "keywords.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -474,9 +474,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "use.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "use.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "use.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -499,9 +499,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "licenses.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -524,9 +524,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "package_mask.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -549,9 +549,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "package_unmask.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -574,9 +574,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "mirrors.conf.d").exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(), std::back_inserter(files),
-                    tr1::bind(std::logical_not<bool>(), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -598,7 +598,7 @@ PaludisConfig::~PaludisConfig()
 {
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PaludisConfig::bashrc_files() const
 {
     return _imp->bashrc_files;
@@ -713,43 +713,43 @@ PaludisConfig::accept_breaks_portage() const
     return _imp->accept_breaks_portage;
 }
 
-tr1::shared_ptr<const KeywordsConf>
+std::tr1::shared_ptr<const KeywordsConf>
 PaludisConfig::keywords_conf() const
 {
     return _imp->keywords_conf;
 }
 
-tr1::shared_ptr<const UseConf>
+std::tr1::shared_ptr<const UseConf>
 PaludisConfig::use_conf() const
 {
     return _imp->use_conf;
 }
 
-tr1::shared_ptr<const LicensesConf>
+std::tr1::shared_ptr<const LicensesConf>
 PaludisConfig::licenses_conf() const
 {
     return _imp->licenses_conf;
 }
 
-tr1::shared_ptr<const PackageMaskConf>
+std::tr1::shared_ptr<const PackageMaskConf>
 PaludisConfig::package_mask_conf() const
 {
     return _imp->package_mask_conf;
 }
 
-tr1::shared_ptr<const PackageMaskConf>
+std::tr1::shared_ptr<const PackageMaskConf>
 PaludisConfig::package_unmask_conf() const
 {
     return _imp->package_unmask_conf;
 }
 
-tr1::shared_ptr<const MirrorsConf>
+std::tr1::shared_ptr<const MirrorsConf>
 PaludisConfig::mirrors_conf() const
 {
     return _imp->mirrors_conf;
 }
 
-tr1::shared_ptr<const World>
+std::tr1::shared_ptr<const World>
 PaludisConfig::world() const
 {
     _imp->need_environment_conf();

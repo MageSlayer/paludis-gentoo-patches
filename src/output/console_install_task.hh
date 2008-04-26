@@ -115,25 +115,25 @@ namespace paludis
             int _counts[last_count];
             unsigned long _download_size;
             bool _download_size_overflow;
-            tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
-            tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
-            tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
-            tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
+            std::tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
+            std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
+            std::tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
+            std::tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
 
-            void _add_descriptions(tr1::shared_ptr<const UseFlagNameSet>,
-                    const tr1::shared_ptr<const PackageID> &, UseDescriptionState);
+            void _add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet>,
+                    const std::tr1::shared_ptr<const PackageID> &, UseDescriptionState);
 
             bool _resolution_finished;
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsSet>);
+                    std::tr1::shared_ptr<const DestinationsSet>);
 
         public:
             virtual void execute();
             int exit_status() const;
 
-            bool try_to_set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > &)
+            bool try_to_set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
@@ -167,7 +167,7 @@ namespace paludis
 
             virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
                     const int x, const int y, const int s, const int f);
-            virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
+            virtual void on_skip_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f);
             virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int);
 
@@ -206,7 +206,7 @@ namespace paludis
             virtual void on_display_failure_summary_success(const DepListEntry &);
             virtual void on_display_failure_summary_failure(const DepListEntry &);
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &);
-            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &);
+            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &);
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int);
             virtual void on_display_failure_summary_post();
 
@@ -229,14 +229,14 @@ namespace paludis
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_for(const PackageID &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
-                    tr1::shared_ptr<const PackageIDSequence>,
-                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    std::tr1::shared_ptr<const PackageIDSequence>,
+                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_description(const DepListEntry &,
-                    tr1::shared_ptr<const PackageIDSequence>,
-                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    std::tr1::shared_ptr<const PackageIDSequence>,
+                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
-                    tr1::shared_ptr<const PackageIDSequence>,
-                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    std::tr1::shared_ptr<const PackageIDSequence>,
+                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_distsize(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_non_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_tags(const DepListEntry &, const DisplayMode);
@@ -247,7 +247,7 @@ namespace paludis
             virtual void display_tag_summary_start();
             virtual void display_tag_summary_tag_title(const DepTagCategory &);
             virtual void display_tag_summary_tag_pre_text(const DepTagCategory &);
-            virtual void display_tag_summary_tag(tr1::shared_ptr<const DepTag>);
+            virtual void display_tag_summary_tag(std::tr1::shared_ptr<const DepTag>);
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 
@@ -286,12 +286,12 @@ namespace paludis
                 return _download_size;
             }
 
-            tr1::shared_ptr<Set<DepTagEntry> > all_tags()
+            std::tr1::shared_ptr<Set<DepTagEntry> > all_tags()
             {
                 return _all_tags;
             }
 
-            tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > all_use_descriptions()
+            std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > all_use_descriptions()
             {
                 return _all_use_descriptions;
             }
@@ -321,8 +321,8 @@ namespace paludis
             ///\name Makers
             ///\{
 
-            tr1::shared_ptr<DepTagSummaryDisplayer> make_dep_tag_summary_displayer();
-            tr1::shared_ptr<EntryDepTagDisplayer> make_entry_dep_tag_displayer();
+            std::tr1::shared_ptr<DepTagSummaryDisplayer> make_dep_tag_summary_displayer();
+            std::tr1::shared_ptr<EntryDepTagDisplayer> make_entry_dep_tag_displayer();
 
             ///\}
     };

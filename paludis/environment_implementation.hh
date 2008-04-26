@@ -50,10 +50,10 @@ namespace paludis
         public Environment
     {
         protected:
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
         public:
@@ -67,22 +67,22 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            virtual std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const SetNameSet> set_names() const
+            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const DestinationsSet> default_destinations() const
+            virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string default_distribution() const

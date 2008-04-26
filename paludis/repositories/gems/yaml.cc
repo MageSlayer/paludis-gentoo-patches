@@ -21,9 +21,9 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <tr1/functional>
 #include <syck.h>
 #include <cstring>
 #include <algorithm>
@@ -179,9 +179,9 @@ namespace
 MapNode::ConstIterator
 MapNode::find(const std::string & s) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
     return std::find_if(begin(), end(),
-            tr1::bind(match_string_node, s, tr1::bind<const Node *>(tr1::mem_fn(&std::pair<const Node *, const Node *>::first), _1)));
+            std::tr1::bind(match_string_node, s, std::tr1::bind<const Node *>(std::tr1::mem_fn(&std::pair<const Node *, const Node *>::first), _1)));
 }
 
 namespace
@@ -290,8 +290,8 @@ namespace paludis
         };
 
         Node * top;
-        tr1::shared_ptr<SyckParser> parser;
-        tr1::shared_ptr<char> data;
+        std::tr1::shared_ptr<SyckParser> parser;
+        std::tr1::shared_ptr<char> data;
         unsigned data_length;
 
         Register reg;
@@ -348,7 +348,7 @@ namespace paludis
     template <>
     struct Implementation<NodeManager>
     {
-        std::map<const void *, std::list<tr1::shared_ptr<const Node> > > store;
+        std::map<const void *, std::list<std::tr1::shared_ptr<const Node> > > store;
     };
 }
 
@@ -364,7 +364,7 @@ NodeManager::~NodeManager()
 void
 NodeManager::register_document(const void * const d)
 {
-    if (! _imp->store.insert(std::make_pair(d, std::list<tr1::shared_ptr<const Node> >())).second)
+    if (! _imp->store.insert(std::make_pair(d, std::list<std::tr1::shared_ptr<const Node> >())).second)
         throw InternalError(PALUDIS_HERE, "duplicate document");
 }
 
@@ -378,7 +378,7 @@ NodeManager::deregister_document(const void * const d)
 void
 NodeManager::manage_node(const void * const d, const Node * const n)
 {
-    std::map<const void *, std::list<tr1::shared_ptr<const Node> > >::iterator i(_imp->store.find(d));
+    std::map<const void *, std::list<std::tr1::shared_ptr<const Node> > >::iterator i(_imp->store.find(d));
     if (i == _imp->store.end())
         throw InternalError(PALUDIS_HERE, "no such document");
     i->second.push_back(make_shared_ptr(n));

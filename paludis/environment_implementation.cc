@@ -40,25 +40,25 @@ EnvironmentImplementation::~EnvironmentImplementation()
 }
 
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::bashrc_files() const
 {
     return make_shared_ptr(new FSEntrySequence);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::syncers_dirs() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     result->push_back(FSEntry(DATADIR "/paludis/syncers"));
     result->push_back(FSEntry(LIBEXECDIR "/paludis/syncers"));
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
     if (fetchers_dir.empty())
     {
@@ -70,10 +70,10 @@ EnvironmentImplementation::fetchers_dirs() const
     return result;
 }
 
-tr1::shared_ptr<const DestinationsSet>
+std::tr1::shared_ptr<const DestinationsSet>
 EnvironmentImplementation::default_destinations() const
 {
-    tr1::shared_ptr<DestinationsSet> result(new DestinationsSet);
+    std::tr1::shared_ptr<DestinationsSet> result(new DestinationsSet);
 
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -85,11 +85,11 @@ EnvironmentImplementation::default_destinations() const
     return result;
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 EnvironmentImplementation::set(const SetName & s) const
 {
     {
-        tr1::shared_ptr<SetSpecTree::ConstItem> l(local_set(s));
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> l(local_set(s));
         if (l)
         {
             Log::get_instance()->message("environment_implementation.local_set", ll_debug, lc_context) << "Set '" << s << "' is a local set";
@@ -97,13 +97,13 @@ EnvironmentImplementation::set(const SetName & s) const
         }
     }
 
-    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result;
+    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result;
 
     /* these sets always exist, even if empty */
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
     {
         Log::get_instance()->message("environment_implementation.standard_set", ll_debug, lc_context) << "Set '" << s << "' is a standard set";
-        result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
@@ -113,13 +113,13 @@ EnvironmentImplementation::set(const SetName & s) const
         if (! (**r)[k::sets_interface()])
             continue;
 
-        tr1::shared_ptr<SetSpecTree::ConstItem> add((**r)[k::sets_interface()]->package_set(s));
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> add((**r)[k::sets_interface()]->package_set(s));
         if (add)
         {
             Log::get_instance()->message("environment_implementation.set_found_in_repository", ll_debug, lc_context)
                 << "Set '" << s << "' found in '" << (*r)->name() << "'";
             if (! result)
-                result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             result->add(add);
         }
     }
@@ -130,7 +130,7 @@ EnvironmentImplementation::set(const SetName & s) const
 
     if ("world" == s.data())
     {
-        tr1::shared_ptr<SetSpecTree::ConstItem> w(world_set());
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> w(world_set());
         if (w)
             result->add(w);
     }
@@ -176,7 +176,7 @@ EnvironmentImplementation::default_distribution() const
     return result;
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
     return make_shared_ptr(new SetNameSet);

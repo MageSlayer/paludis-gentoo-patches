@@ -25,11 +25,10 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/tr1_functional.hh>
-#include <paludis/util/tr1_memory.hh>
 
 #include <paludis/package_id-fwd.hh>
-
+#include <tr1/memory>
+#include <tr1/functional>
 #include <string>
 
 namespace broken_linkage_finder
@@ -46,7 +45,7 @@ namespace broken_linkage_finder
 
             virtual void add_extra_lib_dir(const paludis::FSEntry &) = 0;
             virtual void need_breakage_added(
-                const paludis::tr1::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
+                const std::tr1::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
 
     };
 }

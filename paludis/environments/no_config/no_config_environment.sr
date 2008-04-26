@@ -11,7 +11,7 @@ make_class_Params()
     key accept_unstable bool
     key repository_type no_config_environment::RepositoryType
     key master_repository_dir "FSEntry"
-    key extra_params "tr1::shared_ptr<Map<std::string, std::string> >"
+    key extra_params "std::tr1::shared_ptr<Map<std::string, std::string> >"
     allow_named_args
 
     doxygen_comment << "END"

@@ -58,16 +58,16 @@ namespace paludis
                 virtual bool query_use_force(const UseFlagName &, const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
+                virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
+                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
+                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
+                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual char use_expand_separator(const PackageID &) const
@@ -79,16 +79,16 @@ namespace paludis
 
                 /* RepositorySetsInterface */
 
-                virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+                virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+                virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 /* RepositoryEnvironmentVariableInterface */
 
                 virtual std::string get_environment_variable(
-                        const tr1::shared_ptr<const PackageID> & for_package,
+                        const std::tr1::shared_ptr<const PackageID> & for_package,
                         const std::string & var) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -110,19 +110,19 @@ namespace paludis
 
                 /* Repository */
 
-                virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+                virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
                 ///\name For use by EInstalledRepositoryID
                 ///\{
 
-                virtual void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                virtual void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
                         const UninstallActionOptions & o, bool reinstalling) const = 0;
 
-                virtual void perform_config(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_config(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
 
-                virtual void perform_info(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_info(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
 
                 ///\}
         };

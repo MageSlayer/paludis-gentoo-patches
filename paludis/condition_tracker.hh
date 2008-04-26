@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONDITION_TRACKER_HH
 #define PALUDIS_GUARD_PALUDIS_CONDITION_TRACKER_HH 1
 
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <tr1/memory>
+#include <tr1/functional>
 
 /** \file
  * Declarations for ConditionTracker, which is used internally by DepList.
@@ -50,8 +50,8 @@ namespace paludis
         public ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>
     {
         private:
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > base;
-            tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<DependencySpecTree> >)> adder;
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > base;
+            std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<DependencySpecTree> >)> adder;
 
             template <typename T_>
             void do_visit_sequence(const T_ &,
@@ -59,15 +59,15 @@ namespace paludis
                         DependencySpecTree::ConstSequenceIterator);
 
             template <typename T_>
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > do_add_sequence(const T_ &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > do_add_sequence(const T_ &);
             template <typename T_>
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > do_add_leaf(const T_ &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > do_add_leaf(const T_ &);
 
         public:
             ///\name Basic operations
             ///\{
 
-            ConditionTracker(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >);
+            ConditionTracker(std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >);
 
             virtual ~ConditionTracker();
 
@@ -76,10 +76,10 @@ namespace paludis
             ///\name Add a condition
             ///\{
 
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const AnyDepSpec &);
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const ConditionalDepSpec &);
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const PackageDepSpec &);
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const BlockDepSpec &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const AnyDepSpec &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const ConditionalDepSpec &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const PackageDepSpec &);
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const BlockDepSpec &);
 
             ///\}
 

@@ -23,7 +23,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
@@ -32,6 +31,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
+#include <tr1/functional>
 #include <algorithm>
 
 using namespace paludis;
@@ -217,11 +217,11 @@ namespace
                 result = _m(stringify(s.value()));
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
             {
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > &)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &)
             {
             }
 
@@ -230,76 +230,76 @@ namespace
                 result = _m(stringify(s.value()));
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & s)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & s)
             {
                 result = _m(stringify(*s.value()));
             }
 
             void visit(const MetadataCollectionKey<UseFlagNameSet> & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<UseFlagName>, _1)));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<UseFlagName>, _1)));
             }
 
             void visit(const MetadataCollectionKey<IUseFlagSet> & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<IUseFlag>, _1)));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<IUseFlag>, _1)));
             }
 
             void visit(const MetadataCollectionKey<KeywordNameSet> & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<KeywordName>, _1)));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<KeywordName>, _1)));
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), _1));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), _1));
             }
 
             void visit(const MetadataCollectionKey<FSEntrySequence> & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<FSEntry>, _1)));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<FSEntry>, _1)));
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & s)
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
 
                 if (_flatten)
                     result = _m(join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " "));
                 else
                     result = indirect_iterator(s.value()->end()) != std::find_if(
                             indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()),
-                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<PackageID>, _1)));
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<PackageID>, _1)));
             }
 
             void visit(const MetadataSpecTreeKey<RestrictSpecTree> & s)

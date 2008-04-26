@@ -22,7 +22,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -91,10 +91,10 @@ namespace paludis
             public:
                 ~PythonCompositeDepSpec();
 
-                void add_child(const tr1::shared_ptr<const PythonDepSpec>);
+                void add_child(const std::tr1::shared_ptr<const PythonDepSpec>);
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
 
                 ConstIterator begin() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -125,7 +125,7 @@ namespace paludis
             public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonConditionalDepSpec>
         {
             private:
-                const tr1::shared_ptr<const ConditionalDepSpecData> _data;
+                const std::tr1::shared_ptr<const ConditionalDepSpecData> _data;
 
             public:
                 PythonConditionalDepSpec(const ConditionalDepSpec &);
@@ -135,7 +135,7 @@ namespace paludis
                 bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE PythonStringDepSpec :
@@ -166,20 +166,20 @@ namespace paludis
                 ~PythonPackageDepSpec();
 
                 operator PackageDepSpec() const;
-                operator tr1::shared_ptr<PackageDepSpec>() const;
+                operator std::tr1::shared_ptr<PackageDepSpec>() const;
 
-                tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
-                tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
-                tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
-                tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
+                std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
+                std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+                std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+                std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
                 VersionRequirementsMode version_requirements_mode() const;
                 void set_version_requirements_mode(const VersionRequirementsMode m);
-                tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
-                tr1::shared_ptr<const RepositoryName> repository_ptr() const;
-                tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
-                tr1::shared_ptr<const DepTag> tag() const;
-                void set_tag(const tr1::shared_ptr<const DepTag> & s);
-                const tr1::shared_ptr<const PythonPackageDepSpec> without_additional_requirements() const;
+                std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
+                std::tr1::shared_ptr<const RepositoryName> repository_ptr() const;
+                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
+                std::tr1::shared_ptr<const DepTag> tag() const;
+                void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
+                const std::tr1::shared_ptr<const PythonPackageDepSpec> without_additional_requirements() const;
 
                 std::string py_str() const;
 
@@ -245,13 +245,13 @@ namespace paludis
             public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>
         {
             private:
-                tr1::shared_ptr<const PythonPackageDepSpec> _spec;
+                std::tr1::shared_ptr<const PythonPackageDepSpec> _spec;
 
             public:
-                PythonBlockDepSpec(tr1::shared_ptr<const PythonPackageDepSpec> &);
+                PythonBlockDepSpec(std::tr1::shared_ptr<const PythonPackageDepSpec> &);
                 PythonBlockDepSpec(const BlockDepSpec &);
 
-                tr1::shared_ptr<const PythonPackageDepSpec> blocked_spec() const;
+                std::tr1::shared_ptr<const PythonPackageDepSpec> blocked_spec() const;
         };
 
         class PALUDIS_VISIBLE PythonURILabelsDepSpec :
@@ -280,14 +280,14 @@ namespace paludis
             private InstantiationPolicy<SpecTreeToPython, instantiation_method::NonCopyableTag>
         {
             private:
-                tr1::shared_ptr<PythonCompositeDepSpec> _current_parent;
+                std::tr1::shared_ptr<PythonCompositeDepSpec> _current_parent;
 
             public:
                 SpecTreeToPython();
 
                 virtual ~SpecTreeToPython();
 
-                const tr1::shared_ptr<const PythonDepSpec> result() const;
+                const std::tr1::shared_ptr<const PythonDepSpec> result() const;
 
                 void visit_sequence(const AllDepSpec &,
                         GenericSpecTree::ConstSequenceIterator,
@@ -329,15 +329,15 @@ namespace paludis
             private InstantiationPolicy<SpecTreeFromPython<H_>, instantiation_method::NonCopyableTag>
         {
             private:
-                tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > _result;
-                tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> _add;
+                std::tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > _result;
+                std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> _add;
 
             public:
                 SpecTreeFromPython();
 
                 virtual ~SpecTreeFromPython();
 
-                tr1::shared_ptr<typename H_::ConstItem> result() const;
+                std::tr1::shared_ptr<typename H_::ConstItem> result() const;
 
                 void visit(const PythonAllDepSpec &);
                 void visit(const PythonAnyDepSpec &);

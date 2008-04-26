@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_MATCHER_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_MATCHER_HH 1
 
-#include <string>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/virtual_constructor.hh>
+#include <string>
+#include <tr1/memory>
 
 namespace inquisitio
 {
@@ -53,7 +53,7 @@ namespace inquisitio
         public paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>,
         public paludis::VirtualConstructor<
             std::string,
-            paludis::tr1::shared_ptr<Matcher> (*) (const std::string &),
+            std::tr1::shared_ptr<Matcher> (*) (const std::string &),
             paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >
     {
         friend class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;

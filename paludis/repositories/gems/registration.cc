@@ -33,10 +33,10 @@ using namespace paludis;
 
 namespace
 {
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_gems_repository(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m)
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string location;
         if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
@@ -67,10 +67,10 @@ namespace
                     .builddir(builddir)));
     }
 
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_installed_gems_repository(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m)
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string install_dir;
         if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())

@@ -19,7 +19,6 @@
 
 #include "package_mask_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
@@ -35,14 +34,15 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/hashes.hh>
 #include <list>
 #include <algorithm>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef std::list<std::pair<SetName, tr1::shared_ptr<const SetSpecTree::ConstItem> > > Sets;
+typedef std::list<std::pair<SetName, std::tr1::shared_ptr<const SetSpecTree::ConstItem> > > Sets;
 
 namespace paludis
 {
@@ -50,7 +50,7 @@ namespace paludis
     struct Implementation<PackageMaskConf>
     {
         const PaludisEnvironment * const env;
-        std::list<tr1::shared_ptr<const PackageDepSpec> > masks;
+        std::list<std::tr1::shared_ptr<const PackageDepSpec> > masks;
         mutable Sets sets;
         mutable Mutex set_mutex;
 
@@ -75,7 +75,7 @@ PackageMaskConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a package mask or unmask file:");
 
-    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -83,9 +83,9 @@ PackageMaskConf::add(const FSEntry & filename)
             line != line_end ; ++line)
     {
         if (std::string::npos == line->find("/"))
-            _imp->sets.push_back(std::make_pair(SetName(*line), tr1::shared_ptr<const SetSpecTree::ConstItem>()));
+            _imp->sets.push_back(std::make_pair(SetName(*line), std::tr1::shared_ptr<const SetSpecTree::ConstItem>()));
         else
-            _imp->masks.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
+            _imp->masks.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
                                 *line, UserPackageDepSpecOptions() + updso_allow_wildcards))));
     }
 }
@@ -93,11 +93,11 @@ PackageMaskConf::add(const FSEntry & filename)
 bool
 PackageMaskConf::query(const PackageID & e) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
     if (indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            tr1::bind(&match_package, tr1::ref(*_imp->env), _1, tr1::cref(e))))
+            std::tr1::bind(&match_package, std::tr1::ref(*_imp->env), _1, std::tr1::cref(e))))
         return true;
 
     {
@@ -114,7 +114,7 @@ PackageMaskConf::query(const PackageID & e) const
                     Log::get_instance()->message("paludis_environment.package_mask.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << it->first << "' does not exist";
                     it->second.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 }
             }
 

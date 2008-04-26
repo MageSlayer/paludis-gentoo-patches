@@ -5,9 +5,9 @@
 
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name.hh>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
@@ -25,8 +25,8 @@ namespace gtkpaludis
             class MaskPopulator;
             class PopulateData;
 
-            void populate_in_paludis_thread(paludis::tr1::shared_ptr<const paludis::PackageID>);
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_paludis_thread(std::tr1::shared_ptr<const paludis::PackageID>);
+            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
 
         public:
             VersionInfoModel(QueryWindow * const m, VersionsPage * const p);

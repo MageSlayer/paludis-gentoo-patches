@@ -35,37 +35,38 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/literal_metadata_key.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
     template <>
     struct Implementation<InstalledGemsRepository>
     {
-        const tr1::shared_ptr<Mutex> big_nasty_mutex;
+        const std::tr1::shared_ptr<Mutex> big_nasty_mutex;
 
         const gems::InstalledRepositoryParams params;
 
-        mutable tr1::shared_ptr<const CategoryNamePartSet> category_names;
-        mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type package_names;
+        mutable std::tr1::shared_ptr<const CategoryNamePartSet> category_names;
+        mutable std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> > package_names;
         mutable IDMap ids;
 
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const gems::InstalledRepositoryParams p,
-                       tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+                       std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             big_nasty_mutex(m),
             params(p),
             has_category_names(false),
@@ -153,7 +154,7 @@ InstalledGemsRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.find(q.category)->second->end() != _imp->package_names.find(q.category)->second->find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 InstalledGemsRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -162,7 +163,7 @@ InstalledGemsRepository::category_names() const
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 InstalledGemsRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -172,14 +173,14 @@ InstalledGemsRepository::package_names(const CategoryNamePart & c) const
 
     need_ids();
 
-    MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type::const_iterator i(
+    std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> >::const_iterator i(
             _imp->package_names.find(c));
     if (i == _imp->package_names.end())
         return make_shared_ptr(new QualifiedPackageNameSet);
     return i->second;
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 InstalledGemsRepository::package_ids(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -204,7 +205,7 @@ InstalledGemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -225,7 +226,7 @@ InstalledGemsRepository::need_ids() const
 
     need_category_names();
 
-    tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
     _imp->package_names.insert(std::make_pair(gems, pkgs));
 
     for (DirIterator d(_imp->params.install_dir / "specifications"), d_end ; d != d_end ; ++d)
@@ -282,7 +283,7 @@ InstalledGemsRepository::merge(const MergeParams &)
 
 #if 0
 void
-InstalledGemsRepository::do_uninstall(const tr1::shared_ptr<const PackageID> & id,
+InstalledGemsRepository::do_uninstall(const std::tr1::shared_ptr<const PackageID> & id,
         const UninstallOptions &) const
 {
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
@@ -356,13 +357,13 @@ InstalledGemsRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledGemsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;

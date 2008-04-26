@@ -155,11 +155,11 @@ int main(int argc, char * argv[])
                 "example_dep_label", "EXAMPLE_DEP_LABEL_OPTIONS", "EXAMPLE_DEP_LABEL_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
                     query::SupportsAction<InstalledAction>(),
                     qo_whatever));
 

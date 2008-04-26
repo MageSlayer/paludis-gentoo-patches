@@ -47,7 +47,6 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
@@ -56,6 +55,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 
+#include <tr1/functional>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -71,19 +71,19 @@ namespace paludis
     {
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
-        mutable tr1::shared_ptr<Hooker> hooker;
+        mutable std::tr1::shared_ptr<Hooker> hooker;
         mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
 
-        tr1::shared_ptr<PaludisConfig> config;
+        std::tr1::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
         std::list<UseConfigEntry> forced_use;
 
-        tr1::shared_ptr<PackageDatabase> package_database;
+        std::tr1::shared_ptr<PackageDatabase> package_database;
 
         mutable Mutex sets_mutex;
-        mutable std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
+        mutable std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
-        Implementation(PaludisEnvironment * const e, tr1::shared_ptr<PaludisConfig> c) :
+        Implementation(PaludisEnvironment * const e, std::tr1::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
             paludis_command("paludis"),
@@ -132,7 +132,7 @@ namespace paludis
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
-                this, tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))))
+                this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))))
 {
     Context context("When loading paludis environment:");
 
@@ -234,7 +234,7 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 }
 
 bool
-PaludisEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k,
+PaludisEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k,
         const PackageID & e) const
 {
     return _imp->config->keywords_conf()->query(k, e);
@@ -259,7 +259,7 @@ PaludisEnvironment::unmasked_by_user(const PackageID & d) const
     return _imp->config->package_unmask_conf()->query(d);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::bashrc_files() const
 {
     return _imp->config->bashrc_files();
@@ -294,76 +294,76 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
     return _imp->hooker->perform_hook(hook);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::hook_dirs() const
 {
     Lock lock(_imp->hook_mutex);
 
     _imp->need_hook_dirs(_imp->config->config_dir());
 
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::transform(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter(),
-            tr1::mem_fn(&std::pair<FSEntry, bool>::first));
+            std::tr1::mem_fn(&std::pair<FSEntry, bool>::first));
 
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::fetchers_dirs() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "fetchers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_FETCHERS", "").empty())
     {
-        tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::fetchers_dirs());
+        std::tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::fetchers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::syncers_dirs() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "syncers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_SYNCERS", "").empty())
     {
-        tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::syncers_dirs());
+        std::tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::syncers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
     return result;
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisEnvironment::local_set(const SetName & ss) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When looking for package set '" + stringify(ss) + "' in paludis environment:");
 
     Lock l(_imp->sets_mutex);
 
-    std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(ss));
+    std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(ss));
     if (i != _imp->sets.end())
         return i->second;
 
     std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
     FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
-    tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(s.first) + ".conf"));
+    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(s.first) + ".conf"));
 
     if ((dir / (stringify(s.first) + ".bash")).exists())
     {
         SetFile f(SetFileParams::create()
                 .file_name(dir / (stringify(s.first) + ".bash"))
                 .type(sft_paludis_bash)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
                 .set_operator_mode(s.second)
                 .environment(this));
@@ -376,7 +376,7 @@ PaludisEnvironment::local_set(const SetName & ss) const
         SetFile f(SetFileParams::create()
                 .file_name(dir / (stringify(s.first) + ".conf"))
                 .type(sft_paludis_conf)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions() + updso_allow_wildcards))
                 .tag(tag)
                 .set_operator_mode(s.second)
                 .environment(this));
@@ -386,12 +386,12 @@ PaludisEnvironment::local_set(const SetName & ss) const
     }
     else
     {
-        _imp->sets.insert(std::make_pair(ss, tr1::shared_ptr<SetSpecTree::ConstItem>()));
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        _imp->sets.insert(std::make_pair(ss, std::tr1::shared_ptr<SetSpecTree::ConstItem>()));
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisEnvironment::world_set() const
 {
     return _imp->config->world()->world_set();
@@ -421,10 +421,10 @@ PaludisEnvironment::remove_from_world(const SetName & s) const
     _imp->config->world()->remove_from_world(s);
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 PaludisEnvironment::set_names() const
 {
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
 
     if ((FSEntry(_imp->config->config_dir()) / "sets").exists())
         for (DirIterator d(FSEntry(_imp->config->config_dir()) / "sets"), d_end ;
@@ -439,13 +439,13 @@ PaludisEnvironment::set_names() const
     return result;
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 PaludisEnvironment::mirrors(const std::string & m) const
 {
     return _imp->config->mirrors_conf()->query(m);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 PaludisEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
 {
     return _imp->config->use_conf()->known_use_expand_names(prefix, e);
@@ -483,13 +483,13 @@ PaludisEnvironment::config_dir() const
     return _imp->config->config_dir();
 }
 
-tr1::shared_ptr<PackageDatabase>
+std::tr1::shared_ptr<PackageDatabase>
 PaludisEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const PackageDatabase>
+std::tr1::shared_ptr<const PackageDatabase>
 PaludisEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -546,12 +546,12 @@ namespace
     };
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 {
     if (! _imp->config->accept_all_breaks_portage())
     {
-        tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        std::tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
         if (breakages)
         {
             std::list<std::string> bad_breakages;
@@ -563,15 +563,15 @@ PaludisEnvironment::mask_for_breakage(const PackageID & id) const
         }
     }
 
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_user(const PackageID & d) const
 {
     if (_imp->config->package_mask_conf()->query(d))
         return make_shared_ptr(new UserConfigMask);
 
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 

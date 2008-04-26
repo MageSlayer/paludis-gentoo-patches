@@ -155,7 +155,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
 
             default:
                 {
-                    tr1::shared_ptr<UserUseRequirement> req(new UserUseRequirement(flag));
+                    std::tr1::shared_ptr<UserUseRequirement> req(new UserUseRequirement(flag));
                     result.additional_requirement(req);
                 }
                 break;

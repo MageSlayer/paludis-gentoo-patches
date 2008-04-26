@@ -27,12 +27,11 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
-
+#include <tr1/functional>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -141,7 +140,7 @@ namespace
                 << join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), " ") << "\n";
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
             stream << k.raw_name() << ": " << stringify(*k.value()) << "\n";
         }
@@ -171,7 +170,7 @@ namespace
             stream << k.raw_name() << ": " << k.value() << "\n";
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             if (k.value())
                 stream << k.raw_name() << ": " << (*k.value())[k::mask_file()] << ": "
@@ -180,7 +179,7 @@ namespace
                 stream << k.raw_name() << "\n";
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
         {
             stream << k.raw_name() << "\n";
         }
@@ -197,7 +196,7 @@ namespace
         FSEntry previous_entry;
 
         bool show_keys, show_keys_once;
-        std::map<tr1::shared_ptr<const PackageID>, std::set<std::string>, PackageIDSetComparator> printed_keys;
+        std::map<std::tr1::shared_ptr<const PackageID>, std::set<std::string>, PackageIDSetComparator> printed_keys;
 
         QualudisReporter(const std::string & show_associated_keys) :
             previous_entry("/NONE"),
@@ -336,14 +335,14 @@ int main(int argc, char *argv[])
         if (! QualudisCommandLine::get_instance()->a_master_repository_dir.specified())
             QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
-        tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
+        std::tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
                     .repository_dir(get_location())
                     .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
-                    .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
+                    .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
                     ));
 
         if (! (*env->main_repository())[k::qa_interface()])

@@ -31,7 +31,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -45,6 +44,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 
+#include <tr1/functional>
 #include <algorithm>
 #include <iterator>
 #include <map>
@@ -55,14 +55,14 @@ using namespace paludis;
 using namespace broken_linkage_finder;
 
 template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag,
-         const paludis::tr1::shared_ptr<const paludis::PackageID> >;
+         const std::tr1::shared_ptr<const paludis::PackageID> >;
 template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag,
          const paludis::FSEntry>;
 template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 
-typedef std::multimap<FSEntry, tr1::shared_ptr<const PackageID> > Files;
+typedef std::multimap<FSEntry, std::tr1::shared_ptr<const PackageID> > Files;
 typedef std::map<FSEntry, std::set<std::string> > PackageBreakage;
-typedef std::map<tr1::shared_ptr<const PackageID>, PackageBreakage, PackageIDSetComparator> Breakage;
+typedef std::map<std::tr1::shared_ptr<const PackageID>, PackageBreakage, PackageIDSetComparator> Breakage;
 
 namespace paludis
 {
@@ -73,7 +73,7 @@ namespace paludis
         const Configuration config;
         std::string library;
 
-        std::vector<tr1::shared_ptr<LinkageChecker> > checkers;
+        std::vector<std::tr1::shared_ptr<LinkageChecker> > checkers;
         std::set<FSEntry> extra_lib_dirs;
 
         Mutex mutex;
@@ -90,7 +90,7 @@ namespace paludis
         void check_file(const FSEntry &);
 
         void add_breakage(const FSEntry &, const std::string &);
-        void gather_package(const tr1::shared_ptr<const PackageID> &);
+        void gather_package(const std::tr1::shared_ptr<const PackageID> &);
 
         Implementation(const Environment * the_env, const std::string & the_library) :
             env(the_env),
@@ -128,18 +128,18 @@ namespace
 BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::string & library) :
     PrivateImplementationPattern<BrokenLinkageFinder>(new Implementation<BrokenLinkageFinder>(env, library))
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context ctx("When checking for broken linkage in '" + stringify(env->root()) + "':");
 
-    _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new ElfLinkageChecker(env->root(), library)));
+    _imp->checkers.push_back(std::tr1::shared_ptr<LinkageChecker>(new ElfLinkageChecker(env->root(), library)));
     if (library.empty())
-        _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new LibtoolLinkageChecker(env->root())));
+        _imp->checkers.push_back(std::tr1::shared_ptr<LinkageChecker>(new LibtoolLinkageChecker(env->root())));
 
     std::vector<FSEntry> search_dirs_nosyms, search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
                    std::back_inserter(search_dirs_nosyms),
-                   tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
+                   std::tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
     std::sort(search_dirs_nosyms.begin(), search_dirs_nosyms.end());
 
     for (std::vector<FSEntry>::const_iterator it(search_dirs_nosyms.begin()),
@@ -154,10 +154,10 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
 
     std::transform(_imp->config.begin_ld_so_conf(), _imp->config.end_ld_so_conf(),
                    std::inserter(_imp->extra_lib_dirs, _imp->extra_lib_dirs.begin()),
-                   tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
+                   std::tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
 
     std::for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
-                      tr1::bind(&Implementation<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
+                      std::tr1::bind(&Implementation<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
 
     for (Configuration::DirsIterator it(_imp->extra_lib_dirs.begin()),
              it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
@@ -166,21 +166,21 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
             << "Need to check for extra libraries in '" << (env->root() / *it) << "'";
 #ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
         std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
-                tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
+                std::tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
 #else
         std::for_each(indirect_iterator(_imp->checkers.begin()), indirect_iterator(_imp->checkers.end()),
-                tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
+                std::tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
 #endif
     }
 
-    tr1::function<void (const FSEntry &, const std::string &)> callback(
-        tr1::bind(&Implementation<BrokenLinkageFinder>::add_breakage, _imp.get(), _1, _2));
+    std::tr1::function<void (const FSEntry &, const std::string &)> callback(
+        std::tr1::bind(&Implementation<BrokenLinkageFinder>::add_breakage, _imp.get(), _1, _2));
 #ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
     std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
-            tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
+            std::tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
 #else
     std::for_each(indirect_iterator(_imp->checkers.begin()), indirect_iterator(_imp->checkers.end()),
-            tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
+            std::tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
 #endif
 
     _imp->checkers.clear();
@@ -217,7 +217,7 @@ Implementation<BrokenLinkageFinder>::search_directory(const FSEntry & directory)
 void
 Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry without_root(directory.strip_leading(env->root()));
     if (config.dir_is_masked(without_root))
@@ -237,7 +237,7 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
     try
     {
         std::for_each(DirIterator(directory, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), DirIterator(),
-                          tr1::bind(&Implementation<BrokenLinkageFinder>::check_file, this, _1));
+                          std::tr1::bind(&Implementation<BrokenLinkageFinder>::check_file, this, _1));
     }
     catch (const FSError & ex)
     {
@@ -248,7 +248,7 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
 void
 Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     try
     {
@@ -259,10 +259,10 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
             {
 #ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
                 std::for_each(checkers.begin(), checkers.end(),
-                        tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
+                        std::tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
 #else
                 std::for_each(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
-                        tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
+                        std::tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
 #endif
             }
         }
@@ -275,13 +275,13 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
 #ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
             if (checkers.end() ==
                     std::find_if(checkers.begin(), checkers.end(),
-                        tr1::bind(&LinkageChecker::check_file, _1, file)))
+                        std::tr1::bind(&LinkageChecker::check_file, _1, file)))
                 Log::get_instance()->message("reconcilio.broken_linkage_finder.unrecognised", ll_debug, lc_context)
                     << "'" << file << "' is not a recognised file type";
 #else
             if (indirect_iterator(checkers.end()) ==
                     std::find_if(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
-                        tr1::bind(&LinkageChecker::check_file, _1, file)))
+                        std::tr1::bind(&LinkageChecker::check_file, _1, file)))
                 Log::get_instance()->message("reconcilio.broken_linkage_finder.unrecognised", ll_debug, lc_context)
                     << "'" << file << "' is not a recognised file type";
 #endif
@@ -296,7 +296,7 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
 void
 Implementation<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const std::string & req)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (library.empty() && config.lib_is_masked(req))
         return;
@@ -307,12 +307,12 @@ Implementation<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const st
 
         Context ctx("When building map from files to packages:");
 
-        tr1::shared_ptr<const PackageDatabase> db(env->package_database());
-        tr1::shared_ptr<const PackageIDSequence> pkgs(
+        std::tr1::shared_ptr<const PackageDatabase> db(env->package_database());
+        std::tr1::shared_ptr<const PackageIDSequence> pkgs(
             db->query(query::InstalledAtRoot(env->root()), qo_whatever));
 
         std::for_each(pkgs->begin(), pkgs->end(),
-                          tr1::bind(&Implementation<BrokenLinkageFinder>::gather_package, this, _1));
+                          std::tr1::bind(&Implementation<BrokenLinkageFinder>::gather_package, this, _1));
     }
 
     FSEntry without_root(file.strip_leading(env->root()));
@@ -328,16 +328,16 @@ Implementation<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const st
 }
 
 void
-Implementation<BrokenLinkageFinder>::gather_package(const tr1::shared_ptr<const PackageID> & pkg)
+Implementation<BrokenLinkageFinder>::gather_package(const std::tr1::shared_ptr<const PackageID> & pkg)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context ctx("When gathering the contents of " + stringify(*pkg) + ":");
 
-    tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > key(pkg->contents_key());
+    std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > key(pkg->contents_key());
     if (! key)
         return;
-    tr1::shared_ptr<const Contents> contents(key->value());
+    std::tr1::shared_ptr<const Contents> contents(key->value());
     if (! contents)
         return;
 
@@ -366,7 +366,7 @@ BrokenLinkageFinder::end_broken_packages() const
 }
 
 BrokenLinkageFinder::BrokenFileConstIterator
-BrokenLinkageFinder::begin_broken_files(const tr1::shared_ptr<const PackageID> & pkg) const
+BrokenLinkageFinder::begin_broken_files(const std::tr1::shared_ptr<const PackageID> & pkg) const
 {
     if (pkg)
     {
@@ -381,7 +381,7 @@ BrokenLinkageFinder::begin_broken_files(const tr1::shared_ptr<const PackageID> &
 }
 
 BrokenLinkageFinder::BrokenFileConstIterator
-BrokenLinkageFinder::end_broken_files(const tr1::shared_ptr<const PackageID> & pkg) const
+BrokenLinkageFinder::end_broken_files(const std::tr1::shared_ptr<const PackageID> & pkg) const
 {
     if (pkg)
     {
@@ -397,7 +397,7 @@ BrokenLinkageFinder::end_broken_files(const tr1::shared_ptr<const PackageID> & p
 
 BrokenLinkageFinder::MissingRequirementConstIterator
 BrokenLinkageFinder::begin_missing_requirements(
-    const tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
+    const std::tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
 {
     if (pkg)
     {
@@ -423,7 +423,7 @@ BrokenLinkageFinder::begin_missing_requirements(
 
 BrokenLinkageFinder::MissingRequirementConstIterator
 BrokenLinkageFinder::end_missing_requirements(
-    const tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
+    const std::tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
 {
     if (pkg)
     {

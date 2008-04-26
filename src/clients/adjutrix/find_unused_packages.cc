@@ -59,7 +59,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
 
         cout << "Searching for unused packages in repository " << stringify(r->name()) << endl;
 
-        tr1::shared_ptr<const CategoryNamePartSet> categories(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> categories(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end()) ;
                 c != c_end ; ++c)
         {
@@ -73,7 +73,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
                     continue;
 
             cout << " In category " << stringify(*c) << ":" << endl;
-            tr1::shared_ptr<const QualifiedPackageNameSet> packages(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(r->package_names(*c));
 
             for (QualifiedPackageNameSet::ConstIterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
@@ -87,7 +87,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
                                 stringify(*c)))
                         continue;
 
-                tr1::shared_ptr<const PackageIDSequence> unused(task.execute(*p));
+                std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(*p));
                 for (IndirectIterator<PackageIDSequence::ConstIterator> u(unused->begin()), u_end(unused->end()) ; 
                         u != u_end ; ++u)
                     cout << stringify(*u) << endl;

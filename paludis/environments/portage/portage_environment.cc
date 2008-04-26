@@ -46,8 +46,8 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/set_file.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/mutex.hh>
+#include <tr1/functional>
 #include <functional>
 #include <algorithm>
 #include <set>
@@ -59,10 +59,10 @@
 using namespace paludis;
 using namespace paludis::portage_environment;
 
-typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageUse;
-typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageKeywords;
-typedef std::list<tr1::shared_ptr<const PackageDepSpec> > PackageMask;
-typedef std::list<tr1::shared_ptr<const PackageDepSpec> > PackageUnmask;
+typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageUse;
+typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageKeywords;
+typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> > PackageMask;
+typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> > PackageUnmask;
 
 PortageEnvironmentConfigurationError::PortageEnvironmentConfigurationError(const std::string & s) throw () :
     ConfigurationError(s)
@@ -77,7 +77,7 @@ namespace paludis
         const FSEntry conf_dir;
         std::string paludis_command;
 
-        tr1::shared_ptr<KeyValueConfigFile> vars;
+        std::tr1::shared_ptr<KeyValueConfigFile> vars;
 
         std::set<std::string> use_with_expands;
         std::set<std::string> use_expand;
@@ -94,12 +94,12 @@ namespace paludis
 
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
-        mutable tr1::shared_ptr<Hooker> hooker;
+        mutable std::tr1::shared_ptr<Hooker> hooker;
         mutable std::list<FSEntry> hook_dirs;
 
         int overlay_importance;
 
-        tr1::shared_ptr<PackageDatabase> package_database;
+        std::tr1::shared_ptr<PackageDatabase> package_database;
 
         const FSEntry world_file;
         mutable Mutex world_mutex;
@@ -178,7 +178,7 @@ namespace
 PortageEnvironment::PortageEnvironment(const std::string & s) :
     PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(this, s))
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When creating PortageEnvironment using config root '" + s + "':");
 
@@ -209,7 +209,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     tokenise_whitespace(_imp->vars->get("PORTDIR_OVERLAY"),
             create_inserter<FSEntry>(std::back_inserter(portdir_overlay)));
     std::for_each(portdir_overlay.begin(), portdir_overlay.end(),
-            tr1::bind(tr1::mem_fn(&PortageEnvironment::_add_portdir_overlay_repository), this, _1));
+            std::tr1::bind(std::tr1::mem_fn(&PortageEnvironment::_add_portdir_overlay_repository), this, _1));
 
     /* use etc */
 
@@ -286,7 +286,7 @@ template<typename I_>
 void
 PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string & def_value)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When loading '" + stringify(f) + "':");
 
@@ -295,7 +295,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
 
     if (f.is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), tr1::bind(
+        std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(
                     &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value));
     }
     else
@@ -310,7 +310,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
             if (tokens.empty())
                 continue;
 
-            tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(parse_user_package_dep_spec(
+            std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), UserPackageDepSpecOptions())));
             if (1 == tokens.size())
             {
@@ -331,7 +331,7 @@ template<typename I_>
 void
 PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When loading '" + stringify(f) + "':");
 
@@ -340,7 +340,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 
     if (f.is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), tr1::bind(
+        std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(
                     &PortageEnvironment::_load_lined_file<I_>, this, _1, i));
     }
     else
@@ -348,7 +348,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
         LineConfigFile file(f, LineConfigFileOptions());
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
-            *i++ = tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+            *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                         parse_user_package_dep_spec(strip_trailing(strip_leading(*line, " \t"), " \t"), UserPackageDepSpecOptions())));
     }
 }
@@ -375,7 +375,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
 void
 PortageEnvironment::_add_virtuals_repository()
 {
-    tr1::shared_ptr<Map<std::string, std::string> > keys(
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     package_database()->add_repository(-2,
             RepositoryMaker::get_instance()->find_maker("virtuals")(this, keys));
@@ -384,7 +384,7 @@ PortageEnvironment::_add_virtuals_repository()
 void
 PortageEnvironment::_add_installed_virtuals_repository()
 {
-    tr1::shared_ptr<Map<std::string, std::string> > keys(
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     package_database()->add_repository(-1,
@@ -402,7 +402,7 @@ void
 PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
         const std::string & sync, int importance)
 {
-    tr1::shared_ptr<Map<std::string, std::string> > keys(
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(portdir));
@@ -435,7 +435,7 @@ PortageEnvironment::_add_vdb_repository()
 {
     Context context("When creating vdb repository:");
 
-    tr1::shared_ptr<Map<std::string, std::string> > keys(
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(root() / "/var/db/pkg"));
@@ -531,7 +531,7 @@ PortageEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameSet> keywords,
+PortageEnvironment::accept_keywords(std::tr1::shared_ptr <const KeywordNameSet> keywords,
         const PackageID & d) const
 {
     bool result(false);
@@ -589,13 +589,13 @@ PortageEnvironment::unmasked_by_user(const PackageID & e) const
     return false;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
         const PackageID & pde) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
-    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
+    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");
@@ -625,7 +625,7 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
 HookResult
 PortageEnvironment::perform_hook(const Hook & hook) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Lock l(_imp->hook_mutex);
     if (! _imp->hooker)
@@ -633,59 +633,59 @@ PortageEnvironment::perform_hook(const Hook & hook) const
         _imp->need_hook_dirs();
         _imp->hooker.reset(new Hooker(this));
         std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
-                tr1::bind(tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1, false));
+                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1, false));
     }
 
     return _imp->hooker->perform_hook(hook);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::hook_dirs() const
 {
     Lock l(_imp->hook_mutex);
     _imp->need_hook_dirs();
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::bashrc_files() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
     return result;
 }
 
-tr1::shared_ptr<PackageDatabase>
+std::tr1::shared_ptr<PackageDatabase>
 PortageEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const PackageDatabase>
+std::tr1::shared_ptr<const PackageDatabase>
 PortageEnvironment::package_database() const
 {
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 PortageEnvironment::mirrors(const std::string & m) const
 {
     std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
         p(_imp->mirrors.equal_range(m));
-    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
     std::transform(p.first, p.second, result->back_inserter(),
-            tr1::mem_fn(&std::pair<const std::string, std::string>::second));
+            std::tr1::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageEnvironment::local_set(const SetName &) const
 {
-    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 bool
@@ -739,12 +739,12 @@ namespace
     };
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 PortageEnvironment::mask_for_breakage(const PackageID & id) const
 {
     if (! _imp->ignore_all_breaks_portage)
     {
-        tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        std::tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
         if (breakages)
         {
             std::set<std::string> bad_breakages;
@@ -756,10 +756,10 @@ PortageEnvironment::mask_for_breakage(const PackageID & id) const
         }
     }
 
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 PortageEnvironment::mask_for_user(const PackageID & d) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
@@ -767,7 +767,7 @@ PortageEnvironment::mask_for_user(const PackageID & d) const
         if (match_package(*this, **i, d))
             return make_shared_ptr(new UserConfigMask);
 
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
 gid_t
@@ -813,7 +813,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
 
     Context context("When adding '" + s + "' to world file '" + stringify(_imp->world_file) + "':");
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (! _imp->world_file.exists())
     {
@@ -829,8 +829,8 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
     SetFile world(SetFileParams::create()
             .file_name(_imp->world_file)
             .type(sft_simple)
-            .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-            .tag(tr1::shared_ptr<DepTag>())
+            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+            .tag(std::tr1::shared_ptr<DepTag>())
             .set_operator_mode(sfsmo_natural)
             .environment(this));
     world.add(s);
@@ -844,15 +844,15 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
 
     Context context("When removing '" + s + "' from world file '" + stringify(_imp->world_file) + "':");
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (_imp->world_file.exists())
     {
         SetFile world(SetFileParams::create()
                 .file_name(_imp->world_file)
                 .type(sft_simple)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                .tag(tr1::shared_ptr<DepTag>())
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .tag(std::tr1::shared_ptr<DepTag>())
                 .set_operator_mode(sfsmo_natural)
                 .environment(this));
 
@@ -861,14 +861,14 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageEnvironment::world_set() const
 {
     Context context("When fetching environment world set:");
 
-    tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify("Environment")));
+    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify("Environment")));
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Lock l(_imp->world_mutex);
 
@@ -877,7 +877,7 @@ PortageEnvironment::world_set() const
         SetFile world(SetFileParams::create()
                 .file_name(_imp->world_file)
                 .type(sft_simple)
-                .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                 .tag(tag)
                 .set_operator_mode(sfsmo_natural)
                 .environment(this));
@@ -887,7 +887,7 @@ PortageEnvironment::world_set() const
         Log::get_instance()->message("portage_environment.world_file.does_not_exist", ll_warning, lc_no_context) <<
             "World file '" << _imp->world_file << "' doesn't exist";
 
-    return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 }
 

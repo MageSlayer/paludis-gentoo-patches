@@ -31,8 +31,8 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/repositories/e/conditional_dep_spec.hh>
+#include <tr1/functional>
 #include <algorithm>
 #include <map>
 #include <set>
@@ -45,7 +45,7 @@ namespace
     struct ExtractorsRequirements :
         InstantiationPolicy<ExtractorsRequirements, instantiation_method::SingletonTag>
     {
-        tr1::shared_ptr<const KeyValueConfigFile> file;
+        std::tr1::shared_ptr<const KeyValueConfigFile> file;
 
         ExtractorsRequirements(const FSEntry & f = FSEntry(getenv_with_default("PALUDIS_QA_DATA_DIR",
                         stringify(FSEntry(DATADIR) / "paludis" / "qa"))) / "extractors.conf")
@@ -253,7 +253,7 @@ bool
 paludis::erepository::extractors_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' on ID '" + stringify(*id) + "':");

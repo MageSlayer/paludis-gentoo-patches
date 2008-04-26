@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,17 +37,17 @@ namespace paludis
             public:
                 UnpackagedDependencyKey(const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
-                        const tr1::shared_ptr<const DependencyLabelSequence> &,
+                        const std::tr1::shared_ptr<const DependencyLabelSequence> &,
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 
-                const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const;
+                const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const;
 
                 std::string pretty_print(const DependencySpecTree::ItemFormatter & f) const;
 
                 std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const;
 
-                virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

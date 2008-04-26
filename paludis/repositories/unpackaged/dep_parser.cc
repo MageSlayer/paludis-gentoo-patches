@@ -29,13 +29,13 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-tr1::shared_ptr<const DependencySpecTree::ConstItem>
+std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
 DepParser::parse(const std::string & s)
 {
     Context context("When parsing '" + s + "':");
 
-    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
-            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
+            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(tokens));
@@ -49,8 +49,8 @@ DepParser::parse(const std::string & s)
         if (a.empty())
             continue;
 
-        tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
-                new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+        std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
+                new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
                         new PackageDepSpec(parse_user_package_dep_spec(a, UserPackageDepSpecOptions())))));
         result->add(spec);
     }

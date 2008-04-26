@@ -4,10 +4,10 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <gtkmm/dialog.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/stock.h>
+#include <tr1/functional>
 #include <unistd.h>
 #include <algorithm>
 #include <list>
@@ -155,7 +155,7 @@ ThreadedWindow::run_gui_queue()
             local_queue.splice(local_queue.begin(), _imp->gui_queue, _imp->gui_queue.begin(), _imp->gui_queue.end());
     }
 
-    std::for_each(local_queue.begin(), local_queue.end(), paludis::tr1::mem_fn(&sigc::slot<void>::operator ()));
+    std::for_each(local_queue.begin(), local_queue.end(), std::tr1::mem_fn(&sigc::slot<void>::operator ()));
 
     return true;
 }
@@ -179,7 +179,7 @@ ThreadedWindow::run_paludis_queue()
             read(_imp->paludis_queue_pipe[0], &buf, 1023);
         }
         else
-            std::for_each(local_queue.begin(), local_queue.end(), paludis::tr1::mem_fn(&sigc::slot<void>::operator ()));
+            std::for_each(local_queue.begin(), local_queue.end(), std::tr1::mem_fn(&sigc::slot<void>::operator ()));
     }
 }
 

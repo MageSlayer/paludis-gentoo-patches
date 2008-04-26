@@ -410,20 +410,20 @@ namespace paludis
         public ActionError
     {
         private:
-            const tr1::shared_ptr<const Sequence<FetchActionFailure> > _failures;
+            const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > _failures;
 
         public:
             ///\name Basic operations
             ///\{
 
             FetchActionError(const std::string &) throw ();
-            FetchActionError(const std::string &, const tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
+            FetchActionError(const std::string &, const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
             ~FetchActionError() throw ();
 
             ///\}
 
             /// More information about failed fetches.
-            const tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

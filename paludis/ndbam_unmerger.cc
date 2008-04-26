@@ -33,11 +33,10 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-
+#include <tr1/functional>
 #include <list>
 #include <map>
 #include <vector>
@@ -117,7 +116,7 @@ NDBAMUnmerger::~NDBAMUnmerger()
 Hook
 NDBAMUnmerger::extend_hook(const Hook & h) const
 {
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options[k::environment()]->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options[k::config_protect()])
@@ -190,7 +189,7 @@ NDBAMUnmerger::_add_file(const FSEntry & f, const std::string & md5, const time_
 void
 NDBAMUnmerger::_add_dir(const FSEntry & f)
 {
-    add_unmerge_entry(stringify(f), et_dir, tr1::shared_ptr<ExtraInfo>());
+    add_unmerge_entry(stringify(f), et_dir, std::tr1::shared_ptr<ExtraInfo>());
 }
 
 void
@@ -202,18 +201,18 @@ NDBAMUnmerger::_add_sym(const FSEntry & f, const std::string & target, const tim
 void
 NDBAMUnmerger::populate_unmerge_set()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
     _imp->options[k::ndbam()]->parse_contents(*_imp->options[k::package_id()],
-            tr1::bind(&NDBAMUnmerger::_add_file, this, _1, _2, _3),
-            tr1::bind(&NDBAMUnmerger::_add_dir, this, _1),
-            tr1::bind(&NDBAMUnmerger::_add_sym, this, _1, _2, _3)
+            std::tr1::bind(&NDBAMUnmerger::_add_file, this, _1, _2, _3),
+            std::tr1::bind(&NDBAMUnmerger::_add_dir, this, _1),
+            std::tr1::bind(&NDBAMUnmerger::_add_sym, this, _1, _2, _3)
             );
 }
 
 bool
-NDBAMUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+NDBAMUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
-    tr1::shared_ptr<FileExtraInfo> fie(tr1::static_pointer_cast<FileExtraInfo>(ei));
+    std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
     if (! (_imp->options[k::root()] / f).is_regular_file())
         display("--- [!type] " + stringify(f));
@@ -240,9 +239,9 @@ NDBAMUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) cons
 }
 
 bool
-NDBAMUnmerger::check_sym(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+NDBAMUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
-    tr1::shared_ptr<SymlinkExtraInfo> sie(tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
+    std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
     if (! (_imp->options[k::root()] / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
@@ -257,13 +256,13 @@ NDBAMUnmerger::check_sym(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 bool
-NDBAMUnmerger::check_misc(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const
+NDBAMUnmerger::check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
 {
     return false;
 }
 
 bool
-NDBAMUnmerger::check_dir(const FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+NDBAMUnmerger::check_dir(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (! (_imp->options[k::root()] / f).is_directory())
         display("--- [!type] " + stringify(f));

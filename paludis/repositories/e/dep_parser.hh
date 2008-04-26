@@ -76,48 +76,48 @@ namespace paludis
         /**
          * Parse a dependency heirarchy.
          */
-        tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a dep spec label.
          */
-        tr1::shared_ptr<DependencyLabelsDepSpec> parse_dependency_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<DependencyLabelsDepSpec> parse_dependency_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a provide heirarchy.
          */
-        tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a restrict.
          */
-        tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a fetchable uri heirarchy.
          */
-        tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a simple uri heirarchy.
          */
-        tr1::shared_ptr<SimpleURISpecTree::ConstItem> parse_simple_uri(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> parse_simple_uri(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a license heirarchy.
          */
-        tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
          * Parse a URI label.
          */
-        tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
     }
 }
 

@@ -24,7 +24,7 @@
 #include <paludis/util/kc-fwd.hh>
 #include <paludis/util/keys.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Forward declarations for paludis/mask.hh .
@@ -56,7 +56,7 @@ namespace paludis
      */
     typedef kc::KeyedClass<
         kc::Field<k::mask_file, FSEntry>,
-        kc::Field<k::comment, tr1::shared_ptr<const Sequence<std::string> > >
+        kc::Field<k::comment, std::tr1::shared_ptr<const Sequence<std::string> > >
             > RepositoryMaskInfo;
 }
 

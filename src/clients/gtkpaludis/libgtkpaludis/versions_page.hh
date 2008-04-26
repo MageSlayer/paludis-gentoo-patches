@@ -4,8 +4,8 @@
 #define GTKPALUDIS_GUARD_LIBGTKPALUDIS_VERSIONS_PAGE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
+#include <tr1/memory>
 #include <libgtkpaludis/query_notebook_page.hh>
 #include <gtkmm/table.h>
 
@@ -24,8 +24,8 @@ namespace gtkpaludis
 
             virtual void populate();
 
-            void set_id(paludis::tr1::shared_ptr<const paludis::PackageID>);
-            paludis::tr1::shared_ptr<const paludis::PackageID> get_id() const;
+            void set_id(std::tr1::shared_ptr<const paludis::PackageID>);
+            std::tr1::shared_ptr<const paludis::PackageID> get_id() const;
     };
 }
 

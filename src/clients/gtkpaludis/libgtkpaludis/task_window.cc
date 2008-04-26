@@ -5,7 +5,6 @@
 #include "gui_task.hh"
 #include "task_sequence_list.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
@@ -16,6 +15,7 @@
 #include <gtkmm/statusbar.h>
 #include <gtkmm/scrolledwindow.h>
 #include <vtemm/terminal_widget.hh>
+#include <tr1/memory>
 #include <cstdlib>
 #include <fcntl.h>
 
@@ -41,7 +41,7 @@ namespace paludis
         Vte::Terminal terminal;
         int master_fd, slave_fd;
 
-        paludis::tr1::shared_ptr<FDOutputStream> messages_stream;
+        std::tr1::shared_ptr<FDOutputStream> messages_stream;
 
         Implementation(MainWindow * const m, GuiTask * const t) :
             main_window(m),

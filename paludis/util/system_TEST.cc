@@ -21,9 +21,9 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/thread_pool.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <tr1/functional>
 
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <sched.h>
@@ -144,8 +144,8 @@ namespace test_cases
         {
             ThreadPool pool;
             bool b(false);
-            pool.create_thread(tr1::bind(&repeatedly_run_command, tr1::ref(b)));
-            pool.create_thread(tr1::bind(&repeatedly_log, tr1::ref(b)));
+            pool.create_thread(std::tr1::bind(&repeatedly_run_command, std::tr1::ref(b)));
+            pool.create_thread(std::tr1::bind(&repeatedly_log, std::tr1::ref(b)));
             b = true;
         }
     } test_run_command_mutex;

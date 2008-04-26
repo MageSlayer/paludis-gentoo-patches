@@ -38,11 +38,11 @@ int main(int argc, char * argv[])
                 "example_dep_spec_flattener", "EXAMPLE_DEP_SPEC_FLATTENER_OPTIONS", "EXAMPLE_DEP_SPEC_FLATTENER_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        tr1::shared_ptr<const PackageIDSequence> ids(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(
                 env->package_database()->query(
                     query::SupportsAction<InstalledAction>(),
                     qo_order_by_version));
@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
                 (*i)->provide_key()->value()->accept(provides);
 
                 /* The results are available through DepSpecFlattener::begin()
-                 * and ::end(). These return an iterator to a tr1::shared_ptr<>,
+                 * and ::end(). These return an iterator to a std::tr1::shared_ptr<>,
                  * so we use indirect_iterator to add a level of dereferencing.*/
                 cout << "    " << left << setw(24) << "Provides:" << " "
                     << join(indirect_iterator(provides.begin()), indirect_iterator(provides.end()), " ")

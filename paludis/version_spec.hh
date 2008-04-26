@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -95,6 +95,8 @@ namespace paludis
              */
             const VersionSpec & operator= (const VersionSpec & other);
 
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             ///\}
 
             ///\name Comparison operators
@@ -125,12 +127,6 @@ namespace paludis
             bool operator< (const VersionSpec &) const;
 
             ///\}
-
-            /**
-             * Fetch a hash value, used to avoid exposing our internals to
-             * CRCHash.
-             */
-            std::size_t hash_value() const;
 
             /**
              * Remove the revision part.

@@ -57,8 +57,8 @@ namespace paludis
      * \since 0.26
      */
     template <>
-    class ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> > :
-        public virtual ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >
+    class ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> > :
+        public virtual ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >
     {
         public:
             virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
@@ -115,12 +115,12 @@ namespace paludis
             ///\{
 
             LiteralMetadataFSEntrySequenceKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const tr1::shared_ptr<const FSEntrySequence> &);
+                    const std::tr1::shared_ptr<const FSEntrySequence> &);
             ~LiteralMetadataFSEntrySequenceKey();
 
             ///\}
 
-            virtual const tr1::shared_ptr<const FSEntrySequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::tr1::shared_ptr<const FSEntrySequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string pretty_print_flat(const Formatter<FSEntry> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -145,12 +145,12 @@ namespace paludis
             ///\{
 
             LiteralMetadataStringSetKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const tr1::shared_ptr<const Set<std::string> > &);
+                    const std::tr1::shared_ptr<const Set<std::string> > &);
             ~LiteralMetadataStringSetKey();
 
             ///\}
 
-            virtual const tr1::shared_ptr<const Set<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::tr1::shared_ptr<const Set<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string pretty_print_flat(const Formatter<std::string> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

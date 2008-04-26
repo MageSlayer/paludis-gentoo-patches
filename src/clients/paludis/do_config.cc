@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,9 +33,9 @@ namespace
     struct AmbiguousConfigTarget :
         public Exception
     {
-        tr1::shared_ptr<const PackageIDSequence> matches;
+        std::tr1::shared_ptr<const PackageIDSequence> matches;
 
-        AmbiguousConfigTarget(tr1::shared_ptr<const PackageIDSequence> & m) throw () :
+        AmbiguousConfigTarget(std::tr1::shared_ptr<const PackageIDSequence> & m) throw () :
             Exception("Ambiguous config target"),
             matches(m)
         {
@@ -47,7 +47,7 @@ namespace
     };
 
     int
-    do_one_config_entry(const tr1::shared_ptr<const PackageID> & p)
+    do_one_config_entry(const std::tr1::shared_ptr<const PackageID> & p)
     {
         int return_code(0);
 
@@ -66,19 +66,19 @@ namespace
     }
 
     int
-    do_one_config(tr1::shared_ptr<Environment> env, const std::string & target)
+    do_one_config(std::tr1::shared_ptr<Environment> env, const std::string & target)
     {
         Context local_context("When handling query '" + target + "':");
 
         /* we might have a dep spec, but we might just have a simple package name
          * without a category. either should work. */
-        tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
+        std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
                 new PackageDepSpec(make_package_dep_spec().package(
                         env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(target), query::InstalledAtRoot(env->root())))) :
                 new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
 
-        tr1::shared_ptr<const PackageIDSequence>
+        std::tr1::shared_ptr<const PackageIDSequence>
             entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
         if (entries->empty())
@@ -92,7 +92,7 @@ namespace
 }
 
 int
-do_config(tr1::shared_ptr<Environment> env)
+do_config(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(0);
 

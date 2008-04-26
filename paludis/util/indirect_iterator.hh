@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,9 +22,9 @@
 
 #include <paludis/util/indirect_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/util/tr1_functional.hh>
-#include <paludis/util/tr1_type_traits.hh>
+#include <tr1/memory>
+#include <tr1/functional>
+#include <tr1/type_traits>
 
 namespace paludis
 {
@@ -41,13 +41,13 @@ namespace paludis
     };
 
     template <typename T_>
-    struct IndirectIteratorValueType<tr1::shared_ptr<T_> >
+    struct IndirectIteratorValueType<std::tr1::shared_ptr<T_> >
     {
         typedef T_ Type;
     };
 
     template <typename T_>
-    struct IndirectIteratorValueType<tr1::shared_ptr<const T_> >
+    struct IndirectIteratorValueType<std::tr1::shared_ptr<const T_> >
     {
         typedef const T_ Type;
     };
@@ -65,7 +65,7 @@ namespace paludis
     };
 
     /**
-     * An IndirectIterator turns an iterator over T_ * or tr1::shared_ptr<T_> into an iterator
+     * An IndirectIterator turns an iterator over T_ * or std::tr1::shared_ptr<T_> into an iterator
      * over T_.
      *
      * \ingroup g_iterator
@@ -96,9 +96,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename tr1::remove_reference<Value_>::type & value_type;
-            typedef typename tr1::remove_reference<Value_>::type & reference;
-            typedef typename tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::tr1::remove_reference<Value_>::type & value_type;
+            typedef typename std::tr1::remove_reference<Value_>::type & reference;
+            typedef typename std::tr1::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 

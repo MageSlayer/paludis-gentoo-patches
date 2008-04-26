@@ -32,15 +32,15 @@ namespace bp = boost::python;
 struct DepListWrapper
 {
     static void
-    add(DepList & self, tr1::shared_ptr<SetSpecTree::ConstItem> st,
-            tr1::shared_ptr<const DestinationsSet> & d)
+    add(DepList & self, std::tr1::shared_ptr<SetSpecTree::ConstItem> st,
+            std::tr1::shared_ptr<const DestinationsSet> & d)
     {
         self.add(*st, d);
     }
 
     static bool
-    already_installed(const DepList & self, tr1::shared_ptr<DependencySpecTree::ConstItem> st,
-            tr1::shared_ptr<const DestinationsSet> & d)
+    already_installed(const DepList & self, std::tr1::shared_ptr<DependencySpecTree::ConstItem> st,
+            std::tr1::shared_ptr<const DestinationsSet> & d)
     {
         return self.already_installed(*st, d);
     }
@@ -235,7 +235,7 @@ void expose_dep_list()
     /**
      * DepList
      */
-    tr1::shared_ptr<DepListOptions> (DepList::* options_ptr)() = &DepList::options;
+    std::tr1::shared_ptr<DepListOptions> (DepList::* options_ptr)() = &DepList::options;
     DepList::Iterator (DepList::*dl_begin_ptr)() = &DepList::begin;
     DepList::Iterator (DepList::*dl_end_ptr)() = &DepList::end;
     bp::class_<DepList, boost::noncopyable>

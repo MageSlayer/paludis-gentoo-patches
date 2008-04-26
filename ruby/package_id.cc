@@ -46,8 +46,8 @@ namespace
     VALUE
     package_id_canonical_form(VALUE self, VALUE cf)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         return rb_str_new2(((*self_ptr)->canonical_form(static_cast<PackageIDCanonicalForm>(NUM2INT(cf)))).c_str());
     }
 
@@ -60,8 +60,8 @@ namespace
     VALUE
     package_id_name(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         return qualified_package_name_to_value((*self_ptr)->name());
     }
 
@@ -75,9 +75,9 @@ namespace
     VALUE
     package_id_supports_action(VALUE self, VALUE test)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        std::tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         return (*self_ptr)->supports_action(*test_ptr) ? Qtrue : Qfalse;
     }
 
@@ -90,9 +90,9 @@ namespace
     VALUE
     package_id_perform_action(VALUE self, VALUE test)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        tr1::shared_ptr<Action> a_ptr(value_to_action(test));
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        std::tr1::shared_ptr<Action> a_ptr(value_to_action(test));
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         try
         {
             (*self_ptr)->perform_action(*a_ptr);
@@ -119,8 +119,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const S_> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const S_>, self_ptr);
+            std::tr1::shared_ptr<const S_> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const S_>, self_ptr);
             return rb_str_new2(stringify(((**self_ptr).*m_)()).c_str());
         }
     };
@@ -134,8 +134,8 @@ namespace
     VALUE
     package_id_version(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         return version_spec_to_value((*self_ptr)->version());
     }
 
@@ -148,8 +148,8 @@ namespace
     VALUE
     package_id_repository_name(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
     }
 
@@ -162,8 +162,8 @@ namespace
     VALUE
     package_id_subscript(VALUE self, VALUE raw_name)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         PackageID::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
         if ((*self_ptr)->end_metadata() == it)
             return Qnil;
@@ -179,8 +179,8 @@ namespace
     VALUE
     package_id_each_metadata(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         for (PackageID::MetadataConstIterator it((*self_ptr)->begin_metadata()),
                 it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
         {
@@ -200,8 +200,8 @@ namespace
     VALUE
     package_id_masks(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         VALUE result(rb_ary_new());
         for (PackageID::MasksConstIterator it((*self_ptr)->begin_masks()),
                 it_end((*self_ptr)->end_masks()); it_end != it; ++it)
@@ -223,8 +223,8 @@ namespace
     VALUE
     package_id_invalidate_masks(VALUE self)
     {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         (*self_ptr)->invalidate_masks();
         return Qnil;
     }
@@ -241,9 +241,9 @@ namespace
     package_id_breaks_portage(VALUE self)
     {
         VALUE result(rb_ary_new());
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        tr1::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
+        std::tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
+        std::tr1::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
         if (breakages)
             for (Set<std::string>::ConstIterator it(breakages->begin()),
                      it_end(breakages->end()); it_end != it; ++it)
@@ -265,8 +265,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const PackageID> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+            std::tr1::shared_ptr<const PackageID> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
             return (self_ptr->get()->*m_)() ? Qtrue : Qfalse;
         }
     };
@@ -399,15 +399,15 @@ namespace
      *
      * Things we fetch
      */
-    template <typename T_, const tr1::shared_ptr<const T_> (PackageID::* m_) () const>
+    template <typename T_, const std::tr1::shared_ptr<const T_> (PackageID::* m_) () const>
     struct KeyValue
     {
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const PackageID> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-            tr1::shared_ptr<const MetadataKey> ptr = (((**self_ptr).*m_)());
+            std::tr1::shared_ptr<const PackageID> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
+            std::tr1::shared_ptr<const MetadataKey> ptr = (((**self_ptr).*m_)());
 
             if (ptr)
             {
@@ -431,11 +431,11 @@ namespace
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
-        rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
+        rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
         rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
-        rb_define_method(c_package_id, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::to_s_via_ptr), 0);
-        rb_define_method(c_package_id, "hash", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::hash_via_ptr), 0);
-        rb_define_method(c_package_id, "eql?", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
+        rb_define_method(c_package_id, "to_s", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageID> >::to_s_via_ptr), 0);
+        rb_define_method(c_package_id, "hash", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageID> >::hash_via_ptr), 0);
+        rb_define_method(c_package_id, "eql?", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
         rb_define_method(c_package_id, "supports_action", RUBY_FUNC_CAST(&package_id_supports_action), 1);
         rb_define_method(c_package_id, "perform_action", RUBY_FUNC_CAST(&package_id_perform_action), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
@@ -445,7 +445,7 @@ namespace
         rb_define_method(c_package_id, "invalidate_masks", RUBY_FUNC_CAST(&package_id_invalidate_masks), 0);
         rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
-        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<tr1::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
+        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::tr1::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
         rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
@@ -464,7 +464,7 @@ namespace
                         &PackageID::short_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
                         &PackageID::long_description_key>::fetch)), 0);
-        rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<tr1::shared_ptr<const Contents> >,
+        rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
                         &PackageID::contents_key>::fetch)), 0);
         rb_define_method(c_package_id, "installed_time_key", RUBY_FUNC_CAST((&KeyValue<MetadataTimeKey,&PackageID::installed_time_key>::fetch)), 0);
         rb_define_method(c_package_id, "source_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
@@ -492,13 +492,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::package_id_to_value(tr1::shared_ptr<const PackageID> m)
+paludis::ruby::package_id_to_value(std::tr1::shared_ptr<const PackageID> m)
 {
-    tr1::shared_ptr<const PackageID> * m_ptr(0);
+    std::tr1::shared_ptr<const PackageID> * m_ptr(0);
     try
     {
-        m_ptr = new tr1::shared_ptr<const PackageID>(m);
-        return Data_Wrap_Struct(c_package_id, 0, &Common<tr1::shared_ptr<const PackageID> >::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<const PackageID>(m);
+        return Data_Wrap_Struct(c_package_id, 0, &Common<std::tr1::shared_ptr<const PackageID> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -507,13 +507,13 @@ paludis::ruby::package_id_to_value(tr1::shared_ptr<const PackageID> m)
     }
 }
 
-tr1::shared_ptr<const PackageID>
+std::tr1::shared_ptr<const PackageID>
 paludis::ruby::value_to_package_id(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_package_id))
     {
-        tr1::shared_ptr<const PackageID> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const PackageID>, v_ptr);
+        std::tr1::shared_ptr<const PackageID> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<const PackageID>, v_ptr);
         return *v_ptr;
     }
     else

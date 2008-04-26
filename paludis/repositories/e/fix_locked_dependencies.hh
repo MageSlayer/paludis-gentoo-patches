@@ -22,19 +22,19 @@
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/dep_tree.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     namespace erepository
     {
-        const tr1::shared_ptr<const DependencySpecTree::ConstItem> fix_locked_dependencies(
+        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> fix_locked_dependencies(
                 const Environment * const env,
-                const EAPI &, const tr1::shared_ptr<const PackageID> &,
-                const tr1::shared_ptr<const DependencySpecTree::ConstItem> &) PALUDIS_VISIBLE;
+                const EAPI &, const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &) PALUDIS_VISIBLE;
     }
 }
 

@@ -4,8 +4,8 @@ make_class_SetFileParams()
 
     key file_name FSEntry
     key type SetFileType
-    key parser "tr1::function<PackageDepSpec (const std::string &)>"
-    key tag "tr1::shared_ptr<const DepTag>"
+    key parser "std::tr1::function<PackageDepSpec (const std::string &)>"
+    key tag "std::tr1::shared_ptr<const DepTag>"
     key environment "const Environment *"
     key set_operator_mode SetFileSetOperatorMode
 

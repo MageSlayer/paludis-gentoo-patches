@@ -46,17 +46,17 @@ PackagesRepositoryFilterModel::populate()
     r = append();
     (*r)[_imp->columns.col_text] = "All repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::All);
+    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::All);
 
     r = append();
     (*r)[_imp->columns.col_text] = "Installable repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::SupportsAction<InstallAction>());
+    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::SupportsAction<InstallAction>());
 
     r = append();
     (*r)[_imp->columns.col_text] = "Installed repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::SupportsAction<InstalledAction>());
+    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::SupportsAction<InstalledAction>());
 
     _imp->main_window->paludis_thread_action(
             sigc::mem_fun(this, &PackagesRepositoryFilterModel::populate_in_paludis_thread), "Populating repository filter model");
@@ -65,7 +65,7 @@ PackagesRepositoryFilterModel::populate()
 void
 PackagesRepositoryFilterModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<RepositoryNameSequence> columns(new RepositoryNameSequence);
+    std::tr1::shared_ptr<RepositoryNameSequence> columns(new RepositoryNameSequence);
 
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator>
             r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
@@ -78,7 +78,7 @@ PackagesRepositoryFilterModel::populate_in_paludis_thread()
 }
 
 void
-PackagesRepositoryFilterModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const RepositoryNameSequence> names)
+PackagesRepositoryFilterModel::populate_in_gui_thread(std::tr1::shared_ptr<const RepositoryNameSequence> names)
 {
     iterator repositories(append());
     (*repositories)[_imp->columns.col_text] = "Specific repository";
@@ -90,7 +90,7 @@ PackagesRepositoryFilterModel::populate_in_gui_thread(paludis::tr1::shared_ptr<c
         iterator r(append(repositories->children()));
         (*r)[_imp->columns.col_text] = stringify(*n);
         (*r)[_imp->columns.col_sensitive] = true;
-        (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::Repository(*n));
+        (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::Repository(*n));
     }
 }
 

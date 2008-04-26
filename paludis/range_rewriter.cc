@@ -36,8 +36,8 @@ namespace
     struct RangeRewrittenPackageDepSpecData :
         PackageDepSpecData
     {
-        tr1::shared_ptr<QualifiedPackageName> package;
-        tr1::shared_ptr<VersionRequirements> version_requirements;
+        std::tr1::shared_ptr<QualifiedPackageName> package;
+        std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::list<std::string> strings;
 
@@ -92,22 +92,22 @@ namespace
             return s.str() + " (rewritten from { " + join(strings.begin(), strings.end(), ", ") + " })";
         }
 
-        virtual tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
         {
             return package;
         }
 
-        virtual tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
         {
-            return tr1::shared_ptr<const PackageNamePart>();
+            return std::tr1::shared_ptr<const PackageNamePart>();
         }
 
-        virtual tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
         {
-            return tr1::shared_ptr<const CategoryNamePart>();
+            return std::tr1::shared_ptr<const CategoryNamePart>();
         }
 
-        virtual tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
         {
             return version_requirements;
         }
@@ -117,19 +117,19 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
-            return tr1::shared_ptr<const SlotRequirement>();
+            return std::tr1::shared_ptr<const SlotRequirement>();
         }
 
-        virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
         {
-            return tr1::shared_ptr<const RepositoryName>();
+            return std::tr1::shared_ptr<const RepositoryName>();
         }
 
-        virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
-            return tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
+            return std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
         }
 
         void add_spec(const PackageDepSpec & spec)
@@ -149,12 +149,12 @@ namespace
                     version_requirements->back_inserter());
         }
 
-        tr1::shared_ptr<const PackageDepSpecData> without_additional_requirements() const
+        std::tr1::shared_ptr<const PackageDepSpecData> without_additional_requirements() const
         {
             return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
         }
 
-        tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
+        std::tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
         {
             return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
         }
@@ -167,7 +167,7 @@ namespace paludis
     struct Implementation<RangeRewriter>
     {
         bool invalid;
-        tr1::shared_ptr<RangeRewrittenPackageDepSpecData> spec_data;
+        std::tr1::shared_ptr<RangeRewrittenPackageDepSpecData> spec_data;
 
         Implementation() :
             invalid(false)
@@ -265,12 +265,12 @@ RangeRewriter::visit_leaf(const NamedSetDepSpec &)
     _imp->invalid = true;
 }
 
-tr1::shared_ptr<PackageDepSpec>
+std::tr1::shared_ptr<PackageDepSpec>
 RangeRewriter::spec() const
 {
     if (_imp->invalid || ! _imp->spec_data)
-        return tr1::shared_ptr<PackageDepSpec>();
+        return std::tr1::shared_ptr<PackageDepSpec>();
 
-    return tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(_imp->spec_data));
+    return std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(_imp->spec_data));
 }
 

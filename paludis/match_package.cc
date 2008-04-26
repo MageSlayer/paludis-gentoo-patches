@@ -26,7 +26,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 #include <algorithm>
 
 using namespace paludis;
@@ -136,12 +136,12 @@ paludis::match_package_in_set(
         const SetSpecTree::ConstItem & target,
         const PackageID & entry)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env);
     target.accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            tr1::bind(&match_package, tr1::cref(env), _1, tr1::cref(entry)));
+            std::tr1::bind(&match_package, std::tr1::cref(env), _1, std::tr1::cref(entry)));
 }
 

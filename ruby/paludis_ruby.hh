@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -37,7 +37,7 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/util/hashes.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa.hh>
@@ -75,38 +75,38 @@ namespace paludis
 
         /* constructors */
 
-        VALUE package_database_to_value(tr1::shared_ptr<PackageDatabase>);
-        VALUE repository_to_value(tr1::shared_ptr<Repository>);
+        VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
+        VALUE repository_to_value(std::tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
-        VALUE package_id_to_value(tr1::shared_ptr<const PackageID>);
-        VALUE dep_tag_to_value(tr1::shared_ptr<const DepTag>);
+        VALUE package_id_to_value(std::tr1::shared_ptr<const PackageID>);
+        VALUE dep_tag_to_value(std::tr1::shared_ptr<const DepTag>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
-        VALUE contents_to_value(tr1::shared_ptr<const Contents>);
-        VALUE repository_mask_info_to_value(tr1::shared_ptr<const RepositoryMaskInfo>);
-        VALUE metadata_key_to_value(tr1::shared_ptr<const MetadataKey> m);
+        VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
+        VALUE repository_mask_info_to_value(std::tr1::shared_ptr<const RepositoryMaskInfo>);
+        VALUE metadata_key_to_value(std::tr1::shared_ptr<const MetadataKey> m);
         VALUE fetch_action_failure_to_value(const FetchActionFailure &);
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
-        template <typename T_> VALUE dep_tree_to_value(const tr1::shared_ptr<const typename T_::ConstItem> &);
-        template <typename T_> tr1::shared_ptr<const typename T_::ConstItem> value_to_dep_tree(VALUE);
-        VALUE package_dep_spec_to_value(const tr1::shared_ptr<const PackageDepSpec> &);
-        VALUE uri_label_to_value(const tr1::shared_ptr<const URILabel> &);
-        VALUE mask_to_value(tr1::shared_ptr<const Mask>);
+        template <typename T_> VALUE dep_tree_to_value(const std::tr1::shared_ptr<const typename T_::ConstItem> &);
+        template <typename T_> std::tr1::shared_ptr<const typename T_::ConstItem> value_to_dep_tree(VALUE);
+        VALUE package_dep_spec_to_value(const std::tr1::shared_ptr<const PackageDepSpec> &);
+        VALUE uri_label_to_value(const std::tr1::shared_ptr<const URILabel> &);
+        VALUE mask_to_value(std::tr1::shared_ptr<const Mask>);
 
         VersionSpec value_to_version_spec(VALUE v);
-        tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
-        tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
-        tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
-        tr1::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
+        std::tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
+        std::tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
+        std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
+        std::tr1::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
-        tr1::shared_ptr<Environment> value_to_environment(VALUE v);
-        tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
+        std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
+        std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         Query value_to_query(VALUE v);
-        tr1::shared_ptr<Repository> value_to_repository(VALUE);
-        tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
-        tr1::shared_ptr<Action> value_to_action(VALUE v);
+        std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
+        std::tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
+        std::tr1::shared_ptr<Action> value_to_action(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         QACheckProperties value_to_qa_check_properties(VALUE);
@@ -186,14 +186,14 @@ namespace paludis
             {
                 T_ * self_ptr;
                 Data_Get_Struct(self, T_, self_ptr);
-                return INT2FIX(CRCHash<T_>()(*self_ptr));
+                return INT2FIX(Hash<T_>()(*self_ptr));
             }
 
             static VALUE hash_via_ptr(VALUE self)
             {
                 T_ * self_ptr;
                 Data_Get_Struct(self, T_, self_ptr);
-                return INT2FIX(CRCHash<typename tr1::remove_const<typename T_::element_type>::type>()(**self_ptr));
+                return INT2FIX(Hash<typename std::tr1::remove_const<typename T_::element_type>::type>()(**self_ptr));
             }
 
 

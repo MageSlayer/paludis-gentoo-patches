@@ -52,7 +52,7 @@ namespace
     bool accept_keyword(const TestPortageEnvironment & env,
             const KeywordName & k, const PackageID & e)
     {
-        tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
+        std::tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
         kk->insert(k);
         return env.accept_keywords(kk, e);
     }
@@ -68,10 +68,10 @@ namespace test_cases
         {
             PortageEnvironment env("portage_environment_TEST_dir/query_use");
 
-            const tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
-            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(env.query_use(UseFlagName("one"), *idx));
@@ -96,9 +96,9 @@ namespace test_cases
         {
             PortageEnvironment env("portage_environment_TEST_dir/known_use_expand_names");
 
-            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-            tr1::shared_ptr<const UseFlagNameSet> k1(env.known_use_expand_names(UseFlagName("foo_cards"), *id1));
+            std::tr1::shared_ptr<const UseFlagNameSet> k1(env.known_use_expand_names(UseFlagName("foo_cards"), *id1));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three");
         }
     } test_known_use_expand;
@@ -111,35 +111,35 @@ namespace test_cases
         {
             TestPortageEnvironment env("portage_environment_TEST_dir/accept_keywords");
 
-            const tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *idx));
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *idx));
             TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *idx));
 
-            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id1));
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id1));
             TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id1));
 
-            const tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id2));
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id2));
             TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id2));
 
-            const tr1::shared_ptr<const PackageID> id3(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id3(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-three-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
             TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), *id3));
             TEST_CHECK(! accept_keyword(env, KeywordName("arch"), *id3));
             TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *id3));
 
-            const tr1::shared_ptr<const PackageID> id4(*env.package_database()->query(
+            const std::tr1::shared_ptr<const PackageID> id4(*env.package_database()->query(
                         query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-four-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
             TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
         }

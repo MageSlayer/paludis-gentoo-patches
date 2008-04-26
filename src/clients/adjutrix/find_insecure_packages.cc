@@ -71,7 +71,7 @@ namespace
     {
         private:
             const Environment & _env;
-            std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
+            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
             std::set<SetName> recursing_sets;
 
         public:
@@ -84,7 +84,7 @@ namespace
 
             void visit_leaf(const PackageDepSpec & a)
             {
-                tr1::shared_ptr<const PackageIDSequence> insecure(
+                std::tr1::shared_ptr<const PackageIDSequence> insecure(
                         _env.package_database()->query(query::Matches(a), qo_order_by_version));
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
@@ -98,7 +98,7 @@ namespace
             {
                 Context context("When expanding named set '" + stringify(s) + "':");
 
-                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
+                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
 
                 if (! set)
                 {
@@ -125,7 +125,7 @@ namespace
     std::ostream & operator<< (std::ostream & s, const ListInsecureVisitor & v)
     {
         QualifiedPackageName old_name("dormouse/teapot");
-        for (std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator>::const_iterator
+        for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator>::const_iterator
                 f(v._found.begin()), f_end(v._found.end()) ; f != f_end ; ++f)
         {
             if (f->first->name() != old_name)
@@ -165,7 +165,7 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
 
         write_repository_header(r->name());
 
-        tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure((*r)[k::sets_interface()]->package_set(SetName("insecurity")));
+        std::tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure((*r)[k::sets_interface()]->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);

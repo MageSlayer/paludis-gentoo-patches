@@ -50,8 +50,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsSet> ddd,
-                    const Environment * const, const tr1::shared_ptr<const PackageID> &, bool, bool);
+            ShowSuggestVisitor(DepList * const dd, std::tr1::shared_ptr<const DestinationsSet> ddd,
+                    const Environment * const, const std::tr1::shared_ptr<const PackageID> &, bool, bool);
             ~ShowSuggestVisitor();
 
             ///\}

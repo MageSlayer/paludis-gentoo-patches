@@ -128,7 +128,7 @@ SourceURIFinder::add_local_mirrors()
 {
     Context context("When adding local mirrors:");
 
-    tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors("*"));
+    std::tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors("*"));
     if (mirrors->empty())
         Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Mirrors set is empty";
 
@@ -145,7 +145,7 @@ SourceURIFinder::add_mirrors()
 {
     Context context("When adding repository mirrors from '" + _imp->mirrors_name + "':");
 
-    tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(_imp->mirrors_name));
+    std::tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(_imp->mirrors_name));
     if (mirrors->empty())
         Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Environment mirrors set is empty";
 
@@ -186,7 +186,7 @@ SourceURIFinder::add_listed()
 
         {
             Context local_context("When adding from environment for listed mirror '" + mirror + "':");
-            tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror));
+            std::tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror));
             if (mirrors->empty())
                 Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Mirrors set is empty";
             for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)

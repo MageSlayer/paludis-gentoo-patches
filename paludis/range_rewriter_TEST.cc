@@ -40,10 +40,10 @@ namespace test_cases
 
         void run()
         {
-            tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1", UserPackageDepSpecOptions())))));
-            tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2", UserPackageDepSpecOptions())))));
+            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
+                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1", UserPackageDepSpecOptions())))));
+            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
+                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2", UserPackageDepSpecOptions())))));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());

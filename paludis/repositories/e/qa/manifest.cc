@@ -55,14 +55,14 @@ namespace
         ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>,
         ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>
     {
-        tr1::shared_ptr<const PackageID> id;
-        std::map<std::string, tr1::shared_ptr<PackageIDSet> > & distfiles;
+        std::tr1::shared_ptr<const PackageID> id;
+        std::map<std::string, std::tr1::shared_ptr<PackageIDSet> > & distfiles;
 
         using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>::visit_sequence;
         using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>::visit_sequence;
 
-        DistfilesCollector(const tr1::shared_ptr<const PackageID> & i,
-                           std::map<std::string, tr1::shared_ptr<PackageIDSet> > & d) :
+        DistfilesCollector(const std::tr1::shared_ptr<const PackageID> & i,
+                           std::map<std::string, std::tr1::shared_ptr<PackageIDSet> > & d) :
             id(i),
             distfiles(d)
         {
@@ -74,11 +74,11 @@ namespace
 
         void visit_leaf(const FetchableURIDepSpec & u)
         {
-            std::map<std::string, tr1::shared_ptr<PackageIDSet> >::iterator it(
+            std::map<std::string, std::tr1::shared_ptr<PackageIDSet> >::iterator it(
                 distfiles.find(u.filename()));
             if (distfiles.end() == it)
             {
-                tr1::shared_ptr<PackageIDSet> set(new PackageIDSet);
+                std::tr1::shared_ptr<PackageIDSet> set(new PackageIDSet);
                 it = distfiles.insert(std::make_pair(u.filename(), set)).first;
             }
             it->second->insert(id);
@@ -92,16 +92,16 @@ namespace
         std::string name;
 
         FSEntry manifest;
-        tr1::shared_ptr<Map<FSEntry, std::string> > files;
-        tr1::shared_ptr<const PackageIDSequence> packages;
+        std::tr1::shared_ptr<Map<FSEntry, std::string> > files;
+        std::tr1::shared_ptr<const PackageIDSequence> packages;
 
         std::set<FSEntry> accounted_files;
-        std::map<std::string, tr1::shared_ptr<PackageIDSet> > distfiles;
+        std::map<std::string, std::tr1::shared_ptr<PackageIDSet> > distfiles;
         std::set<std::string> accounted_distfiles;
 
         Manifest2Checker(QAReporter & r, const FSEntry & d, const std::string & n,
-                         const FSEntry & m, const tr1::shared_ptr<Map<FSEntry, std::string> > & f,
-                         const tr1::shared_ptr<const PackageIDSequence> & p) :
+                         const FSEntry & m, const std::tr1::shared_ptr<Map<FSEntry, std::string> > & f,
+                         const std::tr1::shared_ptr<const PackageIDSequence> & p) :
             reporter(r),
             dir(d),
             name(n),
@@ -203,7 +203,7 @@ namespace
             for (std::set<std::string>::const_iterator dist_it(stray_distfiles.begin()),
                      dist_it_end(stray_distfiles.end()); dist_it_end != dist_it; ++dist_it)
             {
-                tr1::shared_ptr<const PackageIDSet> set(distfiles.find(*dist_it)->second);
+                std::tr1::shared_ptr<const PackageIDSet> set(distfiles.find(*dist_it)->second);
                 for (PackageIDSet::ConstIterator pkg_it(set->begin()),
                          pkg_it_end(set->end()); pkg_it_end != pkg_it; ++pkg_it)
                     reporter.message(QAMessage((*pkg_it)->fs_location_key()->value(), qaml_normal, name, "DIST file '" + *dist_it + "' is not listed in the Manifest")
@@ -218,12 +218,12 @@ bool
 paludis::erepository::manifest_check(
         QAReporter & reporter,
         const FSEntry & dir,
-        const tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const ERepository> & repo,
         const QualifiedPackageName & qpn,
         const std::string & name
         )
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When performing check '" + name + "' using manifest_check on directory '" + stringify(dir) + "':");
     Log::get_instance()->message("e.qa.manifest_check", ll_debug, lc_context) << "manifest_check '"
@@ -239,7 +239,7 @@ paludis::erepository::manifest_check(
             return true;
         }
 
-        tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(qpn));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(qpn));
         Manifest2Checker checker(reporter, dir, name, manifest, repo->layout()->manifest_files(qpn), ids);
         for (PackageIDSequence::ConstIterator it(ids->begin()),
                  it_end(ids->end()); it_end != it; ++it)
@@ -252,7 +252,7 @@ paludis::erepository::manifest_check(
         }
 
         Manifest2Reader reader(manifest);
-        std::for_each(reader.begin(), reader.end(), tr1::bind(&Manifest2Checker::check_file, tr1::ref(checker), _1));
+        std::for_each(reader.begin(), reader.end(), std::tr1::bind(&Manifest2Checker::check_file, std::tr1::ref(checker), _1));
         checker.check_unmanifested();
 
         bool is_signed(false);

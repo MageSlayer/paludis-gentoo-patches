@@ -131,7 +131,7 @@ namespace paludis
             /**
              * Fetch the metadata key that is not accepted.
              */
-            virtual const tr1::shared_ptr<const MetadataKey> unaccepted_key() const = 0;
+            virtual const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const = 0;
     };
 
     /**
@@ -151,7 +151,7 @@ namespace paludis
              * Fetch a metadata key explaining the mask. May return a zero
              * pointer, if no more information is available.
              */
-            virtual const tr1::shared_ptr<const MetadataKey> mask_key() const = 0;
+            virtual const std::tr1::shared_ptr<const MetadataKey> mask_key() const = 0;
     };
 
     /**
@@ -193,7 +193,7 @@ namespace paludis
             /**
              * Fetch the associated package.
              */
-            virtual const tr1::shared_ptr<const PackageID> associated_package() const = 0;
+            virtual const std::tr1::shared_ptr<const PackageID> associated_package() const = 0;
     };
 }
 

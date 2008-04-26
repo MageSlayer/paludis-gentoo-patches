@@ -21,10 +21,10 @@
 #include <python/exception.hh>
 
 #include <paludis/action.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/repository.hh>
+#include <tr1/memory>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -92,7 +92,7 @@ void expose_action()
          "InstallActionOptions",
          "Options for InstallAction.",
          bp::init<const bool &, const InstallActionDebugOption &, const InstallActionChecksOption &,
-                const tr1::shared_ptr<paludis::Repository> &>(
+                const std::tr1::shared_ptr<paludis::Repository> &>(
                     "__init__(no_config_protect_bool, InstallActionDebugOption,\n"
                     "InstallActionChecksOption, Repository)"
                     )
@@ -116,8 +116,8 @@ void expose_action()
                 )
 
         .add_property("destination",
-                &kc_getter<InstallActionOptions, tr1::shared_ptr<Repository>, k::destination>,
-                &kc_setter<InstallActionOptions, tr1::shared_ptr<Repository>, k::destination>,
+                &kc_getter<InstallActionOptions, std::tr1::shared_ptr<Repository>, k::destination>,
+                &kc_setter<InstallActionOptions, std::tr1::shared_ptr<Repository>, k::destination>,
                 "[rw] Repository"
                 )
         ;

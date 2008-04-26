@@ -57,21 +57,21 @@ namespace paludis
     struct Implementation<CheckFetchedFilesVisitor>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         const FSEntry distdir;
         const bool check_unneeded;
 
         std::set<std::string> done;
-        const tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
+        const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
         bool need_nofetch;
         bool in_nofetch;
 
-        const tr1::shared_ptr<Manifest2Reader> m2r;
+        const std::tr1::shared_ptr<Manifest2Reader> m2r;
         const UseManifest use_manifest;
 
         Implementation(
                 const Environment * const e,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const FSEntry & d,
                 const bool c,
                 const bool n,
@@ -93,7 +93,7 @@ namespace paludis
 
 CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const Environment * const e,
-        const tr1::shared_ptr<const PackageID> & i,
+        const std::tr1::shared_ptr<const PackageID> & i,
         const FSEntry & d,
         const bool c,
         const bool n,
@@ -411,7 +411,7 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     std::cout << std::endl;
 }
 
-const tr1::shared_ptr<const Sequence<FetchActionFailure> >
+const std::tr1::shared_ptr<const Sequence<FetchActionFailure> >
 CheckFetchedFilesVisitor::failures() const
 {
     return _imp->failures;

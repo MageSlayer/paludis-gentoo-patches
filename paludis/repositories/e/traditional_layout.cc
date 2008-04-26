@@ -23,7 +23,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/package_id.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -39,8 +38,9 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-
-#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -48,9 +48,9 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
-typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
+typedef std::tr1::unordered_map<CategoryNamePart, bool, Hash<CategoryNamePart> > CategoryMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, bool, Hash<QualifiedPackageName> > PackagesMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName>  > IDMap;
 
 namespace paludis
 {
@@ -67,17 +67,17 @@ namespace paludis
         mutable PackagesMap package_names;
         mutable IDMap ids;
 
-        mutable tr1::shared_ptr<CategoryNamePartSet> category_names_collection;
-        tr1::shared_ptr<const ERepositoryEntries> entries;
+        mutable std::tr1::shared_ptr<CategoryNamePartSet> category_names_collection;
+        std::tr1::shared_ptr<const ERepositoryEntries> entries;
 
-        tr1::shared_ptr<FSEntrySequence> arch_list_files;
-        tr1::shared_ptr<FSEntrySequence> repository_mask_files;
-        tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
-        tr1::shared_ptr<FSEntrySequence> mirror_files;
-        tr1::shared_ptr<FSEntrySequence> use_desc_dirs;
+        std::tr1::shared_ptr<FSEntrySequence> arch_list_files;
+        std::tr1::shared_ptr<FSEntrySequence> repository_mask_files;
+        std::tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
+        std::tr1::shared_ptr<FSEntrySequence> mirror_files;
+        std::tr1::shared_ptr<FSEntrySequence> use_desc_dirs;
 
         Implementation(const ERepository * const r, const FSEntry & t,
-                tr1::shared_ptr<const ERepositoryEntries> e) :
+                std::tr1::shared_ptr<const ERepositoryEntries> e) :
             repository(r),
             tree_root(t),
             has_category_names(false),
@@ -93,8 +93,8 @@ namespace paludis
 }
 
 TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEntry & tree_root,
-        tr1::shared_ptr<const ERepositoryEntries> e,
-        tr1::shared_ptr<const FSEntry> f) :
+        std::tr1::shared_ptr<const ERepositoryEntries> e,
+        std::tr1::shared_ptr<const FSEntry> f) :
     Layout(f),
     PrivateImplementationPattern<TraditionalLayout>(new Implementation<TraditionalLayout>(repo, tree_root, e))
 {
@@ -201,7 +201,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 {
     Lock l(_imp->big_nasty_mutex);
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (_imp->package_names[n])
         return;
@@ -209,7 +209,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(_imp->repository->name()) + ":");
 
-    tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence);
+    std::tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence);
 
     FSEntry path(_imp->tree_root / stringify(n.category) / stringify(n.package));
 
@@ -220,9 +220,9 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 
         try
         {
-            tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, *e));
+            std::tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
-                        tr1::bind(std::equal_to<VersionSpec>(), id->version(), tr1::bind(tr1::mem_fn(&PackageID::version), _1))))
+                        std::tr1::bind(std::equal_to<VersionSpec>(), id->version(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message("e.traditional_layout.id.duplicate", ll_warning, lc_context)
                     << "Ignoring entry '" << *e << "' for '" << n << "' in repository '" << _imp->repository->name()
                     << "' because another equivalent version already exists";
@@ -305,10 +305,10 @@ TraditionalLayout::need_category_names_collection() const
     _imp->category_names_collection.reset(new CategoryNamePartSet);
     std::transform(_imp->category_names.begin(), _imp->category_names.end(),
             _imp->category_names_collection->inserter(),
-            tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first));
+            std::tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first));
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 TraditionalLayout::category_names() const
 {
     Lock l(_imp->big_nasty_mutex);
@@ -319,12 +319,12 @@ TraditionalLayout::category_names() const
     return _imp->category_names_collection;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 TraditionalLayout::package_names(const CategoryNamePart & c) const
 {
     Lock l(_imp->big_nasty_mutex);
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     /* this isn't particularly fast because it isn't called very often. avoid
      * changing the data structures used to make this faster at the expense of
@@ -336,7 +336,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->tree_root / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
@@ -347,7 +347,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
                     continue;
 
                 if (DirIterator() == std::find_if(DirIterator(*d, DirIteratorOptions() + dio_inode_sort), DirIterator(),
-                            tr1::bind(&ERepositoryEntries::is_package_file, _imp->entries.get(),
+                            std::tr1::bind(&ERepositoryEntries::is_package_file, _imp->entries.get(),
                                 c + PackageNamePart(d->basename()), _1)))
                     continue;
 
@@ -363,7 +363,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
 
     _imp->category_names[c] = true;
 
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
             p != p_end ; ++p)
@@ -373,7 +373,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
     return result;
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 TraditionalLayout::package_ids(const QualifiedPackageName & n) const
 {
     Lock l(_imp->big_nasty_mutex);
@@ -386,7 +386,7 @@ TraditionalLayout::package_ids(const QualifiedPackageName & n) const
         return _imp->ids.find(n)->second;
     }
     else
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 }
 
 FSEntry
@@ -413,31 +413,31 @@ TraditionalLayout::category_directory(const CategoryNamePart & cat) const
     return _imp->tree_root / stringify(cat);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::arch_list_files() const
 {
     return _imp->arch_list_files;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::repository_mask_files() const
 {
     return _imp->repository_mask_files;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::profiles_desc_files() const
 {
     return _imp->profiles_desc_files;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::mirror_files() const
 {
     return _imp->mirror_files;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::use_desc_dirs() const
 {
     return _imp->use_desc_dirs;
@@ -452,31 +452,31 @@ TraditionalLayout::profiles_base_dir() const
         return _imp->tree_root / "profiles";
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::exlibsdirs(const QualifiedPackageName & q) const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
-    tr1::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
+    std::tr1::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
     std::copy(global->begin(), global->end(), result->back_inserter());
 
-    tr1::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category));
+    std::tr1::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category));
     std::copy(category->begin(), category->end(), result->back_inserter());
 
-    tr1::shared_ptr<const FSEntrySequence> package(exlibsdirs_package(q));
+    std::tr1::shared_ptr<const FSEntrySequence> package(exlibsdirs_package(q));
     std::copy(package->begin(), package->end(), result->back_inserter());
 
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::exlibsdirs_global() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     if (_imp->repository->params().master_repository)
     {
-        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_global());
+        std::tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_global());
         std::copy(master->begin(), master->end(), result->back_inserter());
     }
     result->push_back(_imp->tree_root / "exlibs");
@@ -484,14 +484,14 @@ TraditionalLayout::exlibsdirs_global() const
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::exlibsdirs_category(const CategoryNamePart & c) const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     if (_imp->repository->params().master_repository)
     {
-        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_category(c));
+        std::tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_category(c));
         std::copy(master->begin(), master->end(), result->back_inserter());
     }
     result->push_back(category_directory(c) / "exlibs");
@@ -499,14 +499,14 @@ TraditionalLayout::exlibsdirs_category(const CategoryNamePart & c) const
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     if (_imp->repository->params().master_repository)
     {
-        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_package(q));
+        std::tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->exlibsdirs_package(q));
         std::copy(master->begin(), master->end(), result->back_inserter());
     }
     result->push_back(package_directory(q));
@@ -514,14 +514,14 @@ TraditionalLayout::exlibsdirs_package(const QualifiedPackageName & q) const
     return result;
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TraditionalLayout::licenses_dirs() const
 {
-    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     if (_imp->repository->params().master_repository)
     {
-        tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->licenses_dirs());
+        std::tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->licenses_dirs());
         std::copy(master->begin(), master->end(), result->back_inserter());
     }
     result->push_back(_imp->tree_root / "licenses");
@@ -532,7 +532,7 @@ TraditionalLayout::licenses_dirs() const
 namespace
 {
     void aux_files_helper(const FSEntry & d,
-            tr1::shared_ptr<Map<FSEntry, std::string> > & m,
+            std::tr1::shared_ptr<Map<FSEntry, std::string> > & m,
             const QualifiedPackageName & qpn)
     {
         if (! d.exists())
@@ -562,10 +562,10 @@ namespace
     }
 }
 
-tr1::shared_ptr<Map<FSEntry, std::string> >
+std::tr1::shared_ptr<Map<FSEntry, std::string> >
 TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
 {
-    tr1::shared_ptr<Map<FSEntry, std::string> > result(new Map<FSEntry, std::string>);
+    std::tr1::shared_ptr<Map<FSEntry, std::string> > result(new Map<FSEntry, std::string>);
     FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
 
     std::list<FSEntry> package_files((DirIterator(package_dir, DirIteratorOptions() + dio_inode_sort)),

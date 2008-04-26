@@ -72,7 +72,7 @@ namespace
                         (k::contents_file(), "vdb_unmerger_TEST_dir/CONTENTS/" + what)
                         (k::config_protect(), "/protected_file /protected_dir")
                         (k::config_protect_mask(), "/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        (k::package_id(), tr1::shared_ptr<PackageID>()))
+                        (k::package_id(), std::tr1::shared_ptr<PackageID>()))
             {
             }
     };

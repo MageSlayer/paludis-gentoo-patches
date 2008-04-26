@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,7 @@ namespace
             int _count, _current_count, _error_count;
 
         public:
-            OurUninstallTask(tr1::shared_ptr<Environment> e) :
+            OurUninstallTask(std::tr1::shared_ptr<Environment> e) :
                 UninstallTask(e.get()),
                 _count(0),
                 _current_count(0),
@@ -128,7 +128,7 @@ namespace
                     else
                         max_count = std::numeric_limits<long>::max();
 
-                    for (Set<tr1::shared_ptr<DepTag> >::ConstIterator
+                    for (Set<std::tr1::shared_ptr<DepTag> >::ConstIterator
                             tag(d.tags->begin()),
                             tag_end(d.tags->end()) ;
                             tag != tag_end ; ++tag)
@@ -214,7 +214,7 @@ namespace
             }
     };
 
-    int real_uninstall(tr1::shared_ptr<Environment> env, bool unused)
+    int real_uninstall(std::tr1::shared_ptr<Environment> env, bool unused)
     {
         int return_code(0);
 
@@ -320,13 +320,13 @@ namespace
 }
 
 int
-do_uninstall(tr1::shared_ptr<Environment> env)
+do_uninstall(std::tr1::shared_ptr<Environment> env)
 {
     return real_uninstall(env, false);
 }
 
 int
-do_uninstall_unused(tr1::shared_ptr<Environment> env)
+do_uninstall_unused(std::tr1::shared_ptr<Environment> env)
 {
     return real_uninstall(env, true);
 }

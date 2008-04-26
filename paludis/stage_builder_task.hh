@@ -24,8 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for StageBuilderTask.
@@ -114,7 +113,7 @@ namespace paludis
             ///\name Queue stage in build list
             ///\{
 
-            void queue_stage(tr1::shared_ptr<const StageBase>);
+            void queue_stage(std::tr1::shared_ptr<const StageBase>);
 
             ///\}
 
@@ -122,7 +121,7 @@ namespace paludis
             ///\{
 
             struct StageConstIteratorTag;
-            typedef WrappedForwardIterator<StageConstIteratorTag, const tr1::shared_ptr<const StageBase> > StageConstIterator;
+            typedef WrappedForwardIterator<StageConstIteratorTag, const std::tr1::shared_ptr<const StageBase> > StageConstIterator;
             StageConstIterator begin_stages() const;
             StageConstIterator end_stages() const;
 
@@ -132,11 +131,11 @@ namespace paludis
             ///\{
 
             virtual void on_build_all_pre() = 0;
-            virtual void on_build_pre(tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_post(tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_fail(tr1::shared_ptr<const StageBase>, const StageBuildError &) = 0;
-            virtual void on_build_skipped(tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_succeed(tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_pre(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_post(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &) = 0;
+            virtual void on_build_skipped(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_succeed(std::tr1::shared_ptr<const StageBase>) = 0;
             virtual void on_build_all_post() = 0;
 
             ///\}

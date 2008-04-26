@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -96,7 +96,7 @@ main(int argc, char *argv[])
         paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
         paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());
 
-        tr1::shared_ptr<Environment> env(
+        std::tr1::shared_ptr<Environment> env(
             EnvironmentMaker::get_instance()->make_from_spec(
                 CommandLine::get_instance()->a_environment.argument()));
         env->set_paludis_command(paludis_command);

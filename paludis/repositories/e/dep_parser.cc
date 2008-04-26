@@ -26,11 +26,11 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/kc.hh>
+#include <tr1/memory>
 #include <stack>
 #include <set>
 
@@ -75,14 +75,14 @@ namespace
         dps_had_label
     };
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     struct ParsePackageDepSpec
     {
         const EAPI & _eapi;
-        const tr1::shared_ptr<const PackageID> _id;
+        const std::tr1::shared_ptr<const PackageID> _id;
 
-        ParsePackageDepSpec(const EAPI & e, const tr1::shared_ptr<const PackageID> & i) :
+        ParsePackageDepSpec(const EAPI & e, const std::tr1::shared_ptr<const PackageID> & i) :
             _eapi(e),
             _id(i)
         {
@@ -90,15 +90,15 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_e_package_dep_spec(s, _eapi, _id))))));
+            p(std::tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_e_package_dep_spec(s, _eapi, _id))))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -107,9 +107,9 @@ namespace
     struct ParsePackageOrBlockDepSpec
     {
         const EAPI & _eapi;
-        const tr1::shared_ptr<const PackageID> _id;
+        const std::tr1::shared_ptr<const PackageID> _id;
 
-        ParsePackageOrBlockDepSpec(const EAPI & e, const tr1::shared_ptr<const PackageID> & i) :
+        ParsePackageOrBlockDepSpec(const EAPI & e, const std::tr1::shared_ptr<const PackageID> & i) :
             _eapi(e),
             _id(i)
         {
@@ -117,22 +117,22 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             if (s.empty() || '!' != s.at(0))
-                p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
-                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                p(std::tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+                                std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                         parse_e_package_dep_spec(s, _eapi, _id))))));
             else
-                p(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
-                                tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
-                                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                p(std::tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
+                                std::tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
+                                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                                 parse_e_package_dep_spec(s.substr(1), _eapi, _id))))))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -142,15 +142,15 @@ namespace
     {
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
-                            tr1::shared_ptr<PlainTextDepSpec>(new PlainTextDepSpec(s)))));
+            p(std::tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
+                            std::tr1::shared_ptr<PlainTextDepSpec>(new PlainTextDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -160,15 +160,15 @@ namespace
     {
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, LicenseDepSpec> >(new TreeLeaf<H_, LicenseDepSpec>(
-                            tr1::shared_ptr<LicenseDepSpec>(new LicenseDepSpec(s)))));
+            p(std::tr1::shared_ptr<TreeLeaf<H_, LicenseDepSpec> >(new TreeLeaf<H_, LicenseDepSpec>(
+                            std::tr1::shared_ptr<LicenseDepSpec>(new LicenseDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -185,19 +185,19 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
-                            tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(s)))));
+            p(std::tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
+                            std::tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             if (_supports_arrow)
-                p(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
-                                tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(lhs + " -> " + rhs)))));
+                p(std::tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
+                                std::tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(lhs + " -> " + rhs)))));
             else
                 throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this EAPI");
         }
@@ -207,15 +207,15 @@ namespace
     {
         template <typename H_>
         void
-        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, SimpleURIDepSpec> >(new TreeLeaf<H_, SimpleURIDepSpec>(
-                            tr1::shared_ptr<SimpleURIDepSpec>(new SimpleURIDepSpec(s)))));
+            p(std::tr1::shared_ptr<TreeLeaf<H_, SimpleURIDepSpec> >(new TreeLeaf<H_, SimpleURIDepSpec>(
+                            std::tr1::shared_ptr<SimpleURIDepSpec>(new SimpleURIDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -225,15 +225,15 @@ namespace
     struct HandleUse
     {
         static void handle(const std::string &, const std::string & i,
-                const tr1::shared_ptr<const PackageID> & id, const Environment * const env,
-                const EAPI & eapi, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
+                const std::tr1::shared_ptr<const PackageID> & id, const Environment * const env,
+                const EAPI & eapi, std::stack<std::pair<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
         {
-            tr1::shared_ptr<ConstTreeSequence<H_, ConditionalDepSpec> > a(
-                    new ConstTreeSequence<H_, ConditionalDepSpec>(tr1::shared_ptr<ConditionalDepSpec>(
+            std::tr1::shared_ptr<ConstTreeSequence<H_, ConditionalDepSpec> > a(
+                    new ConstTreeSequence<H_, ConditionalDepSpec>(std::tr1::shared_ptr<ConditionalDepSpec>(
                             new ConditionalDepSpec(parse_e_conditional_dep_spec(i, env, id, eapi)))));
             stack.top().first(a);
-            stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                    tr1::bind(&ConstTreeSequence<H_, ConditionalDepSpec>::add, a.get(), _1)), false));
+            stack.push(std::make_pair(std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                    std::tr1::bind(&ConstTreeSequence<H_, ConditionalDepSpec>::add, a.get(), _1)), false));
         }
     };
 
@@ -241,8 +241,8 @@ namespace
     struct HandleUse<H_, false>
     {
         static void handle(const std::string & s, const std::string &,
-                const tr1::shared_ptr<const PackageID> &, const Environment * const,
-                const EAPI &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
+                const std::tr1::shared_ptr<const PackageID> &, const Environment * const,
+                const EAPI &, std::stack<std::pair<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
         {
             throw DepStringParseError(s, "use? group is not allowed here");
         }
@@ -251,21 +251,21 @@ namespace
     template <typename H_, bool>
     struct HandleAny
     {
-        static void handle(const std::string &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &
+        static void handle(const std::string &, std::stack<std::pair<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &
                 stack)
         {
-             tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > a(new ConstTreeSequence<H_, AnyDepSpec>(
-                         tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
+             std::tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > a(new ConstTreeSequence<H_, AnyDepSpec>(
+                         std::tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
              stack.top().first(a);
-             stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                     tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, a.get(), _1)), true));
+             stack.push(std::make_pair(std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                     std::tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, a.get(), _1)), true));
         }
     };
 
     template <typename H_>
     struct HandleAny<H_, false>
     {
-        static void handle(const std::string & s, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
+        static void handle(const std::string & s, std::stack<std::pair<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
         {
              throw DepStringParseError(s, "|| is not allowed here");
         }
@@ -274,7 +274,7 @@ namespace
     template <typename H_, typename K_>
     struct HandleLabel
     {
-        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &,
+        static void add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> &,
                 const EAPI &)
         {
             throw DepStringParseError(s, "label is not allowed here");
@@ -284,11 +284,11 @@ namespace
     template <typename H_>
     struct HandleLabel<H_, LabelsAreURI>
     {
-        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
+        static void add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
                 const EAPI & e)
         {
             if (e[k::supported()])
-                p(tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
+                p(std::tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
                             new TreeLeaf<H_, URILabelsDepSpec>(parse_uri_label(s, e))));
             else
                 throw DepStringParseError(s, "URI labels not allowed in this EAPI");
@@ -298,11 +298,11 @@ namespace
     template <typename H_>
     struct HandleLabel<H_, LabelsAreDependency>
     {
-        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
+        static void add(const std::string & s, std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
                 const EAPI & e)
         {
             if (e[k::supported()])
-                p(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
+                p(std::tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
                             new TreeLeaf<H_, DependencyLabelsDepSpec>(parse_dependency_label(s, e))));
             else
                 throw DepStringParseError(s, "Dependency labels not allowed in this EAPI");
@@ -313,20 +313,20 @@ namespace
 namespace
 {
     template <typename H_, typename I_, bool any_, bool use_, typename Label_>
-    tr1::shared_ptr<typename H_::ConstItem>
+    std::tr1::shared_ptr<typename H_::ConstItem>
     parse(const std::string & s, bool disallow_any_use, const I_ & p, const Environment * const env,
-            const EAPI & e, const tr1::shared_ptr<const PackageID> & id)
+            const EAPI & e, const std::tr1::shared_ptr<const PackageID> & id)
     {
         Context context("When parsing dependency string '" + s + "':");
 
         if (! id)
             throw InternalError(PALUDIS_HERE, "! id");
 
-        tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
-            new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-        std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
-        stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result.get(), _1)), false));
+        std::tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
+            new ConstTreeSequence<H_, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::stack<std::pair<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
+        stack.push(std::make_pair(std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                std::tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result.get(), _1)), false));
 
         std::string arrow_lhs;
         DepParserState state(dps_initial);
@@ -372,11 +372,11 @@ namespace
 
                                 case dpl_open_paren:
                                      {
-                                         tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
-                                                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                         std::tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
+                                                     std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                                          stack.top().first(a);
-                                         stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                                                         tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a.get(), _1)), false));
+                                         stack.push(std::make_pair(std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                                                         std::tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a.get(), _1)), false));
                                          state = dps_had_paren;
                                      }
                                      continue;
@@ -658,9 +658,9 @@ namespace
     }
 }
 
-tr1::shared_ptr<DependencySpecTree::ConstItem>
+std::tr1::shared_ptr<DependencySpecTree::ConstItem>
 paludis::erepository::parse_depend(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing dependency string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -672,9 +672,9 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
             ParsePackageOrBlockDepSpec(e, id), env, e, id);
 }
 
-tr1::shared_ptr<ProvideSpecTree::ConstItem>
+std::tr1::shared_ptr<ProvideSpecTree::ConstItem>
 paludis::erepository::parse_provide(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing provide string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -682,12 +682,12 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e[k::name()] + "' provides");
 
     return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false,
-            ParsePackageDepSpec(e, tr1::shared_ptr<const PackageID>()), env, e, id);
+            ParsePackageDepSpec(e, std::tr1::shared_ptr<const PackageID>()), env, e, id);
 }
 
-tr1::shared_ptr<RestrictSpecTree::ConstItem>
+std::tr1::shared_ptr<RestrictSpecTree::ConstItem>
 paludis::erepository::parse_restrict(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing restrict string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -698,9 +698,9 @@ paludis::erepository::parse_restrict(const std::string & s, const Environment * 
             ParseTextDepSpec(), env, e, id);
 }
 
-tr1::shared_ptr<FetchableURISpecTree::ConstItem>
+std::tr1::shared_ptr<FetchableURISpecTree::ConstItem>
 paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing fetchable URI string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -712,9 +712,9 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
             env, e, id);
 }
 
-tr1::shared_ptr<SimpleURISpecTree::ConstItem>
+std::tr1::shared_ptr<SimpleURISpecTree::ConstItem>
 paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing simple URI string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -725,9 +725,9 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
             ParseSimpleURIDepSpec(), env, e, id);
 }
 
-tr1::shared_ptr<LicenseSpecTree::ConstItem>
+std::tr1::shared_ptr<LicenseSpecTree::ConstItem>
 paludis::erepository::parse_license(const std::string & s, const Environment * const env,
-        const tr1::shared_ptr<const PackageID> & id, const EAPI & e)
+        const std::tr1::shared_ptr<const PackageID> & id, const EAPI & e)
 {
     Context c("When parsing license string '" + s + "' using EAPI '" + e[k::name()] + "':");
 
@@ -738,7 +738,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
             true, ParseLicenseDepSpec(), env, e, id);
 }
 
-tr1::shared_ptr<URILabelsDepSpec>
+std::tr1::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
@@ -750,7 +750,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     if (c.empty())
         throw DepStringParseError(s, "Unknown label");
 
-    tr1::shared_ptr<URILabelsDepSpec> l(new LabelsDepSpec<URILabelVisitorTypes>);
+    std::tr1::shared_ptr<URILabelsDepSpec> l(new LabelsDepSpec<URILabelVisitorTypes>);
 
     if (c == "URIMirrorsThenListedLabel")
         l->add_label(make_shared_ptr(new URIMirrorsThenListedLabel(s.substr(0, s.length() - 1))));
@@ -770,7 +770,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     return l;
 }
 
-tr1::shared_ptr<DependencyLabelsDepSpec>
+std::tr1::shared_ptr<DependencyLabelsDepSpec>
 paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
@@ -782,7 +782,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
     std::string label(s.substr(0, s.length() - 1));
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, ",+", "", std::inserter(labels, labels.end()));
 
-    tr1::shared_ptr<DependencyLabelsDepSpec> l(new DependencyLabelsDepSpec);
+    std::tr1::shared_ptr<DependencyLabelsDepSpec> l(new DependencyLabelsDepSpec);
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {

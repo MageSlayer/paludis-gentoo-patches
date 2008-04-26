@@ -40,10 +40,10 @@ namespace paludis
         std::ostringstream s;
 
         const Environment * const env;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         const bool want_description;
 
-        Implementation(const Environment * const e, const tr1::shared_ptr<const PackageID> & i,
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
                 const bool w) :
             env(e),
             id(i),
@@ -60,7 +60,7 @@ namespace
     {
         std::ostringstream s;
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
             s << *k.value();
         }
@@ -110,11 +110,11 @@ namespace
             s << stringify(buf);
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             s << (*k.value())[k::mask_file()] << ": " <<
                 join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ");
@@ -199,7 +199,7 @@ namespace
     };
 }
 
-MaskDisplayer::MaskDisplayer(const Environment * const e, const tr1::shared_ptr<const PackageID> & id,
+MaskDisplayer::MaskDisplayer(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & id,
         const bool want_description) :
     PrivateImplementationPattern<MaskDisplayer>(new Implementation<MaskDisplayer>(e, id, want_description))
 {

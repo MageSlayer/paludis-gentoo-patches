@@ -28,15 +28,17 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 using namespace paludis::gems;
 
 template class WrappedForwardIterator<GemSpecifications::ConstIteratorTag,
-         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >;
+         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification> > >;
 
-typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> >::Type Specs;
+typedef std::tr1::unordered_map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification>,
+        Hash<std::pair<QualifiedPackageName, VersionSpec> > > Specs;
 
 namespace paludis
 {
@@ -104,10 +106,10 @@ namespace
     {
         Implementation<GemSpecifications> * const _imp;
         const Environment * const environment;
-        const tr1::shared_ptr<const Repository> repository;
+        const std::tr1::shared_ptr<const Repository> repository;
 
         GemsVisitor(const Environment * const e,
-                const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+                const std::tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
             _imp(i),
             environment(e),
             repository(r)
@@ -123,7 +125,7 @@ namespace
 
                 try
                 {
-                    tr1::shared_ptr<GemSpecification> spec(new GemSpecification(environment, repository, *i->second));
+                    std::tr1::shared_ptr<GemSpecification> spec(new GemSpecification(environment, repository, *i->second));
                     _imp->specs.insert(std::make_pair(std::make_pair(spec->name(), spec->version()), spec));
                 }
                 catch (const InternalError &)
@@ -158,10 +160,10 @@ namespace
     {
         Implementation<GemSpecifications> * const _imp;
         const Environment * const environment;
-        const tr1::shared_ptr<const Repository> repository;
+        const std::tr1::shared_ptr<const Repository> repository;
 
         TopVisitor(const Environment * const e,
-                const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+                const std::tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
             _imp(i),
             environment(e),
             repository(r)
@@ -195,7 +197,7 @@ namespace
 }
 
 GemSpecifications::GemSpecifications(const Environment * const e,
-        const tr1::shared_ptr<const Repository> & r, const yaml::Node & n) :
+        const std::tr1::shared_ptr<const Repository> & r, const yaml::Node & n) :
     PrivateImplementationPattern<GemSpecifications>(new Implementation<GemSpecifications>)
 {
     TopVisitor v(e, r, _imp.get());

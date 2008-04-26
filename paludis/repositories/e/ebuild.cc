@@ -36,7 +36,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -57,7 +56,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <time.h>
-
+#include <tr1/functional>
 #include <list>
 
 #include "config.h"
@@ -104,13 +103,13 @@ EbuildCommand::operator() ()
     if (params[k::userpriv()])
         cmd.with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid());
 
-    using namespace tr1::placeholders;
-    cmd.with_pipe_command_handler(tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1));
+    using namespace std::tr1::placeholders;
+    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1));
 
-    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
 
     cmd = extend_command(cmd
             .with_setenv("P", stringify(params[k::package_id()]->name().package) + "-" +
@@ -341,7 +340,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
 
 namespace
 {
-    std::string get(const tr1::shared_ptr<const Map<std::string, std::string> > & k, const std::string & s)
+    std::string get(const std::tr1::shared_ptr<const Map<std::string, std::string> > & k, const std::string & s)
     {
         Map<std::string, std::string>::ConstIterator i(k->find(s));
         if (k->end() == i)
@@ -351,7 +350,7 @@ namespace
 }
 
 void
-EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
+EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
 {
     Context context("When loading generated metadata for '" + stringify(*params[k::package_id()]) + "':");
 
@@ -699,17 +698,17 @@ WriteVDBEntryCommand::WriteVDBEntryCommand(const WriteVDBEntryParams & p) :
 void
 WriteVDBEntryCommand::operator() ()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/write_vdb_entry.bash '" +
             stringify(params[k::output_directory()]) + "' '" +
             stringify(params[k::environment_file()]) + "'");
 
-    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
 
     Command cmd(Command(ebuild_cmd)
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -736,7 +735,7 @@ WriteVDBEntryCommand::operator() ()
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::ebuild_options()].ignore_pivot_env_functions)
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::ebuild_options()].ignore_pivot_env_variables)
-            .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
             );
 
     if (0 != (run_command(cmd)))
@@ -892,7 +891,7 @@ WriteBinaryEbuildCommand::WriteBinaryEbuildCommand(const WriteBinaryEbuildComman
 void
 WriteBinaryEbuildCommand::operator() ()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (! (*EAPIData::get_instance()->eapi_from_string("pbin-1+" + (*params[k::package_id()]->eapi())[k::exported_name()]))[k::supported()])
         throw InstallActionError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
@@ -909,10 +908,10 @@ WriteBinaryEbuildCommand::operator() ()
             stringify(params[k::environment_file()]) + "' '" +
             stringify(params[k::image()]) + "'");
 
-    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
 
     Command cmd(Command(ebuild_cmd)
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -944,7 +943,7 @@ WriteBinaryEbuildCommand::operator() ()
                         + (*params[k::package_id()]->eapi())[k::exported_name()]))[k::supported()])[k::ebuild_metadata_variables()].metadata_keywords)
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", (*(*EAPIData::get_instance()->eapi_from_string("pbin-1+"
                         + (*params[k::package_id()]->eapi())[k::exported_name()]))[k::supported()])[k::ebuild_environment_variables()][k::env_distdir()])
-            .with_pipe_command_handler(tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
             );
 
     if (0 != (run_command(cmd)))

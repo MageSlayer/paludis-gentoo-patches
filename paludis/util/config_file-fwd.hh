@@ -26,6 +26,9 @@
 namespace paludis
 {
 #include <paludis/util/config_file-se.hh>
+
+    class KeyValueConfigFile;
+    class LineConfigFile;
 }
 
 #endif

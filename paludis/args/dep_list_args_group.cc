@@ -161,7 +161,7 @@ DepListArgsGroup::~DepListArgsGroup()
 void
 DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOptions & options) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (dl_reinstall.argument() == "never")
         options.reinstall = dl_reinstall_never;
@@ -233,8 +233,8 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
 
     if (! options.override_masks)
         options.override_masks.reset(new DepListOverrideMasksFunctions);
-    options.override_masks->push_back(tr1::bind(&override_tilde_keywords, env, _1, _2));
-    options.override_masks->push_back(tr1::bind(&override_license, _2));
+    options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
+    options.override_masks->push_back(std::tr1::bind(&override_license, _2));
 
     if (dl_override_masks.specified())
     {
@@ -247,18 +247,18 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
             if (*a == "tilde-keyword")
-                options.override_masks->push_back(tr1::bind(&override_tilde_keywords, env, _1, _2));
+                options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
             else if (*a == "unkeyworded")
-                options.override_masks->push_back(tr1::bind(&override_unkeyworded, env, _1, _2));
+                options.override_masks->push_back(std::tr1::bind(&override_unkeyworded, env, _1, _2));
             else if (*a == "repository")
-                options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
+                options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
             else if (*a == "license")
-                options.override_masks->push_back(tr1::bind(&override_license, _2));
+                options.override_masks->push_back(std::tr1::bind(&override_license, _2));
             else if (*a == "profile")
             {
                 Log::get_instance()->message("paludis.args.deprecated", ll_warning, lc_no_context) <<
                     "--dl-override-masks profile is deprecated, use --dl-override-masks repository";
-                options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
+                options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
             }
             else if (*a == "none")
             {

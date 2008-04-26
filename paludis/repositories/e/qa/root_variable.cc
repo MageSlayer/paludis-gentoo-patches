@@ -40,7 +40,7 @@ bool
 paludis::erepository::root_variable_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & content,
         const std::string & name)
 {

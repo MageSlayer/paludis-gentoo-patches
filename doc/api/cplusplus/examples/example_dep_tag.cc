@@ -78,11 +78,11 @@ namespace
 
     /* Display information about a named set. */
     void display_set(
-            const tr1::shared_ptr<const Environment> & env,
+            const std::tr1::shared_ptr<const Environment> & env,
             const SetName & name,
             SeenCategories & seen_categories)
     {
-        tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(name));
+        std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(name));
 
         /* Environment::set can return a zero pointer, if a set is not known. */
         if (! set)
@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
                 "example_dep_tag", "EXAMPLE_DEP_TAG_OPTIONS", "EXAMPLE_DEP_TAG_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         SeenCategories seen_categories;
@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
             /* Fetch the category. DepTagCategoryMaker::find_maker returns a
              * function that creates the category, rather than directly
              * returning the category. */
-            tr1::shared_ptr<const DepTagCategory> category(
+            std::tr1::shared_ptr<const DepTagCategory> category(
                     DepTagCategoryMaker::get_instance()->find_maker(*s)());
 
             cout << left << setw(20) << "        Visible:" << " " << boolalpha << category->visible() << endl;

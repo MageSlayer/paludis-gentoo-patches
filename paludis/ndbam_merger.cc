@@ -47,7 +47,7 @@ namespace paludis
     {
         NDBAMMergerParams params;
         FSEntry realroot;
-        tr1::shared_ptr<std::ofstream> contents_file;
+        std::tr1::shared_ptr<std::ofstream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
@@ -70,7 +70,8 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
             (k::install_under(), p[k::install_under()])
             (k::options(), p[k::options()])),
-    PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p))
+    PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p)),
+    _imp(PrivateImplementationPattern<NDBAMMerger>::_imp)
 {
 }
 
@@ -81,7 +82,7 @@ NDBAMMerger::~NDBAMMerger()
 Hook
 NDBAMMerger::extend_hook(const Hook & h)
 {
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params[k::environment()]->bashrc_files());
 
     if (_imp->params[k::package_id()])
     {

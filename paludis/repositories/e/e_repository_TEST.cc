@@ -30,7 +30,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/kc.hh>
@@ -42,7 +41,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-
+#include <tr1/functional>
 #include <set>
 #include <fstream>
 #include <string>
@@ -69,13 +68,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
         }
@@ -93,13 +92,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo2");
             keys->insert("profiles", "e_repository_TEST_dir/repo2/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
         }
@@ -117,13 +116,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo3");
             keys->insert("profiles", "e_repository_TEST_dir/repo3/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
         }
@@ -141,13 +140,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -174,20 +173,20 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const CategoryNamePartSet> c(repo->category_names());
+                std::tr1::shared_ptr<const CategoryNamePartSet> c(repo->category_names());
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
@@ -209,13 +208,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
             keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -250,13 +249,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
             keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             repo->package_names(CategoryNamePart("cat-one"));
@@ -295,16 +294,16 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
             keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> names;
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -349,16 +348,16 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo5");
             keys->insert("profiles", "e_repository_TEST_dir/repo5/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> names;
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -378,37 +377,37 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
             keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageIDSequence> versions;
+                std::tr1::shared_ptr<const PackageIDSequence> versions;
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
@@ -427,37 +426,37 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo8");
             keys->insert("profiles", "e_repository_TEST_dir/repo8/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageIDSequence> versions;
+                std::tr1::shared_ptr<const PackageIDSequence> versions;
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
                 TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
@@ -478,19 +477,19 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo6");
             keys->insert("profiles", "e_repository_TEST_dir/repo6/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
@@ -521,21 +520,21 @@ namespace test_cases
 
                 TestEnvironment env;
                 env.set_paludis_command("/bin/false");
-                tr1::shared_ptr<Map<std::string, std::string> > keys(
+                std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                         new Map<std::string, std::string>);
                 keys->insert("format", "ebuild");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
                 keys->insert("location", "e_repository_TEST_dir/repo7");
                 keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
-                tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+                std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
                 env.package_database()->add_repository(1, repo);
 
                 for (int pass = 1 ; pass <= 3 ; ++pass)
                 {
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
-                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                    std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                             UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
@@ -543,27 +542,27 @@ namespace test_cases
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pd(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id1->build_dependencies_key());
                     id1->build_dependencies_key()->value()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
-                    erepository::DepSpecPrettyPrinter pr(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id1->run_dependencies_key());
                     id1->run_dependencies_key()->value()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
-                    tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
+                    std::tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
                                             UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(id2->short_description_key());
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
-                    erepository::DepSpecPrettyPrinter pd2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    erepository::DepSpecPrettyPrinter pd2(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id2->build_dependencies_key());
                     id2->build_dependencies_key()->value()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
-                    erepository::DepSpecPrettyPrinter pr2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    erepository::DepSpecPrettyPrinter pr2(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id2->run_dependencies_key());
                     id2->run_dependencies_key()->value()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
@@ -589,21 +588,21 @@ namespace test_cases
 
                 TestEnvironment env;
                 env.set_paludis_command("/bin/false");
-                tr1::shared_ptr<Map<std::string, std::string> > keys(
+                std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                         new Map<std::string, std::string>);
                 keys->insert("format", "ebuild");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
                 keys->insert("location", "e_repository_TEST_dir/repo7");
                 keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
-                tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+                std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
                 env.package_database()->add_repository(1, repo);
 
                 for (int pass = 1 ; pass <= 3 ; ++pass)
                 {
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
-                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                    std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-1",
                                             UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
@@ -616,7 +615,7 @@ namespace test_cases
                 {
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
 
-                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                    std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-2",
                                             UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
@@ -650,25 +649,25 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo7");
             keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository( &env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository( &env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                std::tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
 
                 TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                TEST_CHECK_EQUAL((*tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi())[k::name()], "UNKNOWN");
+                TEST_CHECK_EQUAL((*std::tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi())[k::name()], "UNKNOWN");
                 TEST_CHECK(! id1->short_description_key());
             }
         }
@@ -686,26 +685,26 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo9");
             keys->insert("profiles", "e_repository_TEST_dir/repo9/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(
+                std::tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(
                                     parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))),
                             qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(
+                std::tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(
                                     parse_user_package_dep_spec("=cat-two/pkg-two-1", UserPackageDepSpecOptions()))),
                             qo_require_exactly_one)->begin());
-                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(
+                std::tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(
                                     parse_user_package_dep_spec("=cat-one/pkg-one-2", UserPackageDepSpecOptions()))),
                             qo_require_exactly_one)->begin());
 
@@ -739,22 +738,22 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            tr1::shared_ptr<Map<std::string, std::string> > keys18(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys18(
                     new Map<std::string, std::string>);
             keys18->insert("format", "ebuild");
             keys18->insert("names_cache", "/var/empty");
             keys18->insert("location", "e_repository_TEST_dir/repo18");
             keys18->insert("profiles", "e_repository_TEST_dir/repo18/profiles/profile");
-            tr1::shared_ptr<ERepository> repo18(make_ebuild_repository(&env, keys18));
+            std::tr1::shared_ptr<ERepository> repo18(make_ebuild_repository(&env, keys18));
             env.package_database()->add_repository(1, repo18);
 
-            tr1::shared_ptr<Map<std::string, std::string> > keys19(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys19(
                     new Map<std::string, std::string>);
             keys19->insert("format", "ebuild");
             keys19->insert("names_cache", "/var/empty");
             keys19->insert("location", "e_repository_TEST_dir/repo19");
             keys19->insert("master_repository", "test-repo-18");
-            tr1::shared_ptr<ERepository> repo19(make_ebuild_repository(&env, keys19));
+            std::tr1::shared_ptr<ERepository> repo19(make_ebuild_repository(&env, keys19));
             env.package_database()->add_repository(1, repo19);
 
             TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-18",
@@ -789,13 +788,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo10");
             keys->insert("profiles", "e_repository_TEST_dir/repo10/profiles/profile/subprofile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -827,13 +826,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo10");
             keys->insert("profiles", "e_repository_TEST_dir/repo10/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
@@ -862,19 +861,19 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo15");
             keys->insert("profiles", "e_repository_TEST_dir/repo15/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             bool has_one(false), has_two(false), has_three(false);
             int count(0);
 
-            tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
+            std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                     it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify((*it)[k::virtual_name()]))
@@ -937,13 +936,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo11");
             keys->insert("profiles", "e_repository_TEST_dir/repo11/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             repo->make_manifest(QualifiedPackageName("category/package"));
 
@@ -982,7 +981,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exheres");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo12");
@@ -992,7 +991,7 @@ namespace test_cases
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("profile_eapi", "exheres-0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(FetchActionOptions::named_create()
@@ -1002,7 +1001,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("no files", true);
-                const tr1::shared_ptr<const PackageID> no_files_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> no_files_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(no_files_id);
@@ -1013,7 +1012,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("fetched files", true);
-                const tr1::shared_ptr<const PackageID> fetched_files_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> fetched_files_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetched_files_id);
@@ -1025,7 +1024,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("fetchable files", true);
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
-                const tr1::shared_ptr<const PackageID> fetchable_files_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> fetchable_files_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetchable_files_id);
@@ -1036,7 +1035,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("arrow files", true);
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
-                const tr1::shared_ptr<const PackageID> arrow_files_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> arrow_files_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(arrow_files_id);
@@ -1046,7 +1045,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("unfetchable files", true);
-                const tr1::shared_ptr<const PackageID> unfetchable_files_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> unfetchable_files_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(unfetchable_files_id);
@@ -1054,7 +1053,7 @@ namespace test_cases
             }
 
             {
-                const tr1::shared_ptr<const PackageID> no_files_restricted_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> no_files_restricted_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files-restricted",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(no_files_restricted_id);
@@ -1062,7 +1061,7 @@ namespace test_cases
             }
 
             {
-                const tr1::shared_ptr<const PackageID> fetched_files_restricted_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> fetched_files_restricted_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files-restricted",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetched_files_restricted_id);
@@ -1070,7 +1069,7 @@ namespace test_cases
             }
 
             {
-                const tr1::shared_ptr<const PackageID> fetchable_files_restricted_id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> fetchable_files_restricted_id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(fetchable_files_restricted_id);
@@ -1087,13 +1086,13 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo11");
             keys->insert("profiles", "e_repository_TEST_dir/repo11/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             env.package_database()->add_repository(1, repo);
 
@@ -1102,7 +1101,7 @@ namespace test_cases
                     (k::safe_resume(), true)
                     );
 
-            const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+            const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     UserPackageDepSpecOptions()))), qo_order_by_version)->last());
             TEST_CHECK(id);
@@ -1130,7 +1129,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo13");
@@ -1141,19 +1140,19 @@ namespace test_cases
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
 
-            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
             iv_keys->insert("root", "/");
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env, iv_keys));
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
-                        tr1::shared_ptr<Map<std::string, std::string> >()));
+                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
@@ -1163,7 +1162,7 @@ namespace test_cases
                     );
 
             {
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=virtual/virtual-pretend-installed-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1171,7 +1170,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1180,7 +1179,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("in-subshell die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1189,7 +1188,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("success", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/success",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1198,7 +1197,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("unpack die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1207,7 +1206,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("emake fail", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1216,7 +1215,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf source 0", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1226,7 +1225,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("best version", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1235,7 +1234,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("has version", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1244,7 +1243,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("match", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1253,7 +1252,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("vars", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/vars-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1280,7 +1279,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo13");
@@ -1291,10 +1290,10 @@ namespace test_cases
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(InstallActionOptions::named_create()
@@ -1306,7 +1305,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf source 1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1316,7 +1315,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("dosym success 1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1344,7 +1343,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo13");
@@ -1355,10 +1354,10 @@ namespace test_cases
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(InstallActionOptions::named_create()
@@ -1370,7 +1369,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf source kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1380,7 +1379,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("banned functions kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1390,7 +1389,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("banned vars kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-vars-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1399,7 +1398,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("dosym success kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1409,7 +1408,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("dosym fail kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-fail-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1437,7 +1436,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo13");
@@ -1448,17 +1447,17 @@ namespace test_cases
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
             InfoAction action;
 
             {
                 TestMessageSuffix suffix("info success kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/info-success-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1468,7 +1467,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("info fail kdebuild-1", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/info-fail-kdebuild-1",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1496,7 +1495,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo14");
@@ -1507,19 +1506,19 @@ namespace test_cases
             keys->insert("profile_eapi", "exheres-0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
 
-            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
             iv_keys->insert("root", "/");
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env, iv_keys));
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
-                        tr1::shared_ptr<Map<std::string, std::string> >()));
+                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
@@ -1530,7 +1529,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1539,7 +1538,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("in-subshell die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1548,7 +1547,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("success", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/success",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1557,7 +1556,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("unpack die", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1566,7 +1565,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("emake fail", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1575,7 +1574,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("best version", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1584,7 +1583,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("has version", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1593,7 +1592,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("match", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1602,7 +1601,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("ever", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/ever-1.3",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1613,7 +1612,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf phase", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-phase-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1622,7 +1621,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf vars", true);
-                const tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-vars-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
@@ -1639,34 +1638,34 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo17");
             keys->insert("profiles", "e_repository_TEST_dir/repo17/profiles/profile");
-            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageID> id(*env.package_database()->
+            const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->
                     query(query::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
 
             StringifyFormatter ff;
 
-            erepository::DepSpecPrettyPrinter pd(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK(id->build_dependencies_key());
             id->build_dependencies_key()->value()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post:");
 
-            erepository::DepSpecPrettyPrinter pr(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK(id->run_dependencies_key());
             id->run_dependencies_key()->value()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "cat/pkg1 build: build,run: cat/pkg3 suggested: cat/pkg4 post:");
 
-            erepository::DepSpecPrettyPrinter pp(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK(id->post_dependencies_key());
             id->post_dependencies_key()->value()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "build: build,run: suggested: post: cat/pkg5");

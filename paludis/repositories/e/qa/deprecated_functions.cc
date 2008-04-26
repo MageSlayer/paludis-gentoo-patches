@@ -69,7 +69,7 @@ namespace
     };
 
     QAMessage
-    with_id(QAMessage m, const tr1::shared_ptr<const PackageID> & id)
+    with_id(QAMessage m, const std::tr1::shared_ptr<const PackageID> & id)
     {
         return id ? m.with_associated_id(id) : m;
     }
@@ -79,7 +79,7 @@ bool
 paludis::erepository::deprecated_functions_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & content,
         const std::string & name)
 {

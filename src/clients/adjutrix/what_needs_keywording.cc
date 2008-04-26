@@ -25,7 +25,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
@@ -38,7 +37,7 @@
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
-
+#include <tr1/functional>
 #include <set>
 #include <map>
 #include <list>
@@ -52,7 +51,7 @@ using std::endl;
 
 int do_what_needs_keywording(NoConfigEnvironment & env)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     int return_code(0);
 
@@ -60,7 +59,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
+        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
                     RepositoryName("fake_destination")));
         env.package_database()->add_repository(1, fake_destination);
     }
@@ -77,9 +76,9 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     d_options.use = dl_use_deps_take_all;
     d_options.blocks = dl_blocks_discard_completely;
     d_options.override_masks.reset(new DepListOverrideMasksFunctions);
-    d_options.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
-    d_options.override_masks->push_back(tr1::bind(&override_unkeyworded, &env, _1, _2));
-    d_options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
+    d_options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+    d_options.override_masks->push_back(std::tr1::bind(&override_unkeyworded, &env, _1, _2));
+    d_options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
 
     DepList d(&env, d_options);
 
@@ -144,7 +143,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             if (p->package_id->keywords_key())
             {
-                tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id->keywords_key()->value());
+                std::tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id->keywords_key()->value());
                 for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")

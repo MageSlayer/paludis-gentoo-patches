@@ -34,7 +34,7 @@ using namespace paludis;
 bool
 paludis::erepository::categories_check(
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const ERepository> & repo,
         const std::string & name)
 {
     Context context("When performing check '" + name + "':");

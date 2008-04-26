@@ -67,21 +67,21 @@ namespace paludis
 
             void deindex(const QualifiedPackageName &) const;
 
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -93,13 +93,13 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 }
 

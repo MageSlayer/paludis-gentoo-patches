@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,7 +47,7 @@
 #include <paludis/util/operators.hh>
 
 #include <string>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -159,7 +159,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTagCategoryMaker :
-        public VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
+        public VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
         public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>
     {
@@ -308,8 +308,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DependencyDepTag(const tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
-                    const tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
+            DependencyDepTag(const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
+                    const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
 
             ~DependencyDepTag();
 
@@ -322,18 +322,18 @@ namespace paludis
             /**
              * The PackageID that contains our dependency.
              */
-            const tr1::shared_ptr<const PackageID> package_id() const;
+            const std::tr1::shared_ptr<const PackageID> package_id() const;
 
             /**
              * The PackageDepSpec that pulled us in.
              */
-            const tr1::shared_ptr<const PackageDepSpec> dependency() const;
+            const std::tr1::shared_ptr<const PackageDepSpec> dependency() const;
 
             /**
              * The AnyDepSpec instances and ConditionalDepSpec instances that our dependency
              * is conditional upon.
              */
-            const tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
+            const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
     };
 
     /**

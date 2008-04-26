@@ -77,9 +77,9 @@ namespace
             {
             }
 
-            virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>,
-                    tr1::shared_ptr<const CategoryNamePartSet>) const;
+            virtual std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                    std::tr1::shared_ptr<const RepositoryNameSequence>,
+                    std::tr1::shared_ptr<const CategoryNamePartSet>) const;
 
             std::string as_human_readable_string() const
             {
@@ -87,22 +87,22 @@ namespace
             }
     };
 
-    tr1::shared_ptr<QualifiedPackageNameSet>
+    std::tr1::shared_ptr<QualifiedPackageNameSet>
     FuzzyPackageNameDelegate::packages(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameSequence> repos,
-                    tr1::shared_ptr<const CategoryNamePartSet> cats) const
+                    std::tr1::shared_ptr<const RepositoryNameSequence> repos,
+                    std::tr1::shared_ptr<const CategoryNamePartSet> cats) const
     {
-        tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+        std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
         for (RepositoryNameSequence::ConstIterator r(repos->begin()),
                  r_end(repos->end()); r_end != r; ++r)
         {
-            tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
+            std::tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
             for (CategoryNamePartSet::ConstIterator c(cats->begin()),
                      c_end(cats->end()); c_end != c; ++c)
             {
-                tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(repo->package_names(*c));
+                std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(repo->package_names(*c));
                 for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                          p_end(pkgs->end()); p_end != p; ++p)
                     if (tolower(p->package.data()[0]) == _first_char &&
@@ -119,7 +119,7 @@ namespace
     {
         public:
             FuzzyPackageName(const std::string & p) :
-                Query(tr1::shared_ptr<QueryDelegate>(new FuzzyPackageNameDelegate(p)))
+                Query(std::tr1::shared_ptr<QueryDelegate>(new FuzzyPackageNameDelegate(p)))
             {
             }
     };
@@ -154,7 +154,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
             real_generator = real_generator & query::Repository(*pds.repository_ptr());
     }
 
-    tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator & FuzzyPackageName(package), qo_best_version_only));
+    std::tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator & FuzzyPackageName(package), qo_best_version_only));
 
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
             ; i != i_end ; ++i)

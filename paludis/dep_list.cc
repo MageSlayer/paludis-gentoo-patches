@@ -30,7 +30,6 @@
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/distribution.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
@@ -48,22 +47,24 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/hashes.hh>
 
 #include <algorithm>
 #include <functional>
 #include <vector>
 #include <list>
 #include <set>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
-typedef std::list<tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
 
-template class Sequence<tr1::function<bool (const PackageID &, const Mask &)> >;
+template class Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> >;
 template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
 template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
 
@@ -96,13 +97,13 @@ DepListOptions::DepListOptions() :
 namespace paludis
 {
     typedef std::list<DepListEntry> MergeList;
-    typedef MakeHashedMultiMap<QualifiedPackageName, MergeList::iterator>::Type MergeListIndex;
+    typedef std::tr1::unordered_multimap<QualifiedPackageName, MergeList::iterator, Hash<QualifiedPackageName> > MergeListIndex;
 
     template<>
     struct Implementation<DepList>
     {
         const Environment * const env;
-        tr1::shared_ptr<DepListOptions> opts;
+        std::tr1::shared_ptr<DepListOptions> opts;
 
         MergeList merge_list;
         MergeList::const_iterator current_merge_list_entry;
@@ -117,11 +118,11 @@ namespace paludis
 
         LabelsStack labels;
 
-        const tr1::shared_ptr<const PackageID> current_package_id() const
+        const std::tr1::shared_ptr<const PackageID> current_package_id() const
         {
             if (current_merge_list_entry != merge_list.end())
                 return current_merge_list_entry->package_id;
-            return tr1::shared_ptr<const PackageID>();
+            return std::tr1::shared_ptr<const PackageID>();
         }
 
         Implementation(const Environment * const e, const DepListOptions & o) :
@@ -170,7 +171,7 @@ namespace
             /* see EffSTL 9 for why this is so painful */
             if (e.tags->empty())
                 return;
-            tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags);
+            std::tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags);
             GenerationGreaterThan pred(g);
             for (DepListEntryTags::ConstIterator i(e.tags->begin()), i_end(e.tags->end()) ;
                     i != i_end ; ++i)
@@ -290,16 +291,16 @@ struct DepList::AddVisitor :
     ConstVisitor<DependencySpecTree>
 {
     DepList * const d;
-    tr1::shared_ptr<const DestinationsSet> destinations;
-    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
+    std::tr1::shared_ptr<const DestinationsSet> destinations;
+    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
     std::set<SetName> recursing_sets;
     const bool only_if_not_suggested_label;
 
-    AddVisitor(DepList * const dd, bool l, tr1::shared_ptr<const DestinationsSet> ddd,
-               tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c =
-               (tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+    AddVisitor(DepList * const dd, bool l, std::tr1::shared_ptr<const DestinationsSet> ddd,
+               std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c =
+               (std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                    new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                       tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))) :
+                       std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))) :
         d(dd),
         destinations(ddd),
         conditions(c),
@@ -377,12 +378,12 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         }
     }
 
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* find already installed things */
     // TODO: check destinations
-    tr1::shared_ptr<const PackageIDSequence> already_installed(d->_imp->env->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> already_installed(d->_imp->env->package_database()->query(
                 query::SupportsAction<InstalledAction>() &
                 query::Matches(a),
                 qo_order_by_version));
@@ -408,7 +409,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
         if (d->_imp->opts->dependency_tags && d->_imp->current_package_id())
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
+                    .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
                     .generation(d->_imp->merge_list_generation));
 
         /* add an appropriate destination */
@@ -439,8 +440,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     /* find installable candidates, and find the best visible candidate */
-    tr1::shared_ptr<const PackageID> best_visible_candidate;
-    tr1::shared_ptr<const PackageIDSequence> installable_candidates(
+    std::tr1::shared_ptr<const PackageID> best_visible_candidate;
+    std::tr1::shared_ptr<const PackageIDSequence> installable_candidates(
             d->_imp->env->package_database()->query(
                 query::MaybeSupportsAction<InstallAction>() &
                 query::Matches(a),
@@ -542,7 +543,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (! a.additional_requirements_ptr())
                 throw AllMaskedError(a);
 
-            tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
+            std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
                         query::Matches(*a.without_additional_requirements()), qo_whatever));
 
             for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
@@ -561,7 +562,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         }
     }
 
-    tr1::shared_ptr<PackageIDSequence> already_installed_in_same_slot(new PackageIDSequence);
+    std::tr1::shared_ptr<PackageIDSequence> already_installed_in_same_slot(new PackageIDSequence);
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
         if ((*aa)->slot() == best_visible_candidate->slot())
@@ -616,7 +617,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         case dl_downgrade_error:
         case dl_downgrade_warning:
             {
-                tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
+                std::tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         d->_imp->env->package_database()->query(
                             query::SupportsAction<InstalledAction>() &
                             query::Matches(make_package_dep_spec()
@@ -652,7 +653,7 @@ DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
 {
     Context context("When adding NamedSetDepSpec '" + stringify(a) + "':");
 
-    tr1::shared_ptr<const SetSpecTree::ConstItem> set(d->_imp->env->set(a.name()));
+    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(d->_imp->env->set(a.name()));
 
     if (! set)
         throw NoSuchSetError(stringify(a.name()));
@@ -674,7 +675,7 @@ DepList::AddVisitor::visit_sequence(const AllDepSpec &,
         DependencySpecTree::ConstSequenceIterator end)
 {
     d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
     std::for_each(cur, end, accept_visitor(*this));
 }
@@ -684,13 +685,13 @@ DepList::AddVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
         d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
-        RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+        RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
         if (a.condition_met())
             std::for_each(cur, end, accept_visitor(*this));
@@ -707,10 +708,10 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
     if (end == std::find_if(cur, end, &is_viable_any_child))
@@ -719,7 +720,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
     {
         RangeRewriter r;
         std::for_each(cur, end, accept_visitor(r));
-        tr1::shared_ptr<PackageDepSpec> rewritten_spec(r.spec());
+        std::tr1::shared_ptr<PackageDepSpec> rewritten_spec(r.spec());
         if (rewritten_spec)
         {
             TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
@@ -728,7 +729,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         }
     }
 
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* see if any of our children is already installed. if any is, add it so that
@@ -761,8 +762,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
-                    tr1::shared_ptr<DepListOverrideMasksFunctions>());
+            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    std::tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
@@ -783,8 +784,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
-                    tr1::shared_ptr<DepListOverrideMasksFunctions>());
+            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    std::tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
         }
@@ -818,12 +819,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
     Context context("When checking BlockDepSpec '!" + stringify(*a.blocked_spec()) + "':");
 
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
-    tr1::shared_ptr<const PackageIDSequence> already_installed;
+    std::tr1::shared_ptr<const PackageIDSequence> already_installed;
 
     if (a.blocked_spec()->package_ptr())
     {
@@ -987,13 +988,13 @@ DepList::~DepList()
 {
 }
 
-tr1::shared_ptr<DepListOptions>
+std::tr1::shared_ptr<DepListOptions>
 DepList::options()
 {
     return _imp->opts;
 }
 
-const tr1::shared_ptr<const DepListOptions>
+const std::tr1::shared_ptr<const DepListOptions>
 DepList::options() const
 {
     return _imp->opts;
@@ -1008,18 +1009,18 @@ DepList::clear()
 
 void
 DepList::add_in_role(const bool only_if_not_suggested_label, DependencySpecTree::ConstItem & spec, const std::string & role,
-        tr1::shared_ptr<const DestinationsSet> destinations)
+        std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
     Context context("When adding " + role + (only_if_not_suggested_label ? " unless under a suggested label" : "") + ":");
     add_not_top_level(only_if_not_suggested_label, spec, destinations,
-        tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
-            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))));
+        std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))));
 }
 
 void
 DepList::add_not_top_level(const bool only_if_not_suggested_label,
-        DependencySpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSet> destinations,
-                           tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions)
+        DependencySpecTree::ConstItem & spec, std::tr1::shared_ptr<const DestinationsSet> destinations,
+                           std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
@@ -1029,7 +1030,7 @@ DepList::add_not_top_level(const bool only_if_not_suggested_label,
 }
 
 void
-DepList::add(SetSpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSet> destinations)
+DepList::add(SetSpecTree::ConstItem & spec, std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
@@ -1042,16 +1043,16 @@ DepList::add(SetSpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsSe
 }
 
 void
-DepList::add(const PackageDepSpec & spec, tr1::shared_ptr<const DestinationsSet> destinations)
+DepList::add(const PackageDepSpec & spec, std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
-    TreeLeaf<SetSpecTree, PackageDepSpec> l(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(spec)));
+    TreeLeaf<SetSpecTree, PackageDepSpec> l(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(spec)));
     add(l, destinations);
 }
 
 void
-DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr<const DepTag> tag,
-        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
-        tr1::shared_ptr<const DestinationsSet> destinations)
+DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, std::tr1::shared_ptr<const DepTag> tag,
+        const PackageDepSpec & pds, std::tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
+        std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
     Context context("When adding package '" + stringify(*p) + "':");
 
@@ -1066,12 +1067,12 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
                 .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
-                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .destination(p->virtual_for_key() ? tr1::shared_ptr<Repository>() : find_destination(*p, destinations))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                .destination(p->virtual_for_key() ? std::tr1::shared_ptr<Repository>() : find_destination(*p, destinations))
                 .associated_entry(0)
                 .handled(p->virtual_for_key() ?
-                    tr1::shared_ptr<DepListEntryHandled>(new DepListEntryNoHandlingRequired) :
-                    tr1::shared_ptr<DepListEntryHandled>(new DepListEntryUnhandled))
+                    std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryNoHandlingRequired) :
+                    std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryUnhandled))
                 .kind(p->virtual_for_key() ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
@@ -1084,7 +1085,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
 
     if (_imp->opts->dependency_tags && _imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1105,7 +1106,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec()
+            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec()
                         .package(*(*i)->package_ptr())
                         .version_requirement(VersionRequirement(vo_equal, p->version()))));
 
@@ -1128,8 +1129,8 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
                                 QualifiedPackageName((*i)->text()), p))
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
-                        .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                        .destination(tr1::shared_ptr<Repository>())
+                        .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                        .destination(std::tr1::shared_ptr<Repository>())
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                         .kind(dlk_provided)));
@@ -1187,8 +1188,8 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
 }
 
 void
-DepList::add_error_package(const tr1::shared_ptr<const PackageID> & p, const DepListEntryKind kind,
-        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions)
+DepList::add_error_package(const std::tr1::shared_ptr<const PackageID> & p, const DepListEntryKind kind,
+        const PackageDepSpec & pds, std::tr1::shared_ptr<DependencySpecTree::ConstItem> conditions)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p->name()));
@@ -1199,7 +1200,7 @@ DepList::add_error_package(const tr1::shared_ptr<const PackageID> & p, const Dep
         {
             if (_imp->current_package_id())
                 pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                        .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                         .generation(_imp->merge_list_generation));
             return;
         }
@@ -1211,24 +1212,24 @@ DepList::add_error_package(const tr1::shared_ptr<const PackageID> & p, const Dep
                 .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .destination(tr1::shared_ptr<Repository>())
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                .destination(std::tr1::shared_ptr<Repository>())
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                 .kind(kind)));
 
     if (_imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 }
 
 void
-DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
-        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
-        const tr1::shared_ptr<const DestinationsSet> destinations)
+DepList::add_suggested_package(const std::tr1::shared_ptr<const PackageID> & p,
+        const PackageDepSpec & pds, std::tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
+        const std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p->name()));
@@ -1247,7 +1248,7 @@ DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
                 .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                 .destination(find_destination(*p, destinations))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
@@ -1255,7 +1256,7 @@ DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
 
     if (_imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
@@ -1263,7 +1264,7 @@ DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
 
 void
 DepList::add_predeps(DependencySpecTree::ConstItem & d, const DepListDepsOption opt, const std::string & s,
-        tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
+        std::tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
     {
@@ -1285,7 +1286,7 @@ DepList::add_predeps(DependencySpecTree::ConstItem & d, const DepListDepsOption 
 
 void
 DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption opt, const std::string & s,
-        tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
+        std::tr1::shared_ptr<const DestinationsSet> destinations, const bool only_if_not_suggested_label)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
     {
@@ -1317,9 +1318,9 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
 }
 
 void
-DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr<const DepTag> tag,
-        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
-        const tr1::shared_ptr<const DestinationsSet> destinations)
+DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageID> & p, std::tr1::shared_ptr<const DepTag> tag,
+        const PackageDepSpec & pds, std::tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
+        const std::tr1::shared_ptr<const DestinationsSet> destinations)
 {
     Context context("When adding installed package '" + stringify(*p) + "':");
 
@@ -1329,9 +1330,9 @@ DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & 
                 DepListEntry::create()
                 .package_id(p)
                 .generation(_imp->merge_list_generation)
-                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                 .state(dle_has_pre_deps)
-                .destination(tr1::shared_ptr<Repository>())
+                .destination(std::tr1::shared_ptr<Repository>())
                 .associated_entry(0)
                 .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                 .kind(dlk_already_installed)));
@@ -1344,7 +1345,7 @@ DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & 
 
     if (_imp->opts->dependency_tags && _imp->current_package_id())
         our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1485,7 +1486,7 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
                     uninstalled.iuse_key()->value()->begin(), uninstalled.iuse_key()->value()->end(),
                     std::inserter(iuse_common, iuse_common.begin()));
             std::transform(iuse_common.begin(), iuse_common.end(), std::inserter(use_common, use_common.begin()),
-                    tr1::mem_fn(&IUseFlag::flag));
+                    std::tr1::mem_fn(&IUseFlag::flag));
         }
 
         for (std::set<UseFlagName>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
@@ -1499,7 +1500,7 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 
 bool
 DepList::already_installed(const DependencySpecTree::ConstItem & spec,
-        tr1::shared_ptr<const DestinationsSet> destinations) const
+        std::tr1::shared_ptr<const DestinationsSet> destinations) const
 {
     QueryVisitor visitor(this, destinations, _imp->env, _imp->current_package_id());
     spec.accept(visitor);
@@ -1574,9 +1575,9 @@ DepList::has_errors() const
     return end() != std::find_if(begin(), end(), IsError());
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 DepList::find_destination(const PackageID & p,
-        tr1::shared_ptr<const DestinationsSet> dd)
+        std::tr1::shared_ptr<const DestinationsSet> dd)
 {
     for (DestinationsSet::ConstIterator d(dd->begin()), d_end(dd->end()) ;
              d != d_end ; ++d)

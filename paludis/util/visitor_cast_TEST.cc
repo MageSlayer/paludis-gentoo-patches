@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,14 +66,14 @@ namespace test_cases
 
         void run()
         {
-            std::vector<tr1::shared_ptr<NodeVisitorTypes::ConstItem> > v;
+            std::vector<std::tr1::shared_ptr<NodeVisitorTypes::ConstItem> > v;
 
-            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
-                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
-            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
-                        new TreeLeaf<NodeVisitorTypes, BarNode>(tr1::shared_ptr<BarNode>(new BarNode))));
-            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
-                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
+            v.push_back(std::tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(std::tr1::shared_ptr<FooNode>(new FooNode))));
+            v.push_back(std::tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, BarNode>(std::tr1::shared_ptr<BarNode>(new BarNode))));
+            v.push_back(std::tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(std::tr1::shared_ptr<FooNode>(new FooNode))));
 
             TEST_CHECK(visitor_cast<const FooNode>(*v[0]));
             TEST_CHECK(! visitor_cast<const FooNode>(*v[1]));

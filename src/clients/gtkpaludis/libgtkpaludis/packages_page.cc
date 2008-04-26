@@ -33,10 +33,10 @@ namespace paludis
         PackagesList packages_list;
         PackageButtons package_buttons;
 
-        paludis::tr1::shared_ptr<const Query> repository_filter;
-        paludis::tr1::shared_ptr<const CategoryNamePart> category;
-        paludis::tr1::shared_ptr<const SetName> set;
-        paludis::tr1::shared_ptr<const QualifiedPackageName> qpn;
+        std::tr1::shared_ptr<const Query> repository_filter;
+        std::tr1::shared_ptr<const CategoryNamePart> category;
+        std::tr1::shared_ptr<const SetName> set;
+        std::tr1::shared_ptr<const QualifiedPackageName> qpn;
         PackagesPackageFilterOption package_filter;
         PackagesTextFilterSourceOption text_filter;
         std::string text_filter_text;
@@ -93,7 +93,7 @@ PackagesPage::populate()
 }
 
 void
-PackagesPage::set_category(paludis::tr1::shared_ptr<const CategoryNamePart> c)
+PackagesPage::set_category(std::tr1::shared_ptr<const CategoryNamePart> c)
 {
     _imp->category = c;
     _imp->set.reset();
@@ -102,7 +102,7 @@ PackagesPage::set_category(paludis::tr1::shared_ptr<const CategoryNamePart> c)
 }
 
 void
-PackagesPage::set_set(paludis::tr1::shared_ptr<const SetName> c)
+PackagesPage::set_set(std::tr1::shared_ptr<const SetName> c)
 {
     _imp->set = c;
     _imp->category.reset();
@@ -110,33 +110,33 @@ PackagesPage::set_set(paludis::tr1::shared_ptr<const SetName> c)
     _imp->package_buttons.populate();
 }
 
-paludis::tr1::shared_ptr<const CategoryNamePart>
+std::tr1::shared_ptr<const CategoryNamePart>
 PackagesPage::get_category() const
 {
     return _imp->category;
 }
 
-paludis::tr1::shared_ptr<const SetName>
+std::tr1::shared_ptr<const SetName>
 PackagesPage::get_set() const
 {
     return _imp->set;
 }
 
 void
-PackagesPage::set_qpn(paludis::tr1::shared_ptr<const QualifiedPackageName> q)
+PackagesPage::set_qpn(std::tr1::shared_ptr<const QualifiedPackageName> q)
 {
     _imp->qpn = q;
     _imp->package_buttons.populate();
 }
 
-paludis::tr1::shared_ptr<const QualifiedPackageName>
+std::tr1::shared_ptr<const QualifiedPackageName>
 PackagesPage::get_qpn() const
 {
     return _imp->qpn;
 }
 
 void
-PackagesPage::set_repository_filter(paludis::tr1::shared_ptr<const Query> q)
+PackagesPage::set_repository_filter(std::tr1::shared_ptr<const Query> q)
 {
     _imp->repository_filter = q;
     _imp->categories_list.populate();
@@ -145,7 +145,7 @@ PackagesPage::set_repository_filter(paludis::tr1::shared_ptr<const Query> q)
     _imp->package_buttons.populate();
 }
 
-paludis::tr1::shared_ptr<const Query>
+std::tr1::shared_ptr<const Query>
 PackagesPage::get_repository_filter() const
 {
     return _imp->repository_filter;

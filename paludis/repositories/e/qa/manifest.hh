@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,7 +29,7 @@ namespace paludis
         bool manifest_check(
                 QAReporter &,
                 const FSEntry & dir,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const QualifiedPackageName &,
                 const std::string & s
                 ) PALUDIS_VISIBLE;

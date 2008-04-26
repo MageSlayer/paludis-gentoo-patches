@@ -45,7 +45,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/match_package.hh>
 #include <paludis/query.hh>
@@ -69,7 +68,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -77,7 +75,10 @@
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
+#include <paludis/util/hashes.hh>
 
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <map>
 #include <set>
 #include <functional>
@@ -102,10 +103,11 @@
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName,
-        std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type RepositoryMaskMap;
-typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
+typedef std::tr1::unordered_map<QualifiedPackageName,
+        std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
+        Hash<QualifiedPackageName> > RepositoryMaskMap;
+typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > MirrorMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
 
 namespace
@@ -142,22 +144,22 @@ namespace
                     for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
                             i_end(info_pkgs.end()) ; i != i_end ; ++i)
                     {
-                        tr1::shared_ptr<MetadataKey> key;
-                        tr1::shared_ptr<const PackageIDSequence> q(
+                        std::tr1::shared_ptr<MetadataKey> key;
+                        std::tr1::shared_ptr<const PackageIDSequence> q(
                                 _env->package_database()->query(
                                     query::Matches(erepository::parse_e_package_dep_spec(*i,
                                             *erepository::EAPIData::get_instance()->eapi_from_string(_p),
-                                            tr1::shared_ptr<const PackageID>())) &
+                                            std::tr1::shared_ptr<const PackageID>())) &
                                     query::InstalledAtRoot(_env->root()),
                                     qo_order_by_version));
                         if (q->empty())
                             key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
                         else
                         {
-                            using namespace tr1::placeholders;
-                            tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
+                            using namespace std::tr1::placeholders;
+                            std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
                             std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
-                                    tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
+                                    std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
                             key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
                         }
 
@@ -206,16 +208,16 @@ namespace paludis
         ERepository * const repo;
         const ERepositoryParams params;
 
-        const tr1::shared_ptr<Mutexes> mutexes;
+        const std::tr1::shared_ptr<Mutexes> mutexes;
 
-        tr1::shared_ptr<RepositoryNameCache> names_cache;
+        std::tr1::shared_ptr<RepositoryNameCache> names_cache;
 
         mutable RepositoryMaskMap repo_mask;
         mutable bool has_repo_mask;
 
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
-        mutable tr1::shared_ptr<UseFlagNameSet> arch_flags;
+        mutable std::tr1::shared_ptr<UseFlagNameSet> arch_flags;
 
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
@@ -223,52 +225,52 @@ namespace paludis
         mutable bool has_profiles_desc;
         mutable ProfilesDesc profiles_desc;
 
-        mutable std::list<tr1::shared_ptr<UseDesc> > use_desc;
+        mutable std::list<std::tr1::shared_ptr<UseDesc> > use_desc;
 
-        mutable tr1::shared_ptr<ERepositoryProfile> profile_ptr;
+        mutable std::tr1::shared_ptr<ERepositoryProfile> profile_ptr;
 
-        mutable tr1::shared_ptr<ERepositoryNews> news_ptr;
+        mutable std::tr1::shared_ptr<ERepositoryNews> news_ptr;
 
-        mutable tr1::shared_ptr<ERepositorySets> sets_ptr;
-        mutable tr1::shared_ptr<erepository::ERepositoryEntries> entries_ptr;
-        mutable tr1::shared_ptr<erepository::Layout> layout;
+        mutable std::tr1::shared_ptr<ERepositorySets> sets_ptr;
+        mutable std::tr1::shared_ptr<erepository::ERepositoryEntries> entries_ptr;
+        mutable std::tr1::shared_ptr<erepository::Layout> layout;
 
-        Implementation(ERepository * const, const ERepositoryParams &, tr1::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
+        Implementation(ERepository * const, const ERepositoryParams &, std::tr1::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
         ~Implementation();
 
         void need_profiles() const;
         void need_profiles_desc() const;
 
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > layout_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > cache_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > write_cache_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > append_repository_name_to_write_cache_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > ignore_deprecated_profiles;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
-        tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > eclassdirs_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > securitydir_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > setsdir_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > newsdir_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > master_repository_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
-        tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > layout_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > cache_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > write_cache_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > append_repository_name_to_write_cache_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > ignore_deprecated_profiles;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
+        std::tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > eclassdirs_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > securitydir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > setsdir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > newsdir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > master_repository_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
+        std::tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
-            const ERepositoryParams & p, tr1::shared_ptr<Mutexes> m) :
+            const ERepositoryParams & p, std::tr1::shared_ptr<Mutexes> m) :
         repo(r),
         params(p),
         mutexes(m),
@@ -282,7 +284,7 @@ namespace paludis
         layout(erepository::LayoutMaker::get_instance()->find_maker(
                     params.layout)(r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
-                        tr1::shared_ptr<FSEntry>())),
+                        std::tr1::shared_ptr<FSEntry>())),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, params.entry_format)),
         layout_key(new LiteralMetadataValueKey<std::string> ("layout", "layout",
@@ -320,9 +322,9 @@ namespace paludis
         builddir_key(new LiteralMetadataValueKey<FSEntry> (
                     "builddir", "builddir", mkt_normal, params.builddir)),
         master_repository_key(params.master_repository ?
-                tr1::shared_ptr<MetadataValueKey<std::string> >(new LiteralMetadataValueKey<std::string> (
+                std::tr1::shared_ptr<MetadataValueKey<std::string> >(new LiteralMetadataValueKey<std::string> (
                         "master_repository", "master_repository", mkt_normal, stringify(params.master_repository->name()))) :
-                tr1::shared_ptr<MetadataValueKey<std::string> >()),
+                std::tr1::shared_ptr<MetadataValueKey<std::string> >()),
         eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown)),
         eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
@@ -332,9 +334,9 @@ namespace paludis
         use_manifest_key(new LiteralMetadataValueKey<std::string> (
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest))),
         info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
-                tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
+                std::tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
                         params.environment, layout->info_packages_file(params.location / "profiles"), params.profile_eapi)) :
-                tr1::shared_ptr<MetadataSectionKey>()),
+                std::tr1::shared_ptr<MetadataSectionKey>()),
         binary_destination_key(new LiteralMetadataValueKey<std::string> (
                     "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination))),
         binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
@@ -376,7 +378,7 @@ namespace paludis
         Context context("When loading profiles.desc:");
 
         bool found_one(false);
-        tr1::shared_ptr<const FSEntrySequence> profiles_desc_files(layout->profiles_desc_files());
+        std::tr1::shared_ptr<const FSEntrySequence> profiles_desc_files(layout->profiles_desc_files());
         for (FSEntrySequence::ConstIterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
                 p != p_end ; ++p)
         {
@@ -401,7 +403,7 @@ namespace paludis
                             (k::arch(), tokens.at(0))
                             (k::path(), *profiles.begin())
                             (k::status(), tokens.at(2))
-                            (k::profile(), tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
+                            (k::profile(), std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                         params.environment, repo, repo->name(), profiles,
                                         (*(*erepository::EAPIData::get_instance()->eapi_from_string(
                                             params.eapi_when_unknown))[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]))));
@@ -540,25 +542,25 @@ ERepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->layout->has_package_named(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 ERepository::category_names() const
 {
     return _imp->layout->category_names();
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 ERepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->layout->package_names(c);
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 ERepository::package_ids(const QualifiedPackageName & n) const
 {
     return _imp->layout->package_ids(n);
 }
 
-tr1::shared_ptr<const RepositoryMaskInfo>
+std::tr1::shared_ptr<const RepositoryMaskInfo>
 ERepository::repository_masked(const PackageID & id) const
 {
     Lock l(_imp->mutexes->repo_mask_mutex);
@@ -567,12 +569,12 @@ ERepository::repository_masked(const PackageID & id) const
     {
         Context context("When querying repository mask for '" + stringify(id) + "':");
 
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
 
-        tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
+        std::tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
         erepository::ProfileFile<erepository::MaskFile> repository_mask_file;
         std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
-                      tr1::bind(&erepository::ProfileFile<erepository::MaskFile>::add_file, tr1::ref(repository_mask_file), _1));
+                      std::tr1::bind(&erepository::ProfileFile<erepository::MaskFile>::add_file, std::tr1::ref(repository_mask_file), _1));
 
         for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator
                  line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
@@ -580,10 +582,10 @@ ERepository::repository_masked(const PackageID & id) const
         {
             try
             {
-                tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
+                std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
                                 line->first,
                                 *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi),
-                                tr1::shared_ptr<const PackageID>())));
+                                std::tr1::shared_ptr<const PackageID>())));
                 if (a->package_ptr())
                     _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
                 else
@@ -608,14 +610,14 @@ ERepository::repository_masked(const PackageID & id) const
 
     RepositoryMaskMap::iterator r(_imp->repo_mask.find(id.name()));
     if (_imp->repo_mask.end() == r)
-        return tr1::shared_ptr<const RepositoryMaskInfo>();
+        return std::tr1::shared_ptr<const RepositoryMaskInfo>();
     else
-        for (std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
+        for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->params.environment, *k->first, id))
                 return k->second;
 
-    return tr1::shared_ptr<const RepositoryMaskInfo>();
+    return std::tr1::shared_ptr<const RepositoryMaskInfo>();
 }
 
 UseFlagState
@@ -662,7 +664,7 @@ ERepository::query_use(const UseFlagName & f, const PackageID & e) const
                     break;
 
                 bool is_expand(false);
-                const tr1::shared_ptr<const UseFlagNameSet> prefixes(use_expand_prefixes());
+                const std::tr1::shared_ptr<const UseFlagNameSet> prefixes(use_expand_prefixes());
                 for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                         p != p_end && ! is_expand ; ++p)
                     if (0 == stringify(*p).compare(0, stringify(*p).length(), stringify(f), 0, stringify(*p).length()))
@@ -734,7 +736,7 @@ ERepository::query_use_force(const UseFlagName & u, const PackageID & e) const
     }
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 ERepository::arch_flags() const
 {
     Lock l(_imp->mutexes->arch_flags_mutex);
@@ -744,7 +746,7 @@ ERepository::arch_flags() const
         _imp->arch_flags.reset(new UseFlagNameSet);
 
         bool found_one(false);
-        tr1::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
+        std::tr1::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
         for (FSEntrySequence::ConstIterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
                 p != p_end ; ++p)
         {
@@ -775,7 +777,7 @@ ERepository::need_mirrors() const
     if (! _imp->has_mirrors)
     {
         bool found_one(false);
-        tr1::shared_ptr<const FSEntrySequence> mirror_files(_imp->layout->mirror_files());
+        std::tr1::shared_ptr<const FSEntrySequence> mirror_files(_imp->layout->mirror_files());
         for (FSEntrySequence::ConstIterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
                 p != p_end ; ++p)
         {
@@ -813,7 +815,7 @@ ERepository::need_mirrors() const
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepository::package_set(const SetName & s) const
 {
     if (s.data() == "system")
@@ -825,7 +827,7 @@ ERepository::package_set(const SetName & s) const
     return _imp->sets_ptr->package_set(s);
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 ERepository::sets_list() const
 {
     return _imp->sets_ptr->sets_list();
@@ -905,20 +907,20 @@ ERepository::update_news() const
     _imp->news_ptr->update_news();
 }
 
-const tr1::shared_ptr<const erepository::Layout>
+const std::tr1::shared_ptr<const erepository::Layout>
 ERepository::layout() const
 {
     return _imp->layout;
 }
 
-const tr1::shared_ptr<const ERepositoryProfile>
+const std::tr1::shared_ptr<const ERepositoryProfile>
 ERepository::profile() const
 {
     _imp->need_profiles();
     return _imp->profile_ptr;
 }
 
-const tr1::shared_ptr<const erepository::ERepositoryEntries>
+const std::tr1::shared_ptr<const erepository::ERepositoryEntries>
 ERepository::entries() const
 {
     return _imp->entries_ptr;
@@ -926,7 +928,7 @@ ERepository::entries() const
 
 std::string
 ERepository::get_environment_variable(
-        const tr1::shared_ptr<const PackageID> & for_package,
+        const std::tr1::shared_ptr<const PackageID> & for_package,
         const std::string & var) const
 {
     Context context("When fetching environment variable '" + var + "' from repository '"
@@ -934,7 +936,7 @@ ERepository::get_environment_variable(
 
     _imp->need_profiles();
 
-    return _imp->entries_ptr->get_environment_variable(tr1::static_pointer_cast<const erepository::ERepositoryID>(for_package),
+    return _imp->entries_ptr->get_environment_variable(std::tr1::static_pointer_cast<const erepository::ERepositoryID>(for_package),
             var, _imp->profile_ptr);
 }
 
@@ -960,7 +962,7 @@ ERepository::end_mirrors(const std::string & s) const
     return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
-tr1::shared_ptr<const ERepository::VirtualsSequence>
+std::tr1::shared_ptr<const ERepository::VirtualsSequence>
 ERepository::virtual_packages() const
 {
     Context context("When loading virtual packages for repository '" +
@@ -968,7 +970,7 @@ ERepository::virtual_packages() const
 
     _imp->need_profiles();
 
-    tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
+    std::tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
 
     for (ERepositoryProfile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
@@ -979,14 +981,14 @@ ERepository::virtual_packages() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 ERepository::use_expand_flags() const
 {
     _imp->need_profiles();
 
     std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
                             (_imp->params.profile_eapi)))[k::supported()])[k::ebuild_options()].use_expand_separator));
-    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
+    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
@@ -1005,12 +1007,12 @@ ERepository::use_expand_flags() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 ERepository::use_expand_prefixes() const
 {
     _imp->need_profiles();
 
-    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
+    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
@@ -1022,12 +1024,12 @@ ERepository::use_expand_prefixes() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 ERepository::use_expand_hidden_prefixes() const
 {
     _imp->need_profiles();
 
-    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
+    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
             i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
     {
@@ -1044,7 +1046,7 @@ ERepository::use_expand_separator(const PackageID & id) const
 {
     if (this != id.repository().get())
         return '\0';
-    const tr1::shared_ptr<const erepository::EAPI> & eapi(static_cast<const erepository::ERepositoryID &>(id).eapi());
+    const std::tr1::shared_ptr<const erepository::EAPI> & eapi(static_cast<const erepository::ERepositoryID &>(id).eapi());
     return (*eapi)[k::supported()] ? (*(*eapi)[k::supported()])[k::ebuild_options()].use_expand_separator : '\0';
 }
 
@@ -1054,13 +1056,13 @@ ERepository::regenerate_cache() const
     _imp->names_cache->regenerate_cache();
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 ERepository::category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
         return Repository::category_names_containing_package(p);
 
-    tr1::shared_ptr<const CategoryNamePartSet> result(
+    std::tr1::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::category_names_containing_package(p);
@@ -1141,14 +1143,14 @@ ERepository::describe_use_flag(const UseFlagName & f,
     {
         std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
                                 _imp->params.profile_eapi))[k::supported()])[k::ebuild_options()].use_expand_separator));
-        tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
+        std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
         for (FSEntrySequence::ConstIterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
-            _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p, expand_sep)));
+            _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(*p, expand_sep)));
     }
 
     std::string result;
-    for (std::list<tr1::shared_ptr<UseDesc> >::const_iterator i(_imp->use_desc.begin()),
+    for (std::list<std::tr1::shared_ptr<UseDesc> >::const_iterator i(_imp->use_desc.begin()),
             i_end(_imp->use_desc.end()) ; i != i_end ; ++i)
     {
         std::string new_result((*i)->describe(f, e));
@@ -1206,10 +1208,10 @@ ERepository::perform_hook(const Hook & hook) const
     return HookResult(0, "");
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 ERepository::unimportant_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -1223,7 +1225,7 @@ namespace
         void * handle;
         void (* qa_checks_handle)(
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const QACheckProperties & ignore_if,
                 const QACheckProperties & ignore_unless,
                 const QAMessageLevel minimum_level,
@@ -1275,7 +1277,7 @@ ERepository::check_qa(
         if (0 == libqahandle.qa_checks_handle)
             libqahandle.qa_checks_handle = STUPID_CAST(void (*)(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepository> &,
+                        const std::tr1::shared_ptr<const ERepository> &,
                         const QACheckProperties &,
                         const QACheckProperties &,
                         const QAMessageLevel,
@@ -1365,7 +1367,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     if (! manifest)
         throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
-    tr1::shared_ptr<Map<FSEntry, std::string> > files = _imp->layout->manifest_files(qpn);
+    std::tr1::shared_ptr<Map<FSEntry, std::string> > files = _imp->layout->manifest_files(qpn);
 
     for (Map<FSEntry, std::string>::ConstIterator f(files->begin()) ;
             f != files->end() ; ++f)
@@ -1381,8 +1383,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
         std::ifstream file_stream(stringify(file).c_str());
         if (! file_stream)
-            throw ERepositoryConfigurationError("Couldn't read " 
-                    + stringify(file));
+            throw ERepositoryConfigurationError("Couldn't read " + stringify(file));
 
         RMD160 rmd160sum(file_stream);
         manifest << file_type << " " << filename << " "
@@ -1399,7 +1400,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         manifest << " SHA256 " << sha256sum.hexsum() << std::endl;
     }
 
-    tr1::shared_ptr<const PackageIDSequence> versions;
+    std::tr1::shared_ptr<const PackageIDSequence> versions;
     versions = package_ids(qpn);
 
     std::set<std::string> done_files;
@@ -1408,7 +1409,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             v_end(versions->end()) ;
             v != v_end ; ++v)
     {
-        tr1::shared_ptr<const PackageID> id = (*v);
+        std::tr1::shared_ptr<const PackageID> id = (*v);
         if (! id->fetches_key())
             continue;
         paludis::erepository::AAVisitor aa;
@@ -1472,15 +1473,15 @@ ERepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 ERepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 ERepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

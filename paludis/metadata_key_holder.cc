@@ -19,12 +19,12 @@
 
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/metadata_key.hh>
+#include <tr1/functional>
 #include <list>
 #include <algorithm>
 
@@ -35,7 +35,7 @@ namespace paludis
     template <>
     struct Implementation<MetadataKeyHolder>
     {
-        mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
+        mutable std::list<std::tr1::shared_ptr<const MetadataKey> > keys;
     };
 }
 
@@ -49,12 +49,12 @@ MetadataKeyHolder::~MetadataKeyHolder()
 }
 
 void
-MetadataKeyHolder::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
+MetadataKeyHolder::add_metadata_key(const std::tr1::shared_ptr<const MetadataKey> & k) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
+                std::tr1::bind(std::equal_to<std::string>(), k->raw_name(), std::tr1::bind(std::tr1::mem_fn(&MetadataKey::raw_name), _1))))
         throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
 
     _imp->keys.push_back(k);
@@ -77,13 +77,13 @@ MetadataKeyHolder::end_metadata() const
 MetadataKeyHolder::MetadataConstIterator
 MetadataKeyHolder::find_metadata(const std::string & s) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     need_keys_added();
 
-    // tr1::mem_fn on a sptr doesn't work with boost
+    // std::tr1::mem_fn on a sptr doesn't work with boost
     // return std::find_if(begin_metadata(), end_metadata(),
-    //        tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
+    //        std::tr1::bind(std::equal_to<std::string>(), s, std::tr1::bind(std::tr1::mem_fn(&MetadataKey::raw_name), _1)));
 
     for (MetadataConstIterator i(begin_metadata()), i_end(end_metadata()) ;
             i != i_end ; ++i)

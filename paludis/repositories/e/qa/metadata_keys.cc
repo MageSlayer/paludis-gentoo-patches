@@ -51,9 +51,9 @@ namespace
             bool PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
-            const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
+            const std::tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
         }
 
         void visit(const MetadataTimeKey & k)
@@ -61,9 +61,9 @@ namespace
             time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
         {
-            const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+            const std::tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
         void visit(const MetadataValueKey<FSEntry>& k)
@@ -71,69 +71,69 @@ namespace
             const FSEntry & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
-            const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
+            const std::tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            const tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            const tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            const tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            const tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            const tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            const tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            const tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            const tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            const tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
-            const tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
-            const tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataSectionKey & k)
@@ -148,7 +148,7 @@ bool
 paludis::erepository::metadata_keys_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' on ID '" + stringify(*id) + "':");

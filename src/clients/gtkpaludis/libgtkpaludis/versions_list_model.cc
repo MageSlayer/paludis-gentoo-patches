@@ -5,7 +5,6 @@
 #include "versions_page.hh"
 #include "markup.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/environment.hh>
@@ -13,6 +12,7 @@
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <tr1/functional>
 #include <list>
 
 using namespace paludis;
@@ -39,11 +39,11 @@ namespace
 {
     struct PopulateDataItem
     {
-        tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<const PackageID> id;
         std::string masks;
         bool prefer_default;
 
-        PopulateDataItem(const tr1::shared_ptr<const PackageID> & d,
+        PopulateDataItem(const std::tr1::shared_ptr<const PackageID> & d,
                 const std::string & m, const bool p) :
             id(d),
             masks(m),
@@ -103,8 +103,8 @@ VersionsListModel::populate()
 void
 VersionsListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<PopulateData> data(new PopulateData);
-    paludis::tr1::shared_ptr<const PackageIDSequence> c(
+    std::tr1::shared_ptr<PopulateData> data(new PopulateData);
+    std::tr1::shared_ptr<const PackageIDSequence> c(
             _imp->query_window->environment()->package_database()->query(
                 query::Package(_imp->query_window->get_package_name()),
                 qo_order_by_version));
@@ -133,7 +133,7 @@ VersionsListModel::populate_in_paludis_thread()
 }
 
 void
-VersionsListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const VersionsListModel::PopulateData> names)
+VersionsListModel::populate_in_gui_thread(std::tr1::shared_ptr<const VersionsListModel::PopulateData> names)
 {
     clear();
 

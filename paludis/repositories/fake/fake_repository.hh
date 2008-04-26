@@ -56,11 +56,11 @@ namespace paludis
             /**
              * Add a virtual package.
              */
-            void add_virtual_package(const QualifiedPackageName &, tr1::shared_ptr<const PackageDepSpec>);
+            void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepSpec>);
 
             /* RepositoryVirtualsInterface */
 
-            virtual tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+            virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryMirrorsInterface */
@@ -74,8 +74,8 @@ namespace paludis
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 }
 

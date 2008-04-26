@@ -52,15 +52,15 @@ namespace
         public ConstVisitor<DependencySpecTree>::VisitConstSequence<DependenciesCollector, AnyDepSpec>
     {
         private:
-            const tr1::shared_ptr<const Environment> _env;
-            const tr1::shared_ptr<const PackageID> _id;
+            const std::tr1::shared_ptr<const Environment> _env;
+            const std::tr1::shared_ptr<const PackageID> _id;
             ResultsMap & _results;
             std::set<SetName> _recursing_sets;
 
         public:
             DependenciesCollector(
-                    const tr1::shared_ptr<const Environment> & e,
-                    const tr1::shared_ptr<const PackageID> & i,
+                    const std::tr1::shared_ptr<const Environment> & e,
+                    const std::tr1::shared_ptr<const PackageID> & i,
                     ResultsMap & r) :
                 _env(e),
                 _id(i),
@@ -92,7 +92,7 @@ namespace
             void visit_leaf(const NamedSetDepSpec & spec)
             {
                 /* For named set specs, we visit the set. */
-                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(spec.name()));
+                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(spec.name()));
 
                 /* First complication: we might have a name referring to a set
                  * that doesn't exist. */
@@ -140,14 +140,14 @@ namespace
         public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<FileExtensionsCollector, AllDepSpec>
     {
         private:
-            const tr1::shared_ptr<const Environment> _env;
-            const tr1::shared_ptr<const PackageID> _id;
+            const std::tr1::shared_ptr<const Environment> _env;
+            const std::tr1::shared_ptr<const PackageID> _id;
             ResultsMap & _results;
 
         public:
             FileExtensionsCollector(
-                    const tr1::shared_ptr<const Environment> & e,
-                    const tr1::shared_ptr<const PackageID> & i,
+                    const std::tr1::shared_ptr<const Environment> & e,
+                    const std::tr1::shared_ptr<const PackageID> & i,
                     ResultsMap & r) :
                 _env(e),
                 _id(i),
@@ -190,11 +190,11 @@ int main(int argc, char * argv[])
                 "example_dep_tree", "EXAMPLE_DEP_TREE_OPTIONS", "EXAMPLE_DEP_TREE_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
                     query::SupportsAction<InstalledAction>(),
                     qo_order_by_version));
 

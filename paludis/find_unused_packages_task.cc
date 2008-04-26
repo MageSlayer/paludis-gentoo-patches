@@ -38,11 +38,11 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
+    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
                 query::Matches(make_package_dep_spec()
                     .package(package)
                     .repository(_repo->name())),
@@ -62,7 +62,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
             old_slot = (*p)->slot();
         }
 
-        tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
+        std::tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
         bool used(false);
         for (KeywordNameSet::ConstIterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)

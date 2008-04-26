@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,9 +31,9 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const tr1::shared_ptr<const MetadataKey> unaccepted_key;
+        const std::tr1::shared_ptr<const MetadataKey> unaccepted_key;
 
-        Implementation(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & u) :
+        Implementation(const char k, const std::string & d, const std::tr1::shared_ptr<const MetadataKey> & u) :
             key(k),
             description(d),
             unaccepted_key(u)
@@ -42,7 +42,7 @@ namespace paludis
     };
 }
 
-EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & u) :
+EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const std::tr1::shared_ptr<const MetadataKey> & u) :
     PrivateImplementationPattern<EUnacceptedMask>(new Implementation<EUnacceptedMask>(k, d, u))
 {
 }
@@ -63,7 +63,7 @@ EUnacceptedMask::description() const
     return _imp->description;
 }
 
-const tr1::shared_ptr<const MetadataKey>
+const std::tr1::shared_ptr<const MetadataKey>
 EUnacceptedMask::unaccepted_key() const
 {
     return _imp->unaccepted_key;
@@ -123,9 +123,9 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const tr1::shared_ptr<const MetadataKey> mask_key;
+        const std::tr1::shared_ptr<const MetadataKey> mask_key;
 
-        Implementation(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & m) :
+        Implementation(const char k, const std::string & d, const std::tr1::shared_ptr<const MetadataKey> & m) :
             key(k),
             description(d),
             mask_key(m)
@@ -134,7 +134,7 @@ namespace paludis
     };
 }
 
-ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & m) :
+ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::tr1::shared_ptr<const MetadataKey> & m) :
     PrivateImplementationPattern<ERepositoryMask>(new Implementation<ERepositoryMask>(k, d, m))
 {
 }
@@ -155,7 +155,7 @@ ERepositoryMask::description() const
     return _imp->description;
 }
 
-const tr1::shared_ptr<const MetadataKey>
+const std::tr1::shared_ptr<const MetadataKey>
 ERepositoryMask::mask_key() const
 {
     return _imp->mask_key;

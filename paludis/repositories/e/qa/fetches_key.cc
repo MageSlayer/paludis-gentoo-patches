@@ -79,14 +79,14 @@ namespace
     {
         QAReporter & reporter;
         bool fetch_restrict;
-        tr1::shared_ptr<const PackageID> id;
-        tr1::shared_ptr<const MetadataKey> key;
+        std::tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<const MetadataKey> key;
         FSEntry entry;
         std::string name;
 
         Checker(QAReporter & rr, bool f,
-                const tr1::shared_ptr<const PackageID> & i,
-                const tr1::shared_ptr<const MetadataKey> & k,
+                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const MetadataKey> & k,
                 const FSEntry & fs, const std::string & n) :
             reporter(rr),
             fetch_restrict(f),
@@ -187,7 +187,7 @@ bool
 paludis::erepository::fetches_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using fetches_key_check on ID '" + stringify(*id) + "':");

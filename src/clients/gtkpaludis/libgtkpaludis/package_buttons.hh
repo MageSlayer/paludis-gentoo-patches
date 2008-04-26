@@ -5,8 +5,8 @@
 
 #include <gtkmm/buttonbox.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
@@ -18,7 +18,7 @@ namespace gtkpaludis
         private paludis::PrivateImplementationPattern<PackageButtons>
     {
         private:
-            void populate_in_paludis_thread(paludis::tr1::shared_ptr<const paludis::QualifiedPackageName>);
+            void populate_in_paludis_thread(std::tr1::shared_ptr<const paludis::QualifiedPackageName>);
             void populate_in_gui_thread(const bool, const bool, const bool);
 
         protected:

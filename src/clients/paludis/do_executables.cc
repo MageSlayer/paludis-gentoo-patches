@@ -97,14 +97,14 @@ namespace
 
 void
 do_one_executables_entry(
-        const tr1::shared_ptr<Environment>,
+        const std::tr1::shared_ptr<Environment>,
         const PackageID & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
     if (e.contents_key())
     {
-        tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
+        std::tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
         std::string path(getenv("PATH"));
         std::list<std::string> paths;
         tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(path, ":", "", std::back_inserter(paths));
@@ -119,19 +119,19 @@ do_one_executables_entry(
 
 void
 do_one_executables(
-        const tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. either should work. */
-    tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
+    std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
             new PackageDepSpec(make_package_dep_spec().package(
                     env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))) :
             new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
 
-    tr1::shared_ptr<const PackageIDSequence>
+    std::tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
                         env->root()), qo_order_by_version));
 
@@ -144,7 +144,7 @@ do_one_executables(
 }
 
 int
-do_executables(tr1::shared_ptr<Environment> env)
+do_executables(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 

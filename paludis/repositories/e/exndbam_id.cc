@@ -19,12 +19,12 @@
 
 #include <paludis/repositories/e/exndbam_id.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/contents.hh>
 #include <paludis/ndbam.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -47,34 +47,34 @@ namespace
     }
 
     class ExndbamContentsKey :
-        public MetadataValueKey<tr1::shared_ptr<const Contents> > 
+        public MetadataValueKey<std::tr1::shared_ptr<const Contents> > 
     {
         private:
             const PackageID * const _id;
             const NDBAM * const _db;
             mutable Mutex _mutex;
-            mutable tr1::shared_ptr<Contents> _v;
+            mutable std::tr1::shared_ptr<Contents> _v;
 
         public:
             ExndbamContentsKey(const PackageID * const i, const NDBAM * const d) :
-                MetadataValueKey<tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
+                MetadataValueKey<std::tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
                 _id(i),
                 _db(d)
             {
             }
 
-            const tr1::shared_ptr<const Contents> value() const
+            const std::tr1::shared_ptr<const Contents> value() const
             {
                 Lock l(_mutex);
                 if (_v)
                     return _v;
 
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
                 _v.reset(new Contents);
                 _db->parse_contents(*_id,
-                        tr1::bind(&create_file, tr1::ref(*_v), _1),
-                        tr1::bind(&create_dir, tr1::ref(*_v), _1),
-                        tr1::bind(&create_sym, tr1::ref(*_v), _1, _2)
+                        std::tr1::bind(&create_file, std::tr1::ref(*_v), _1),
+                        std::tr1::bind(&create_dir, std::tr1::ref(*_v), _1),
+                        std::tr1::bind(&create_sym, std::tr1::ref(*_v), _1, _2)
                         );
                 return _v;
             }
@@ -83,7 +83,7 @@ namespace
 
 ExndbamID::ExndbamID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const tr1::shared_ptr<const Repository> & r,
+        const std::tr1::shared_ptr<const Repository> & r,
         const FSEntry & f, const NDBAM * const n) :
     EInstalledRepositoryID(q, v, e, r, f),
     _ndbam(n)
@@ -108,7 +108,7 @@ ExndbamID::contents_filename() const
     return "contents";
 }
 
-tr1::shared_ptr<MetadataValueKey<tr1::shared_ptr<const Contents> > >
+std::tr1::shared_ptr<MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 ExndbamID::make_contents_key() const
 {
     return make_shared_ptr(new ExndbamContentsKey(this, _ndbam));

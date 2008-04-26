@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,7 +47,7 @@ namespace paludis
         public RepositoryUseInterface,
         public RepositorySetsInterface,
         private PrivateImplementationPattern<FakeRepositoryBase>,
-        public tr1::enable_shared_from_this<FakeRepositoryBase>
+        public std::tr1::enable_shared_from_this<FakeRepositoryBase>
     {
         private:
             PrivateImplementationPattern<FakeRepositoryBase>::ImpPtr & _imp;
@@ -81,14 +81,14 @@ namespace paludis
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata.
              */
-            tr1::shared_ptr<FakePackageID> add_version(const QualifiedPackageName &, const VersionSpec &);
+            std::tr1::shared_ptr<FakePackageID> add_version(const QualifiedPackageName &, const VersionSpec &);
 
             /**
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata (convenience
              * overload taking strings).
              */
-            tr1::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p, const std::string & v)
+            std::tr1::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p, const std::string & v)
             {
                 return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v));
             }
@@ -96,7 +96,7 @@ namespace paludis
             /**
              * Add a package set.
              */
-            void add_package_set(const SetName &, tr1::shared_ptr<SetSpecTree::ConstItem>);
+            void add_package_set(const SetName &, std::tr1::shared_ptr<SetSpecTree::ConstItem>);
 
             virtual void invalidate();
 
@@ -118,16 +118,16 @@ namespace paludis
             virtual bool query_use_force(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual char use_expand_separator(const PackageID &) const
@@ -139,23 +139,23 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const

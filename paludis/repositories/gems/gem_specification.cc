@@ -22,7 +22,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -31,6 +30,7 @@
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::gems;
@@ -48,20 +48,20 @@ namespace paludis
         std::string platform;
         std::string homepage;
 
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > description_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > summary_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > rubyforge_project_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > description_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > summary_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > rubyforge_project_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
 
-        tr1::shared_ptr<const FSEntry> load_from_file;
+        std::tr1::shared_ptr<const FSEntry> load_from_file;
 
         const Environment * const environment;
-        const tr1::shared_ptr<const Repository> repository;
+        const std::tr1::shared_ptr<const Repository> repository;
 
         mutable bool has_masks;
 
-        Implementation(const Environment * const e, const tr1::shared_ptr<const Repository> & r) :
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const Repository> & r) :
             environment(e),
             repository(r),
             has_masks(false)
@@ -243,7 +243,7 @@ namespace
 }
 
 GemSpecification::GemSpecification(const Environment * const e,
-        const tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
+        const std::tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
     PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp)
 {
@@ -264,7 +264,7 @@ GemSpecification::GemSpecification(const Environment * const e,
 }
 
 
-GemSpecification::GemSpecification(const Environment * const e, const tr1::shared_ptr<const Repository> & r,
+GemSpecification::GemSpecification(const Environment * const e, const std::tr1::shared_ptr<const Repository> & r,
         const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
     PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp)
@@ -324,130 +324,130 @@ GemSpecification::slot() const
     return SlotName(_imp->version);
 }
 
-const tr1::shared_ptr<const Repository>
+const std::tr1::shared_ptr<const Repository>
 GemSpecification::repository() const
 {
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 GemSpecification::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 GemSpecification::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 GemSpecification::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 GemSpecification::provide_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemSpecification::build_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemSpecification::run_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemSpecification::post_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 GemSpecification::fetches_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 GemSpecification::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemSpecification::suggested_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::short_description_key() const
 {
     return _imp->summary_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::long_description_key() const
 {
     return _imp->description_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemSpecification::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 GemSpecification::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
 }
 
-const tr1::shared_ptr<const MetadataTimeKey>
+const std::tr1::shared_ptr<const MetadataTimeKey>
 GemSpecification::installed_time_key() const
 {
-    return tr1::shared_ptr<const MetadataTimeKey>();
+    return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemSpecification::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 GemSpecification::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 GemSpecification::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<bool> >
+const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 GemSpecification::transient_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
 }
 
 bool
@@ -478,7 +478,7 @@ InstalledGemsRepository::need_version_metadata(const QualifiedPackageName & q, c
 
     Context c("When loading version metadata for '" + stringify(PackageDatabaseEntry(q, v, name())) + "':");
 
-    tr1::shared_ptr<gems::InstalledGemMetadata> m(new gems::InstalledGemMetadata(v));
+    std::tr1::shared_ptr<gems::InstalledGemMetadata> m(new gems::InstalledGemMetadata(v));
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), m));
 
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
@@ -601,13 +601,13 @@ GemSpecification::need_masks_added() const
     if (! _imp->environment->unmasked_by_user(*this))
     {
         /* user */
-        tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
+        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
         if (user_mask)
             add_mask(user_mask);
     }
 
     /* break portage */
-    tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
+    std::tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
     if (breaks_mask)
         add_mask(breaks_mask);
 }
@@ -624,10 +624,10 @@ GemSpecification::invalidate_masks() const
     PackageID::invalidate_masks();
 }
 
-tr1::shared_ptr<const Set<std::string> >
+std::tr1::shared_ptr<const Set<std::string> >
 GemSpecification::breaks_portage() const
 {
-    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
     why->insert("format");
     return why;
 }

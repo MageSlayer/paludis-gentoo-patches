@@ -29,33 +29,33 @@ namespace bp = boost::python;
 
 template <typename L_>
 struct class_concrete_uri_label :
-    bp::class_<L_, tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
+    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
 {
     class_concrete_uri_label(const std::string & name) :
-        bp::class_<L_, tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
+        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
         (
          name.c_str(),
          "A concrete URI label class.",
          bp::init<const std::string &>("__init__(string)")
         )
     {
-        bp::implicitly_convertible<tr1::shared_ptr<L_>, tr1::shared_ptr<URILabel> >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<URILabel> >();
     }
 };
 
 template <typename L_, typename C_>
 struct class_concrete_dependency_label :
-    bp::class_<L_, tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
+    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
 {
     class_concrete_dependency_label(const std::string & name, const std::string & doc) :
-        bp::class_<L_, tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
+        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
         (
          name.c_str(),
          doc.c_str(),
          bp::init<const std::string &>("__init__(string)")
         )
     {
-        bp::implicitly_convertible<tr1::shared_ptr<L_>, tr1::shared_ptr<C_> >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<C_> >();
     }
 };
 
@@ -110,7 +110,7 @@ void expose_dep_label()
     /**
      * DependencySystemLabel
      */
-    bp::implicitly_convertible<tr1::shared_ptr<DependencySystemLabel>, tr1::shared_ptr<DependencyLabel> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<DependencySystemLabel>, std::tr1::shared_ptr<DependencyLabel> >();
     register_shared_ptrs_to_python<DependencySystemLabel>();
     bp::class_<DependencySystemLabel, bp::bases<DependencyLabel>, boost::noncopyable>
         (
@@ -122,7 +122,7 @@ void expose_dep_label()
     /**
      * DependencyTypeLabel
      */
-    bp::implicitly_convertible<tr1::shared_ptr<DependencyTypeLabel>, tr1::shared_ptr<DependencyLabel> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<DependencyTypeLabel>, std::tr1::shared_ptr<DependencyLabel> >();
     register_shared_ptrs_to_python<DependencyTypeLabel>();
     bp::class_<DependencyTypeLabel, bp::bases<DependencyLabel>, boost::noncopyable>
         (
@@ -134,7 +134,7 @@ void expose_dep_label()
     /**
      * DependencySuggestLabel
      */
-    bp::implicitly_convertible<tr1::shared_ptr<DependencySuggestLabel>, tr1::shared_ptr<DependencyLabel> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<DependencySuggestLabel>, std::tr1::shared_ptr<DependencyLabel> >();
     register_shared_ptrs_to_python<DependencySuggestLabel>();
     bp::class_<DependencySuggestLabel, bp::bases<DependencyLabel>, boost::noncopyable>
         (
@@ -146,7 +146,7 @@ void expose_dep_label()
     /**
      * DependencyABIsLabel
      */
-    bp::implicitly_convertible<tr1::shared_ptr<DependencyABIsLabel>, tr1::shared_ptr<DependencyLabel> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<DependencyABIsLabel>, std::tr1::shared_ptr<DependencyLabel> >();
     register_shared_ptrs_to_python<DependencyABIsLabel>();
     bp::class_<DependencyABIsLabel, bp::bases<DependencyLabel>, boost::noncopyable>
         (

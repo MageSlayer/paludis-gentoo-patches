@@ -49,8 +49,8 @@ namespace paludis
                 ///\{
 
                 ExheresLayout(const ERepository * const, const FSEntry &,
-                        tr1::shared_ptr<const ERepositoryEntries>,
-                        tr1::shared_ptr<const FSEntry>);
+                        std::tr1::shared_ptr<const ERepositoryEntries>,
+                        std::tr1::shared_ptr<const FSEntry>);
 
                 virtual ~ExheresLayout();
 
@@ -65,14 +65,14 @@ namespace paludis
                 virtual FSEntry categories_file() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -92,39 +92,39 @@ namespace paludis
                         const std::string & eapi) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> mirror_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry profiles_base_dir() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const;
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const FSEntrySequence> licenses_dirs() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> licenses_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
+                virtual std::tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void invalidate_masks();

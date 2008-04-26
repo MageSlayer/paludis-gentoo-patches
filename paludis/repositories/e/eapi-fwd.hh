@@ -22,10 +22,10 @@
 
 #include <paludis/util/kc-fwd.hh>
 #include <paludis/util/keys.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/merger-fwd.hh>
 #include <paludis/name-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -100,7 +100,7 @@ namespace paludis
         typedef kc::KeyedClass<
             kc::Field<k::name, std::string>,
             kc::Field<k::exported_name, std::string>,
-            kc::Field<k::supported, tr1::shared_ptr<const SupportedEAPI> >
+            kc::Field<k::supported, std::tr1::shared_ptr<const SupportedEAPI> >
                 > EAPI;
 
     }

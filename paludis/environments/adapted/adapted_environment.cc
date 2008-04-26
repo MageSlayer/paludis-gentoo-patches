@@ -18,34 +18,35 @@
  */
 
 #include "adapted_environment.hh"
-#include <paludis/hashed_containers.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/hook.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/match_package.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
-typedef MakeHashedMultiMap<UseFlagName, std::pair<tr1::shared_ptr<const PackageDepSpec>, UseFlagState> >::Type Use;
+typedef std::tr1::unordered_multimap<UseFlagName, std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseFlagState>, Hash<UseFlagName> > Use;
 
 namespace paludis
 {
     template<>
     struct Implementation<AdaptedEnvironment>
     {
-        tr1::shared_ptr<Environment> env;
+        std::tr1::shared_ptr<Environment> env;
         Use use;
 
-        Implementation(tr1::shared_ptr<Environment> e) :
+        Implementation(std::tr1::shared_ptr<Environment> e) :
             env(e)
         {
         }
     };
 }
 
-AdaptedEnvironment::AdaptedEnvironment(tr1::shared_ptr<Environment> e) :
+AdaptedEnvironment::AdaptedEnvironment(std::tr1::shared_ptr<Environment> e) :
     PrivateImplementationPattern<AdaptedEnvironment>(new Implementation<AdaptedEnvironment>(e))
 {
 }
@@ -55,7 +56,7 @@ AdaptedEnvironment::~AdaptedEnvironment()
 }
 
 void
-AdaptedEnvironment::adapt_use(tr1::shared_ptr<const PackageDepSpec> p,
+AdaptedEnvironment::adapt_use(std::tr1::shared_ptr<const PackageDepSpec> p,
         const UseFlagName & u, const UseFlagState s)
 {
     _imp->use.insert(std::make_pair(u, std::make_pair(p, s)));
@@ -67,13 +68,13 @@ AdaptedEnvironment::clear_adaptions()
     _imp.reset(new Implementation<AdaptedEnvironment>(_imp->env));
 }
 
-tr1::shared_ptr<PackageDatabase>
+std::tr1::shared_ptr<PackageDatabase>
 AdaptedEnvironment::package_database()
 {
     return _imp->env->package_database();
 }
 
-tr1::shared_ptr<const PackageDatabase>
+std::tr1::shared_ptr<const PackageDatabase>
 AdaptedEnvironment::package_database() const
 {
     return _imp->env->package_database();
@@ -106,7 +107,7 @@ AdaptedEnvironment::query_use(const UseFlagName & u, const PackageID & e) const
     throw InternalError(PALUDIS_HERE, "Bad state");
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageID & e) const
 {
     return _imp->env->known_use_expand_names(u, e);
@@ -119,30 +120,30 @@ AdaptedEnvironment::accept_license(const std::string & l, const PackageID & e) c
 }
 
 bool
-AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
+AdaptedEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
 {
     return _imp->env->accept_keywords(k, e);
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::bashrc_files() const
 {
     return _imp->env->bashrc_files();
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::syncers_dirs() const
 {
     return _imp->env->syncers_dirs();
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::fetchers_dirs() const
 {
     return _imp->env->fetchers_dirs();
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::hook_dirs() const
 {
     return _imp->env->hook_dirs();
@@ -178,25 +179,25 @@ AdaptedEnvironment::reduced_gid() const
     return _imp->env->reduced_gid();
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 AdaptedEnvironment::mirrors(const std::string & m) const
 {
     return _imp->env->mirrors(m);
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 AdaptedEnvironment::set_names() const
 {
     return _imp->env->set_names();
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 AdaptedEnvironment::set(const SetName & s) const
 {
     return _imp->env->set(s);
 }
 
-tr1::shared_ptr<const DestinationsSet>
+std::tr1::shared_ptr<const DestinationsSet>
 AdaptedEnvironment::default_destinations() const
 {
     return _imp->env->default_destinations();
@@ -214,13 +215,13 @@ AdaptedEnvironment::default_distribution() const
     return _imp->env->default_distribution();
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 AdaptedEnvironment::mask_for_breakage(const PackageID & id) const
 {
     return _imp->env->mask_for_breakage(id);
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 AdaptedEnvironment::mask_for_user(const PackageID & id) const
 {
     return _imp->env->mask_for_user(id);

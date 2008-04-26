@@ -26,14 +26,15 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/ndbam.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <functional>
 #include <vector>
 #include <map>
@@ -41,7 +42,7 @@
 
 using namespace paludis;
 
-template class Sequence<tr1::shared_ptr<NDBAMEntry> >;
+template class Sequence<std::tr1::shared_ptr<NDBAMEntry> >;
 
 namespace
 {
@@ -50,29 +51,29 @@ namespace
     struct CategoryNamesContainingPackageEntry;
 }
 
-typedef MakeHashedMap<CategoryNamePart, tr1::shared_ptr<CategoryContents> >::Type CategoryContentsMap;
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageContents> >::Type PackageContentsMap;
-typedef MakeHashedMap<PackageNamePart, tr1::shared_ptr<CategoryNamesContainingPackageEntry> >::Type CategoryNamesContainingPackage;
+typedef std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<CategoryContents>, Hash<CategoryNamePart> > CategoryContentsMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageContents>, Hash<QualifiedPackageName> > PackageContentsMap;
+typedef std::tr1::unordered_map<PackageNamePart, std::tr1::shared_ptr<CategoryNamesContainingPackageEntry>, Hash<PackageNamePart> > CategoryNamesContainingPackage;
 
 namespace
 {
     struct CategoryContents
     {
         Mutex mutex;
-        tr1::shared_ptr<QualifiedPackageNameSet> package_names;
+        std::tr1::shared_ptr<QualifiedPackageNameSet> package_names;
         PackageContentsMap package_contents_map;
     };
 
     struct PackageContents
     {
         Mutex mutex;
-        tr1::shared_ptr<NDBAMEntrySequence> entries;
+        std::tr1::shared_ptr<NDBAMEntrySequence> entries;
     };
 
     struct CategoryNamesContainingPackageEntry
     {
         Mutex mutex;
-        tr1::shared_ptr<CategoryNamePartSet> category_names_containing_package;
+        std::tr1::shared_ptr<CategoryNamePartSet> category_names_containing_package;
     };
 }
 
@@ -85,7 +86,7 @@ namespace paludis
         const FSEntry location;
 
         mutable Mutex category_names_mutex;
-        mutable tr1::shared_ptr<CategoryNamePartSet> category_names;
+        mutable std::tr1::shared_ptr<CategoryNamePartSet> category_names;
         mutable CategoryContentsMap category_contents_map;
 
         mutable Mutex category_names_containing_package_mutex;
@@ -99,7 +100,7 @@ namespace paludis
 }
 
 NDBAM::NDBAM(const FSEntry & l,
-        const tr1::function<bool (const std::string &)> & check_format,
+        const std::tr1::function<bool (const std::string &)> & check_format,
         const std::string & preferred_format) :
     PrivateImplementationPattern<NDBAM>(new Implementation<NDBAM>(l))
 {
@@ -135,7 +136,7 @@ NDBAM::~NDBAM()
 {
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 NDBAM::category_names()
 {
     Lock l(_imp->category_names_mutex);
@@ -170,7 +171,7 @@ NDBAM::category_names()
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 NDBAM::package_names(const CategoryNamePart & c)
 {
     if (! has_category_named(c))
@@ -229,7 +230,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
             _imp->category_contents_map.insert(std::make_pair(c, new CategoryContents));
             return true;
         }
-        _imp->category_contents_map.insert(std::make_pair(c, tr1::shared_ptr<CategoryContents>()));
+        _imp->category_contents_map.insert(std::make_pair(c, std::tr1::shared_ptr<CategoryContents>()));
     }
 
     return false;
@@ -260,7 +261,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
             cc.package_contents_map.insert(std::make_pair(q, new PackageContents));
             return true;
         }
-        cc.package_contents_map.insert(std::make_pair(q, tr1::shared_ptr<PackageContents>()));
+        cc.package_contents_map.insert(std::make_pair(q, std::tr1::shared_ptr<PackageContents>()));
     }
 
     return false;
@@ -270,14 +271,14 @@ namespace
 {
     struct NDBAMEntryVersionComparator
     {
-        bool operator() (const tr1::shared_ptr<const NDBAMEntry> & a, const tr1::shared_ptr<const NDBAMEntry> & b) const
+        bool operator() (const std::tr1::shared_ptr<const NDBAMEntry> & a, const std::tr1::shared_ptr<const NDBAMEntry> & b) const
         {
             return (*a)[k::version()] < (*b)[k::version()];
         }
     };
 }
 
-tr1::shared_ptr<NDBAMEntrySequence>
+std::tr1::shared_ptr<NDBAMEntrySequence>
 NDBAM::entries(const QualifiedPackageName & q)
 {
     if (! has_package_named(q))
@@ -328,7 +329,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                                 (k::version(), v)
                                 (k::slot(), s)
                                 (k::fs_location(), d->realpath())
-                                (k::package_id(), tr1::shared_ptr<PackageID>())
+                                (k::package_id(), std::tr1::shared_ptr<PackageID>())
                                 (k::magic(), m)
                                 (k::mutex(), make_shared_ptr(new Mutex)))));
             }
@@ -343,7 +344,7 @@ NDBAM::entries(const QualifiedPackageName & q)
             }
         }
 
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
         pc.entries->sort(NDBAMEntryVersionComparator());
     }
 
@@ -352,9 +353,9 @@ NDBAM::entries(const QualifiedPackageName & q)
 
 void
 NDBAM::parse_contents(const PackageID & id,
-        const tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
-        const tr1::function<void (const FSEntry &)> & on_dir,
-        const tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
+        const std::tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
+        const std::tr1::function<void (const FSEntry &)> & on_dir,
+        const std::tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
         ) const
 {
     Context c("When fetching contents for '" + stringify(id) + "':");
@@ -502,7 +503,7 @@ NDBAM::parse_contents(const PackageID & id,
     }
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 NDBAM::category_names_containing_package(const PackageNamePart & p) const
 {
     Lock l(_imp->category_names_containing_package_mutex);

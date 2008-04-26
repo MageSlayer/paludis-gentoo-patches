@@ -35,10 +35,10 @@ namespace paludis
 
         mutable std::string active_prefix;
 
-        const tr1::shared_ptr<UseFlagNameSet> seen_new_use_flag_names;
-        const tr1::shared_ptr<UseFlagNameSet> seen_changed_use_flag_names;
-        const tr1::shared_ptr<UseFlagNameSet> seen_use_flag_names;
-        const tr1::shared_ptr<UseFlagNameSet> seen_use_expand_prefixes;
+        const std::tr1::shared_ptr<UseFlagNameSet> seen_new_use_flag_names;
+        const std::tr1::shared_ptr<UseFlagNameSet> seen_changed_use_flag_names;
+        const std::tr1::shared_ptr<UseFlagNameSet> seen_use_flag_names;
+        const std::tr1::shared_ptr<UseFlagNameSet> seen_use_expand_prefixes;
 
         Implementation(const bool b) :
             unchanged_are_new(b),
@@ -60,25 +60,25 @@ ColourFormatter::~ColourFormatter()
 {
 }
 
-const tr1::shared_ptr<const UseFlagNameSet>
+const std::tr1::shared_ptr<const UseFlagNameSet>
 ColourFormatter::seen_new_use_flag_names() const
 {
     return _imp->seen_new_use_flag_names;
 }
 
-const tr1::shared_ptr<const UseFlagNameSet>
+const std::tr1::shared_ptr<const UseFlagNameSet>
 ColourFormatter::seen_changed_use_flag_names() const
 {
     return _imp->seen_changed_use_flag_names;
 }
 
-const tr1::shared_ptr<const UseFlagNameSet>
+const std::tr1::shared_ptr<const UseFlagNameSet>
 ColourFormatter::seen_use_flag_names() const
 {
     return _imp->seen_use_flag_names;
 }
 
-const tr1::shared_ptr<const UseFlagNameSet>
+const std::tr1::shared_ptr<const UseFlagNameSet>
 ColourFormatter::seen_use_expand_prefixes() const
 {
     return _imp->seen_use_expand_prefixes;

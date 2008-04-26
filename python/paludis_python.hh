@@ -21,24 +21,23 @@
 #define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
 
 #include <python/mutex.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/attributes.hh>
-
 #include <boost/python.hpp>
+#include <tr1/memory>
 
 namespace paludis
 {
-    // Make Boost.Python work with tr1::shared_ptr<>
+    // Make Boost.Python work with std::tr1::shared_ptr<>
     template <typename T_>
-    inline T_ * get_pointer(tr1::shared_ptr<T_> const & p)
+    inline T_ * get_pointer(std::tr1::shared_ptr<T_> const & p)
     {
         return p.get();
     }
 
-    // Make Boost.Python work with tr1::shared_ptr<const>
+    // Make Boost.Python work with std::tr1::shared_ptr<const>
     template <typename T_>
-    inline T_ * get_pointer(tr1::shared_ptr<const T_> const & p)
+    inline T_ * get_pointer(std::tr1::shared_ptr<const T_> const & p)
     {
         return const_cast<T_*>(p.get());
     }
@@ -48,16 +47,16 @@ namespace boost
 {
     namespace python
     {
-        // Make Boost.Python work with tr1::shared_ptr<>
+        // Make Boost.Python work with std::tr1::shared_ptr<>
         template <typename T_>
-        struct pointee<paludis::tr1::shared_ptr<T_> >
+        struct pointee<std::tr1::shared_ptr<T_> >
         {
             typedef T_ type;
         };
 
-        // Make Boost.Python work with tr1::shared_ptr<const>
+        // Make Boost.Python work with std::tr1::shared_ptr<const>
         template <typename T_>
-        struct pointee<paludis::tr1::shared_ptr<const T_> >
+        struct pointee<std::tr1::shared_ptr<const T_> >
         {
             typedef T_ type;
         };
@@ -82,10 +81,10 @@ namespace paludis
         register_shared_ptrs_to_python(RegisterSharedPointers rsp=rsp_both)
         {
             if (rsp == rsp_both || rsp == rsp_non_const)
-                boost::python::register_ptr_to_python<tr1::shared_ptr<T_> >();
+                boost::python::register_ptr_to_python<std::tr1::shared_ptr<T_> >();
             if (rsp == rsp_both || rsp == rsp_const)
-                boost::python::register_ptr_to_python<tr1::shared_ptr<const T_> >();
-            boost::python::implicitly_convertible<tr1::shared_ptr<T_>, tr1::shared_ptr<const T_> >();
+                boost::python::register_ptr_to_python<std::tr1::shared_ptr<const T_> >();
+            boost::python::implicitly_convertible<std::tr1::shared_ptr<T_>, std::tr1::shared_ptr<const T_> >();
         }
 
         // expose stringifyable enums

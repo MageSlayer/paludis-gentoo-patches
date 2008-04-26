@@ -27,7 +27,7 @@ namespace paludis
     namespace erepository
     {
         typedef kc::KeyedClass<
-            kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+            kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
             kc::Field<k::image_dir, FSEntry>,
             kc::Field<k::debug_dir, FSEntry>,
             kc::Field<k::debug_build, InstallActionDebugOption>

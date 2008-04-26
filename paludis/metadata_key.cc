@@ -24,9 +24,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/name.hh>
+#include <tr1/functional>
 #include <list>
 #include <algorithm>
 
@@ -113,7 +113,7 @@ ExtraMetadataValueKeyMethods<bool>::~ExtraMetadataValueKeyMethods()
 {
 }
 
-ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
+ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
 {
 }
 
@@ -160,7 +160,7 @@ template class MetadataValueKey<std::string>;
 template class MetadataValueKey<long>;
 template class MetadataValueKey<bool>;
 template class MetadataValueKey<FSEntry>;
-template class MetadataValueKey<tr1::shared_ptr<const PackageID> >;
-template class MetadataValueKey<tr1::shared_ptr<const Contents> >;
-template class MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >;
+template class MetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
+template class MetadataValueKey<std::tr1::shared_ptr<const Contents> >;
+template class MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >;
 

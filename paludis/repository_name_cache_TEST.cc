@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("/var/empty"), repo.get());
@@ -55,7 +55,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.get());
@@ -72,7 +72,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.get());
@@ -89,7 +89,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.get());
@@ -106,7 +106,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.get());
@@ -123,18 +123,18 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
 
-            tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());
@@ -148,7 +148,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.get());
@@ -159,12 +159,12 @@ namespace test_cases
             cache.regenerate_cache();
             TEST_CHECK(cache.usable());
 
-            tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());

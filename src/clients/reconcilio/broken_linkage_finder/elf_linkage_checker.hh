@@ -23,8 +23,7 @@
 #include "linkage_checker.hh"
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
-
+#include <tr1/functional>
 #include <iosfwd>
 
 namespace broken_linkage_finder
@@ -42,7 +41,7 @@ namespace broken_linkage_finder
 
             virtual void add_extra_lib_dir(const paludis::FSEntry &);
             virtual void need_breakage_added(
-                const paludis::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
+                const std::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
     };
 }
 

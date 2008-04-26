@@ -57,12 +57,12 @@ namespace paludis
         bool accept_unstable;
         bool is_vdb;
 
-        tr1::shared_ptr<Repository> main_repo;
-        tr1::shared_ptr<Repository> master_repo;
+        std::tr1::shared_ptr<Repository> main_repo;
+        std::tr1::shared_ptr<Repository> master_repo;
 
         std::string paludis_command;
 
-        tr1::shared_ptr<PackageDatabase> package_database;
+        std::tr1::shared_ptr<PackageDatabase> package_database;
 
         Implementation(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -156,7 +156,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
             else
             {
-                tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+                std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
 
                 if (params.extra_params)
                     std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
@@ -175,7 +175,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             }
         }
 
-        tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
+        std::tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
 
         if (params.extra_params)
             std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
@@ -201,13 +201,13 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         if ((*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                        tr1::shared_ptr<Map<std::string, std::string> >()));
+                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
     }
     else
     {
         Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context) << "VDB, using vdb_db";
 
-        tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         if (params.extra_params)
             std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
 
@@ -218,7 +218,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
 
-        tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
+        std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                 new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
 
@@ -265,37 +265,37 @@ NoConfigEnvironment::set_accept_unstable(const bool value)
         (*it)->invalidate_masks();
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 NoConfigEnvironment::main_repository()
 {
     return _imp->main_repo;
 }
 
-tr1::shared_ptr<const Repository>
+std::tr1::shared_ptr<const Repository>
 NoConfigEnvironment::main_repository() const
 {
     return _imp->main_repo;
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 NoConfigEnvironment::master_repository()
 {
     return _imp->master_repo;
 }
 
-tr1::shared_ptr<const Repository>
+std::tr1::shared_ptr<const Repository>
 NoConfigEnvironment::master_repository() const
 {
     return _imp->master_repo;
 }
 
-tr1::shared_ptr<PackageDatabase>
+std::tr1::shared_ptr<PackageDatabase>
 NoConfigEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const PackageDatabase>
+std::tr1::shared_ptr<const PackageDatabase>
 NoConfigEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -314,7 +314,7 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywords,
+NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> keywords,
         const PackageID &) const
 {
     if (_imp->is_vdb)
@@ -360,16 +360,16 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
     return false;
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 NoConfigEnvironment::local_set(const SetName &) const
 {
-    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 NoConfigEnvironment::world_set() const
 {
-    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 void
@@ -398,16 +398,16 @@ NoConfigEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 NoConfigEnvironment::mask_for_breakage(const PackageID &) const
 {
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 NoConfigEnvironment::mask_for_user(const PackageID &) const
 {
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
 uid_t
@@ -422,7 +422,7 @@ NoConfigEnvironment::reduced_gid() const
     return getgid();
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 NoConfigEnvironment::mirrors(const std::string &) const
 {
     return make_shared_ptr(new MirrorsSequence);
@@ -446,13 +446,13 @@ NoConfigEnvironment::perform_hook(const Hook &) const
     return HookResult(0, "");
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 NoConfigEnvironment::hook_dirs() const
 {
     return make_shared_ptr(new FSEntrySequence);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 NoConfigEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
 {
     return make_shared_ptr(new UseFlagNameSet);

@@ -26,10 +26,9 @@
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-
+#include <tr1/memory>
 #include <string>
 #include <iosfwd>
 
@@ -198,9 +197,9 @@ class DynamicEntries :
     friend class paludis::InstantiationPolicy<DynamicEntries, paludis::instantiation_method::SingletonTag>;
 
     public:
-        void register_type(typename ElfType_::DynamicTag, paludis::tr1::shared_ptr<DynamicEntry<ElfType_> >);
+        void register_type(typename ElfType_::DynamicTag, std::tr1::shared_ptr<DynamicEntry<ElfType_> >);
 
-        paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > get_entry(typename ElfType_::DynamicTag) const;
+        std::tr1::shared_ptr<DynamicEntry<ElfType_> > get_entry(typename ElfType_::DynamicTag) const;
         bool has_entry(typename ElfType_::DynamicTag) const;
 
     private:

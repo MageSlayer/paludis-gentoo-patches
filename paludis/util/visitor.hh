@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,10 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <tr1/memory>
+#include <tr1/type_traits>
 
 /** \file
  * Declares the Visitor and related classes.
@@ -98,7 +98,7 @@ namespace paludis
                 template <typename V_>
                 void const_accept(V_ & v) const
                 {
-                    ConstAccept<tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
+                    ConstAccept<std::tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
                 }
 
                 /**
@@ -190,7 +190,7 @@ namespace paludis
                 template <typename V_>
                 void mutable_accept(V_ & v)
                 {
-                    Accept<tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
+                    Accept<std::tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
                 }
 
                 template <typename V_>
@@ -243,7 +243,7 @@ namespace paludis
                 TreeLeaf(const TreeLeaf &);
                 const TreeLeaf & operator= (const TreeLeaf &);
 
-                const tr1::shared_ptr<T_> _item;
+                const std::tr1::shared_ptr<T_> _item;
 
             protected:
                 ///\name Visitor operations
@@ -261,16 +261,16 @@ namespace paludis
 
                 virtual ~TreeLeaf();
 
-                TreeLeaf(const tr1::shared_ptr<T_> & i);
+                TreeLeaf(const std::tr1::shared_ptr<T_> & i);
 
                 ///\}
 
                 ///\name Fetch our contained item
                 ///\{
 
-                tr1::shared_ptr<T_> item();
+                std::tr1::shared_ptr<T_> item();
 
-                tr1::shared_ptr<const T_> item() const;
+                std::tr1::shared_ptr<const T_> item() const;
 
                 ///\}
         };
@@ -289,8 +289,8 @@ namespace paludis
                 TreeSequence(const TreeSequence &);
                 const TreeSequence & operator= (const TreeSequence &);
 
-                const tr1::shared_ptr<T_> _item;
-                const tr1::shared_ptr<Sequence<tr1::shared_ptr<AcceptInterface<H_> > > > _items;
+                const std::tr1::shared_ptr<T_> _item;
+                const std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<AcceptInterface<H_> > > > _items;
 
             protected:
                 ///\name Visitor operations
@@ -308,23 +308,23 @@ namespace paludis
 
                 virtual ~TreeSequence();
 
-                TreeSequence(tr1::shared_ptr<T_> i);
+                TreeSequence(std::tr1::shared_ptr<T_> i);
 
                 ///\}
 
                 ///\name Fetch our contained item
                 ///\{
 
-                tr1::shared_ptr<const T_> item() const;
+                std::tr1::shared_ptr<const T_> item() const;
 
-                tr1::shared_ptr<T_> item();
+                std::tr1::shared_ptr<T_> item();
 
                 ///\}
 
                 ///\name Work on our children
                 ///\{
 
-                void add(tr1::shared_ptr<AcceptInterface<H_> > i);
+                void add(std::tr1::shared_ptr<AcceptInterface<H_> > i);
 
                 typename H_::ConstSequenceIterator
                 const_begin() const;
@@ -355,8 +355,8 @@ namespace paludis
                 ConstTreeSequence(const ConstTreeSequence &);
                 const ConstTreeSequence & operator= (const ConstTreeSequence &);
 
-                const tr1::shared_ptr<T_> _item;
-                const tr1::shared_ptr<Sequence<tr1::shared_ptr<const ConstAcceptInterface<H_> > > > _items;
+                const std::tr1::shared_ptr<T_> _item;
+                const std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<const ConstAcceptInterface<H_> > > > _items;
 
             protected:
                 ///\name Visitor operations
@@ -372,23 +372,23 @@ namespace paludis
 
                 virtual ~ConstTreeSequence();
 
-                ConstTreeSequence(tr1::shared_ptr<T_> i);
+                ConstTreeSequence(std::tr1::shared_ptr<T_> i);
 
                 ///\}
 
                 ///\name Fetch our contained item
                 ///\{
 
-                tr1::shared_ptr<T_> item();
+                std::tr1::shared_ptr<T_> item();
 
-                tr1::shared_ptr<const T_> item() const;
+                std::tr1::shared_ptr<const T_> item() const;
 
                 ///\}
 
                 ///\name Work on our children
                 ///\{
 
-                void add(tr1::shared_ptr<const ConstAcceptInterface<H_> > i);
+                void add(std::tr1::shared_ptr<const ConstAcceptInterface<H_> > i);
 
                 typename H_::ConstSequenceIterator
                 const_begin() const;
@@ -956,7 +956,7 @@ namespace paludis
                 };
 
                 typename TreeSequenceIteratorTypes<H_>::ConstIterator _i;
-                mutable tr1::shared_ptr<Adapter> _c;
+                mutable std::tr1::shared_ptr<Adapter> _c;
 
             public:
                 ///\name Basic operations
@@ -999,7 +999,7 @@ namespace paludis
                 };
 
                 typename TreeSequenceIteratorTypes<H_>::Iterator _i;
-                mutable tr1::shared_ptr<Adapter> _c;
+                mutable std::tr1::shared_ptr<Adapter> _c;
 
             public:
                 ///\name Basic operations
@@ -1209,36 +1209,36 @@ namespace paludis
                      */
                     enum {
                         value =
-                            (tr1::is_same<const A_, const typename H_::ContainedItem1>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem2>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem3>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem4>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem5>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem6>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem7>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem8>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem9>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem10>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem11>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem12>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem13>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem14>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem15>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem16>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem17>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem18>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem19>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem20>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem21>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem22>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem23>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem24>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem25>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem26>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem27>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem28>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem29>::value ? 1 : 0) |
-                            (tr1::is_same<const A_, const typename H_::ContainedItem30>::value ? 1 : 0)
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem1>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem2>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem3>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem4>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem5>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem6>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem7>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem8>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem9>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem10>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem11>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem12>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem13>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem14>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem15>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem16>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem17>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem18>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem19>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem20>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem21>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem22>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem23>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem24>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem25>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem26>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem27>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem28>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem29>::value ? 1 : 0) |
+                            (std::tr1::is_same<const A_, const typename H_::ContainedItem30>::value ? 1 : 0)
                     };
                 };
 
@@ -1327,36 +1327,36 @@ namespace paludis
                      */
                     enum {
                         value =
-                            (tr1::is_same<A_, typename H_::ContainedItem1>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem2>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem3>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem4>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem5>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem6>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem7>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem8>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem9>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem10>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem11>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem12>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem13>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem14>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem15>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem16>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem17>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem18>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem19>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem20>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem21>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem22>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem23>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem24>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem25>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem26>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem27>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem28>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem29>::value ? 1 : 0) |
-                            (tr1::is_same<A_, typename H_::ContainedItem30>::value ? 1 : 0)
+                            (std::tr1::is_same<A_, typename H_::ContainedItem1>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem2>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem3>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem4>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem5>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem6>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem7>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem8>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem9>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem10>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem11>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem12>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem13>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem14>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem15>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem16>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem17>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem18>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem19>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem20>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem21>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem22>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem23>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem24>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem25>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem26>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem27>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem28>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem29>::value ? 1 : 0) |
+                            (std::tr1::is_same<A_, typename H_::ContainedItem30>::value ? 1 : 0)
                     };
                 };
 

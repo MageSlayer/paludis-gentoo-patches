@@ -23,7 +23,6 @@
 
 #include <paludis/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -32,7 +31,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-
+#include <tr1/functional>
 #include <set>
 #include <map>
 #include <iostream>
@@ -61,7 +60,7 @@ namespace
     write_keywords_graph(const Environment & e, const Repository & repo,
             const QualifiedPackageName & package)
     {
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
 
         Context context("When writing keyword graph for '" + stringify(package) + "' in '"
                 + stringify(repo.name()) + "':");
@@ -70,12 +69,12 @@ namespace
         cout << endl;
 
         FindUnusedPackagesTask task(&e, &repo);
-        tr1::shared_ptr<const PackageIDSequence> packages(e.package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> packages(e.package_database()->query(
                 query::Matches(make_package_dep_spec()
                     .package(package)
                     .repository(repo.name())),
                 qo_group_by_slot));
-        tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
+        std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -83,20 +82,20 @@ namespace
         if (! repo[k::use_interface()])
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo[k::use_interface()]->arch_flags());
+        std::tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo[k::use_interface()]->arch_flags());
         if (arch_flags->empty())
             return;
 
         std::set<SlotName> slots;
         std::transform(indirect_iterator(packages->begin()), indirect_iterator(packages->end()),
                 std::inserter(slots, slots.begin()),
-                tr1::mem_fn(&PackageID::slot));
+                std::tr1::mem_fn(&PackageID::slot));
 
         unsigned version_specs_columns_width(std::max_element(indirect_iterator(packages->begin()),
                     indirect_iterator(packages->end()),
-                    tr1::bind(CompareByStringLength<std::string>(),
-                        tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version),
-                        tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _2, idcf_version))
+                    std::tr1::bind(CompareByStringLength<std::string>(),
+                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version),
+                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _2, idcf_version))
                     )->canonical_form(idcf_version).length() + 1);
 
         unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags->begin(),
@@ -148,7 +147,7 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->canonical_form(idcf_version) << "| ";
 
-            tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
+            std::tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
 
             for (UseFlagNameSet::ConstIterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
@@ -194,7 +193,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -205,7 +204,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

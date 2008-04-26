@@ -165,7 +165,7 @@ namespace gtkpaludis
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
             got_key(k, markup_escape(stringify(*k.value())));
         }
@@ -195,7 +195,7 @@ namespace gtkpaludis
             got_key(k, markup_escape(stringify(buf)));
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             if (! k.value())
                 return;
@@ -209,7 +209,7 @@ namespace gtkpaludis
             got_key(k, markup_escape(stringify(k.value())));
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
         {
         }
 
@@ -221,10 +221,10 @@ namespace gtkpaludis
     struct VersionInfoModel::KeyMetadataPopulator :
         VersionInfoModel::MetadataPopulator
     {
-        tr1::shared_ptr<VersionInfoModel::PopulateData> data;
+        std::tr1::shared_ptr<VersionInfoModel::PopulateData> data;
         const MetadataKeyType type;
 
-        KeyMetadataPopulator(const tr1::shared_ptr<VersionInfoModel::PopulateData> & d, const MetadataKeyType t) :
+        KeyMetadataPopulator(const std::tr1::shared_ptr<VersionInfoModel::PopulateData> & d, const MetadataKeyType t) :
             data(d),
             type(t)
         {
@@ -253,9 +253,9 @@ namespace gtkpaludis
     struct VersionInfoModel::MaskPopulator :
         ConstVisitor<MaskVisitorTypes>
     {
-        tr1::shared_ptr<VersionInfoModel::PopulateData> data;
+        std::tr1::shared_ptr<VersionInfoModel::PopulateData> data;
 
-        MaskPopulator(const tr1::shared_ptr<VersionInfoModel::PopulateData> & d) :
+        MaskPopulator(const std::tr1::shared_ptr<VersionInfoModel::PopulateData> & d) :
             data(d)
         {
         }
@@ -297,9 +297,9 @@ namespace gtkpaludis
 }
 
 void
-VersionInfoModel::populate_in_paludis_thread(tr1::shared_ptr<const PackageID> p)
+VersionInfoModel::populate_in_paludis_thread(std::tr1::shared_ptr<const PackageID> p)
 {
-    tr1::shared_ptr<PopulateData> data(new PopulateData);
+    std::tr1::shared_ptr<PopulateData> data(new PopulateData);
     if (p)
     {
         KeyMetadataPopulator mps(data, mkt_significant);
@@ -317,7 +317,7 @@ VersionInfoModel::populate_in_paludis_thread(tr1::shared_ptr<const PackageID> p)
 }
 
 void
-VersionInfoModel::populate_in_gui_thread(tr1::shared_ptr<const VersionInfoModel::PopulateData> names)
+VersionInfoModel::populate_in_gui_thread(std::tr1::shared_ptr<const VersionInfoModel::PopulateData> names)
 {
     clear();
 

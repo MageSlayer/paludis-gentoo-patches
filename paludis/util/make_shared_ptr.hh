@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_PTR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_PTR_HH 1
 
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/make_shared_ptr-fwd.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for the make_shared_ptr function.
@@ -36,10 +36,10 @@
 namespace paludis
 {
     template <typename T_>
-    tr1::shared_ptr<T_>
+    std::tr1::shared_ptr<T_>
     make_shared_ptr(T_ * const t)
     {
-        return tr1::shared_ptr<T_>(t);
+        return std::tr1::shared_ptr<T_>(t);
     }
 }
 

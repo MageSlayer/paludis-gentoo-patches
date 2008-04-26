@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Forward declarations for paludis/package_id.hh .
@@ -45,7 +45,7 @@ namespace paludis
      * \ingroup g_package_id
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const PackageID> > PackageIDSequence;
+    typedef Sequence<std::tr1::shared_ptr<const PackageID> > PackageIDSequence;
 
     /**
      * A PackageIDSet holds a collection of PackageID instances that have no
@@ -54,7 +54,7 @@ namespace paludis
      * \ingroup g_package_id
      * \since 0.26
      */
-    typedef Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
+    typedef Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
 
 #include <paludis/package_id-se.hh>
 

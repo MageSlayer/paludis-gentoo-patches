@@ -31,13 +31,13 @@
 
 using namespace paludis;
 
-tr1::shared_ptr<DependencySpecTree::ConstItem>
+std::tr1::shared_ptr<DependencySpecTree::ConstItem>
 cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
-            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
+            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::list<std::string> specs;
 
@@ -67,8 +67,8 @@ cranrepository::parse_depends(const std::string & s)
     {
         Context local_context("When processing token '" + *a + "':");
 
-        tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
-                new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+        std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
+                new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
                         new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
                                 strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))))));
         result->add(spec);

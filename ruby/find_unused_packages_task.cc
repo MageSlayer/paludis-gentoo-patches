@@ -70,7 +70,7 @@ namespace
         {
             FindUnusedPackagesTask * ptr;
             Data_Get_Struct(self, FindUnusedPackagesTask, ptr);
-            tr1::shared_ptr<const PackageIDSequence> c(ptr->execute(value_to_qualified_package_name(qpn)));
+            std::tr1::shared_ptr<const PackageIDSequence> c(ptr->execute(value_to_qualified_package_name(qpn)));
             VALUE result(rb_ary_new());
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));

@@ -18,7 +18,7 @@ namespace gtkpaludis
     {
         protected:
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryNameSequence> names);
+            void populate_in_gui_thread(std::tr1::shared_ptr<const paludis::RepositoryNameSequence> names);
 
         public:
             PackagesRepositoryFilterModel(MainWindow * const m);
@@ -35,7 +35,7 @@ namespace gtkpaludis
 
                     Gtk::TreeModelColumn<bool> col_sensitive;
                     Gtk::TreeModelColumn<Glib::ustring> col_text;
-                    Gtk::TreeModelColumn<paludis::tr1::shared_ptr<const paludis::Query> > col_query;
+                    Gtk::TreeModelColumn<std::tr1::shared_ptr<const paludis::Query> > col_query;
             };
 
             Columns & columns();

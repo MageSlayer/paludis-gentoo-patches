@@ -56,7 +56,7 @@ namespace
         public:
             virtual ~SetFileHandler();
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> contents() const = 0;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const = 0;
             virtual void add(const std::string &) = 0;
             virtual void remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
@@ -70,14 +70,14 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            mutable std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
 
             void _create_contents() const;
 
         public:
             PaludisConfHandler(const SetFileParams &);
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
@@ -88,12 +88,12 @@ namespace
     {
         private:
             const SetFileParams _p;
-            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
 
         public:
             PaludisBashHandler(const SetFileParams &);
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
             virtual void add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
@@ -107,20 +107,20 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            mutable std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
 
             void _create_contents() const;
 
         public:
             SimpleHandler(const SetFileParams &);
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
     };
 
-    tr1::shared_ptr<SetFileHandler>
+    std::tr1::shared_ptr<SetFileHandler>
     make_handler(const SetFileParams & p)
     {
         Context context("When making SetFileHandler for '" + stringify(p.file_name) + "':");
@@ -128,13 +128,13 @@ namespace
         switch (p.type)
         {
             case sft_simple:
-                return tr1::shared_ptr<SetFileHandler>(new SimpleHandler(p));
+                return std::tr1::shared_ptr<SetFileHandler>(new SimpleHandler(p));
 
             case sft_paludis_conf:
-                return tr1::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
+                return std::tr1::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
 
             case sft_paludis_bash:
-                return tr1::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
+                return std::tr1::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
 
             case last_sft:
                 break;
@@ -162,7 +162,7 @@ namespace
     };
 
     void
-    do_one_conf_line(const std::string & line, tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result,
+    do_one_conf_line(const std::string & line, std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result,
             const SetFileParams & params)
     {
         if (line.empty())
@@ -193,7 +193,7 @@ namespace
             {
                 if (std::string::npos == tokens.at(1).find('/'))
                 {
-                    tr1::shared_ptr<NamedSetDepSpec> spec;
+                    std::tr1::shared_ptr<NamedSetDepSpec> spec;
                     switch (params.set_operator_mode)
                     {
                         case sfsmo_natural:
@@ -213,15 +213,15 @@ namespace
                     if (! spec)
                         throw InternalError(PALUDIS_HERE, "Bad params.set_name_suffix");
 
-                    result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                    result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
                                 new TreeLeaf<SetSpecTree, NamedSetDepSpec>(spec)));
                 }
                 else
                 {
-                    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
+                    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                     if (params.tag)
                         spec->set_tag(params.tag);
-                    result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                    result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                 new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
             }
@@ -234,7 +234,7 @@ namespace
                     return;
                 }
 
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                 if (params.tag)
                     spec->set_tag(params.tag);
 
@@ -245,7 +245,7 @@ namespace
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! params.environment->package_database()->query(query::Package(*spec->package_ptr()) &
                                 query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
-                        result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
                 else
@@ -261,7 +261,7 @@ namespace
                     return;
                 }
 
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser(tokens.at(1))));
                 if (params.tag)
                     spec->set_tag(params.tag);
 
@@ -275,7 +275,7 @@ namespace
                                         .package(*spec->package_ptr())
                                         .slot_requirement(spec->slot_requirement_ptr())) &
                                 query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
-                        result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
                 else
@@ -323,7 +323,7 @@ SimpleHandler::_create_contents() const
 {
     Context context("When parsing atoms in simple set file '" + stringify(_p.file_name) + "':");
 
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
     {
@@ -339,16 +339,16 @@ SimpleHandler::_create_contents() const
         {
             if (std::string::npos == i->find('/'))
             {
-                tr1::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
-                _contents->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                std::tr1::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
+                _contents->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
                             new TreeLeaf<SetSpecTree, NamedSetDepSpec>(p)));
             }
             else
             {
-                tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser(stringify(*i))));
+                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser(stringify(*i))));
                 if (_p.tag)
                     p->set_tag(_p.tag);
-                _contents->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                _contents->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                             new TreeLeaf<SetSpecTree, PackageDepSpec>(p)));
             }
         }
@@ -364,7 +364,7 @@ SimpleHandler::_create_contents() const
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 SimpleHandler::contents() const
 {
     Lock l(_mutex);
@@ -430,13 +430,13 @@ PaludisConfHandler::_create_contents() const
 {
     Context context("When parsing atoms in paludis conf set file '" + stringify(_p.file_name) + "':");
 
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
         do_one_conf_line(*i, _contents, _p);
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisConfHandler::contents() const
 {
     Lock l(_mutex);
@@ -489,7 +489,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     _p(p)
 {
     Context context("When loading paludis bash set file '" + stringify(_p.file_name) + "':");
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     std::stringstream s;
     Command cmd(Command("bash '" + stringify(_p.file_name) + "'")
@@ -513,11 +513,11 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
         Log::get_instance()->message("set_file.script.failure", ll_warning, lc_context)
             << "Set file script '" << _p.file_name << "' returned non-zero exit status '"
             << exit_status << "'";
-        _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisBashHandler::contents() const
 {
     return _contents;
@@ -547,7 +547,7 @@ namespace paludis
     struct Implementation<SetFile>
     {
         const SetFileParams params;
-        tr1::shared_ptr<SetFileHandler> handler;
+        std::tr1::shared_ptr<SetFileHandler> handler;
 
         Implementation(const SetFileParams & p) :
             params(p),
@@ -566,7 +566,7 @@ SetFile::~SetFile()
 {
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 SetFile::contents() const
 {
     return _imp->handler->contents();

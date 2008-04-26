@@ -51,11 +51,11 @@ void
 CategoriesList::handle_signal_cursor_changed()
 {
     if (get_selection()->get_selected())
-        _imp->packages_page->set_category(paludis::tr1::shared_ptr<CategoryNamePart>(new CategoryNamePart(
+        _imp->packages_page->set_category(std::tr1::shared_ptr<CategoryNamePart>(new CategoryNamePart(
                         static_cast<Glib::ustring>((*get_selection()->get_selected())[_imp->model->columns().col_cat_name]).raw())));
     else
         _imp->packages_page->set_category(
-                paludis::tr1::shared_ptr<CategoryNamePart>());
+                std::tr1::shared_ptr<CategoryNamePart>());
 }
 
 

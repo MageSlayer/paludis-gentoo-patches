@@ -267,46 +267,12 @@ int main(int, char **)
 	m.insert(std::make_pair(1, 2));
 }
 ],
-	[
-	 AC_MSG_RESULT([std::tr1::unordered_map])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_STD_TR1_UNORDERED=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HASH_IS_STD_TR1_UNORDERED=1"
-	],
-	[
-	 AC_COMPILE_IFELSE([
-#include <ext/hash_map>
-int main(int, char **)
-{
-	__gnu_cxx::hash_map<int, int> m;
-	m.insert(std::make_pair(1, 2));
-}
-],
-	 [
-	  AC_MSG_RESULT([__gnu_cxx::hash_map])
-	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_GNU_CXX_HASH=1"
-	  PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HASH_IS_GNU_CXX_HASH=1"
-	 ],
-	 [
-	  AC_COMPILE_IFELSE([
-#include <hash_map>
-int main(int, char **)
-{
-	std::hash_map<int, int> m;
-	m.insert(std::make_pair(1, 2));
-}
-],
-	  [
-	   AC_MSG_RESULT([std::hash_map])
-	   PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_STD_HASH=1"
-	   PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HASH_IS_STD_HASH=1"
-	  ],
-	  [
-	   AC_MSG_RESULT([no, falling back to std::map (slower)])
-	  ])])])
+	[AC_MSG_RESULT([std::tr1::unordered_map])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
 dnl }}}
 
 dnl {{{ tr1 shared pointers
-need_pointer_wrappers=no
 AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
 AC_COMPILE_IFELSE([
 #include <tr1/memory>
@@ -316,31 +282,12 @@ int main(int, char **)
 	return *x;
 }
 ],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_STD_TR1=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_MEMORY_IS_STD_TR1=1"
-	],
+	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_CHECKING([for boost::shared_ptr<>])
-	 AC_COMPILE_IFELSE([
-#include <boost/shared_ptr.hpp>
-int main(int, char **)
-{
-	boost::shared_ptr<int> x(new int(10));
-	return *x;
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_BOOST=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_MEMORY_IS_BOOST=1"
-	 need_pointer_wrappers=yes],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
-AM_CONDITIONAL([NEED_POINTER_WRAPPERS], test x$need_pointer_wrappers = "xyes")
+	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
 dnl }}}
 
 dnl {{{ tr1 type traits
-need_type_traits_wrappers=no
 AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
 AC_COMPILE_IFELSE([
 #include <tr1/type_traits>
@@ -350,31 +297,12 @@ int main(int, char **)
 	return x;
 }
 ],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1"
-	],
+	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_CHECKING([for boost::remove_pointer<>])
-	 AC_COMPILE_IFELSE([
-#include <boost/type_traits.hpp>
-int main(int, char **)
-{
-	boost::remove_pointer<int *>::type x(10);
-	return x;
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_BOOST=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_BOOST=1"
-	 need_type_traits_wrappers=yes],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
-AM_CONDITIONAL([NEED_TYPE_TRAITS_WRAPPERS], test x$need_type_traits_wrappers = "xyes")
+	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
 dnl }}}
 
 dnl {{{ tr1 binders
-need_bind_wrappers=no
 AC_MSG_CHECKING([for std::tr1::bind<>])
 AC_COMPILE_IFELSE([
 #include <tr1/functional>
@@ -396,39 +324,9 @@ int main(int, char **)
 		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
 }
 ],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1"
-	],
+	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_CHECKING([for boost::bind<>])
-	 AC_COMPILE_IFELSE([
-#include <boost/bind.hpp>
-#include <boost/mem_fn.hpp>
-#include <functional>
-#include <algorithm>
-#include <list>
-struct S
-{
-	void x(const int) const
-	{
-	}
-};
-int main(int, char **)
-{
-	std::list<int> l;
-	S s;
-	std::for_each(l.begin(), l.end(),
-		boost::bind(boost::mem_fn(&S::x), &s, _1));
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_BOOST=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_BOOST=1"
-	 need_bind_wrappers=yes],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
-AM_CONDITIONAL([NEED_BIND_WRAPPERS], test x$need_bind_wrappers = "xyes")
+	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
 dnl }}}
 
 need_xml_check=

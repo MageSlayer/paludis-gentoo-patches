@@ -30,8 +30,8 @@ make_class_UninstallListEntry()
 {
     visible
 
-    key package_id "tr1::shared_ptr<const PackageID>"
-    key tags "tr1::shared_ptr<Set<tr1::shared_ptr<DepTag> > >"
+    key package_id "std::tr1::shared_ptr<const PackageID>"
+    key tags "std::tr1::shared_ptr<Set<std::tr1::shared_ptr<DepTag> > >"
     key kind UninstallListEntryKind
 
     allow_named_args

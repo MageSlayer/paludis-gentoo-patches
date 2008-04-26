@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,11 +22,10 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-
+#include <tr1/memory>
 #include <string>
 
 namespace paludis
@@ -136,7 +135,7 @@ namespace paludis
             /**
              * Create a GLSA from an XML file.
              */
-            static tr1::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
+            static std::tr1::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
 
             ///\name Iterate over our packages.
             ///\{
@@ -151,7 +150,7 @@ namespace paludis
             /**
              * Add a package.
              */
-            void add_package(tr1::shared_ptr<const GLSAPackage>);
+            void add_package(std::tr1::shared_ptr<const GLSAPackage>);
 
             /**
              * Set our ID.

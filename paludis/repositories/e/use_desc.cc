@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,6 @@
  */
 
 #include "use_desc.hh"
-#include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/fs_entry.hh>
@@ -29,6 +28,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
@@ -37,7 +38,7 @@ namespace paludis
     template<>
     struct Implementation<UseDesc>
     {
-        MakeHashedMap<std::string, std::string>::Type desc;
+        std::tr1::unordered_map<std::string, std::string, Hash<std::string> > desc;
 
         void add(const FSEntry & f, const std::string & prefix)
         {
@@ -81,12 +82,12 @@ UseDesc::~UseDesc()
 std::string
 UseDesc::describe(const UseFlagName & f, const PackageID & e) const
 {
-    MakeHashedMap<std::string, std::string>::Type::const_iterator i(
+    std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator i(
             _imp->desc.find(stringify(e.name()) + ":" + stringify(f)));
     if (_imp->desc.end() != i)
         return i->second;
 
-    MakeHashedMap<std::string, std::string>::Type::const_iterator j(_imp->desc.find(stringify(f)));
+    std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator j(_imp->desc.find(stringify(f)));
     if (_imp->desc.end() != j)
         return j->second;
 

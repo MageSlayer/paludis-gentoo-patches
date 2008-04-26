@@ -52,19 +52,19 @@ namespace
         InstantiationPolicy<SpecKeysBlacklist, instantiation_method::SingletonTag>
     {
         Mutex mutex;
-        std::map<std::string, const tr1::shared_ptr<const QualifiedPackageNameSet> > map;
+        std::map<std::string, const std::tr1::shared_ptr<const QualifiedPackageNameSet> > map;
 
-        const tr1::shared_ptr<const QualifiedPackageNameSet> blacklist(const std::string & s)
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> blacklist(const std::string & s)
         {
             Lock lock(mutex);
-            std::map<std::string, const tr1::shared_ptr<const QualifiedPackageNameSet> >::const_iterator i(map.find(s));
+            std::map<std::string, const std::tr1::shared_ptr<const QualifiedPackageNameSet> >::const_iterator i(map.find(s));
             if (map.end() != i)
                 return i->second;
             else
             {
                 Context context("When loading spec_keys PackageDepSpec blacklist '" + s + "':");
 
-                tr1::shared_ptr<QualifiedPackageNameSet> r(new QualifiedPackageNameSet);
+                std::tr1::shared_ptr<QualifiedPackageNameSet> r(new QualifiedPackageNameSet);
                 FSEntry f(FSEntry(getenv_with_default("PALUDIS_QA_DATA_DIR",
                                 stringify(FSEntry(DATADIR) / "paludis" / "qa")))
                         / ("spec_keys_pds_blacklist." + s + ".conf"));
@@ -89,11 +89,11 @@ namespace
     {
         const FSEntry entry;
         QAReporter & reporter;
-        const tr1::shared_ptr<const PackageID> & id;
+        const std::tr1::shared_ptr<const PackageID> & id;
         const std::set<UseFlagName> & iuse_flags;
-        const tr1::shared_ptr<const MetadataKey> & key;
+        const std::tr1::shared_ptr<const MetadataKey> & key;
         const std::string name;
-        const tr1::shared_ptr<const QualifiedPackageNameSet> pds_blacklist;
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> pds_blacklist;
         bool forbid_arch_flags, forbid_inverse_arch_flags;
 
         unsigned level;
@@ -103,11 +103,11 @@ namespace
         Checker(
                 const FSEntry & f,
                 QAReporter & r,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const std::set<UseFlagName> & iuse,
-                const tr1::shared_ptr<const MetadataKey> & k,
+                const std::tr1::shared_ptr<const MetadataKey> & k,
                 const std::string & n,
-                const tr1::shared_ptr<const QualifiedPackageNameSet> p,
+                const std::tr1::shared_ptr<const QualifiedPackageNameSet> p,
                 bool a, bool ia) :
             entry(f),
             reporter(r),
@@ -208,7 +208,7 @@ namespace
             {
                 if (iuse_flags.end() == iuse_flags.find(conditional_dep_spec_flag(u)))
                 {
-                    tr1::shared_ptr<const UseFlagNameSet> c(
+                    std::tr1::shared_ptr<const UseFlagNameSet> c(
                         (*id->repository())[k::use_interface()]->use_expand_hidden_prefixes());
                     std::string flag(stringify(conditional_dep_spec_flag(u)));
                     bool is_hidden(false);
@@ -295,15 +295,15 @@ namespace
     {
         const FSEntry entry;
         QAReporter & reporter;
-        tr1::shared_ptr<const MetadataKey> key;
-        const tr1::shared_ptr<const PackageID> & id;
+        std::tr1::shared_ptr<const MetadataKey> key;
+        const std::tr1::shared_ptr<const PackageID> & id;
         const std::set<UseFlagName> & iuse_flags;
         const std::string name;
 
         CheckForwarder(
                 const FSEntry & f,
                 QAReporter & r,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const std::set<UseFlagName> & iuse,
                 const std::string & n) :
             entry(f),
@@ -314,7 +314,7 @@ namespace
         {
         }
 
-        void visit_sptr(const tr1::shared_ptr<const MetadataKey> & k)
+        void visit_sptr(const std::tr1::shared_ptr<const MetadataKey> & k)
         {
             key = k;
             k->accept(*this);
@@ -336,15 +336,15 @@ namespace
         {
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > &)
         {
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &)
         {
         }
 
@@ -387,7 +387,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), false, false);
+                Checker c(entry, reporter, id, iuse_flags, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), false, false);
                 k.value()->accept(c);
             }
             catch (const InternalError &)
@@ -408,7 +408,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
+                Checker c(entry, reporter, id, iuse_flags, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const InternalError &)
@@ -429,7 +429,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
+                Checker c(entry, reporter, id, iuse_flags, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const InternalError &)
@@ -492,7 +492,7 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, iuse_flags, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
+                Checker c(entry, reporter, id, iuse_flags, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
                 k.value()->accept(c);
             }
             catch (const InternalError &)
@@ -514,23 +514,23 @@ bool
 paludis::erepository::spec_keys_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using spec_keys_check on ID '" + stringify(*id) + "':");
     Log::get_instance()->message("e.qa.spec_keys_check", ll_debug, lc_context) << "spec_keys_check '"
         << entry << "', " << *id << "', " << name << "'";
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     std::set<UseFlagName> iuse;
     std::transform(id->iuse_key()->value()->begin(),
                    id->iuse_key()->value()->end(),
                    std::inserter(iuse, iuse.begin()),
-                   tr1::mem_fn(&IUseFlag::flag));
+                   std::tr1::mem_fn(&IUseFlag::flag));
 
     CheckForwarder f(entry, reporter, id, iuse, name);
-    std::for_each(id->begin_metadata(), id->end_metadata(), tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
+    std::for_each(id->begin_metadata(), id->end_metadata(), std::tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
 
     return true;
 }

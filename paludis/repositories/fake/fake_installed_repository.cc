@@ -39,8 +39,8 @@ namespace paludis
     template <>
     struct Implementation<FakeInstalledRepository>
     {
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
 
         Implementation() :
             format_key(new LiteralMetadataValueKey<std::string> (
@@ -85,20 +85,20 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
     return true;
 }
 
-tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
+std::tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
 FakeInstalledRepository::provided_packages() const
 {
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
+    std::tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
-    tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
+        std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
+            std::tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
             for (PackageIDSequence::ConstIterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
@@ -191,13 +191,13 @@ FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     return q.result;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

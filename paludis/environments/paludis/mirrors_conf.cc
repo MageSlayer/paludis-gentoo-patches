@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,25 +19,26 @@
 
 #include "mirrors_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <algorithm>
 #include <vector>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef MakeHashedMultiMap<std::string, std::string>::Type Mirrors;
+typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > Mirrors;
 
 namespace paludis
 {
@@ -68,7 +69,7 @@ MirrorsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a mirrors file:");
 
-    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -87,13 +88,13 @@ MirrorsConf::add(const FSEntry & filename)
     }
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 MirrorsConf::query(const std::string & m) const
 {
-    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
     std::transform(p.first, p.second, result->back_inserter(),
-            paludis::tr1::mem_fn(&std::pair<const std::string, std::string>::second));
+            std::tr1::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
 }
 

@@ -18,7 +18,6 @@
  */
 
 #include <paludis/distribution.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -30,6 +29,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
@@ -40,12 +41,14 @@ DistributionConfigurationError::DistributionConfigurationError(const std::string
 {
 }
 
+typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const Distribution>, Hash<std::string> > DistributionHash;
+
 namespace paludis
 {
     template <>
     struct Implementation<DistributionData>
     {
-        MakeHashedMap<std::string, tr1::shared_ptr<const Distribution> >::Type values;
+        DistributionHash values;
 
         Implementation()
         {
@@ -96,10 +99,10 @@ DistributionData::~DistributionData()
 {
 }
 
-tr1::shared_ptr<const Distribution>
+std::tr1::shared_ptr<const Distribution>
 DistributionData::distribution_from_string(const std::string & s) const
 {
-    MakeHashedMap<std::string, tr1::shared_ptr<const Distribution> >::Type::const_iterator i(_imp->values.find(s));
+    DistributionHash::const_iterator i(_imp->values.find(s));
     if (i == _imp->values.end())
         throw DistributionConfigurationError("No distribution configuration found for '" + s + "'");
     else

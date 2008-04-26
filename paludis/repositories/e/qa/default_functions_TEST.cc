@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,9 +66,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("cat/other");
 
             TestReporter r;
@@ -84,9 +84,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("cat/other");
 
             TestReporter r;
@@ -102,9 +102,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("cat/other");
 
             TestReporter r;

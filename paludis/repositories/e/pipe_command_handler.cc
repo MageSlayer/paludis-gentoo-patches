@@ -53,7 +53,7 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const tr1::shared_ptr<const PackageID> & package_id, const std::string & s)
+        const std::tr1::shared_ptr<const PackageID> & package_id, const std::string & s)
 {
     Context context("In ebuild pipe command handler for '" + s + "':");
 
@@ -100,12 +100,12 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! (*eapi)[k::supported()])
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
+                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
@@ -114,7 +114,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                         "' resolves to '" << **entries->last() << "', which is a virtual for '"
                         << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                         "new style virtuals.";
-                    tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
                     new_entries->push_back((*entries->last())->virtual_for_key()->value());
                     entries = new_entries;
                 }
@@ -139,12 +139,12 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! (*eapi)[k::supported()])
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
+                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if (entries->empty())
                     return "O1;";
@@ -161,16 +161,16 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! (*eapi)[k::supported()])
                     return "EMATCH EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
-                tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
+                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()))
                 {
-                    tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
                     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
                             i != i_end ; ++i)
                     {
@@ -210,7 +210,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             {
                 if (! environment->package_database()->has_repository_named(RepositoryName("installed")))
                     return "Eno installed repository available";
-                tr1::shared_ptr<const Repository> repo(environment->package_database()->fetch_repository(RepositoryName("installed")));
+                std::tr1::shared_ptr<const Repository> repo(environment->package_database()->fetch_repository(RepositoryName("installed")));
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";
@@ -227,7 +227,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 return "Ebad REWRITE_VAR command";
             }
 
-            tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+            std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
             if (! (*eapi)[k::supported()])
                 return "EREWRITE_VAR EAPI " + tokens[1] + " unsupported";
 
@@ -238,12 +238,12 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_pdepend) ||
                     (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_dependencies))
             {
-                tr1::shared_ptr<const DependencySpecTree::ConstItem> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
+                std::tr1::shared_ptr<const DependencySpecTree::ConstItem> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
                             environment, package_id, *eapi));
-                tr1::shared_ptr<const DependencySpecTree::ConstItem> after(fix_locked_dependencies(
+                std::tr1::shared_ptr<const DependencySpecTree::ConstItem> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;
-                DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                 after->accept(p);
                 return "O0;" + stringify(p);
             }

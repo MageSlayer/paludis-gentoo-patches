@@ -26,7 +26,7 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 template class VirtualConstructor<std::string,
-         tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
+         std::tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
                  const ERepositoryParams &),
          virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >;
 

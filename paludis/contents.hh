@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,7 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 #include <string>
 
@@ -244,13 +244,13 @@ namespace paludis
             ///\}
 
             /// Add a new entry.
-            void add(tr1::shared_ptr<const ContentsEntry> c);
+            void add(std::tr1::shared_ptr<const ContentsEntry> c);
 
             ///\name Iterate over our entries
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

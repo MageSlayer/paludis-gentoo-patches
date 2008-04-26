@@ -43,8 +43,7 @@
 #include <string>
 #include <algorithm>
 #include <list>
-
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::cranrepository;
@@ -56,28 +55,28 @@ namespace paludis
     {
         const Environment * const env;
 
-        const tr1::shared_ptr<const Repository> repository;
-        const tr1::shared_ptr<const CRANRepository> cran_repository;
-        const tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
+        const std::tr1::shared_ptr<const Repository> repository;
+        const std::tr1::shared_ptr<const CRANRepository> cran_repository;
+        const std::tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
 
         QualifiedPackageName name;
         VersionSpec version;
 
-        tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > url_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > short_description_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > long_description_key;
-        tr1::shared_ptr<LiteralMetadataValueKey<std::string> > license_key;
-        tr1::shared_ptr<PackageIDKey> contained_in_key;
-        tr1::shared_ptr<PackageIDSequenceKey> contains_key;
-        tr1::shared_ptr<DepKey> depends_key;
-        tr1::shared_ptr<DepKey> suggests_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > url_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > short_description_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > long_description_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > license_key;
+        std::tr1::shared_ptr<PackageIDKey> contained_in_key;
+        std::tr1::shared_ptr<PackageIDSequenceKey> contains_key;
+        std::tr1::shared_ptr<DepKey> depends_key;
+        std::tr1::shared_ptr<DepKey> suggests_key;
 
-        tr1::shared_ptr<DependencyLabelSequence> suggests_labels;
-        tr1::shared_ptr<DependencyLabelSequence> depends_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> suggests_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> depends_labels;
 
         Implementation(const Environment * const e,
-                const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+                const std::tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
             env(e),
             repository(r),
             cran_repository(r),
@@ -92,7 +91,7 @@ namespace paludis
         }
 
         Implementation(const Environment * const e,
-                const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+                const std::tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
             env(e),
             repository(c),
             cran_repository(c),
@@ -109,7 +108,7 @@ namespace paludis
     };
 }
 
-CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+CRANPackageID::CRANPackageID(const Environment * const env, const std::tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
     PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(env, r, f)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
@@ -278,7 +277,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
 }
 
 CRANPackageID::CRANPackageID(const Environment * const e,
-        const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+        const std::tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
     PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(e, c, r, t)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
@@ -320,106 +319,106 @@ CRANPackageID::slot() const
     return SlotName("0");
 }
 
-const tr1::shared_ptr<const Repository>
+const std::tr1::shared_ptr<const Repository>
 CRANPackageID::repository() const
 {
     return _imp->repository;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 CRANPackageID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 CRANPackageID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 CRANPackageID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 CRANPackageID::provide_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 CRANPackageID::build_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 CRANPackageID::run_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 CRANPackageID::post_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 CRANPackageID::suggested_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 CRANPackageID::fetches_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 CRANPackageID::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::short_description_key() const
 {
     return _imp->short_description_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::long_description_key() const
 {
     return _imp->long_description_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 CRANPackageID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
 }
 
-const tr1::shared_ptr<const MetadataTimeKey>
+const std::tr1::shared_ptr<const MetadataTimeKey>
 CRANPackageID::installed_time_key() const
 {
-    return tr1::shared_ptr<const MetadataTimeKey>();
+    return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANPackageID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 std::size_t
@@ -434,10 +433,10 @@ CRANPackageID::arbitrary_less_than_comparison(const PackageID &) const
     return false;
 }
 
-tr1::shared_ptr<const Set<std::string> >
+std::tr1::shared_ptr<const Set<std::string> >
 CRANPackageID::breaks_portage() const
 {
-    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
     why->insert("format");
     return why;
 }
@@ -469,10 +468,10 @@ namespace
         ConstVisitor<SupportsActionTestVisitorTypes>
     {
         bool result;
-        const tr1::shared_ptr<const CRANRepository> cran_repository;
-        const tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
+        const std::tr1::shared_ptr<const CRANRepository> cran_repository;
+        const std::tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
 
-        SupportsActionQuery(const tr1::shared_ptr<const CRANRepository> & c, const tr1::shared_ptr<const CRANInstalledRepository> & r) :
+        SupportsActionQuery(const std::tr1::shared_ptr<const CRANRepository> & c, const std::tr1::shared_ptr<const CRANInstalledRepository> & r) :
             result(false),
             cran_repository(c),
             cran_installed_repository(r)
@@ -530,27 +529,27 @@ CRANPackageID::perform_action(Action & a) const
     throw UnsupportedActionError(*this, a);
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 CRANPackageID::contains_key() const
 {
     return _imp->contains_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 CRANPackageID::contained_in_key() const
 {
     return _imp->contained_in_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANPackageID::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<bool> >
+const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 CRANPackageID::transient_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
 }
 

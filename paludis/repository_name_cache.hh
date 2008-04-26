@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_NAME_CACHE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for RepositoryNameCache, which is used by some Repository
@@ -73,7 +73,7 @@ namespace paludis
              * fall back to Repository::do_category_names_containing_package or
              * its own implementation.
              */
-            tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**

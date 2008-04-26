@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -138,7 +138,7 @@ main(int argc, char *argv[])
                     no_config_environment::ncer_ebuild)
                 .disable_metadata_cache(false)
                 .master_repository_dir(CommandLine::get_instance()->a_master_repository_dir.argument())
-                .extra_params(tr1::shared_ptr<Map<std::string, std::string> >()));
+                .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >()));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,9 +22,9 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <tr1/memory>
+#include <tr1/functional>
 #include <string>
 #include <sys/types.h>
 
@@ -174,7 +174,7 @@ namespace paludis
             /**
              * Specify a pipe command handler.
              */
-            Command & with_pipe_command_handler(const tr1::function<std::string (const std::string &)> &);
+            Command & with_pipe_command_handler(const std::tr1::function<std::string (const std::string &)> &);
 
             /**
              * Specify a stream to which stdout is captured and written.
@@ -204,12 +204,12 @@ namespace paludis
             /**
              * The uid for setuid.
              */
-            tr1::shared_ptr<const uid_t> uid() const;
+            std::tr1::shared_ptr<const uid_t> uid() const;
 
             /**
              * The gid for setgid.
              */
-            tr1::shared_ptr<const gid_t> gid() const;
+            std::tr1::shared_ptr<const gid_t> gid() const;
 
             /**
              * The stdout prefix.
@@ -235,7 +235,7 @@ namespace paludis
             /**
              * The pipe command handler.
              */
-            const tr1::function<std::string (const std::string &)> & pipe_command_handler() const;
+            const std::tr1::function<std::string (const std::string &)> & pipe_command_handler() const;
 
             /**
              * The captured stdout stream, or null.

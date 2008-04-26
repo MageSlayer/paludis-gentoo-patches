@@ -25,7 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for distributions.
@@ -87,7 +87,7 @@ namespace paludis
             /**
              * Fetch a distribution from a named string.
              */
-            tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
+            std::tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
     };
 }
 

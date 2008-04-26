@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         else
             stage = "cxx";
 
-        tr1::shared_ptr<AdaptedEnvironment> env(
+        std::tr1::shared_ptr<AdaptedEnvironment> env(
                 new AdaptedEnvironment(EnvironmentMaker::get_instance()->make_from_spec(
                         CommandLine::get_instance()->a_environment.argument())));
 
@@ -89,9 +89,9 @@ int main(int argc, char *argv[])
         do
         {
             if (! TargetConfig::get_instance()->aux().empty())
-                builder.queue_stage(tr1::shared_ptr<const StageBase>(new AuxiliaryStage(env)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new AuxiliaryStage(env)));
 
-            builder.queue_stage(tr1::shared_ptr<const StageBase>(new BinutilsStage(env)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new BinutilsStage(env)));
 
             if (stage == "binutils")
                 break;
@@ -100,28 +100,28 @@ int main(int argc, char *argv[])
             {
                 if (TargetConfig::get_instance()->headers().empty())
                     throw DoHelp("--headers specified though CTARGET does not need any headers");
-                builder.queue_stage(tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
-                builder.queue_stage(tr1::shared_ptr<const StageBase>(new LibCHeadersStage(env)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCHeadersStage(env)));
             }
 
-            builder.queue_stage(tr1::shared_ptr<const StageBase>(new MinimalStage(env)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(env)));
 
             if (stage == "minimal")
                 break;
 
             if ((! CommandLine::get_instance()->a_headers.specified()) && 
                     (! TargetConfig::get_instance()->headers().empty()))
-                builder.queue_stage(tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
 
             if (stage == "headers")
                 break;
 
-            builder.queue_stage(tr1::shared_ptr<const StageBase>(new LibCStage(env)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCStage(env)));
 
             if (stage == "libc")
                 break;
 
-            builder.queue_stage(tr1::shared_ptr<const StageBase>(new FullStage(env)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new FullStage(env)));
 
         } while (false);
 

@@ -20,7 +20,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
@@ -29,12 +28,13 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
-#include <paludis/hashed_containers.hh>
-
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <list>
 #include <algorithm>
 
@@ -42,29 +42,29 @@ using namespace paludis;
 
 #include <paludis/package_id-se.cc>
 
-template class Sequence<tr1::shared_ptr<const PackageID> >;
-template class WrappedForwardIterator<Sequence<tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
-         const tr1::shared_ptr<const PackageID> >;
-template class WrappedForwardIterator<Sequence<tr1::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
-         const tr1::shared_ptr<const PackageID> >;
-template class WrappedOutputIterator<Sequence<tr1::shared_ptr<const PackageID> >::InserterTag,
-         tr1::shared_ptr<const PackageID> >;
+template class Sequence<std::tr1::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
+         const std::tr1::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::InserterTag,
+         std::tr1::shared_ptr<const PackageID> >;
 
-template class Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
-template class WrappedForwardIterator<Set<tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
-         const tr1::shared_ptr<const PackageID> >;
-template class WrappedOutputIterator<Set<tr1::shared_ptr<const PackageID> >::InserterTag,
-         tr1::shared_ptr<const PackageID> >;
+template class Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
+template class WrappedForwardIterator<Set<std::tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Set<std::tr1::shared_ptr<const PackageID> >::InserterTag,
+         std::tr1::shared_ptr<const PackageID> >;
 
-template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> >;
-template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, tr1::shared_ptr<const Mask> >;
+template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, std::tr1::shared_ptr<const MetadataKey> >;
+template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, std::tr1::shared_ptr<const Mask> >;
 
 namespace paludis
 {
     template <>
     struct Implementation<PackageID>
     {
-        mutable std::list<tr1::shared_ptr<const Mask> > masks;
+        mutable std::list<std::tr1::shared_ptr<const Mask> > masks;
     };
 }
 
@@ -79,7 +79,7 @@ PackageID::~PackageID()
 }
 
 void
-PackageID::add_mask(const tr1::shared_ptr<const Mask> & k) const
+PackageID::add_mask(const std::tr1::shared_ptr<const Mask> & k) const
 {
     _imp->masks.push_back(k);
 }
@@ -118,8 +118,8 @@ paludis::operator<< (std::ostream & s, const PackageID & i)
 }
 
 bool
-PackageIDSetComparator::operator() (const tr1::shared_ptr<const PackageID> & a,
-        const tr1::shared_ptr<const PackageID> & b) const
+PackageIDSetComparator::operator() (const std::tr1::shared_ptr<const PackageID> & a,
+        const std::tr1::shared_ptr<const PackageID> & b) const
 {
     if (a->name() < b->name())
         return true;
@@ -157,7 +157,7 @@ namespace paludis
     template <>
     struct Implementation<PackageIDComparator>
     {
-        MakeHashedMap<RepositoryName, unsigned>::Type m;
+        std::tr1::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> > m;
     };
 }
 
@@ -181,8 +181,8 @@ PackageIDComparator::~PackageIDComparator()
 }
 
 bool
-PackageIDComparator::operator() (const tr1::shared_ptr<const PackageID> & a,
-        const tr1::shared_ptr<const PackageID> & b) const
+PackageIDComparator::operator() (const std::tr1::shared_ptr<const PackageID> & a,
+        const std::tr1::shared_ptr<const PackageID> & b) const
 {
     if (a->name() < b->name())
         return true;
@@ -196,7 +196,7 @@ PackageIDComparator::operator() (const tr1::shared_ptr<const PackageID> & a,
     if (a->version() > b->version())
         return false;
 
-    MakeHashedMap<RepositoryName, unsigned>::Type::const_iterator
+    std::tr1::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
         ma(_imp->m.find(a->repository()->name())),
         mb(_imp->m.find(b->repository()->name()));
 
@@ -209,5 +209,15 @@ PackageIDComparator::operator() (const tr1::shared_ptr<const PackageID> & a,
         return false;
 
     return a->arbitrary_less_than_comparison(*b);
+}
+
+std::size_t
+PackageID::hash() const
+{
+    return
+        (Hash<QualifiedPackageName>()(name()) << 0) ^
+        (Hash<VersionSpec>()(version()) << 5) ^
+        (Hash<RepositoryName>()(repository()->name()) << 9) ^
+        (extra_hash_value() << 13);
 }
 

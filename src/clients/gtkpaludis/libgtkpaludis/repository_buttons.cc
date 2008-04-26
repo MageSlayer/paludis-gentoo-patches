@@ -22,7 +22,7 @@ namespace paludis
         Gtk::Button sync_button;
         Gtk::Button sync_all_button;
 
-        tr1::shared_ptr<const RepositoryName> repository_name;
+        std::tr1::shared_ptr<const RepositoryName> repository_name;
 
         Implementation(MainWindow * const m) :
             main_window(m),

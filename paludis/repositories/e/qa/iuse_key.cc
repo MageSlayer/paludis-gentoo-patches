@@ -71,8 +71,8 @@ bool
 paludis::erepository::iuse_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const Repository> & repo,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Repository> & repo,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using iuse_key_check on ID '" + stringify(*id) + "':");

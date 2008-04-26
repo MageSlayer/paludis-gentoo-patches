@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
@@ -36,7 +35,8 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/kc.hh>
-
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 #include <map>
 #include <vector>
 #include <list>
@@ -53,7 +53,7 @@ namespace paludis
     template<>
     struct Implementation<EAPIData>
     {
-        MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type values;
+        std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> > values;
 
         Implementation()
         {
@@ -67,7 +67,7 @@ namespace paludis
 
                 Context cc("When loading EAPI file '" + stringify(*d) + "':");
 
-                tr1::shared_ptr<Map<std::string, std::string> > predefined(new Map<std::string, std::string>);
+                std::tr1::shared_ptr<Map<std::string, std::string> > predefined(new Map<std::string, std::string>);
                 predefined->insert("PALUDIS_EAPIS_DIR", stringify(d->dirname()));
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), predefined);
 
@@ -111,7 +111,7 @@ namespace paludis
                         merger_options += destringify<MergerOption>(*t);
                 }
 
-                tr1::shared_ptr<EAPI> eapi(new EAPI(
+                std::tr1::shared_ptr<EAPI> eapi(new EAPI(
                             strip_trailing_string(d->basename(), ".conf"),
                             k.get("exported_name"),
                             make_shared_ptr(new SupportedEAPI(
@@ -268,7 +268,7 @@ namespace paludis
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"), eapi));
             }
 
-            MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type::const_iterator i(values.find("0"));
+            std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(values.find("0"));
             if (i == values.end())
                 throw EAPIConfigurationError("No EAPI configuration found for EAPI 0");
             else
@@ -291,20 +291,20 @@ EAPIData::~EAPIData()
 {
 }
 
-tr1::shared_ptr<const EAPI>
+std::tr1::shared_ptr<const EAPI>
 EAPIData::eapi_from_string(const std::string & s) const
 {
-    MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type::const_iterator i(_imp->values.find(s));
+    std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(_imp->values.find(s));
     if (i != _imp->values.end())
         return i->second;
 
-    return make_shared_ptr(new EAPI(s, s, tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI(s, s, std::tr1::shared_ptr<SupportedEAPI>()));
 }
 
-tr1::shared_ptr<const EAPI>
+std::tr1::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
-    return make_shared_ptr(new EAPI("UNKNOWN", "UNKNOWN", tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI("UNKNOWN", "UNKNOWN", std::tr1::shared_ptr<SupportedEAPI>()));
 }
 
 namespace paludis

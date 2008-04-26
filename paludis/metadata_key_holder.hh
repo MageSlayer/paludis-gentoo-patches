@@ -23,8 +23,8 @@
 #include <paludis/metadata_key_holder-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -43,7 +43,7 @@ namespace paludis
              * Add a new MetadataKey, which must not use the same raw name as
              * any previous MetadataKey added to this ID.
              */
-            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
+            virtual void add_metadata_key(const std::tr1::shared_ptr<const MetadataKey> &) const;
 
             /**
              * Clear all MetadataKey instances added using add_metadata_key.
@@ -65,7 +65,7 @@ namespace paludis
             ///\{
 
             struct MetadataConstIteratorTag;
-            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+            typedef WrappedForwardIterator<MetadataConstIteratorTag, std::tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
 
             MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));

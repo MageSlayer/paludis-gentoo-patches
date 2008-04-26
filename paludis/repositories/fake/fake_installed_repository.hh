@@ -54,7 +54,7 @@ namespace paludis
 
             /* RepositoryProvidesInterface */
 
-            virtual tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+            virtual std::tr1::shared_ptr<const ProvidesSequence> provided_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -69,8 +69,8 @@ namespace paludis
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
             /* Keys */
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
 
     };
 }

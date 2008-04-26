@@ -24,6 +24,8 @@
 #include <paludis/util/fd_holder.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -34,6 +36,7 @@
 #include <errno.h>
 #include <cstring>
 #include <list>
+#include <tr1/unordered_map>
 
 #include "config.h"
 #ifdef HAVE_XATTRS
@@ -44,15 +47,34 @@ using namespace paludis;
 
 #include <paludis/merger-se.cc>
 
+typedef std::tr1::unordered_map<std::pair<dev_t, ino_t>, std::string, Hash<std::pair<dev_t, ino_t> > > MergedMap;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<Merger>
+    {
+        MergedMap merged_ids;
+        MergerParams params;
+        bool result;
+        bool skip_dir;
+
+        Implementation(const MergerParams & p) :
+            params(p),
+            result(true),
+            skip_dir(false)
+        {
+        }
+    };
+}
+
 MergerError::MergerError(const std::string & s) throw () :
     Exception(s)
 {
 }
 
 Merger::Merger(const MergerParams & p) :
-    _params(p),
-    _result(true),
-    _skip_dir(false)
+    PrivateImplementationPattern<Merger>(new Implementation<Merger>(p))
 {
 }
 
@@ -63,37 +85,37 @@ Merger::~Merger()
 bool
 Merger::check()
 {
-    Context context("When checking merge from '" + stringify(_params[k::image()]) + "' to '"
-            + stringify(_params[k::root()]) + "':");
+    Context context("When checking merge from '" + stringify(_imp->params[k::image()]) + "' to '"
+            + stringify(_imp->params[k::root()]) + "':");
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_pre")
-                         ("INSTALL_SOURCE", stringify(_params[k::image()]))
-                         ("INSTALL_DESTINATION", stringify(_params[k::root()])))).max_exit_status)
+                         ("INSTALL_SOURCE", stringify(_imp->params[k::image()]))
+                         ("INSTALL_DESTINATION", stringify(_imp->params[k::root()])))).max_exit_status)
         make_check_fail();
 
-    do_dir_recursive(true, _params[k::image()], _params[k::root()] / _params[k::install_under()]);
+    do_dir_recursive(true, _imp->params[k::image()], _imp->params[k::root()] / _imp->params[k::install_under()]);
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_post")
-                         ("INSTALL_SOURCE", stringify(_params[k::image()]))
-                         ("INSTALL_DESTINATION", stringify(_params[k::root()])))).max_exit_status)
+                         ("INSTALL_SOURCE", stringify(_imp->params[k::image()]))
+                         ("INSTALL_DESTINATION", stringify(_imp->params[k::root()])))).max_exit_status)
         make_check_fail();
 
-    return _result;
+    return _imp->result;
 }
 
 void
 Merger::make_check_fail()
 {
-    _result = false;
+    _imp->result = false;
 }
 
 void
 Merger::merge()
 {
-    Context context("When performing merge from '" + stringify(_params[k::image()]) + "' to '"
-            + stringify(_params[k::root()]) + "':");
+    Context context("When performing merge from '" + stringify(_imp->params[k::image()]) + "' to '"
+            + stringify(_imp->params[k::root()]) + "':");
 
     struct SaveUmask
     {
@@ -110,20 +132,20 @@ Merger::merge()
         }
     } old_umask(::umask(0000));
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_pre")
-                         ("INSTALL_SOURCE", stringify(_params[k::image()]))
-                         ("INSTALL_DESTINATION", stringify(_params[k::root()])))).max_exit_status)
+                         ("INSTALL_SOURCE", stringify(_imp->params[k::image()]))
+                         ("INSTALL_DESTINATION", stringify(_imp->params[k::root()])))).max_exit_status)
         Log::get_instance()->message("merger.pre_hooks.failure", ll_warning, lc_context) <<
-            "Merge of '" << _params[k::image()] << "' to '" << _params[k::root()] << "' pre hooks returned non-zero";
+            "Merge of '" << _imp->params[k::image()] << "' to '" << _imp->params[k::root()] << "' pre hooks returned non-zero";
 
     /* special handling for install_under */
     {
-        Context local_context("When preparing install_under directory '" + stringify(_params[k::install_under()]) + "' under root '"
-                + stringify(_params[k::root()]) + "':");
+        Context local_context("When preparing install_under directory '" + stringify(_imp->params[k::install_under()]) + "' under root '"
+                + stringify(_imp->params[k::root()]) + "':");
 
         std::list<FSEntry> dd;
-        for (FSEntry d(_params[k::root()].realpath() / _params[k::install_under()]), d_end(_params[k::root()].realpath()) ;
+        for (FSEntry d(_imp->params[k::root()].realpath() / _imp->params[k::install_under()]), d_end(_imp->params[k::root()].realpath()) ;
                 d != d_end ; d = d.dirname())
             dd.push_front(d);
         for (std::list<FSEntry>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
@@ -136,14 +158,14 @@ Merger::merge()
                 record_install_under_dir(*d, MergeStatusFlags() + msi_used_existing);
     }
 
-    do_dir_recursive(false, _params[k::image()], (_params[k::root()] / _params[k::install_under()]).realpath());
+    do_dir_recursive(false, _imp->params[k::image()], (_imp->params[k::root()] / _imp->params[k::install_under()]).realpath());
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_post")
-                         ("INSTALL_SOURCE", stringify(_params[k::image()]))
-                         ("INSTALL_DESTINATION", stringify(_params[k::root()])))).max_exit_status)
+                         ("INSTALL_SOURCE", stringify(_imp->params[k::image()]))
+                         ("INSTALL_DESTINATION", stringify(_imp->params[k::root()])))).max_exit_status)
         Log::get_instance()->message("merger.post_hooks.failure", ll_warning, lc_context) <<
-            "Merge of '" << _params[k::image()] << "' to '" << _params[k::root()] << "' post hooks returned non-zero";
+            "Merge of '" << _imp->params[k::image()] << "' to '" << _imp->params[k::root()] << "' post hooks returned non-zero";
 }
 
 EntryType
@@ -181,9 +203,9 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end;
 
-    if (is_check && d == d_end && dst != _params[k::root()].realpath())
+    if (is_check && d == d_end && dst != _imp->params[k::root()].realpath())
     {
-        if (_params[k::options()][mo_allow_empty_dirs])
+        if (_imp->params[k::options()][mo_allow_empty_dirs])
             Log::get_instance()->message("merger.empty_directory", ll_warning, lc_context) << "Installing empty directory '"
                 << stringify(dst) << "'";
         else
@@ -205,13 +227,13 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
             case et_dir:
                 on_dir(is_check, *d, dst);
-                if (_result)
+                if (_imp->result)
                 {
-                    if (! _skip_dir)
+                    if (! _imp->skip_dir)
                         do_dir_recursive(is_check, *d,
                                 is_check ? (dst / d->basename()) : (dst / d->basename()).realpath());
                     else
-                        _skip_dir = false;
+                        _imp->skip_dir = false;
                 }
                 continue;
 
@@ -238,7 +260,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
     EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_file_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -246,7 +268,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 
     if (! is_check)
     {
-        HookResult hr(_params[k::environment()]->perform_hook(extend_hook(
+        HookResult hr(_imp->params[k::environment()]->perform_hook(extend_hook(
                         Hook("merger_install_file_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
@@ -257,7 +279,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_params[k::root()].realpath())));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params[k::root()].realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }
@@ -295,7 +317,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
     } while (false);
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_file_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -310,7 +332,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
     EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -318,7 +340,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 
     if (! is_check)
     {
-        HookResult hr(_params[k::environment()]->perform_hook(extend_hook(
+        HookResult hr(_imp->params[k::environment()]->perform_hook(extend_hook(
                         Hook("merger_install_dir_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
@@ -329,9 +351,9 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_params[k::root()].realpath())));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params[k::root()].realpath())));
             display_override("--- [skp] " + tidy);
-            _skip_dir = true;
+            _imp->skip_dir = true;
             return;
         }
     }
@@ -369,7 +391,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
     } while (false);
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -384,7 +406,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -392,7 +414,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 
     if (! is_check)
     {
-        HookResult hr(_params[k::environment()]->perform_hook(extend_hook(
+        HookResult hr(_imp->params[k::environment()]->perform_hook(extend_hook(
                         Hook("merger_install_sym_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
@@ -403,14 +425,14 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_params[k::root()].realpath())));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params[k::root()].realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }
     }
     else
     {
-        if (symlink_needs_rewriting(src) && ! _params[k::options()][mo_rewrite_symlinks])
+        if (symlink_needs_rewriting(src) && ! _imp->params[k::options()][mo_rewrite_symlinks])
             on_error(is_check, "Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
     }
 
@@ -446,7 +468,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     } while (false);
 
     if (is_check &&
-        0 != _params[k::environment()]->perform_hook(extend_hook(
+        0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_check_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
@@ -639,7 +661,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             + stringify(dst_name) + "':");
     MergeStatusFlags result;
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_pre")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
@@ -649,7 +671,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
     FSEntry dst_real(dst_dir / dst_name);
 
-    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
+    std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
         throw MergerError("Could not set SELinux context on '"
@@ -662,10 +684,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     uid_t dest_uid(src.owner());
     gid_t dest_gid(src.group());
 
-    if (! _params[k::no_chown()])
+    if (! _imp->params[k::no_chown()])
     {
-        uid_t new_uid(dest_uid == _params[k::environment()]->reduced_uid() ? 0 : -1);
-        gid_t new_gid(dest_gid == _params[k::environment()]->reduced_gid() ? 0 : -1);
+        uid_t new_uid(dest_uid == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
+        gid_t new_gid(dest_gid == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
         if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
         {
             FSEntry(src).chown(new_uid, new_gid);
@@ -686,13 +708,13 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
 
-        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
+        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
     else
     {
         do_copy = true;
         std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
-                _merged_ids.equal_range(src.lowlevel_id()));
+                _imp->merged_ids.equal_range(src.lowlevel_id()));
         for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
         {
             if (0 == ::link(i->second.c_str(), stringify(dst_real).c_str()))
@@ -719,7 +741,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (-1 == output_fd)
             throw MergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
-        if (! _params[k::no_chown()])
+        if (! _imp->params[k::no_chown()])
             if (0 != ::fchown(output_fd, dest_uid, dest_gid))
                 throw MergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
@@ -740,10 +762,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             throw MergerError(
                     "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
 
-        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
+        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
@@ -757,7 +779,7 @@ bool
 Merger::symlink_needs_rewriting(const FSEntry & sym)
 {
     std::string target(sym.readlink());
-    std::string real_image(stringify(_params[k::image()].realpath()));
+    std::string real_image(stringify(_imp->params[k::image()].realpath()));
 
     return (0 == target.compare(0, real_image.length(), real_image));
 }
@@ -770,7 +792,7 @@ Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
 
-    FSEntry real_image(_params[k::image()].realpath());
+    FSEntry real_image(_imp->params[k::image()].realpath());
     FSEntry dst(src.readlink());
     std::string fixed_dst(stringify(dst.strip_leading(real_image)));
 
@@ -787,10 +809,10 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
 {
     for (DirIterator d(dst, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
-        if (! _params[k::no_chown()])
+        if (! _imp->params[k::no_chown()])
         {
-            uid_t new_uid(d->owner() == _params[k::environment()]->reduced_uid() ? 0 : -1);
-            gid_t new_gid(d->group() == _params[k::environment()]->reduced_gid() ? 0 : -1);
+            uid_t new_uid(d->owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
+            gid_t new_gid(d->group() == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
             if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
             {
                 FSEntry f(*d);
@@ -814,12 +836,12 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
                 record_install_sym(*d, dst, MergeStatusFlags() + msi_parent_rename);
-                _merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
             case et_file:
                 record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
-                _merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
             case et_dir:
@@ -846,7 +868,7 @@ Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
     for (DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         mode_t mode(d->permissions());
-        tr1::shared_ptr<const SecurityContext> secctx(
+        std::tr1::shared_ptr<const SecurityContext> secctx(
                 MatchPathCon::get_instance()->match(stringify(dst / d->basename()), mode));
         if (0 != paludis::setfilecon(*d, secctx))
             throw MergerError("Could not set SELinux context on '"
@@ -863,7 +885,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 
     MergeStatusFlags result;
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
@@ -877,10 +899,10 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     if (0 != (mode & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
-    if (! _params[k::no_chown()])
+    if (! _imp->params[k::no_chown()])
     {
-        uid_t new_uid(dest_uid == _params[k::environment()]->reduced_uid() ? 0 : -1);
-        gid_t new_gid(dest_gid == _params[k::environment()]->reduced_gid() ? 0 : -1);
+        uid_t new_uid(dest_uid == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
+        gid_t new_gid(dest_gid == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
         if (uid_t(-1) != new_uid)
             mode &= ~S_ISUID;
         if (gid_t(-1) != new_gid)
@@ -897,7 +919,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     }
 
     FSEntry dst(dst_dir / src.basename());
-    tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
+    std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
         throw MergerError("Could not set SELinux context on '"
@@ -910,7 +932,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     {
         result += msi_rename;
         record_renamed_dir_recursive(dst);
-        _skip_dir = true;
+        _imp->skip_dir = true;
     }
     else
     {
@@ -922,14 +944,14 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         if (-1 == dst_fd)
             throw MergerError("Could not get an FD for the directory '"
                     + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
-        if (! _params[k::no_chown()])
+        if (! _imp->params[k::no_chown()])
             ::fchown(dst_fd, dest_uid, dest_gid);
         /* pick up set*id bits */
         ::fchmod(dst_fd, mode);
         try_to_copy_xattrs(src, dst_fd, result);
     }
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
@@ -948,15 +970,15 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 
     FSEntry dst(dst_dir / src.basename());
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst)))).max_exit_status)
         Log::get_instance()->message("merger.sym.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
-    uid_t dest_uid(src.owner() == _params[k::environment()]->reduced_uid() ? 0 : src.owner());
-    gid_t dest_gid(src.group() == _params[k::environment()]->reduced_gid() ? 0 : src.group());
+    uid_t dest_uid(src.owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : src.owner());
+    gid_t dest_gid(src.group() == _imp->params[k::environment()]->reduced_gid() ? 0 : src.group());
 
     if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
@@ -970,7 +992,7 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         do_sym = true;
         FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
         std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
-                _merged_ids.equal_range(src.lowlevel_id()));
+                _imp->merged_ids.equal_range(src.lowlevel_id()));
         for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
         {
             if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
@@ -991,17 +1013,17 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst).c_str()))
             throw MergerError("Couldn't create symlink at '" + stringify(dst) + "': "
                     + stringify(::strerror(errno)));
-        _merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst)));
+        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst)));
     }
 
-    if (! _params[k::no_chown()])
+    if (! _imp->params[k::no_chown()])
     {
         if (src.owner() != dest_uid || src.group() != dest_gid)
             result += msi_fixed_ownership;
         dst.lchown(dest_uid, dest_gid);
     }
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst)))).max_exit_status)
@@ -1014,7 +1036,7 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::unlink_file(FSEntry d)
 {
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_file_pre")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_file.pre_hooks.failure", ll_warning, lc_context) <<
@@ -1032,7 +1054,7 @@ Merger::unlink_file(FSEntry d)
 
     d.unlink();
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_file_post")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_file.post_hooks.failure", ll_warning, lc_context) <<
@@ -1042,7 +1064,7 @@ Merger::unlink_file(FSEntry d)
 void
 Merger::unlink_sym(FSEntry d)
 {
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_pre")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_sym.pre_hooks.failure", ll_warning, lc_context) <<
@@ -1050,7 +1072,7 @@ Merger::unlink_sym(FSEntry d)
 
     d.unlink();
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_post")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_sym.post_hooks.failure", ll_warning, lc_context) <<
@@ -1060,7 +1082,7 @@ Merger::unlink_sym(FSEntry d)
 void
 Merger::unlink_dir(FSEntry d)
 {
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_pre")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_dir.pre_hooks.failure", ll_warning, lc_context) <<
@@ -1068,7 +1090,7 @@ Merger::unlink_dir(FSEntry d)
 
     d.rmdir();
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_post")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_dir.post_hooks.failure", ll_warning, lc_context) <<
@@ -1078,7 +1100,7 @@ Merger::unlink_dir(FSEntry d)
 void
 Merger::unlink_misc(FSEntry d)
 {
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_pre")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_misc.pre_hooks.failure", ll_warning, lc_context) <<
@@ -1086,7 +1108,7 @@ Merger::unlink_misc(FSEntry d)
 
     d.unlink();
 
-    if (0 != _params[k::environment()]->perform_hook(extend_hook(
+    if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_post")
                          ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         Log::get_instance()->message("merger.unlink_misc.post_hooks.failure", ll_warning, lc_context) <<
@@ -1097,8 +1119,8 @@ Hook
 Merger::extend_hook(const Hook & h)
 {
     return h
-        ("ROOT", stringify(_params[k::root()]))
-        ("IMAGE", stringify(_params[k::image()]));
+        ("ROOT", stringify(_imp->params[k::root()]))
+        ("IMAGE", stringify(_imp->params[k::image()]));
 }
 
 #ifdef HAVE_XATTRS
@@ -1117,7 +1139,7 @@ Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & f
         return;
     }
 
-    tr1::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
+    std::tr1::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
     list_sz = flistxattr(src_fd, list_holder.get(), list_sz);
     if (-1 == list_sz)
     {
@@ -1140,7 +1162,7 @@ Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & f
                 break;
             }
 
-            tr1::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
+            std::tr1::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
             value_sz = fgetxattr(src_fd, key.c_str(), value_holder.get(), value_sz);
             if (-1 == value_sz)
             {

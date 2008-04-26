@@ -35,7 +35,7 @@ namespace paludis
         kc::Field<k::contents_file, FSEntry>,
         kc::Field<k::config_protect, std::string>,
         kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
         kc::Field<k::options, MergerOptions>
             > NDBAMMergerParams;
 
@@ -52,6 +52,8 @@ namespace paludis
         private:
             void display_override(const std::string &) const;
             std::string make_arrows(const MergeStatusFlags &) const;
+
+            PrivateImplementationPattern<NDBAMMerger>::ImpPtr & _imp;
 
         public:
             NDBAMMerger(const NDBAMMergerParams &);

@@ -39,119 +39,119 @@ class MetadataKeySptrToPythonVisitor :
     public ConstVisitor<MetadataKeyVisitorTypes>
 {
     private:
-        const tr1::shared_ptr<const MetadataKey> & _m_ptr;
+        const std::tr1::shared_ptr<const MetadataKey> & _m_ptr;
 
     public:
         boost::python::object obj;
 
-        MetadataKeySptrToPythonVisitor(const tr1::shared_ptr<const MetadataKey> & m_ptr) :
+        MetadataKeySptrToPythonVisitor(const std::tr1::shared_ptr<const MetadataKey> & m_ptr) :
             _m_ptr(m_ptr)
         {
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >(_m_ptr));
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<bool> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<bool> >(_m_ptr));
         }
 
         void visit(const MetadataTimeKey & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const Contents> > >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataValueKey<FSEntry> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<FSEntry> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<ProvideSpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<ProvideSpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(_m_ptr));
         }
 
         void visit(const MetadataSectionKey & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSectionKey>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSectionKey>(_m_ptr));
         }
 };
 
@@ -159,11 +159,11 @@ struct MetadataKeySptrToPython
 {
     MetadataKeySptrToPython()
     {
-        bp::to_python_converter<tr1::shared_ptr<const MetadataKey>, MetadataKeySptrToPython>();
+        bp::to_python_converter<std::tr1::shared_ptr<const MetadataKey>, MetadataKeySptrToPython>();
     }
 
     static PyObject *
-    convert(const tr1::shared_ptr<const MetadataKey> & m)
+    convert(const std::tr1::shared_ptr<const MetadataKey> & m)
     {
         MetadataKeySptrToPythonVisitor v(m);
         m->accept(v);
@@ -172,15 +172,15 @@ struct MetadataKeySptrToPython
 };
 
 struct MetadataPackageIDKeyWrapper :
-    MetadataValueKey<tr1::shared_ptr<const PackageID> > ,
-    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+    MetadataValueKey<std::tr1::shared_ptr<const PackageID> > ,
+    bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 {
     MetadataPackageIDKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<tr1::shared_ptr<const PackageID> > (r, h, t)
+        MetadataValueKey<std::tr1::shared_ptr<const PackageID> > (r, h, t)
     {
     }
 
-    virtual const tr1::shared_ptr<const PackageID> value() const
+    virtual const std::tr1::shared_ptr<const PackageID> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -252,7 +252,7 @@ struct MetadataSectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSectionKey", "need_keys_added");
     }
 
-    virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > title_key() const
+    virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > title_key() const
     {
         Lock l(get_mutex());
 
@@ -285,15 +285,15 @@ struct MetadataTimeKeyWrapper :
 };
 
 struct MetadataContentsKeyWrapper :
-    MetadataValueKey<tr1::shared_ptr<const Contents> > ,
-    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const Contents> > >
+    MetadataValueKey<std::tr1::shared_ptr<const Contents> > ,
+    bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 {
     MetadataContentsKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<tr1::shared_ptr<const Contents> > (r, h, t)
+        MetadataValueKey<std::tr1::shared_ptr<const Contents> > (r, h, t)
     {
     }
 
-    virtual const tr1::shared_ptr<const Contents> value() const
+    virtual const std::tr1::shared_ptr<const Contents> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -327,15 +327,15 @@ struct MetadataFSEntryKeyWrapper :
 };
 
 struct MetadataRepositoryMaskInfoKeyWrapper :
-    MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > ,
-    bp::wrapper<MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > >
+    MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > ,
+    bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >
 {
     MetadataRepositoryMaskInfoKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > (r, h, t)
+        MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > (r, h, t)
     {
     }
 
-    virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
+    virtual const std::tr1::shared_ptr<const RepositoryMaskInfo> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -357,7 +357,7 @@ struct MetadataCollectionKeyWrapper :
     {
     }
 
-    virtual const tr1::shared_ptr<const C_> value() const
+    virtual const std::tr1::shared_ptr<const C_> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -369,7 +369,7 @@ struct MetadataCollectionKeyWrapper :
     }
 
     std::string pretty_print_flat(const Formatter<
-            typename tr1::remove_const<
+            typename std::tr1::remove_const<
                     typename RemoveSharedPtr<typename C_::value_type>::Type>::type> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -392,7 +392,7 @@ struct MetadataCollectionKeyWrapper<IUseFlagSet> :
     {
     }
 
-    virtual const tr1::shared_ptr<const IUseFlagSet> value() const
+    virtual const std::tr1::shared_ptr<const IUseFlagSet> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -416,7 +416,7 @@ struct MetadataCollectionKeyWrapper<IUseFlagSet> :
 
     std::string pretty_print_flat_with_comparison(
             const Environment * const e,
-            const tr1::shared_ptr<const PackageID> & pid,
+            const std::tr1::shared_ptr<const PackageID> & pid,
             const Formatter<IUseFlag> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -439,7 +439,7 @@ struct MetadataSpecTreeKeyWrapper :
     {
     }
 
-    virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const typename C_::ConstItem> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -483,7 +483,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     {
     }
 
-    virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -516,7 +516,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
 
-    virtual const tr1::shared_ptr<const URILabel> initial_label() const
+    virtual const std::tr1::shared_ptr<const URILabel> initial_label() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -538,7 +538,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     {
     }
 
-    virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -571,7 +571,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
 
-    virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+    virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -585,11 +585,11 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
 
 template <typename C_>
 struct class_set_key :
-    bp::class_<MetadataCollectionKeyWrapper<C_>, tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
+    bp::class_<MetadataCollectionKeyWrapper<C_>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<MetadataCollectionKeyWrapper<C_>, tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
+        bp::class_<MetadataCollectionKeyWrapper<C_>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
                     "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
@@ -601,9 +601,9 @@ struct class_set_key :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataCollectionKey<C_> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
-                tr1::shared_ptr<MetadataKey> >();
+        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataCollectionKey<C_> > >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
+                std::tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataCollectionKey<C_>::value),
                 ("value() -> " + set + "\n"
@@ -620,11 +620,11 @@ struct class_set_key :
 
 template <>
 struct class_set_key<IUseFlagSet> :
-    bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
+    bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
+        bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
                     "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
@@ -636,9 +636,9 @@ struct class_set_key<IUseFlagSet> :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
-                tr1::shared_ptr<MetadataKey> >();
+        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
+                std::tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::value),
                 ("value() -> " + set + "\n"
@@ -664,11 +664,11 @@ struct class_set_key<IUseFlagSet> :
 
 template <typename C_>
 struct class_spec_tree_key :
-    bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
+    bp::class_<MetadataSpecTreeKeyWrapper<C_>, std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_spec_tree_key(const std::string & spec_tree) :
-        bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
+        bp::class_<MetadataSpecTreeKeyWrapper<C_>, std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + spec_tree + "Key").c_str(),
                     "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
@@ -680,9 +680,9 @@ struct class_spec_tree_key :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<C_> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
-                tr1::shared_ptr<MetadataKey> >();
+        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataSpecTreeKey<C_> > >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
+                std::tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
                 ("value() -> " + spec_tree + "\n"
@@ -706,12 +706,12 @@ struct class_spec_tree_key :
 template <>
 struct class_spec_tree_key<FetchableURISpecTree> :
     bp::class_<MetadataSpecTreeKeyWrapper<FetchableURISpecTree>,
-        tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+        std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_spec_tree_key(const std::string & spec_tree) :
         bp::class_<MetadataSpecTreeKeyWrapper<FetchableURISpecTree>, 
-            tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+            std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + spec_tree + "Key").c_str(),
                     "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
@@ -723,9 +723,9 @@ struct class_spec_tree_key<FetchableURISpecTree> :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
-                tr1::shared_ptr<MetadataKey> >();
+        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+                std::tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::value),
                 ("value() -> " + spec_tree + "\n"
@@ -755,12 +755,12 @@ struct class_spec_tree_key<FetchableURISpecTree> :
 template <>
 struct class_spec_tree_key<DependencySpecTree> :
     bp::class_<MetadataSpecTreeKeyWrapper<DependencySpecTree>,
-        tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+        std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_spec_tree_key(const std::string & spec_tree) :
         bp::class_<MetadataSpecTreeKeyWrapper<DependencySpecTree>, 
-            tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+            std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + spec_tree + "Key").c_str(),
                     "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
@@ -772,9 +772,9 @@ struct class_spec_tree_key<DependencySpecTree> :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
-                tr1::shared_ptr<MetadataKey> >();
+        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
+                std::tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::value),
                 ("value() -> " + spec_tree + "\n"
@@ -857,10 +857,10 @@ void expose_metadata_key()
     /**
      * MetadataPackageIDKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > > >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataPackageIDKeyWrapper, tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataPackageIDKeyWrapper, std::tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataPackageIDKey",
@@ -872,7 +872,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const PackageID> > ::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const PackageID> > ::value),
                 "value() -> PackageID\n"
                 "Fetch our value."
                 )
@@ -881,10 +881,10 @@ void expose_metadata_key()
     /**
      * MetadataStringKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<std::string> > >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataStringKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataStringKeyWrapper, tr1::shared_ptr<MetadataStringKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<std::string> > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataStringKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataStringKeyWrapper, std::tr1::shared_ptr<MetadataStringKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataStringKey",
@@ -905,10 +905,10 @@ void expose_metadata_key()
     /**
      * MetadataSectionKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSectionKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataSectionKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataSectionKeyWrapper, tr1::shared_ptr<MetadataSectionKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataSectionKey> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataSectionKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataSectionKeyWrapper, std::tr1::shared_ptr<MetadataSectionKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataSectionKey",
@@ -934,10 +934,10 @@ void expose_metadata_key()
     /**
      * MetadataTimeKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataTimeKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataTimeKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataTimeKeyWrapper, tr1::shared_ptr<MetadataTimeKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataTimeKey> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataTimeKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataTimeKeyWrapper, std::tr1::shared_ptr<MetadataTimeKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataTimeKey",
@@ -957,10 +957,10 @@ void expose_metadata_key()
     /**
      * MetadataFSEntryKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<FSEntry> > >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataFSEntryKeyWrapper, tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataFSEntryKeyWrapper, std::tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataFSEntryKey",
@@ -980,10 +980,10 @@ void expose_metadata_key()
     /**
      * MetadataContentsKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > > >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataContentsKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataContentsKeyWrapper, tr1::shared_ptr<MetadataContentsKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataContentsKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataContentsKeyWrapper, std::tr1::shared_ptr<MetadataContentsKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataContentsKey",
@@ -994,7 +994,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const Contents> > ::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const Contents> > ::value),
                 "value() -> Contents\n"
                 "Fetch our value."
                 )
@@ -1021,10 +1021,10 @@ void expose_metadata_key()
     /**
      * MetadataRepositoryMaskInfoKey
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > > >();
-    bp::implicitly_convertible<tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
-            tr1::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, std::tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataRepositoryMaskInfoKey",
@@ -1036,7 +1036,7 @@ void expose_metadata_key()
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > ::value),
+        .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > ::value),
                 "value() -> RepositoryMaskInfo\n"
                 "Fetch our value."
                 )

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -199,7 +199,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            NonUniqueQueryResultError(const Query &, const tr1::shared_ptr<const PackageIDSequence> &) throw ();
+            NonUniqueQueryResultError(const Query &, const std::tr1::shared_ptr<const PackageIDSequence> &) throw ();
     };
 
     /**
@@ -257,18 +257,18 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(int importance, const tr1::shared_ptr<Repository>);
+            void add_repository(int importance, const std::tr1::shared_ptr<Repository>);
 
             /**
              * Fetch a named repository.
              */
-            tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch a named repository.
              */
-            tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -302,7 +302,7 @@ namespace paludis
             /**
              * Query the repository.
              */
-            const tr1::shared_ptr<const PackageIDSequence> query(
+            const std::tr1::shared_ptr<const PackageIDSequence> query(
                     const Query &, const QueryOrder) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -316,7 +316,7 @@ namespace paludis
             ///\{
 
             struct RepositoryConstIteratorTag;
-            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
+            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> > RepositoryConstIterator;
 
             RepositoryConstIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

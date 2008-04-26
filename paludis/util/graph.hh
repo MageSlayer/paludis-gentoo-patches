@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for DirectedGraph and related utilities.
@@ -115,13 +115,13 @@ namespace paludis
     {
         private:
             class RemainingNodes;
-            tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
+            std::tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
 
         public:
             ///\name Basic operations
             ///\{
 
-            NoGraphTopologicalOrderExistsError(tr1::shared_ptr<const RemainingNodes>) throw ();
+            NoGraphTopologicalOrderExistsError(std::tr1::shared_ptr<const RemainingNodes>) throw ();
             ~NoGraphTopologicalOrderExistsError() throw ();
 
             ///\}
@@ -129,7 +129,7 @@ namespace paludis
             /**
              * The nodes remaining in the graph.
              */
-            tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
+            std::tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
     };
 
     /**

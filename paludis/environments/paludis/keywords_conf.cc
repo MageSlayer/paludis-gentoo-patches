@@ -19,7 +19,6 @@
 
 #include "keywords_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
@@ -36,6 +35,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 #include <list>
 #include <vector>
 #include <map>
@@ -44,12 +45,12 @@ using namespace paludis;
 using namespace paludis::paludis_environment;
 
 typedef std::list<KeywordName> KeywordsList;
-typedef std::map<tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
-typedef std::pair<tr1::shared_ptr<const SetSpecTree::ConstItem>, KeywordsList> SetNameEntry;
+typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
+typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, KeywordsList> SetNameEntry;
 
-typedef MakeHashedMap<QualifiedPackageName, PDSToKeywordsList>::Type SpecificMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, PDSToKeywordsList, Hash<QualifiedPackageName> > SpecificMap;
 typedef PDSToKeywordsList UnspecificMap;
-typedef MakeHashedMap<SetName, SetNameEntry>::Type NamedSetMap;
+typedef std::tr1::unordered_map<SetName, SetNameEntry, Hash<SetName> > NamedSetMap;
 
 namespace paludis
 {
@@ -84,7 +85,7 @@ KeywordsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a keywords file:");
 
-    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -107,7 +108,7 @@ KeywordsConf::add(const FSEntry & filename)
         if (std::string::npos == tokens.at(0).find("/"))
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
+                                std::tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -115,7 +116,7 @@ KeywordsConf::add(const FSEntry & filename)
         }
         else
         {
-            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), UserPackageDepSpecOptions() + updso_allow_wildcards)));
             if (d->package_ptr())
             {
@@ -136,7 +137,7 @@ KeywordsConf::add(const FSEntry & filename)
 }
 
 bool
-KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
+KeywordsConf::query(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
 {
     static const KeywordName star_keyword("*");
     static const KeywordName minus_star_keyword("-*");
@@ -190,7 +191,7 @@ KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e
                     Log::get_instance()->message("paludis_environment.keywords_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
                     i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 }
             }
 

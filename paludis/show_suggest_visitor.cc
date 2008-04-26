@@ -29,16 +29,16 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
+#include <tr1/functional>
 #include <set>
 #include <list>
 
 using namespace paludis;
 
-typedef std::list<tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
 
 namespace paludis
 {
@@ -46,34 +46,34 @@ namespace paludis
     struct Implementation<ShowSuggestVisitor>
     {
         DepList * const dep_list;
-        tr1::shared_ptr<const DestinationsSet> destinations;
+        std::tr1::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         bool dependency_tags;
         const bool only_if_suggested_label;
-        tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
+        std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
         std::set<SetName> recursing_sets;
         LabelsStack labels;
 
-        Implementation(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-                const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
+        Implementation(DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+                const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
             dep_list(d),
             destinations(dd),
             environment(e),
             id(p),
             dependency_tags(t),
             only_if_suggested_label(l),
-            conditions(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+            conditions(std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                               tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))
+                               std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))
         {
             labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
         }
     };
 }
 
-ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-        const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
+ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+        const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
     PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t, l))
 {
 }
@@ -87,14 +87,14 @@ ShowSuggestVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     if (a.condition_met())
     {
         _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-        RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+        RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
         std::for_each(cur, end, accept_visitor(*this));
     }
@@ -105,12 +105,12 @@ ShowSuggestVisitor::visit_sequence(const AnyDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(cur, end, accept_visitor(*this));
 }
@@ -121,7 +121,7 @@ ShowSuggestVisitor::visit_sequence(const AllDepSpec &,
         DependencySpecTree::ConstSequenceIterator end)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(cur, end, accept_visitor(*this));
 }
@@ -180,11 +180,11 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         }
     }
 
-    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+    Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
-    tr1::shared_ptr<const PackageIDSequence> installed_matches(_imp->environment->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> installed_matches(_imp->environment->package_database()->query(
                 query::SupportsAction<InstalledAction>() &
                 query::Matches(a), qo_order_by_version));
     if (! installed_matches->empty())
@@ -196,7 +196,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         return;
     }
 
-    tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
                 query::SupportsAction<InstallAction>() &
                 query::Matches(a), qo_order_by_version));
     if (matches->empty())
@@ -231,7 +231,7 @@ ShowSuggestVisitor::visit_leaf(const NamedSetDepSpec & s)
 {
     Context context("When expanding named set '" + stringify(s) + "':");
 
-    tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
+    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
 
     if (! set)
     {

@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
 
             /* Show the output of various members. Not all of these are of much
              * direct use. */
-            cout << "    " << left << setw(24) << "Hash value:" << " " << "0x" << hex << v->hash_value() << endl;
+            cout << "    " << left << setw(24) << "Hash value:" << " " << "0x" << hex << v->hash() << endl;
             cout << "    " << left << setw(24) << "Remove revision:" << " " << v->remove_revision() << endl;
             cout << "    " << left << setw(24) << "Revision only:" << " " << v->revision_only() << endl;
             cout << "    " << left << setw(24) << "Bump:" << " " << v->bump() << endl;

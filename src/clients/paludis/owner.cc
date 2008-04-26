@@ -95,7 +95,7 @@ namespace
 
 int
 do_one_owner(
-        const tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & query)
 {
     bool found_owner=false;
@@ -108,21 +108,21 @@ do_one_owner(
         if (! (*r)->some_ids_might_support_action(action_test))
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
         for (CategoryNamePartSet::ConstIterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
-                tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
+                std::tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
                 for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
                 {
                     if (! (*v)->contents_key())
                         continue;
 
-                    tr1::shared_ptr<const Contents> contents((*v)->contents_key()->value());
+                    std::tr1::shared_ptr<const Contents> contents((*v)->contents_key()->value());
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
                     if (! d.matches.empty())
@@ -147,7 +147,7 @@ do_one_owner(
 }
 
 int
-do_owner(tr1::shared_ptr<Environment> env)
+do_owner(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
     Context context("When performing owner action from command line:");

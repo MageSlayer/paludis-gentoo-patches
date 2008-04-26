@@ -38,19 +38,19 @@ namespace paludis
     struct Implementation<UnpackagedRepository>
     {
         const UnpackagedRepositoryParams params;
-        tr1::shared_ptr<const PackageID> id;
-        tr1::shared_ptr<PackageIDSequence> ids;
-        tr1::shared_ptr<QualifiedPackageNameSet> package_names;
-        tr1::shared_ptr<CategoryNamePartSet> category_names;
+        std::tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<PackageIDSequence> ids;
+        std::tr1::shared_ptr<QualifiedPackageNameSet> package_names;
+        std::tr1::shared_ptr<CategoryNamePartSet> category_names;
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_under_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > name_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > slot_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_under_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > name_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > slot_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
@@ -124,25 +124,25 @@ UnpackagedRepository::_add_metadata_keys() const
     add_metadata_key(_imp->description_key);
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 UnpackagedRepository::package_ids(const QualifiedPackageName & n) const
 {
     return n == _imp->id->name() ? _imp->ids : make_shared_ptr(new PackageIDSequence);
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 UnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
     return c == _imp->id->name().category ? _imp->package_names : make_shared_ptr(new QualifiedPackageNameSet);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 UnpackagedRepository::category_names() const
 {
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 UnpackagedRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return p == _imp->id->name().package ? _imp->category_names : make_shared_ptr(new CategoryNamePartSet);
@@ -183,15 +183,15 @@ UnpackagedRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 UnpackagedRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

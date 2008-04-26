@@ -46,9 +46,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
             TEST_CHECK((*repo)[k::virtuals_interface()]);
 
@@ -67,7 +67,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "cat/pkg-1:0::repo | cat/pkg-2:0::repo | virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo)");
         }
@@ -80,10 +80,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
-            tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
-            tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
+            std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
             env.package_database()->add_repository(2, virtuals);
             env.package_database()->add_repository(3, repo1);
@@ -105,7 +105,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "cat/pkg-1:0::repo1 | cat/pkg-2:0::repo1 | "
                     "virtual/foo-1::virtuals (virtual for cat/pkg-1:0::repo1) | "
@@ -121,9 +121,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
-            tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
+            std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
+            std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
 
             env.package_database()->add_repository(2, repo1);
             env.package_database()->add_repository(3, repo2);
@@ -140,7 +140,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "virtual/gkp-1:0::repo1 | virtual/pkg-1::virtuals (virtual for virtual/gkp-1:0::repo1) | "
                     "virtual/pkg-2:0::repo2 | virtual/pkg-2::virtuals (virtual for virtual/pkg-2:0::repo2)");

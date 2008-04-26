@@ -38,8 +38,8 @@ namespace
         PackageDepSpecData
     {
         std::string unnormalised_package_name;
-        tr1::shared_ptr<const QualifiedPackageName> package_v;
-        tr1::shared_ptr<VersionRequirements> version_requirements_v;
+        std::tr1::shared_ptr<const QualifiedPackageName> package_v;
+        std::tr1::shared_ptr<VersionRequirements> version_requirements_v;
 
         virtual std::string as_string() const
         {
@@ -65,22 +65,22 @@ namespace
             return result;
         }
 
-        virtual tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
         {
             return package_v;
         }
 
-        virtual tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
         {
-            return tr1::shared_ptr<const PackageNamePart>();
+            return std::tr1::shared_ptr<const PackageNamePart>();
         }
 
-        virtual tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
         {
-            return tr1::shared_ptr<const CategoryNamePart>();
+            return std::tr1::shared_ptr<const CategoryNamePart>();
         }
 
-        virtual tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
         {
             return version_requirements_v;
         }
@@ -90,19 +90,19 @@ namespace
             return vr_and;
         }
 
-        virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
-            return tr1::shared_ptr<const SlotRequirement>();
+            return std::tr1::shared_ptr<const SlotRequirement>();
         }
 
-        virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
         {
-            return tr1::shared_ptr<const RepositoryName>();
+            return std::tr1::shared_ptr<const RepositoryName>();
         }
 
-        virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
-            return tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
+            return std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
         }
 
         CRANPackageDepSpecData & version_requirement(const VersionRequirement & v)
@@ -131,7 +131,7 @@ paludis::cranrepository::parse_cran_package_dep_spec(const std::string & ss)
 {
     Context context("When parsing CRAN package dep spec '" + ss + "':");
 
-    tr1::shared_ptr<CRANPackageDepSpecData> data(new CRANPackageDepSpecData);
+    std::tr1::shared_ptr<CRANPackageDepSpecData> data(new CRANPackageDepSpecData);
     std::string s(ss);
 
     std::string::size_type p(s.find('('));

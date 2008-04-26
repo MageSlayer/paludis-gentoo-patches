@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -364,10 +364,10 @@ namespace paludis
             ///\name Current label selections
             ///\{
 
-            const tr1::shared_ptr<const DependencySystemLabelSequence> system_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const tr1::shared_ptr<const DependencyTypeLabelSequence> type_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const tr1::shared_ptr<const DependencyABIsLabelSequence> abi_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const tr1::shared_ptr<const DependencySuggestLabelSequence> suggest_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const DependencySystemLabelSequence> system_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const DependencyTypeLabelSequence> type_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const DependencyABIsLabelSequence> abi_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const DependencySuggestLabelSequence> suggest_labels() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };

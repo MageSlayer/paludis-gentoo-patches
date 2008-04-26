@@ -19,7 +19,6 @@
 
 #include "use_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
@@ -37,6 +36,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 #include <algorithm>
 #include <list>
 #include <vector>
@@ -44,15 +45,15 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseFlagWithStateMap;
+typedef std::tr1::unordered_map<UseFlagName, UseFlagState, Hash<UseFlagName> > UseFlagWithStateMap;
 typedef std::list<std::string> MinusStarPrefixList;
 typedef std::pair<UseFlagWithStateMap, MinusStarPrefixList> UseInfo;
-typedef std::pair<tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
-typedef std::pair<tr1::shared_ptr<const SetSpecTree::ConstItem>, UseInfo> DSWithUseInfo;
+typedef std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
+typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, UseInfo> DSWithUseInfo;
 typedef std::list<PDSWithUseInfo> PDSWithUseInfoList;
-typedef MakeHashedMap<QualifiedPackageName, PDSWithUseInfoList>::Type Qualified;
+typedef std::tr1::unordered_map<QualifiedPackageName, PDSWithUseInfoList, Hash<QualifiedPackageName> > Qualified;
 typedef std::list<PDSWithUseInfo> Unqualified;
-typedef MakeHashedMap<SetName, DSWithUseInfo>::Type Sets;
+typedef std::tr1::unordered_map<SetName, DSWithUseInfo, Hash<SetName> > Sets;
 
 namespace paludis
 {
@@ -86,7 +87,7 @@ UseConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a use file:");
 
-    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -132,7 +133,7 @@ UseConf::add(const FSEntry & filename)
         }
         else
         {
-            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), UserPackageDepSpecOptions() + updso_allow_wildcards)));
 
             if (d->additional_requirements_ptr())
@@ -206,7 +207,7 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     bool ignore_empty_minus_star(false);
     if ((*e.repository())[k::use_interface()])
     {
-        tr1::shared_ptr<const UseFlagNameSet> prefixes((*e.repository())[k::use_interface()]->use_expand_prefixes());
+        std::tr1::shared_ptr<const UseFlagNameSet> prefixes((*e.repository())[k::use_interface()]->use_expand_prefixes());
         for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
@@ -260,7 +261,7 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
                 Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                     << r->first << "' does not exist";
                 r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             }
         }
 
@@ -318,12 +319,12 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
-    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
+    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");
@@ -353,7 +354,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e)
                     Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << r->first << "' does not exist";
                     r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 }
             }
 

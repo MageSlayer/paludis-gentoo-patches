@@ -36,10 +36,10 @@
 
 using namespace paludis;
 
-tr1::shared_ptr<ERepository>
+std::tr1::shared_ptr<ERepository>
 paludis::make_ebuild_repository(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> > m)
+        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -50,13 +50,13 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
-    tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
+    std::tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
             new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf",
                 KeyValueConfigFileOptions())
             : 0);
 
-    tr1::shared_ptr<const RepositoryName> master_repository_name;
-    tr1::shared_ptr<const ERepository> master_repository;
+    std::tr1::shared_ptr<const RepositoryName> master_repository_name;
+    std::tr1::shared_ptr<const ERepository> master_repository;
     if (m->end() != m->find("master_repository") && ! m->find("master_repository")->second.empty())
     {
         Context context_local("When finding configuration information for master_repository '"
@@ -64,7 +64,7 @@ paludis::make_ebuild_repository(
 
         master_repository_name.reset(new RepositoryName(m->find("master_repository")->second));
 
-        tr1::shared_ptr<const Repository> master_repository_uncasted(
+        std::tr1::shared_ptr<const Repository> master_repository_uncasted(
                 env->package_database()->fetch_repository(*master_repository_name));
 
         std::string format("unknown");
@@ -74,7 +74,7 @@ paludis::make_ebuild_repository(
             throw ERepositoryConfigurationError("Master repository format is '" +
                     stringify(format) + "', not 'ebuild'");
 
-        master_repository = tr1::static_pointer_cast<const ERepository>(master_repository_uncasted);
+        master_repository = std::tr1::static_pointer_cast<const ERepository>(master_repository_uncasted);
 
         if (master_repository->params().master_repository)
             throw ERepositoryConfigurationError("Requested master repository has a master_repository of '" +
@@ -82,7 +82,7 @@ paludis::make_ebuild_repository(
                     "be used as a master repository");
     }
 
-    tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
     if (m->end() != m->find("profiles"))
         tokenise_whitespace(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
@@ -96,7 +96,7 @@ paludis::make_ebuild_repository(
             throw ERepositoryConfigurationError("No profiles have been specified");
     }
 
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
 
     if (m->end() != m->find("eclassdirs"))
         tokenise_whitespace(m->find("eclassdirs")->second,
@@ -273,7 +273,7 @@ paludis::make_ebuild_repository(
             throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords is unset or empty");
     }
 
-    return tr1::shared_ptr<ERepository>(new ERepository(ERepositoryParams::create()
+    return std::tr1::shared_ptr<ERepository>(new ERepository(ERepositoryParams::create()
                 .entry_format("ebuild")
                 .layout(layout)
                 .environment(env)
@@ -304,10 +304,10 @@ paludis::make_ebuild_repository(
                 .builddir(builddir)));
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 paludis::make_ebuild_repository_wrapped(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> > m)
+        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     return make_ebuild_repository(env, m);
 }

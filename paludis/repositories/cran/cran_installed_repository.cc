@@ -18,7 +18,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/hashed_containers.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/dep_spec.hh>
@@ -43,9 +42,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
-
+#include <paludis/util/hashes.hh>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <functional>
 #include <algorithm>
 #include <fstream>
@@ -54,7 +54,10 @@ using namespace paludis;
 
 #include <paludis/repositories/cran/cran_installed_repository-sr.cc>
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::Type IDMap;
+typedef std::tr1::unordered_map<
+    QualifiedPackageName,
+    std::tr1::shared_ptr<const cranrepository::CRANPackageID>,
+    Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
@@ -69,9 +72,9 @@ namespace paludis
         Implementation(const CRANInstalledRepositoryParams &);
         ~Implementation();
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
     };
 }
 
@@ -206,39 +209,39 @@ CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 CRANInstalledRepository::category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
     return result;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 CRANInstalledRepository::package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! has_category_named(c))
         return result;
 
     need_ids();
 
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first));
+            std::tr1::mem_fn(&std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const cranrepository::CRANPackageID> >::first));
 
     return result;
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 CRANInstalledRepository::package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     if (! has_package_named(n))
         return result;
 
@@ -251,12 +254,12 @@ CRANInstalledRepository::package_ids(const QualifiedPackageName & n) const
 }
 
 #if 0
-tr1::shared_ptr<const Contents>
+std::tr1::shared_ptr<const Contents>
 CRANInstalledRepository::do_contents(const Package ID & id) const
 {
     Context context("When fetching contents for " + stringify(id) + ":");
 
-    tr1::shared_ptr<Contents> result(new Contents);
+    std::tr1::shared_ptr<Contents> result(new Contents);
 
     if (! _imp->entries_valid)
         _imp->load_entries();
@@ -300,11 +303,11 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
         }
 
         if ("obj" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
         else if ("dir" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
         else if ("misc" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
         else if ("sym" == tokens.at(0))
         {
             if (tokens.size() < 4)
@@ -316,7 +319,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
                 continue;
             }
 
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(
                             tokens.at(1), tokens.at(3))));
         }
     }
@@ -367,10 +370,10 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
 }
 #endif
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 CRANInstalledRepository::make_cran_installed_repository(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> > m)
+        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     Context context("When making CRAN installed repository from repo_file '" + 
             (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
@@ -387,7 +390,7 @@ CRANInstalledRepository::make_cran_installed_repository(
     if (m->end() != m->find("world") && ! ((world = m->find("world")->second)).empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
-    return tr1::shared_ptr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()
+    return std::tr1::shared_ptr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .root(root)));
@@ -411,8 +414,8 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because its location ('" + stringify(_imp->location) + "') is not a directory");
 
-    tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, v));
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+    std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, v));
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash unmerge")
             .with_setenv("PN", vm->cran_interface->package)
@@ -426,7 +429,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 }
 #endif
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 CRANInstalledRepository::package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -434,15 +437,15 @@ CRANInstalledRepository::package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
         need_ids();
 
         for (IDMap::const_iterator p(_imp->ids.begin()), p_end(_imp->ids.end()) ;
                 p != p_end ; ++p)
         {
-            tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
+            std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
                     new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(
                             new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package))))));
             result->add(spec);
@@ -451,15 +454,15 @@ CRANInstalledRepository::package_set(const SetName & s) const
         return result;
     }
     else
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 CRANInstalledRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
     return result;
 }
@@ -571,13 +574,13 @@ CRANInstalledRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 CRANInstalledRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

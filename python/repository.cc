@@ -102,7 +102,7 @@ struct RepositoryWrapper :
 
 struct FakeRepositoryWrapper
 {
-    static tr1::shared_ptr<PackageID>
+    static std::tr1::shared_ptr<PackageID>
     add_version(FakeRepository & self, const QualifiedPackageName & qpn, const VersionSpec & vs)
     {
         return self.add_version(qpn, vs);
@@ -161,7 +161,7 @@ void expose_repository()
      * Repository
      */
     register_shared_ptrs_to_python<Repository>(rsp_const);
-    bp::class_<RepositoryWrapper, tr1::shared_ptr<Repository>, boost::noncopyable>
+    bp::class_<RepositoryWrapper, std::tr1::shared_ptr<Repository>, boost::noncopyable>
         (
          "Repository",
          "A Repository provides a representation of a physical repository to a PackageDatabase.",
@@ -431,9 +431,9 @@ void expose_repository()
     /**
      * FakeRepository
      */
-    bp::implicitly_convertible<tr1::shared_ptr<FakeRepository>, tr1::shared_ptr<Repository> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<FakeRepository>, std::tr1::shared_ptr<Repository> >();
 
-    bp::class_<FakeRepository, tr1::shared_ptr<FakeRepository>, bp::bases<Repository>, boost::noncopyable>
+    bp::class_<FakeRepository, std::tr1::shared_ptr<FakeRepository>, bp::bases<Repository>, boost::noncopyable>
         (
          "FakeRepository",
          "Fake repository for use in test cases.",

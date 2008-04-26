@@ -14,6 +14,10 @@ make_class_QualifiedPackageName()
         explicit QualifiedPackageName(const std::string &);
 END
 
+    extra_methods <<END
+        std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+END
+
     doxygen_comment << "END"
         /**
          * Represents a category plus package name.

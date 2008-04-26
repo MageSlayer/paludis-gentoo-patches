@@ -29,10 +29,10 @@ using namespace paludis;
 
 namespace
 {
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_unpackaged_repository(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m)
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         Context context("When creating UnpackagedRepository:");
 
@@ -81,10 +81,10 @@ namespace
                     (k::description(), description)));
     }
 
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_installed_unpackaged_repository(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m)
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         Context context("When creating InstalledUnpackagedRepository:");
 

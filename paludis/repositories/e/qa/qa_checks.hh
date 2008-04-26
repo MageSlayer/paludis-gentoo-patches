@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_QA_CHECKS_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_QA_CHECKS_HH 1
 
-#include <paludis/util/tr1_functional.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -35,55 +33,58 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/e_repository.hh>
 
+#include <tr1/functional>
+#include <tr1/memory>
+
 namespace paludis
 {
     namespace erepository
     {
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &
+                const std::tr1::shared_ptr<const ERepository> &
                 )> TreeCheckFunction;
 
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const std::string &
                 )> EclassFileContentsCheckFunction;
 
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const CategoryNamePart &
                 )> CategoryDirCheckFunction;
 
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const QualifiedPackageName &
                 )> PackageDirCheckFunction;
 
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
-                const tr1::shared_ptr<const ERepositoryID> &
+                const std::tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepositoryID> &
                 )> PackageIDCheckFunction;
 
-        typedef tr1::function<bool (
+        typedef std::tr1::function<bool (
                 const FSEntry &,
                 QAReporter &,
                 const Environment * const,
-                const tr1::shared_ptr<const ERepository> &,
-                const tr1::shared_ptr<const ERepositoryID> &,
+                const std::tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepositoryID> &,
                 const std::string &
                 )> PackageIDFileContentsCheckFunction;
 
@@ -98,22 +99,22 @@ namespace paludis
                 ~QAChecks();
 
             public:
-                const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
                     tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
                     eclass_file_contents_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
                     category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
                     package_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
                     package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> >
+                const std::tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> >
                     package_id_file_contents_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

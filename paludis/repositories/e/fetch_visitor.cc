@@ -48,26 +48,26 @@ namespace paludis
     struct Implementation<FetchVisitor>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         const EAPI & eapi;
         const FSEntry distdir;
         const bool fetch_unneeded;
         const bool userpriv;
         const std::string mirrors_name;
-        tr1::shared_ptr<const URILabel> default_label;
+        std::tr1::shared_ptr<const URILabel> default_label;
         const bool safe_resume;
 
         std::list<const URILabel *> labels;
 
         Implementation(
                 const Environment * const e,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const EAPI & p,
                 const FSEntry & d,
                 const bool f,
                 const bool u,
                 const std::string & m,
-                const tr1::shared_ptr<const URILabel> & n,
+                const std::tr1::shared_ptr<const URILabel> & n,
                 const bool sr) :
             env(e),
             id(i),
@@ -86,13 +86,13 @@ namespace paludis
 
 FetchVisitor::FetchVisitor(
         const Environment * const e,
-        const tr1::shared_ptr<const PackageID> & i,
+        const std::tr1::shared_ptr<const PackageID> & i,
         const EAPI & p,
         const FSEntry & d,
         const bool f,
         const bool u,
         const std::string & m,
-        const tr1::shared_ptr<const URILabel> & n,
+        const std::tr1::shared_ptr<const URILabel> & n,
         const bool sr) :
     PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr))
 {
@@ -181,7 +181,7 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
             continue;
         }
 
-        const tr1::shared_ptr<const FSEntrySequence> fetch_dirs(_imp->env->fetchers_dirs());
+        const std::tr1::shared_ptr<const FSEntrySequence> fetch_dirs(_imp->env->fetchers_dirs());
         bool found(false);
         for (FSEntrySequence::ConstIterator d(fetch_dirs->begin()), d_end(fetch_dirs->end()) ;
                 d != d_end ; ++d)
@@ -194,10 +194,10 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
                 if (_imp->userpriv)
                     cmd.with_uid_gid(_imp->env->reduced_uid(), _imp->env->reduced_gid());
 
-                tr1::shared_ptr<const FSEntrySequence> syncers_dirs(_imp->env->syncers_dirs());
-                tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->env->bashrc_files());
-                tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(_imp->env->fetchers_dirs());
-                tr1::shared_ptr<const FSEntrySequence> hook_dirs(_imp->env->hook_dirs());
+                std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(_imp->env->syncers_dirs());
+                std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->env->bashrc_files());
+                std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(_imp->env->fetchers_dirs());
+                std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(_imp->env->hook_dirs());
 
                 cmd
                     .with_setenv("P", stringify(_imp->id->name().package) + "-" +

@@ -131,7 +131,7 @@ VDBUnmerger::~VDBUnmerger()
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const
 {
-    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options[k::environment()]->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options[k::config_protect()])
@@ -216,7 +216,7 @@ VDBUnmerger::populate_unmerge_set()
         {
             std::string md5sum(tokens.at(2));
             time_t mtime(destringify<time_t>(tokens.at(3)));
-            tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
+            std::tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
             add_unmerge_entry(tokens.at(1), et_file, extra);
 
         }
@@ -224,7 +224,7 @@ VDBUnmerger::populate_unmerge_set()
         {
             std::string dest(tokens.at(2));
             time_t mtime(destringify<time_t>(tokens.at(3)));
-            tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
+            std::tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
             add_unmerge_entry(tokens.at(1), et_sym, extra);
         }
         else if ("misc" == tokens.at(0))
@@ -233,12 +233,12 @@ VDBUnmerger::populate_unmerge_set()
         else if ("fif" == tokens.at(0) || "dev" == tokens.at(0))
         {
             std::string type(tokens.at(0));
-            tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
+            std::tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
             add_unmerge_entry(tokens.at(1), et_misc, extra);
         }
         else if ("dir" == tokens.at(0))
         {
-            add_unmerge_entry(tokens.at(1), et_dir, tr1::shared_ptr<ExtraInfo>());
+            add_unmerge_entry(tokens.at(1), et_dir, std::tr1::shared_ptr<ExtraInfo>());
         }
         else
             Log::get_instance()->message("e.vdb.contents.malformed", ll_warning, lc_no_context)
@@ -247,9 +247,9 @@ VDBUnmerger::populate_unmerge_set()
 }
 
 bool
-VDBUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
-    tr1::shared_ptr<FileExtraInfo> fie(tr1::static_pointer_cast<FileExtraInfo>(ei));
+    std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
     if (! (_imp->options[k::root()] / f).is_regular_file())
         display("--- [!type] " + stringify(f));
@@ -276,9 +276,9 @@ VDBUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 bool
-VDBUnmerger::check_sym(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
-    tr1::shared_ptr<SymlinkExtraInfo> sie(tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
+    std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
     if (! (_imp->options[k::root()] / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
@@ -293,9 +293,9 @@ VDBUnmerger::check_sym(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 bool
-VDBUnmerger::check_misc(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_misc(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
-    tr1::shared_ptr<MiscExtraInfo> mie(tr1::static_pointer_cast<MiscExtraInfo>(ei));
+    std::tr1::shared_ptr<MiscExtraInfo> mie(std::tr1::static_pointer_cast<MiscExtraInfo>(ei));
 
     if ("fif" == mie->_type && ! (_imp->options[k::root()] / f).is_fifo())
         display("--- [!type] " + stringify(f));
@@ -308,7 +308,7 @@ VDBUnmerger::check_misc(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 bool
-VDBUnmerger::check_dir(const FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+VDBUnmerger::check_dir(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (! (_imp->options[k::root()] / f).is_directory())
         display("--- [!type] " + stringify(f));

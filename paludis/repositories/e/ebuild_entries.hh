@@ -53,7 +53,7 @@ namespace paludis
                 /**
                  * Create an EbuildEntries instance.
                  */
-                static tr1::shared_ptr<ERepositoryEntries> make_ebuild_entries(const Environment * const,
+                static std::tr1::shared_ptr<ERepositoryEntries> make_ebuild_entries(const Environment * const,
                             ERepository * const, const ERepositoryParams &);
 
                 ///\name Basic operations
@@ -75,26 +75,26 @@ namespace paludis
                 virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
-                virtual void fetch(const tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
-                virtual void pretend_fetch(const tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
-                virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
-                virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
-                virtual void info(const tr1::shared_ptr<const ERepositoryID> &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
 
                 virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
 

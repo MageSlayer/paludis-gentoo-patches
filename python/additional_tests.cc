@@ -21,7 +21,6 @@
 
 #include <python/paludis_python.hh>
 
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -38,6 +37,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <tr1/memory>
 
 using namespace paludis;
 namespace bp = boost::python;
@@ -46,8 +46,8 @@ namespace environment
 {
     void test_env(Environment & e)
     {
-        tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
-        tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
+        std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
+        std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
         e.package_database()->add_repository(0, repo);
 
         UseFlagName u("use");
@@ -57,7 +57,7 @@ namespace environment
 
         bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
 
-        tr1::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
+        std::tr1::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
         kns->insert(KeywordName("keyword"));
         bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, *pid));
 
@@ -148,7 +148,7 @@ namespace metadata_key
         MetadataKeyType foo(m.type());
     }
 
-    void test_metadata_package_id_key(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & m)
+    void test_metadata_package_id_key(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & m)
     {
         test_metadata_key(m);
         m.value();
@@ -173,13 +173,13 @@ namespace metadata_key
         time_t PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
-    void test_metadata_contents_key(const MetadataValueKey<tr1::shared_ptr<const Contents> > & m)
+    void test_metadata_contents_key(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_repository_mask_info_key(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & m)
+    void test_metadata_repository_mask_info_key(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & m)
     {
         test_metadata_key(m);
         m.value();
@@ -203,8 +203,8 @@ namespace metadata_key
         m.pretty_print_flat(ff);
 
         TestEnvironment e;
-        tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
-        tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
+        std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
+        std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
 
         m.pretty_print_flat_with_comparison(&e, pid, ff);
     }

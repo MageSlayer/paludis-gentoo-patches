@@ -23,8 +23,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/tr1_memory.hh>
-
+#include <tr1/memory>
 #include <vector>
 
 #include <cerrno>
@@ -38,7 +37,7 @@ namespace paludis
     template <>
     struct Implementation<WildcardExpander>
     {
-        tr1::shared_ptr<std::vector<FSEntry> > files;
+        std::tr1::shared_ptr<std::vector<FSEntry> > files;
         std::vector<FSEntry>::const_iterator it;
 
         Implementation() :
@@ -46,7 +45,7 @@ namespace paludis
         {
         }
 
-        Implementation(const tr1::shared_ptr<std::vector<FSEntry> > & the_files,
+        Implementation(const std::tr1::shared_ptr<std::vector<FSEntry> > & the_files,
                        std::vector<FSEntry>::const_iterator the_it) :
             files(the_files),
             it(the_it)

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,16 +62,16 @@ namespace paludis
     template <>
     struct Implementation<DepListEntryHandledSkippedDependent>
     {
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
 
-        Implementation(const tr1::shared_ptr<const PackageID> & i) :
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i) :
             id(i)
         {
         }
     };
 }
 
-DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const tr1::shared_ptr<const PackageID> & i) :
+DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const std::tr1::shared_ptr<const PackageID> & i) :
     PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(new Implementation<DepListEntryHandledSkippedDependent>(i))
 {
 }
@@ -80,7 +80,7 @@ DepListEntryHandledSkippedDependent::~DepListEntryHandledSkippedDependent()
 {
 }
 
-const tr1::shared_ptr<const PackageID>
+const std::tr1::shared_ptr<const PackageID>
 DepListEntryHandledSkippedDependent::id() const
 {
     return _imp->id;

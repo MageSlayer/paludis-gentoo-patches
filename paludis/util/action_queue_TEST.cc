@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@ namespace test_cases
             {
                 ActionQueue q;
                 for (int x(0) ; x < 100 ; ++x)
-                    q.enqueue(tr1::bind(tr1::mem_fn(&std::list<int>::push_back), &l, x));
+                    q.enqueue(std::tr1::bind(std::tr1::mem_fn(&std::list<int>::push_back), &l, x));
             }
 
             std::list<int>::const_iterator i(l.begin());

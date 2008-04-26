@@ -178,7 +178,7 @@ namespace paludis
              * implementations should not return zero here, but clients should still
              * check.
              */
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
 
             /**
              * The installed_root_key, if non-zero, specifies that we contain installed
@@ -187,7 +187,7 @@ namespace paludis
              * This key is currently used in various places to determine whether a repository is
              * an 'installed' repository or not.
              */
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
 
             ///\}
 
@@ -207,29 +207,29 @@ namespace paludis
             /**
              * Fetch our category names.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
 
             /**
              * Fetch unimportant categories.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
             /**
              * Fetch categories that contain a named package.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**
              * Fetch our package names.
              */
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart & c) const = 0;
 
             /**
              * Fetch our IDs.
              */
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
 
             /**
              * Might some of our IDs support a particular action?
@@ -295,22 +295,22 @@ namespace paludis
             /**
              * Fetch all arch flags.
              */
-            virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const = 0;
 
             /**
              * Fetch all expand flags.
              */
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const = 0;
 
             /**
              * Fetch all expand hidden flags.
              */
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const = 0;
 
             /**
              * Fetch all use expand prefixes.
              */
-            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const = 0;
 
             /**
              * Fetch the use expand separator (eg _ or :) for the
@@ -344,12 +344,12 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const = 0;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const = 0;
 
             /**
              * Gives a list of the names of all the sets provided by this repo.
              */
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -399,7 +399,7 @@ namespace paludis
              * Query an environment variable
              */
             virtual std::string get_environment_variable(
-                    const tr1::shared_ptr<const PackageID> & for_package,
+                    const std::tr1::shared_ptr<const PackageID> & for_package,
                     const std::string & var) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -461,7 +461,7 @@ namespace paludis
             /**
              * Fetch our virtual packages.
              */
-            virtual tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+            virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -481,8 +481,8 @@ namespace paludis
         public:
             virtual ~RepositoryMakeVirtualsInterface();
 
-            virtual const tr1::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
+            virtual const std::tr1::shared_ptr<const PackageID> make_virtual_package_id(
+                    const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -507,7 +507,7 @@ namespace paludis
             /**
              * Fetch our provided packages.
              */
-            virtual tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+            virtual std::tr1::shared_ptr<const ProvidesSequence> provided_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

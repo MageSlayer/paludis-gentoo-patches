@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007 David Leverton
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_CLONE_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 #ifdef PALUDIS_HAVE_CONCEPTS
 #  include <concepts>
@@ -56,7 +56,7 @@ namespace paludis
             /**
              * Return a new copy of ourselves.
              */
-            virtual tr1::shared_ptr<T_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual std::tr1::shared_ptr<T_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
@@ -80,7 +80,7 @@ namespace paludis
         public virtual Cloneable<Base_>
     {
         public:
-            virtual tr1::shared_ptr<Base_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::tr1::shared_ptr<Base_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Basic operations
             ///\{

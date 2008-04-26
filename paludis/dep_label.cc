@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,11 +28,11 @@
 
 using namespace paludis;
 
-template class Sequence<tr1::shared_ptr<const DependencyLabel> >;
-template class Sequence<tr1::shared_ptr<const DependencySystemLabel> >;
-template class Sequence<tr1::shared_ptr<const DependencyTypeLabel> >;
-template class Sequence<tr1::shared_ptr<const DependencySuggestLabel> >;
-template class Sequence<tr1::shared_ptr<const DependencyABIsLabel> >;
+template class Sequence<std::tr1::shared_ptr<const DependencyLabel> >;
+template class Sequence<std::tr1::shared_ptr<const DependencySystemLabel> >;
+template class Sequence<std::tr1::shared_ptr<const DependencyTypeLabel> >;
+template class Sequence<std::tr1::shared_ptr<const DependencySuggestLabel> >;
+template class Sequence<std::tr1::shared_ptr<const DependencyABIsLabel> >;
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const URILabel & l)
@@ -144,10 +144,10 @@ namespace paludis
     template <>
     struct Implementation<ActiveDependencyLabels>
     {
-        tr1::shared_ptr<DependencySystemLabelSequence> system_labels;
-        tr1::shared_ptr<DependencyTypeLabelSequence> type_labels;
-        tr1::shared_ptr<DependencyABIsLabelSequence> abi_labels;
-        tr1::shared_ptr<DependencySuggestLabelSequence> suggest_labels;
+        std::tr1::shared_ptr<DependencySystemLabelSequence> system_labels;
+        std::tr1::shared_ptr<DependencyTypeLabelSequence> type_labels;
+        std::tr1::shared_ptr<DependencyABIsLabelSequence> abi_labels;
+        std::tr1::shared_ptr<DependencySuggestLabelSequence> suggest_labels;
     };
 }
 
@@ -157,10 +157,10 @@ namespace
         ConstVisitor<DependencyLabelVisitorTypes>
     {
         Implementation<ActiveDependencyLabels> & _imp;
-        const tr1::shared_ptr<const DependencyLabel> _l;
+        const std::tr1::shared_ptr<const DependencyLabel> _l;
 
         LabelsPopulator(Implementation<ActiveDependencyLabels> & i,
-                const tr1::shared_ptr<const DependencyLabel> & l) :
+                const std::tr1::shared_ptr<const DependencyLabel> & l) :
             _imp(i),
             _l(l)
         {
@@ -170,28 +170,28 @@ namespace
         {
             if (! _imp.suggest_labels)
                 _imp.suggest_labels.reset(new DependencySuggestLabelSequence);
-            _imp.suggest_labels->push_back(tr1::static_pointer_cast<const DependencySuggestLabel>(_l));
+            _imp.suggest_labels->push_back(std::tr1::static_pointer_cast<const DependencySuggestLabel>(_l));
         }
 
         void visit(const DependencySystemLabel &)
         {
             if (! _imp.system_labels)
                 _imp.system_labels.reset(new DependencySystemLabelSequence);
-            _imp.system_labels->push_back(tr1::static_pointer_cast<const DependencySystemLabel>(_l));
+            _imp.system_labels->push_back(std::tr1::static_pointer_cast<const DependencySystemLabel>(_l));
         }
 
         void visit(const DependencyABIsLabel &)
         {
             if (! _imp.abi_labels)
                 _imp.abi_labels.reset(new DependencyABIsLabelSequence);
-            _imp.abi_labels->push_back(tr1::static_pointer_cast<const DependencyABIsLabel>(_l));
+            _imp.abi_labels->push_back(std::tr1::static_pointer_cast<const DependencyABIsLabel>(_l));
         }
 
         void visit(const DependencyTypeLabel &)
         {
             if (! _imp.type_labels)
                 _imp.type_labels.reset(new DependencyTypeLabelSequence);
-            _imp.type_labels->push_back(tr1::static_pointer_cast<const DependencyTypeLabel>(_l));
+            _imp.type_labels->push_back(std::tr1::static_pointer_cast<const DependencyTypeLabel>(_l));
         }
     };
 }
@@ -288,25 +288,25 @@ ActiveDependencyLabels::~ActiveDependencyLabels()
 {
 }
 
-const tr1::shared_ptr<const DependencySystemLabelSequence>
+const std::tr1::shared_ptr<const DependencySystemLabelSequence>
 ActiveDependencyLabels::system_labels() const
 {
     return _imp->system_labels;
 }
 
-const tr1::shared_ptr<const DependencyTypeLabelSequence>
+const std::tr1::shared_ptr<const DependencyTypeLabelSequence>
 ActiveDependencyLabels::type_labels() const
 {
     return _imp->type_labels;
 }
 
-const tr1::shared_ptr<const DependencyABIsLabelSequence>
+const std::tr1::shared_ptr<const DependencyABIsLabelSequence>
 ActiveDependencyLabels::abi_labels() const
 {
     return _imp->abi_labels;
 }
 
-const tr1::shared_ptr<const DependencySuggestLabelSequence>
+const std::tr1::shared_ptr<const DependencySuggestLabelSequence>
 ActiveDependencyLabels::suggest_labels() const
 {
     return _imp->suggest_labels;

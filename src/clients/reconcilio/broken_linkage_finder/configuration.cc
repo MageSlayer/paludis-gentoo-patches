@@ -31,9 +31,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-
+#include <tr1/functional>
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -75,7 +74,7 @@ namespace
 
     template <typename T_>
     void
-    from_colon_string(const tr1::function<std::string (const std::string &)> & source,
+    from_colon_string(const std::tr1::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
@@ -89,7 +88,7 @@ namespace
 
     template <typename T_>
     void
-    from_string(const tr1::function<std::string (const std::string &)> & source,
+    from_string(const std::tr1::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
@@ -167,12 +166,12 @@ Configuration::~Configuration()
 void
 Implementation<Configuration>::load_from_environment()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context ctx("When checking environment variables:");
 
-    tr1::function<std::string (const std::string &)> fromenv(
-        tr1::bind(getenv_with_default, _1, ""));
+    std::tr1::function<std::string (const std::string &)> fromenv(
+        std::tr1::bind(getenv_with_default, _1, ""));
 
     from_string(fromenv, "LD_LIBRARY_MASK",  ld_library_mask);
     from_string(fromenv, "SEARCH_DIRS",      search_dirs);
@@ -182,7 +181,7 @@ Implementation<Configuration>::load_from_environment()
 void
 Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry etc_revdep_rebuild(root / "etc" / "revdep-rebuild");
     Context ctx("When reading '" + stringify(etc_revdep_rebuild) + "':");
@@ -209,8 +208,8 @@ Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root
             {
                 KeyValueConfigFile kvs(*it, opts);
 
-                tr1::function<std::string (const std::string &)> fromfile(
-                    tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
+                std::tr1::function<std::string (const std::string &)> fromfile(
+                    std::tr1::bind(&KeyValueConfigFile::get, std::tr1::cref(kvs), _1));
 
                 from_string(fromfile, "LD_LIBRARY_MASK",  ld_library_mask);
                 from_string(fromfile, "SEARCH_DIRS",      search_dirs);
@@ -229,7 +228,7 @@ Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root
 void
 Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry etc_profile_env(root / "etc" / "profile.env");
     Context ctx("When reading '" + stringify(etc_profile_env) + "':");
@@ -243,8 +242,8 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
 
         KeyValueConfigFile kvs(etc_profile_env, opts);
 
-        tr1::function<std::string (const std::string &)> fromfile(
-            tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
+        std::tr1::function<std::string (const std::string &)> fromfile(
+            std::tr1::bind(&KeyValueConfigFile::get, std::tr1::cref(kvs), _1));
 
         from_colon_string(fromfile, "PATH",     search_dirs);
         from_colon_string(fromfile, "ROOTPATH", search_dirs);

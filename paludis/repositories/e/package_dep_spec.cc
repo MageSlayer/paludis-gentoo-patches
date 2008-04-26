@@ -29,13 +29,14 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <tr1/memory>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 PartiallyMadePackageDepSpec
 paludis::erepository::partial_parse_e_package_dep_spec(
-        const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
+        const std::string & ss, const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
 {
     Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi[k::name()]) + "':");
 
@@ -141,7 +142,7 @@ paludis::erepository::partial_parse_e_package_dep_spec(
                 {
                     std::string raw_flag("[" + flag + "]");
 
-                    tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req;
+                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req;
                     if ('=' == flag.at(flag.length() - 1))
                     {
                         if (! id)
@@ -393,7 +394,7 @@ paludis::erepository::partial_parse_e_package_dep_spec(
 }
 
 PackageDepSpec
-paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const tr1::shared_ptr<const PackageID> & id)
+paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
 {
     return partial_parse_e_package_dep_spec(ss, eapi, id);
 }

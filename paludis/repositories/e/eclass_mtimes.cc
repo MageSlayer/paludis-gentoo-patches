@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,12 +18,13 @@
  */
 
 #include "eclass_mtimes.hh"
-#include <paludis/hashed_containers.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 
@@ -32,18 +33,18 @@ namespace paludis
     template<>
     struct Implementation<EclassMtimes>
     {
-        tr1::shared_ptr<const FSEntrySequence> eclass_dirs;
+        std::tr1::shared_ptr<const FSEntrySequence> eclass_dirs;
         mutable Mutex mutex;
-        mutable MakeHashedMap<std::string, time_t>::Type eclass_mtimes;
+        mutable std::tr1::unordered_map<std::string, time_t, Hash<std::string> > eclass_mtimes;
 
-        Implementation(tr1::shared_ptr<const FSEntrySequence> d) :
+        Implementation(std::tr1::shared_ptr<const FSEntrySequence> d) :
             eclass_dirs(d)
         {
         }
     };
 }
 
-EclassMtimes::EclassMtimes(tr1::shared_ptr<const FSEntrySequence> d) :
+EclassMtimes::EclassMtimes(std::tr1::shared_ptr<const FSEntrySequence> d) :
     PrivateImplementationPattern<EclassMtimes>(new Implementation<EclassMtimes>(d))
 {
 }
@@ -57,7 +58,7 @@ EclassMtimes::mtime(const std::string & e) const
 {
     Lock l(_imp->mutex);
 
-    MakeHashedMap<std::string, time_t>::Type::const_iterator i(_imp->eclass_mtimes.find(e));
+    std::tr1::unordered_map<std::string, time_t, Hash<std::string> >::const_iterator i(_imp->eclass_mtimes.find(e));
     if (i != _imp->eclass_mtimes.end())
         return i->second;
 

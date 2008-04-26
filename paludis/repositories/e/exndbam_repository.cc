@@ -66,10 +66,10 @@ namespace paludis
         ExndbamRepositoryParams params;
         mutable NDBAM ndbam;
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
 
         Implementation(const ExndbamRepositoryParams & p) :
             params(p),
@@ -129,10 +129,10 @@ ExndbamRepository::_add_metadata_keys() const
 }
 
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 ExndbamRepository::make_exndbam_repository(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> > m)
+        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
     Context context("When making Exndbam repository from repo_file '" + repo_file + "':");
@@ -169,7 +169,7 @@ ExndbamRepository::make_exndbam_repository(
             "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";
 
-    return tr1::shared_ptr<Repository>(new ExndbamRepository(
+    return std::tr1::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
                 ExndbamRepositoryParams::create()
                 .environment(env)
@@ -191,11 +191,11 @@ ExndbamRepository::invalidate_masks()
 {
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 ExndbamRepository::package_ids(const QualifiedPackageName & q) const
 {
-    tr1::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::tr1::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
+    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
@@ -210,19 +210,19 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
     return result;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 ExndbamRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->ndbam.package_names(c);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 ExndbamRepository::category_names() const
 {
     return _imp->ndbam.category_names();
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 ExndbamRepository::category_names_containing_package(
         const PackageNamePart & p) const
 {
@@ -247,13 +247,13 @@ ExndbamRepositoryConfigurationError::ExndbamRepositoryConfigurationError(
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 ExndbamRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 ExndbamRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -273,9 +273,9 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m[k::package_id()]))
         throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
 
-    tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m[k::package_id()]->name()));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m[k::package_id()]->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
@@ -311,7 +311,7 @@ ExndbamRepository::merge(const MergeParams & m)
     WriteVDBEntryCommand write_vdb_entry_command(
             WriteVDBEntryParams::named_create()
             (k::environment(), _imp->params.environment)
-            (k::package_id(), tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
+            (k::package_id(), std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
             (k::output_directory(), target_ver_dir)
             (k::environment_file(), m[k::environment_file()]));
 
@@ -355,7 +355,7 @@ ExndbamRepository::merge(const MergeParams & m)
     if (if_overwritten_id)
     {
         UninstallActionOptions uninstall_options(false);
-        perform_uninstall(tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), uninstall_options, true);
+        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), uninstall_options, true);
     }
 
     VDBPostMergeCommand post_merge_command(
@@ -366,7 +366,7 @@ ExndbamRepository::merge(const MergeParams & m)
 }
 
 void
-ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id,
+ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const UninstallActionOptions & o, bool replace) const
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
@@ -374,7 +374,7 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
     bool last(! replace);
     if (last)
     {
-        tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
             if (**v != *id)
@@ -389,9 +389,9 @@ ExndbamRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> 
                 "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
 
     FSEntry ver_dir(id->fs_location_key()->value());
-    tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_uninstall);

@@ -32,9 +32,9 @@ using namespace paludis::erepository;
 bool
 paludis::erepository::stray_files_check(
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const ERepository> & repo,
         const FSEntry & dir,
-        const tr1::function<bool (const tr1::shared_ptr<const ERepository> &, const FSEntry &)> & stray,
+        const std::tr1::function<bool (const std::tr1::shared_ptr<const ERepository> &, const FSEntry &)> & stray,
         const std::string & name
         )
 {
@@ -52,7 +52,7 @@ paludis::erepository::stray_files_check(
 
 bool
 paludis::erepository::is_stray_at_tree_dir(
-        const tr1::shared_ptr<const ERepository> &,
+        const std::tr1::shared_ptr<const ERepository> &,
         const FSEntry & d)
 {
     if (d.is_directory_or_symlink_to_directory())
@@ -73,7 +73,7 @@ paludis::erepository::is_stray_at_tree_dir(
 
 bool
 paludis::erepository::is_stray_at_category_dir(
-        const tr1::shared_ptr<const ERepository> &,
+        const std::tr1::shared_ptr<const ERepository> &,
         const FSEntry & d)
 {
     if (d.is_directory_or_symlink_to_directory())

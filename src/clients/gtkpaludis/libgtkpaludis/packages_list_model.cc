@@ -12,11 +12,11 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <tr1/functional>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -48,7 +48,7 @@ namespace
         std::string title;
         std::string status_markup;
         std::string description;
-        tr1::shared_ptr<const QualifiedPackageName> qpn;
+        std::tr1::shared_ptr<const QualifiedPackageName> qpn;
         PackagesPackageFilterOption local_best_option;
         std::list<PopulateItem> children;
         bool merge_if_one_child;
@@ -129,12 +129,12 @@ PackagesListModel::populate()
 namespace
 {
     PopulateItem make_item(const PackageDepSpec & pds,
-            const tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const Environment * const environment)
     {
         PackagesPackageFilterOption best_option(ppfo_all_packages);
         std::string status;
-        paludis::tr1::shared_ptr<const PackageIDSequence> ci(
+        std::tr1::shared_ptr<const PackageIDSequence> ci(
                 environment->package_database()->query(
                     query::InstalledAtRoot(environment->root()) &
                     query::Matches(pds) &
@@ -143,7 +143,7 @@ namespace
                         .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))),
                     qo_order_by_version));
 
-        paludis::tr1::shared_ptr<const PackageIDSequence> av(
+        std::tr1::shared_ptr<const PackageIDSequence> av(
                 environment->package_database()->query(
                     query::SupportsAction<InstallAction>() &
                     query::Matches(pds) &
@@ -174,7 +174,7 @@ namespace
         }
         else
         {
-            paludis::tr1::shared_ptr<const PackageIDSequence> av(
+            std::tr1::shared_ptr<const PackageIDSequence> av(
                     environment->package_database()->query(
                         query::Matches(pds) &
                         query::Matches(make_package_dep_spec()
@@ -210,11 +210,11 @@ namespace
 void
 PackagesListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<PopulateData> data(new PopulateData);
+    std::tr1::shared_ptr<PopulateData> data(new PopulateData);
 
     if (_imp->packages_page->get_category())
     {
-        paludis::tr1::shared_ptr<const PackageIDSequence> c(
+        std::tr1::shared_ptr<const PackageIDSequence> c(
                 _imp->main_window->environment()->package_database()->query(
                     *_imp->packages_page->get_repository_filter() &
                     query::Category(*_imp->packages_page->get_category()),
@@ -245,7 +245,7 @@ PackagesListModel::populate_in_paludis_thread()
         _imp->main_window->environment()->set(*_imp->packages_page->get_set())->accept(f);
         std::set<std::string> a;
         std::transform(indirect_iterator(f.begin()), indirect_iterator(f.end()), std::inserter(a, a.begin()),
-                tr1::mem_fn(&StringDepSpec::text));
+                std::tr1::mem_fn(&StringDepSpec::text));
 
         for (std::set<std::string>::const_iterator i(a.begin()), i_end(a.end()) ;
                 i != i_end ; ++i)
@@ -255,7 +255,7 @@ PackagesListModel::populate_in_paludis_thread()
             PackageDepSpec ds(parse_user_package_dep_spec(*i, UserPackageDepSpecOptions() + updso_allow_wildcards));
             if (ds.package_ptr())
             {
-                paludis::tr1::shared_ptr<const PackageIDSequence> c(
+                std::tr1::shared_ptr<const PackageIDSequence> c(
                         _imp->main_window->environment()->package_database()->query(
                             *_imp->packages_page->get_repository_filter() &
                             query::Matches(ds),
@@ -271,7 +271,7 @@ PackagesListModel::populate_in_paludis_thread()
             }
             else
             {
-                paludis::tr1::shared_ptr<const PackageIDSequence> c(
+                std::tr1::shared_ptr<const PackageIDSequence> c(
                         _imp->main_window->environment()->package_database()->query(
                             *_imp->packages_page->get_repository_filter() &
                             query::Matches(ds),
@@ -304,7 +304,7 @@ PackagesListModel::populate_in_paludis_thread()
 }
 
 void
-PackagesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const PackagesListModel::PopulateData> names)
+PackagesListModel::populate_in_gui_thread(std::tr1::shared_ptr<const PackagesListModel::PopulateData> names)
 {
     clear();
     Gtk::TreeNodeChildren c(children());

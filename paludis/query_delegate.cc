@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,30 +29,30 @@ QueryDelegate::~QueryDelegate()
 {
 }
 
-tr1::shared_ptr<RepositoryNameSequence>
+std::tr1::shared_ptr<RepositoryNameSequence>
 QueryDelegate::repositories(const Environment &) const
 {
-    return tr1::shared_ptr<RepositoryNameSequence>();
+    return std::tr1::shared_ptr<RepositoryNameSequence>();
 }
 
-tr1::shared_ptr<CategoryNamePartSet>
-QueryDelegate::categories(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>) const
+std::tr1::shared_ptr<CategoryNamePartSet>
+QueryDelegate::categories(const Environment &, std::tr1::shared_ptr<const RepositoryNameSequence>) const
 {
-    return tr1::shared_ptr<CategoryNamePartSet>();
+    return std::tr1::shared_ptr<CategoryNamePartSet>();
 }
 
-tr1::shared_ptr<QualifiedPackageNameSet>
-QueryDelegate::packages(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
-        tr1::shared_ptr<const CategoryNamePartSet>) const
+std::tr1::shared_ptr<QualifiedPackageNameSet>
+QueryDelegate::packages(const Environment &, std::tr1::shared_ptr<const RepositoryNameSequence>,
+        std::tr1::shared_ptr<const CategoryNamePartSet>) const
 {
-    return tr1::shared_ptr<QualifiedPackageNameSet>();
+    return std::tr1::shared_ptr<QualifiedPackageNameSet>();
 }
 
-tr1::shared_ptr<PackageIDSequence>
-QueryDelegate::ids(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
-        tr1::shared_ptr<const QualifiedPackageNameSet>) const
+std::tr1::shared_ptr<PackageIDSequence>
+QueryDelegate::ids(const Environment &, std::tr1::shared_ptr<const RepositoryNameSequence>,
+        std::tr1::shared_ptr<const QualifiedPackageNameSet>) const
 {
-    return tr1::shared_ptr<PackageIDSequence>();
+    return std::tr1::shared_ptr<PackageIDSequence>();
 }
 
 

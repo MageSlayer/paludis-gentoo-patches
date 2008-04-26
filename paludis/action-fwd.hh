@@ -24,8 +24,8 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/kc-fwd.hh>
 #include <paludis/util/keys.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/repository-fwd.hh>
+#include <tr1/memory>
 
 /** \file
  * Forward declarations for paludis/action.hh .
@@ -84,7 +84,7 @@ namespace paludis
         kc::Field<k::no_config_protect, bool>,
         kc::Field<k::debug_build, InstallActionDebugOption>,
         kc::Field<k::checks, InstallActionChecksOption>,
-        kc::Field<k::destination, tr1::shared_ptr<Repository> >
+        kc::Field<k::destination, std::tr1::shared_ptr<Repository> >
             > InstallActionOptions;
 
     /**

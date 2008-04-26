@@ -19,7 +19,6 @@
 
 #include "e_repository_profile_file.hh"
 #include "e_repository_mask_file.hh"
-#include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>
@@ -30,6 +29,7 @@
 #include <list>
 #include <set>
 #include <algorithm>
+#include <tr1/type_traits>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -80,7 +80,7 @@ namespace paludis
     template <typename F_>
     struct Implementation<ProfileFile<F_> >
     {
-        typedef std::list<typename tr1::remove_const<typename tr1::remove_reference<
+        typedef std::list<typename std::tr1::remove_const<typename std::tr1::remove_reference<
             typename F_::ConstIterator::value_type>::type>::type> Lines;
         Lines lines;
 
@@ -100,7 +100,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     F_ file(f, LineConfigFileOptions());
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        const std::string & key(FileEntryTraits<typename tr1::remove_const<typename tr1::remove_reference<
+        const std::string & key(FileEntryTraits<typename std::tr1::remove_const<typename std::tr1::remove_reference<
                 typename F_::ConstIterator::value_type>::type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {

@@ -42,10 +42,10 @@ namespace paludis
     template<>
     struct Implementation<FakeRepository>
     {
-        tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
+        std::tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
         std::map<std::string, std::string> mirrors;
 
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation() :
             virtual_packages(new FakeRepository::VirtualsSequence),
@@ -108,14 +108,14 @@ FakeRepository::~FakeRepository()
 {
 }
 
-tr1::shared_ptr<const FakeRepository::VirtualsSequence>
+std::tr1::shared_ptr<const FakeRepository::VirtualsSequence>
 FakeRepository::virtual_packages() const
 {
     return _imp->virtual_packages;
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, tr1::shared_ptr<const PackageDepSpec> p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepSpec> p)
 {
     _imp->virtual_packages->push_back(RepositoryVirtualsEntry(q, p));
 }
@@ -201,15 +201,15 @@ FakeRepository::end_mirrors(const std::string & s) const
     return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

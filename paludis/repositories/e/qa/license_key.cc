@@ -43,12 +43,12 @@ namespace
     {
         const FSEntry & entry;
         QAReporter & reporter;
-        tr1::shared_ptr<const ERepositoryID> id;
-        tr1::shared_ptr<const FSEntrySequence> dirs;
+        std::tr1::shared_ptr<const ERepositoryID> id;
+        std::tr1::shared_ptr<const FSEntrySequence> dirs;
         std::string name;
 
-        Checker(const FSEntry & e, QAReporter & r, const tr1::shared_ptr<const ERepositoryID> & p,
-                const tr1::shared_ptr<const FSEntrySequence> d, const std::string & n) :
+        Checker(const FSEntry & e, QAReporter & r, const std::tr1::shared_ptr<const ERepositoryID> & p,
+                const std::tr1::shared_ptr<const FSEntrySequence> d, const std::string & n) :
             entry(e),
             reporter(r),
             id(p),
@@ -80,8 +80,8 @@ bool
 paludis::erepository::license_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepository> & repo,
-        const tr1::shared_ptr<const ERepositoryID> & id,
+        const std::tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using license_key_check on ID '" + stringify(*id) + "':");

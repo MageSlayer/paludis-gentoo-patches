@@ -24,9 +24,9 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
+#include <tr1/functional>
 #include <algorithm>
 #include <list>
 
@@ -111,7 +111,7 @@ namespace
                     task->on_sync_pre(r);
                 }
 
-                tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
+                std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
                 if ((*rr)[k::syncable_interface()] && (*rr)[k::syncable_interface()]->sync())
                 {
                     Lock l(mutex);
@@ -172,19 +172,19 @@ SyncTask::execute()
 
     ItemSyncer s(std::distance(_imp->targets.begin(), _imp->targets.end()), _imp->env, this);
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 #ifdef PALUDIS_ENABLE_THREADS
     if (_imp->parallel)
     {
         ActionQueue actions(5);
         for (std::list<RepositoryName>::const_iterator t(_imp->targets.begin()), t_end(_imp->targets.end()) ;
                 t != t_end ; ++t)
-            actions.enqueue(tr1::bind(&ItemSyncer::sync, &s, *t));
+            actions.enqueue(std::tr1::bind(&ItemSyncer::sync, &s, *t));
     }
     else
-        std::for_each(_imp->targets.begin(), _imp->targets.end(), tr1::bind(&ItemSyncer::sync, &s, _1));
+        std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
 #else
-    std::for_each(_imp->targets.begin(), _imp->targets.end(), tr1::bind(&ItemSyncer::sync, &s, _1));
+    std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
 #endif
 
     on_sync_all_post();

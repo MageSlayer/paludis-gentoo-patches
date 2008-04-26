@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,7 @@
 
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 #include <algorithm>
 #include <vector>
 
@@ -148,7 +148,7 @@ namespace paludis
     VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::copy_keys(T_ out_iter) const
     {
         std::transform(_entries_holder->entries.begin(), _entries_holder->entries.end(), out_iter,
-                paludis::tr1::mem_fn(&std::pair<KeyType_, ValueType_>::first));
+                std::tr1::mem_fn(&std::pair<KeyType_, ValueType_>::first));
     }
 }
 

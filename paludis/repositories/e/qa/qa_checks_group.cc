@@ -22,11 +22,12 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/util/hashes.hh>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <algorithm>
 #include <list>
 
@@ -43,8 +44,8 @@ namespace paludis
     {
         mutable Mutex mutex;
         DirectedGraph<std::string, int> deps;
-        mutable typename MakeHashedMap<std::string, T_>::Type unordered;
-        mutable tr1::shared_ptr<std::list<T_> > ordered;
+        mutable std::tr1::unordered_map<std::string, T_, Hash<std::string> > unordered;
+        mutable std::tr1::shared_ptr<std::list<T_> > ordered;
     };
 }
 
@@ -103,7 +104,7 @@ QAChecksGroup<T_>::need_ordering() const
 {
     Lock l(_imp->mutex);
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (_imp->ordered)
         return;
@@ -112,7 +113,7 @@ QAChecksGroup<T_>::need_ordering() const
     _imp->deps.topological_sort(std::back_inserter(o));
     _imp->ordered.reset(new std::list<T_>);
     std::transform(o.begin(), o.end(), std::back_inserter(*_imp->ordered),
-            tr1::bind(tr1::mem_fn(&MakeHashedMap<std::string, T_>::Type::operator []), &_imp->unordered, _1));
+            std::tr1::bind(std::tr1::mem_fn(&std::tr1::unordered_map<std::string, T_, Hash<std::string> >::operator []), &_imp->unordered, _1));
 }
 
 template class QAChecksGroup<TreeCheckFunction>;

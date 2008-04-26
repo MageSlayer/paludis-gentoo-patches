@@ -39,14 +39,16 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -59,18 +61,19 @@ using namespace paludis;
 
 template class WrappedForwardIterator<ERepositoryProfile::UseExpandConstIteratorTag, const UseFlagName>;
 template class WrappedForwardIterator<ERepositoryProfile::VirtualsConstIteratorTag,
-         const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >;
+         const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >;
 
 namespace
 {
-    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
-    typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
-    typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
-    typedef MakeHashedMap<QualifiedPackageName,
-            std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type PackageMaskMap;
+    typedef std::tr1::unordered_set<UseFlagName, Hash<UseFlagName> > UseFlagSet;
+    typedef std::tr1::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
+    typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
+    typedef std::tr1::unordered_map<QualifiedPackageName,
+            std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
+            Hash<QualifiedPackageName> > PackageMaskMap;
 
-    typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
-    typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
+    typedef std::tr1::unordered_map<UseFlagName, bool, Hash<UseFlagName> > FlagStatusMap;
+    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
     {
@@ -141,8 +144,8 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > system_packages;
-            tr1::shared_ptr<GeneralSetDepTag> system_tag;
+            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > system_packages;
+            std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
 
@@ -179,7 +182,7 @@ namespace paludis
                 env(e),
                 repository(p),
                 system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
+                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
                 Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
@@ -419,7 +422,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 bool
 Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
-    tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
+    std::tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
 
     try
     {
@@ -465,12 +468,12 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                     continue;
 
                 Context context_spec("When parsing '" + *i + "':");
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                             erepository::parse_e_package_dep_spec(i->substr(1), *erepository::EAPIData::get_instance()->eapi_from_string(
-                                    repository->params().profile_eapi), tr1::shared_ptr<const PackageID>())));
+                                    repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
-                system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                system_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
     }
     catch (const InternalError &)
@@ -497,9 +500,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 
                 QualifiedPackageName v(tokens[0]);
                 virtuals.erase(v);
-                virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     erepository::parse_e_package_dep_spec(tokens[1], *erepository::EAPIData::get_instance()->eapi_from_string(
-                                            repository->params().profile_eapi), tr1::shared_ptr<const PackageID>())))));
+                                            repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())))));
             }
         }
         catch (const InternalError &)
@@ -520,9 +523,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
                         erepository::parse_e_package_dep_spec(line->first, *erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi), tr1::shared_ptr<const PackageID>())));
+                                repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
@@ -602,9 +605,9 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
 
         try
         {
-            tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
+            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
                         erepository::parse_e_package_dep_spec(*tokens.begin(), *erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi), tr1::shared_ptr<const PackageID>())));
+                                repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
@@ -812,7 +815,7 @@ ERepositoryProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
@@ -860,20 +863,20 @@ ERepositoryProfile::end_virtuals() const
     return VirtualsConstIterator(_imp->virtuals.end());
 }
 
-tr1::shared_ptr<const RepositoryMaskInfo>
+std::tr1::shared_ptr<const RepositoryMaskInfo>
 ERepositoryProfile::profile_masked(const PackageID & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)
-        return tr1::shared_ptr<const RepositoryMaskInfo>();
+        return std::tr1::shared_ptr<const RepositoryMaskInfo>();
     else
     {
-        for (std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
+        for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, *k->first, id))
                 return k->second;
     }
 
-    return tr1::shared_ptr<const RepositoryMaskInfo>();
+    return std::tr1::shared_ptr<const RepositoryMaskInfo>();
 }
 

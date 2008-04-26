@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
                 "example_dep_spec", "EXAMPLE_DEP_SPEC_OPTIONS", "EXAMPLE_DEP_SPEC_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each command line parameter... */
@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
-            tr1::shared_ptr<const PackageIDSequence> ids(
+            std::tr1::shared_ptr<const PackageIDSequence> ids(
                     env->package_database()->query(query::Matches(spec), qo_order_by_version));
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

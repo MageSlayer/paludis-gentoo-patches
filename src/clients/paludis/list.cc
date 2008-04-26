@@ -29,7 +29,7 @@
 #include <paludis/metadata_key.hh>
 #include <src/output/colour.hh>
 
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 #include <iomanip>
 #include <iostream>
 #include <list>
@@ -39,7 +39,7 @@
 using namespace paludis;
 
 int
-do_list_repositories(tr1::shared_ptr<Environment> env)
+do_list_repositories(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
@@ -71,7 +71,7 @@ do_list_repositories(tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_categories(tr1::shared_ptr<Environment> env)
+do_list_categories(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
@@ -96,7 +96,7 @@ do_list_categories(tr1::shared_ptr<Environment> env)
                         r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
             cats[*c].push_back(r->name());
@@ -124,7 +124,7 @@ do_list_categories(tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_packages(tr1::shared_ptr<Environment> env)
+do_list_packages(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
@@ -149,7 +149,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                         r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -160,7 +160,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs[*p].push_back(r->name());
@@ -189,7 +189,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_sets(tr1::shared_ptr<Environment> env)
+do_list_sets(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
@@ -217,7 +217,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
                         r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
-        tr1::shared_ptr<const SetNameSet> set_names((*r)[k::sets_interface()]->sets_list());
+        std::tr1::shared_ptr<const SetNameSet> set_names((*r)[k::sets_interface()]->sets_list());
         for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back(stringify(r->name()));
@@ -225,7 +225,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
 
     if (! CommandLine::get_instance()->a_repository.specified())
     {
-        tr1::shared_ptr<const SetNameSet> set_names(env->set_names());
+        std::tr1::shared_ptr<const SetNameSet> set_names(env->set_names());
         for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back("environment");

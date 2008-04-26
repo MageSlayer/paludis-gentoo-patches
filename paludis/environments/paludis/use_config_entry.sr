@@ -3,7 +3,7 @@
 
 make_class_UseConfigEntry()
 {
-    key dep_spec "tr1::shared_ptr<const PackageDepSpec>"
+    key dep_spec "std::tr1::shared_ptr<const PackageDepSpec>"
     key flag_name UseFlagName
     key flag_state UseFlagState
 
@@ -20,8 +20,8 @@ END
 
 make_class_SetUseConfigEntry()
 {
-    key set_name "tr1::shared_ptr<const SetName>"
-    key dep_spec "tr1::shared_ptr<const DepSpec>"
+    key set_name "std::tr1::shared_ptr<const SetName>"
+    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
     key flag_name UseFlagName
     key flag_state UseFlagState
 
@@ -38,8 +38,8 @@ END
 
 make_class_SetUseConfigMinusStarEntry()
 {
-    key set_name "tr1::shared_ptr<const SetName>"
-    key dep_spec "tr1::shared_ptr<const DepSpec>"
+    key set_name "std::tr1::shared_ptr<const SetName>"
+    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
     key prefix std::string
 
     doxygen_comment << "END"
@@ -55,8 +55,8 @@ END
 
 make_class_SetKeywordConfigEntry()
 {
-    key set_name "tr1::shared_ptr<const SetName>"
-    key dep_spec "tr1::shared_ptr<const DepSpec>"
+    key set_name "std::tr1::shared_ptr<const SetName>"
+    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
     key keyword KeywordName
 
     doxygen_comment << "END"
@@ -72,8 +72,8 @@ END
 
 make_class_SetLicenseConfigEntry()
 {
-    key set_name "tr1::shared_ptr<const SetName>"
-    key dep_spec "tr1::shared_ptr<const DepSpec>"
+    key set_name "std::tr1::shared_ptr<const SetName>"
+    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
     key license std::string
 
     doxygen_comment << "END"
@@ -89,8 +89,8 @@ END
 
 make_class_SetMaskConfigEntry()
 {
-    key set_name "tr1::shared_ptr<const SetName>"
-    key dep_spec "tr1::shared_ptr<const DepSpec>"
+    key set_name "std::tr1::shared_ptr<const SetName>"
+    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
 
     doxygen_comment << "END"
         /**

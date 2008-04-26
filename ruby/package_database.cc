@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,8 +45,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->favourite_repository()).c_str());
         }
         catch (const std::exception & e)
@@ -70,8 +70,8 @@ namespace
         {
             if (1 == argc || 2 == argc)
             {
-                tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
                 return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
                                 PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_query(argv[1]) : query::All())).c_str());
             }
@@ -96,7 +96,7 @@ namespace
     VALUE
     package_database_query(int argc, VALUE *argv, VALUE self)
     {
-        tr1::shared_ptr<const PackageIDSequence> items;
+        std::tr1::shared_ptr<const PackageIDSequence> items;
         try
         {
             if (2 == argc)
@@ -104,8 +104,8 @@ namespace
                 Query q = value_to_query(argv[0]);
                 QueryOrder qo = static_cast<QueryOrder>(NUM2INT(argv[1]));
 
-                tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
                 items = ((*self_ptr)->query(q, qo));
             }
@@ -136,8 +136,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             if (rb_block_given_p())
             {
@@ -170,8 +170,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(StringValuePtr(name))));
         }
@@ -192,8 +192,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             return (*self_ptr)->more_important_than(RepositoryName(StringValuePtr(name1)),
                     RepositoryName(StringValuePtr(name2))) ? Qtrue : Qfalse;
@@ -215,8 +215,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             return ((*self_ptr)->has_repository_named(RepositoryName(StringValuePtr(name)))) ? true : false;
         }
@@ -264,13 +264,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::package_database_to_value(tr1::shared_ptr<PackageDatabase> m)
+paludis::ruby::package_database_to_value(std::tr1::shared_ptr<PackageDatabase> m)
 {
-    tr1::shared_ptr<PackageDatabase> * m_ptr(0);
+    std::tr1::shared_ptr<PackageDatabase> * m_ptr(0);
     try
     {
-        m_ptr = new tr1::shared_ptr<PackageDatabase>(m);
-        return Data_Wrap_Struct(c_package_database, 0, &Common<tr1::shared_ptr<PackageDatabase> >::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<PackageDatabase>(m);
+        return Data_Wrap_Struct(c_package_database, 0, &Common<std::tr1::shared_ptr<PackageDatabase> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {

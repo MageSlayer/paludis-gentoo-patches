@@ -76,10 +76,10 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & key)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<
-                    "MetadataValueKey<tr1::shared_ptr<const PackageID> >" << endl;
+                    "MetadataValueKey<std::tr1::shared_ptr<const PackageID> >" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << *key.value() << endl;
             }
 
@@ -95,21 +95,21 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << buf << endl;
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<
-                    "MetadataValueKey<tr1::shared_ptr<const Contents> > " << endl;
+                    "MetadataValueKey<std::tr1::shared_ptr<const Contents> > " << endl;
                 /* We won't display the contents of the contents key here, since
                  * it involves creating another visitor. See \ref
                  * example_contents.cc "example_contents.cc" for that. */
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> > & key)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<
-                    "MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >" << endl;
+                    "MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >" << endl;
 
-                /* MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >::value()
+                /* MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >::value()
                  * can return a zero pointer. Other keys can't. */
                 if (key.value())
                 {
@@ -255,11 +255,11 @@ int main(int argc, char * argv[])
                 "example_metadata_key", "EXAMPLE_METADATA_KEY_OPTIONS", "EXAMPLE_METADATA_KEY_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
                     query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))),
                     qo_order_by_version));
 
@@ -273,7 +273,7 @@ int main(int argc, char * argv[])
             for (PackageID::MetadataConstIterator k((*i)->begin_metadata()), k_end((*i)->end_metadata()) ;
                     k != k_end ; ++k)
             {
-                /* Display it. Note that PackageID::MetadataConstIterator returns a tr1::shared_ptr
+                /* Display it. Note that PackageID::MetadataConstIterator returns a std::tr1::shared_ptr
                  * to a key, so we dereference twice (or we could have used IndirectIterator). */
                 show_key(**k);
                 cout << endl;
@@ -294,7 +294,7 @@ int main(int argc, char * argv[])
                     k != k_end ; ++k)
             {
                 /* Display it. Repository::MetadataConstIterator also returns a
-                 * tr1::shared_ptr to the key. */
+                 * std::tr1::shared_ptr to the key. */
                 show_key(**k);
                 cout << endl;
             }

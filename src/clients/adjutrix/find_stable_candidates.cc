@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -119,7 +119,7 @@ namespace
         typedef std::map<SlotName, SlotsEntry> SlotsToVersions;
         SlotsToVersions slots_to_versions;
 
-        tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
+        std::tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
         for (PackageIDSequence::ConstIterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
@@ -186,7 +186,7 @@ void do_find_stable_candidates(const NoConfigEnvironment & env)
 
         write_repository_header(keyword, r->name());
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -197,7 +197,7 @@ void do_find_stable_candidates(const NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

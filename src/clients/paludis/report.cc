@@ -46,7 +46,7 @@ namespace
             const Environment * const env;
 
         public:
-            OurReportTask(tr1::shared_ptr<Environment> e) :
+            OurReportTask(std::tr1::shared_ptr<Environment> e) :
                 ReportTask(e.get()),
                 _n_packages(0),
                 _n_errors(0),
@@ -56,15 +56,15 @@ namespace
 
             virtual void on_report_all_pre();
             virtual void on_report_check_package_pre(const QualifiedPackageName & p);
-            virtual void on_report_package_success(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id, const tr1::shared_ptr<const PackageID> & origin);
-            virtual void on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag);
-            virtual void on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_missing(const tr1::shared_ptr<const PackageID> & id, const RepositoryName & repo_name);
-            virtual void on_report_package_is_unused(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_failure_post(const tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_success(const std::tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_failure_pre(const std::tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id, const std::tr1::shared_ptr<const PackageID> & origin);
+            virtual void on_report_package_is_vulnerable_pre(const std::tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_is_vulnerable(const std::tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag);
+            virtual void on_report_package_is_vulnerable_post(const std::tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> & id, const RepositoryName & repo_name);
+            virtual void on_report_package_is_unused(const std::tr1::shared_ptr<const PackageID> & id);
+            virtual void on_report_package_failure_post(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_check_package_post(const QualifiedPackageName & p);
             virtual void on_report_all_post();
 
@@ -86,19 +86,19 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_success(const tr1::shared_ptr<const PackageID> &)
+    OurReportTask::on_report_package_success(const std::tr1::shared_ptr<const PackageID> &)
     {
     }
 
     void
-    OurReportTask::on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & pde)
+    OurReportTask::on_report_package_failure_pre(const std::tr1::shared_ptr<const PackageID> & pde)
     {
         cout << "* " << colour(cl_package_name, *pde) << " NOT OK";
     }
 
     void
-    OurReportTask::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id,
-            const tr1::shared_ptr<const PackageID> & origin)
+    OurReportTask::on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageID> & origin)
     {
         cout << endl << "    Masked by: ";
 
@@ -120,13 +120,13 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
+    OurReportTask::on_report_package_is_vulnerable_pre(const std::tr1::shared_ptr<const PackageID> &)
     {
         cout << endl << "    This package has following security issues:";
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &, const GLSADepTag & glsa_tag)
+    OurReportTask::on_report_package_is_vulnerable(const std::tr1::shared_ptr<const PackageID> &, const GLSADepTag & glsa_tag)
     {
         cout << endl << "    " << colour(cl_error, glsa_tag.short_text() + ": \"" + glsa_tag.glsa_title() +"\"")
                     << endl << colour(cl_error, "        -> " + stringify(glsa_tag.glsa_file()));
@@ -134,12 +134,12 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> &)
+    OurReportTask::on_report_package_is_vulnerable_post(const std::tr1::shared_ptr<const PackageID> &)
     {
     }
 
     void
-    OurReportTask::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &,
+    OurReportTask::on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> &,
             const RepositoryName & repo_name)
     {
         cout << endl << "    No longer exists in its original repository '" << repo_name << "'";
@@ -147,14 +147,14 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_unused(const tr1::shared_ptr<const PackageID> &)
+    OurReportTask::on_report_package_is_unused(const std::tr1::shared_ptr<const PackageID> &)
     {
         cout << endl << "    Not used by any package in world";
         ++_n_errors;
     }
 
     void
-    OurReportTask::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &)
+    OurReportTask::on_report_package_failure_post(const std::tr1::shared_ptr<const PackageID> &)
     {
         cout << endl << endl;
     }
@@ -174,7 +174,7 @@ namespace
     }
 }
 
-int do_report(tr1::shared_ptr<Environment> env)
+int do_report(std::tr1::shared_ptr<Environment> env)
 {
     Context context("When performing report action from command line:");
 

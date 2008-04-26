@@ -31,20 +31,20 @@ namespace paludis
         class ERepositoryID;
 
         class EMutableRepositoryMaskInfoKey :
-            public MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >
+            public MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >
         {
             private:
-                tr1::shared_ptr<const RepositoryMaskInfo> _value;
+                std::tr1::shared_ptr<const RepositoryMaskInfo> _value;
 
             public:
-                EMutableRepositoryMaskInfoKey(const tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, tr1::shared_ptr<const RepositoryMaskInfo>, const MetadataKeyType);
+                EMutableRepositoryMaskInfoKey(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, std::tr1::shared_ptr<const RepositoryMaskInfo>, const MetadataKeyType);
                 ~EMutableRepositoryMaskInfoKey();
 
-                virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
+                virtual const std::tr1::shared_ptr<const RepositoryMaskInfo> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void set_value(tr1::shared_ptr<const RepositoryMaskInfo>);
+                void set_value(std::tr1::shared_ptr<const RepositoryMaskInfo>);
         };
 
         class EDependenciesKey :
@@ -57,13 +57,13 @@ namespace paludis
             public:
                 EDependenciesKey(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &,
-                        const tr1::shared_ptr<const DependencyLabelSequence> &,
+                        const std::tr1::shared_ptr<const DependencyLabelSequence> &,
                         const MetadataKeyType);
                 ~EDependenciesKey();
 
-                virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
@@ -72,7 +72,7 @@ namespace paludis
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -85,11 +85,11 @@ namespace paludis
 
             public:
                 EFetchableURIKey(const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EFetchableURIKey();
 
-                virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
@@ -98,7 +98,7 @@ namespace paludis
                 virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                virtual const std::tr1::shared_ptr<const URILabel> initial_label() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -111,11 +111,11 @@ namespace paludis
 
             public:
                 ESimpleURIKey(const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ESimpleURIKey();
 
-                virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
@@ -134,11 +134,11 @@ namespace paludis
 
             public:
                 ERestrictKey(const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ERestrictKey();
 
-                virtual const tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const RestrictSpecTree::ItemFormatter &) const
@@ -157,11 +157,11 @@ namespace paludis
 
             public:
                 EProvideKey(const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EProvideKey();
 
-                virtual const tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const ProvideSpecTree::ItemFormatter &) const
@@ -181,11 +181,11 @@ namespace paludis
             public:
                 ELicenseKey(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
-                virtual const tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const LicenseSpecTree::ItemFormatter &) const
@@ -205,11 +205,11 @@ namespace paludis
             public:
                 EIUseKey(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EIUseKey();
 
-                const tr1::shared_ptr<const IUseFlagSet> value() const
+                const std::tr1::shared_ptr<const IUseFlagSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
@@ -217,7 +217,7 @@ namespace paludis
 
                 virtual std::string pretty_print_flat_with_comparison(
                         const Environment * const,
-                        const tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageID> &,
                         const Formatter<IUseFlag> &
                         ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -233,11 +233,11 @@ namespace paludis
             public:
                 EKeywordsKey(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EKeywordsKey();
 
-                const tr1::shared_ptr<const KeywordNameSet> value() const
+                const std::tr1::shared_ptr<const KeywordNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print_flat(const Formatter<KeywordName> &) const
@@ -254,11 +254,11 @@ namespace paludis
             public:
                 EUseKey(
                         const Environment * const,
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EUseKey();
 
-                const tr1::shared_ptr<const UseFlagNameSet> value() const
+                const std::tr1::shared_ptr<const UseFlagNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print_flat(const Formatter<UseFlagName> &) const
@@ -273,11 +273,11 @@ namespace paludis
                 PrivateImplementationPattern<EInheritedKey>::ImpPtr & _imp;
 
             public:
-                EInheritedKey(const tr1::shared_ptr<const ERepositoryID> &,
+                EInheritedKey(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EInheritedKey();
 
-                const tr1::shared_ptr<const Set<std::string> > value() const
+                const std::tr1::shared_ptr<const Set<std::string> > value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print_flat(const Formatter<std::string> &) const
@@ -285,7 +285,7 @@ namespace paludis
         };
 
         class EContentsKey :
-            public MetadataValueKey<tr1::shared_ptr<const Contents> >,
+            public MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
             private PrivateImplementationPattern<EContentsKey>
         {
             private:
@@ -293,11 +293,11 @@ namespace paludis
 
             public:
                 EContentsKey(
-                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~EContentsKey();
 
-                const tr1::shared_ptr<const Contents> value() const
+                const std::tr1::shared_ptr<const Contents> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -309,7 +309,7 @@ namespace paludis
                 PrivateImplementationPattern<EMTimeKey>::ImpPtr & _imp;
 
             public:
-                EMTimeKey(const tr1::shared_ptr<const ERepositoryID> &,
+                EMTimeKey(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~EMTimeKey();
 

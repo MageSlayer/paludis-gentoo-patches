@@ -26,7 +26,7 @@ make_class_DepListOptions()
     key circular DepListCircularOption
     key use DepListUseOption
     key blocks DepListBlocksOption
-    key override_masks "tr1::shared_ptr<DepListOverrideMasksFunctions>"
+    key override_masks "std::tr1::shared_ptr<DepListOverrideMasksFunctions>"
 
     key dependency_tags bool
 
@@ -53,15 +53,15 @@ make_class_DepListEntry()
 
     key kind DepListEntryKind
 
-    key package_id "tr1::shared_ptr<const PackageID>"
+    key package_id "std::tr1::shared_ptr<const PackageID>"
     key associated_entry "const DepListEntry *"
-    key tags "tr1::shared_ptr<DepListEntryTags>"
-    key destination "tr1::shared_ptr<Repository>"
+    key tags "std::tr1::shared_ptr<DepListEntryTags>"
+    key destination "std::tr1::shared_ptr<Repository>"
 
     key generation long
     key state DepListEntryState
 
-    key handled "tr1::shared_ptr<const DepListEntryHandled>"
+    key handled "std::tr1::shared_ptr<const DepListEntryHandled>"
 
     allow_named_args
 

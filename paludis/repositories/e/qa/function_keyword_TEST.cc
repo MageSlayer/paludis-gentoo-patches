@@ -63,9 +63,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("cat/other");
 
             TestReporter r1;

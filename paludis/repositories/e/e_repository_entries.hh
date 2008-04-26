@@ -28,10 +28,10 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <tr1/memory>
 #include <string>
 
 /** \file
@@ -71,44 +71,44 @@ namespace paludis
                 /**
                  * Create an ERepositoryID.
                  */
-                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const FSEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Fetch an environment variable.
                  */
-                virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle an install.
                  */
-                virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle a fetch.
                  */
-                virtual void fetch(const tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle a pretend fetch.
                  */
-                virtual void pretend_fetch(const tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle a pretend.
                  */
-                virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle an info.
                  */
-                virtual void info(const tr1::shared_ptr<const ERepositoryID> &,
-                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
                  * Handle a merge.
@@ -151,7 +151,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE ERepositoryEntriesMaker :
             public VirtualConstructor<std::string,
-                tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
+                std::tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
                         const ERepositoryParams &),
                 virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >,
             public InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>

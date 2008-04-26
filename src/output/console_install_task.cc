@@ -31,7 +31,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -50,6 +49,7 @@
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/user_dep_spec.hh>
 
+#include <tr1/functional>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -125,7 +125,7 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
-        tr1::shared_ptr<const DestinationsSet> d) :
+        std::tr1::shared_ptr<const DestinationsSet> d) :
     InstallTask(env, options, d),
     _download_size(0),
     _download_size_overflow(false),
@@ -179,7 +179,7 @@ ConsoleInstallTask::exit_status() const
 }
 
 bool
-ConsoleInstallTask::try_to_set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > & s)
+ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > & s)
 {
     bool is_ok(true);
     try
@@ -247,9 +247,9 @@ ConsoleInstallTask::on_clean_all_pre(const DepListEntry & d,
 {
     display_clean_all_pre_list_start(d, c);
 
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
     std::for_each(indirect_iterator(c.begin()), indirect_iterator(c.end()),
-            tr1::bind(tr1::mem_fn(&ConsoleInstallTask::display_one_clean_all_pre_list_entry), this, _1));
+            std::tr1::bind(std::tr1::mem_fn(&ConsoleInstallTask::display_one_clean_all_pre_list_entry), this, _1));
 
     display_clean_all_pre_list_end(d, c);
 }
@@ -355,17 +355,17 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     if (already_done(d))
         return;
 
-    tr1::shared_ptr<RepositoryName> repo;
+    std::tr1::shared_ptr<RepositoryName> repo;
     if (d.destination)
         repo.reset(new RepositoryName(d.destination->name()));
 
-    tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
+    std::tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
             query(query::Matches(repo ?
                     make_package_dep_spec().package(d.package_id->name()).repository(*repo) :
                     make_package_dep_spec().package(d.package_id->name())),
                 qo_order_by_version));
 
-    tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
+    std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
             query(query::Matches(repo ?
                     make_package_dep_spec()
                         .package(d.package_id->name())
@@ -475,7 +475,7 @@ ConsoleInstallTask::on_skip_unsatisfied(const DepListEntry & d, const PackageDep
 }
 
 void
-ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const tr1::shared_ptr<const PackageID> & id,
+ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const std::tr1::shared_ptr<const PackageID> & id,
         const int x, const int y, const int s, const int f)
 {
     std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id) +
@@ -672,7 +672,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
     for (std::set<std::string>::iterator cat(tag_categories.begin()),
             cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
     {
-        tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
+        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
                 find_maker(*cat)());
 
         if (! c->visible())
@@ -704,7 +704,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
     bool started(false);
     UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
 
-    tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > group(
+    std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > group(
             new Set<UseDescription, UseDescriptionComparator>);
     for (Set<UseDescription, UseDescriptionComparator>::ConstIterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
@@ -852,9 +852,9 @@ ConsoleInstallTask::display_tag_summary_tag_pre_text(const DepTagCategory & c)
 }
 
 void
-ConsoleInstallTask::display_tag_summary_tag(tr1::shared_ptr<const DepTag> t)
+ConsoleInstallTask::display_tag_summary_tag(std::tr1::shared_ptr<const DepTag> t)
 {
-    tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
+    std::tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
     t->accept(*displayer.get());
 }
 
@@ -980,7 +980,7 @@ void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode m)
 {
     // XXX fix this once the new resolver's in
-    tr1::shared_ptr<const PackageIDSequence> inst(
+    std::tr1::shared_ptr<const PackageIDSequence> inst(
         environment()->package_database()->query(
             query::Matches(make_package_dep_spec()
                            .package(d.package_id->name())
@@ -1023,8 +1023,8 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        tr1::shared_ptr<const PackageIDSequence> existing_repo,
-        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        std::tr1::shared_ptr<const PackageIDSequence> existing_repo,
+        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
         const DisplayMode m)
 {
     switch (m)
@@ -1049,7 +1049,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                 output_no_endl(render_as_update_mode(" ["));
 
                 std::string destination_str;
-                tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
+                std::tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
                 if (default_destinations->end() == default_destinations->find(d.destination))
                     destination_str = " ::" + stringify(d.destination->name());
 
@@ -1125,8 +1125,8 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 
 void
 ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
-        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
-        tr1::shared_ptr<const PackageIDSequence>,
+        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        std::tr1::shared_ptr<const PackageIDSequence>,
         const DisplayMode m)
 {
     if ((! d.package_id->short_description_key()) || d.package_id->short_description_key()->value().empty())
@@ -1163,8 +1163,8 @@ ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
 }
 
 void
-ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
-        const tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
+ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet> c,
+        const std::tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
 {
     for (UseFlagNameSet::ConstIterator f(c->begin()), f_end(c->end()) ;
             f != f_end ; ++f)
@@ -1197,8 +1197,8 @@ ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        tr1::shared_ptr<const PackageIDSequence> existing_repo,
-        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        std::tr1::shared_ptr<const PackageIDSequence> existing_repo,
+        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
@@ -1215,7 +1215,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         output_no_endl("    ");
     }
 
-    tr1::shared_ptr<const PackageID> old_id;
+    std::tr1::shared_ptr<const PackageID> old_id;
     if (! existing_slot_repo->empty())
         old_id = *existing_slot_repo->last();
     else if (! existing_repo->empty())
@@ -1239,11 +1239,11 @@ namespace
     struct FindDistfilesSize :
         PretendFetchAction
     {
-        tr1::shared_ptr<Set<FSEntry> > already_downloaded;
+        std::tr1::shared_ptr<Set<FSEntry> > already_downloaded;
         unsigned long size;
         bool overflow;
 
-        FindDistfilesSize(const FetchActionOptions & o, const tr1::shared_ptr<Set<FSEntry> > & a) :
+        FindDistfilesSize(const FetchActionOptions & o, const std::tr1::shared_ptr<Set<FSEntry> > & a) :
             PretendFetchAction(o),
             already_downloaded(a),
             size(0),
@@ -1327,7 +1327,7 @@ ConsoleInstallTask::display_merge_list_entry_non_package_tags(const DepListEntry
 
         all_tags()->insert(*tag);
 
-        tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
+        std::tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
         tag->tag->accept(*displayer.get());
         tag_titles.append(displayer->text());
         tag_titles.append(", ");
@@ -1386,8 +1386,8 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
         if (tag->tag->category() != "dependency")
             continue;
 
-        tr1::shared_ptr<const PackageDepSpec> spec(
-            tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
+        std::tr1::shared_ptr<const PackageDepSpec> spec(
+            std::tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
         if (d.kind != dlk_masked && d.kind != dlk_block && environment()->package_database()->query(
                 query::Matches(*spec) &
                 query::SupportsAction<InstalledAction>(),
@@ -1459,16 +1459,16 @@ ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const Dis
     output_endl();
 }
 
-tr1::shared_ptr<DepTagSummaryDisplayer>
+std::tr1::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
+    return std::tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
 }
 
-tr1::shared_ptr<EntryDepTagDisplayer>
+std::tr1::shared_ptr<EntryDepTagDisplayer>
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
-    return tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
+    return std::tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()
@@ -1625,7 +1625,7 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
 {
     try
     {
-        tr1::shared_ptr<const PackageIDSequence> p(
+        std::tr1::shared_ptr<const PackageIDSequence> p(
                 environment()->package_database()->query(
                     query::Matches(e.query()) & query::SupportsAction<InstallAction>(), qo_order_by_version));
         if (p->empty())
@@ -1773,7 +1773,7 @@ ConsoleInstallTask::on_display_failure_summary_skipped_unsatisfied(const DepList
 
 void
 ConsoleInstallTask::on_display_failure_summary_skipped_dependent(const DepListEntry & e,
-        const tr1::shared_ptr<const PackageID> & id)
+        const std::tr1::shared_ptr<const PackageID> & id)
 {
     output_starred_item_no_endl("");
     output_stream() << colour(cl_package_name, *e.package_id) << ": skipped (dependent upon '"

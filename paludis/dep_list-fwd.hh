@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
 
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>

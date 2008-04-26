@@ -27,7 +27,7 @@ namespace paludis
 
         int master_fd, slave_fd;
 
-        paludis::tr1::shared_ptr<FDOutputStream> messages_stream;
+        std::tr1::shared_ptr<FDOutputStream> messages_stream;
 
         sigc::connection terminal_cursor_moved_connection;
 

@@ -26,14 +26,14 @@ namespace gtkpaludis
 
             virtual void populate();
 
-            void set_category(paludis::tr1::shared_ptr<const paludis::CategoryNamePart>);
-            paludis::tr1::shared_ptr<const paludis::CategoryNamePart> get_category() const;
+            void set_category(std::tr1::shared_ptr<const paludis::CategoryNamePart>);
+            std::tr1::shared_ptr<const paludis::CategoryNamePart> get_category() const;
 
-            void set_set(paludis::tr1::shared_ptr<const paludis::SetName>);
-            paludis::tr1::shared_ptr<const paludis::SetName> get_set() const;
+            void set_set(std::tr1::shared_ptr<const paludis::SetName>);
+            std::tr1::shared_ptr<const paludis::SetName> get_set() const;
 
-            void set_repository_filter(paludis::tr1::shared_ptr<const paludis::Query>);
-            paludis::tr1::shared_ptr<const paludis::Query> get_repository_filter() const;
+            void set_repository_filter(std::tr1::shared_ptr<const paludis::Query>);
+            std::tr1::shared_ptr<const paludis::Query> get_repository_filter() const;
 
             void set_package_filter(const PackagesPackageFilterOption);
             PackagesPackageFilterOption get_package_filter() const;
@@ -44,8 +44,8 @@ namespace gtkpaludis
             void set_text_filter_text(const std::string &);
             std::string get_text_filter_text() const;
 
-            void set_qpn(paludis::tr1::shared_ptr<const paludis::QualifiedPackageName>);
-            paludis::tr1::shared_ptr<const paludis::QualifiedPackageName> get_qpn() const;
+            void set_qpn(std::tr1::shared_ptr<const paludis::QualifiedPackageName>);
+            std::tr1::shared_ptr<const paludis::QualifiedPackageName> get_qpn() const;
 
     };
 }

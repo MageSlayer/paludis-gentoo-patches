@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,14 +24,10 @@
  * Declaration for the do_contents function.
  */
 
-#include <paludis/util/tr1_memory.hh>
-
-namespace paludis
-{
-    class Environment;
-}
+#include <tr1/memory>
+#include <paludis/environment-fwd.hh>
 
 /// Handle --contents.
-int do_contents(paludis::tr1::shared_ptr<paludis::Environment>);
+int do_contents(std::tr1::shared_ptr<paludis::Environment>);
 
 #endif

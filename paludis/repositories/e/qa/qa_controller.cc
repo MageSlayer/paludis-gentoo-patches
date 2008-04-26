@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/qa/qa_checks.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
@@ -34,7 +33,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
-
+#include <tr1/functional>
 #include <fstream>
 #include <unistd.h>
 #include <algorithm>
@@ -67,10 +66,10 @@ namespace
         {
             if (! std::uncaught_exception())
             {
-                using namespace tr1::placeholders;
+                using namespace std::tr1::placeholders;
                 std::for_each(message_buf.begin(), message_buf.end(),
-                        tr1::bind(&QAReporter::message, tr1::ref(base),
-                            tr1::bind<const QAMessage>(&std::pair<const FSEntry, const QAMessage>::second, _1)));
+                        std::tr1::bind(&QAReporter::message, std::tr1::ref(base),
+                            std::tr1::bind<const QAMessage>(&std::pair<const FSEntry, const QAMessage>::second, _1)));
             }
         }
 
@@ -84,7 +83,7 @@ namespace
                 if (0 != stringify(i->first).compare(0, root.length(), root))
                     break;
 
-                message_queue.enqueue(tr1::bind(&QAReporter::message, &base, QAMessage(i->second)));
+                message_queue.enqueue(std::tr1::bind(&QAReporter::message, &base, QAMessage(i->second)));
                 message_buf.erase(i++);
             }
         }
@@ -97,7 +96,7 @@ namespace
 
         void status(const std::string & s)
         {
-            message_queue.enqueue(tr1::bind(&QAReporter::status, &base, std::string(s)));
+            message_queue.enqueue(std::tr1::bind(&QAReporter::status, &base, std::string(s)));
         }
     };
 }
@@ -108,7 +107,7 @@ namespace paludis
     struct Implementation<QAController>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const ERepository> repo;
+        const std::tr1::shared_ptr<const ERepository> repo;
         const QACheckProperties ignore_if;
         const QACheckProperties ignore_unless;
         const QAMessageLevel minimum_level;
@@ -121,7 +120,7 @@ namespace paludis
 
         Implementation(
                 const Environment * const e,
-                const tr1::shared_ptr<const ERepository> & r,
+                const std::tr1::shared_ptr<const ERepository> & r,
                 const QACheckProperties & i,
                 const QACheckProperties & u,
                 const QAMessageLevel m,
@@ -142,7 +141,7 @@ namespace paludis
 
 QAController::QAController(
         const Environment * const env,
-        const tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const ERepository> & repo,
         const QACheckProperties & ignore_if,
         const QACheckProperties & ignore_unless,
         const QAMessageLevel minimum_level,
@@ -165,7 +164,7 @@ QAController::_worker()
 
     while (! done)
     {
-        tr1::function<void ()> work_item;
+        std::tr1::function<void ()> work_item;
 
         {
             Lock l(_imp->pools_mutex);
@@ -176,16 +175,16 @@ QAController::_worker()
                 _imp->cats_pool.erase(_imp->cats_pool.begin());
                 if (_above_base_dir(c_dir) || _under_base_dir(c_dir))
                 {
-                    tr1::shared_ptr<const QualifiedPackageNameSet> qpns(_imp->repo->package_names(cat));
+                    std::tr1::shared_ptr<const QualifiedPackageNameSet> qpns(_imp->repo->package_names(cat));
                     std::copy(qpns->begin(), qpns->end(), std::inserter(_imp->pkgs_pool, _imp->pkgs_pool.begin()));
-                    work_item = tr1::bind(&QAController::_check_category, this, cat, qpns);
+                    work_item = std::tr1::bind(&QAController::_check_category, this, cat, qpns);
                 }
             }
             else if (! _imp->pkgs_pool.empty())
             {
                 QualifiedPackageName qpn(*_imp->pkgs_pool.begin());
                 _imp->pkgs_pool.erase(_imp->pkgs_pool.begin());
-                work_item = tr1::bind(&QAController::_check_package, this, qpn);
+                work_item = std::tr1::bind(&QAController::_check_package, this, qpn);
             }
             else
                 done = true;
@@ -217,7 +216,7 @@ QAController::_status_worker()
 void
 QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (! _under_base_dir(dir) || ! dir.exists())
         return;
@@ -238,9 +237,9 @@ QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
                     std::find_if(
                             QAChecks::get_instance()->eclass_file_contents_checks_group()->begin(),
                             QAChecks::get_instance()->eclass_file_contents_checks_group()->end(),
-                            tr1::bind(std::equal_to<bool>(), false,
-                                tr1::bind<bool>(tr1::mem_fn(&EclassFileContentsCheckFunction::operator() ),
-                                    _1, *it, tr1::ref(_imp->reporter),
+                            std::tr1::bind(std::equal_to<bool>(), false,
+                                std::tr1::bind<bool>(std::tr1::mem_fn(&EclassFileContentsCheckFunction::operator() ),
+                                    _1, *it, std::tr1::ref(_imp->reporter),
                                     _imp->env, _imp->repo, content)));
             }
     }
@@ -259,31 +258,31 @@ QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
 }
 
 void
-QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<const QualifiedPackageNameSet> qpns)
+QAController::_check_category(const CategoryNamePart c, const std::tr1::shared_ptr<const QualifiedPackageNameSet> qpns)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry c_dir(_imp->repo->layout()->category_directory(c));
 
     if (_under_base_dir(c_dir))
     {
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
         std::find_if(
                 QAChecks::get_instance()->category_dir_checks_group()->begin(),
                 QAChecks::get_instance()->category_dir_checks_group()->end(),
-                tr1::bind(std::equal_to<bool>(), false,
-                    tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                        _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
+                std::tr1::bind(std::equal_to<bool>(), false,
+                    std::tr1::bind<bool>(std::tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                        _1, _imp->repo->layout()->category_directory(c), std::tr1::ref(_imp->reporter),
                         _imp->env, _imp->repo, c)));
     }
 
-    tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_category(c));
-    std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_category(c));
+    std::for_each(exlibs->begin(), exlibs->end(), std::tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 
     bool done(false);
     while (! done)
     {
-        tr1::function<void ()> work_item;
+        std::tr1::function<void ()> work_item;
         {
             Lock l(_imp->pools_mutex);
             for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
@@ -293,7 +292,7 @@ QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<co
                 if (i != _imp->pkgs_pool.end())
                 {
                     _imp->pkgs_pool.erase(i);
-                    work_item = tr1::bind(&QAController::_check_package, this, *q);
+                    work_item = std::tr1::bind(&QAController::_check_package, this, *q);
                     break;
                 }
             }
@@ -315,7 +314,7 @@ QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<co
 void
 QAController::_check_package(const QualifiedPackageName p)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry p_dir(_imp->repo->layout()->package_directory(p));
 
@@ -324,24 +323,24 @@ QAController::_check_package(const QualifiedPackageName p)
         std::find_if(
                 QAChecks::get_instance()->package_dir_checks_group()->begin(),
                 QAChecks::get_instance()->package_dir_checks_group()->end(),
-                tr1::bind(std::equal_to<bool>(), false,
-                    tr1::bind<bool>(tr1::mem_fn(&PackageDirCheckFunction::operator()),
+                std::tr1::bind(std::equal_to<bool>(), false,
+                    std::tr1::bind<bool>(std::tr1::mem_fn(&PackageDirCheckFunction::operator()),
                         _1, _imp->repo->layout()->package_directory(p),
-                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, p)));
+                        std::tr1::ref(_imp->reporter), _imp->env, _imp->repo, p)));
 
-        tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
-        std::for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_check_id, this, _1));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
+        std::for_each(ids->begin(), ids->end(), std::tr1::bind(&QAController::_check_id, this, _1));
         _imp->reporter.flush(p_dir);
     }
 
-    tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_package(p));
-    std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_package(p));
+    std::for_each(exlibs->begin(), exlibs->end(), std::tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 }
 
 void
-QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
+QAController::_check_id(const std::tr1::shared_ptr<const PackageID> & i)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     FSEntry p_dir(_imp->repo->layout()->package_directory(i->name()));
 
@@ -352,10 +351,10 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
             std::find_if(
                     QAChecks::get_instance()->package_id_checks_group()->begin(),
                     QAChecks::get_instance()->package_id_checks_group()->end(),
-                    tr1::bind(std::equal_to<bool>(), false,
-                        tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
-                            _1, i->fs_location_key()->value(), tr1::ref(_imp->reporter),
-                            _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+                    std::tr1::bind(std::equal_to<bool>(), false,
+                        std::tr1::bind<bool>(std::tr1::mem_fn(&PackageIDCheckFunction::operator() ),
+                            _1, i->fs_location_key()->value(), std::tr1::ref(_imp->reporter),
+                            _imp->env, _imp->repo, std::tr1::static_pointer_cast<const ERepositoryID>(i))));
 
             std::ifstream f(stringify(i->fs_location_key()->value()).c_str());
             std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -369,10 +368,10 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
                 std::find_if(
                         QAChecks::get_instance()->package_id_file_contents_checks_group()->begin(),
                         QAChecks::get_instance()->package_id_file_contents_checks_group()->end(),
-                        tr1::bind(std::equal_to<bool>(), false,
-                            tr1::bind<bool>(tr1::mem_fn(&PackageIDFileContentsCheckFunction::operator() ),
-                                _1, i->fs_location_key()->value(), tr1::ref(_imp->reporter),
-                                _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i), content)));
+                        std::tr1::bind(std::equal_to<bool>(), false,
+                            std::tr1::bind<bool>(std::tr1::mem_fn(&PackageIDFileContentsCheckFunction::operator() ),
+                                _1, i->fs_location_key()->value(), std::tr1::ref(_imp->reporter),
+                                _imp->env, _imp->repo, std::tr1::static_pointer_cast<const ERepositoryID>(i), content)));
         }
     }
     catch (const InternalError &)
@@ -391,7 +390,7 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
 void
 QAController::run()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     try
     {
@@ -400,9 +399,9 @@ QAController::run()
                     std::find_if(
                         QAChecks::get_instance()->tree_checks_group()->begin(),
                         QAChecks::get_instance()->tree_checks_group()->end(),
-                        tr1::bind(std::equal_to<bool>(), false,
-                            tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
-                                _1, _imp->repo->params().location, tr1::ref(_imp->reporter),
+                        std::tr1::bind(std::equal_to<bool>(), false,
+                            std::tr1::bind<bool>(std::tr1::mem_fn(&TreeCheckFunction::operator() ),
+                                _1, _imp->repo->params().location, std::tr1::ref(_imp->reporter),
                                 _imp->env, _imp->repo))))
             {
                 QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
@@ -413,21 +412,21 @@ QAController::run()
 
         std::for_each(_imp->repo->params().eclassdirs->begin(),
                       _imp->repo->params().eclassdirs->end(),
-                      tr1::bind(&QAController::_check_eclasses, this, _1, ".eclass"));
+                      std::tr1::bind(&QAController::_check_eclasses, this, _1, ".eclass"));
 
-        tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_global());
-        std::for_each(exlibs->begin(), exlibs->end(), tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
+        std::tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_global());
+        std::for_each(exlibs->begin(), exlibs->end(), std::tr1::bind(&QAController::_check_eclasses, this, _1, ".exlib"));
 
         /* Create our workers and pools. Each worker starts by working on a
          * separate category. If there aren't any unclaimed categories, workers
          * start taking packages from another worker's category. */
-        tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
         std::copy(cats->begin(), cats->end(), std::inserter(_imp->cats_pool, _imp->cats_pool.begin()));
 #ifdef PALUDIS_ENABLE_THREADS
         ThreadPool workers;
         for (int x(0) ; x < 5 ; ++x)
-            workers.create_thread(tr1::bind(&QAController::_worker, this));
-        workers.create_thread(tr1::bind(&QAController::_status_worker, this));
+            workers.create_thread(std::tr1::bind(&QAController::_worker, this));
+        workers.create_thread(std::tr1::bind(&QAController::_status_worker, this));
 #else
         _worker();
 #endif

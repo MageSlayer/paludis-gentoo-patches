@@ -23,9 +23,9 @@
 #include <paludis/repositories/e/e_installed_repository.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repository.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -38,7 +38,7 @@ namespace paludis
 
     class PALUDIS_VISIBLE ExndbamRepository :
         public erepository::EInstalledRepository,
-        public tr1::enable_shared_from_this<ExndbamRepository>,
+        public std::tr1::enable_shared_from_this<ExndbamRepository>,
         public PrivateImplementationPattern<ExndbamRepository>
     {
         private:
@@ -57,9 +57,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static tr1::shared_ptr<Repository> make_exndbam_repository(
+            static std::tr1::shared_ptr<Repository> make_exndbam_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> > m);
+                    std::tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -78,18 +78,18 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -101,13 +101,13 @@ namespace paludis
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
 
             ///\name For use by ExndbamID
             ///\{
 
-            void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
+            void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
                     const UninstallActionOptions & o, bool reinstalling) const;
 
             ///\}

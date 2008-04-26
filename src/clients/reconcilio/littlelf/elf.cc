@@ -47,7 +47,7 @@ namespace paludis
     template <typename ElfType_>
     struct Implementation<ElfObject<ElfType_> >
     {
-        std::vector<paludis::tr1::shared_ptr<Section<ElfType_> > > sections;
+        std::vector<std::tr1::shared_ptr<Section<ElfType_> > > sections;
     };
 }
 

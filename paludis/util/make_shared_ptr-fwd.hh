@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_PTR_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Forward declarations for paludis/make_shared_ptr.hh .
@@ -32,17 +32,17 @@
 namespace paludis
 {
     /**
-     * Convenience function for creating a tr1::shared_ptr<> from a newly
+     * Convenience function for creating a std::tr1::shared_ptr<> from a newly
      * constructed object.
      *
      * Use this only with <code>new T_(whatever)</code> as the parameter. Do not
-     * use it to try to create a tr1::shared_ptr<> from something that is not
+     * use it to try to create a std::tr1::shared_ptr<> from something that is not
      * newly allocated.
      *
      * \ingroup g_utils
      */
     template <typename T_>
-    tr1::shared_ptr<T_>
+    std::tr1::shared_ptr<T_>
     make_shared_ptr(T_ * const t) PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 

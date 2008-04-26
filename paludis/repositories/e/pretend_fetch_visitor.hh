@@ -39,11 +39,11 @@ namespace paludis
             public:
                 PretendFetchVisitor(
                         const Environment * const,
-                        const tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageID> &,
                         const EAPI & eapi,
                         const FSEntry & distdir,
                         const bool fetch_unneeded,
-                        const tr1::shared_ptr<const URILabel> & initial_label,
+                        const std::tr1::shared_ptr<const URILabel> & initial_label,
                         PretendFetchAction & action);
 
                 ~PretendFetchVisitor();

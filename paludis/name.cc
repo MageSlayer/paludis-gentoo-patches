@@ -26,6 +26,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/hashes.hh>
 #include <ostream>
 #include <utility>
 
@@ -490,5 +491,11 @@ paludis::operator<< (std::ostream & s, const IUseFlag & i)
     s << i.flag;
 
     return s;
+}
+
+std::size_t
+QualifiedPackageName::hash() const
+{
+    return Hash<std::string>()(stringify(*this));
 }
 

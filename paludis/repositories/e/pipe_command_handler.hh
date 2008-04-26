@@ -22,7 +22,7 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 #include <string>
 
 namespace paludis
@@ -30,7 +30,7 @@ namespace paludis
     namespace erepository
     {
         std::string pipe_command_handler(const Environment * const,
-                const tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const PackageID> &,
                 const std::string & s);
     }
 }

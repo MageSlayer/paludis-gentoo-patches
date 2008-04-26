@@ -101,19 +101,19 @@ namespace paludis
             public UseRequirement
         {
             private:
-                const tr1::shared_ptr<const PackageID> _id;
+                const std::tr1::shared_ptr<const PackageID> _id;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                ConditionalUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                ConditionalUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~ConditionalUseRequirement();
 
                 ///\}
 
                 /// Our package.
-                const tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
+                const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
                 {
                     return _id;
                 }
@@ -132,7 +132,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                IfMineThenUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                IfMineThenUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~IfMineThenUseRequirement();
 
                 ///\}
@@ -154,7 +154,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                IfNotMineThenUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                IfNotMineThenUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~IfNotMineThenUseRequirement();
 
                 ///\}
@@ -176,7 +176,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                IfMineThenNotUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                IfMineThenNotUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~IfMineThenNotUseRequirement();
 
                 ///\}
@@ -198,7 +198,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                IfNotMineThenNotUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                IfNotMineThenNotUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~IfNotMineThenNotUseRequirement();
 
                 ///\}
@@ -220,7 +220,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                EqualUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                EqualUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~EqualUseRequirement();
 
                 ///\}
@@ -242,7 +242,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                NotEqualUseRequirement(const std::string &, const UseFlagName &, const tr1::shared_ptr<const PackageID> &);
+                NotEqualUseRequirement(const std::string &, const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
                 ~NotEqualUseRequirement();
 
                 ///\}

@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,7 @@ namespace paludis
 {
     namespace cranrepository
     {
-        tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depends(const std::string & s) PALUDIS_VISIBLE;
+        std::tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depends(const std::string & s) PALUDIS_VISIBLE;
     }
 }
 

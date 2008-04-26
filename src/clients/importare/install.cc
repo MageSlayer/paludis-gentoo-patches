@@ -53,11 +53,11 @@ namespace
         public ConsoleInstallTask
     {
         private:
-            tr1::shared_ptr<Environment> _env;
+            std::tr1::shared_ptr<Environment> _env;
 
         public:
-            OurInstallTask(tr1::shared_ptr<Environment> env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsSet> destinations) :
+            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options,
+                    std::tr1::shared_ptr<const DestinationsSet> destinations) :
                 ConsoleInstallTask(env.get(), options, destinations),
                 _env(env)
             {
@@ -130,7 +130,7 @@ namespace
 }
 
 int
-do_install(const tr1::shared_ptr<Environment> & env, const tr1::shared_ptr<const PackageID> & target)
+do_install(const std::tr1::shared_ptr<Environment> & env, const std::tr1::shared_ptr<const PackageID> & target)
 {
     Context context("When performing install action from command line:");
 
@@ -142,7 +142,7 @@ do_install(const tr1::shared_ptr<Environment> & env, const tr1::shared_ptr<const
     CommandLine::get_instance()->install_args.populate_install_task(env.get(), task);
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
-    tr1::shared_ptr<PackageIDSequence> targets(new PackageIDSequence);
+    std::tr1::shared_ptr<PackageIDSequence> targets(new PackageIDSequence);
     targets->push_back(target);
     task.set_targets_from_exact_packages(targets);
     task.execute();

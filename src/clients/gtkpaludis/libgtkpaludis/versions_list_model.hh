@@ -5,9 +5,9 @@
 
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
@@ -22,7 +22,7 @@ namespace gtkpaludis
             class PopulateData;
 
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
 
         public:
             VersionsListModel(QueryWindow * const m, VersionsPage * const p);
@@ -39,7 +39,7 @@ namespace gtkpaludis
                     Gtk::TreeModelColumn<Glib::ustring> col_repo_name;
                     Gtk::TreeModelColumn<Glib::ustring> col_slot;
                     Gtk::TreeModelColumn<Glib::ustring> col_masks_markup;
-                    Gtk::TreeModelColumn<paludis::tr1::shared_ptr<const paludis::PackageID> > col_id;
+                    Gtk::TreeModelColumn<std::tr1::shared_ptr<const paludis::PackageID> > col_id;
                     Gtk::TreeModelColumn<bool> col_prefer_default;
             };
 

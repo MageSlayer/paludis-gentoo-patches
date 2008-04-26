@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -314,17 +314,17 @@ namespace test_cases
 
     struct VersionSpecHashTest : TestCase
     {
-        VersionSpecHashTest() : TestCase("version spec hash_value()") { }
+        VersionSpecHashTest() : TestCase("version spec hash()") { }
 
         void run()
         {
-            TEST_CHECK(VersionSpec("0").hash_value() != VersionSpec("0.0").hash_value());
-            TEST_CHECK(VersionSpec("1").hash_value() != VersionSpec("1.0").hash_value());
-            TEST_CHECK(VersionSpec("1.0").hash_value() != VersionSpec("1").hash_value());
-            TEST_CHECK(VersionSpec("1.0_alpha").hash_value() != VersionSpec("1_alpha").hash_value());
-            TEST_CHECK(VersionSpec("1_alpha").hash_value() != VersionSpec("1.0_alpha").hash_value());
+            TEST_CHECK(VersionSpec("0").hash() != VersionSpec("0.0").hash());
+            TEST_CHECK(VersionSpec("1").hash() != VersionSpec("1.0").hash());
+            TEST_CHECK(VersionSpec("1.0").hash() != VersionSpec("1").hash());
+            TEST_CHECK(VersionSpec("1.0_alpha").hash() != VersionSpec("1_alpha").hash());
+            TEST_CHECK(VersionSpec("1_alpha").hash() != VersionSpec("1.0_alpha").hash());
         }
-    } test_version_spec_hash_value;
+    } test_version_spec_hash;
 
     /**
      * \test VersionSpec ordering.
@@ -364,17 +364,17 @@ namespace test_cases
             TEST_CHECK(VersionSpec("1_alpha_beta-scm") == VersionSpec("1_alpha0_beta-scm"));
             TEST_CHECK(VersionSpec("1_alpha_beta000_rc3-scm") == VersionSpec("1_alpha00_beta_rc3-scm"));
 
-            TEST_CHECK(VersionSpec("0001").hash_value() == VersionSpec("1").hash_value());
-            TEST_CHECK(VersionSpec("01").hash_value() == VersionSpec("001").hash_value());
-            TEST_CHECK(VersionSpec("0001.1").hash_value() == VersionSpec("1.1").hash_value());
-            TEST_CHECK(VersionSpec("01.01").hash_value() == VersionSpec("1.01").hash_value());
-            TEST_CHECK(VersionSpec("1.010").hash_value() == VersionSpec("1.01").hash_value());
-            TEST_CHECK(VersionSpec("1.00").hash_value() == VersionSpec("1.0").hash_value());
-            TEST_CHECK(VersionSpec("1.0100").hash_value() == VersionSpec("1.010").hash_value());
-            TEST_CHECK(VersionSpec("1").hash_value() == VersionSpec("1-r0").hash_value());
-            TEST_CHECK(VersionSpec("1.2").hash_value() == VersionSpec("1.2-r").hash_value());
-            TEST_CHECK(VersionSpec("1.2-r3").hash_value() == VersionSpec("1.2-r3.0").hash_value());
-            TEST_CHECK(VersionSpec("1.2").hash_value() == VersionSpec("1.2-r0.0").hash_value());
+            TEST_CHECK(VersionSpec("0001").hash() == VersionSpec("1").hash());
+            TEST_CHECK(VersionSpec("01").hash() == VersionSpec("001").hash());
+            TEST_CHECK(VersionSpec("0001.1").hash() == VersionSpec("1.1").hash());
+            TEST_CHECK(VersionSpec("01.01").hash() == VersionSpec("1.01").hash());
+            TEST_CHECK(VersionSpec("1.010").hash() == VersionSpec("1.01").hash());
+            TEST_CHECK(VersionSpec("1.00").hash() == VersionSpec("1.0").hash());
+            TEST_CHECK(VersionSpec("1.0100").hash() == VersionSpec("1.010").hash());
+            TEST_CHECK(VersionSpec("1").hash() == VersionSpec("1-r0").hash());
+            TEST_CHECK(VersionSpec("1.2").hash() == VersionSpec("1.2-r").hash());
+            TEST_CHECK(VersionSpec("1.2-r3").hash() == VersionSpec("1.2-r3.0").hash());
+            TEST_CHECK(VersionSpec("1.2").hash() == VersionSpec("1.2-r0.0").hash());
 
             std::vector<VersionSpec> v;
             v.push_back(VersionSpec("1_alpha_alpha"));
@@ -476,10 +476,10 @@ namespace test_cases
                         TEST_CHECK(*v2 > *v1);
                         TEST_CHECK(*v1 != *v2);
                         TEST_CHECK(*v2 != *v1);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
-                        TEST_CHECK(v1->hash_value() != v2->hash_value());
-                        TEST_CHECK(v2->hash_value() != v1->hash_value());
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash()));
+                        TEST_CHECK(v1->hash() != v2->hash());
+                        TEST_CHECK(v2->hash() != v1->hash());
                     }
                     else if (std::distance(v.begin(), v1) > std::distance(v.begin(), v2))
                     {
@@ -487,19 +487,19 @@ namespace test_cases
                         TEST_CHECK(*v1 > *v2);
                         TEST_CHECK(*v2 != *v1);
                         TEST_CHECK(*v1 != *v2);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
-                        TEST_CHECK(v1->hash_value() != v2->hash_value());
-                        TEST_CHECK(v2->hash_value() != v1->hash_value());
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash()));
+                        TEST_CHECK(v1->hash() != v2->hash());
+                        TEST_CHECK(v2->hash() != v1->hash());
                     }
                     else
                     {
                         TEST_CHECK(*v2 == *v1);
                         TEST_CHECK(*v1 == *v2);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
-                        TEST_CHECK(v1->hash_value() == v2->hash_value());
-                        TEST_CHECK(v2->hash_value() == v1->hash_value());
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash()));
+                        TEST_CHECK(v1->hash() == v2->hash());
+                        TEST_CHECK(v2->hash() == v1->hash());
                     }
                 }
             }

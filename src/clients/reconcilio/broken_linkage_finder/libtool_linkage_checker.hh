@@ -39,7 +39,7 @@ namespace broken_linkage_finder
 
             virtual void add_extra_lib_dir(const paludis::FSEntry &);
             virtual void need_breakage_added(
-                const paludis::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
+                const std::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
     };
 }
 

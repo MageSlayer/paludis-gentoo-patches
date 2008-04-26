@@ -21,7 +21,6 @@
 #include <paludis/repositories/virtuals/package_id.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
@@ -32,19 +31,21 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/hashes.hh>
 
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <vector>
 #include <utility>
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
@@ -53,17 +54,17 @@ namespace paludis
     {
         const Environment * const env;
 
-        const tr1::shared_ptr<Mutex> big_nasty_mutex;
+        const std::tr1::shared_ptr<Mutex> big_nasty_mutex;
 
-        mutable std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > names;
+        mutable std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > names;
         mutable bool has_names;
 
         mutable IDMap ids;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const Environment * const e, std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             big_nasty_mutex(m),
             has_names(false),
@@ -80,8 +81,8 @@ namespace
     struct NamesNameComparator
     {
         bool
-        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
+        operator() (const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & a,
+                const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & b) const
         {
             return a.first < b.first;
         }
@@ -90,8 +91,8 @@ namespace
     struct NamesSortComparator
     {
         bool
-        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
+        operator() (const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & a,
+                const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & b) const
         {
             if (a.first < b.first)
                 return true;
@@ -104,8 +105,8 @@ namespace
     struct NamesUniqueComparator
     {
         bool
-        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
+        operator() (const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & a,
+                const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > & b) const
         {
             return a.first == b.first && stringify(*a.second) == stringify(*b.second);
         }
@@ -157,18 +158,18 @@ VirtualsRepository::need_names() const
         if (! (**r)[k::provides_interface()])
             continue;
 
-        tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> provides(
+        std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> provides(
                 (**r)[k::provides_interface()]->provided_packages());
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
-            _imp->names.push_back(std::make_pair((*p)[k::virtual_name()], tr1::shared_ptr<const PackageDepSpec>(
+            _imp->names.push_back(std::make_pair((*p)[k::virtual_name()], std::tr1::shared_ptr<const PackageDepSpec>(
                             new PackageDepSpec(make_package_dep_spec().package((*p)[k::provided_by()]->name())))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
     _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
 
-    std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > new_names;
+    std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > new_names;
 
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
@@ -176,16 +177,16 @@ VirtualsRepository::need_names() const
         if (! (**r)[k::virtuals_interface()])
             continue;
 
-        tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> virtuals(
+        std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> virtuals(
                 (**r)[k::virtuals_interface()]->virtual_packages());
         for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator v(virtuals->begin()),
                 v_end(virtuals->end()) ; v != v_end ; ++v)
         {
             std::pair<
-                std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator,
-                std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
+                std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator,
+                std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
                         std::equal_range(_imp->names.begin(), _imp->names.end(),
-                            std::make_pair((*v)[k::virtual_name()], tr1::shared_ptr<const PackageDepSpec>()),
+                            std::make_pair((*v)[k::virtual_name()], std::tr1::shared_ptr<const PackageDepSpec>()),
                             NamesNameComparator()));
 
             if (p.first == p.second)
@@ -218,10 +219,10 @@ VirtualsRepository::need_ids() const
     IDMap my_ids;
 
     /* Populate our _imp->entries. */
-    for (std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator
+    for (std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
-        tr1::shared_ptr<const PackageIDSequence> matches(_imp->env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->env->package_database()->query(
                     query::Matches(*v->second) &
                     query::SupportsAction<InstallAction>(),
                     qo_order_by_version));
@@ -237,7 +238,7 @@ VirtualsRepository::need_ids() const
             if (my_ids.end() == i)
                 i = my_ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence))).first;
 
-            tr1::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
+            std::tr1::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
             if (stringify(id->name().category) != "virtual")
                 throw InternalError(PALUDIS_HERE, "Got bad id '" + stringify(*id) + "'");
             i->second->push_back(id);
@@ -248,48 +249,48 @@ VirtualsRepository::need_ids() const
     swap(my_ids, _imp->ids);
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 VirtualsRepository::make_virtuals_repository(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> >)
+        std::tr1::shared_ptr<const Map<std::string, std::string> >)
 {
-    return tr1::shared_ptr<Repository>(new VirtualsRepository(env));
+    return std::tr1::shared_ptr<Repository>(new VirtualsRepository(env));
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 VirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     return i->second;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 VirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
-        return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     need_ids();
 
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first));
+            std::tr1::mem_fn(&std::pair<const QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> >::first));
 
     return result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -303,10 +304,10 @@ VirtualsRepository::has_package_named(const QualifiedPackageName & q) const
     need_names();
 
     std::pair<
-        std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator,
-        std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator,
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
             std::equal_range(_imp->names.begin(), _imp->names.end(),
-                std::make_pair(q, tr1::shared_ptr<const PackageDepSpec>()),
+                std::make_pair(q, std::tr1::shared_ptr<const PackageDepSpec>()),
                 NamesNameComparator()));
 
     return p.first != p.second;
@@ -336,9 +337,9 @@ VirtualsRepository::invalidate_masks()
             (*it2)->invalidate_masks();
 }
 
-const tr1::shared_ptr<const PackageID>
+const std::tr1::shared_ptr<const PackageID>
 VirtualsRepository::make_virtual_package_id(
-        const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
+        const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
 {
     if (virtual_name.category.data() != "virtual")
         throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
@@ -408,24 +409,24 @@ VirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase &
     return q.result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::unimportant_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 VirtualsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 void

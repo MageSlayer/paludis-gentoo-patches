@@ -30,6 +30,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -37,7 +38,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
-#include <paludis/hashed_containers.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -53,13 +53,13 @@ namespace paludis
         const SlotName slot;
         const RepositoryName repository_name;
 
-        tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
-        tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
 
-        const tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
-        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
-        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
-        const tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
+        const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
+        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
         Implementation(const Environment * const e,
                 const QualifiedPackageName & q,
@@ -157,130 +157,130 @@ UnpackagedID::slot() const
     return _imp->slot;
 }
 
-const tr1::shared_ptr<const Repository>
+const std::tr1::shared_ptr<const Repository>
 UnpackagedID::repository() const
 {
     return _imp->env->package_database()->fetch_repository(_imp->repository_name);
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 UnpackagedID::virtual_for_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnpackagedID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 UnpackagedID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 UnpackagedID::provide_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 UnpackagedID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 UnpackagedID::contained_in_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const PackageID> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::build_dependencies_key() const
 {
     return _imp->build_dependencies_key;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::run_dependencies_key() const
 {
     return _imp->run_dependencies_key;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::post_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::suggested_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnpackagedID::fetches_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnpackagedID::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedID::short_description_key() const
 {
     return _imp->description_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedID::long_description_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 UnpackagedID::contents_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<tr1::shared_ptr<const Contents> > >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
 }
 
-const tr1::shared_ptr<const MetadataTimeKey>
+const std::tr1::shared_ptr<const MetadataTimeKey>
 UnpackagedID::installed_time_key() const
 {
-    return tr1::shared_ptr<const MetadataTimeKey>();
+    return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedID::source_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedID::binary_origin_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 UnpackagedID::fs_location_key() const
 {
     return _imp->fs_location_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<bool> >
+const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 UnpackagedID::transient_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
 }
 
 bool
@@ -336,10 +336,10 @@ UnpackagedID::invalidate_masks() const
 {
 }
 
-tr1::shared_ptr<const Set<std::string> >
+std::tr1::shared_ptr<const Set<std::string> >
 UnpackagedID::breaks_portage() const
 {
-    tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
     why->insert("format");
     return why;
 }
@@ -353,6 +353,6 @@ UnpackagedID::arbitrary_less_than_comparison(const PackageID & other) const
 std::size_t
 UnpackagedID::extra_hash_value() const
 {
-    return CRCHash<SlotName>()(slot());
+    return Hash<SlotName>()(slot());
 }
 

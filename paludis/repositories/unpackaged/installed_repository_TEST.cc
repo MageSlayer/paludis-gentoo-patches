@@ -87,7 +87,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -96,7 +96,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageIDSequence> ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "),
                     "cat-one/foo-1:0::installed-unpackaged cat-one/foo-2:1::installed-unpackaged");
@@ -110,7 +110,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -119,7 +119,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageID> id1(
+            const std::tr1::shared_ptr<const PackageID> id1(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
@@ -137,7 +137,7 @@ namespace test_cases
                     indirect_iterator(id1->contents_key()->value()->end()), accept_visitor(d1));
             TEST_CHECK_EQUAL(d1.s.str(), "dir</fnord>");
 
-            const tr1::shared_ptr<const PackageID> id2(
+            const std::tr1::shared_ptr<const PackageID> id2(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
@@ -164,7 +164,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -173,13 +173,13 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageID> id1(
+            const std::tr1::shared_ptr<const PackageID> id1(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
             TEST_CHECK(! id1->masked());
 
-            const tr1::shared_ptr<const PackageID> id2(
+            const std::tr1::shared_ptr<const PackageID> id2(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
@@ -194,7 +194,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -210,7 +210,7 @@ namespace test_cases
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<UninstallAction>()));
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
-            const tr1::shared_ptr<const PackageID> id1(
+            const std::tr1::shared_ptr<const PackageID> id1(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
@@ -231,7 +231,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -240,7 +240,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged");
@@ -251,7 +251,7 @@ namespace test_cases
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             UninstallAction action(UninstallActionOptions::named_create()
@@ -267,7 +267,7 @@ namespace test_cases
 
             repo->invalidate();
 
-            const tr1::shared_ptr<const PackageIDSequence> post_ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(post_ids->begin()), indirect_iterator(post_ids->end()), " "), "");
         }
@@ -286,7 +286,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -295,7 +295,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged cat-one/foo-3.2.1:barney::installed-unpackaged");
@@ -303,7 +303,7 @@ namespace test_cases
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin());
 
@@ -317,7 +317,7 @@ namespace test_cases
 
             repo->invalidate();
 
-            const tr1::shared_ptr<const PackageIDSequence> post_ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(post_ids->begin()), indirect_iterator(post_ids->end()), " "),
                     "cat-one/foo-3.2.1:barney::installed-unpackaged");
@@ -339,7 +339,7 @@ namespace test_cases
                 TestMessageSuffix suffix("initial", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -348,7 +348,7 @@ namespace test_cases
                             ));
                 env.package_database()->add_repository(1, repo);
 
-                const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                         env.package_database()->query(query::All(), qo_order_by_version));
                 TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
 
@@ -359,7 +359,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4a", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -368,7 +368,7 @@ namespace test_cases
                             ));
                 env.package_database()->add_repository(0, repo);
 
-                tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
                             unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                             (k::environment(), &env)
@@ -384,7 +384,7 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
                 }
@@ -404,7 +404,7 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
@@ -415,7 +415,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4b1", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -424,7 +424,7 @@ namespace test_cases
                             ));
                 env.package_database()->add_repository(0, repo);
 
-                tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
                             unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                             (k::environment(), &env)
@@ -440,7 +440,7 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
@@ -462,7 +462,7 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -473,7 +473,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4b2", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -482,7 +482,7 @@ namespace test_cases
                             ));
                 env.package_database()->add_repository(0, repo);
 
-                tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
                             unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                             (k::environment(), &env)
@@ -498,7 +498,7 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -520,7 +520,7 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -531,7 +531,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall 4a", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -541,7 +541,7 @@ namespace test_cases
                 env.package_database()->add_repository(0, repo);
 
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -560,7 +560,7 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -571,7 +571,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall 4b", true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
@@ -581,7 +581,7 @@ namespace test_cases
                 env.package_database()->add_repository(0, repo);
 
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
@@ -596,7 +596,7 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const tr1::shared_ptr<const PackageIDSequence> pre_ids(
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
                             env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "");

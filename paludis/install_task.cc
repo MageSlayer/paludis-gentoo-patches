@@ -24,7 +24,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
@@ -41,10 +40,10 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/kc.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/handled_information.hh>
+#include <tr1/functional>
 #include <sstream>
 #include <functional>
 #include <algorithm>
@@ -70,9 +69,9 @@ namespace paludis
         UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
-        tr1::shared_ptr<std::string> add_to_world_spec;
-        tr1::shared_ptr<const DestinationsSet> destinations;
+        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
+        std::tr1::shared_ptr<std::string> add_to_world_spec;
+        std::tr1::shared_ptr<const DestinationsSet> destinations;
 
         bool pretend;
         bool fetch_only;
@@ -87,7 +86,7 @@ namespace paludis
         bool had_resolution_failures;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
-                tr1::shared_ptr<const DestinationsSet> d) :
+                std::tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
             fetch_options(
@@ -100,10 +99,10 @@ namespace paludis
                     (k::no_config_protect(), false)
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::destination(), tr1::shared_ptr<Repository>())
+                    (k::destination(), std::tr1::shared_ptr<Repository>())
                     ),
             uninstall_options(false),
-            targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
+            targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
             fetch_only(false),
@@ -119,7 +118,7 @@ namespace paludis
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
-        const tr1::shared_ptr<const DestinationsSet> d) :
+        const std::tr1::shared_ptr<const DestinationsSet> d) :
     PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
@@ -131,7 +130,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _imp->targets.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -140,22 +139,22 @@ InstallTask::clear()
 }
 
 void
-InstallTask::set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > & s)
+InstallTask::set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > & s)
 {
-    using namespace tr1::placeholders;
-    std::for_each(s->begin(), s->end(), tr1::bind(&InstallTask::_add_target, this, _1));
+    using namespace std::tr1::placeholders;
+    std::for_each(s->begin(), s->end(), std::tr1::bind(&InstallTask::_add_target, this, _1));
 }
 
 void
-InstallTask::set_targets_from_exact_packages(const tr1::shared_ptr<const PackageIDSequence> & s)
+InstallTask::set_targets_from_exact_packages(const std::tr1::shared_ptr<const PackageIDSequence> & s)
 {
-    using namespace tr1::placeholders;
-    std::for_each(s->begin(), s->end(), tr1::bind(&InstallTask::_add_package_id, this, _1));
+    using namespace std::tr1::placeholders;
+    std::for_each(s->begin(), s->end(), std::tr1::bind(&InstallTask::_add_package_id, this, _1));
 }
 
 namespace
 {
-    tr1::shared_ptr<DepListEntryHandled> handled_from_string(const std::string & s,
+    std::tr1::shared_ptr<DepListEntryHandled> handled_from_string(const std::string & s,
             const Environment * const env)
     {
         Context context("When decoding DepListEntryHandled value '" + s + "':");
@@ -202,7 +201,7 @@ namespace
 }
 
 void
-InstallTask::set_targets_from_serialisation(const std::string & format, const tr1::shared_ptr<const Sequence<std::string> > & ss)
+InstallTask::set_targets_from_serialisation(const std::string & format, const std::tr1::shared_ptr<const Sequence<std::string> > & ss)
 {
     if (format != "0.25")
         throw InternalError(PALUDIS_HERE, "Serialisation format '" + format + "' not supported by this version of Paludis");
@@ -222,13 +221,13 @@ InstallTask::set_targets_from_serialisation(const std::string & format, const tr
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
-        const tr1::shared_ptr<const PackageID> package_id(*_imp->env->package_database()->query(
+        const std::tr1::shared_ptr<const PackageID> package_id(*_imp->env->package_database()->query(
                     query::Matches(parse_user_package_dep_spec(*tokens.begin(), UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
         tokens.pop_front();
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no destination");
-        tr1::shared_ptr<Repository> destination;
+        std::tr1::shared_ptr<Repository> destination;
         if ("0" != *tokens.begin())
             destination = _imp->env->package_database()->fetch_repository(RepositoryName(*tokens.begin()));
         tokens.pop_front();
@@ -240,7 +239,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format, const tr
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no handled");
-        tr1::shared_ptr<DepListEntryHandled> handled(handled_from_string(*tokens.begin(), _imp->env));
+        std::tr1::shared_ptr<DepListEntryHandled> handled(handled_from_string(*tokens.begin(), _imp->env));
         tokens.pop_front();
 
         if (! tokens.empty())
@@ -376,7 +375,7 @@ InstallTask::_add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    tr1::shared_ptr<SetSpecTree::ConstItem> s;
+    std::tr1::shared_ptr<SetSpecTree::ConstItem> s;
     std::string modified_target(target);
 
     bool done(false);
@@ -423,9 +422,9 @@ InstallTask::_add_target(const std::string & target)
 
         if (std::string::npos != target.find('/'))
         {
-            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
-            spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
-            _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
+            spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                         new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
         }
         else
@@ -435,9 +434,9 @@ InstallTask::_add_target(const std::string & target)
                 QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(target), query::MaybeSupportsAction<InstallAction>()));
                 modified_target = stringify(q);
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(q)));
-                spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
-                _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(q)));
+                spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                             new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
             catch (const NoSuchPackageError &)
@@ -452,7 +451,7 @@ InstallTask::_add_target(const std::string & target)
 }
 
 void
-InstallTask::_add_package_id(const tr1::shared_ptr<const PackageID> & target)
+InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & target)
 {
     Context context("When adding install target '" + stringify(*target) + "' from ID:");
 
@@ -466,14 +465,14 @@ InstallTask::_add_package_id(const tr1::shared_ptr<const PackageID> & target)
     if (! _imp->override_target_type)
         _imp->dep_list.options()->target_type = dl_target_package;
 
-    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                 .package(target->name())
                 .version_requirement(VersionRequirement(vo_equal, target->version()))
                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
                 .repository(target->repository()->name())));
 
-    spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
-    _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+    spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+    _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                 new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
 
     _imp->raw_targets.push_back(stringify(*spec));
@@ -739,7 +738,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         (*r)->invalidate();
 
     // look for packages with the same name in the same slot in the destination repos
-    tr1::shared_ptr<const PackageIDSequence> collision_list;
+    std::tr1::shared_ptr<const PackageIDSequence> collision_list;
 
     if (dep->destination)
         collision_list = _imp->env->package_database()->query(
@@ -829,7 +828,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 void
 InstallTask::_main_actions()
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     /* we're about to fetch / install the entire list */
     if (_imp->fetch_only)
@@ -857,7 +856,7 @@ InstallTask::_main_actions()
 
     /* fetch / install our entire list */
     int x(0), y(std::count_if(_imp->dep_list.begin(), _imp->dep_list.end(),
-                tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, tr1::bind<DepListEntryKind>(tr1::mem_fn(&DepListEntry::kind), _1)))),
+                std::tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, std::tr1::bind<DepListEntryKind>(std::tr1::mem_fn(&DepListEntry::kind), _1)))),
         s(0), f(0);
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
@@ -884,7 +883,7 @@ InstallTask::_main_actions()
 
                 case itcof_if_satisfied:
                     {
-                        tr1::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
+                        std::tr1::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
                         if (! d)
                             break;
                         dep->handled.reset(new DepListEntryHandledSkippedUnsatisfied(*d));
@@ -895,7 +894,7 @@ InstallTask::_main_actions()
 
                 case itcof_if_independent:
                     {
-                        tr1::shared_ptr<const PackageID> d(_dependent(*dep));
+                        std::tr1::shared_ptr<const PackageID> d(_dependent(*dep));
                         if (! d)
                             break;
                         dep->handled.reset(new DepListEntryHandledSkippedDependent(d));
@@ -954,8 +953,8 @@ InstallTask::_main_actions()
                                 "() \t\r\n"));
                 }
 
-                tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 std::list<std::string> tokens;
                 tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
                 if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
@@ -968,12 +967,12 @@ InstallTask::_main_actions()
                         t != t_end ; ++t)
                 {
                     if (s_had_package_targets)
-                        all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                        all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
                                             new PackageDepSpec(parse_user_package_dep_spec(*t, UserPackageDepSpecOptions()))))));
                     else
-                        all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(tr1::shared_ptr<NamedSetDepSpec>(
+                        all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(std::tr1::shared_ptr<NamedSetDepSpec>(
                                             new NamedSetDepSpec(SetName(*t))))));
                 }
 
@@ -1253,7 +1252,7 @@ namespace
 }
 
 void
-InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem> a)
+InstallTask::world_update_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem> a)
 {
     WorldTargetFinder w(_imp->env, this);
     a->accept(w);
@@ -1281,7 +1280,7 @@ namespace
 
         const Environment * const env;
         const PackageID & id;
-        tr1::shared_ptr<const PackageDepSpec> failure;
+        std::tr1::shared_ptr<const PackageDepSpec> failure;
         std::set<SetName> recursing_sets;
 
         CheckSatisfiedVisitor(const Environment * const e,
@@ -1333,7 +1332,7 @@ namespace
 
         void visit_leaf(const NamedSetDepSpec & s)
         {
-            tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+            std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
 
             if (! set)
             {
@@ -1355,7 +1354,7 @@ namespace
     };
 }
 
-tr1::shared_ptr<const PackageDepSpec>
+std::tr1::shared_ptr<const PackageDepSpec>
 InstallTask::_unsatisfied(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are satisfied:");
@@ -1441,17 +1440,17 @@ namespace
 
         const Environment * const env;
         const DepList & dep_list;
-        const tr1::shared_ptr<const PackageID> id;
-        tr1::shared_ptr<PackageIDSet> already_checked;
+        const std::tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<PackageIDSet> already_checked;
 
-        tr1::shared_ptr<const PackageID> failure;
+        std::tr1::shared_ptr<const PackageID> failure;
         std::set<SetName> recursing_sets;
 
         CheckIndependentVisitor(
                 const Environment * const e,
                 const DepList & d,
-                const tr1::shared_ptr<const PackageID> & i,
-                const tr1::shared_ptr<PackageIDSet> & a) :
+                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<PackageIDSet> & a) :
             env(e),
             dep_list(d),
             id(i),
@@ -1492,7 +1491,7 @@ namespace
 
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
-            tr1::shared_ptr<const PackageIDSequence> installed(env->package_database()->query(
+            std::tr1::shared_ptr<const PackageIDSequence> installed(env->package_database()->query(
                         query::Matches(a) &
                         query::SupportsAction<InstalledAction>(),
                         qo_whatever));
@@ -1545,7 +1544,7 @@ namespace
 
         void visit_leaf(const NamedSetDepSpec & s)
         {
-            tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+            std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
 
             if (! set)
             {
@@ -1582,12 +1581,12 @@ InstallTask::had_action_failures() const
 }
 
 
-tr1::shared_ptr<const PackageID>
+std::tr1::shared_ptr<const PackageID>
 InstallTask::_dependent(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are independent of failed packages:");
 
-    tr1::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
+    std::tr1::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
     CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id, already_checked);
     already_checked->insert(e.package_id);
 

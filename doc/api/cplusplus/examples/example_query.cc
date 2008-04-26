@@ -29,14 +29,14 @@ using std::endl;
 namespace
 {
     /* Run a particular query, and show its results. */
-    void show_query(const tr1::shared_ptr<const Environment> & env, const Query & query)
+    void show_query(const std::tr1::shared_ptr<const Environment> & env, const Query & query)
     {
         /* Queries support a crude form of stringification. */
         cout << query << ":" << endl;
 
         /* Usually the only thing clients will do with a Query object is pass it
          * to PackageDatabase::query. */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(query, qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(query, qo_order_by_version));
 
         /* Show the results */
         if (! ids->empty())
@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
                 "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Make some queries, and display what they give. */

@@ -30,7 +30,7 @@ bool
 paludis::erepository::ebuild_count_check(
         QAReporter & reporter,
         const FSEntry & dir,
-        const tr1::shared_ptr<const Repository> & repo,
+        const std::tr1::shared_ptr<const Repository> & repo,
         const QualifiedPackageName & q,
         const std::string & name
         )
@@ -39,7 +39,7 @@ paludis::erepository::ebuild_count_check(
     Log::get_instance()->message("e.qa.ebuild_count_check", ll_debug, lc_context) << "ebuild_count_check '"
         << dir << "', " << name << "'";
 
-    tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
+    std::tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
     PackageIDSequence::ConstIterator::difference_type count(std::distance(ids->begin(), ids->end()));
 
     if (count > 10)

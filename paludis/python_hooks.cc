@@ -22,7 +22,7 @@ namespace bp = boost::python;
 
 extern "C"
 {
-    tr1::shared_ptr<HookFile> create_py_hook_file(const FSEntry &, const bool, const Environment * const)
+    std::tr1::shared_ptr<HookFile> create_py_hook_file(const FSEntry &, const bool, const Environment * const)
         PALUDIS_VISIBLE;
 }
 
@@ -72,7 +72,7 @@ namespace
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
 
-            virtual const tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            virtual const std::tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const
             {
                 return make_shared_ptr(new Sequence<std::string>);
             }
@@ -437,8 +437,8 @@ PyHookFile::_get_traceback() const
     return strip_trailing(bp::extract<std::string>(result_str)(), "\n");
 }
 
-tr1::shared_ptr<HookFile>
+std::tr1::shared_ptr<HookFile>
 create_py_hook_file(const FSEntry & f, const bool b, const Environment * const e)
 {
-    return tr1::shared_ptr<HookFile>(new PyHookFile(f, b, e));
+    return std::tr1::shared_ptr<HookFile>(new PyHookFile(f, b, e));
 }

@@ -52,11 +52,11 @@ void
 VersionsList::handle_signal_cursor_changed()
 {
     if (get_selection()->get_selected())
-        _imp->versions_page->set_id(paludis::tr1::shared_ptr<const PackageID>(
+        _imp->versions_page->set_id(std::tr1::shared_ptr<const PackageID>(
                     (*get_selection()->get_selected())[_imp->model->columns().col_id].operator
-                    paludis::tr1::shared_ptr<const PackageID> ()));
+                    std::tr1::shared_ptr<const PackageID> ()));
     else
-        _imp->versions_page->set_id(paludis::tr1::shared_ptr<const PackageID>());
+        _imp->versions_page->set_id(std::tr1::shared_ptr<const PackageID>());
 }
 
 void

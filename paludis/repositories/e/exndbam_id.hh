@@ -36,14 +36,14 @@ namespace paludis
             public:
                 ExndbamID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
-                        const tr1::shared_ptr<const Repository> &,
+                        const std::tr1::shared_ptr<const Repository> &,
                         const FSEntry & file,
                         const NDBAM * const);
 
                 virtual std::string fs_location_raw_name() const;
                 virtual std::string fs_location_human_name() const;
                 virtual std::string contents_filename() const;
-                virtual tr1::shared_ptr<MetadataValueKey<tr1::shared_ptr<const Contents> > > make_contents_key() const;
+                virtual std::tr1::shared_ptr<MetadataValueKey<std::tr1::shared_ptr<const Contents> > > make_contents_key() const;
         };
     }
 }

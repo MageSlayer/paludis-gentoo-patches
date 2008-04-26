@@ -51,13 +51,13 @@ namespace
         const FSEntry entry;
         QAReporter * const reporter;
         const Environment * const env;
-        const tr1::shared_ptr<const PackageID> & id;
-        const tr1::shared_ptr<const ERepository> repo;
+        const std::tr1::shared_ptr<const PackageID> & id;
+        const std::tr1::shared_ptr<const ERepository> repo;
         const std::set<KeywordName> & accepted_keywords;
         const ERepository::ProfilesConstIterator profile;
         const std::string name;
         const bool unstable;
-        const tr1::shared_ptr<const MetadataKey> & key;
+        const std::tr1::shared_ptr<const MetadataKey> & key;
 
         bool success;
         bool viable;
@@ -66,13 +66,13 @@ namespace
                 const FSEntry & e,
                 QAReporter * const r,
                 const Environment * const v,
-                const tr1::shared_ptr<const PackageID> & i,
-                const tr1::shared_ptr<const ERepository> o,
+                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const ERepository> o,
                 const std::set<KeywordName> & a,
                 const ERepository::ProfilesConstIterator & p,
                 const std::string & n,
                 const bool u,
-                const tr1::shared_ptr<const MetadataKey> & k) :
+                const std::tr1::shared_ptr<const MetadataKey> & k) :
             entry(e),
             reporter(r),
             env(v),
@@ -103,13 +103,13 @@ namespace
 
         void visit_leaf(const PackageDepSpec & orig_p)
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             success = false;
             viable = true;
 
             const PackageDepSpec * p(&orig_p);
-            tr1::shared_ptr<PackageDepSpec> local_p;
+            std::tr1::shared_ptr<PackageDepSpec> local_p;
 
             /* rewrite virtuals to avoid problems later on */
             if (p->package_ptr())
@@ -121,10 +121,10 @@ namespace
 
                     if (v->second->version_requirements_ptr())
                         std::for_each(v->second->version_requirements_ptr()->begin(), v->second->version_requirements_ptr()->end(),
-                                tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
+                                std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
                     if (orig_p.version_requirements_ptr())
                         std::for_each(orig_p.version_requirements_ptr()->begin(), orig_p.version_requirements_ptr()->end(),
-                                tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
+                                std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
 
                     pp.package(*v->second->package_ptr());
                     if (orig_p.slot_requirement_ptr())
@@ -138,7 +138,7 @@ namespace
                 }
             }
 
-            const tr1::shared_ptr<const PackageIDSequence> matches(env->package_database()->query(
+            const std::tr1::shared_ptr<const PackageIDSequence> matches(env->package_database()->query(
                         query::Matches(*p) & query::SupportsAction<InstallAction>(), qo_order_by_version));
             if (matches->empty())
             {
@@ -236,7 +236,7 @@ namespace
                 if (reporter)
                 {
                     StringifyFormatter ff;
-                    DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    DepSpecPrettyPrinter printer(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     std::for_each(begin, end, accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"
@@ -263,8 +263,8 @@ paludis::erepository::visibility_check(
         const FSEntry & entry,
         QAReporter & reporter,
         const Environment * const env,
-        const tr1::shared_ptr<const ERepository> & repo,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const ERepository> & repo,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using visibility_check on ID '" + stringify(*id) + "':");

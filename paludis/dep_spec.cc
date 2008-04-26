@@ -34,9 +34,9 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <tr1/functional>
 #include <algorithm>
 #include <list>
 #include <map>
@@ -67,20 +67,20 @@ AnyDepSpec::AnyDepSpec()
 {
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 AnyDepSpec::clone() const
 {
-    return tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec());
+    return std::tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec());
 }
 
 AllDepSpec::AllDepSpec()
 {
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 AllDepSpec::clone() const
 {
-    return tr1::shared_ptr<AllDepSpec>(new AllDepSpec());
+    return std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec());
 }
 
 namespace paludis
@@ -88,11 +88,11 @@ namespace paludis
     template <>
     struct Implementation<ConditionalDepSpec>
     {
-        const tr1::shared_ptr<const ConditionalDepSpecData> data;
+        const std::tr1::shared_ptr<const ConditionalDepSpecData> data;
         Mutex mutex;
         bool added_keys;
 
-        Implementation(const tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+        Implementation(const std::tr1::shared_ptr<const ConditionalDepSpecData> & d) :
             data(d),
             added_keys(false)
         {
@@ -100,7 +100,7 @@ namespace paludis
     };
 }
 
-ConditionalDepSpec::ConditionalDepSpec(const tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+ConditionalDepSpec::ConditionalDepSpec(const std::tr1::shared_ptr<const ConditionalDepSpecData> & d) :
     PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(d)),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
@@ -137,9 +137,9 @@ ConditionalDepSpec::need_keys_added() const
     if (! _imp->added_keys)
     {
         _imp->added_keys = true;
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
         std::for_each(_imp->data->begin_metadata(), _imp->data->end_metadata(),
-                tr1::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
+                std::tr1::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
     }
 }
 
@@ -163,7 +163,7 @@ ConditionalDepSpec::condition_meetable() const
     return _imp->data->condition_meetable();
 }
 
-const tr1::shared_ptr<const ConditionalDepSpecData>
+const std::tr1::shared_ptr<const ConditionalDepSpecData>
 ConditionalDepSpec::data() const
 {
     return _imp->data;
@@ -203,10 +203,10 @@ NamedSetDepSpec::name() const
     return _name;
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
-    return tr1::shared_ptr<NamedSetDepSpec>(new NamedSetDepSpec(_name));
+    return std::tr1::shared_ptr<NamedSetDepSpec>(new NamedSetDepSpec(_name));
 }
 
 const PackageDepSpec *
@@ -215,7 +215,7 @@ PackageDepSpec::as_package_dep_spec() const
     return this;
 }
 
-BlockDepSpec::BlockDepSpec(tr1::shared_ptr<const PackageDepSpec> a) :
+BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
     StringDepSpec("!" + a->text()),
     _spec(a)
 {
@@ -315,10 +315,10 @@ PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
 {
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 PlainTextDepSpec::clone() const
 {
-    return tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
+    return std::tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
 }
 
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
@@ -326,10 +326,10 @@ LicenseDepSpec::LicenseDepSpec(const std::string & s) :
 {
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 LicenseDepSpec::clone() const
 {
-    return tr1::shared_ptr<DepSpec>(new LicenseDepSpec(text()));
+    return std::tr1::shared_ptr<DepSpec>(new LicenseDepSpec(text()));
 }
 
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
@@ -337,22 +337,22 @@ SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
 {
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
-    return tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
+    return std::tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
 }
 
-tr1::shared_ptr<const PackageDepSpec>
+std::tr1::shared_ptr<const PackageDepSpec>
 BlockDepSpec::blocked_spec() const
 {
     return _spec;
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
-    return tr1::shared_ptr<DepSpec>(new BlockDepSpec(tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
+    return std::tr1::shared_ptr<DepSpec>(new BlockDepSpec(std::tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
 }
 
 FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
@@ -395,10 +395,10 @@ FetchableURIDepSpec::filename() const
     return orig.substr(p+1);
 }
 
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 FetchableURIDepSpec::clone() const
 {
-    return tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(text()));
+    return std::tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(text()));
 }
 
 namespace paludis
@@ -409,7 +409,7 @@ namespace paludis
     template <typename T_>
     struct Implementation<LabelsDepSpec<T_ > >
     {
-        std::list<tr1::shared_ptr<const typename T_::BasicNode> > items;
+        std::list<std::tr1::shared_ptr<const typename T_::BasicNode> > items;
     };
 }
 
@@ -425,12 +425,12 @@ LabelsDepSpec<T_>::~LabelsDepSpec()
 }
 
 template <typename T_>
-tr1::shared_ptr<DepSpec>
+std::tr1::shared_ptr<DepSpec>
 LabelsDepSpec<T_>::clone() const
 {
-    using namespace tr1::placeholders;
-    tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
-    std::for_each(begin(), end(), tr1::bind(tr1::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
+    using namespace std::tr1::placeholders;
+    std::tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
+    std::for_each(begin(), end(), std::tr1::bind(std::tr1::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
 }
 
@@ -450,7 +450,7 @@ LabelsDepSpec<T_>::end() const
 
 template <typename T_>
 void
-LabelsDepSpec<T_>::add_label(const tr1::shared_ptr<const typename T_::BasicNode> & item)
+LabelsDepSpec<T_>::add_label(const std::tr1::shared_ptr<const typename T_::BasicNode> & item)
 {
     _imp->items.push_back(item);
 }
@@ -464,10 +464,10 @@ namespace paludis
     template <>
     struct Implementation<PackageDepSpec>
     {
-        const tr1::shared_ptr<const PackageDepSpecData> data;
-        tr1::shared_ptr<const DepTag> tag;
+        const std::tr1::shared_ptr<const PackageDepSpecData> data;
+        std::tr1::shared_ptr<const DepTag> tag;
 
-        Implementation(const tr1::shared_ptr<const PackageDepSpecData> & d, const tr1::shared_ptr<const DepTag> & t) :
+        Implementation(const std::tr1::shared_ptr<const PackageDepSpecData> & d, const std::tr1::shared_ptr<const DepTag> & t) :
             data(d),
             tag(t)
         {
@@ -475,10 +475,10 @@ namespace paludis
     };
 }
 
-PackageDepSpec::PackageDepSpec(const tr1::shared_ptr<const PackageDepSpecData> & d) :
+PackageDepSpec::PackageDepSpec(const std::tr1::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, tr1::shared_ptr<const DepTag>()))
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::tr1::shared_ptr<const DepTag>()))
 {
 }
 
@@ -494,25 +494,25 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
 {
 }
 
-tr1::shared_ptr<const QualifiedPackageName>
+std::tr1::shared_ptr<const QualifiedPackageName>
 PackageDepSpec::package_ptr() const
 {
     return _imp->data->package_ptr();
 }
 
-tr1::shared_ptr<const PackageNamePart>
+std::tr1::shared_ptr<const PackageNamePart>
 PackageDepSpec::package_name_part_ptr() const
 {
     return _imp->data->package_name_part_ptr();
 }
 
-tr1::shared_ptr<const CategoryNamePart>
+std::tr1::shared_ptr<const CategoryNamePart>
 PackageDepSpec::category_name_part_ptr() const
 {
     return _imp->data->category_name_part_ptr();
 }
 
-tr1::shared_ptr<const VersionRequirements>
+std::tr1::shared_ptr<const VersionRequirements>
 PackageDepSpec::version_requirements_ptr() const
 {
     return _imp->data->version_requirements_ptr();
@@ -524,28 +524,28 @@ PackageDepSpec::version_requirements_mode() const
     return _imp->data->version_requirements_mode();
 }
 
-tr1::shared_ptr<const SlotRequirement>
+std::tr1::shared_ptr<const SlotRequirement>
 PackageDepSpec::slot_requirement_ptr() const
 {
     return _imp->data->slot_requirement_ptr();
 }
 
-tr1::shared_ptr<const RepositoryName>
+std::tr1::shared_ptr<const RepositoryName>
 PackageDepSpec::repository_ptr() const
 {
     return _imp->data->repository_ptr();
 }
 
-tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
+std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->data->additional_requirements_ptr();
 }
 
-tr1::shared_ptr<PackageDepSpec>
+std::tr1::shared_ptr<PackageDepSpec>
 PackageDepSpec::without_additional_requirements() const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     PartiallyMadePackageDepSpec result;
 
@@ -560,7 +560,7 @@ PackageDepSpec::without_additional_requirements() const
 
     if (version_requirements_ptr())
         std::for_each(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
-                tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &result, _1));
+                std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &result, _1));
 
     result.version_requirements_mode(version_requirements_mode());
 
@@ -573,14 +573,14 @@ PackageDepSpec::without_additional_requirements() const
     return make_shared_ptr(new PackageDepSpec(result));
 }
 
-tr1::shared_ptr<const DepTag>
+std::tr1::shared_ptr<const DepTag>
 PackageDepSpec::tag() const
 {
     return _imp->tag;
 }
 
 void
-PackageDepSpec::set_tag(const tr1::shared_ptr<const DepTag> & s)
+PackageDepSpec::set_tag(const std::tr1::shared_ptr<const DepTag> & s)
 {
     _imp->tag = s;
 }
@@ -606,14 +606,14 @@ namespace
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
-        tr1::shared_ptr<QualifiedPackageName> package;
-        tr1::shared_ptr<PackageNamePart> package_name_part;
-        tr1::shared_ptr<CategoryNamePart> category_name_part;
-        tr1::shared_ptr<VersionRequirements> version_requirements;
+        std::tr1::shared_ptr<QualifiedPackageName> package;
+        std::tr1::shared_ptr<PackageNamePart> package_name_part;
+        std::tr1::shared_ptr<CategoryNamePart> category_name_part;
+        std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
-        tr1::shared_ptr<const SlotRequirement> slot;
-        tr1::shared_ptr<RepositoryName> repository;
-        tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::tr1::shared_ptr<const SlotRequirement> slot;
+        std::tr1::shared_ptr<RepositoryName> repository;
+        std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
 
         PartiallyMadePackageDepSpecData() :
             PackageDepSpecData(),
@@ -747,22 +747,22 @@ namespace
             return s.str();
         }
 
-        virtual tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
         {
             return package;
         }
 
-        virtual tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
         {
             return package_name_part;
         }
 
-        virtual tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
         {
             return category_name_part;
         }
 
-        virtual tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
         {
             return version_requirements;
         }
@@ -772,17 +772,17 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
             return slot;
         }
 
-        virtual tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
         {
             return repository;
         }
 
-        virtual tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
             return additional_requirements;
         }
@@ -794,7 +794,7 @@ namespace paludis
     template <>
     struct Implementation<PartiallyMadePackageDepSpec>
     {
-        tr1::shared_ptr<PartiallyMadePackageDepSpecData> data;
+        std::tr1::shared_ptr<PartiallyMadePackageDepSpecData> data;
 
         Implementation() :
             data(new PartiallyMadePackageDepSpecData)
@@ -830,7 +830,7 @@ PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::slot_requirement(const tr1::shared_ptr<const SlotRequirement> & s)
+PartiallyMadePackageDepSpec::slot_requirement(const std::tr1::shared_ptr<const SlotRequirement> & s)
 {
     _imp->data->slot = s;
     return *this;
@@ -874,7 +874,7 @@ PartiallyMadePackageDepSpec::version_requirements_mode(const VersionRequirements
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::additional_requirement(const tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
+PartiallyMadePackageDepSpec::additional_requirement(const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
 {
     if (! _imp->data->additional_requirements)
         _imp->data->additional_requirements.reset(new AdditionalPackageDepSpecRequirements);
@@ -895,11 +895,11 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
 
 template class LabelsDepSpec<URILabelVisitorTypes>;
 template class WrappedForwardIterator<LabelsDepSpec<URILabelVisitorTypes>::ConstIteratorTag,
-         const tr1::shared_ptr<const URILabelVisitorTypes::BasicNode> >;
+         const std::tr1::shared_ptr<const URILabelVisitorTypes::BasicNode> >;
 
 template class LabelsDepSpec<DependencyLabelVisitorTypes>;
 template class WrappedForwardIterator<LabelsDepSpec<DependencyLabelVisitorTypes>::ConstIteratorTag,
-         const tr1::shared_ptr<const DependencyLabelVisitorTypes::BasicNode> >;
+         const std::tr1::shared_ptr<const DependencyLabelVisitorTypes::BasicNode> >;
 
-template class Sequence<tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 

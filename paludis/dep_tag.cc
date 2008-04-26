@@ -30,7 +30,7 @@
 
 using namespace paludis;
 
-template class VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
+template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
 
 template class ConstVisitor<DepTagVisitorTypes>;
@@ -56,10 +56,10 @@ template class WrappedOutputIterator<Set<DepTagEntry>::InserterTag, DepTagEntry>
 
 namespace
 {
-    tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<const DepTagCategory>
     make_glsa_dep_tag()
     {
-        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     true,
                     "glsa",
                     "Security advisories",
@@ -67,10 +67,10 @@ namespace
                     "Please read the advisories carefully and take appropriate action."));
     }
 
-    tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<const DepTagCategory>
     make_general_set_dep_tag()
     {
-        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     true,
                     "general",
                     "General sets",
@@ -78,10 +78,10 @@ namespace
                     ""));
     }
 
-    tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<const DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     false,
                     "dependency",
                     "Dependencies",
@@ -89,10 +89,10 @@ namespace
                     ""));
     }
 
-    tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<const DepTagCategory>
     make_target_dep_tag()
     {
-        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     false,
                     "target",
                     "Targets",
@@ -355,23 +355,23 @@ namespace paludis
         mutable Mutex mutex;
         mutable std::string str;
 
-        tr1::shared_ptr<const PackageID> id;
-        const tr1::shared_ptr<PackageDepSpec> spec;
-        const tr1::shared_ptr<const DependencySpecTree::ConstItem> cond;
+        std::tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<PackageDepSpec> spec;
+        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> cond;
 
-        Implementation(const tr1::shared_ptr<const PackageID> & i,
-                const PackageDepSpec & d, const tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
+                const PackageDepSpec & d, const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
             id(i),
-            spec(tr1::static_pointer_cast<PackageDepSpec>(d.clone())),
+            spec(std::tr1::static_pointer_cast<PackageDepSpec>(d.clone())),
             cond(s)
         {
-            spec->set_tag(tr1::shared_ptr<const DepTag>());
+            spec->set_tag(std::tr1::shared_ptr<const DepTag>());
         }
     };
 }
 
-DependencyDepTag::DependencyDepTag(const tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d,
-        const tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
+DependencyDepTag::DependencyDepTag(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d,
+        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
     PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d, s))
 {
 }
@@ -392,19 +392,19 @@ DependencyDepTag::category() const
     return "dependency";
 }
 
-const tr1::shared_ptr<const PackageID>
+const std::tr1::shared_ptr<const PackageID>
 DependencyDepTag::package_id() const
 {
     return _imp->id;
 }
 
-const tr1::shared_ptr<const PackageDepSpec>
+const std::tr1::shared_ptr<const PackageDepSpec>
 DependencyDepTag::dependency() const
 {
     return _imp->spec;
 }
 
-const tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
 DependencyDepTag::conditions() const
 {
     return _imp->cond;

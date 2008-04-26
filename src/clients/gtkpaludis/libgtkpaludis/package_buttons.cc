@@ -67,7 +67,7 @@ PackageButtons::populate()
 }
 
 void
-PackageButtons::populate_in_paludis_thread(paludis::tr1::shared_ptr<const QualifiedPackageName> q)
+PackageButtons::populate_in_paludis_thread(std::tr1::shared_ptr<const QualifiedPackageName> q)
 {
     _imp->main_window->gui_thread_action(
             sigc::bind(sigc::mem_fun(this, &PackageButtons::populate_in_gui_thread),

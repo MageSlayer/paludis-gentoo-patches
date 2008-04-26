@@ -5,8 +5,8 @@
 
 #include <gtkmm/treemodelfilter.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
@@ -26,7 +26,7 @@ namespace gtkpaludis
             class PopulateData;
 
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
 
         public:
             PackagesListFilteredModel(MainWindow * const m, PackagesPage * const p,

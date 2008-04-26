@@ -48,7 +48,7 @@ namespace paludis
     struct Implementation<ConsoleQueryTask>
     {
         const Environment * const env;
-        mutable tr1::shared_ptr<Map<char, std::string> > masks_to_explain;
+        mutable std::tr1::shared_ptr<Map<char, std::string> > masks_to_explain;
 
         Implementation(const Environment * const e) :
             env(e),
@@ -68,11 +68,11 @@ ConsoleQueryTask::~ConsoleQueryTask()
 }
 
 void
-ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID> display_entry) const
+ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
 {
     /* prefer the best installed version, then the best visible version, then
      * the best version */
-    tr1::shared_ptr<const PackageIDSequence>
+    std::tr1::shared_ptr<const PackageIDSequence>
         entries(_imp->env->package_database()->query(query::Matches(a), qo_order_by_version)),
         preferred_entries(_imp->env->package_database()->query(
                     query::Matches(a) & query::InstalledAtRoot(_imp->env->root()), qo_order_by_version));
@@ -105,7 +105,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID
 }
 
 void
-ConsoleQueryTask::display_header(const PackageDepSpec & a, const tr1::shared_ptr<const PackageID> & e) const
+ConsoleQueryTask::display_header(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
             a.repository_ptr())
@@ -115,7 +115,7 @@ ConsoleQueryTask::display_header(const PackageDepSpec & a, const tr1::shared_ptr
 }
 
 void
-ConsoleQueryTask::display_compact(const PackageDepSpec & a, const tr1::shared_ptr<const PackageID> & e) const
+ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
             a.repository_ptr())
@@ -136,8 +136,8 @@ ConsoleQueryTask::display_compact(const PackageDepSpec & a, const tr1::shared_pt
 
 void
 ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
-        tr1::shared_ptr<const PackageIDSequence> entries,
-        const tr1::shared_ptr<const PackageID> & display_entry) const
+        std::tr1::shared_ptr<const PackageIDSequence> entries,
+        const std::tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* find all repository names. */
     RepositoryNameSequence repo_names;
@@ -241,13 +241,13 @@ namespace
         private:
             const ConsoleQueryTask * const task;
             const Environment * const env;
-            const tr1::shared_ptr<const PackageID> id;
+            const std::tr1::shared_ptr<const PackageID> id;
             const MetadataKeyType type;
             const unsigned in;
 
         public:
             Displayer(const ConsoleQueryTask * const t, const Environment * const e,
-                    const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k,
+                    const std::tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k,
                     const unsigned ind = 0) :
                 task(t),
                 env(e),
@@ -486,7 +486,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
             {
                 if (k.type() == type)
                 {
@@ -600,7 +600,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
             {
                 if (k.type() == type && k.value())
                 {
@@ -641,14 +641,14 @@ namespace
                 }
             }
 
-            void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > &)
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
             {
             }
     };
 }
 
 void
-ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
+ConsoleQueryTask::display_metadata(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & id) const
 {
     Displayer ds(this, _imp->env, id, mkt_significant);
     std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(ds));
@@ -676,7 +676,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr
 }
 
 void
-ConsoleQueryTask::display_masks(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
+ConsoleQueryTask::display_masks(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & id) const
 {
     for (PackageID::MasksConstIterator m(id->begin_masks()), m_end(id->end_masks()) ;
             m != m_end ; ++m)
@@ -772,7 +772,7 @@ namespace
     };
 
     template <typename T_>
-    bool is_spec_empty(tr1::shared_ptr<const T_> d)
+    bool is_spec_empty(std::tr1::shared_ptr<const T_> d)
     {
         IsEmpty e;
         d->accept(e);
@@ -780,7 +780,7 @@ namespace
     }
 }
 
-const tr1::shared_ptr<const Map<char, std::string> >
+const std::tr1::shared_ptr<const Map<char, std::string> >
 ConsoleQueryTask::masks_to_explain() const
 {
     return _imp->masks_to_explain;

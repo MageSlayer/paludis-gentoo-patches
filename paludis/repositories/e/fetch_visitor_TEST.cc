@@ -47,14 +47,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/in/input1").exists());
             TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
 
-            const tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
+            const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
             FetchVisitor v(&env, *env.package_database()->query(query::Matches(parse_user_package_dep_spec("=cat/pkg-1", UserPackageDepSpecOptions())),
                         qo_require_exactly_one)->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),

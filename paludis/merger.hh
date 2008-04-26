@@ -29,7 +29,6 @@
 #include <iosfwd>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <paludis/hashed_containers.hh>
 
 /** \file
  * Declarations for the Merger class, which can be used by Repository
@@ -73,14 +72,10 @@ namespace paludis
      * \ingroup g_repository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Merger
+    class PALUDIS_VISIBLE Merger :
+        private PrivateImplementationPattern<Merger>
     {
         private:
-            typedef MakeHashedMultiMap<std::pair<dev_t, ino_t>, std::string>::Type MergedMap;
-            MergedMap _merged_ids;
-            MergerParams _params;
-            bool _result;
-            bool _skip_dir;
             void record_renamed_dir_recursive(const FSEntry &);
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);

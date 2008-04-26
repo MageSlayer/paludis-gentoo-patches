@@ -45,7 +45,7 @@ namespace paludis
                 const FSEntry & _filename;
                 const FSEntry & _ebuild;
                 time_t _master_mtime;
-                tr1::shared_ptr<const EclassMtimes> _eclass_mtimes;
+                std::tr1::shared_ptr<const EclassMtimes> _eclass_mtimes;
                 bool _silent;
 
             public:
@@ -53,15 +53,15 @@ namespace paludis
                 ///\{
 
                 EbuildFlatMetadataCache(const Environment * const, const FSEntry & filename, const FSEntry & ebuild,
-                        time_t master_mtime, tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
+                        time_t master_mtime, std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
 
                 ///\}
 
                 ///\name Cache operations
                 ///\{
 
-                bool load(const tr1::shared_ptr<const EbuildID> &);
-                void save(const tr1::shared_ptr<const EbuildID> &);
+                bool load(const std::tr1::shared_ptr<const EbuildID> &);
+                void save(const std::tr1::shared_ptr<const EbuildID> &);
 
                 ///\}
         };

@@ -194,49 +194,49 @@ EInstalledRepository::describe_use_flag(const UseFlagName &, const PackageID &) 
     return "";
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 EInstalledRepository::use_expand_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 EInstalledRepository::use_expand_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 EInstalledRepository::use_expand_hidden_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 EInstalledRepository::package_set(const SetName & s) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When fetching package set '" + stringify(s) + "' from '" +
             stringify(name()) + "':");
 
     if ("everything" == s.data())
     {
-        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
+        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
 
-        tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
         for (CategoryNamePartSet::ConstIterator i(cats->begin()), i_end(cats->end()) ;
                 i != i_end ; ++i)
         {
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*i));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*i));
             for (QualifiedPackageNameSet::ConstIterator e(pkgs->begin()), e_end(pkgs->end()) ;
                     e != e_end ; ++e)
             {
-                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(*e)));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(*e)));
                 spec->set_tag(tag);
-                result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
             }
         }
 
@@ -246,49 +246,49 @@ EInstalledRepository::package_set(const SetName & s) const
     {
         if (_imp->params.deprecated_world.exists())
         {
-            tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
+            std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
             SetFile world(SetFileParams::create()
                     .file_name(_imp->params.deprecated_world)
                     .type(sft_simple)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
                     .tag(tag)
                     .set_operator_mode(sfsmo_natural)
                     .environment(_imp->params.environment));
             return world.contents();
         }
 
-        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
     else
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 EInstalledRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
     if (_imp->params.deprecated_world.exists())
         result->insert(SetName("world"));
     return result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 EInstalledRepository::unimportant_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 EInstalledRepository::arch_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 char
@@ -296,13 +296,13 @@ EInstalledRepository::use_expand_separator(const PackageID & id) const
 {
     if (this != id.repository().get())
         return '\0';
-    const tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
+    const std::tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
     return (*eapi)[k::supported()] ? (*(*eapi)[k::supported()])[k::ebuild_options()].use_expand_separator : '\0';
 }
 
 std::string
 EInstalledRepository::get_environment_variable(
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & var) const
 {
     Context context("When fetching environment variable '" + var + "' for '" +
@@ -339,7 +339,7 @@ EInstalledRepository::get_environment_variable(
 }
 
 void
-EInstalledRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) const
+EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositoryID> & id) const
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
@@ -349,10 +349,10 @@ EInstalledRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> 
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_config);
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -382,7 +382,7 @@ EInstalledRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> 
 }
 
 void
-EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) const
+EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryID> & id) const
 {
     Context context("When infoing '" + stringify(*id) + "':");
 
@@ -392,10 +392,10 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
 
@@ -412,7 +412,7 @@ EInstalledRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & 
             RepositoryName rn(id->source_origin_key()->value());
             if (_imp->params.environment->package_database()->has_repository_named(rn))
             {
-                const tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
+                const std::tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
                 if ((*r)[k::e_interface()])
                 {
                     i = (*r)[k::e_interface()]->info_variables_file((*r)[k::e_interface()]->params().location / "profiles");

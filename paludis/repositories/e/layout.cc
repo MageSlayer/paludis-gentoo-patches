@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -30,16 +30,16 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 template class VirtualConstructor<std::string,
-         tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
-                 tr1::shared_ptr<const ERepositoryEntries>,
-                 tr1::shared_ptr<const FSEntry>),
+         std::tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
+                 std::tr1::shared_ptr<const ERepositoryEntries>,
+                 std::tr1::shared_ptr<const FSEntry>),
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
 
 template class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
 
 template class Map<FSEntry, std::string>;
 
-Layout::Layout(tr1::shared_ptr<const FSEntry> l) :
+Layout::Layout(std::tr1::shared_ptr<const FSEntry> l) :
     _master_repository_location(l)
 {
 }
@@ -48,7 +48,7 @@ Layout::~Layout()
 {
 }
 
-tr1::shared_ptr<const FSEntry>
+std::tr1::shared_ptr<const FSEntry>
 Layout::master_repository_location() const
 {
     return _master_repository_location;
@@ -63,12 +63,12 @@ Layout::sync_filter_file() const
 namespace
 {
     template <typename T_>
-    tr1::shared_ptr<Layout>
+    std::tr1::shared_ptr<Layout>
     make_layout(const ERepository * const n, const FSEntry & b,
-            tr1::shared_ptr<const ERepositoryEntries> e,
-            tr1::shared_ptr<const FSEntry> f)
+            std::tr1::shared_ptr<const ERepositoryEntries> e,
+            std::tr1::shared_ptr<const FSEntry> f)
     {
-        return tr1::shared_ptr<Layout>(new T_(n, b, e, f));
+        return std::tr1::shared_ptr<Layout>(new T_(n, b, e, f));
     }
 }
 

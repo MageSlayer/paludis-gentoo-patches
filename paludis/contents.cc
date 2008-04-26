@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,7 +42,7 @@ template class Visits<const ContentsFifoEntry>;
 template class Visits<const ContentsDevEntry>;
 template class Visits<const ContentsMiscEntry>;
 
-template class WrappedForwardIterator<Contents::ConstIteratorTag, const tr1::shared_ptr<const ContentsEntry> >;
+template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 
 ContentsEntry::ContentsEntry(const std::string & n) :
     _name(n)
@@ -101,7 +101,7 @@ namespace paludis
     template<>
     struct Implementation<Contents>
     {
-        std::list<tr1::shared_ptr<const ContentsEntry> > c;
+        std::list<std::tr1::shared_ptr<const ContentsEntry> > c;
     };
 }
 
@@ -115,7 +115,7 @@ Contents::~Contents()
 }
 
 void
-Contents::add(tr1::shared_ptr<const ContentsEntry> c)
+Contents::add(std::tr1::shared_ptr<const ContentsEntry> c)
 {
     _imp->c.push_back(c);
 }

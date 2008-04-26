@@ -21,13 +21,11 @@
 #define PALUDIS_GUARD_RECONCILIO_INSTALL_HH
 
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
-
 #include <paludis/environment-fwd.hh>
-
+#include <tr1/memory>
 #include <string>
 
-int do_install(const paludis::tr1::shared_ptr<paludis::Environment> &,
-               const paludis::tr1::shared_ptr<const paludis::Sequence<std::string> > &);
+int do_install(const std::tr1::shared_ptr<paludis::Environment> &,
+               const std::tr1::shared_ptr<const paludis::Sequence<std::string> > &);
 
 #endif

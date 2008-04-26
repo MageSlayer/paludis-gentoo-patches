@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,10 +22,10 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 int do_install(
-        const paludis::tr1::shared_ptr<paludis::Environment> &,
-        const paludis::tr1::shared_ptr<const paludis::PackageID> & target);
+        const std::tr1::shared_ptr<paludis::Environment> &,
+        const std::tr1::shared_ptr<const paludis::PackageID> & target);
 
 #endif

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -70,14 +70,14 @@ namespace
 
 void
 do_one_contents_entry(
-        const tr1::shared_ptr<Environment>,
+        const std::tr1::shared_ptr<Environment>,
         const PackageID & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
     if (e.contents_key())
     {
-        tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
+        std::tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
         ContentsDisplayer d;
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
     }
@@ -89,19 +89,19 @@ do_one_contents_entry(
 
 void
 do_one_contents(
-        const tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. either should work. */
-    tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
+    std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
             new PackageDepSpec(make_package_dep_spec().package(
                     env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))) :
             new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
 
-    tr1::shared_ptr<const PackageIDSequence>
+    std::tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
                         env->root()), qo_order_by_version));
 
@@ -114,7 +114,7 @@ do_one_contents(
 }
 
 int
-do_contents(tr1::shared_ptr<Environment> env)
+do_contents(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 

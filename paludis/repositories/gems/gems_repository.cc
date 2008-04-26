@@ -30,10 +30,11 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <tr1/unordered_map>
 #include <fstream>
 
 using namespace paludis;
@@ -45,23 +46,23 @@ namespace paludis
     {
         const gems::RepositoryParams params;
 
-        const tr1::shared_ptr<Mutex> big_nasty_mutex;
+        const std::tr1::shared_ptr<Mutex> big_nasty_mutex;
 
-        mutable tr1::shared_ptr<const CategoryNamePartSet> category_names;
-        mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type package_names;
-        mutable MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type ids;
+        mutable std::tr1::shared_ptr<const CategoryNamePartSet> category_names;
+        mutable std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> > package_names;
+        mutable std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > ids;
 
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const gems::RepositoryParams p, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const gems::RepositoryParams p, std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             params(p),
             big_nasty_mutex(m),
             has_category_names(false),
@@ -135,10 +136,11 @@ GemsRepository::invalidate_masks()
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    for (MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
-         it_end != it; ++it)
+    for (std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> >::iterator
+            it(_imp->ids.begin()), it_end(_imp->ids.end());
+            it_end != it; ++it)
         for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
-             it2_end != it2; ++it2)
+                it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }
 
@@ -163,7 +165,7 @@ GemsRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.find(q.category)->second->end() != _imp->package_names.find(q.category)->second->find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 GemsRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -172,7 +174,7 @@ GemsRepository::category_names() const
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 GemsRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -182,14 +184,14 @@ GemsRepository::package_names(const CategoryNamePart & c) const
 
     need_ids();
 
-    MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type::const_iterator i(
+    std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> >::const_iterator i(
             _imp->package_names.find(c));
     if (i == _imp->package_names.end())
         return make_shared_ptr(new QualifiedPackageNameSet);
     return i->second;
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 GemsRepository::package_ids(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -199,7 +201,7 @@ GemsRepository::package_ids(const QualifiedPackageName & q) const
 
     need_ids();
 
-    MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::const_iterator i(
+    std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> >::const_iterator i(
             _imp->ids.find(q));
     if (i == _imp->ids.end())
         return make_shared_ptr(new PackageIDSequence);
@@ -215,7 +217,7 @@ GemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -232,7 +234,7 @@ GemsRepository::need_ids() const
 
     need_category_names();
 
-    tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
     _imp->package_names.insert(std::make_pair(CategoryNamePart("gems"), pkgs));
 
     Context context("When loading gems yaml file:");
@@ -250,7 +252,8 @@ GemsRepository::need_ids() const
     {
         pkgs->insert(i->first.first);
 
-        MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator v(_imp->ids.find(i->first.first));
+        std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> >::iterator
+            v(_imp->ids.find(i->first.first));
         if (_imp->ids.end() == v)
             v = _imp->ids.insert(std::make_pair(i->first.first, make_shared_ptr(new PackageIDSequence))).first;
 
@@ -262,7 +265,7 @@ GemsRepository::need_ids() const
 
 #if 0
 void
-GemsRepository::do_install(const tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
+GemsRepository::do_install(const std::tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
 {
     if (o.fetch_only)
         return;
@@ -337,15 +340,15 @@ GemsRepository::need_keys_added() const
 {
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 GemsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemsRepository::installed_root_key() const
 {
-    return tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 

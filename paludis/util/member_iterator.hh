@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -22,8 +22,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MEMBER_ITERATOR_HH 1
 
 #include <paludis/util/member_iterator-fwd.hh>
-#include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/operators.hh>
+#include <tr1/type_traits>
 
 #ifdef PALUDIS_HAVE_CONCEPTS
 #  include <concepts>
@@ -36,9 +36,9 @@ namespace paludis
     struct FirstIteratorTypes
     {
         typedef MemberIterator<
-            typename tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first_type,
+            typename std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first_type,
             Iterator_,
-            &tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first>
+            &std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first>
                 Type;
     };
 
@@ -46,9 +46,9 @@ namespace paludis
     struct SecondIteratorTypes
     {
         typedef MemberIterator<
-            typename tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second_type,
+            typename std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second_type,
             Iterator_,
-            &tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second>
+            &std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second>
                 Type;
     };
 
@@ -60,7 +60,7 @@ namespace paludis
      * \since 0.26
      */
     template <typename Value_, typename Iterator_,
-             Value_ tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     class MemberIterator :
         public equality_operators::HasEqualityOperators
     {
@@ -82,9 +82,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename tr1::remove_const<typename tr1::remove_reference<Value_>::type>::type value_type;
-            typedef const typename tr1::remove_reference<Value_>::type & reference;
-            typedef const typename tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::tr1::remove_const<typename std::tr1::remove_reference<Value_>::type>::type value_type;
+            typedef const typename std::tr1::remove_reference<Value_>::type & reference;
+            typedef const typename std::tr1::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 
@@ -119,7 +119,7 @@ namespace paludis
 namespace std
 {
     template <typename Value_, typename Iterator_,
-             Value_ tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     concept_map ForwardIterator<paludis::MemberIterator<Value_, Iterator_, member_> >
     {
     };

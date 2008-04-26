@@ -19,7 +19,7 @@
 
 #include <paludis/util/damerau_levenshtein.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 #include <vector>
 
 using namespace paludis;

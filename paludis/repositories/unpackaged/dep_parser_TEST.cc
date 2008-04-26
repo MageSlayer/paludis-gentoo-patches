@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<const DependencySpecTree::ConstItem> spec(DepParser::parse("cat/one  , cat/two, cat/three\n"));
+            std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec(DepParser::parse("cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
             DepPrinter p(&env, f, true);
             spec->accept(p);

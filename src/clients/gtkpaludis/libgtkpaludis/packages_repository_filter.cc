@@ -56,6 +56,6 @@ PackagesRepositoryFilter::handle_signal_changed()
 {
     if (get_active())
         _imp->packages_page->set_repository_filter((*get_active())[_imp->model->columns().col_query].operator
-                paludis::tr1::shared_ptr<const Query>());
+                std::tr1::shared_ptr<const Query>());
 }
 

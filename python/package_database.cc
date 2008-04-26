@@ -69,7 +69,7 @@ void expose_package_database()
      * PackageDatabase
      */
     register_shared_ptrs_to_python<PackageDatabase>();
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
         (PackageDatabase::* fetch_repository_ptr)(const RepositoryName &) = &PackageDatabase::fetch_repository;
     bp::class_<PackageDatabase, boost::noncopyable>
         (

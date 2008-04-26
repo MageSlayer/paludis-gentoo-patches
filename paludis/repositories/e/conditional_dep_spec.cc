@@ -44,9 +44,9 @@ namespace
         UseFlagName flag;
 
         const Environment * const env;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
 
-        EConditionalDepSpecData(const std::string & s, const Environment * const e, const tr1::shared_ptr<const PackageID> & i) :
+        EConditionalDepSpecData(const std::string & s, const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i) :
             inverse(false),
             flag(UseFlagName("unset")),
             env(e),
@@ -107,7 +107,7 @@ namespace
 
 ConditionalDepSpec
 paludis::erepository::parse_e_conditional_dep_spec(const std::string & s,
-        const Environment * const env, const tr1::shared_ptr<const PackageID> & id, const EAPI &)
+        const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
 {
     return ConditionalDepSpec(make_shared_ptr(new EConditionalDepSpecData(s, env, id)));
 }

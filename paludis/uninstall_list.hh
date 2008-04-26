@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -56,20 +56,20 @@ namespace paludis
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {
         private:
-            void add_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<DepTag>,
+            void add_package(const std::tr1::shared_ptr<const PackageID> &, std::tr1::shared_ptr<DepTag>,
                     const UninstallListEntryKind k);
-            void real_add(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<DepTag>, const bool);
-            void move_package_to_end(const tr1::shared_ptr<const PackageID> &);
+            void real_add(const std::tr1::shared_ptr<const PackageID> &,
+                    std::tr1::shared_ptr<DepTag>, const bool);
+            void move_package_to_end(const std::tr1::shared_ptr<const PackageID> &);
             void add_unused_dependencies();
             void add_dependencies(const PackageID &, const bool);
 
-            tr1::shared_ptr<const PackageIDSet> collect_depped_upon(
-                    const tr1::shared_ptr<const PackageIDSet> targets) const;
+            std::tr1::shared_ptr<const PackageIDSet> collect_depped_upon(
+                    const std::tr1::shared_ptr<const PackageIDSet> targets) const;
 
-            tr1::shared_ptr<const PackageIDSet> collect_all_installed() const;
+            std::tr1::shared_ptr<const PackageIDSet> collect_all_installed() const;
 
-            tr1::shared_ptr<const PackageIDSet> collect_world() const;
+            std::tr1::shared_ptr<const PackageIDSet> collect_world() const;
 
         public:
             ///\name Basic operations
@@ -88,8 +88,8 @@ namespace paludis
             /**
              * Add a package, optionally with a reason.
              */
-            void add(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<DepTag> = tr1::shared_ptr<DepTag>());
+            void add(const std::tr1::shared_ptr<const PackageID> &,
+                    std::tr1::shared_ptr<DepTag> = std::tr1::shared_ptr<DepTag>());
 
             /**
              * Add any unused packages that are dependencies of packages to uninstall.

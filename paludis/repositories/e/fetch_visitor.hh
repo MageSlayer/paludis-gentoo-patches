@@ -25,11 +25,11 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -42,13 +42,13 @@ namespace paludis
             public:
                 FetchVisitor(
                         const Environment * const,
-                        const tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageID> &,
                         const EAPI & eapi,
                         const FSEntry & distdir,
                         const bool fetch_unneeded,
                         const bool userpriv,
                         const std::string & mirrors_name,
-                        const tr1::shared_ptr<const URILabel> & initial_label,
+                        const std::tr1::shared_ptr<const URILabel> & initial_label,
                         const bool safe_resume);
 
                 ~FetchVisitor();

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,12 +40,12 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "cran_installed");
             keys->insert("library", "cran_installed_repository_TEST_dir/library");
             keys->insert("location", "cran_installed_repository_TEST_dir/repo1");
             keys->insert("builddir", "cran_installed_repository_TEST_dir/tmp");
-            tr1::shared_ptr<Repository> repo(CRANInstalledRepository::make_cran_installed_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> repo(CRANInstalledRepository::make_cran_installed_repository(&env, keys));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
         }
     } test_cran_repository_installed_packages;

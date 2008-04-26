@@ -36,7 +36,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/remove_shared_ptr.hh>
-#include <paludis/util/tr1_type_traits.hh>
+#include <tr1/type_traits>
 #include <string>
 
 /** \file
@@ -78,9 +78,9 @@ namespace paludis
             MetadataValueKey<long>,
             MetadataValueKey<bool>,
             MetadataValueKey<FSEntry>,
-            MetadataValueKey<tr1::shared_ptr<const PackageID> >,
-            MetadataValueKey<tr1::shared_ptr<const Contents> >,
-            MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >,
+            MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
+            MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
+            MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,
             MetadataTimeKey,
             MetadataSectionKey
             >
@@ -235,7 +235,7 @@ namespace paludis
      * \since 0.26
      */
     template <>
-    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >
+    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >
     {
         public:
             virtual ~ExtraMetadataValueKeyMethods() = 0;
@@ -330,7 +330,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const tr1::shared_ptr<const C_> value() const
+            virtual const std::tr1::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -338,7 +338,7 @@ namespace paludis
              * supplied Formatter to format individual items.
              */
             virtual std::string pretty_print_flat(const Formatter<
-                    typename tr1::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
+                    typename std::tr1::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -370,7 +370,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const tr1::shared_ptr<const IUseFlagSet> value() const
+            virtual const std::tr1::shared_ptr<const IUseFlagSet> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -388,7 +388,7 @@ namespace paludis
              */
             virtual std::string pretty_print_flat_with_comparison(
                     const Environment * const,
-                    const tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const PackageID> &,
                     const Formatter<IUseFlag> &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -419,7 +419,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const typename C_::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -465,7 +465,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -486,7 +486,7 @@ namespace paludis
              * Return a URILabel that represents the initial label to use when
              * deciding the behaviour of individual items in the heirarchy.
              */
-            virtual const tr1::shared_ptr<const URILabel> initial_label() const
+            virtual const std::tr1::shared_ptr<const URILabel> initial_label() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -518,7 +518,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -539,7 +539,7 @@ namespace paludis
              * Return a DependencyLabelSequence that represents the initial labels to use when
              * deciding the behaviour of individual items in the heirarchy.
              */
-            virtual const tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+            virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }

@@ -44,10 +44,10 @@ namespace paludis
         public EnvironmentImplementation
     {
         protected:
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -63,10 +63,10 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<PackageDatabase> package_database()
+            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const
@@ -77,29 +77,29 @@ namespace paludis
             /**
              * Convenience way of getting a package id.
              */
-            const tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
+            const std::tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
                     const VersionSpec &, const RepositoryName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
+            virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                     const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+            virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry root() const;
@@ -108,7 +108,7 @@ namespace paludis
 
             virtual gid_t reduced_gid() const;
 
-            virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
+            virtual std::tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual HookResult perform_hook(const Hook &) const

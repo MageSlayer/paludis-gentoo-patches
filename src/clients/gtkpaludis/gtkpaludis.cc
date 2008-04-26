@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name(argv[0]);
-    paludis::tr1::shared_ptr<paludis::Environment> env(
+    std::tr1::shared_ptr<paludis::Environment> env(
             paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
     MainWindow main_window(env.get());

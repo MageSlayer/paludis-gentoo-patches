@@ -27,7 +27,7 @@
 #include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
 #include <string>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 #include "stage.hh"
 #include "target_config.hh"
@@ -65,7 +65,7 @@ BinutilsStage::build(const StageOptions &) const
 {
     Context context("When building BinutilsStage:");
 
-    tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(
+    std::tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(
                 parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -87,7 +87,7 @@ KernelHeadersStage::build(const StageOptions &) const
 {
     Context context("When building KernelHeadersStage:");
 
-    tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(
+    std::tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(
                 parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -111,7 +111,7 @@ MinimalStage::build(const StageOptions &) const
 {
     Context context("When executing MinimalStage:");
 
-    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -143,7 +143,7 @@ LibCHeadersStage::build(const StageOptions &) const
 {
     Context context("When building LIbCHeaderStage:");
 
-    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -156,7 +156,7 @@ LibCHeadersStage::build(const StageOptions &) const
 bool
 LibCHeadersStage::is_rebuild() const
 {
-    return (! tr1::shared_ptr<const PackageIDSequence>(_env->package_database()->query(
+    return (! std::tr1::shared_ptr<const PackageIDSequence>(_env->package_database()->query(
                     query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever))->empty());
@@ -167,7 +167,7 @@ LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");
 
-    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -178,7 +178,7 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
                 query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
                 query::InstalledAtRoot(_env->root()),
                 qo_whatever));
@@ -194,7 +194,7 @@ FullStage::build(const StageOptions &) const
 {
     Context context("When building FullStage:");
 
-    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -212,7 +212,7 @@ FullStage::build(const StageOptions &) const
 bool
 FullStage::is_rebuild() const
 {
-    tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
                 query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) &
                 query::InstalledAtRoot(_env->root()),
                 qo_whatever));

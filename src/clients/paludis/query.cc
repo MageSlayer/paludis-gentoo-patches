@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,7 +43,7 @@ namespace
         public ConsoleQueryTask
     {
         public:
-            QueryTask(const tr1::shared_ptr<Environment> e) :
+            QueryTask(const std::tr1::shared_ptr<Environment> e) :
                 ConsoleQueryTask(e.get())
             {
             }
@@ -71,9 +71,9 @@ namespace
 }
 
 void do_one_package_query(
-        const tr1::shared_ptr<Environment> env,
-        const tr1::shared_ptr<Map<char, std::string> > & masks_to_explain,
-        tr1::shared_ptr<PackageDepSpec> spec)
+        const std::tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain,
+        std::tr1::shared_ptr<PackageDepSpec> spec)
 {
     QueryTask query(env);
     query.show(*spec);
@@ -108,10 +108,10 @@ namespace
 }
 
 void do_one_set_query(
-        const tr1::shared_ptr<Environment>,
+        const std::tr1::shared_ptr<Environment>,
         const std::string & q,
-        const tr1::shared_ptr<Map<char, std::string> > &,
-        tr1::shared_ptr<const SetSpecTree::ConstItem> set)
+        const std::tr1::shared_ptr<Map<char, std::string> > &,
+        std::tr1::shared_ptr<const SetSpecTree::ConstItem> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     SetPrettyPrinter packages;
@@ -121,16 +121,16 @@ void do_one_set_query(
 }
 
 void do_one_query(
-        const tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & q,
-        const tr1::shared_ptr<Map<char, std::string> > & masks_to_explain)
+        const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain)
 {
     Context local_context("When handling query '" + q + "':");
 
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. or it might be a set... all should work. */
-    tr1::shared_ptr<PackageDepSpec> spec;
-    tr1::shared_ptr<const SetSpecTree::ConstItem> set;
+    std::tr1::shared_ptr<PackageDepSpec> spec;
+    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set;
     if (std::string::npos == q.find('/'))
     {
         try
@@ -153,13 +153,13 @@ void do_one_query(
         do_one_set_query(env, q, masks_to_explain, set);
 }
 
-int do_query(tr1::shared_ptr<Environment> env)
+int do_query(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing query action from command line:");
 
-    tr1::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
+    std::tr1::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
 
     CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

@@ -28,7 +28,7 @@
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 #include <fstream>
 #include <set>
 #include <list>
@@ -42,7 +42,7 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSEntry & f,
-        const FSEntry & e, time_t t, tr1::shared_ptr<const EclassMtimes> m, bool s) :
+        const FSEntry & e, time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
     _env(v),
     _filename(f),
     _ebuild(e),
@@ -53,9 +53,9 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, co
 }
 
 bool
-EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
+EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When loading version metadata from '" + stringify(_filename) + "':");
 
@@ -87,8 +87,8 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
 
                         if (ok && ! tokens.empty())
                             ok = tokens.end() == std::find_if(tokens.begin(), tokens.end(),
-                                    tr1::bind(std::greater<time_t>(), tr1::bind(
-                                            tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
+                                    std::tr1::bind(std::greater<time_t>(), std::tr1::bind(
+                                            std::tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
                     }
 
                     if (ok)
@@ -209,14 +209,14 @@ namespace
     std::string flatten(const T_ & d)
     {
         StringifyFormatter ff;
-        DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+        DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
         d->accept(p);
         return stringify(p);
     }
 }
 
 void
-EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
+EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 

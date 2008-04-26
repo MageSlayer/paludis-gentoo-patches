@@ -48,12 +48,11 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-
+#include <tr1/functional>
 #include <fstream>
 #include <list>
 #include <set>
@@ -116,7 +115,7 @@ namespace paludis
         ERepository * const e_repository;
         const ERepositoryParams params;
 
-        tr1::shared_ptr<EclassMtimes> eclass_mtimes;
+        std::tr1::shared_ptr<EclassMtimes> eclass_mtimes;
         time_t master_mtime;
 
         Implementation(const Environment * const e, ERepository * const p,
@@ -144,12 +143,12 @@ EbuildEntries::~EbuildEntries()
 {
 }
 
-const tr1::shared_ptr<const ERepositoryID>
+const std::tr1::shared_ptr<const ERepositoryID>
 EbuildEntries::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 {
     Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
-    tr1::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f), _imp->params.environment,
+    std::tr1::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f), _imp->params.environment,
                 _imp->e_repository->shared_from_this(), f, _guess_eapi(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
@@ -166,10 +165,10 @@ namespace
             std::list<const URILabelsDepSpec *> _labels;
 
             const Environment * const env;
-            const tr1::shared_ptr<const PackageID> id;
+            const std::tr1::shared_ptr<const PackageID> id;
 
         public:
-            AFinder(const Environment * const e, const tr1::shared_ptr<const PackageID> & i) :
+            AFinder(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i) :
                 env(e),
                 id(i)
             {
@@ -226,7 +225,7 @@ namespace
 {
     std::string make_use(const Environment * const env,
             const ERepositoryID & id,
-            tr1::shared_ptr<const ERepositoryProfile> profile)
+            std::tr1::shared_ptr<const ERepositoryProfile> profile)
     {
         std::string use;
 
@@ -243,14 +242,14 @@ namespace
         return use;
     }
 
-    tr1::shared_ptr<Map<std::string, std::string> >
+    std::tr1::shared_ptr<Map<std::string, std::string> >
     make_expand(const Environment * const env,
             const ERepositoryID & e,
-            tr1::shared_ptr<const ERepositoryProfile> profile,
+            std::tr1::shared_ptr<const ERepositoryProfile> profile,
             std::string & use,
             const std::string & expand_sep)
     {
-        tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
+        std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
 
         for (ERepositoryProfile::UseExpandConstIterator x(profile->begin_use_expand()),
@@ -267,7 +266,7 @@ namespace
                     create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
             /* possible values from environment */
-            tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
+            std::tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
                     env->known_use_expand_names(*x, e));
             for (UseFlagNameSet::ConstIterator i(possible_values_from_env->begin()),
                     i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
@@ -329,10 +328,10 @@ namespace
 }
 
 void
-EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
-        const FetchActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
+EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const FetchActionOptions & o, std::tr1::shared_ptr<const ERepositoryProfile> p) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When fetching '" + stringify(*id) + "':");
 
@@ -427,10 +426,10 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                     check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
             std::string use(make_use(_imp->params.environment, *id, p));
             std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
-            tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+            std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                         _imp->params.environment, *id, p, use, expand_sep));
 
-            tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+            std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
             EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_nofetch);
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -473,10 +472,10 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 void
-EbuildEntries::pretend_fetch(const tr1::shared_ptr<const ERepositoryID> & id,
-        PretendFetchAction & a, tr1::shared_ptr<const ERepositoryProfile>) const
+EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        PretendFetchAction & a, std::tr1::shared_ptr<const ERepositoryProfile>) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When pretending to fetch ID '" + stringify(*id) + "':");
 
@@ -490,10 +489,10 @@ EbuildEntries::pretend_fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 void
-EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
-        const InstallActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
+EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const InstallActionOptions & o, std::tr1::shared_ptr<const ERepositoryProfile> p) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When installing '" + stringify(*id) + "':");
 
@@ -505,19 +504,19 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
 
         test_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "test"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "test"));
 
         strip_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "strip")) ||
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "strip")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nostrip"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
     std::string archives, all_archives;
@@ -576,10 +575,10 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
-    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+    std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
-    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
             check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment) &&
@@ -704,10 +703,10 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 void
-EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
-        tr1::shared_ptr<const ERepositoryProfile> p) const
+EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        std::tr1::shared_ptr<const ERepositoryProfile> p) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When infoing '" + stringify(*id) + "':");
 
@@ -719,9 +718,9 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
@@ -732,10 +731,10 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
-    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+    std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
-    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -785,8 +784,8 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 std::string
-EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & var, tr1::shared_ptr<const ERepositoryProfile>) const
+EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::string & var, std::tr1::shared_ptr<const ERepositoryProfile>) const
 {
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_variable);
 
@@ -797,7 +796,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
 
     bool userpriv_restrict;
     {
-        using namespace tr1::placeholders;
+        using namespace std::tr1::placeholders;
 
         DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
@@ -805,14 +804,14 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
 
-    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(EbuildCommandParams::named_create()
             (k::environment(), _imp->params.environment)
@@ -838,11 +837,11 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
     return cmd.result();
 }
 
-tr1::shared_ptr<ERepositoryEntries>
+std::tr1::shared_ptr<ERepositoryEntries>
 EbuildEntries::make_ebuild_entries(
         const Environment * const e, ERepository * const r, const ERepositoryParams & p)
 {
-    return tr1::shared_ptr<ERepositoryEntries>(new EbuildEntries(e, r, p));
+    return std::tr1::shared_ptr<ERepositoryEntries>(new EbuildEntries(e, r, p));
 }
 
 void
@@ -856,7 +855,7 @@ EbuildEntries::merge(const MergeParams & m)
 
     FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
                 m[k::package_id()]->name(), m[k::package_id()]->version(),
-                "pbin-1+" + (*tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::name()]));
+                "pbin-1+" + (*std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::name()]));
 
     binary_ebuild_location.dirname().dirname().mkdir();
     binary_ebuild_location.dirname().mkdir();
@@ -864,14 +863,14 @@ EbuildEntries::merge(const MergeParams & m)
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             WriteBinaryEbuildCommandParams::named_create()
             (k::environment(), _imp->params.environment)
-            (k::package_id(), tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
+            (k::package_id(), std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()]))
             (k::binary_ebuild_location(), binary_ebuild_location)
             (k::binary_distdir(), _imp->params.binary_distdir)
             (k::environment_file(), m[k::environment_file()])
             (k::image(), m[k::image_dir()])
             (k::destination_repository(), _imp->e_repository)
             (k::builddir(), _imp->params.builddir)
-            (k::merger_options(), (*(*tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::supported()])
+            (k::merger_options(), (*(*std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::supported()])
              [k::merger_options()])
             );
 
@@ -905,10 +904,10 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 }
 
 bool
-EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
-        tr1::shared_ptr<const ERepositoryProfile> p) const
+EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        std::tr1::shared_ptr<const ERepositoryProfile> p) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     Context context("When running pretend for '" + stringify(*id) + "':");
 
@@ -925,19 +924,19 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
 
     std::string use(make_use(_imp->params.environment, *id, p));
     std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
-    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+    std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
-    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend);
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;

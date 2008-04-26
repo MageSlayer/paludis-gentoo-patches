@@ -50,10 +50,10 @@ class ColourFormatter :
         ColourFormatter(const bool unchanged_are_new = false);
         ~ColourFormatter();
 
-        const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_new_use_flag_names() const;
-        const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_changed_use_flag_names() const;
-        const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_flag_names() const;
-        const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_expand_prefixes() const;
+        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_new_use_flag_names() const;
+        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_changed_use_flag_names() const;
+        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_flag_names() const;
+        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_expand_prefixes() const;
 
         std::string format(const paludis::IUseFlag &, const paludis::format::Plain &) const;
         std::string format(const paludis::IUseFlag &, const paludis::format::Enabled &) const;

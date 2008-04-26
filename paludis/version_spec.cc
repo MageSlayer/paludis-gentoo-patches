@@ -474,7 +474,7 @@ VersionSpec::equal_star_compare(const VersionSpec & other) const
 }
 
 std::size_t
-VersionSpec::hash_value() const
+VersionSpec::hash() const
 {
     Lock l(_imp->hash_mutex);
 

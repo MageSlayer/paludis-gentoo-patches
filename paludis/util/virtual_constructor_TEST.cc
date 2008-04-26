@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <set>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Test cases for VirtualConstructor.
@@ -85,9 +85,9 @@ namespace
                 return "Chocolate Chip";
             }
 
-            static tr1::shared_ptr<Cookie> make(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make(CookieSize size)
             {
-                return tr1::shared_ptr<Cookie>(new ChocolateChipCookie(size));
+                return std::tr1::shared_ptr<Cookie>(new ChocolateChipCookie(size));
             }
     };
 
@@ -108,20 +108,20 @@ namespace
                 return _with_crunchy_bits ? "Crunchy Ginger" : "Ginger";
             }
 
-            static tr1::shared_ptr<Cookie> make(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make(CookieSize size)
             {
-                return tr1::shared_ptr<Cookie>(new GingerCookie(size, false));
+                return std::tr1::shared_ptr<Cookie>(new GingerCookie(size, false));
             }
 
-            static tr1::shared_ptr<Cookie> make_crunchy(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make_crunchy(CookieSize size)
             {
-                return tr1::shared_ptr<Cookie>(new GingerCookie(size, true));
+                return std::tr1::shared_ptr<Cookie>(new GingerCookie(size, true));
             }
     };
 
     class CookieMaker :
         public VirtualConstructor<std::string,
-            tr1::shared_ptr<Cookie> (*) (CookieSize),
+            std::tr1::shared_ptr<Cookie> (*) (CookieSize),
             virtual_constructor_not_found::ThrowException<NoCookie> >,
         public InstantiationPolicy<CookieMaker, instantiation_method::SingletonTag>
     {

@@ -43,7 +43,7 @@
 using namespace paludis;
 
 int
-do_fix_linkage(const tr1::shared_ptr<Environment> & env)
+do_fix_linkage(const std::tr1::shared_ptr<Environment> & env)
 {
     Context ctx("When performing the Fix Linkage action:");
 
@@ -71,7 +71,7 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
             std::cout << std::endl << colour(cl_heading, "Packages that depend on " +  library + ":") << std::endl;
     }
 
-    tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder.begin_broken_packages()),
              pkg_it_end(finder.end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
     {
@@ -107,7 +107,7 @@ do_fix_linkage(const tr1::shared_ptr<Environment> & env)
                         .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
     }
 
-    tr1::shared_ptr<const PackageID> orphans;
+    std::tr1::shared_ptr<const PackageID> orphans;
     if (finder.begin_broken_files(orphans) != finder.end_broken_files(orphans))
     {
         if (library.empty())

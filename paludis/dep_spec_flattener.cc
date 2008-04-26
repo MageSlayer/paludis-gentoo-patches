@@ -41,7 +41,7 @@ namespace paludis
     {
         const Environment * const env;
 
-        std::list<tr1::shared_ptr<const Item_> > specs;
+        std::list<std::tr1::shared_ptr<const Item_> > specs;
 
         Implementation(const Environment * const e) :
             env(e)
@@ -122,7 +122,7 @@ dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::vis
 
     Context context("When expanding named set '" + stringify(s) + "':");
 
-    tr1::shared_ptr<const SetSpecTree::ConstItem> set(f->_imp->env->set(s.name()));
+    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(f->_imp->env->set(s.name()));
 
     if (! set)
     {
@@ -145,7 +145,7 @@ template <typename Heirarchy_, typename Item_>
 void
 DepSpecFlattener<Heirarchy_, Item_>::visit_leaf(const Item_ & p)
 {
-    _imp->specs.push_back(tr1::static_pointer_cast<const Item_>(p.clone()));
+    _imp->specs.push_back(std::tr1::static_pointer_cast<const Item_>(p.clone()));
 }
 
 template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;

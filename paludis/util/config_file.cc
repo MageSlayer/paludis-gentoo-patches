@@ -76,7 +76,7 @@ namespace paludis
     template<>
     struct Implementation<ConfigFile::Source>
     {
-        tr1::shared_ptr<std::istream> stream_to_delete;
+        std::tr1::shared_ptr<std::istream> stream_to_delete;
         std::istream & stream;
         std::string filename;
 
@@ -99,7 +99,7 @@ namespace paludis
         {
         }
 
-        Implementation(tr1::shared_ptr<std::istream> s, std::istream & t, const std::string & f) :
+        Implementation(std::tr1::shared_ptr<std::istream> s, std::istream & t, const std::string & f) :
             stream_to_delete(s),
             stream(t),
             filename(f)
@@ -248,12 +248,12 @@ namespace paludis
     template<>
     struct Implementation<KeyValueConfigFile::Defaults>
     {
-        tr1::shared_ptr<const KeyValueConfigFile> kv;
-        tr1::shared_ptr<const Map<std::string, std::string> > a;
+        std::tr1::shared_ptr<const KeyValueConfigFile> kv;
+        std::tr1::shared_ptr<const Map<std::string, std::string> > a;
         std::string (* f)(const std::string &, const std::string &);
 
-        Implementation(tr1::shared_ptr<const KeyValueConfigFile> kvv,
-                tr1::shared_ptr<const Map<std::string, std::string> > av,
+        Implementation(std::tr1::shared_ptr<const KeyValueConfigFile> kvv,
+                std::tr1::shared_ptr<const Map<std::string, std::string> > av,
                 std::string (* fv)(const std::string &, const std::string &)) :
             kv(kvv),
             a(av),
@@ -264,44 +264,44 @@ namespace paludis
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const KeyValueConfigFile> v) :
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile> v) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
-                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
+                std::tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const Map<std::string, std::string> > a) :
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const Map<std::string, std::string> > a) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
-                tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
+                std::tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
 {
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<KeyValueConfigFile> v) :
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile> v) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
-                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
+                std::tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> > a) :
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<Map<std::string, std::string> > a) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
-                tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
+                std::tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
 {
 }
 
 KeyValueConfigFile::Defaults::Defaults(std::string (* f) (const std::string &, const std::string &)) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
-                tr1::shared_ptr<const KeyValueConfigFile>(),
-                tr1::shared_ptr<const Map<std::string, std::string> >(), f))
+                std::tr1::shared_ptr<const KeyValueConfigFile>(),
+                std::tr1::shared_ptr<const Map<std::string, std::string> >(), f))
 {
 }
 
 KeyValueConfigFile::Defaults::Defaults() :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
-                tr1::shared_ptr<const KeyValueConfigFile>(),
-                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
+                std::tr1::shared_ptr<const KeyValueConfigFile>(),
+                std::tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 

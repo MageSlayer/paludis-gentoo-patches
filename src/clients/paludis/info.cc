@@ -47,7 +47,7 @@ namespace
 {
     struct MetadataKeyComparator
     {
-        bool operator() (const tr1::shared_ptr<const MetadataKey> & a, const tr1::shared_ptr<const MetadataKey> & b) const
+        bool operator() (const std::tr1::shared_ptr<const MetadataKey> & a, const std::tr1::shared_ptr<const MetadataKey> & b) const
         {
             bool a_is_section(visitor_cast<const MetadataSectionKey>(*a));
             bool b_is_section(visitor_cast<const MetadataSectionKey>(*b));
@@ -73,7 +73,7 @@ namespace
         {
             cout << endl;
             cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
-            std::set<tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(k.begin_metadata(), k.end_metadata());
+            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(k.begin_metadata(), k.end_metadata());
             InfoDisplayer i(indent + "    ");
             std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
         }
@@ -98,17 +98,17 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << *k.value() << endl;
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
@@ -198,19 +198,19 @@ namespace
 }
 
 int do_one_info(
-        const tr1::shared_ptr<const Environment> & env,
+        const std::tr1::shared_ptr<const Environment> & env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
-    tr1::shared_ptr<PackageDepSpec> spec;
+    std::tr1::shared_ptr<PackageDepSpec> spec;
     if (std::string::npos != q.find('/'))
         spec.reset(new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
     else
         spec.reset(new PackageDepSpec(make_package_dep_spec().package(
                         env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))));
 
-    tr1::shared_ptr<const PackageIDSequence>
+    std::tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec), qo_order_by_version)),
         installed_entries(env->package_database()->query(
                     query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version)),
@@ -218,7 +218,7 @@ int do_one_info(
                     query::Matches(*spec) & query::SupportsAction<InstallAction>() & query::NotMasked(),
                     qo_order_by_version));
 
-    tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
+    std::tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
 
     if (entries->empty())
         throw NoSuchPackageError(q);
@@ -254,7 +254,7 @@ int do_one_info(
 }
 
 int
-do_info(const tr1::shared_ptr<const Environment> & env)
+do_info(const std::tr1::shared_ptr<const Environment> & env)
 {
     int return_code(0);
 
@@ -317,7 +317,7 @@ do_info(const tr1::shared_ptr<const Environment> & env)
             r != r_end ; ++r)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
-        std::set<tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
+        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
         InfoDisplayer i("    ");
         std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
         cout << endl;

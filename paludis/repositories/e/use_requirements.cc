@@ -79,7 +79,7 @@ DisabledUseRequirement::as_human_string() const
 }
 
 ConditionalUseRequirement::ConditionalUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     UseRequirement(s, n),
     _id(i)
 {
@@ -90,7 +90,7 @@ ConditionalUseRequirement::~ConditionalUseRequirement()
 }
 
 IfMineThenUseRequirement::IfMineThenUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }
@@ -112,7 +112,7 @@ IfMineThenUseRequirement::as_human_string() const
 }
 
 IfNotMineThenUseRequirement::IfNotMineThenUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }
@@ -134,7 +134,7 @@ IfNotMineThenUseRequirement::as_human_string() const
 }
 
 IfMineThenNotUseRequirement::IfMineThenNotUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }
@@ -156,7 +156,7 @@ IfMineThenNotUseRequirement::requirement_met(const Environment * const env, cons
 }
 
 IfNotMineThenNotUseRequirement::IfNotMineThenNotUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }
@@ -178,7 +178,7 @@ IfNotMineThenNotUseRequirement::as_human_string() const
 }
 
 EqualUseRequirement::EqualUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }
@@ -200,7 +200,7 @@ EqualUseRequirement::as_human_string() const
 }
 
 NotEqualUseRequirement::NotEqualUseRequirement(const std::string & s,
-        const UseFlagName & n, const tr1::shared_ptr<const PackageID> & i) :
+        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
     ConditionalUseRequirement(s, n, i)
 {
 }

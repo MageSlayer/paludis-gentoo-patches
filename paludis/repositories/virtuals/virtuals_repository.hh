@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_VIRTUALS_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/map-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -35,7 +35,7 @@ namespace paludis
         public Repository,
         public RepositoryMakeVirtualsInterface,
         private PrivateImplementationPattern<VirtualsRepository>,
-        public tr1::enable_shared_from_this<VirtualsRepository>
+        public std::tr1::enable_shared_from_this<VirtualsRepository>
     {
         private:
             PrivateImplementationPattern<VirtualsRepository>::ImpPtr & _imp;
@@ -59,11 +59,11 @@ namespace paludis
             /**
              * Create a VirtualsRepository instance.
              */
-            static tr1::shared_ptr<Repository> make_virtuals_repository(
+            static std::tr1::shared_ptr<Repository> make_virtuals_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> >);
+                    std::tr1::shared_ptr<const Map<std::string, std::string> >);
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
             virtual void invalidate();
 
@@ -73,15 +73,15 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -94,14 +94,14 @@ namespace paludis
 
             /* RepositoryMakeVirtualsInterface */
 
-            virtual const tr1::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
+            virtual const std::tr1::shared_ptr<const PackageID> make_virtual_package_id(
+                    const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 }
 

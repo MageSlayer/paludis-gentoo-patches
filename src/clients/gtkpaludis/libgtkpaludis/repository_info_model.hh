@@ -6,7 +6,7 @@
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -24,7 +24,7 @@ namespace gtkpaludis
         private:
 #if 0
             void set_repository_in_paludis_thread(const paludis::RepositoryName &);
-            void set_repository_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryInfo>);
+            void set_repository_in_gui_thread(std::tr1::shared_ptr<const paludis::RepositoryInfo>);
 #endif
 
         public:

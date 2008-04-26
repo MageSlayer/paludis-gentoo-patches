@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,8 +28,8 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <src/output/console_task.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -43,26 +43,26 @@ namespace paludis
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepSpec &, tr1::shared_ptr<const PackageID> = tr1::shared_ptr<const PackageID>()) const;
+            virtual void show(const PackageDepSpec &, std::tr1::shared_ptr<const PackageID> = std::tr1::shared_ptr<const PackageID>()) const;
 
-            virtual void display_header(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_header(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
             virtual void display_versions_by_repository(const PackageDepSpec &,
-                    tr1::shared_ptr<const PackageIDSequence>, const tr1::shared_ptr<const PackageID> &) const;
-            virtual void display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
+                    std::tr1::shared_ptr<const PackageIDSequence>, const std::tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_metadata(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
 
-            virtual void display_masks(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_masks(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
 
-            virtual void display_compact(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_compact(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
 
             virtual bool want_compact() const = 0;
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;
             virtual bool want_authors() const = 0;
 
-            const tr1::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
+            const std::tr1::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
     };
 }
 

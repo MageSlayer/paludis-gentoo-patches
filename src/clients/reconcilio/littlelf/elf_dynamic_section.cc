@@ -42,13 +42,13 @@ namespace paludis
     template <typename ElfType_>
     struct Implementation<DynamicEntries<ElfType_> >
     {
-        std::map<typename ElfType_::DynamicTag, tr1::shared_ptr<DynamicEntry<ElfType_> > > available_types;
+        std::map<typename ElfType_::DynamicTag, std::tr1::shared_ptr<DynamicEntry<ElfType_> > > available_types;
     };
 
     template <typename ElfType_>
     struct Implementation<DynamicSection<ElfType_> >
     {
-        std::vector<paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > > dynamic_entries;
+        std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > > dynamic_entries;
     };
 }
 
@@ -110,12 +110,12 @@ namespace
 
         private:
             const DynamicSection<ElfType_> & _dyn_section;
-            typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator _begin, _end;
+            typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator _begin, _end;
 
         public:
             DynamicSectionStringResolvingVisitor(const DynamicSection<ElfType_> & dyn_section,
-                typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator begin,
-                typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator end) :
+                typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator begin,
+                typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator end) :
                 _dyn_section(dyn_section),
                 _begin(begin),
                 _end(end)
@@ -126,7 +126,7 @@ namespace
             virtual void visit(StringSection<ElfType_> & section)
             {
                 littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_> v(_dyn_section, section);
-                for(typename std::vector<tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator i = _begin; i != _end; ++i)
+                for(typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator i = _begin; i != _end; ++i)
                     (*i)->accept(v);
             }
     };
@@ -258,16 +258,16 @@ DynamicEntries<ElfType_>::~DynamicEntries()
 
 template <typename ElfType_>
 void
-DynamicEntries<ElfType_>::register_type(typename ElfType_::DynamicTag identifier, tr1::shared_ptr<DynamicEntry<ElfType_> > entry)
+DynamicEntries<ElfType_>::register_type(typename ElfType_::DynamicTag identifier, std::tr1::shared_ptr<DynamicEntry<ElfType_> > entry)
 {
     _imp->available_types[identifier] = entry;
 }
 
 template <typename ElfType_>
-tr1::shared_ptr<DynamicEntry<ElfType_> >
+std::tr1::shared_ptr<DynamicEntry<ElfType_> >
 DynamicEntries<ElfType_>::get_entry(typename ElfType_::DynamicTag tag) const
 {
-    typename std::map<typename ElfType_::DynamicTag, tr1::shared_ptr<DynamicEntry<ElfType_> > >::const_iterator i;
+    typename std::map<typename ElfType_::DynamicTag, std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::const_iterator i;
     if (( i = _imp->available_types.find(tag)) != _imp->available_types.end())
         return i->second->clone();
     return make_shared_ptr(new DynamicEntryUnknown<ElfType_>());
@@ -299,7 +299,7 @@ DynamicSection<ElfType_>::DynamicSection(typename ElfType_::Word index, const ty
 
     for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
     {
-        paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
+        std::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
         instance->initialize(_imp->dynamic_entries.size(), *i);
         _imp->dynamic_entries.push_back(instance);
     }

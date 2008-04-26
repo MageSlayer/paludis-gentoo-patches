@@ -29,7 +29,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::list<tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
 
 namespace paludis
 {
@@ -40,7 +40,7 @@ namespace paludis
         std::string rdepend;
         std::string pdepend;
 
-        tr1::shared_ptr<DependencyLabelSequence> default_labels;
+        std::tr1::shared_ptr<DependencyLabelSequence> default_labels;
         LabelsStack labels;
 
         Implementation() :
@@ -114,7 +114,7 @@ DependenciesRewriter::visit_sequence(const AllDepSpec &,
         DependencySpecTree::ConstSequenceIterator end)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();
@@ -134,7 +134,7 @@ DependenciesRewriter::visit_sequence(const AnyDepSpec &,
         DependencySpecTree::ConstSequenceIterator end)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();
@@ -154,7 +154,7 @@ DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
         DependencySpecTree::ConstSequenceIterator end)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
-    RunOnDestruction restore_labels(tr1::bind(tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();

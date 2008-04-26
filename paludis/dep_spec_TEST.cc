@@ -42,7 +42,7 @@ namespace test_cases
 
         void run()
         {
-            tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec(make_package_dep_spec()));
+            std::tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec(make_package_dep_spec()));
             TEST_CHECK(0 == x->as_conditional_dep_spec());
         }
     } test_dep_spec_as;
@@ -76,14 +76,14 @@ namespace test_cases
         {
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]", UserPackageDepSpecOptions()));
 
-            tr1::shared_ptr<PackageDepSpec> b(tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            std::tr1::shared_ptr<PackageDepSpec> b(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *b);
 
-            tr1::shared_ptr<PackageDepSpec> c(tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            std::tr1::shared_ptr<PackageDepSpec> c(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
 
             BlockDepSpec d(c);
-            tr1::shared_ptr<BlockDepSpec> e(tr1::static_pointer_cast<BlockDepSpec>(d.clone()));
+            std::tr1::shared_ptr<BlockDepSpec> e(std::tr1::static_pointer_cast<BlockDepSpec>(d.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(*(d.blocked_spec()), *(e->blocked_spec()));
         }
     } test_dep_spec_clone;

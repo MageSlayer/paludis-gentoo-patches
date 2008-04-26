@@ -56,11 +56,11 @@ PackagesList::handle_signal_cursor_changed()
 {
     if (get_selection()->get_selected())
     {
-        tr1::shared_ptr<const QualifiedPackageName> qpn((*get_selection()->get_selected())[_imp->real_model->columns().col_qpn]);
+        std::tr1::shared_ptr<const QualifiedPackageName> qpn((*get_selection()->get_selected())[_imp->real_model->columns().col_qpn]);
         _imp->repositories_page->set_qpn(qpn);
     }
     else
-        _imp->repositories_page->set_qpn(tr1::shared_ptr<QualifiedPackageName>());
+        _imp->repositories_page->set_qpn(std::tr1::shared_ptr<QualifiedPackageName>());
 }
 
 void

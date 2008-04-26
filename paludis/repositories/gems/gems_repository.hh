@@ -23,7 +23,7 @@
 #include <paludis/repository.hh>
 #include <paludis/repositories/gems/params-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -36,7 +36,7 @@ namespace paludis
     class PALUDIS_VISIBLE GemsRepository :
         public Repository,
         private PrivateImplementationPattern<GemsRepository>,
-        public tr1::enable_shared_from_this<GemsRepository>
+        public std::tr1::enable_shared_from_this<GemsRepository>
     {
         private:
             PrivateImplementationPattern<GemsRepository>::ImpPtr & _imp;
@@ -65,15 +65,15 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -86,8 +86,8 @@ namespace paludis
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 }
 

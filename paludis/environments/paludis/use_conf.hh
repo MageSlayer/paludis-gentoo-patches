@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -65,7 +65,7 @@ namespace paludis
                 /**
                  * Fetch the known use expand names for a prefix.
                  */
-                tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
+                std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                         const UseFlagName &, const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };

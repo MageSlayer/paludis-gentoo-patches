@@ -26,11 +26,11 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/sr.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for DepSpecFlattener.
@@ -186,7 +186,7 @@ namespace paludis
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const Item_> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Item_> > ConstIterator;
 
             ConstIterator begin() const;
             ConstIterator end() const;

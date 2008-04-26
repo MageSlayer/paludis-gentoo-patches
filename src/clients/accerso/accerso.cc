@@ -29,12 +29,12 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
+#include <tr1/functional>
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
         }
         else
         {
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
             NoConfigEnvironment env(no_config_environment::Params::create()
                     .repository_dir(CommandLine::get_instance()->a_repository_directory.argument())
@@ -110,9 +110,9 @@ main(int argc, char *argv[])
                     .extra_params(keys)
                     .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
-            tr1::shared_ptr<const PackageIDSequence> ids(
+            std::tr1::shared_ptr<const PackageIDSequence> ids(
                     env.package_database()->query(query::Repository(env.main_repository()->name()), qo_order_by_version));
-            std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(PackageIDComparator(
+            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(PackageIDComparator(
                         env.package_database().get()));
             unsigned success(0), total(0);
 
@@ -175,7 +175,7 @@ main(int argc, char *argv[])
 
             std::cout << std::endl;
 
-            tr1::shared_ptr<std::ofstream> outf;
+            std::tr1::shared_ptr<std::ofstream> outf;
             if (CommandLine::get_instance()->a_report_file.specified())
             {
                 outf.reset(new std::ofstream(CommandLine::get_instance()->a_report_file.argument().c_str()));
@@ -198,8 +198,8 @@ main(int argc, char *argv[])
                 << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
             int exit_status(0);
-            tr1::shared_ptr<const PackageID> old_id;
-            for (std::multimap<tr1::shared_ptr<const PackageID>, std::string, tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
+            std::tr1::shared_ptr<const PackageID> old_id;
+            for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, std::tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
                     r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
             {
                 exit_status |= 1;

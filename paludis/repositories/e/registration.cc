@@ -37,10 +37,10 @@ extern "C"
 
 namespace
 {
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_portage_repository(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m)
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string repo_file = "?";
         if (m->end() != m->find("repo_file"))

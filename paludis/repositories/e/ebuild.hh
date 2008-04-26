@@ -57,12 +57,12 @@ namespace paludis
          */
         typedef kc::KeyedClass<
             kc::Field<k::environment, const Environment *>,
-            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
             kc::Field<k::ebuild_dir, FSEntry>,
             kc::Field<k::ebuild_file, FSEntry>,
             kc::Field<k::files_dir, FSEntry>,
-            kc::Field<k::eclassdirs, tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::exlibsdirs, tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::eclassdirs, std::tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::portdir, FSEntry>,
             kc::Field<k::distdir, FSEntry>,
             kc::Field<k::builddir, FSEntry>,
@@ -84,8 +84,8 @@ namespace paludis
             kc::Field<k::use, std::string>,
             kc::Field<k::use_expand, std::string>,
             kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >
+            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >
                 > EbuildNoFetchCommandParams;
 
         /**
@@ -101,8 +101,8 @@ namespace paludis
             kc::Field<k::use, std::string>,
             kc::Field<k::use_expand, std::string>,
             kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
+            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::disable_cfgpro, bool>,
             kc::Field<k::slot, SlotName>,
             kc::Field<k::config_protect, std::string>,
@@ -121,8 +121,8 @@ namespace paludis
             kc::Field<k::use, std::string>,
             kc::Field<k::use_expand, std::string>,
             kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >
+            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >
                 > EbuildPretendCommandParams;
 
         /**
@@ -163,8 +163,8 @@ namespace paludis
             kc::Field<k::use, std::string>,
             kc::Field<k::use_expand, std::string>,
             kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, tr1::shared_ptr<const Map<std::string, std::string> > >,
+            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
+            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::load_environment, const FSEntry *>,
             kc::Field<k::info_vars, FSEntry>,
             kc::Field<k::use_ebuild_file, bool>
@@ -179,7 +179,7 @@ namespace paludis
          */
         typedef kc::KeyedClass<
             kc::Field<k::environment, const Environment *>,
-            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
             kc::Field<k::output_directory, FSEntry>,
             kc::Field<k::environment_file, FSEntry>
                 > WriteVDBEntryParams;
@@ -194,7 +194,7 @@ namespace paludis
         typedef kc::KeyedClass<
             kc::Field<k::environment, const Environment *>,
             kc::Field<k::destination_repository, const ERepository *>,
-            kc::Field<k::package_id, tr1::shared_ptr<const erepository::ERepositoryID> >,
+            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
             kc::Field<k::binary_ebuild_location, FSEntry>,
             kc::Field<k::binary_distdir, FSEntry>,
             kc::Field<k::environment_file, FSEntry>,
@@ -568,7 +568,7 @@ namespace paludis
             public EbuildCommand
         {
             private:
-                tr1::shared_ptr<Map<std::string, std::string> > keys;
+                std::tr1::shared_ptr<Map<std::string, std::string> > keys;
 
             public:
                 EbuildMetadataCommand(const EbuildCommandParams &);
@@ -583,7 +583,7 @@ namespace paludis
 
                 Command extend_command(const Command &);
 
-                void load(const tr1::shared_ptr<const EbuildID> &);
+                void load(const std::tr1::shared_ptr<const EbuildID> &);
         };
     }
 }

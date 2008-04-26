@@ -23,11 +23,11 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 
@@ -36,9 +36,9 @@ namespace paludis
     template <>
     struct Implementation<LiteralMetadataFSEntrySequenceKey>
     {
-        const tr1::shared_ptr<const FSEntrySequence> value;
+        const std::tr1::shared_ptr<const FSEntrySequence> value;
 
-        Implementation(const tr1::shared_ptr<const FSEntrySequence> & v) :
+        Implementation(const std::tr1::shared_ptr<const FSEntrySequence> & v) :
             value(v)
         {
         }
@@ -47,9 +47,9 @@ namespace paludis
     template <>
     struct Implementation<LiteralMetadataStringSetKey>
     {
-        const tr1::shared_ptr<const Set<std::string> > value;
+        const std::tr1::shared_ptr<const Set<std::string> > value;
 
-        Implementation(const tr1::shared_ptr<const Set<std::string> > & v) :
+        Implementation(const std::tr1::shared_ptr<const Set<std::string> > & v) :
             value(v)
         {
         }
@@ -71,7 +71,7 @@ namespace paludis
 }
 
 LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & h, const std::string & r,
-        const MetadataKeyType t, const tr1::shared_ptr<const FSEntrySequence> & v) :
+        const MetadataKeyType t, const std::tr1::shared_ptr<const FSEntrySequence> & v) :
     MetadataCollectionKey<FSEntrySequence>(h, r, t),
     PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>(new Implementation<LiteralMetadataFSEntrySequenceKey>(v)),
     _imp(PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::_imp)
@@ -82,7 +82,7 @@ LiteralMetadataFSEntrySequenceKey::~LiteralMetadataFSEntrySequenceKey()
 {
 }
 
-const tr1::shared_ptr<const FSEntrySequence>
+const std::tr1::shared_ptr<const FSEntrySequence>
 LiteralMetadataFSEntrySequenceKey::value() const
 {
     return _imp->value;
@@ -99,12 +99,12 @@ namespace
 std::string
 LiteralMetadataFSEntrySequenceKey::pretty_print_flat(const Formatter<FSEntry> & f) const
 {
-    using namespace tr1::placeholders;
-    return join(value()->begin(), value()->end(), " ", tr1::bind(&format_fsentry, _1, f));
+    using namespace std::tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_fsentry, _1, f));
 }
 
 LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & h, const std::string & r,
-        const MetadataKeyType t, const tr1::shared_ptr<const Set<std::string> > & v) :
+        const MetadataKeyType t, const std::tr1::shared_ptr<const Set<std::string> > & v) :
     MetadataCollectionKey<Set<std::string> >(h, r, t),
     PrivateImplementationPattern<LiteralMetadataStringSetKey>(new Implementation<LiteralMetadataStringSetKey>(v)),
     _imp(PrivateImplementationPattern<LiteralMetadataStringSetKey>::_imp)
@@ -115,7 +115,7 @@ LiteralMetadataStringSetKey::~LiteralMetadataStringSetKey()
 {
 }
 
-const tr1::shared_ptr<const Set<std::string> >
+const std::tr1::shared_ptr<const Set<std::string> >
 LiteralMetadataStringSetKey::value() const
 {
     return _imp->value;
@@ -132,18 +132,18 @@ namespace
 std::string
 LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
-    using namespace tr1::placeholders;
-    return join(value()->begin(), value()->end(), " ", tr1::bind(&format_string, _1, f));
+    using namespace std::tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
 }
 
-ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
+ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
 {
 }
 
 std::string
-ExtraLiteralMetadataValueKeyMethods<tr1::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
+ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
 {
-    tr1::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> > *>(this)->value());
+    std::tr1::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > *>(this)->value());
     if (v->supports_action(SupportsActionTest<InstalledAction>()))
         return f.format(*v, format::Installed());
     else if (v->supports_action(SupportsActionTest<InstallAction>()))
@@ -181,5 +181,5 @@ LiteralMetadataValueKey<T_>::value() const
 template class LiteralMetadataValueKey<FSEntry>;
 template class LiteralMetadataValueKey<std::string>;
 template class LiteralMetadataValueKey<bool>;
-template class LiteralMetadataValueKey<tr1::shared_ptr<const PackageID> >;
+template class LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
 

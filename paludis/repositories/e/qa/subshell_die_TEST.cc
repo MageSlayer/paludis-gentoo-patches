@@ -62,9 +62,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
 
             TestReporter r1;
             TEST_CHECK(subshell_die_check(FSEntry("/var/empty"), r1, id, "src_unpack() {\n\tunpack \"${A}\"\n\tcd \"${S}\"\n\ttrue && ( epatch \"${FILESDIR}\"/${PN}-cookie.patch || die \"subshelled!\")\n}\n", "subshell_die"));

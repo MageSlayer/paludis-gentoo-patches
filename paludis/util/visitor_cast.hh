@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_CAST_HH 1
 
 #include <paludis/util/visitor.hh>
-#include <paludis/util/tr1_type_traits.hh>
+#include <tr1/type_traits>
 
 /** \file
  * Declarations for the visitor_cast function.
@@ -92,7 +92,7 @@ namespace paludis
 
             void visit(const Item_ & i)
             {
-                result = GetResult<const Result_, tr1::is_same<const Result_, const Item_>::value>::get(&i);
+                result = GetResult<const Result_, std::tr1::is_same<const Result_, const Item_>::value>::get(&i);
             }
         };
 
@@ -131,7 +131,7 @@ namespace paludis
 
             void visit_leaf(const Item_ & i)
             {
-                result = GetResult<const Result_, tr1::is_same<const Result_, const Item_>::value>::get(&i);
+                result = GetResult<const Result_, std::tr1::is_same<const Result_, const Item_>::value>::get(&i);
             }
         };
 
@@ -157,7 +157,7 @@ namespace paludis
                     typename Heirarchy_::ConstSequenceIterator,
                     typename Heirarchy_::ConstSequenceIterator)
             {
-                result = GetResult<const Result_, tr1::is_same<const Result_, const Item_>::value>::get(&i);
+                result = GetResult<const Result_, std::tr1::is_same<const Result_, const Item_>::value>::get(&i);
             }
         };
 
@@ -183,7 +183,7 @@ namespace paludis
                     typename Heirarchy_::SequenceIterator,
                     typename Heirarchy_::SequenceIterator)
             {
-                result = GetResult<const Result_, tr1::is_same<const Result_, const Item_>::value>::get(&i);
+                result = GetResult<const Result_, std::tr1::is_same<const Result_, const Item_>::value>::get(&i);
             }
         };
 

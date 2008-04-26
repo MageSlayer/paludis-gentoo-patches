@@ -31,7 +31,7 @@
 
 #include <iosfwd>
 #include <string>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -342,7 +342,7 @@ namespace paludis
      * \ingroup g_config_file
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const KeyValueConfigFile>);
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile>);
 
     /**
      * Use a string pair collection for defaults.
@@ -350,7 +350,7 @@ namespace paludis
      * \ingroup g_config_file
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const Map<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const Map<std::string, std::string> >);
 
     /**
      * Use another KeyValueConfigFile for defaults (non-const).
@@ -358,7 +358,7 @@ namespace paludis
      * \ingroup g_config_file
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<KeyValueConfigFile>);
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile>);
 
     /**
      * Use a string pair collection for defaults (non-const).
@@ -366,7 +366,7 @@ namespace paludis
      * \ingroup g_config_file
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<Map<std::string, std::string> >);
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>;

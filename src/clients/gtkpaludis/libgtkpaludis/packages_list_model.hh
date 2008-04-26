@@ -5,9 +5,9 @@
 
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
+#include <tr1/memory>
+#include <tr1/functional>
 #include <libgtkpaludis/packages_package_filter_option.hh>
 
 namespace gtkpaludis
@@ -29,7 +29,7 @@ namespace gtkpaludis
                     PopulateDataIterator);
 
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
 
         public:
             PackagesListModel(MainWindow * const m, PackagesPage * const p);
@@ -45,7 +45,7 @@ namespace gtkpaludis
                     Gtk::TreeModelColumn<Glib::ustring> col_package;
                     Gtk::TreeModelColumn<Glib::ustring> col_status_markup;
                     Gtk::TreeModelColumn<Glib::ustring> col_description;
-                    Gtk::TreeModelColumn<paludis::tr1::shared_ptr<const paludis::QualifiedPackageName> > col_qpn;
+                    Gtk::TreeModelColumn<std::tr1::shared_ptr<const paludis::QualifiedPackageName> > col_qpn;
                     Gtk::TreeModelColumn<PackagesPackageFilterOption> col_best_package_filter_option;
             };
 

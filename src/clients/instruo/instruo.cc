@@ -29,7 +29,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
@@ -37,6 +36,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
+#include <tr1/functional>
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -66,9 +66,9 @@ namespace
             bool PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
-            const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
+            const std::tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
         }
 
         void visit(const MetadataTimeKey & k)
@@ -76,9 +76,9 @@ namespace
             time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
         {
-            const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+            const std::tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)
@@ -86,69 +86,69 @@ namespace
             const FSEntry & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataValueKey<tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
-            const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
+            const std::tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            const tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            const tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            const tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            const tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            const tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            const tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            const tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            const tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            const tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
-            const tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
-            const tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataSectionKey & k)
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_output_directory.specified())
             CommandLine::get_instance()->a_output_directory.set_argument(stringify(FSEntry::cwd()));
 
-        tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         keys->insert("append_repository_name_to_write_cache", "false");
         NoConfigEnvironment env(no_config_environment::Params::create()
                 .repository_dir(CommandLine::get_instance()->a_repository_directory.argument())
@@ -231,9 +231,9 @@ main(int argc, char *argv[])
                 .extra_params(keys)
                 .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
-        tr1::shared_ptr<const PackageIDSequence> ids(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(
                 env.package_database()->query(query::Repository(env.main_repository()->name()), qo_order_by_version));
-        std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(env.package_database().get());
+        std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(env.package_database().get());
         unsigned success(0), total(0);
 
         CategoryNamePart old_cat("OLDCAT");
@@ -307,7 +307,7 @@ main(int argc, char *argv[])
 
         std::cout << std::endl;
 
-        tr1::shared_ptr<std::ofstream> outf;
+        std::tr1::shared_ptr<std::ofstream> outf;
         if (CommandLine::get_instance()->a_report_file.specified())
         {
             outf.reset(new std::ofstream(CommandLine::get_instance()->a_report_file.argument().c_str()));
@@ -330,8 +330,8 @@ main(int argc, char *argv[])
             << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
         int exit_status(0);
-        tr1::shared_ptr<const PackageID> old_id;
-        for (std::multimap<tr1::shared_ptr<const PackageID>, std::string, tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
+        std::tr1::shared_ptr<const PackageID> old_id;
+        for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, std::tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
                 r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
         {
             exit_status |= 1;

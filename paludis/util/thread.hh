@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_THREAD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_THREAD_HH 1
 
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/attributes.hh>
+#include <tr1/functional>
 
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <pthread.h>
@@ -54,7 +54,7 @@ namespace paludis
         private:
 #ifdef PALUDIS_ENABLE_THREADS
             pthread_t * const _thread;
-            const tr1::function<void () throw ()> _func;
+            const std::tr1::function<void () throw ()> _func;
 
             static void * thread_func(void *);
 #endif
@@ -63,7 +63,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Thread(const tr1::function<void () throw ()> &);
+            Thread(const std::tr1::function<void () throw ()> &);
             ~Thread();
 
             ///\}
@@ -71,7 +71,7 @@ namespace paludis
             /**
              * Adapt a function for use in IdleActionPool.
              */
-            static void idle_adapter(const tr1::function<void () throw ()> &);
+            static void idle_adapter(const std::tr1::function<void () throw ()> &);
     };
 }
 

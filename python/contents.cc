@@ -28,16 +28,16 @@ namespace bp = boost::python;
 // For classes derived from ContentsEntry
 template <typename C_>
 class class_contents:
-    public bp::class_<C_, tr1::shared_ptr<C_>, bp::bases<ContentsEntry>, boost::noncopyable>
+    public bp::class_<C_, std::tr1::shared_ptr<C_>, bp::bases<ContentsEntry>, boost::noncopyable>
 {
     public:
         template <class Init_>
         class_contents(const std::string & name, const std::string & class_doc, Init_ initspec) :
-            bp::class_<C_, tr1::shared_ptr<C_>, bp::bases<ContentsEntry>, boost::noncopyable>(
+            bp::class_<C_, std::tr1::shared_ptr<C_>, bp::bases<ContentsEntry>, boost::noncopyable>(
                     name.c_str(), class_doc.c_str(), initspec)
         {
-            bp::register_ptr_to_python<tr1::shared_ptr<const C_> >();
-            bp::implicitly_convertible<tr1::shared_ptr<C_>, tr1::shared_ptr<ContentsEntry> >();
+            bp::register_ptr_to_python<std::tr1::shared_ptr<const C_> >();
+            bp::implicitly_convertible<std::tr1::shared_ptr<C_>, std::tr1::shared_ptr<ContentsEntry> >();
         }
 };
 
@@ -46,9 +46,9 @@ void expose_contents()
     /**
      * ContentsEntry
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const ContentsEntry> >();
-    bp::implicitly_convertible<tr1::shared_ptr<ContentsEntry>,
-            tr1::shared_ptr<const ContentsEntry> >();
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const ContentsEntry> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<ContentsEntry>,
+            std::tr1::shared_ptr<const ContentsEntry> >();
     bp::class_<ContentsEntry, boost::noncopyable>
         (
          "ContentsEntry",
@@ -134,7 +134,7 @@ void expose_contents()
      * Contents
      */
     register_shared_ptrs_to_python<Contents>(rsp_const);
-    bp::class_<Contents, tr1::shared_ptr<Contents>, boost::noncopyable>
+    bp::class_<Contents, std::tr1::shared_ptr<Contents>, boost::noncopyable>
         (
          "Contents",
          "Iterable of ContentsEntry.\n"

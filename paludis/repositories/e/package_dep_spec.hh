@@ -31,10 +31,10 @@ namespace paludis
     namespace erepository
     {
         PackageDepSpec parse_e_package_dep_spec(const std::string &, const EAPI & eapi,
-                const tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+                const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
 
         PartiallyMadePackageDepSpec partial_parse_e_package_dep_spec(const std::string &, const EAPI & eapi,
-                const tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+                const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
 
         class ESlotExactRequirement :
             public SlotExactRequirement

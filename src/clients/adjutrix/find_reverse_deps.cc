@@ -82,7 +82,7 @@ namespace
             {
             }
 
-            void check(tr1::shared_ptr<const DependencySpecTree::ConstItem> spec, const std::string & depname)
+            void check(std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec, const std::string & depname)
             {
                 _depname = depname;
                 spec->accept(*this);
@@ -115,7 +115,7 @@ namespace
             {
                 Context context("When expanding named set '" + stringify(s) + "':");
 
-                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(s.name()));
+                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(s.name()));
 
                 if (! set)
                 {
@@ -164,9 +164,9 @@ namespace
     void
     ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
-        tr1::shared_ptr<const PackageIDSequence> dep_entries(_env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> dep_entries(_env->package_database()->query(
                     query::Matches(a), qo_order_by_version));
-        tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
+        std::tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
         bool header_written = false;
 
@@ -215,7 +215,7 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        tr1::shared_ptr<const PackageIDSequence> p_entries(env.package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> p_entries(env.package_database()->query(
                 query::Package(p), qo_order_by_version));
 
         bool found_matches(false);
@@ -262,7 +262,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 
-    tr1::shared_ptr<PackageDepSpec> spec;
+    std::tr1::shared_ptr<PackageDepSpec> spec;
     try
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
@@ -313,7 +313,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 5;
     }
 
-    tr1::shared_ptr<const PackageIDSequence> entries(env.package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> entries(env.package_database()->query(
                 query::Matches(*spec), qo_order_by_version));
     int ret(0);
 
@@ -335,7 +335,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 
         write_repository_header(stringify(*spec), stringify(r->name()));
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -348,7 +348,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

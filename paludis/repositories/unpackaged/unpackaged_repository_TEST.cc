@@ -46,7 +46,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -61,7 +61,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageIDSequence> ids(
+            const std::tr1::shared_ptr<const PackageIDSequence> ids(
                     env.package_database()->query(query::All(), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "),
                     "cat/pkg-1.0:foo::unpackaged");
@@ -75,7 +75,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -90,7 +90,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0"));
@@ -109,7 +109,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -124,7 +124,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             TEST_CHECK(! id->masked());
@@ -138,7 +138,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -160,7 +160,7 @@ namespace test_cases
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<UninstallAction>()));
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             TEST_CHECK(id->supports_action(SupportsActionTest<InstallAction>()));
@@ -180,7 +180,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -195,7 +195,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -206,7 +206,7 @@ namespace test_cases
 
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/root/first").is_regular_file());
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             InstallAction action(InstallActionOptions::named_create()
@@ -234,7 +234,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
+            std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                         (k::environment(), &env)
@@ -249,7 +249,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
+            std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
@@ -260,7 +260,7 @@ namespace test_cases
 
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
 
-            const tr1::shared_ptr<const PackageID> id(
+            const std::tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
 
             InstallAction action(InstallActionOptions::named_create()

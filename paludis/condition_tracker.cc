@@ -24,13 +24,13 @@
 #include <paludis/dep_label.hh>
 
 using namespace paludis;
-using namespace tr1::placeholders;
+using namespace std::tr1::placeholders;
 
 ConditionTracker::ConditionTracker(
-            tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions) :
+            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions) :
     base(new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-             tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
-    adder(tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, base.get(), _1))
+             std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
+    adder(std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, base.get(), _1))
 {
     conditions->accept(*this);
 }
@@ -40,44 +40,44 @@ ConditionTracker::~ConditionTracker()
 }
 
 template <typename T_>
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::do_add_sequence(const T_ & node)
 {
-    adder(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, T_> >(
+    adder(std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, T_> >(
               new ConstTreeSequence<DependencySpecTree, T_>(
-                  tr1::static_pointer_cast<T_>(node.clone()))));
+                  std::tr1::static_pointer_cast<T_>(node.clone()))));
     return base;
 }
 
 template <typename T_>
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::do_add_leaf(const T_ & node)
 {
-    adder(tr1::shared_ptr<TreeLeaf<DependencySpecTree, T_> >(
+    adder(std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, T_> >(
               new TreeLeaf<DependencySpecTree, T_>(
-                  tr1::static_pointer_cast<T_>(node.clone()))));
+                  std::tr1::static_pointer_cast<T_>(node.clone()))));
     return base;
 }
 
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::add_condition(const AnyDepSpec & any)
 {
     return do_add_sequence(any);
 }
 
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::add_condition(const ConditionalDepSpec & use)
 {
     return do_add_sequence(use);
 }
 
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::add_condition(const PackageDepSpec & pkg)
 {
     return do_add_leaf(pkg);
 }
 
-tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
+std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >
 ConditionTracker::add_condition(const BlockDepSpec & block)
 {
     return do_add_leaf(block);
@@ -89,11 +89,11 @@ ConditionTracker::do_visit_sequence(const T_ & node,
            DependencySpecTree::ConstSequenceIterator begin,
            DependencySpecTree::ConstSequenceIterator end)
 {
-    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, T_> > a(
+    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, T_> > a(
         new ConstTreeSequence<DependencySpecTree, T_>(
-            tr1::static_pointer_cast<T_>(node.clone())));
+            std::tr1::static_pointer_cast<T_>(node.clone())));
     adder(a);
-    adder = tr1::bind(&ConstTreeSequence<DependencySpecTree, T_>::add, a.get(), _1);
+    adder = std::tr1::bind(&ConstTreeSequence<DependencySpecTree, T_>::add, a.get(), _1);
     if (begin != end)
     {
         begin->accept(*this);

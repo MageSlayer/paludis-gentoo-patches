@@ -48,7 +48,7 @@ namespace
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
-        tr1::shared_ptr<const PackageIDSequence> matches(
+        std::tr1::shared_ptr<const PackageIDSequence> matches(
                 env.package_database()->query(query::NotMasked(), qo_group_by_slot));
 
         QualifiedPackageName old_package("dummy/dummy");

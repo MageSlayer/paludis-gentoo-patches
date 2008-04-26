@@ -45,7 +45,7 @@ namespace
         public ConsoleInstallTask
     {
         public:
-            OurInstallTask(tr1::shared_ptr<Environment> env, const DepListOptions & options) :
+            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options) :
                 ConsoleInstallTask(env.get(), options, env->default_destinations())
             {
             }
@@ -118,7 +118,7 @@ namespace
 }
 
 int
-do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
+do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
 {
     Context context("When performing install action from command line:");
 
@@ -151,7 +151,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
             throw DoHelp("bad value for --debug-build");
     }
 
-    tr1::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
     specs->push_back(spec_str);
     if (! task.try_to_set_targets_from_user_specs(specs))
         return task.exit_status();

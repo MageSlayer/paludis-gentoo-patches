@@ -24,11 +24,11 @@
 #include <paludis/util/kc-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/keys.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/merger-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <tr1/memory>
 
 /** \file
  * Forward declarations for paludis/repository.hh .
@@ -68,7 +68,7 @@ namespace paludis
      *
      * \ingroup g_repository
      */
-    typedef Set<paludis::tr1::shared_ptr<Repository> > DestinationsSet;
+    typedef Set<std::tr1::shared_ptr<Repository> > DestinationsSet;
 
 
     /**
@@ -106,7 +106,7 @@ namespace paludis
         kc::Field<k::path, FSEntry>,
         kc::Field<k::arch, std::string>,
         kc::Field<k::status, std::string>,
-        kc::Field<k::profile, tr1::shared_ptr<ERepositoryProfile> >
+        kc::Field<k::profile, std::tr1::shared_ptr<ERepositoryProfile> >
             >RepositoryEInterfaceProfilesDescLine;
 
     /**
@@ -119,7 +119,7 @@ namespace paludis
      */
     typedef kc::KeyedClass<
             kc::Field<k::virtual_name, QualifiedPackageName>,
-            kc::Field<k::provided_by, tr1::shared_ptr<const PackageID> >
+            kc::Field<k::provided_by, std::tr1::shared_ptr<const PackageID> >
         > RepositoryProvidesEntry;
 
     /**
@@ -132,7 +132,7 @@ namespace paludis
      */
     typedef kc::KeyedClass<
             kc::Field<k::virtual_name, QualifiedPackageName>,
-            kc::Field<k::provided_by_spec, tr1::shared_ptr<const PackageDepSpec> >
+            kc::Field<k::provided_by_spec, std::tr1::shared_ptr<const PackageDepSpec> >
         > RepositoryVirtualsEntry;
 
     /**
@@ -143,7 +143,7 @@ namespace paludis
      * \nosubgrouping
      */
     typedef kc::KeyedClass<
-        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
         kc::Field<k::image_dir, FSEntry>,
         kc::Field<k::environment_file, FSEntry>,
         kc::Field<k::options, MergerOptions>

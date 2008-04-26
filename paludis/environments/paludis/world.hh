@@ -22,10 +22,10 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 #include <string>
 
 namespace paludis
@@ -40,10 +40,10 @@ namespace paludis
                 void _remove_string_from_world(const std::string &) const;
 
             public:
-                World(const Environment * const, const tr1::shared_ptr<const FSEntry> &);
+                World(const Environment * const, const std::tr1::shared_ptr<const FSEntry> &);
                 ~World();
 
-                tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add_to_world(const SetName &) const;
                 void add_to_world(const QualifiedPackageName &) const;

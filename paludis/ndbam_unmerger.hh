@@ -39,7 +39,7 @@ namespace paludis
         kc::Field<k::contents_file, FSEntry>,
         kc::Field<k::config_protect, std::string>,
         kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, tr1::shared_ptr<const PackageID> >,
+        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
         kc::Field<k::ndbam, const NDBAM *>
             > NDBAMUnmergerOptions;
 
@@ -77,10 +77,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
-            bool check_dir(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
-            bool check_sym(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
-            bool check_misc(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
+            bool check_file(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            bool check_dir(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            bool check_sym(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            bool check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
 
         public:
             ///\name Basic operations

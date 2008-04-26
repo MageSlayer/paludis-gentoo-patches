@@ -21,7 +21,6 @@
 #include <paludis/repositories/virtuals/package_id.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -29,19 +28,21 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/hashes.hh>
 
+#include <tr1/functional>
+#include <tr1/unordered_map>
 #include <algorithm>
 #include <vector>
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
+typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
@@ -51,14 +52,14 @@ namespace paludis
         const Environment * const env;
         const FSEntry root;
 
-        const tr1::shared_ptr<Mutex> ids_mutex;
+        const std::tr1::shared_ptr<Mutex> ids_mutex;
         mutable IDMap ids;
         mutable bool has_ids;
 
-        tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, const FSEntry & r, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const Environment * const e, const FSEntry & r, std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             root(r),
             ids_mutex(m),
@@ -149,7 +150,7 @@ InstalledVirtualsRepository::need_ids() const
         if (! (**r)[k::provides_interface()])
             continue;
 
-        tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
+        std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
                 (**r)[k::provides_interface()]->provided_packages());
 
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
@@ -159,7 +160,7 @@ InstalledVirtualsRepository::need_ids() const
             if (i == _imp->ids.end())
                 i = _imp->ids.insert(std::make_pair((*p)[k::virtual_name()], make_shared_ptr(new PackageIDSequence))).first;
 
-            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
+            std::tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
                         _imp->env, shared_from_this(), (*p)[k::virtual_name()], (*p)[k::provided_by()], false));
             i->second->push_back(id);
         }
@@ -168,10 +169,10 @@ InstalledVirtualsRepository::need_ids() const
     _imp->has_ids = true;
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 InstalledVirtualsRepository::make_installed_virtuals_repository(
         Environment * const env,
-        tr1::shared_ptr<const Map<std::string, std::string> > k)
+        std::tr1::shared_ptr<const Map<std::string, std::string> > k)
 {
     std::string root_str;
 
@@ -181,43 +182,43 @@ InstalledVirtualsRepository::make_installed_virtuals_repository(
     if (root_str.empty())
         throw ConfigurationError("No root specified for InstalledVirtualsRepository");
 
-    return tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env, FSEntry(root_str)));
+    return std::tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env, FSEntry(root_str)));
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     return i->second;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
-        return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     need_ids();
 
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first));
+            std::tr1::mem_fn(&std::pair<const QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> >::first));
 
     return result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -320,21 +321,21 @@ InstalledVirtualsRepository::some_ids_might_support_action(const SupportsActionT
     return q.result;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::unimportant_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 InstalledVirtualsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledVirtualsRepository::installed_root_key() const
 {
     return _imp->root_key;

@@ -31,8 +31,8 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/metadata_key.hh>
+#include <tr1/functional>
 #include <map>
 #include <list>
 #include <utility>
@@ -41,9 +41,9 @@
 
 using namespace paludis;
 
-template class Set<tr1::shared_ptr<Repository> >;
-template class WrappedForwardIterator<Set<tr1::shared_ptr<Repository> >::ConstIteratorTag, const tr1::shared_ptr<Repository> >;
-template class WrappedOutputIterator<Set<tr1::shared_ptr<Repository> >::InserterTag, tr1::shared_ptr<Repository> >;
+template class Set<std::tr1::shared_ptr<Repository> >;
+template class WrappedForwardIterator<Set<std::tr1::shared_ptr<Repository> >::ConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
+template class WrappedOutputIterator<Set<std::tr1::shared_ptr<Repository> >::InserterTag, std::tr1::shared_ptr<Repository> >;
 
 template class Sequence<RepositoryVirtualsEntry>;
 template class WrappedForwardIterator<Sequence<RepositoryVirtualsEntry>::ConstIteratorTag, const RepositoryVirtualsEntry>;
@@ -132,13 +132,13 @@ Repository::name() const
     return _imp->name;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 Repository::category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
-    tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))
@@ -216,7 +216,7 @@ Repository::can_be_favourite_repository() const
     return true;
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names() const
 {
     return make_shared_ptr(new CategoryNamePartSet);

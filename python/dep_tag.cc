@@ -32,7 +32,7 @@ namespace bp = boost::python;
 struct DepTagCategoryMakerWrapper
 {
     // More convenient way of creating DepTagCategories
-    static tr1::shared_ptr<const DepTagCategory>
+    static std::tr1::shared_ptr<const DepTagCategory>
     make_from_id(const DepTagCategoryMaker & self, const std::string & id)
     {
         return self[id]();
@@ -168,8 +168,8 @@ void expose_dep_tag()
         (
          "DependencyDepTag",
          "DepTag subclass for dependencies.",
-         bp::init<const tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
-                const tr1::shared_ptr<const DependencySpecTree::ConstItem> >(
+         bp::init<const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
+                const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> >(
                     "__init__(PackageID, PackageDepSpec, CompositeDepSpec)"
                     )
         )

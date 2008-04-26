@@ -19,7 +19,6 @@
 
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
@@ -27,6 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
+#include <tr1/functional>
 #include <string>
 
 using namespace paludis;
@@ -36,7 +36,7 @@ namespace paludis
     template<>
     struct Implementation<TestEnvironment>
     {
-        tr1::shared_ptr<PackageDatabase> package_database;
+        std::tr1::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
 
         Implementation(Environment * const e) :
@@ -66,7 +66,7 @@ TestEnvironment::query_use(const UseFlagName & u, const PackageID & p) const
 }
 
 bool
-TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID &) const
+TestEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
@@ -77,13 +77,13 @@ TestEnvironment::accept_license(const std::string &, const PackageID &) const
     return true;
 }
 
-tr1::shared_ptr<PackageDatabase>
+std::tr1::shared_ptr<PackageDatabase>
 TestEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const PackageDatabase>
+std::tr1::shared_ptr<const PackageDatabase>
 TestEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -101,13 +101,13 @@ TestEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
-const tr1::shared_ptr<const PackageID>
+const std::tr1::shared_ptr<const PackageID>
 TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
         const VersionSpec & v, const RepositoryName & r) const
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
-    tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
+    std::tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         if (v == (*i)->version())
@@ -115,10 +115,10 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
     throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 TestEnvironment::local_set(const SetName &) const
 {
-    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 uid_t
@@ -139,10 +139,10 @@ TestEnvironment::root() const
     return FSEntry("/");
 }
 
-tr1::shared_ptr<const MirrorsSequence>
+std::tr1::shared_ptr<const MirrorsSequence>
 TestEnvironment::mirrors(const std::string & s) const
 {
-    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
 
     if (s == "example")
     {
@@ -159,22 +159,22 @@ TestEnvironment::perform_hook(const Hook &) const
     return HookResult(0, "");
 }
 
-tr1::shared_ptr<const FSEntrySequence>
+std::tr1::shared_ptr<const FSEntrySequence>
 TestEnvironment::hook_dirs() const
 {
     return make_shared_ptr(new FSEntrySequence);
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 TestEnvironment::mask_for_breakage(const PackageID &) const
 {
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
-const tr1::shared_ptr<const Mask>
+const std::tr1::shared_ptr<const Mask>
 TestEnvironment::mask_for_user(const PackageID &) const
 {
-    return tr1::shared_ptr<const Mask>();
+    return std::tr1::shared_ptr<const Mask>();
 }
 
 bool
@@ -183,16 +183,16 @@ TestEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 TestEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
 {
     return make_shared_ptr(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 TestEnvironment::world_set() const
 {
-    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 void

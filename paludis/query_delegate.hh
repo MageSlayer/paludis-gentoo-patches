@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,7 +66,7 @@ namespace paludis
              *
              * Default behaviour: return all repositories.
              */
-            virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const;
+            virtual std::tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const;
 
             /**
              * Fetch the names of categories potentially containing matches.
@@ -74,8 +74,8 @@ namespace paludis
              * Default behaviour: return all categories in the provided
              * repository collection.
              */
-            virtual tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>) const;
+            virtual std::tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
+                    std::tr1::shared_ptr<const RepositoryNameSequence>) const;
 
             /**
              * Fetch the names of packages potentially containing matches.
@@ -86,9 +86,9 @@ namespace paludis
              * Note that some entries in the categories collection (but not in
              * the repositories collection) may not exist.
              */
-            virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>,
-                    tr1::shared_ptr<const CategoryNamePartSet>) const;
+            virtual std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                    std::tr1::shared_ptr<const RepositoryNameSequence>,
+                    std::tr1::shared_ptr<const CategoryNamePartSet>) const;
 
             /**
              * Fetch the IDs of matching packages.
@@ -98,9 +98,9 @@ namespace paludis
              * Note that some entries in the qualified package name collection
              * (but not in the repositories collection) may not exist.
              */
-            virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>,
-                    tr1::shared_ptr<const QualifiedPackageNameSet>) const;
+            virtual std::tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
+                    std::tr1::shared_ptr<const RepositoryNameSequence>,
+                    std::tr1::shared_ptr<const QualifiedPackageNameSet>) const;
 
             /**
              * Fetch a string representation of our query.

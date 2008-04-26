@@ -36,7 +36,7 @@ bool
 paludis::erepository::keywords_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepositoryID> & id,
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using keywords_key_check on ID '" + stringify(*id) + "':");

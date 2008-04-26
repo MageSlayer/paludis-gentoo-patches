@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,13 +60,13 @@ namespace paludis
         friend std::ostream & operator<< (std::ostream &, const Query &);
 
         private:
-            tr1::shared_ptr<const QueryDelegate> _d;
+            std::tr1::shared_ptr<const QueryDelegate> _d;
 
         protected:
             ///\name Basic operations
             ///\{
 
-            Query(tr1::shared_ptr<const QueryDelegate>);
+            Query(std::tr1::shared_ptr<const QueryDelegate>);
 
         public:
             ~Query();
@@ -76,18 +76,18 @@ namespace paludis
             ///\name Delegate-implemented functions
             ///\{
 
-            tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const;
+            std::tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const;
 
-            tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameSequence> r) const;
+            std::tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+                    std::tr1::shared_ptr<const RepositoryNameSequence> r) const;
 
-            tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameSequence> r,
-                    tr1::shared_ptr<const CategoryNamePartSet> c) const;
+            std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+                    std::tr1::shared_ptr<const RepositoryNameSequence> r,
+                    std::tr1::shared_ptr<const CategoryNamePartSet> c) const;
 
-            tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameSequence> r,
-                    tr1::shared_ptr<const QualifiedPackageNameSet> q) const;
+            std::tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
+                    std::tr1::shared_ptr<const RepositoryNameSequence> r,
+                    std::tr1::shared_ptr<const QualifiedPackageNameSet> q) const;
 
             ///\}
     };

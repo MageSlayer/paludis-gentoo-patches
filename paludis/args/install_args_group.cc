@@ -82,19 +82,19 @@ InstallArgsGroup::populate_dep_list_options(const Environment *, DepListOptions 
     options.dependency_tags = a_show_reasons.argument() == "summary" || a_show_reasons.argument() == "full";
 }
 
-tr1::shared_ptr<const DestinationsSet>
+std::tr1::shared_ptr<const DestinationsSet>
 InstallArgsGroup::destinations(Environment * env) const
 {
     if (a_destinations.specified())
     {
         Context local_context("When building destinations collection:");
 
-        tr1::shared_ptr<DestinationsSet> d(new DestinationsSet);
+        std::tr1::shared_ptr<DestinationsSet> d(new DestinationsSet);
         for (args::StringSetArg::ConstIterator i(a_destinations.begin_args()),
                 i_end(a_destinations.end_args()) ;
                 i != i_end ; ++i)
         {
-            tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
+            std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
                         RepositoryName(*i)));
             if ((*repo)[k::destination_interface()])
                 d->insert(repo);

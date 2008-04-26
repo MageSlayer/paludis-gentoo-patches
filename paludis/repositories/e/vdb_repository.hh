@@ -26,9 +26,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for VDBRepository.
@@ -52,7 +52,7 @@ namespace paludis
     class PALUDIS_VISIBLE VDBRepository :
         public erepository::EInstalledRepository,
         public RepositoryProvidesInterface,
-        public tr1::enable_shared_from_this<VDBRepository>,
+        public std::tr1::enable_shared_from_this<VDBRepository>,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
@@ -69,11 +69,11 @@ namespace paludis
             void need_category_names() const;
             void need_package_ids(const CategoryNamePart &) const;
 
-            const tr1::shared_ptr<const erepository::ERepositoryID> package_id_if_exists(const QualifiedPackageName &,
+            const std::tr1::shared_ptr<const erepository::ERepositoryID> package_id_if_exists(const QualifiedPackageName &,
                     const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const tr1::shared_ptr<const erepository::ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
+            const std::tr1::shared_ptr<const erepository::ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
                     const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -89,9 +89,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static tr1::shared_ptr<Repository> make_vdb_repository(
+            static std::tr1::shared_ptr<Repository> make_vdb_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> > m);
+                    std::tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -104,12 +104,12 @@ namespace paludis
 
             virtual void regenerate_cache() const;
 
-            virtual void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
+            virtual void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
                     const UninstallActionOptions & o, bool reinstalling) const;
 
             /* RepositoryProvidesInterface */
 
-            virtual tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+            virtual std::tr1::shared_ptr<const ProvidesSequence> provided_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryDestinationInterface */
@@ -118,18 +118,18 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -140,8 +140,8 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 
     /**

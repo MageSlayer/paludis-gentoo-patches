@@ -31,7 +31,7 @@ namespace paludis
     namespace erepository
     {
         ConditionalDepSpec parse_e_conditional_dep_spec(const std::string &,
-                const Environment * const, const tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         UseFlagName conditional_dep_spec_flag(const ConditionalDepSpec &) PALUDIS_VISIBLE;
         bool conditional_dep_spec_is_inverse(const ConditionalDepSpec &) PALUDIS_VISIBLE;

@@ -34,14 +34,14 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
-         const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > >;
+         const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
 
 namespace paludis
 {
     template <>
     struct Implementation<MaskFile>
     {
-        std::list<std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > lines;
+        std::list<std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > > lines;
     };
 }
 
@@ -53,7 +53,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
     myopts += lcfo_no_skip_blank_lines;
 
     LineConfigFile file(f, myopts);
-    tr1::shared_ptr<Sequence<std::string> > comment(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::string> > comment(new Sequence<std::string>);
     bool comment_used(false);
     for (LineConfigFile::ConstIterator it(file.begin()), it_end(file.end()); it_end != it; ++it)
     {
@@ -68,7 +68,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
         {
             if (comment_used)
             {
-                tr1::shared_ptr<Sequence<std::string> > cpy(new Sequence<std::string>);
+                std::tr1::shared_ptr<Sequence<std::string> > cpy(new Sequence<std::string>);
                 std::copy(comment->begin(), comment->end(), cpy->back_inserter());
                 comment = cpy;
                 comment_used = false;
@@ -77,7 +77,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
             continue;
         }
 
-        _imp->lines.push_back(std::make_pair(*it, tr1::shared_ptr<RepositoryMaskInfo>(new RepositoryMaskInfo(f, comment))));
+        _imp->lines.push_back(std::make_pair(*it, std::tr1::shared_ptr<RepositoryMaskInfo>(new RepositoryMaskInfo(f, comment))));
         comment_used = true;
     }
 }

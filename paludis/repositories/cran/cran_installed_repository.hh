@@ -68,9 +68,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static tr1::shared_ptr<Repository> make_cran_installed_repository(
+            static std::tr1::shared_ptr<Repository> make_cran_installed_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> > m);
+                    std::tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -82,7 +82,7 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryDestinationInterface */
@@ -100,15 +100,15 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -121,13 +121,13 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 
     /**

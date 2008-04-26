@@ -39,11 +39,11 @@ namespace paludis
         kc::Field<k::slot, SlotName>,
         kc::Field<k::fs_location, FSEntry>,
         kc::Field<k::magic, std::string>,
-        kc::Field<k::package_id, tr1::shared_ptr<PackageID> >,
-        kc::Field<k::mutex, tr1::shared_ptr<Mutex> >
+        kc::Field<k::package_id, std::tr1::shared_ptr<PackageID> >,
+        kc::Field<k::mutex, std::tr1::shared_ptr<Mutex> >
             > NDBAMEntry;
 
-    typedef Sequence<tr1::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
+    typedef Sequence<std::tr1::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
 }
 
 #endif

@@ -51,10 +51,10 @@ void
 SetsList::handle_signal_cursor_changed()
 {
     if (get_selection()->get_selected())
-        _imp->packages_page->set_set(paludis::tr1::shared_ptr<SetName>(new SetName(
+        _imp->packages_page->set_set(std::tr1::shared_ptr<SetName>(new SetName(
                         static_cast<Glib::ustring>((*get_selection()->get_selected())[_imp->model->columns().col_set_name]).raw())));
     else
         _imp->packages_page->set_set(
-                paludis::tr1::shared_ptr<SetName>());
+                std::tr1::shared_ptr<SetName>());
 }
 

@@ -32,39 +32,39 @@ class MaskSptrToPythonVisitor :
     public ConstVisitor<MaskVisitorTypes>
 {
     private:
-        const tr1::shared_ptr<const Mask> & _m_ptr;
+        const std::tr1::shared_ptr<const Mask> & _m_ptr;
 
     public:
         bp::object obj;
 
-        MaskSptrToPythonVisitor(const tr1::shared_ptr<const Mask> & m_ptr) :
+        MaskSptrToPythonVisitor(const std::tr1::shared_ptr<const Mask> & m_ptr) :
             _m_ptr(m_ptr)
         {
         }
 
         void visit(const UserMask & m)
         {
-            obj = bp::object(tr1::static_pointer_cast<const UserMask>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const UserMask>(_m_ptr));
         }
 
         void visit(const UnacceptedMask & m)
         {
-            obj = bp::object(tr1::static_pointer_cast<const UnacceptedMask>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const UnacceptedMask>(_m_ptr));
         }
 
         void visit(const RepositoryMask & m)
         {
-            obj = bp::object(tr1::static_pointer_cast<const RepositoryMask>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const RepositoryMask>(_m_ptr));
         }
 
         void visit(const UnsupportedMask & m)
         {
-            obj = bp::object(tr1::static_pointer_cast<const UnsupportedMask>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const UnsupportedMask>(_m_ptr));
         }
 
         void visit(const AssociationMask & m)
         {
-            obj = bp::object(tr1::static_pointer_cast<const AssociationMask>(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const AssociationMask>(_m_ptr));
         }
 };
 
@@ -72,11 +72,11 @@ struct MaskSptrToPython
 {
     MaskSptrToPython()
     {
-        bp::to_python_converter<tr1::shared_ptr<const Mask>, MaskSptrToPython>();
+        bp::to_python_converter<std::tr1::shared_ptr<const Mask>, MaskSptrToPython>();
     }
 
     static PyObject *
-    convert(const tr1::shared_ptr<const Mask> & m)
+    convert(const std::tr1::shared_ptr<const Mask> & m)
     {
         MaskSptrToPythonVisitor v(m);
         m->accept(v);
@@ -138,7 +138,7 @@ struct UnacceptedMaskWrapper :
     UnacceptedMask,
     bp::wrapper<UnacceptedMask>
 {
-    virtual const tr1::shared_ptr<const MetadataKey> unaccepted_key() const
+    virtual const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const
     {
         Lock l(get_mutex());
 
@@ -173,7 +173,7 @@ struct RepositoryMaskWrapper :
     RepositoryMask,
     bp::wrapper<RepositoryMask>
 {
-    virtual const tr1::shared_ptr<const MetadataKey> mask_key() const
+    virtual const std::tr1::shared_ptr<const MetadataKey> mask_key() const
     {
         Lock l(get_mutex());
 
@@ -242,7 +242,7 @@ struct AssociationMaskWrapper :
     AssociationMask,
     bp::wrapper<AssociationMask>
 {
-    virtual const tr1::shared_ptr<const PackageID> associated_package() const
+    virtual const std::tr1::shared_ptr<const PackageID> associated_package() const
     {
         Lock l(get_mutex());
 
@@ -280,11 +280,11 @@ void expose_mask()
      * RepositoryMaskInfo
      */
     register_shared_ptrs_to_python<RepositoryMaskInfo>(rsp_const);
-    bp::class_<RepositoryMaskInfo, tr1::shared_ptr<RepositoryMaskInfo> >
+    bp::class_<RepositoryMaskInfo, std::tr1::shared_ptr<RepositoryMaskInfo> >
         (
          "RepositoryMaskInfo",
          "Information about a RepositoryMask.",
-         bp::init<const FSEntry &, const tr1::shared_ptr<const Sequence<std::string> > &>(
+         bp::init<const FSEntry &, const std::tr1::shared_ptr<const Sequence<std::string> > &>(
              "__init__(path_str, list of string)"
              )
         )
@@ -296,8 +296,8 @@ void expose_mask()
                 )
 
         .add_property("comment",
-                &kc_getter<RepositoryMaskInfo, tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
-                &kc_setter<RepositoryMaskInfo, tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
+                &kc_getter<RepositoryMaskInfo, std::tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
+                &kc_setter<RepositoryMaskInfo, std::tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
                 "[ro] Iterable of str\n"
                 "Sequence of lines explaining the mask."
                 )
@@ -339,9 +339,9 @@ void expose_mask()
     /**
      * UserMask
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const UserMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<UserMaskWrapper>, tr1::shared_ptr<Mask> >();
-    bp::class_<UserMaskWrapper, tr1::shared_ptr<UserMaskWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const UserMask> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<UserMaskWrapper>, std::tr1::shared_ptr<Mask> >();
+    bp::class_<UserMaskWrapper, std::tr1::shared_ptr<UserMaskWrapper>,
                 bp::bases<Mask>, boost::noncopyable>
         (
          "UserMask",
@@ -365,9 +365,9 @@ void expose_mask()
     /**
      * UnacceptedMask
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const UnacceptedMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<UnacceptedMaskWrapper>, tr1::shared_ptr<Mask> >();
-    bp::class_<UnacceptedMaskWrapper, tr1::shared_ptr<UnacceptedMaskWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const UnacceptedMask> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<UnacceptedMaskWrapper>, std::tr1::shared_ptr<Mask> >();
+    bp::class_<UnacceptedMaskWrapper, std::tr1::shared_ptr<UnacceptedMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnacceptedMask",
@@ -398,9 +398,9 @@ void expose_mask()
     /**
      * RepositoryMask
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const RepositoryMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<RepositoryMaskWrapper>, tr1::shared_ptr<Mask> >();
-    bp::class_<RepositoryMaskWrapper, tr1::shared_ptr<RepositoryMaskWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const RepositoryMask> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<RepositoryMaskWrapper>, std::tr1::shared_ptr<Mask> >();
+    bp::class_<RepositoryMaskWrapper, std::tr1::shared_ptr<RepositoryMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "RepositoryMask",
@@ -431,9 +431,9 @@ void expose_mask()
     /**
      * UnsupportedMask
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const UnsupportedMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<UnsupportedMaskWrapper>, tr1::shared_ptr<Mask> >();
-    bp::class_<UnsupportedMaskWrapper, tr1::shared_ptr<UnsupportedMaskWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const UnsupportedMask> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<UnsupportedMaskWrapper>, std::tr1::shared_ptr<Mask> >();
+    bp::class_<UnsupportedMaskWrapper, std::tr1::shared_ptr<UnsupportedMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnsupportedMask",
@@ -464,9 +464,9 @@ void expose_mask()
     /**
      * AssociationMask
      */
-    bp::register_ptr_to_python<tr1::shared_ptr<const AssociationMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<AssociationMaskWrapper>, tr1::shared_ptr<Mask> >();
-    bp::class_<AssociationMaskWrapper, tr1::shared_ptr<AssociationMaskWrapper>,
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const AssociationMask> >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<AssociationMaskWrapper>, std::tr1::shared_ptr<Mask> >();
+    bp::class_<AssociationMaskWrapper, std::tr1::shared_ptr<AssociationMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "AssociationMask",

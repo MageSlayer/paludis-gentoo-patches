@@ -40,35 +40,35 @@ namespace
         ConstVisitor<DepTagVisitorTypes>
     {
         VALUE value;
-        tr1::shared_ptr<const DepTag> mm;
+        std::tr1::shared_ptr<const DepTag> mm;
 
-        V(tr1::shared_ptr<const DepTag> _m) :
+        V(std::tr1::shared_ptr<const DepTag> _m) :
             mm(_m)
         {
         }
 
         void visit(const DependencyDepTag &)
         {
-            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new tr1::shared_ptr<const DepTag>(mm));
+            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new std::tr1::shared_ptr<const DepTag>(mm));
         }
 
         void visit(const GLSADepTag &)
         {
-            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new tr1::shared_ptr<const DepTag>(mm));
+            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new std::tr1::shared_ptr<const DepTag>(mm));
         }
 
         void visit(const GeneralSetDepTag &)
         {
-            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new tr1::shared_ptr<const DepTag>(mm));
+            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new std::tr1::shared_ptr<const DepTag>(mm));
         }
 
         void visit(const TargetDepTag &)
         {
-            value = Data_Wrap_Struct(c_target_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new tr1::shared_ptr<const DepTag>(mm));
+            value = Data_Wrap_Struct(c_target_dep_tag, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new std::tr1::shared_ptr<const DepTag>(mm));
         }
     };
 
@@ -84,18 +84,18 @@ namespace
         if (2 != argc)
             rb_raise(rb_eArgError, "DependencyDepTag expects two arguments, but got %d", argc);
 
-        tr1::shared_ptr<const DepTag> * ptr(0);
+        std::tr1::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DepTag>(
+            ptr = new std::tr1::shared_ptr<const DepTag>(
                     new DependencyDepTag(value_to_package_id(argv[0]),
                         *value_to_package_dep_spec(argv[1]),
                         // XXX make this an argument, once the new
                         // visitors are Rubified
-                        tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+                        std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepTag> >::free, ptr));
+                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)))));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -115,9 +115,9 @@ namespace
     VALUE
     dependency_dep_tag_package_id(VALUE self)
     {
-        tr1::shared_ptr<const DepTag> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
-        return package_id_to_value((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->package_id());
+        std::tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
+        return package_id_to_value((std::tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->package_id());
     }
 
     /*
@@ -129,9 +129,9 @@ namespace
     VALUE
     dependency_dep_tag_dependency(VALUE self)
     {
-        tr1::shared_ptr<const DepTag> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
-        return package_dep_spec_to_value((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
+        std::tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
+        return package_dep_spec_to_value((std::tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
     }
 
     /*
@@ -144,9 +144,9 @@ namespace
     VALUE
     dependency_dep_tag_conditions(VALUE self)
     {
-        tr1::shared_ptr<const DepTag> * ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
-        return dep_tree_to_value<DependencySpecTree>((tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->conditions());
+        std::tr1::shared_ptr<const DepTag> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
+        return dep_tree_to_value<DependencySpecTree>((std::tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->conditions());
     }
 
     VALUE
@@ -155,12 +155,12 @@ namespace
         if (3 != argc)
             rb_raise(rb_eArgError, "GLSADepTag expects three arguments, but got %d",argc);
 
-        tr1::shared_ptr<const DepTag> * ptr(0);
+        std::tr1::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
+            ptr = new std::tr1::shared_ptr<const DepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
                         FSEntry(StringValuePtr(argv[2]))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepTag> >::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -177,11 +177,11 @@ namespace
         if (2 != argc)
             rb_raise(rb_eArgError, "GeneralSetDepTag expects two arguments, but got %d",argc);
 
-        tr1::shared_ptr<const DepTag> * ptr(0);
+        std::tr1::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepTag> >::free, ptr));
+            ptr = new std::tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -195,11 +195,11 @@ namespace
     VALUE
     target_dep_tag_new(VALUE self)
     {
-        tr1::shared_ptr<const DepTag> * ptr(0);
+        std::tr1::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DepTag>(new TargetDepTag);
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DepTag> >::free, ptr));
+            ptr = new std::tr1::shared_ptr<const DepTag>(new TargetDepTag);
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, 0, 0);
             return tdata;
         }
@@ -249,9 +249,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const DepTag> * ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
-            return rb_str_new2((((*tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
+            std::tr1::shared_ptr<const DepTag> * ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
+            return rb_str_new2((((*std::tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
         }
     };
 
@@ -269,9 +269,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const DepTag> * ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const DepTag>, ptr);
-            return rb_str_new2(stringify(((*tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
+            std::tr1::shared_ptr<const DepTag> * ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
+            return rb_str_new2(stringify(((*std::tr1::static_pointer_cast<const T_>(*ptr)).*m_)()).c_str());
         }
     };
 
@@ -334,7 +334,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
+paludis::ruby::dep_tag_to_value(std::tr1::shared_ptr<const DepTag> m)
 {
     try
     {
@@ -348,13 +348,13 @@ paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
     }
 }
 
-tr1::shared_ptr<const DepTag>
+std::tr1::shared_ptr<const DepTag>
 paludis::ruby::value_to_dep_tag(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_dep_tag))
     {
-        tr1::shared_ptr<const DepTag> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const DepTag>, v_ptr);
+        std::tr1::shared_ptr<const DepTag> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<const DepTag>, v_ptr);
         return *v_ptr;
     }
     else

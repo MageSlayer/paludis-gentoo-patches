@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,18 +28,18 @@ namespace paludis
     {
         bool stray_files_check(
                 QAReporter &,
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const FSEntry & dir,
-                const tr1::function<bool (const tr1::shared_ptr<const ERepository> &, const FSEntry &)> &,
+                const std::tr1::function<bool (const std::tr1::shared_ptr<const ERepository> &, const FSEntry &)> &,
                 const std::string & s
                 );
 
         bool is_stray_at_tree_dir(
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const FSEntry &);
 
         bool is_stray_at_category_dir(
-                const tr1::shared_ptr<const ERepository> &,
+                const std::tr1::shared_ptr<const ERepository> &,
                 const FSEntry &);
     }
 }

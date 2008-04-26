@@ -43,29 +43,29 @@ class PythonQuery :
         {
         }
 
-        virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const
+        virtual std::tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const
         {
-            return tr1::shared_ptr<RepositoryNameSequence>();
+            return std::tr1::shared_ptr<RepositoryNameSequence>();
         }
 
-        virtual tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
-                tr1::shared_ptr<const RepositoryNameSequence>) const
+        virtual std::tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
+                std::tr1::shared_ptr<const RepositoryNameSequence>) const
         {
-            return tr1::shared_ptr<CategoryNamePartSet>();
+            return std::tr1::shared_ptr<CategoryNamePartSet>();
         }
 
-        virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
-                tr1::shared_ptr<const RepositoryNameSequence>,
-                tr1::shared_ptr<const CategoryNamePartSet>) const
+        virtual std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                std::tr1::shared_ptr<const RepositoryNameSequence>,
+                std::tr1::shared_ptr<const CategoryNamePartSet>) const
         {
-            return tr1::shared_ptr<QualifiedPackageNameSet>();
+            return std::tr1::shared_ptr<QualifiedPackageNameSet>();
         }
 
-        virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
-                tr1::shared_ptr<const RepositoryNameSequence>,
-                tr1::shared_ptr<const QualifiedPackageNameSet>) const
+        virtual std::tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
+                std::tr1::shared_ptr<const RepositoryNameSequence>,
+                std::tr1::shared_ptr<const QualifiedPackageNameSet>) const
         {
-            return tr1::shared_ptr<PackageIDSequence>();
+            return std::tr1::shared_ptr<PackageIDSequence>();
         }
 
         virtual std::string as_human_readable_string() const = 0;
@@ -83,27 +83,27 @@ class PythonQueryDelegate :
         {
         }
 
-        tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
+        std::tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
         {
             return _q->repositories(e);
         }
 
-        tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameSequence> r) const
+        std::tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+                std::tr1::shared_ptr<const RepositoryNameSequence> r) const
         {
             return _q->categories(e, r);
         }
 
-        tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameSequence> r,
-                tr1::shared_ptr<const CategoryNamePartSet> c) const
+        std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+                std::tr1::shared_ptr<const RepositoryNameSequence> r,
+                std::tr1::shared_ptr<const CategoryNamePartSet> c) const
         {
             return _q->packages(e, r, c);
         }
 
-        tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameSequence> r,
-                tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+        std::tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
+                std::tr1::shared_ptr<const RepositoryNameSequence> r,
+                std::tr1::shared_ptr<const QualifiedPackageNameSet> q) const
         {
             return _q->ids(e, r, q);
         }
@@ -115,7 +115,7 @@ class PythonQueryDelegate :
 };
 
 PythonQuery::PythonQuery() :
-    Query(tr1::shared_ptr<const PythonQueryDelegate>(new PythonQueryDelegate(this)))
+    Query(std::tr1::shared_ptr<const PythonQueryDelegate>(new PythonQueryDelegate(this)))
 {
 }
 
@@ -123,7 +123,7 @@ struct PythonQueryWrapper :
     PythonQuery,
     bp::wrapper<PythonQuery>
 {
-    tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
+    std::tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
     {
         Lock l(get_mutex());
 
@@ -132,13 +132,13 @@ struct PythonQueryWrapper :
         return PythonQuery::repositories(e);
     }
 
-    tr1::shared_ptr<RepositoryNameSequence> default_repositories(const Environment & e) const
+    std::tr1::shared_ptr<RepositoryNameSequence> default_repositories(const Environment & e) const
     {
         return PythonQuery::repositories(e);
     }
 
-    tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r) const
+    std::tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r) const
     {
         Lock l(get_mutex());
 
@@ -147,15 +147,15 @@ struct PythonQueryWrapper :
         return PythonQuery::categories(e, r);
     }
 
-    tr1::shared_ptr<CategoryNamePartSet> default_categories(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r) const
+    std::tr1::shared_ptr<CategoryNamePartSet> default_categories(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r) const
     {
         return PythonQuery::categories(e, r);
     }
 
-    tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r,
-            tr1::shared_ptr<const CategoryNamePartSet> c) const
+    std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r,
+            std::tr1::shared_ptr<const CategoryNamePartSet> c) const
     {
         Lock l(get_mutex());
 
@@ -164,16 +164,16 @@ struct PythonQueryWrapper :
         return PythonQuery::packages(e, r, c);
     }
 
-    tr1::shared_ptr<QualifiedPackageNameSet> default_packages(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r,
-            tr1::shared_ptr<const CategoryNamePartSet> c) const
+    std::tr1::shared_ptr<QualifiedPackageNameSet> default_packages(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r,
+            std::tr1::shared_ptr<const CategoryNamePartSet> c) const
     {
         return PythonQuery::packages(e, r, c);
     }
 
-    tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r,
-            tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+    std::tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r,
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> q) const
     {
         Lock l(get_mutex());
 
@@ -182,9 +182,9 @@ struct PythonQueryWrapper :
         return PythonQuery::ids(e, r, q);
     }
 
-    tr1::shared_ptr<PackageIDSequence> default_ids(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameSequence> r,
-            tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+    std::tr1::shared_ptr<PackageIDSequence> default_ids(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameSequence> r,
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> q) const
     {
         return PythonQuery::ids(e, r, q);
     }

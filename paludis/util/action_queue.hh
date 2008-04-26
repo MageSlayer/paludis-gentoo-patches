@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -50,7 +50,7 @@ namespace paludis
             /**
              * Enqueue an item.
              */
-            void enqueue(const tr1::function<void () throw ()> &);
+            void enqueue(const std::tr1::function<void () throw ()> &);
 
             /**
              * Complete any pending tasks.

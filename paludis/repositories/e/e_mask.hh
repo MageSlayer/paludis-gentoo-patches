@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,12 +32,12 @@ namespace paludis
             private PrivateImplementationPattern<EUnacceptedMask>
         {
             public:
-                EUnacceptedMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
+                EUnacceptedMask(const char, const std::string &, const std::tr1::shared_ptr<const MetadataKey> &);
                 ~EUnacceptedMask();
 
                 char key() const;
                 const std::string description() const;
-                const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
+                const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
         };
 
         class EUnsupportedMask :
@@ -58,12 +58,12 @@ namespace paludis
             private PrivateImplementationPattern<ERepositoryMask>
         {
             public:
-                ERepositoryMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
+                ERepositoryMask(const char, const std::string &, const std::tr1::shared_ptr<const MetadataKey> &);
                 ~ERepositoryMask();
 
                 virtual char key() const;
                 const std::string description() const;
-                const tr1::shared_ptr<const MetadataKey> mask_key() const;
+                const std::tr1::shared_ptr<const MetadataKey> mask_key() const;
         };
     }
 }

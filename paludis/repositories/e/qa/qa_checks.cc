@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,12 +62,12 @@ namespace paludis
     template <>
     struct Implementation<QAChecks>
     {
-        const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> > eclass_file_contents_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> > package_dir_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> > package_id_file_contents_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> > eclass_file_contents_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> > package_dir_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
+        const std::tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> > package_id_file_contents_checks_group;
 
         Implementation() :
             tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
@@ -84,167 +84,167 @@ namespace paludis
 QAChecks::QAChecks() :
     PrivateImplementationPattern<QAChecks>(new Implementation<QAChecks>())
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     _imp->tree_checks_group->add_check("stray_tree_files",
-            tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_tree_dir, "stray_tree_files"));
+            std::tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_tree_dir, "stray_tree_files"));
 
     _imp->tree_checks_group->add_check("repo_name",
-            tr1::bind(repo_name_check, _2, _1, "repo_name"));
+            std::tr1::bind(repo_name_check, _2, _1, "repo_name"));
 
     _imp->tree_checks_group->add_check("categories",
-            tr1::bind(categories_check, _2, _4, "categories"));
+            std::tr1::bind(categories_check, _2, _4, "categories"));
 
     _imp->eclass_file_contents_checks_group->add_check("variable_assigns",
-            tr1::bind(variable_assigns_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));
+            std::tr1::bind(variable_assigns_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "variable_assigns"));
 
     _imp->eclass_file_contents_checks_group->add_check("deprecated_functions",
-            tr1::bind(deprecated_functions_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "deprecated_functions"));
+            std::tr1::bind(deprecated_functions_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "deprecated_functions"));
 
     _imp->eclass_file_contents_checks_group->add_check("subshell_die",
-            tr1::bind(subshell_die_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "subshell_die"));
+            std::tr1::bind(subshell_die_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "subshell_die"));
 
     _imp->eclass_file_contents_checks_group->add_check("header",
-            tr1::bind(header_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
+            std::tr1::bind(header_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "header"));
 
     _imp->eclass_file_contents_checks_group->add_check("function_keyword",
-            tr1::bind(function_keyword_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "function_keyword"));
+            std::tr1::bind(function_keyword_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "function_keyword"));
 
     _imp->eclass_file_contents_checks_group->add_check("whitespace",
-            tr1::bind(whitespace_check, _1, _2, tr1::shared_ptr<const ERepositoryID>(), _5, "whitespace"));
+            std::tr1::bind(whitespace_check, _1, _2, std::tr1::shared_ptr<const ERepositoryID>(), _5, "whitespace"));
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
-            tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
+            std::tr1::bind(stray_files_check, _2, _4, _1, is_stray_at_category_dir, "stray_category_dir_files"));
 
     _imp->package_dir_checks_group->add_check("manifest",
-            tr1::bind(manifest_check, _2, _1, _4, _5, "manifest"));
+            std::tr1::bind(manifest_check, _2, _1, _4, _5, "manifest"));
 
     _imp->package_dir_checks_group->add_check("ebuild_count",
-            tr1::bind(ebuild_count_check, _2, _1, _4, _5, "ebuild_count"));
+            std::tr1::bind(ebuild_count_check, _2, _1, _4, _5, "ebuild_count"));
 
     _imp->package_dir_checks_group->add_check("changelog",
-            tr1::bind(changelog_check, _2, _1, _5, "changelog"));
+            std::tr1::bind(changelog_check, _2, _1, _5, "changelog"));
 
     _imp->package_dir_checks_group->add_check("misc_files",
-            tr1::bind(misc_files_check, _2, _1, "misc_files"));
+            std::tr1::bind(misc_files_check, _2, _1, "misc_files"));
 
     _imp->package_dir_checks_group->add_check("files_dir_size",
-            tr1::bind(files_dir_size_check, _2, _1, "files_dir_size"));
+            std::tr1::bind(files_dir_size_check, _2, _1, "files_dir_size"));
 
     _imp->package_id_checks_group->add_check("eapi_supported",
-            tr1::bind(eapi_supported_check, _1, _2, _5, "eapi_supported"));
+            std::tr1::bind(eapi_supported_check, _1, _2, _5, "eapi_supported"));
 
     _imp->package_id_checks_group->add_check("metadata_keys",
-            tr1::bind(metadata_keys_check, _1, _2, _5, "metadata_keys"));
+            std::tr1::bind(metadata_keys_check, _1, _2, _5, "metadata_keys"));
     _imp->package_id_checks_group->add_prerequirement("metadata_keys", "eapi_supported");
 
     _imp->package_id_checks_group->add_check("short_description_key",
-            tr1::bind(short_description_key_check, _1, _2, _5, "short_description_key"));
+            std::tr1::bind(short_description_key_check, _1, _2, _5, "short_description_key"));
     _imp->package_id_checks_group->add_prerequirement("short_description_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("homepage_key",
-            tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
+            std::tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
     _imp->package_id_checks_group->add_prerequirement("homepage_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("iuse_key",
-            tr1::bind(iuse_key_check, _1, _2, _4, _5, "iuse_key"));
+            std::tr1::bind(iuse_key_check, _1, _2, _4, _5, "iuse_key"));
     _imp->package_id_checks_group->add_prerequirement("iuse_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("keywords_key",
-            tr1::bind(keywords_key_check, _1, _2, _5, "keywords_key"));
+            std::tr1::bind(keywords_key_check, _1, _2, _5, "keywords_key"));
     _imp->package_id_checks_group->add_prerequirement("keywords_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("license_key",
-            tr1::bind(license_key_check, _1, _2, _4, _5, "license_key"));
+            std::tr1::bind(license_key_check, _1, _2, _4, _5, "license_key"));
     _imp->package_id_checks_group->add_prerequirement("license_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("spec_keys",
-            tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
+            std::tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
     _imp->package_id_checks_group->add_prerequirement("spec_keys", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("extractors",
-            tr1::bind(extractors_check, _1, _2, _5, "extractors"));
+            std::tr1::bind(extractors_check, _1, _2, _5, "extractors"));
     _imp->package_id_checks_group->add_prerequirement("extractors", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("fetches_key",
-            tr1::bind(fetches_key_check, _1, _2, _5, "fetches_key"));
+            std::tr1::bind(fetches_key_check, _1, _2, _5, "fetches_key"));
     _imp->package_id_checks_group->add_prerequirement("fetches_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("restrict_key",
-            tr1::bind(restrict_key_check, _1, _2, _5, "restrict_key"));
+            std::tr1::bind(restrict_key_check, _1, _2, _5, "restrict_key"));
     _imp->package_id_checks_group->add_prerequirement("restrict_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("inherited_key",
-            tr1::bind(inherited_key_check, _1, _2, _5, "inherited_key"));
+            std::tr1::bind(inherited_key_check, _1, _2, _5, "inherited_key"));
     _imp->package_id_checks_group->add_prerequirement("inherited_key", "metadata_keys");
 
     _imp->package_id_checks_group->add_check("visibility",
-            tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
+            std::tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
     _imp->package_id_checks_group->add_prerequirement("visibility", "metadata_keys");
 
     _imp->package_id_file_contents_checks_group->add_check("default_functions",
-            tr1::bind(default_functions_check, _1, _2, _5, _6, "default_functions"));
+            std::tr1::bind(default_functions_check, _1, _2, _5, _6, "default_functions"));
 
     _imp->package_id_file_contents_checks_group->add_check("variable_assigns",
-            tr1::bind(variable_assigns_check, _1, _2, _5, _6, "variable_assigns"));
+            std::tr1::bind(variable_assigns_check, _1, _2, _5, _6, "variable_assigns"));
 
     _imp->package_id_file_contents_checks_group->add_check("deprecated_functions",
-            tr1::bind(deprecated_functions_check, _1, _2, _5, _6, "deprecated_functions"));
+            std::tr1::bind(deprecated_functions_check, _1, _2, _5, _6, "deprecated_functions"));
 
     _imp->package_id_file_contents_checks_group->add_check("kv_variables",
-            tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));
+            std::tr1::bind(kv_variables_check, _1, _2, _5, _6, "kv_variables"));
 
     _imp->package_id_file_contents_checks_group->add_check("root_variable",
-            tr1::bind(root_variable_check, _1, _2, _5, _6, "root_variable"));
+            std::tr1::bind(root_variable_check, _1, _2, _5, _6, "root_variable"));
 
     _imp->package_id_file_contents_checks_group->add_check("subshell_die",
-            tr1::bind(subshell_die_check, _1, _2, _5, _6, "subshell_die"));
+            std::tr1::bind(subshell_die_check, _1, _2, _5, _6, "subshell_die"));
 
     _imp->package_id_file_contents_checks_group->add_check("function_keyword",
-            tr1::bind(function_keyword_check, _1, _2, _5, _6, "function_keyword"));
+            std::tr1::bind(function_keyword_check, _1, _2, _5, _6, "function_keyword"));
 
     _imp->package_id_file_contents_checks_group->add_check("whitespace",
-            tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
+            std::tr1::bind(whitespace_check, _1, _2, _5, _6, "whitespace"));
 
     _imp->package_id_file_contents_checks_group->add_check("header",
-            tr1::bind(header_check, _1, _2, _5, _6, "header"));
+            std::tr1::bind(header_check, _1, _2, _5, _6, "header"));
 }
 
 QAChecks::~QAChecks()
 {
 }
 
-const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
 QAChecks::tree_checks_group()
 {
     return _imp->tree_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<EclassFileContentsCheckFunction> >
 QAChecks::eclass_file_contents_checks_group()
 {
     return _imp->eclass_file_contents_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
 QAChecks::category_dir_checks_group()
 {
     return _imp->category_dir_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<PackageDirCheckFunction> >
 QAChecks::package_dir_checks_group()
 {
     return _imp->package_dir_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
 QAChecks::package_id_checks_group()
 {
     return _imp->package_id_checks_group;
 }
 
-const tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> >
+const std::tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> >
 QAChecks::package_id_file_contents_checks_group()
 {
     return _imp->package_id_file_contents_checks_group;

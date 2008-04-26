@@ -49,14 +49,14 @@ namespace
         return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryEInterface::ProfilesDescLine>::free, vv);
     }
 
-    tr1::shared_ptr<FakeRepositoryBase>
+    std::tr1::shared_ptr<FakeRepositoryBase>
     value_to_fake_repository_base(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_fake_repository_base))
         {
-            tr1::shared_ptr<Repository> * v_ptr;
-            Data_Get_Struct(v, tr1::shared_ptr<Repository>, v_ptr);
-            return tr1::static_pointer_cast<FakeRepositoryBase>(*v_ptr);
+            std::tr1::shared_ptr<Repository> * v_ptr;
+            Data_Get_Struct(v, std::tr1::shared_ptr<Repository>, v_ptr);
+            return std::tr1::static_pointer_cast<FakeRepositoryBase>(*v_ptr);
         }
         else
         {
@@ -75,8 +75,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->name()).c_str());
         }
         catch (const std::exception & e)
@@ -96,8 +96,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -121,8 +121,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -143,17 +143,17 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+                std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+            std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -177,19 +177,19 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             PackageNamePart package(StringValuePtr(pkg));
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+                std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+            std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -213,19 +213,19 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             CategoryNamePart category(StringValuePtr(cat));
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+                std::tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
                 for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
             for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
@@ -250,19 +250,19 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             QualifiedPackageName q = value_to_qualified_package_name(qpn);
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+                std::tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
                 for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(package_id_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+            std::tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
             return result;
@@ -382,8 +382,8 @@ namespace
     {
         static VALUE fetch(VALUE self)
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             return ((**self_ptr)[T_()]) ? self : Qnil;
         }
     };
@@ -397,9 +397,9 @@ namespace
     VALUE
     repository_some_ids_might_support_action(VALUE self, VALUE test)
     {
-        tr1::shared_ptr<Repository> * self_ptr;
-        tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
-        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+        std::tr1::shared_ptr<Repository> * self_ptr;
+        std::tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
+        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
         return (*self_ptr)->some_ids_might_support_action(*test_ptr) ? Qtrue : Qfalse;
     }
 
@@ -439,8 +439,8 @@ namespace
         {
             try
             {
-                tr1::shared_ptr<Repository> * self_ptr;
-                Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+                std::tr1::shared_ptr<Repository> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
                 RepositoryUseInterface * const use_interface ((**self_ptr)[k::use_interface()]);
 
                 if (use_interface)
@@ -473,11 +473,11 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if ((**self_ptr)[k::use_interface()])
             {
-                tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
+                std::tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
                 char sep((**self_ptr)[k::use_interface()]->use_expand_separator(*pid));
                 return sep ? rb_str_new(&sep, 1) : Qnil;
             }
@@ -504,12 +504,12 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if ((**self_ptr)[k::use_interface()])
             {
                 UseFlagName ufn = UseFlagName(StringValuePtr(flag_name));
-                tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
+                std::tr1::shared_ptr<const PackageID> pid(value_to_package_id(package_id));
                 return rb_str_new2(((**self_ptr)[k::use_interface()]->describe_use_flag(ufn, *pid).c_str()));
             }
             else
@@ -534,8 +534,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if ((**self_ptr)[k::e_interface()])
             {
                 VALUE result(rb_ary_new());
@@ -568,8 +568,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
 
             if ((**self_ptr)[k::e_interface()])
             {
@@ -602,8 +602,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if ((**self_ptr)[k::e_interface()])
                 (**self_ptr)[k::e_interface()]->set_profile(
                     (**self_ptr)[k::e_interface()]->find_profile(
@@ -627,8 +627,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             if ((**self_ptr)[k::e_interface()])
                 return rb_str_new2(((**self_ptr)[k::e_interface()]->profile_variable(StringValuePtr(var))).c_str());
             return Qnil;
@@ -687,8 +687,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
 #ifdef ENABLE_RUBY_QA
             if ((**self_ptr)[k::qa_interface()])
             {
@@ -719,7 +719,7 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
             std::string cat_str(StringValuePtr(category));
             repo->add_category(CategoryNamePart(cat_str));
             return Qnil;
@@ -741,7 +741,7 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
             QualifiedPackageName name(value_to_qualified_package_name(qpn));
             repo->add_package(name);
             return Qnil;
@@ -765,8 +765,8 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
-            tr1::shared_ptr<PackageID> pkg;
+            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::tr1::shared_ptr<PackageID> pkg;
 
             switch (argc)
             {
@@ -817,9 +817,9 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
 
-            tr1::shared_ptr<Repository> * r = new tr1::shared_ptr<Repository>(new
+            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new
                     FakeRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Repository> >::free, r));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -838,8 +838,8 @@ namespace
     VALUE
     repository_subscript(VALUE self, VALUE raw_name)
     {
-        tr1::shared_ptr<const Repository> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const Repository>, self_ptr);
+        std::tr1::shared_ptr<const Repository> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
         Repository::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
         if ((*self_ptr)->end_metadata() == it)
             return Qnil;
@@ -855,8 +855,8 @@ namespace
     VALUE
     repository_each_metadata(VALUE self)
     {
-        tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+        std::tr1::shared_ptr<Repository> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
         for (Repository::MetadataConstIterator it((*self_ptr)->begin_metadata()),
                 it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
         {
@@ -867,14 +867,14 @@ namespace
             return Qnil;
     }
 
-    template <typename T_, const tr1::shared_ptr<const T_> (Repository::* m_) () const>
+    template <typename T_, const std::tr1::shared_ptr<const T_> (Repository::* m_) () const>
     struct RepositoryKey
     {
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
             return (((**self_ptr).*m_)()) ? metadata_key_to_value(((**self_ptr).*m_)()) : Qnil;
         }
     };
@@ -888,8 +888,8 @@ namespace
     VALUE
     repository_get_environment_variable(VALUE self, VALUE pid, VALUE ev)
     {
-        tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+        std::tr1::shared_ptr<Repository> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
         if ((**self_ptr)[k::environment_variable_interface()])
             return rb_str_new2((**self_ptr)[k::environment_variable_interface()]->get_environment_variable(
                         value_to_package_id(pid),
@@ -1007,21 +1007,21 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 }
 
 VALUE
-paludis::ruby::repository_to_value(tr1::shared_ptr<Repository> m)
+paludis::ruby::repository_to_value(std::tr1::shared_ptr<Repository> m)
 {
     if (0 == m)
         return Qnil;
     else
-        return repo_to_value<tr1::shared_ptr<Repository> >(m, &c_repository);
+        return repo_to_value<std::tr1::shared_ptr<Repository> >(m, &c_repository);
 }
 
-tr1::shared_ptr<Repository>
+std::tr1::shared_ptr<Repository>
 paludis::ruby::value_to_repository(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_repository))
     {
-        tr1::shared_ptr<Repository> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<Repository>, v_ptr);
+        std::tr1::shared_ptr<Repository> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<Repository>, v_ptr);
         return *v_ptr;
     }
     else

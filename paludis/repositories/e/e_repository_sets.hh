@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -58,17 +58,17 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const;
+            std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const;
 
             /**
              * Fetch the security or insecurity set.
              */
-            tr1::shared_ptr<SetSpecTree::ConstItem> security_set(bool insecure) const;
+            std::tr1::shared_ptr<SetSpecTree::ConstItem> security_set(bool insecure) const;
 
             /**
              * Give a list of all the sets in this repo.
              */
-            tr1::shared_ptr<const SetNameSet> sets_list() const;
+            std::tr1::shared_ptr<const SetNameSet> sets_list() const;
     };
 }
 

@@ -268,7 +268,7 @@ InstallActionError::InstallActionError(const std::string & msg) throw () :
 }
 
 FetchActionError::FetchActionError(const std::string & msg,
-        const tr1::shared_ptr<const Sequence<FetchActionFailure> > & e) throw () :
+        const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > & e) throw () :
     ActionError("Fetch error: " + msg),
     _failures(e)
 {
@@ -283,7 +283,7 @@ FetchActionError::~FetchActionError() throw ()
 {
 }
 
-const tr1::shared_ptr<const Sequence<FetchActionFailure> >
+const std::tr1::shared_ptr<const Sequence<FetchActionFailure> >
 FetchActionError::failures() const
 {
     return _failures;

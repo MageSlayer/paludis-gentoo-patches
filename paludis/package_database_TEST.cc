@@ -55,8 +55,8 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
-            tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
 
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
@@ -107,7 +107,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("r1c1", "r1c1p1", "1");
             r1->add_version("r1c1", "r1c1p2", "1");
             r1->add_version("r1c1", "r1c1p2", "2");
@@ -116,56 +116,56 @@ namespace test_cases
             p.add_repository(11, r1);
             TEST_CHECK(true);
 
-            tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d1(parse_user_package_dep_spec("r1c1/r1c1p1", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q1(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q1(p.query(
                         query::Matches(d1), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
             PackageDepSpec d2(parse_user_package_dep_spec("r1c1/r1c1p2", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q2(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q2(p.query(
                         query::Matches(d2), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
             PackageDepSpec d3(parse_user_package_dep_spec(">=r1c1/r1c1p2-1", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q3(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q3(p.query(
                         query::Matches(d3), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
             PackageDepSpec d4(parse_user_package_dep_spec(">=r1c1/r1c1p2-2", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q4(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q4(p.query(
                         query::Matches(d4), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "r1c1/r1c1p2-2:0::repo1");
             TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
             PackageDepSpec d5(parse_user_package_dep_spec(">=r1c1/r1c1p2-3", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q5(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q5(p.query(
                         query::Matches(d5), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
             PackageDepSpec d6(parse_user_package_dep_spec("<r1c1/r1c1p2-3", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q6(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q6(p.query(
                         query::Matches(d6), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
             PackageDepSpec d7(parse_user_package_dep_spec("rac1/rac1pa", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q7(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q7(p.query(
                         query::Matches(d7), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
             PackageDepSpec d8(parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q8(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q8(p.query(
                         query::Matches(d8), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
 
             PackageDepSpec d9(parse_user_package_dep_spec("r1c1/r1c1p1", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q9(p.query(
+            const std::tr1::shared_ptr<const PackageIDSequence> q9(p.query(
                         query::Matches(d9) & query::SupportsAction<InstallAction>(), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q9->begin(), q9->end()), 1);
         }
@@ -180,7 +180,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
             r1->add_version("cat", "pkg", "2")->set_slot(SlotName("c"));
             r1->add_version("cat", "pkg", "3")->set_slot(SlotName("c"));
@@ -188,7 +188,7 @@ namespace test_cases
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
-            tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
             r2->add_version("cat", "pkg", "3")->set_slot(SlotName("b"));
             p.add_repository(5, r2);
@@ -196,54 +196,54 @@ namespace test_cases
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()));
 
-            const tr1::shared_ptr<const PackageIDSequence> q1(p.query(query::Matches(d), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> q1(p.query(query::Matches(d), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q1->begin()), indirect_iterator(q1->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-2:c::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q2(p.query(query::Matches(d), qo_group_by_slot));
+            const std::tr1::shared_ptr<const PackageIDSequence> q2(p.query(query::Matches(d), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q2->begin()), indirect_iterator(q2->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-2:c::repo1 cat/pkg-3:c::repo1 cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q3(p.query(query::Matches(d), qo_best_version_only));
+            const std::tr1::shared_ptr<const PackageIDSequence> q3(p.query(query::Matches(d), qo_best_version_only));
             TEST_CHECK_EQUAL(join(indirect_iterator(q3->begin()), indirect_iterator(q3->end()), " "),
                     "cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q4(p.query(query::Matches(d), qo_best_version_in_slot_only));
+            const std::tr1::shared_ptr<const PackageIDSequence> q4(p.query(query::Matches(d), qo_best_version_in_slot_only));
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            tr1::shared_ptr<FakeRepository> r3(new FakeRepository(&e, RepositoryName("repo3")));
+            std::tr1::shared_ptr<FakeRepository> r3(new FakeRepository(&e, RepositoryName("repo3")));
             r3->add_version("cat", "other", "1")->set_slot(SlotName("a"));
             p.add_repository(5, r3);
             TEST_CHECK(true);
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/*", UserPackageDepSpecOptions() + updso_allow_wildcards));
 
-            const tr1::shared_ptr<const PackageIDSequence> q5(p.query(query::Matches(c), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> q5(p.query(query::Matches(c), qo_order_by_version));
             TEST_CHECK_EQUAL(join(indirect_iterator(q5->begin()), indirect_iterator(q5->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-2:c::repo1 "
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q6(p.query(query::Matches(c), qo_group_by_slot));
+            const std::tr1::shared_ptr<const PackageIDSequence> q6(p.query(query::Matches(c), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q6->begin()), indirect_iterator(q6->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-2:c::repo1 cat/pkg-3:c::repo1 "
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q7(p.query(query::Matches(c), qo_best_version_only));
+            const std::tr1::shared_ptr<const PackageIDSequence> q7(p.query(query::Matches(c), qo_best_version_only));
             TEST_CHECK_EQUAL(join(indirect_iterator(q7->begin()), indirect_iterator(q7->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-4:a::repo1");
 
-            const tr1::shared_ptr<const PackageIDSequence> q8(p.query(query::Matches(c), qo_best_version_in_slot_only));
+            const std::tr1::shared_ptr<const PackageIDSequence> q8(p.query(query::Matches(c), qo_best_version_in_slot_only));
             TEST_CHECK_EQUAL(join(indirect_iterator(q8->begin()), indirect_iterator(q8->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
             PackageDepSpec b(parse_user_package_dep_spec("cat/pkg:a", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q9(p.query(query::Matches(b), qo_group_by_slot));
+            const std::tr1::shared_ptr<const PackageIDSequence> q9(p.query(query::Matches(b), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q9->begin()), indirect_iterator(q9->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg[=1|=3]", UserPackageDepSpecOptions()));
-            const tr1::shared_ptr<const PackageIDSequence> q10(p.query(query::Matches(a), qo_group_by_slot));
+            const std::tr1::shared_ptr<const PackageIDSequence> q10(p.query(query::Matches(a), qo_group_by_slot));
             TEST_CHECK_EQUAL(join(indirect_iterator(q10->begin()), indirect_iterator(q10->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1");
         }
@@ -265,9 +265,9 @@ namespace test_cases
             {
             }
 
-            tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
+            std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
             {
-                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 result->insert(CategoryNamePart("bad-cat1"));
                 result->insert(CategoryNamePart("bad-cat2"));
                 return result;
@@ -279,7 +279,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0"));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0"));
             r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0"));
@@ -287,13 +287,13 @@ namespace test_cases
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
-            tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0"));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0"));
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
-            tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
+            std::tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
             r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
             r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
 
@@ -316,7 +316,7 @@ namespace test_cases
             p.add_repository(10, r3);
             TEST_CHECK(true);
 
-            tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(&e, RepositoryName("repo4")));
+            std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(&e, RepositoryName("repo4")));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
             r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));

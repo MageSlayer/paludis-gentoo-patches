@@ -20,10 +20,9 @@
 #ifndef PALUDIS_GUARD_RECONCILIO_FIX_LINKAGE_HH
 #define PALUDIS_GUARD_RECONCILIO_FIX_LINKAGE_HH
 
-#include <paludis/util/tr1_memory.hh>
-
 #include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 
-int do_fix_linkage(const paludis::tr1::shared_ptr<paludis::Environment> &);
+int do_fix_linkage(const std::tr1::shared_ptr<paludis::Environment> &);
 
 #endif

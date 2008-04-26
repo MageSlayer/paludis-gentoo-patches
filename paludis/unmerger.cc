@@ -37,7 +37,7 @@ namespace paludis
     {
         UnmergerOptions options;
 
-        std::multimap<std::string, std::pair<EntryType, tr1::shared_ptr<Unmerger::ExtraInfo> > > unmerge_entries;
+        std::multimap<std::string, std::pair<EntryType, std::tr1::shared_ptr<Unmerger::ExtraInfo> > > unmerge_entries;
 
         Implementation(const UnmergerOptions & o) :
             options(o)
@@ -45,7 +45,7 @@ namespace paludis
         }
     };
 
-    typedef std::multimap<std::string, std::pair<EntryType, tr1::shared_ptr<Unmerger::ExtraInfo> > >::reverse_iterator UnmergeEntriesIterator;
+    typedef std::multimap<std::string, std::pair<EntryType, std::tr1::shared_ptr<Unmerger::ExtraInfo> > >::reverse_iterator UnmergeEntriesIterator;
 }
 
 UnmergerError::UnmergerError(const std::string & s) throw () :
@@ -67,7 +67,7 @@ Unmerger::~Unmerger()
 }
 
 void
-Unmerger::add_unmerge_entry(const std::string & f, EntryType et, tr1::shared_ptr<ExtraInfo> ei)
+Unmerger::add_unmerge_entry(const std::string & f, EntryType et, std::tr1::shared_ptr<ExtraInfo> ei)
 {
     _imp->unmerge_entries.insert(std::make_pair(f, std::make_pair(et, ei)));
 }
@@ -118,7 +118,7 @@ Unmerger::unmerge()
 }
 
 void
-Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+Unmerger::unmerge_file(FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options[k::root()] / f);
 
@@ -144,7 +144,7 @@ Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 void
-Unmerger::unmerge_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+Unmerger::unmerge_sym(FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options[k::root()] / f);
 
@@ -170,7 +170,7 @@ Unmerger::unmerge_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 void
-Unmerger::unmerge_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+Unmerger::unmerge_dir(FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options[k::root()] / f);
 
@@ -191,7 +191,7 @@ Unmerger::unmerge_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 void
-Unmerger::unmerge_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
+Unmerger::unmerge_misc(FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options[k::root()] / f);
 
@@ -217,7 +217,7 @@ Unmerger::unmerge_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 }
 
 void
-Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+Unmerger::unlink_file(FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
@@ -243,7 +243,7 @@ Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 }
 
 void
-Unmerger::unlink_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+Unmerger::unlink_sym(FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
@@ -259,7 +259,7 @@ Unmerger::unlink_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 }
 
 void
-Unmerger::unlink_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+Unmerger::unlink_dir(FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
@@ -275,7 +275,7 @@ Unmerger::unlink_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 }
 
 void
-Unmerger::unlink_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
+Unmerger::unlink_misc(FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options[k::environment()]->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")

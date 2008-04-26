@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,10 +22,9 @@
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/tr1_type_traits.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/attributes.hh>
-
+#include <tr1/functional>
+#include <tr1/type_traits>
 #include <iterator>
 
 #ifdef PALUDIS_HAVE_CONCEPTS
@@ -69,9 +68,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename tr1::remove_reference<Value_>::type & value_type;
-            typedef typename tr1::remove_reference<Value_>::type & reference;
-            typedef typename tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::tr1::remove_reference<Value_>::type & value_type;
+            typedef typename std::tr1::remove_reference<Value_>::type & reference;
+            typedef typename std::tr1::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 

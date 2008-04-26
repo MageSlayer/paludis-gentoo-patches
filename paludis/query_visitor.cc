@@ -22,11 +22,11 @@
 #include <paludis/range_rewriter.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <tr1/functional>
 #include <algorithm>
 #include <set>
 
@@ -39,13 +39,13 @@ namespace paludis
     {
         bool result;
         const DepList * const dep_list;
-        tr1::shared_ptr<const DestinationsSet> destinations;
+        std::tr1::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         std::set<SetName> recursing_sets;
 
-        Implementation(const DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-                const Environment * const e, const tr1::shared_ptr<const PackageID> & p) :
+        Implementation(const DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+                const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p) :
             result(true),
             dep_list(d),
             destinations(dd),
@@ -56,8 +56,8 @@ namespace paludis
     };
 }
 
-QueryVisitor::QueryVisitor(const DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
-        const Environment * const e, const tr1::shared_ptr<const PackageID> & id) :
+QueryVisitor::QueryVisitor(const DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+        const Environment * const e, const std::tr1::shared_ptr<const PackageID> & id) :
     PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
 {
 }
@@ -75,7 +75,7 @@ QueryVisitor::result() const
 void
 QueryVisitor::visit_leaf(const PackageDepSpec & a)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     /* a pda matches if we'll be installed by the time we reach the current point. This
      * means that merely being installed is not enough, if we'll have our version changed
@@ -84,11 +84,11 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
     _imp->result = false;
 
     // TODO: check destinations
-    tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
+    std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
                 query::InstalledAtRoot(_imp->environment->root()) & query::Matches(a), qo_whatever));
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
-                tr1::bind(tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))
+                std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))
     {
         _imp->result = true;
         return;
@@ -107,7 +107,7 @@ QueryVisitor::visit_leaf(const NamedSetDepSpec & s)
 {
     Context context("When expanding named set '" + stringify(s) + "':");
 
-    tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
+    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
 
     if (! set)
     {

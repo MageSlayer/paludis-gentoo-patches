@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1275,7 +1275,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->provide_key()->set_from_string("virtual/foo");
-            tr1::shared_ptr<FakePackageID> m(repo->add_version("cat", "two", "2"));
+            std::tr1::shared_ptr<FakePackageID> m(repo->add_version("cat", "two", "2"));
             m->provide_key()->set_from_string("virtual/foo");
             m->build_dependencies_key()->set_from_string("cat/one");
         }
@@ -1298,9 +1298,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
             opts.override_masks.reset(new DepListOverrideMasksFunctions);
-            opts.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1370,9 +1370,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
             opts.override_masks.reset(new DepListOverrideMasksFunctions);
-            opts.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1789,9 +1789,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
+            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, destination_repo);
 
@@ -1827,9 +1827,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
+            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, destination_repo);
 
@@ -1866,11 +1866,11 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "2");
@@ -1892,11 +1892,11 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -1919,11 +1919,11 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -1947,11 +1947,11 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -1971,21 +1971,21 @@ namespace test_cases
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t3(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t3->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
-            t3->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two", UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t3(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t3->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
+            t3->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two", UserPackageDepSpecOptions()))))));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t4(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t4->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
-            t4->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/three", UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t4(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t4->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
+            t4->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/three", UserPackageDepSpecOptions()))))));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
@@ -2001,12 +2001,12 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "0");
@@ -2019,12 +2019,12 @@ namespace test_cases
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade = dl_upgrade_as_needed;
 
-            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t2(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t2->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
-            t2->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two", UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t2(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t2->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()))))));
+            t2->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two", UserPackageDepSpecOptions()))))));
             d2.add(*t2, env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
@@ -2041,7 +2041,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "zero", "1")->build_dependencies_key()->set_from_string(
                 "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )");
@@ -2052,7 +2052,7 @@ namespace test_cases
             repo->add_version("cat", "five-svn", "0");
             repo->add_version("cat", "six-darcs", "0");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "scm");
@@ -2082,24 +2082,24 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three");
             repo->add_version("cat", "two", "1")->build_dependencies_key()->set_from_string("enabled? ( || ( ( <cat/three-1 cat/three:0 =cat/four-1 ) cat/five ) )");
             repo->add_version("cat", "three", "0.9");
             repo->add_version("cat", "four", "1");
 
-            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, installed_repo);
 
             DepList d1(&env, DepListOptions());
             d1.options()->dependency_tags = true;
             PackageDepSpec with_target_tag(parse_user_package_dep_spec("cat/one", UserPackageDepSpecOptions()));
-            with_target_tag.set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            with_target_tag.set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
             d1.add(with_target_tag, env.default_destinations());
             PackageDepSpec with_set_tag(parse_user_package_dep_spec("cat/two", UserPackageDepSpecOptions()));
-            with_set_tag.set_tag(tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
+            with_set_tag.set_tag(std::tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
             d1.add(with_set_tag, env.default_destinations());
 
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/three-0.9:0::repo cat/one-1:0::repo "
@@ -2107,7 +2107,7 @@ namespace test_cases
 
             // tags for cat/three
             DepList::Iterator it(d1.begin());
-            tr1::shared_ptr<DepListEntryTags> tags(it->tags);
+            std::tr1::shared_ptr<DepListEntryTags> tags(it->tags);
             TEST_CHECK_EQUAL(tags->size(), 3U);
             bool cat_three_has_tag_from_cat_one(false);
             bool cat_three_has_first_tag_from_cat_two(false);
@@ -2118,15 +2118,15 @@ namespace test_cases
             {
                 if ("dependency" != tag_it->tag->category())
                     continue;
-                tr1::shared_ptr<const DependencyDepTag> tag(
-                    tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag));
+                std::tr1::shared_ptr<const DependencyDepTag> tag(
+                    std::tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag));
 
                 if ("cat/one-1:0::repo" == tag->short_text())
                 {
                     cat_three_has_tag_from_cat_one = true;
                     TEST_CHECK_STRINGIFY_EQUAL(*tag->dependency(), "cat/three");
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                    erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     tag->conditions()->accept(pretty);
                     TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat/three");
                 }
@@ -2137,7 +2137,7 @@ namespace test_cases
                     {
                         cat_three_has_first_tag_from_cat_two = true;
                         StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                        erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( <cat/three-1 ) )");
                     }
@@ -2145,7 +2145,7 @@ namespace test_cases
                     {
                         cat_three_has_second_tag_from_cat_two = true;
                         StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                        erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( cat/three:0 ) )");
                     }
@@ -2167,12 +2167,12 @@ namespace test_cases
             tags = it->tags;
             TEST_CHECK_EQUAL(tags->size(), 1U);
             TEST_CHECK_EQUAL(tags->begin()->tag->category(), "dependency");
-            tr1::shared_ptr<const DependencyDepTag> deptag(
-                tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag));
+            std::tr1::shared_ptr<const DependencyDepTag> deptag(
+                std::tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag));
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             deptag->conditions()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( =cat/four-1 ) )");
 

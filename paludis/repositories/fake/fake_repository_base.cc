@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,10 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <tr1/functional>
 #include <map>
 #include <algorithm>
 
@@ -44,10 +44,10 @@ namespace paludis
     struct Implementation<FakeRepositoryBase> :
         private InstantiationPolicy<Implementation<FakeRepositoryBase>, instantiation_method::NonCopyableTag>
     {
-        tr1::shared_ptr<CategoryNamePartSet> category_names;
-        std::map<CategoryNamePart, tr1::shared_ptr<PackageNamePartSet> > package_names;
-        std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> > ids;
-        std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
+        std::tr1::shared_ptr<CategoryNamePartSet> category_names;
+        std::map<CategoryNamePart, std::tr1::shared_ptr<PackageNamePartSet> > package_names;
+        std::map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> > ids;
+        std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
         const Environment * const env;
         const std::string eapi;
@@ -91,16 +91,16 @@ FakeRepositoryBase::has_package_named(const QualifiedPackageName & q) const
          _imp->package_names.find(q.category)->second->find(q.package));
 }
 
-tr1::shared_ptr<const CategoryNamePartSet>
+std::tr1::shared_ptr<const CategoryNamePartSet>
 FakeRepositoryBase::category_names() const
 {
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameSet>
+std::tr1::shared_ptr<const QualifiedPackageNameSet>
 FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 {
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! has_category_named(c))
         return result;
 
@@ -111,13 +111,13 @@ FakeRepositoryBase::package_names(const CategoryNamePart & c) const
     return result;
 }
 
-tr1::shared_ptr<const PackageIDSequence>
+std::tr1::shared_ptr<const PackageIDSequence>
 FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category))
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
     if (! has_package_named(n))
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
     return _imp->ids.find(n)->second;
 }
 
@@ -136,11 +136,11 @@ FakeRepositoryBase::add_package(const QualifiedPackageName & q)
     _imp->ids.insert(std::make_pair(q, new PackageIDSequence));
 }
 
-tr1::shared_ptr<FakePackageID>
+std::tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
-    tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v, _imp->eapi));
+    std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v, _imp->eapi));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }
@@ -163,10 +163,10 @@ FakeRepositoryBase::query_use_force(const UseFlagName &, const PackageID &) cons
     return false;
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 FakeRepositoryBase::arch_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 void
@@ -177,29 +177,29 @@ FakeRepositoryBase::invalidate()
 void
 FakeRepositoryBase::invalidate_masks()
 {
-    for (std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
+    for (std::map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
          it_end != it; ++it)
         for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 FakeRepositoryBase::use_expand_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 FakeRepositoryBase::use_expand_hidden_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameSet>
+std::tr1::shared_ptr<const UseFlagNameSet>
 FakeRepositoryBase::use_expand_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
+    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 char
@@ -211,27 +211,27 @@ FakeRepositoryBase::use_expand_separator(const PackageID & id) const
 }
 
 void
-FakeRepositoryBase::add_package_set(const SetName & n, tr1::shared_ptr<SetSpecTree::ConstItem> s)
+FakeRepositoryBase::add_package_set(const SetName & n, std::tr1::shared_ptr<SetSpecTree::ConstItem> s)
 {
     _imp->sets.insert(std::make_pair(n, s));
 }
 
-tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree::ConstItem>
 FakeRepositoryBase::package_set(const SetName & id) const
 {
-    std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(id));
+    std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(id));
     if (_imp->sets.end() == i)
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
     else
         return i->second;
 }
 
-tr1::shared_ptr<const SetNameSet>
+std::tr1::shared_ptr<const SetNameSet>
 FakeRepositoryBase::sets_list() const
 {
-    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     std::transform(_imp->sets.begin(), _imp->sets.end(), result->inserter(),
-            tr1::mem_fn(&std::pair<const SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::first));
+            std::tr1::mem_fn(&std::pair<const SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> >::first));
     return result;
 }
 

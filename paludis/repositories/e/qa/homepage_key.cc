@@ -41,18 +41,18 @@ namespace
         using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, ConditionalDepSpec>::visit_sequence;
         using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
 
-        const tr1::shared_ptr<const MetadataKey> & key;
+        const std::tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
         QAReporter & reporter;
-        const tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const PackageID> id;
         const std::string name;
         bool found_one;
 
         HomepageChecker(
-                const tr1::shared_ptr<const MetadataKey> & k,
+                const std::tr1::shared_ptr<const MetadataKey> & k,
                 const FSEntry & f,
                 QAReporter & r,
-                const tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const PackageID> & i,
                 const std::string & n) :
             key(k),
             entry(f),
@@ -90,7 +90,7 @@ bool
 paludis::erepository::homepage_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");

@@ -24,14 +24,10 @@
  * Declaration for the do_contents function.
  */
 
-#include <paludis/util/tr1_memory.hh>
-
-namespace paludis
-{
-    class Environment;
-}
+#include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 
 /// Handle --executables.
-int do_executables(paludis::tr1::shared_ptr<paludis::Environment>);
+int do_executables(std::tr1::shared_ptr<paludis::Environment>);
 
 #endif

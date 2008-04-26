@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,10 +31,10 @@ namespace paludis
      * \see ERepository
      * \ingroup grperepository
      */
-    tr1::shared_ptr<ERepository>
+    std::tr1::shared_ptr<ERepository>
     make_ebuild_repository(
             Environment * const,
-            tr1::shared_ptr<const Map<std::string, std::string> >) PALUDIS_VISIBLE;
+            std::tr1::shared_ptr<const Map<std::string, std::string> >) PALUDIS_VISIBLE;
 
     /**
      * Create an ebuild format repository (wrapper for our virtual constructor).
@@ -42,10 +42,10 @@ namespace paludis
      * \see ERepository
      * \ingroup grperepository
      */
-    tr1::shared_ptr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_ebuild_repository_wrapped(
             Environment * const env,
-            tr1::shared_ptr<const Map<std::string, std::string> > m);
+            std::tr1::shared_ptr<const Map<std::string, std::string> > m);
 }
 
 #endif

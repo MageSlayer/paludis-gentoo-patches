@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
+#include <tr1/memory>
 #include <iosfwd>
 
 /** \file
@@ -77,7 +77,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const DependencyLabel> > DependencyLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependencyLabel> > DependencyLabelSequence;
 
     /**
      * A collection of DependencySystemLabel instances.
@@ -85,7 +85,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const DependencySystemLabel> > DependencySystemLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependencySystemLabel> > DependencySystemLabelSequence;
 
     /**
      * A collection of DependencyTypeLabel instances.
@@ -93,7 +93,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const DependencyTypeLabel> > DependencyTypeLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependencyTypeLabel> > DependencyTypeLabelSequence;
 
     /**
      * A collection of DependencySuggestLabel instances.
@@ -101,7 +101,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const DependencySuggestLabel> > DependencySuggestLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependencySuggestLabel> > DependencySuggestLabelSequence;
 
     /**
      * A collection of DependencyABIsLabel instances.
@@ -109,7 +109,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef Sequence<tr1::shared_ptr<const DependencyABIsLabel> > DependencyABIsLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependencyABIsLabel> > DependencyABIsLabelSequence;
 
     template <typename T_, typename Category_> struct ConcreteDependencyLabel;
 

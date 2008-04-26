@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,11 +33,11 @@ namespace paludis
     struct Implementation<UnpackagedDependencyKey>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
-        const tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
+        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
         Implementation(const Environment * const e, const std::string & v,
-                const tr1::shared_ptr<const DependencyLabelSequence> & l) :
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & l) :
             env(e),
             value(DepParser::parse(v)),
             labels(l)
@@ -48,7 +48,7 @@ namespace paludis
 
 UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
-        const tr1::shared_ptr<const DependencyLabelSequence> & l,
+        const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
         const std::string & v) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l)),
@@ -60,7 +60,7 @@ UnpackagedDependencyKey::~UnpackagedDependencyKey()
 {
 }
 
-const tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
 UnpackagedDependencyKey::value() const
 {
     return _imp->value;
@@ -82,7 +82,7 @@ UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatt
     return p.result();
 }
 
-const tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependencyLabelSequence>
 UnpackagedDependencyKey::initial_labels() const
 {
     return _imp->labels;

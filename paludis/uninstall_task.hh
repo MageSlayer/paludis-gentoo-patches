@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -54,14 +54,14 @@ namespace paludis
     {
         private:
             const std::string _t;
-            const tr1::shared_ptr<const PackageIDSequence> _p;
+            const std::tr1::shared_ptr<const PackageIDSequence> _p;
 
         public:
             ///\name Basic operations
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const tr1::shared_ptr<const PackageIDSequence> matches) throw ();
+                    const std::tr1::shared_ptr<const PackageIDSequence> matches) throw ();
 
             ~AmbiguousUnmergeTargetError() throw ();
 
@@ -71,7 +71,7 @@ namespace paludis
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const PackageID> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> > ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 
@@ -159,7 +159,7 @@ namespace paludis
             ///\{
 
             virtual void world_remove_set(const SetName &);
-            virtual void world_remove_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>);
+            virtual void world_remove_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem>);
 
             ///\}
 

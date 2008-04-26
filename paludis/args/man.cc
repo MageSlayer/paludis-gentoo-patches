@@ -19,8 +19,8 @@
 
 #include "man.hh"
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <tr1/functional>
 #include <ostream>
 #include <sstream>
 #include <algorithm>
@@ -95,7 +95,7 @@ namespace
 void
 paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
@@ -146,7 +146,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     if (h->begin_notes() != h->end_notes())
     {
         dw.start_notes();
-        std::for_each(h->begin_notes(), h->end_notes(), tr1::bind(&DocWriter::note, &dw, _1));
+        std::for_each(h->begin_notes(), h->end_notes(), std::tr1::bind(&DocWriter::note, &dw, _1));
         dw.end_notes();
     }
 

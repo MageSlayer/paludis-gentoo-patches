@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,9 +21,8 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
-
+#include <tr1/functional>
 #include <algorithm>
 #include <vector>
 #include <functional>
@@ -162,16 +161,16 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
             const int c = 100;
 
             std::vector<void *> a(c, static_cast<void *>(0));
             TEST_CHECK_EQUAL(MyThreadedClass::instances, 0);
             TEST_CHECK(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
             {
-                std::vector<tr1::shared_ptr<Thread> > t(c);
+                std::vector<std::tr1::shared_ptr<Thread> > t(c);
                 for (int x(0) ; x < c ; ++x)
-                    t[x] = make_shared_ptr(new Thread(tr1::bind(&thread_func, &a[x])));
+                    t[x] = make_shared_ptr(new Thread(std::tr1::bind(&thread_func, &a[x])));
             }
             TEST_CHECK_EQUAL(MyThreadedClass::instances, 1);
             TEST_CHECK(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));

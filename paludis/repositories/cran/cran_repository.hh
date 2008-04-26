@@ -25,8 +25,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 #include <string>
 
 /** \file
@@ -52,7 +52,7 @@ namespace paludis
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
         private PrivateImplementationPattern<CRANRepository>,
-        public tr1::enable_shared_from_this<CRANRepository>
+        public std::tr1::enable_shared_from_this<CRANRepository>
     {
         private:
             PrivateImplementationPattern<CRANRepository>::ImpPtr & _imp;
@@ -78,9 +78,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static tr1::shared_ptr<Repository> make_cran_repository(
+            static std::tr1::shared_ptr<Repository> make_cran_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> > m);
+                    std::tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -92,9 +92,9 @@ namespace paludis
 
             /* RepositorySyncableInterface */
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName &) const;
 
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const;
+            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const;
 
             /* RepositorySyncableInterface */
 
@@ -102,11 +102,11 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -115,7 +115,7 @@ namespace paludis
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -123,8 +123,8 @@ namespace paludis
 
             /* Keys */
 
-            virtual const tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
     };
 
     /**

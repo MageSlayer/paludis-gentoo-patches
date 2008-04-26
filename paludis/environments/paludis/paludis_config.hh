@@ -114,13 +114,13 @@ namespace paludis
                 ///\name Config files
                 ///\{
 
-                tr1::shared_ptr<const KeywordsConf> keywords_conf() const;
-                tr1::shared_ptr<const UseConf> use_conf() const;
-                tr1::shared_ptr<const LicensesConf> licenses_conf() const;
-                tr1::shared_ptr<const PackageMaskConf> package_mask_conf() const;
-                tr1::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
-                tr1::shared_ptr<const MirrorsConf> mirrors_conf() const;
-                tr1::shared_ptr<const World> world() const;
+                std::tr1::shared_ptr<const KeywordsConf> keywords_conf() const;
+                std::tr1::shared_ptr<const UseConf> use_conf() const;
+                std::tr1::shared_ptr<const LicensesConf> licenses_conf() const;
+                std::tr1::shared_ptr<const PackageMaskConf> package_mask_conf() const;
+                std::tr1::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
+                std::tr1::shared_ptr<const MirrorsConf> mirrors_conf() const;
+                std::tr1::shared_ptr<const World> world() const;
 
                 ///\}
 
@@ -139,7 +139,7 @@ namespace paludis
                 /**
                  * Our bashrc files.
                  */
-                tr1::shared_ptr<const FSEntrySequence> bashrc_files() const;
+                std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const;
 
                 /**
                  * The ROOT.

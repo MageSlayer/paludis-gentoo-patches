@@ -28,8 +28,8 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/map-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -48,13 +48,13 @@ namespace paludis
         class PALUDIS_VISIBLE Layout
         {
             private:
-                tr1::shared_ptr<const FSEntry> _master_repository_location;
+                std::tr1::shared_ptr<const FSEntry> _master_repository_location;
 
             protected:
                 ///\name Basic operations
                 ///\{
 
-                Layout(tr1::shared_ptr<const FSEntry> master_repository_location);
+                Layout(std::tr1::shared_ptr<const FSEntry> master_repository_location);
 
                 ///\}
 
@@ -69,7 +69,7 @@ namespace paludis
                 ///\name Configuration information
                 ///\{
 
-                tr1::shared_ptr<const FSEntry> master_repository_location() const;
+                std::tr1::shared_ptr<const FSEntry> master_repository_location() const;
 
                 ///\}
 
@@ -85,14 +85,14 @@ namespace paludis
                 virtual FSEntry categories_file() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -112,40 +112,40 @@ namespace paludis
                         const std::string & eapi) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> mirror_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual FSEntry profiles_base_dir() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<const FSEntrySequence> licenses_dirs() const
+                virtual std::tr1::shared_ptr<const FSEntrySequence> licenses_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
+                virtual std::tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual FSEntry sync_filter_file() const;
@@ -179,9 +179,9 @@ namespace paludis
          */
         class PALUDIS_VISIBLE LayoutMaker :
             public VirtualConstructor<std::string,
-                tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
-                        tr1::shared_ptr<const ERepositoryEntries>,
-                        tr1::shared_ptr<const FSEntry>),
+                std::tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
+                        std::tr1::shared_ptr<const ERepositoryEntries>,
+                        std::tr1::shared_ptr<const FSEntry>),
                 virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
             public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
         {

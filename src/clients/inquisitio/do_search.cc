@@ -35,8 +35,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <tr1/functional>
 #include <list>
 #include <set>
 #include <map>
@@ -53,7 +53,7 @@ namespace
         typedef bool result;
 
         const bool visible_only;
-        tr1::shared_ptr<SupportsActionTestBase> action_test;
+        std::tr1::shared_ptr<SupportsActionTestBase> action_test;
 
         Eligible(const bool v, const std::string & k) :
             visible_only(v)
@@ -85,12 +85,12 @@ namespace
     {
         typedef bool result;
 
-        const std::list<tr1::shared_ptr<Matcher> > & matchers;
-        const std::list<tr1::shared_ptr<Extractor> > & extractors;
+        const std::list<std::tr1::shared_ptr<Matcher> > & matchers;
+        const std::list<std::tr1::shared_ptr<Extractor> > & extractors;
 
         Matches(
-                const std::list<tr1::shared_ptr<Matcher> > & m,
-                const std::list<tr1::shared_ptr<Extractor> > & e) :
+                const std::list<std::tr1::shared_ptr<Matcher> > & m,
+                const std::list<std::tr1::shared_ptr<Extractor> > & e) :
             matchers(m),
             extractors(e)
         {
@@ -98,9 +98,9 @@ namespace
 
         bool operator() (const PackageID & id) const
         {
-            for (std::list<tr1::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
+            for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
                     e != e_end ; ++e)
-                for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
+                for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
                         m != m_end ; ++m)
                     if ((**e)(**m, id))
                         return true;
@@ -109,25 +109,25 @@ namespace
         }
     };
 
-    tr1::shared_ptr<const PackageID> fetch_id(
+    std::tr1::shared_ptr<const PackageID> fetch_id(
             const Environment & env,
-            const tr1::shared_ptr<const Repository> & r,
+            const std::tr1::shared_ptr<const Repository> & r,
             const QualifiedPackageName & q,
-            const tr1::function<bool (const PackageID &)> & e,
-            const tr1::function<bool (const PackageID &)> & m,
+            const std::tr1::function<bool (const PackageID &)> & e,
+            const std::tr1::function<bool (const PackageID &)> & m,
             const bool all_versions,
             const bool invert_match)
     {
-        tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
         if (ids->empty())
-            return tr1::shared_ptr<const PackageID>();
+            return std::tr1::shared_ptr<const PackageID>();
         else
         {
-            std::list<tr1::shared_ptr<const PackageID> > sids(ids->begin(), ids->end());
+            std::list<std::tr1::shared_ptr<const PackageID> > sids(ids->begin(), ids->end());
             PackageIDComparator c(env.package_database().get());
             sids.sort(c);
 
-            for (std::list<tr1::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
+            for (std::list<std::tr1::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
                     i != i_end ; ++i)
             {
                 try
@@ -137,7 +137,7 @@ namespace
                         if (invert_match ^ m(**i))
                             return *i;
                         else if (! all_versions)
-                            return tr1::shared_ptr<const PackageID>();
+                            return std::tr1::shared_ptr<const PackageID>();
                     }
                 }
                 catch (const InternalError &)
@@ -151,24 +151,24 @@ namespace
                 }
             }
 
-            return tr1::shared_ptr<const PackageID>();
+            return std::tr1::shared_ptr<const PackageID>();
         }
     }
 
     void set_id(
             const Environment & env,
-            const std::list<tr1::shared_ptr<const Repository> > & repos,
-            std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> > & q,
-            const tr1::function<bool (const PackageID &)> & e,
-            const tr1::function<bool (const PackageID &)> & m,
+            const std::list<std::tr1::shared_ptr<const Repository> > & repos,
+            std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageID> > & q,
+            const std::tr1::function<bool (const PackageID &)> & e,
+            const std::tr1::function<bool (const PackageID &)> & m,
             const bool all_versions,
             const bool invert_match)
     {
-        tr1::shared_ptr<const PackageID> best_id;
-        for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        std::tr1::shared_ptr<const PackageID> best_id;
+        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match));
+            std::tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match));
             if (id)
             {
                 if (best_id)
@@ -189,19 +189,19 @@ namespace
 int
 do_search(const Environment & env)
 {
-    using namespace tr1::placeholders;
+    using namespace std::tr1::placeholders;
 
     if (CommandLine::get_instance()->a_repository.specified() &&
         ! CommandLine::get_instance()->a_kind.specified())
         CommandLine::get_instance()->a_kind.set_argument("all");
 
-    std::list<tr1::shared_ptr<Matcher> > matchers;
+    std::list<std::tr1::shared_ptr<Matcher> > matchers;
     for (CommandLine::ParametersConstIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
         matchers.push_back(MatcherMaker::get_instance()->find_maker(
                 CommandLine::get_instance()->a_matcher.argument())(*p));
 
-    std::list<tr1::shared_ptr<Extractor> > extractors;
+    std::list<std::tr1::shared_ptr<Extractor> > extractors;
     if (CommandLine::get_instance()->a_keys.begin_args() == CommandLine::get_instance()->a_keys.end_args())
         extractors.push_back(make_shared_ptr(new NameDescriptionExtractor));
     else
@@ -212,7 +212,7 @@ do_search(const Environment & env)
                             CommandLine::get_instance()->a_enabled_only.specified(),
                             env)));
 
-    std::list<tr1::shared_ptr<const Repository> > repos;
+    std::list<std::tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -220,14 +220,14 @@ do_search(const Environment & env)
             if (CommandLine::get_instance()->a_repository.end_args() ==
                     std::find_if(CommandLine::get_instance()->a_repository.begin_args(),
                         CommandLine::get_instance()->a_repository.end_args(),
-                        tr1::bind(std::equal_to<std::string>(), _1, stringify((*r)->name()))))
+                        std::tr1::bind(std::equal_to<std::string>(), _1, stringify((*r)->name()))))
                 continue;
 
         if (CommandLine::get_instance()->a_repository_format.begin_args() != CommandLine::get_instance()->a_repository_format.end_args())
             if (CommandLine::get_instance()->a_repository_format.end_args() ==
                     std::find_if(CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        tr1::bind(std::equal_to<std::string>(), _1, (*r)->format_key() ? (*r)->format_key()->value() : "?")))
+                        std::tr1::bind(std::equal_to<std::string>(), _1, (*r)->format_key() ? (*r)->format_key()->value() : "?")))
                 continue;
 
         if (CommandLine::get_instance()->a_kind.argument() == "installable")
@@ -255,34 +255,34 @@ do_search(const Environment & env)
                 create_inserter<CategoryNamePart>(std::inserter(cats, cats.begin())));
     else
     {
-        for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            tr1::shared_ptr<const CategoryNamePartSet> c((*r)->category_names());
+            std::tr1::shared_ptr<const CategoryNamePartSet> c((*r)->category_names());
             std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
         }
     }
 
-    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
+    std::map<QualifiedPackageName, std::tr1::shared_ptr<const PackageID> > ids;
     if (CommandLine::get_instance()->a_package.begin_args() != CommandLine::get_instance()->a_package.end_args())
     {
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                 c != c_end ; ++c)
             for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_package.begin_args()),
                     i_end(CommandLine::get_instance()->a_package.end_args()) ; i != i_end ; ++i)
-                ids.insert(std::make_pair(*c + PackageNamePart(*i), tr1::shared_ptr<const PackageID>()));
+                ids.insert(std::make_pair(*c + PackageNamePart(*i), std::tr1::shared_ptr<const PackageID>()));
     }
     else
     {
-        for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
             for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                     c != c_end ; ++c)
             {
-                tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
+                std::tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
                 for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
                         i != i_end ; ++i)
-                    ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
+                    ids.insert(std::make_pair(*i, std::tr1::shared_ptr<const PackageID>()));
             }
     }
 
@@ -295,13 +295,13 @@ do_search(const Environment & env)
             extractors
             );
 
-    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches,
+    std::for_each(ids.begin(), ids.end(), std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
                 CommandLine::get_instance()->a_all_versions.specified(),
                 CommandLine::get_instance()->a_not.specified()));
 
     bool any(false);
     InquisitioQueryTask task(&env);
-    for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
+    for (std::map<QualifiedPackageName, std::tr1::shared_ptr<const PackageID> >::const_iterator
             i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
         if (i->second)
         {

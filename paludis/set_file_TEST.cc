@@ -68,13 +68,13 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             SetFile f(SetFileParams::create()
                     .file_name(FSEntry("set_file_TEST_dir/simple1"))
                     .type(sft_simple)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                    .tag(tr1::shared_ptr<DepTag>())
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(std::tr1::shared_ptr<DepTag>())
                     .set_operator_mode(sfsmo_natural)
                     .environment(0));
 
@@ -132,13 +132,13 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             SetFile f(SetFileParams::create()
                     .file_name(FSEntry("set_file_TEST_dir/paludisconf1"))
                     .type(sft_paludis_conf)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                    .tag(tr1::shared_ptr<DepTag>())
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(std::tr1::shared_ptr<DepTag>())
                     .set_operator_mode(sfsmo_natural)
                     .environment(0));
 
@@ -199,13 +199,13 @@ namespace test_cases
 
         void run()
         {
-            using namespace tr1::placeholders;
+            using namespace std::tr1::placeholders;
 
             SetFile f(SetFileParams::create()
                     .file_name(FSEntry("set_file_TEST_dir/override"))
                     .type(sft_paludis_conf)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                    .tag(tr1::shared_ptr<DepTag>())
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(std::tr1::shared_ptr<DepTag>())
                     .set_operator_mode(sfsmo_natural)
                     .environment(0));
 
@@ -218,8 +218,8 @@ namespace test_cases
             SetFile fstar(SetFileParams::create()
                     .file_name(FSEntry("set_file_TEST_dir/override"))
                     .type(sft_paludis_conf)
-                    .parser(tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
-                    .tag(tr1::shared_ptr<DepTag>())
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                    .tag(std::tr1::shared_ptr<DepTag>())
                     .set_operator_mode(sfsmo_star)
                     .environment(0));
 

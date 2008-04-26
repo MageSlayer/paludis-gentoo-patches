@@ -52,9 +52,9 @@ CategoriesListModel::populate()
 void
 CategoriesListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<CategoryNamePartSet> columns(new CategoryNamePartSet);
+    std::tr1::shared_ptr<CategoryNamePartSet> columns(new CategoryNamePartSet);
 
-    paludis::tr1::shared_ptr<RepositoryNameSequence> repos(
+    std::tr1::shared_ptr<RepositoryNameSequence> repos(
             _imp->packages_page->get_repository_filter()->repositories(*_imp->main_window->environment()));
 
     if (repos)
@@ -62,7 +62,7 @@ CategoriesListModel::populate_in_paludis_thread()
         for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
-            paludis::tr1::shared_ptr<const CategoryNamePartSet> cats(
+            std::tr1::shared_ptr<const CategoryNamePartSet> cats(
                     _imp->main_window->environment()->package_database()->fetch_repository(*r)->category_names());
             std::copy(cats->begin(), cats->end(), columns->inserter());
         }
@@ -74,7 +74,7 @@ CategoriesListModel::populate_in_paludis_thread()
                 r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
                 r != r_end ; ++r)
         {
-            paludis::tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names());
+            std::tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names());
             std::copy(cats->begin(), cats->end(), columns->inserter());
         }
     }
@@ -84,7 +84,7 @@ CategoriesListModel::populate_in_paludis_thread()
 }
 
 void
-CategoriesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const CategoryNamePartSet> names)
+CategoriesListModel::populate_in_gui_thread(std::tr1::shared_ptr<const CategoryNamePartSet> names)
 {
     clear();
     for (CategoryNamePartSet::ConstIterator n(names->begin()), n_end(names->end()) ;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,7 +29,7 @@ using namespace inquisitio;
 using namespace paludis;
 
 template class paludis::VirtualConstructor<std::string,
-         tr1::shared_ptr<Matcher> (*) (const std::string &),
+         std::tr1::shared_ptr<Matcher> (*) (const std::string &),
          paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >;
 
 template class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;
@@ -50,10 +50,10 @@ NoSuchMatcherError::NoSuchMatcherError(const std::string & msg) throw () :
 namespace
 {
     template <typename M_>
-    static tr1::shared_ptr<Matcher>
+    static std::tr1::shared_ptr<Matcher>
     make(const std::string & s)
     {
-        return tr1::shared_ptr<Matcher>(new M_(s));
+        return std::tr1::shared_ptr<Matcher>(new M_(s));
     }
 }
 

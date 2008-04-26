@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
          * the environment class to use (e.g. 'paludis', 'portage') and the
          * second part is passed as parameters to be handled by that
          * environment's constructor. */
-        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* A lot of the Environment members aren't very useful to clients. The
@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
          * change in the future) use flag queries. The package database has its
          * own examples, so we'll start with sets: */
 
-        tr1::shared_ptr<SetSpecTree::ConstItem> world(env->set(SetName("world")));
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> world(env->set(SetName("world")));
         if (world)
         {
             /* See \ref example_dep_tree.cc "example_dep_tree.cc" for how to
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
             cout << "No world set defined" << endl;
 
         /* And use flags, for which we need a package IDs: */
-        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
                     query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) &
                     query::SupportsAction<InstalledAction>(),
                     qo_order_by_version));

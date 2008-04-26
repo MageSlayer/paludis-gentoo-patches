@@ -66,17 +66,17 @@ namespace paludis
             void _display_failure_summary();
 
             void _add_target(const std::string &);
-            void _add_package_id(const tr1::shared_ptr<const PackageID> &);
+            void _add_package_id(const std::tr1::shared_ptr<const PackageID> &);
 
-            tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
-            tr1::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
+            std::tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
+            std::tr1::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
 
         protected:
             ///\name Basic operations
             ///\{
 
             InstallTask(Environment * const env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsSet> destinations);
+                    std::tr1::shared_ptr<const DestinationsSet> destinations);
 
             ///\}
 
@@ -109,9 +109,9 @@ namespace paludis
             ///\name Targets
             ///\{
 
-            void set_targets_from_user_specs(const tr1::shared_ptr<const Sequence<std::string> > &);
-            void set_targets_from_exact_packages(const tr1::shared_ptr<const PackageIDSequence> &);
-            void set_targets_from_serialisation(const std::string &, const tr1::shared_ptr<const Sequence<std::string> > &);
+            void set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > &);
+            void set_targets_from_exact_packages(const std::tr1::shared_ptr<const PackageIDSequence> &);
+            void set_targets_from_serialisation(const std::string &, const std::tr1::shared_ptr<const Sequence<std::string> > &);
 
             void clear();
             void override_target_type(const DepListTargetType);
@@ -140,7 +140,7 @@ namespace paludis
             virtual void on_display_failure_summary_success(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_failure(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &) = 0;
-            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &) = 0;
+            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &) = 0;
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int) = 0;
             virtual void on_display_failure_summary_post() = 0;
 
@@ -164,7 +164,7 @@ namespace paludis
 
             virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
                     const int x, const int y, const int s, const int f) = 0;
-            virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
+            virtual void on_skip_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f) = 0;
             virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int) = 0;
 
@@ -210,7 +210,7 @@ namespace paludis
             ///\{
 
             virtual void world_update_set(const SetName &);
-            virtual void world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>);
+            virtual void world_update_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem>);
 
             ///\}
 

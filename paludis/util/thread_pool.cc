@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,9 +19,9 @@
 
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/thread.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <tr1/memory>
 #include <deque>
 
 using namespace paludis;
@@ -31,7 +31,7 @@ namespace paludis
     template <>
     struct Implementation<ThreadPool>
     {
-        std::deque<tr1::shared_ptr<Thread> > threads;
+        std::deque<std::tr1::shared_ptr<Thread> > threads;
     };
 }
 
@@ -45,7 +45,7 @@ ThreadPool::~ThreadPool()
 }
 
 void
-ThreadPool::create_thread(const tr1::function<void () throw ()> & f)
+ThreadPool::create_thread(const std::tr1::function<void () throw ()> & f)
 {
     _imp->threads.push_back(make_shared_ptr(new Thread(f)));
 }

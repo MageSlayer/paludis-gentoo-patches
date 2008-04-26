@@ -25,12 +25,12 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/action-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -46,7 +46,7 @@ namespace paludis
             public:
                 CheckFetchedFilesVisitor(
                         const Environment * const,
-                        const tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageID> &,
                         const FSEntry & distdir,
                         const bool check_unneeded,
                         const bool fetch_restrict,
@@ -67,7 +67,7 @@ namespace paludis
 
                 void visit_leaf(const FetchableURIDepSpec &);
 
-                const tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool need_nofetch() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };

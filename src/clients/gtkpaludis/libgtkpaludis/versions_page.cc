@@ -22,7 +22,7 @@ namespace paludis
         Gtk::ScrolledWindow version_info_scroll;
         VersionInfo version_info;
 
-        paludis::tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<const PackageID> id;
 
         Implementation(QueryWindow * const m, VersionsPage * const p) :
             query_window(m),
@@ -58,13 +58,13 @@ VersionsPage::populate()
 }
 
 void
-VersionsPage::set_id(paludis::tr1::shared_ptr<const PackageID> c)
+VersionsPage::set_id(std::tr1::shared_ptr<const PackageID> c)
 {
     _imp->id = c;
     _imp->version_info.populate();
 }
 
-paludis::tr1::shared_ptr<const PackageID>
+std::tr1::shared_ptr<const PackageID>
 VersionsPage::get_id() const
 {
     return _imp->id;

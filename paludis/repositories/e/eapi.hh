@@ -26,11 +26,11 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/options.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/merger-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -85,12 +85,12 @@ namespace paludis
                 /**
                  * Make an EAPI.
                  */
-                tr1::shared_ptr<const EAPI> eapi_from_string(const std::string &) const;
+                std::tr1::shared_ptr<const EAPI> eapi_from_string(const std::string &) const;
 
                 /**
                  * Make the unknown EAPI.
                  */
-                tr1::shared_ptr<const EAPI> unknown_eapi() const;
+                std::tr1::shared_ptr<const EAPI> unknown_eapi() const;
         };
     }
 }
