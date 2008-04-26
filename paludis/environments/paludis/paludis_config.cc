@@ -175,38 +175,39 @@ namespace paludis
             }
         }
         else
+        {
             Log::get_instance()->message("paludis_environment.no_environment_conf", ll_debug, lc_context)
                 << "No environment.conf or environment.bash in '" << config_dir << "'";
-
-        if (kv)
-        {
-            if (! kv->get("reduced_username").empty())
-                reduced_username = kv->get("reduced_username");
-
-            if (! kv->get("portage_compatible").empty())
-                Log::get_instance()->message("paludis_environment.portage_compatible.deprecated", ll_warning, lc_context)
-                    << "The 'portage_compatible' variable in environment.conf is deprecated,"
-                    << " set 'accept_breaks_portage' to empty instead.";
-            else
-            {
-                std::list<std::string> breakages;
-                tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
-                for (std::list<std::string>::const_iterator it(breakages.begin()),
-                         it_end(breakages.end()); it_end != it; ++it)
-                    if ("*" == *it)
-                    {
-                        accept_all_breaks_portage = true;
-                        break;
-                    }
-                    else
-                        accept_breaks_portage.insert(*it);
-            }
-
-            distribution = kv->get("distribution");
-
-            if (! kv->get("world").empty())
-                world_file.reset(new FSEntry(kv->get("world")));
+            std::stringstream str;
+            kv.reset(new KeyValueConfigFile(str, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
         }
+
+        if (! kv->get("reduced_username").empty())
+            reduced_username = kv->get("reduced_username");
+
+        if (! kv->get("portage_compatible").empty())
+            Log::get_instance()->message("paludis_environment.portage_compatible.deprecated", ll_warning, lc_context)
+                << "The 'portage_compatible' variable in environment.conf is deprecated,"
+                << " set 'accept_breaks_portage' to empty instead.";
+        else
+        {
+            std::list<std::string> breakages;
+            tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
+            for (std::list<std::string>::const_iterator it(breakages.begin()),
+                     it_end(breakages.end()); it_end != it; ++it)
+                if ("*" == *it)
+                {
+                    accept_all_breaks_portage = true;
+                    break;
+                }
+                else
+                    accept_breaks_portage.insert(*it);
+        }
+
+        distribution = kv->get("distribution");
+
+        if (! kv->get("world").empty())
+            world_file.reset(new FSEntry(kv->get("world")));
 
         if (! world_file)
             Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
