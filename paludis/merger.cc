@@ -840,6 +840,8 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
                 continue;
 
             case et_file:
+                if (! FSEntry(*d).utime())
+                    throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
                 record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
                 _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
