@@ -3,7 +3,7 @@
 # $Id: $
 
 DESCRIPTION="Manage Paludis repository config files"
-MAINTAINER="spb@gentoo.org"
+MAINTAINER="spb@exherbo.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
 
