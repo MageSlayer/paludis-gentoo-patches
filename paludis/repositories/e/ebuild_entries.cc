@@ -287,15 +287,16 @@ namespace
                                 std::back_inserter(lower_i), &::tolower);
                         if (0 == lower_i.compare(0, lower_x.length() + 1, lower_x + expand_sep,
                                     0, lower_x.length() + 1))
-                            expand_vars->insert(stringify(*x), "");
-
-                        Map<std::string, std::string>::ConstIterator f(expand_vars->find(stringify(*x)));
-                        std::string value;
-                        if (expand_vars->end() != f)
-                            value = f->second;
-                        value.append(stringify(*i).substr(lower_x.length() + 1) + " ");
-                        expand_vars->erase(f);
-                        expand_vars->insert(stringify(*x), value);
+                        {
+                            Map<std::string, std::string>::ConstIterator f(expand_vars->find(stringify(*x)));
+                            std::string value;
+                            if (expand_vars->end() != f)
+                                value = f->second + " ";
+                            value.append(stringify(*i).substr(lower_x.length() + 1));
+                            if (expand_vars->end() != f)
+                                expand_vars->erase(f);
+                            expand_vars->insert(stringify(*x), value);
+                        }
                     }
             }
             else
