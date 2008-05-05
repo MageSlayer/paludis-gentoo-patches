@@ -1258,6 +1258,15 @@ namespace test_cases
                 TEST_CHECK(id);
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("expand vars", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/expand-vars-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_0;
 
@@ -1623,6 +1632,15 @@ namespace test_cases
                 TestMessageSuffix suffix("econf vars", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-vars-0",
+                                        UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("expand vars", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/expand-vars-0",
                                         UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
                 TEST_CHECK(id);
                 id->perform_action(action);

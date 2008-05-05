@@ -506,6 +506,8 @@ USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
+LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
+USE_EXPAND="LINGUAS"
 END
 mkdir -p "cat/in-ebuild-die"
 cat <<END > cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
@@ -856,6 +858,23 @@ src_install() {
     dosym foo /usr/bin/bar
 }
 END
+mkdir -p "cat/expand-vars"
+cat <<"END" > cat/expand-vars/expand-vars-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    [[ $USE == "enabled-weasel test linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 " ]] \
+        || die "USE=$USE is wrong"
+    [[ $USERLAND == "GNU" ]] || die "USERLAND=$USERLAND is wrong"
+    [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
@@ -868,6 +887,10 @@ END
 echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
+SUBOPTIONS="linguas"
+LINGUAS="en en_GB en_GB@UTF-8"
+USERLAND="GNU"
+OPTIONS="weasel spinach"
 END
 mkdir -p "packages/cat/in-ebuild-die"
 cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
@@ -1009,7 +1032,7 @@ SRC_URI=""
 SLOT="0"
 MYOPTIONS="spork"
 LICENSE="GPL-2"
-PLATFORM="test"
+PLATFORMS="test"
 
 pkg_setup() {
     portageq match "${ROOT}" cat/foo | while read a ; do
@@ -1032,7 +1055,7 @@ SRC_URI=""
 SLOT="0"
 MYOPTIONS="spork"
 LICENSE="GPL-2"
-PLATFORM="test"
+PLATFORMS="test"
 
 pkg_setup() {
     ever at_least 1.2 || die "at_least 1.2"
@@ -1053,7 +1076,7 @@ SRC_URI=""
 SLOT="0"
 MYOPTIONS="spork"
 LICENSE="GPL-2"
-PLATFORM="test"
+PLATFORMS="test"
 
 src_unpack() {
     mkdir ${S}
@@ -1074,7 +1097,7 @@ SRC_URI=""
 SLOT="0"
 MYOPTIONS="enabled-hamster gerbil dormouse"
 LICENSE="GPL-2"
-PLATFORM="test"
+PLATFORMS="test"
 
 DEFAULT_SRC_CONFIGURE_PARAMS="--nice-juicy-steak"
 DEFAULT_SRC_CONFIGURE_OPTION_ENABLES="enabled-hamster gerbil"
@@ -1091,6 +1114,20 @@ echo "${@}" | grep -q -- '--without-dormouse' || exit 4
 true
 END2
     chmod +x ${S}/configure
+}
+END
+mkdir -p "packages/cat/expand-vars"
+cat <<"END" > packages/cat/expand-vars/expand-vars-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="enabled-weasel broccoli linguas:enabled-en_GB"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    [[ ${OPTIONS%%+( )} == "enabled-weasel linguas:enabled-en_GB" ]] || die "OPTIONS=$OPTIONS is wrong"
 }
 END
 cd ..
