@@ -227,6 +227,13 @@ namespace
             const ERepositoryID & id,
             std::tr1::shared_ptr<const ERepositoryProfile> profile)
     {
+        if (! (*id.eapi())[k::supported()])
+        {
+            Log::get_instance()->message("e.ebuild.unknown_eapi", ll_warning, lc_context)
+                << "Don't know how to make a USE string for '" << id << "' because its EAPI is unsupported";
+            return "";
+        }
+
         std::string use;
 
         if (id.iuse_key())
@@ -235,9 +242,9 @@ namespace
                 if (env->query_use(i->flag, id))
                     use += stringify(i->flag) + " ";
 
-        if ((*id.eapi())[k::supported()])
-            if (! (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()].empty())
-                use += profile->environment_variable((*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]) + " ";
+        if (! (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()].empty())
+            use += profile->environment_variable((*(*id.eapi())[k::supported()])
+                    [k::ebuild_environment_variables()][k::env_arch()]) + " ";
 
         return use;
     }
@@ -249,8 +256,14 @@ namespace
             std::string & use,
             const std::string & expand_sep)
     {
-        std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
-            new Map<std::string, std::string>);
+        std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(new Map<std::string, std::string>);
+
+        if (! (*e.eapi())[k::supported()])
+        {
+            Log::get_instance()->message("e.ebuild.unknown_eapi", ll_warning, lc_context)
+                << "Don't know how to make USE_EXPAND strings for '" << e << "' because its EAPI is unsupported";
+            return expand_vars;
+        }
 
         for (ERepositoryProfile::UseExpandConstIterator x(profile->begin_use_expand()),
                 x_end(profile->end_use_expand()) ; x != x_end ; ++x)
@@ -260,38 +273,67 @@ namespace
 
             expand_vars->insert(stringify(*x), "");
 
-            /* possible values from profile */
-            std::set<UseFlagName> possible_values;
-            tokenise_whitespace(profile->environment_variable(stringify(*x)),
-                    create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
-
-            /* possible values from environment */
-            std::tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
-                    env->known_use_expand_names(*x, e));
-            for (UseFlagNameSet::ConstIterator i(possible_values_from_env->begin()),
-                    i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
-                possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
-
-            for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
-                    u != u_end ; ++u)
+            if ((*(*e.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
             {
-                if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
-                    continue;
+                /* oh good. we just need to work from IUSE. no need to mess with the use parameter,
+                 * that's already handled by make_use. */
 
-                if (! (*(*e.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
+                if (e.iuse_key())
+                    for (IUseFlagSet::ConstIterator i(e.iuse_key()->value()->begin()),
+                            i_end(e.iuse_key()->value()->end()) ; i != i_end ; ++i)
+                    {
+                        std::string lower_i;
+                        std::transform(i->flag.data().begin(), i->flag.data().end(),
+                                std::back_inserter(lower_i), &::tolower);
+                        if (0 == lower_i.compare(0, lower_x.length() + 1, lower_x + expand_sep,
+                                    0, lower_x.length() + 1))
+                            expand_vars->insert(stringify(*x), "");
+
+                        Map<std::string, std::string>::ConstIterator f(expand_vars->find(stringify(*x)));
+                        std::string value;
+                        if (expand_vars->end() != f)
+                            value = f->second;
+                        value.append(stringify(*i).substr(lower_x.length() + 1) + " ");
+                        expand_vars->erase(f);
+                        expand_vars->insert(stringify(*x), value);
+                    }
+            }
+            else
+            {
+                /* pesky 0-based EAPI that takes USE_EXPAND things from everywhere, not from IUSE */
+
+                /* possible values from profile */
+                std::set<UseFlagName> possible_values;
+                tokenise_whitespace(profile->environment_variable(stringify(*x)),
+                        create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
+
+                /* possible values from environment */
+                std::tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
+                        env->known_use_expand_names(*x, e));
+                for (UseFlagNameSet::ConstIterator i(possible_values_from_env->begin()),
+                        i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
+                    possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
+
+                for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
+                        u != u_end ; ++u)
+                {
+                    if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
+                        continue;
+
                     use.append(lower_x + expand_sep + stringify(*u) + " ");
 
-                std::string value;
-                Map<std::string, std::string>::ConstIterator i(expand_vars->find(stringify(*x)));
-                if (expand_vars->end() != i)
-                {
-                    value = i->second;
-                    if (! value.empty())
-                        value.append(" ");
-                    expand_vars->erase(i);
+                    std::string value;
+                    Map<std::string, std::string>::ConstIterator i(expand_vars->find(stringify(*x)));
+                    if (expand_vars->end() != i)
+                    {
+                        value = i->second;
+                        if (! value.empty())
+                            value.append(" ");
+                        expand_vars->erase(i);
+                    }
+                    value.append(stringify(*u));
+                    expand_vars->insert(stringify(*x), value);
                 }
-                value.append(stringify(*u));
-                expand_vars->insert(stringify(*x), value);
             }
         }
 
