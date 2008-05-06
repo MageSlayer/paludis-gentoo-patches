@@ -26,7 +26,7 @@ expatch()
         die "expatch called in EBUILD_PHASE ${EBUILD_PHASE}"
     fi
 
-    local recognise= patchlevel= options=() cmd=
+    local recognise= patchlevel= options=() cmd= appliedpatches=0
 
     if [[ ${1} == "--recognised-suffixes" ]]; then
         recognise=true
@@ -34,12 +34,13 @@ expatch()
     fi
 
     while [[ $# -gt 0 ]]; do
-        if [[ ${1} == -p[0-9]* ]]; then
+        if [[ ${1} == -p*([:digit:]]) ]]; then
             patchlevel="${1}"
-        elif [[ ${1} == -* ]]; then
+        elif [[ ${1} == -+([^[:space:]]) ]]; then
             options+=("${1}")
         elif [[ -d ${1} ]]; then
             expatch --recognised-suffixes ${patchlevel} "${options[@]}" "${1}"/*
+            ((appliedpatches++))
         else
             case "${1}" in
                 *.bz2)
@@ -63,12 +64,17 @@ expatch()
                 ;;
             esac
 
-            echo "${cmd} ${1} | patch -s -f ${patchlevel:--p1} ${options[@]}" 1>&2
-            ${cmd} "${1}" | patch -s -f ${patchlevel:--p1} "${options[@]}"
-            assert "patch -s -f ${patchlevel:--p1} ${options[@]} ${1} failed"
+            echo "${cmd} -- '${1}' | patch -s -f ${patchlevel:--p1} ${options[@]}" 1>&2
+            ${cmd} -- "${1}" | patch -s -f ${patchlevel:--p1} "${options[@]}"
+            assert "applying '${1}' failed"
+            ((appliedpatches++))
         fi
         shift
     done
+    # Die if no patches were applied and no directories were supplied. Since
+    # directories get handled recursively by separate instances of expatch we cannot
+    # reliably count applied patches when directories were supplied.
+    [[ ${appliedpatches} -le 0 && -z ${recognise} ]] && die "No patches applied."
 }
 
 econf()

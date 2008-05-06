@@ -32,7 +32,7 @@ src_unpack()
 
 exheres_internal_unpack()
 {
-    cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
 
     if hasq "unpack" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
