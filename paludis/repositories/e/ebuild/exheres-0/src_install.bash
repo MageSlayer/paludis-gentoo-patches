@@ -22,7 +22,53 @@
 
 default_src_install()
 {
-    :
+    local done_docs old_set f d p doc e
+    if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
+        if make -j1 -n install ; then
+            echo "Found a makefile, using the install target" 
+            emake -j1 DESTDIR="${D}" install || die "default emake install failed";
+        else
+            die "default emake install located a makefile but no install target"
+        fi
+    else
+        echo "No makefile found, not using emake install"
+    fi
+    done_docs=
+    old_set=$(shopt | grep 'nocaseglob[[:space:]]*on')
+    shopt -s nocaseglob
+    for d in '' ${DEFAULT_SRC_INSTALL_EXTRA_SUBDIRS} ; do
+        if [[ -n ${d} ]]; then
+            [[ -d ${d} ]] || die "${d} is not a dir"
+            pushd "${d}" > /dev/null || die "Failed to enter ${d}"
+            local docdesttree="${DOCDESTTREE}"
+            docinto "${d}"
+        fi
+        for f in README Change{,s,Log} AUTHORS NEWS TODO ABOUT THANKS {KNOWN_,}BUGS SUBMITTING \
+            HACKING FAQ CREDITS PKG-INFO HISTORY PACKAGING MAINTAINER{,S} CONTRIBUT{E,OR,ORS} RELEASE \
+            ANNOUNCE PORTING NOTES PROBLEMS NOTICE ${DEFAULT_SRC_INSTALL_EXTRA_DOCS}; do 
+            for p in '' ${DEFAULT_SRC_INSTALL_EXTRA_PREFIXES} ; do
+                for doc in *([[:digit:]])${p}${f}{,+([._-])*} ; do
+                    if [[ -s "${doc}" ]] ; then
+                        for e in ${DEFAULT_SRC_INSTALL_EXCLUDE} ; do
+                            [[ ${doc} == ${e} ]] && continue 2
+                        done
+                        done_docs="${done_docs} ${d%/}${d:+/}${doc}"
+                        dodoc "${doc}" || die "dodoc ${d%/}${d:+/}${doc} failed"
+                    fi
+                done
+            done
+        done
+        if [[ -n ${d} ]]; then
+            docinto "${docdesttree}"
+            popd > /dev/null || die "Failed to leave ${d}"
+        fi
+    done
+    if [[ -n "${done_docs}" ]] ; then
+        echo "Installed docs ${done_docs# }"
+    else
+        echo "Didn't find any docs to install"
+    fi
+    [[ -n ${old_set} ]] || shopt -u nocaseglob
 }
 
 src_install()
