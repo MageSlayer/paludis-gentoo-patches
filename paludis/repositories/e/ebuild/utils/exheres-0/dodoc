@@ -24,9 +24,9 @@
 
 if [[ ! -d ${D} ]]; then
     echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
     echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
     kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+    exit 247
 fi
 
 if [[ $# -lt 1 ]]; then
