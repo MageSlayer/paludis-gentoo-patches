@@ -46,7 +46,7 @@ default_src_install()
         for f in README Change{,s,Log} AUTHORS NEWS TODO ABOUT THANKS {KNOWN_,}BUGS SUBMITTING \
             HACKING FAQ CREDITS PKG-INFO HISTORY PACKAGING MAINTAINER{,S} CONTRIBUT{E,OR,ORS} RELEASE \
             ANNOUNCE PORTING NOTES PROBLEMS NOTICE ${DEFAULT_SRC_INSTALL_EXTRA_DOCS}; do 
-            for p in '' ${DEFAULT_SRC_INSTALL_EXTRA_PREFIXES} ; do
+            for p in ${DEFAULT_SRC_INSTALL_EXTRA_PREFIXES} '' ; do
                 for doc in *([[:digit:]])${p}${f}{,+([._-])*} ; do
                     if [[ -s "${doc}" ]] ; then
                         for e in ${DEFAULT_SRC_INSTALL_EXCLUDE} ; do
