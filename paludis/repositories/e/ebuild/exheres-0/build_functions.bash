@@ -74,7 +74,7 @@ expatch()
     # Die if no patches were applied and no directories were supplied. Since
     # directories get handled recursively by separate instances of expatch we cannot
     # reliably count applied patches when directories were supplied.
-    [[ ${appliedpatches} -le 0 && -z ${recognise} ]] && die "No patches applied."
+    [[ ${appliedpatches} -gt 0 || -n ${recognise} ]] || die "No patches applied."
 }
 
 econf()
