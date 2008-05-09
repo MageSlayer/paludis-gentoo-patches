@@ -10,6 +10,7 @@
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
+    <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
 </ul>
 
 <h2 id="ccache">Use <code>ccache</code></h2>
@@ -198,4 +199,11 @@ named <code>portage</code>.  For example:</p>
 sync = tar+ftp://my.favourite.mirror/gentoo/snapshots/portage-latest.tar.bz2
 sync_options = --strip-components=1
 </pre>
+
+<h2 id="deletedvdb">Recover VDB</h2>
+
+<p>If you deleted <code>/var/db/pkg</code> by accident, you're pretty much screwed. So don't do that, and be more
+careful next time.</p>
+
+<p>If you deleted <code>/var/db/pkg</code> on purpose, please install OS X and stop pestering us.</p>
 

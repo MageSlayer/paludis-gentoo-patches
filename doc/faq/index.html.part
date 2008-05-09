@@ -31,6 +31,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
+    <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
 </ul>
 
 <h2>Operation</h2>
