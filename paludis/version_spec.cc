@@ -28,6 +28,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/keys.hh>
+#include <paludis/util/simple_parser.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -103,24 +104,18 @@ VersionSpec::VersionSpec(const std::string & text) :
     _imp->text = text;
 
     /* parse */
-    std::string::size_type p(0);
+    SimpleParser parser(text);
 
-    if (0 == text.compare(p, 3, "scm"))
-    {
+    if (parser.consume(simple_parser::exact("scm")))
         _imp->parts.push_back(Part(scm, ""));
-        p += 3;
-    }
     else
     {
         /* numbers... */
-        while (p < text.length())
+        while (true)
         {
-            std::string::size_type q(text.find_first_not_of("0123456789", p));
-            std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-            p = std::string::npos == q ? text.length() : q;
-
-            if (number_part.empty())
-                throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
+            std::string number_part;
+            if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
+                throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
             if (number_part.size() > 8)
                 Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
@@ -129,108 +124,83 @@ VersionSpec::VersionSpec(const std::string & text) :
 
             _imp->parts.push_back(Part(number, number_part));
 
-            if (p < text.length() && ('.' != text.at(p) || p + 1 == text.length()))
+            if (! parser.consume(simple_parser::exact(".")))
                 break;
-
-            ++p;
         }
 
         /* letter */
-        if (p < text.length())
-            if (text.at(p) >= 'a' && text.at(p) <= 'z')
-                _imp->parts.push_back(Part(letter, text.substr(p++, 1)));
-
-        bool suffix(true);
-        while (suffix)
         {
-            suffix = false;
+            std::string l;
+            if (parser.consume(simple_parser::any_of("abcdefghijklmnopqrstuvwxyz") >> l))
+                _imp->parts.push_back(Part(letter, l));
+        }
 
-            /* suffix */
-            if (p < text.length())
-                do
-                {
-                    PartKind k(empty);
-                    if (0 == text.compare(p, 6, "_alpha"))
-                    {
-                        k = alpha;
-                        p += 6;
-                    }
-                    else if (0 == text.compare(p, 5, "_beta"))
-                    {
-                        k = beta;
-                        p += 5;
-                    }
-                    else if (0 == text.compare(p, 4, "_pre"))
-                    {
-                        k = pre;
-                        p += 4;
-                    }
-                    else if (0 == text.compare(p, 3, "_rc"))
-                    {
-                        k = rc;
-                        p += 3;
-                    }
-                    else if (0 == text.compare(p, 2, "_p"))
-                    {
-                        k = patch;
-                        p += 2;
-                    }
-                    else
-                        break;
+        while (true)
+        {
+            std::string suffix_str, number_str;
+            PartKind k(empty);
+            if (parser.consume(simple_parser::exact("_alpha") >> suffix_str))
+                k = alpha;
+            else if (parser.consume(simple_parser::exact("_beta") >> suffix_str))
+                k = beta;
+            else if (parser.consume(simple_parser::exact("_pre") >> suffix_str))
+                k = pre;
+            else if (parser.consume(simple_parser::exact("_rc") >> suffix_str))
+                k = rc;
+            else if (parser.consume(simple_parser::exact("_p") >> suffix_str))
+                k = patch;
+            else
+                break;
 
-                    std::string::size_type q(text.find_first_not_of("0123456789", p));
-                    std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-                    p = std::string::npos == q ? text.length() : q;
+            if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
+                throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
-                    if (number_part.size() > 8)
-                        Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                            "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                            "(Paludis supports arbitrary lengths, but other package managers do not)";
+            if (number_str.size() > 8)
+                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
+                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
-                    if (number_part.size() > 0)
-                    {
-                        number_part = strip_leading(number_part, "0");
-                        if (number_part.empty())
-                            number_part = "0";
-                    }
-                    _imp->parts.push_back(Part(k, number_part));
-                    suffix = true;
-                } while (false);
+            if (number_str.size() > 0)
+            {
+                number_str = strip_leading(number_str, "0");
+                if (number_str.empty())
+                    number_str = "0";
+            }
+
+            _imp->parts.push_back(Part(k, number_str));
         }
 
         /* try */
-        if (p < text.length() && 0 == text.compare(p, 4, "-try"))
+        if (parser.consume(simple_parser::exact("-try")))
         {
-            p += 4;
+            std::string number_str;
+            if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
+                throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
-            std::string::size_type q(text.find_first_not_of("0123456789", p));
-            std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-            p = std::string::npos == q ? text.length() : q;
-
-            if (number_part.size() > 8)
+            if (number_str.size() > 8)
                 Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
                     "(Paludis supports arbitrary lengths, but other package managers do not)";
 
-            if (number_part.size() > 0)
+            if (number_str.size() > 0)
             {
-                number_part = strip_leading(number_part, "0");
-                if (number_part.empty())
-                    number_part = "0";
+                number_str = strip_leading(number_str, "0");
+                if (number_str.empty())
+                    number_str = "0";
             }
-            _imp->parts.push_back(Part(trypart, number_part));
+            _imp->parts.push_back(Part(trypart, number_str));
         }
 
         /* scm */
-        if ((p < text.length()) && (0 == text.compare(p, 4, "-scm")))
+        if (parser.consume(simple_parser::exact("-scm")))
         {
-            p += 4;
             /* _suffix-scm? */
             if (_imp->parts.back()[k::value()].empty())
                 _imp->parts.back()[k::value()] = "MAX";
 
             _imp->parts.push_back(Part(scm, ""));
         }
+
         /* Now we can change empty values to "0" */
         for (std::vector<Part>::iterator i(_imp->parts.begin()),
                 i_end(_imp->parts.end()) ; i != i_end ; ++i)
@@ -239,52 +209,46 @@ VersionSpec::VersionSpec(const std::string & text) :
     }
 
     /* revision */
-    if (p < text.length())
-        if (0 == text.compare(p, 2, "-r"))
+    if (parser.consume(simple_parser::exact("-r")))
+    {
+        do
         {
-            p += 2;
-            do
+            std::string number_str;
+            if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
+                throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
+
+            if (number_str.size() > 8)
+                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
+                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
+
+            /* Are we -r */
+            bool empty(number_str.empty());
+
+            number_str = strip_leading(number_str, "0");
+            if (number_str.empty())
+                number_str = "0";
+            _imp->parts.push_back(Part(revision, number_str));
+
+            if (empty)
             {
-                std::string::size_type q(text.find_first_not_of("0123456789", p));
-                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-                p = std::string::npos == q ? text.length() : q;
-
-                if (number_part.size() > 8)
-                    Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                        "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                        "(Paludis supports arbitrary lengths, but other package managers do not)";
-
-                /* Are we -r */
-                bool empty(number_part.empty());
-
-                number_part = strip_leading(number_part, "0");
-                if (number_part.empty())
-                    number_part = "0";
-                _imp->parts.push_back(Part(revision, number_part));
-
-                if (p >= text.length())
-                    break;
-                if (text.at(p) != '.')
-                    break;
-                else if (empty)
-                {
-                    /* we don't like -r. */
-                    break;
-                }
-                else if (! (p + 1 < text.length() && text.at(p + 1) >= '0' && text.at(p + 1) <= '9'))
-                {
-                    /* we don't like -rN.x where x is not a digit */
-                    break;
-                }
-                else
-                    ++p;
+                /* we don't like -r.x */
+                break;
             }
-            while (true);
+            else if (! parser.lookahead(simple_parser::exact(".") & simple_parser::any_of("0123456789")))
+            {
+                /* we don't like -rN.x where x is not a digit */
+                break;
+            }
+            else if (! parser.consume(simple_parser::exact(".")))
+                throw BadVersionSpecError(text, "Expected . or end after revision number at offset " + stringify(parser.offset()));
         }
+        while (true);
+    }
 
     /* trailing stuff? */
-    if (p < text.length())
-        throw BadVersionSpecError(text, "unexpected trailing text '" + text.substr(p) + "'");
+    if (! parser.eof())
+        throw BadVersionSpecError(text, "unexpected trailing text '" + text.substr(parser.offset()) + "'");
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :

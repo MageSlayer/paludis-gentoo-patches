@@ -19,6 +19,7 @@
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environment.hh>
+#include <paludis/elike_use_requirement.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
@@ -30,37 +31,6 @@
 using namespace paludis;
 
 #include <paludis/user_dep_spec-se.cc>
-
-namespace
-{
-    struct UserUseRequirement :
-        AdditionalPackageDepSpecRequirement
-    {
-        bool inverse;
-        UseFlagName f;
-
-        UserUseRequirement(const std::string & s) :
-            inverse((! s.empty()) && ('-' == s.at(0))),
-            f(inverse ? UseFlagName(s.substr(1)) : UseFlagName(s))
-        {
-        }
-
-        virtual bool requirement_met(const Environment * const env, const PackageID & id) const
-        {
-            return env->query_use(f, id) ^ inverse;
-        }
-
-        virtual const std::string as_human_string() const
-        {
-            return "Use flag '" + stringify(f) + "' " + (inverse ? "disabled" : "enabled");
-        }
-
-        virtual const std::string as_raw_string() const
-        {
-            return "[" + std::string(inverse ? "-" : "") + stringify(f) + "]";
-        }
-    };
-}
 
 PackageDepSpec
 paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDepSpecOptions & options)
@@ -155,7 +125,8 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
 
             default:
                 {
-                    std::tr1::shared_ptr<UserUseRequirement> req(new UserUseRequirement(flag));
+                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
+                                std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
                     result.additional_requirement(req);
                 }
                 break;

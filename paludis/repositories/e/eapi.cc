@@ -71,14 +71,14 @@ namespace paludis
                 predefined->insert("PALUDIS_EAPIS_DIR", stringify(d->dirname()));
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), predefined);
 
-                PackageDepSpecParseOptions package_dep_spec_parse_options;
+                ELikePackageDepSpecOptions package_dep_spec_parse_options;
                 {
                     std::list<std::string> package_dep_spec_parse_options_tokens;
                     tokenise_whitespace(k.get("package_dep_spec_parse_options"), std::back_inserter(package_dep_spec_parse_options_tokens));
                     for (std::list<std::string>::const_iterator t(package_dep_spec_parse_options_tokens.begin()),
                             t_end(package_dep_spec_parse_options_tokens.end()) ;
                             t != t_end ; ++t)
-                        package_dep_spec_parse_options += destringify<PackageDepSpecParseOption>(*t);
+                        package_dep_spec_parse_options += destringify<ELikePackageDepSpecOption>(*t);
                 }
 
                 DependencySpecTreeParseOptions dependency_spec_tree_parse_options;

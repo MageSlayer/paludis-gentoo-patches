@@ -50,25 +50,22 @@ namespace paludis
         std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
         const Environment * const env;
-        const std::string eapi;
 
-        Implementation(const Environment * const, const std::string & ea);
+        Implementation(const Environment * const);
     };
 
-    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e, const std::string & ea) :
+    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e) :
         category_names(new CategoryNamePartSet),
-        env(e),
-        eapi(ea)
+        env(e)
     {
     }
 }
 
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
-        const RepositoryName & our_name, const RepositoryCapabilities & caps,
-        const std::string & eapi) :
+        const RepositoryName & our_name, const RepositoryCapabilities & caps) :
     Repository(our_name, caps),
     RepositoryUseInterface(),
-    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e, eapi)),
+    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e)),
     _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
 {
 }
@@ -140,7 +137,7 @@ std::tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
-    std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v, _imp->eapi));
+    std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }

@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/util/config_file.hh>
@@ -44,6 +43,8 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -296,7 +297,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 _imp->environment->package_database()->query(
                                     query::Matches(make_package_dep_spec()
                                         .package(glsa_pkg->name())
-                                        .slot_requirement(make_shared_ptr(new erepository::ESlotExactRequirement((*c)->slot(), false)))) &
+                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false)))) &
                                     query::SupportsAction<InstallAction>() &
                                     query::NotMasked(),
                                     qo_order_by_version));

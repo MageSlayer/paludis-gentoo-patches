@@ -20,6 +20,7 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	libpaludis.la \

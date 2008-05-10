@@ -19,8 +19,7 @@
 
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository_base.hh>
-#include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/fake/dep_parser.hh>
 #include <paludis/name.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -43,6 +42,7 @@
 #include <sstream>
 
 using namespace paludis;
+using namespace paludis::fakerepository;
 
 namespace paludis
 {
@@ -364,7 +364,6 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         SlotName slot;
-        std::string eapi;
 
         mutable std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         mutable std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
@@ -388,22 +387,19 @@ namespace paludis
         mutable bool has_masks;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const FakeRepositoryBase> & r,
-                const QualifiedPackageName & q, const VersionSpec & v, const PackageID * const id,
-                const std::string & my_eapi) :
+                const QualifiedPackageName & q, const VersionSpec & v, const PackageID * const id) :
             env(e),
             repository(r),
             name(q),
             version(v),
             slot("0"),
-            eapi(my_eapi),
             build_dependencies_labels(new DependencyLabelSequence),
             run_dependencies_labels(new DependencyLabelSequence),
             post_dependencies_labels(new DependencyLabelSequence),
             suggested_dependencies_labels(new DependencyLabelSequence),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "",
-                        (*(*erepository::EAPIData::get_instance()->eapi_from_string(eapi))[k::supported()])[k::iuse_flag_parse_options()],
-                        mkt_normal, id, env)),
+                        IUseFlagParseOptions() + iufpo_allow_iuse_defaults + iufpo_strict_parsing, mkt_normal, id, env)),
             has_masks(false)
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
@@ -416,8 +412,8 @@ namespace paludis
 }
 
 FakePackageID::FakePackageID(const Environment * const e, const std::tr1::shared_ptr<const FakeRepositoryBase> & r,
-        const QualifiedPackageName & q, const VersionSpec & v, const std::string & eapi) :
-    PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v, this, eapi)),
+        const QualifiedPackageName & q, const VersionSpec & v) :
+    PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v, this)),
     _imp(PrivateImplementationPattern<FakePackageID>::_imp)
 {
     add_metadata_key(_imp->keywords);
@@ -677,40 +673,40 @@ FakePackageID::need_keys_added() const
         using namespace std::tr1::placeholders;
 
         _imp->build_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                    "", std::tr1::bind(&erepository::parse_depend, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
+                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                        shared_from_this()),
                     _imp->build_dependencies_labels, mkt_dependencies));
 
         _imp->run_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                    "", std::tr1::bind(&erepository::parse_depend, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
+                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                        shared_from_this()),
                     _imp->run_dependencies_labels, mkt_dependencies)),
 
         _imp->post_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                    "", std::tr1::bind(&erepository::parse_depend, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
+                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                        shared_from_this()),
                     _imp->post_dependencies_labels, mkt_dependencies)),
 
         _imp->suggested_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                    "", std::tr1::bind(&erepository::parse_depend, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)),
+                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                        shared_from_this()),
                     _imp->suggested_dependencies_labels, mkt_dependencies)),
 
         _imp->src_uri.reset(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URI",
-                    "", std::tr1::bind(&erepository::parse_fetchable_uri, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+                    "", std::tr1::bind(&parse_fetchable_uri, _1, _imp->env,
+                        shared_from_this()), mkt_normal));
 
         _imp->homepage.reset(new FakeMetadataSpecTreeKey<SimpleURISpecTree>("HOMEPAGE", "Homepage",
-                    "", std::tr1::bind(&erepository::parse_simple_uri, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+                    "", std::tr1::bind(&parse_simple_uri, _1, _imp->env,
+                        shared_from_this()), mkt_normal));
 
         _imp->license.reset(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "License",
-                    "", std::tr1::bind(&erepository::parse_license, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+                    "", std::tr1::bind(&parse_license, _1, _imp->env,
+                        shared_from_this()), mkt_normal));
 
         _imp->provide.reset(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provide",
-                    "", std::tr1::bind(&erepository::parse_provide, _1, _imp->env,
-                        shared_from_this(), *erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)), mkt_normal));
+                    "", std::tr1::bind(&parse_provide, _1, _imp->env,
+                        shared_from_this()), mkt_normal));
 
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
@@ -965,7 +961,7 @@ FakePackageID::transient_key() const
 char
 FakePackageID::use_expand_separator() const
 {
-    return (*(*erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi))[k::supported()])[k::ebuild_options()].use_expand_separator;
+    return '_';
 }
 
 std::string

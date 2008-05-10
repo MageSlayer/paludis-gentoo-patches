@@ -18,18 +18,20 @@
  */
 
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/query.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -141,8 +143,9 @@ namespace
                 if (matches->empty())
                     break;
 
-                PackageDepSpec new_s(partial_parse_e_package_dep_spec(stringify(s), eapi, id).slot_requirement(
-                            make_shared_ptr(new ESlotExactRequirement((*matches->last())->slot(), true))));
+                PackageDepSpec new_s(partial_parse_elike_package_dep_spec(stringify(s),
+                            (*eapi[k::supported()])[k::package_dep_spec_parse_options()], id).slot_requirement(
+                            make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot(), true))));
 
                 c.reset(new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(
                                 PackageDepSpec(new_s).clone())));

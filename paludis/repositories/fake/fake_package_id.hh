@@ -203,7 +203,7 @@ namespace paludis
 
             FakePackageID(const Environment * const e,
                     const std::tr1::shared_ptr<const FakeRepositoryBase> &,
-                    const QualifiedPackageName &, const VersionSpec &, const std::string & eapi);
+                    const QualifiedPackageName &, const VersionSpec &);
             ~FakePackageID();
 
             ///\}

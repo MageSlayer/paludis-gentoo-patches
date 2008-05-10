@@ -203,7 +203,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
 
             TEST_CHECK_THROWS(parse_depend("|| ( one/one foo? ( two/two ) )",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
 
             DepSpecPrettyPrinter e(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
@@ -300,7 +300,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
 
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> b",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), Exception);
         }
     } test_dep_spec_parser_uri;
 
@@ -322,15 +322,15 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) ) ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend(")",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
         }
     } test_dep_spec_parser_bad_nesting;
 
@@ -352,40 +352,38 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             TEST_CHECK_THROWS(parse_depend("||",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("|| ",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("foo?",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!? ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!foo? ||",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("(((",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend(")",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("(foo/bar)",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_license("a -> b",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
 
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("foo? -> bar",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a ->",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> || ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(parse_fetchable_uri("a -> foo? ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), Exception);
         }
     } test_dep_spec_parser_bad_values;
 
@@ -409,7 +407,7 @@ namespace test_cases
                     &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "build: one/one");
             TEST_CHECK_THROWS(parse_depend("build: one/one",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringParseError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), EDepParseError);
         }
     } test_dep_spec_parser_labels;
 
@@ -430,7 +428,7 @@ namespace test_cases
                     &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "http://foo/bar manual: two");
             TEST_CHECK_THROWS(parse_fetchable_uri("http://foo/bar monkey: two",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d), DepStringParseError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d), EDepParseError);
         }
     } test_dep_spec_parser_kdebuild_uri_labels;
 }

@@ -23,6 +23,8 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <tr1/memory>
 #include <iosfwd>
 
 namespace paludis

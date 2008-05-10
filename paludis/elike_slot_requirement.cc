@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,22 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH 1
+#include <paludis/elike_slot_requirement.hh>
+#include <paludis/util/stringify.hh>
 
-#include <iosfwd>
-#include <paludis/util/attributes.hh>
-#include <paludis/util/options-fwd.hh>
+using namespace paludis;
 
-namespace paludis
+ELikeSlotExactRequirement::ELikeSlotExactRequirement(const SlotName & s, const bool e) :
+    _s(s),
+    _e(e)
 {
-    namespace erepository
-    {
-#include <paludis/repositories/e/dep_parser-se.hh>
-
-        typedef Options<DependencySpecTreeParseOption> DependencySpecTreeParseOptions;
-    }
-
 }
 
-#endif
+const std::string
+ELikeSlotExactRequirement::as_string() const
+{
+    return ":" + std::string(_e ? "=" : "") + stringify(_s);
+}
+
+const SlotName
+ELikeSlotExactRequirement::slot() const
+{
+    return _s;
+}
+
+const std::string
+ELikeSlotAnyUnlockedRequirement::as_string() const
+{
+    return ":*";
+}
+
+const std::string
+ELikeSlotAnyLockedRequirement::as_string() const
+{
+    return ":=";
+}
+

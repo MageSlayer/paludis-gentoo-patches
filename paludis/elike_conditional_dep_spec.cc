@@ -17,23 +17,30 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/conditional_dep_spec.hh>
-#include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/elike_conditional_dep_spec.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/log.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/name.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
-#include <paludis/dep_spec.hh>
 #include <paludis/repository.hh>
-#include <paludis/literal_metadata_key.hh>
-#include <paludis/metadata_key_holder.hh>
+#include <ostream>
+#include <string>
 
 using namespace paludis;
-using namespace paludis::erepository;
+
+ELikeConditionalDepSpecParseError::ELikeConditionalDepSpecParseError(const std::string & s, const std::string & m) throw () :
+    Exception("Error parsing conditional dep spec '" + s + "': " + m)
+{
+}
 
 namespace
 {
@@ -52,18 +59,15 @@ namespace
             env(e),
             id(i)
         {
-            if (! i)
-                Log::get_instance()->message("e.conditional_dep_spec.no_id", ll_warning, lc_context) << "! i";
-
             if (s.empty())
-                throw DepStringParseError(s, "missing use flag name");
+                throw ELikeConditionalDepSpecParseError(s, "missing use flag name");
 
             if (s.at(s.length() - 1) != '?')
-                throw DepStringParseError(s, "missing ? on use conditional");
+                throw ELikeConditionalDepSpecParseError(s, "missing ? on use conditional");
 
             inverse = '!' == s.at(0);
             if (s.length() < (inverse ? 3 : 2))
-                throw DepStringParseError(s, "missing flag name on use conditional");
+                throw ELikeConditionalDepSpecParseError(s, "missing flag name on use conditional");
 
             flag = UseFlagName(s.substr(inverse ? 1 : 0, s.length() - (inverse ? 2 : 1)));
 
@@ -106,14 +110,14 @@ namespace
 }
 
 ConditionalDepSpec
-paludis::erepository::parse_e_conditional_dep_spec(const std::string & s,
-        const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
+paludis::parse_elike_conditional_dep_spec(const std::string & s,
+        const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id)
 {
     return ConditionalDepSpec(make_shared_ptr(new EConditionalDepSpecData(s, env, id)));
 }
 
 UseFlagName
-paludis::erepository::conditional_dep_spec_flag(const ConditionalDepSpec & spec)
+paludis::elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec)
 {
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Flag"));
     if (i == spec.end_metadata())
@@ -125,7 +129,7 @@ paludis::erepository::conditional_dep_spec_flag(const ConditionalDepSpec & spec)
 }
 
 bool
-paludis::erepository::conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec)
+paludis::elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec)
 {
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Inverse"));
     if (i == spec.end_metadata())

@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/merger-fwd.hh>
 #include <paludis/name-fwd.hh>
+#include <paludis/elike_package_dep_spec-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -74,7 +75,7 @@ namespace paludis
          * \nosubgrouping
          */
         typedef kc::KeyedClass<
-            kc::Field<k::package_dep_spec_parse_options, erepository::PackageDepSpecParseOptions>,
+            kc::Field<k::package_dep_spec_parse_options, ELikePackageDepSpecOptions>,
             kc::Field<k::dependency_spec_tree_parse_options, erepository::DependencySpecTreeParseOptions>,
             kc::Field<k::iuse_flag_parse_options, IUseFlagParseOptions>,
             kc::Field<k::merger_options, MergerOptions>,

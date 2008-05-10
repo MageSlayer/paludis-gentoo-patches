@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/pipe_command_handler.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 

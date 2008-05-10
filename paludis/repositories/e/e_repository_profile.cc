@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/util/log.hh>
@@ -469,8 +468,10 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 
                 Context context_spec("When parsing '" + *i + "':");
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                            erepository::parse_e_package_dep_spec(i->substr(1), *erepository::EAPIData::get_instance()->eapi_from_string(
-                                    repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
+                            parse_elike_package_dep_spec(i->substr(1),
+                                (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                    repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
+                                std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
                 system_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
@@ -501,8 +502,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 QualifiedPackageName v(tokens[0]);
                 virtuals.erase(v);
                 virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    erepository::parse_e_package_dep_spec(tokens[1], *erepository::EAPIData::get_instance()->eapi_from_string(
-                                            repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())))));
+                                    parse_elike_package_dep_spec(tokens[1], (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                                    repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
+                                        std::tr1::shared_ptr<const PackageID>())))));
             }
         }
         catch (const InternalError &)
@@ -524,8 +526,9 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
-                        erepository::parse_e_package_dep_spec(line->first, *erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
+                        parse_elike_package_dep_spec(line->first, (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                        repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
+                            std::tr1::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
@@ -606,8 +609,9 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
-                        erepository::parse_e_package_dep_spec(*tokens.begin(), *erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi), std::tr1::shared_ptr<const PackageID>())));
+                        parse_elike_package_dep_spec(*tokens.begin(), (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                        repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
+                                std::tr1::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;

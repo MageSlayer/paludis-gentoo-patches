@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,22 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ELIKE_CONDITIONAL_DEP_SPEC_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_ELIKE_CONDITIONAL_DEP_SPEC_FWD_HH 1
 
-#include <iosfwd>
-#include <paludis/util/attributes.hh>
-#include <paludis/util/options-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <string>
 
 namespace paludis
 {
-    namespace erepository
-    {
-#include <paludis/repositories/e/dep_parser-se.hh>
+    class ELikeConditionalDepSpecParseError;
 
-        typedef Options<DependencySpecTreeParseOption> DependencySpecTreeParseOptions;
-    }
+    ConditionalDepSpec parse_elike_conditional_dep_spec(const std::string &,
+            const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
+    bool elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;
+
+    UseFlagName elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;
 }
 
 #endif

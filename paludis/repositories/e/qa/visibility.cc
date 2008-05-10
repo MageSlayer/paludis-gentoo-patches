@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
-#include <paludis/repositories/e/conditional_dep_spec.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -37,6 +36,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/elike_conditional_dep_spec.hh>
 #include <set>
 #include <algorithm>
 
@@ -205,8 +205,8 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             viable =
-                ((! conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_masked(conditional_dep_spec_flag(u), *id))) ||
-                ((conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_forced(conditional_dep_spec_flag(u), *id)));
+                ((! elike_conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_masked(elike_conditional_dep_spec_flag(u), *id))) ||
+                ((elike_conditional_dep_spec_is_inverse(u)) && (! (*profile)[k::profile()]->use_forced(elike_conditional_dep_spec_flag(u), *id)));
 
             if (viable)
                 std::for_each(cur, end, accept_visitor(*this));

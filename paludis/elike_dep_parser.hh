@@ -17,25 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_CONDITIONAL_DEP_SPEC_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_CONDITIONAL_DEP_SPEC_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ELIKE_DEP_PARSER_HH
+#define PALUDIS_GUARD_PALUDIS_ELIKE_DEP_PARSER_HH 1
 
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/environment-fwd.hh>
-#include <paludis/name-fwd.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/repositories/e/eapi-fwd.hh>
+#include <paludis/elike_dep_parser-fwd.hh>
 
 namespace paludis
 {
-    namespace erepository
-    {
-        ConditionalDepSpec parse_e_conditional_dep_spec(const std::string &,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
-
-        UseFlagName conditional_dep_spec_flag(const ConditionalDepSpec &) PALUDIS_VISIBLE;
-        bool conditional_dep_spec_is_inverse(const ConditionalDepSpec &) PALUDIS_VISIBLE;
-    }
 }
 
 #endif

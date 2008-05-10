@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
@@ -33,6 +32,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/query.hh>
+#include <paludis/elike_package_dep_spec.hh>
 
 #include <set>
 #include <ostream>
@@ -137,9 +137,9 @@ ERepositoryNews::update_news() const
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! _imp->environment->package_database()->query(
-                                query::Matches(PackageDepSpec(erepository::parse_e_package_dep_spec(*i,
-                                            *erepository::EAPIData::get_instance()->eapi_from_string(
-                                                _imp->e_repository->params().profile_eapi),
+                                query::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
+                                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(
+                                                _imp->e_repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
                                             std::tr1::shared_ptr<const PackageID>()))) &
                                 query::SupportsAction<InstalledAction>(),
                                 qo_whatever)->empty())

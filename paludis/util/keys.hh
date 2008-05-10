@@ -163,6 +163,18 @@ namespace paludis
         typedef kc::Key<134> magic;
         typedef kc::Key<135> mutex;
         typedef kc::Key<136> ndbam;
+        typedef kc::Key<137> on_string;
+        typedef kc::Key<138> on_arrow;
+        typedef kc::Key<139> on_any;
+        typedef kc::Key<140> on_use;
+        typedef kc::Key<141> on_label;
+        typedef kc::Key<142> on_pop;
+        typedef kc::Key<143> on_should_be_empty;
+        typedef kc::Key<144> on_all;
+        typedef kc::Key<145> on_error;
+        typedef kc::Key<146> add_handler;
+        typedef kc::Key<147> item;
+        typedef kc::Key<148> on_use_under_any;
     }
 }
 

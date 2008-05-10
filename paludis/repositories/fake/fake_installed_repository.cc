@@ -66,8 +66,7 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
             (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
             (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
-            "0"),
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
     PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {

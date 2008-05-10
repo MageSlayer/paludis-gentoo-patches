@@ -38,7 +38,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
-#include <paludis/repositories/e/conditional_dep_spec.hh>
+#include <paludis/elike_conditional_dep_spec.hh>
 #include <algorithm>
 #include <map>
 #include <set>
@@ -183,34 +183,34 @@ namespace
                             .with_associated_id(id)
                             .with_associated_key(id, key));
 
-            if (uses.count(conditional_dep_spec_flag(u)))
+            if (uses.count(elike_conditional_dep_spec_flag(u)))
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Recursive use of flag '" + stringify(conditional_dep_spec_flag(u)) + "' in '"
+                            "Recursive use of flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '"
                             + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
 
-            if ((*id->repository())[k::use_interface()]->arch_flags()->count(conditional_dep_spec_flag(u)))
+            if ((*id->repository())[k::use_interface()]->arch_flags()->count(elike_conditional_dep_spec_flag(u)))
             {
                 if (forbid_arch_flags)
                     reporter.message(QAMessage(entry, qaml_normal, name,
-                                "Arch flag '" + stringify(conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
+                                "Arch flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
                                 .with_associated_id(id)
                                 .with_associated_key(id, key));
-                else if (conditional_dep_spec_is_inverse(u) && forbid_inverse_arch_flags)
+                else if (elike_conditional_dep_spec_is_inverse(u) && forbid_inverse_arch_flags)
                     reporter.message(QAMessage(entry, qaml_maybe, name,
-                                "Inverse arch flag '" + stringify(conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
+                                "Inverse arch flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
                                 .with_associated_id(id)
                                 .with_associated_key(id, key));
             }
 
             else
             {
-                if (iuse_flags.end() == iuse_flags.find(conditional_dep_spec_flag(u)))
+                if (iuse_flags.end() == iuse_flags.find(elike_conditional_dep_spec_flag(u)))
                 {
                     std::tr1::shared_ptr<const UseFlagNameSet> c(
                         (*id->repository())[k::use_interface()]->use_expand_hidden_prefixes());
-                    std::string flag(stringify(conditional_dep_spec_flag(u)));
+                    std::string flag(stringify(elike_conditional_dep_spec_flag(u)));
                     bool is_hidden(false);
 
                     for (UseFlagNameSet::ConstIterator i(c->begin()), i_end(c->end()) ;
@@ -226,7 +226,7 @@ namespace
 
                     if (! is_hidden)
                         reporter.message(QAMessage(entry, qaml_normal, name,
-                                    "Conditional flag '" + stringify(conditional_dep_spec_flag(u)) +
+                                    "Conditional flag '" + stringify(elike_conditional_dep_spec_flag(u)) +
                                     "' in '" + stringify(key->raw_name()) + "' not in '" +
                                     stringify(id->iuse_key()->raw_name()) + "'")
                                     .with_associated_id(id)
@@ -238,7 +238,7 @@ namespace
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
             Save<std::set<UseFlagName> > save_uses(&uses, uses);
-            uses.insert(conditional_dep_spec_flag(u));
+            uses.insert(elike_conditional_dep_spec_flag(u));
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty 'use? ( )' in '" + stringify(key->raw_name()) + "'")

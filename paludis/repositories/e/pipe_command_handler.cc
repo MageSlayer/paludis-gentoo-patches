@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/pipe_command_handler.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
@@ -104,7 +103,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! (*eapi)[k::supported()])
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
+                            package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()) &&
@@ -143,7 +143,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! (*eapi)[k::supported()])
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
+                            package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if (entries->empty())
@@ -165,7 +166,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! (*eapi)[k::supported()])
                     return "EMATCH EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(erepository::parse_e_package_dep_spec(tokens[2], *eapi, package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
+                            package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
                             query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()))

@@ -34,8 +34,6 @@ libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_
 paludis_repositories_e_include_HEADERS = \
 	aa_visitor.hh \
 	check_fetched_files_visitor.hh \
-	conditional_dep_spec.hh \
-	dep_lexer.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
 	dep_parser-fwd.hh \
@@ -81,12 +79,10 @@ paludis_repositories_e_include_HEADERS = \
 	make_ebuild_repository.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
-	package_dep_spec.hh \
 	pipe_command_handler.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
-	use_requirements.hh \
 	vdb_contents_tokeniser.hh \
 	vdb_id.hh \
 	vdb_merger.hh \
@@ -96,9 +92,7 @@ paludis_repositories_e_include_HEADERS = \
 
 libpaludiserepository_la_SOURCES = \
 	aa_visitor.cc \
-	dep_lexer.cc \
 	check_fetched_files_visitor.cc \
-	conditional_dep_spec.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
@@ -134,13 +128,11 @@ libpaludiserepository_la_SOURCES = \
 	layout.cc \
 	make_ebuild_repository.cc \
 	manifest2_reader.cc \
-	package_dep_spec.cc \
 	pipe_command_handler.cc \
 	registration.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \
 	use_desc.cc \
-	use_requirements.cc \
 	vdb_id.cc \
 	vdb_merger.cc \
 	vdb_repository.cc \
@@ -247,17 +239,6 @@ dep_spec_pretty_printer_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
-dep_lexer_TEST_SOURCES = dep_lexer_TEST.cc
-
-dep_lexer_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/test/libtest.a \
-	$(DYNAMIC_LD_LIBS)
-
 dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
@@ -320,7 +301,6 @@ fix_locked_dependencies_TEST_LDADD = \
 
 EXTRA_DIST = \
 	aa_visitor_TEST.cc \
-	dep_lexer_TEST.cc \
 	dep_parser.se \
 	dep_parser-se.hh \
 	dep_parser-se.cc \
@@ -513,7 +493,6 @@ paludis_datadir = $(datadir)/paludis
 dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
 
 TESTS = \
-	dep_lexer_TEST \
 	dep_parser_TEST \
 	dep_spec_pretty_printer_TEST \
 	e_repository_TEST \

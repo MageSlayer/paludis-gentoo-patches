@@ -1,0 +1,11 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ELikeUseRequirementOption()
+{
+    prefix euro
+    want_destringify
+
+    key euro_allow_self_deps          "Allow self-dependent use deps"
+}
+

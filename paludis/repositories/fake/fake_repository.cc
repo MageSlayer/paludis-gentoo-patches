@@ -58,9 +58,9 @@ namespace paludis
     };
 }
 
-FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :
+FakeRepository::FakeRepository(const Environment * const env, const RepositoryName & r) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(e, our_name, RepositoryCapabilities::named_create()
+    FakeRepositoryBase(env, r, RepositoryCapabilities::named_create()
             (k::sets_interface(), this)
             (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
             (k::use_interface(), this)
@@ -68,14 +68,13 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
             (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    e->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
+                    env->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
             (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
             (k::e_interface(), static_cast<RepositoryEInterface *>(0))
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
             (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
             (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
-            "0"),
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -97,8 +96,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
             (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
             (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0)),
-            params.eapi),
+            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);

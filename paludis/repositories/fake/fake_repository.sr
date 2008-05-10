@@ -7,7 +7,6 @@ make_class_FakeRepositoryParams()
 
     key environment "const Environment *"
     key name "RepositoryName"
-    key eapi "std::string"
 
     doxygen_comment << "END"
         /**

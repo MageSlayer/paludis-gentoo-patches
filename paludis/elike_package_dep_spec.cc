@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,34 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/package_dep_spec.hh>
-#include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/use_requirements.hh>
-#include <paludis/util/stringify.hh>
+#include <paludis/elike_package_dep_spec.hh>
+#include <paludis/elike_use_requirement.hh>
+#include <paludis/elike_slot_requirement.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
-#include <tr1/memory>
 
 using namespace paludis;
-using namespace paludis::erepository;
+
+#include <paludis/elike_package_dep_spec-se.cc>
 
 PartiallyMadePackageDepSpec
-paludis::erepository::partial_parse_e_package_dep_spec(
-        const std::string & ss, const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
+paludis::partial_parse_elike_package_dep_spec(
+        const std::string & ss, const ELikePackageDepSpecOptions & options, const std::tr1::shared_ptr<const PackageID> & id)
 {
-    Context context("When parsing package dep spec '" + ss + "' with eapi '" + stringify(eapi[k::name()]) + "':");
+    Context context("When parsing package dep spec '" + ss + "':");
 
     if (ss.empty())
         throw PackageDepSpecError("Got empty dep spec");
-
-    if (! eapi[k::supported()])
-        throw PackageDepSpecError("Don't know how to parse dep specs using EAPI '" + eapi[k::name()] + "'");
 
     PartiallyMadePackageDepSpec result;
     std::string s(ss);
@@ -53,13 +48,13 @@ paludis::erepository::partial_parse_e_package_dep_spec(
     std::string::size_type use_group_p;
     while (std::string::npos != ((use_group_p = s.rfind('['))))
     {
-        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_square_bracket_deps])
+        if (! options[epdso_allow_square_bracket_deps])
         {
-            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                throw PackageDepSpecError("[] dependencies not safe for use with this EAPI");
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("[] dependencies not safe for use here");
             else
                 Log::get_instance()->message("e.package_dep_spec.brackets_not_allowed", ll_warning, lc_context)
-                    << "[] dependencies not safe for use with this EAPI";
+                    << "[] dependencies not safe for use here";
         }
 
         if (s.at(s.length() - 1) != ']')
@@ -140,74 +135,8 @@ paludis::erepository::partial_parse_e_package_dep_spec(
 
             default:
                 {
-                    std::string raw_flag("[" + flag + "]");
-
-                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req;
-                    if ('=' == flag.at(flag.length() - 1))
-                    {
-                        if (! id)
-                            throw PackageDepSpecError("Cannot use [use=] without an associated ID");
-
-                        flag.erase(flag.length() - 1);
-                        if (flag.empty())
-                            throw PackageDepSpecError("Invalid [] contents");
-                        if ('!' == flag.at(flag.length() - 1))
-                        {
-                            flag.erase(flag.length() - 1);
-                            if (flag.empty())
-                                throw PackageDepSpecError("Invalid [] contents");
-                            req.reset(new NotEqualUseRequirement(raw_flag, UseFlagName(flag), id));
-                        }
-                        else
-                            req.reset(new EqualUseRequirement(raw_flag, UseFlagName(flag), id));
-                    }
-                    else if ('?' == flag.at(flag.length() - 1))
-                    {
-                        if (! id)
-                            throw PackageDepSpecError("Cannot use [use?] without an associated ID");
-
-                        flag.erase(flag.length() - 1);
-                        if (flag.empty())
-                            throw PackageDepSpecError("Invalid [] contents");
-                        if ('!' == flag.at(flag.length() - 1))
-                        {
-                            flag.erase(flag.length() - 1);
-                            if (flag.empty())
-                                throw PackageDepSpecError("Invalid [] contents");
-                            if ('-' == flag.at(0))
-                            {
-                                flag.erase(0, 1);
-                                if (flag.empty())
-                                    throw PackageDepSpecError("Invalid [] contents");
-
-                                req.reset(new IfNotMineThenNotUseRequirement(raw_flag, UseFlagName(flag), id));
-                            }
-                            else
-                                req.reset(new IfNotMineThenUseRequirement(raw_flag, UseFlagName(flag), id));
-                        }
-                        else
-                        {
-                            if ('-' == flag.at(0))
-                            {
-                                flag.erase(0, 1);
-                                if (flag.empty())
-                                    throw PackageDepSpecError("Invalid [] contents");
-
-                                req.reset(new IfMineThenNotUseRequirement(raw_flag, UseFlagName(flag), id));
-                            }
-                            else
-                                req.reset(new IfMineThenUseRequirement(raw_flag, UseFlagName(flag), id));
-                        }
-                    }
-                    else if ('-' == flag.at(0))
-                    {
-                        flag.erase(0, 1);
-                        if (flag.empty())
-                            throw PackageDepSpecError("Invalid [] contents");
-                        req.reset(new DisabledUseRequirement(raw_flag, UseFlagName(flag)));
-                    }
-                    else
-                        req.reset(new EnabledUseRequirement(raw_flag, UseFlagName(flag)));
+                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
+                                id, ELikeUseRequirementOptions() + euro_allow_self_deps));
                     result.additional_requirement(req);
                 }
                 break;
@@ -219,13 +148,13 @@ paludis::erepository::partial_parse_e_package_dep_spec(
     std::string::size_type repo_p;
     if (std::string::npos != ((repo_p = s.rfind("::"))))
     {
-        if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_repository_deps])
+        if (! options[epdso_allow_repository_deps])
         {
-            if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                throw PackageDepSpecError("Repository dependencies not safe for use with this EAPI");
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("Repository dependencies not safe for use here");
             else
                 Log::get_instance()->message("e.package_dep_spec.repository_not_allowed", ll_warning, lc_context)
-                    << "Repository dependencies not safe for use with this EAPI";
+                    << "Repository dependencies not safe for use here";
         }
 
         result.repository(RepositoryName(s.substr(repo_p + 2)));
@@ -241,43 +170,43 @@ paludis::erepository::partial_parse_e_package_dep_spec(
 
         if ("*" == match)
         {
-            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_star_deps])
+            if (! options[epdso_allow_slot_star_deps])
             {
-                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                    throw PackageDepSpecError("Slot '*' dependencies not safe for use with this EAPI");
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Slot '*' dependencies not safe for use here");
                 else
                     Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
-                        << "Slot '*' dependencies not safe for use with this EAPI";
+                        << "Slot '*' dependencies not safe for use here";
             }
-            result.slot_requirement(make_shared_ptr(new ESlotAnyUnlockedRequirement));
+            result.slot_requirement(make_shared_ptr(new ELikeSlotAnyUnlockedRequirement));
         }
         else if ('=' == match.at(0))
         {
-            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_equal_deps])
+            if (! options[epdso_allow_slot_equal_deps])
             {
-                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                    throw PackageDepSpecError("Slot '=' dependencies not safe for use with this EAPI");
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Slot '=' dependencies not safe for use here");
                 else
                     Log::get_instance()->message("e.package_dep_spec.slot_equals_not_allowed", ll_warning, lc_context)
-                        << "Slot '=' dependencies not safe for use with this EAPI";
+                        << "Slot '=' dependencies not safe for use here";
             }
 
             if (1 == match.length())
-                result.slot_requirement(make_shared_ptr(new ESlotAnyLockedRequirement));
+                result.slot_requirement(make_shared_ptr(new ELikeSlotAnyLockedRequirement));
             else
-                result.slot_requirement(make_shared_ptr(new ESlotExactRequirement(SlotName(s.substr(slot_p + 2)), true)));
+                result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 2)), true)));
         }
         else
         {
-            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_slot_deps])
+            if (! options[epdso_allow_slot_deps])
             {
-                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                    throw PackageDepSpecError("Slot dependencies not safe for use with this EAPI");
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Slot dependencies not safe for use here");
                 else
                     Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
-                        << "Slot dependencies not safe for use with this EAPI";
+                        << "Slot dependencies not safe for use here";
             }
-            result.slot_requirement(make_shared_ptr(new ESlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
+            result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
         }
         s.erase(slot_p);
     }
@@ -293,13 +222,13 @@ paludis::erepository::partial_parse_e_package_dep_spec(
         VersionOperator op(s.substr(0, p));
 
         if (op == vo_tilde_greater)
-            if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_allow_tilde_greater_deps])
+            if (! options[epdso_allow_tilde_greater_deps])
             {
-                if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
-                    throw PackageDepSpecError("~> dependencies not safe for use with this EAPI");
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("~> dependencies not safe for use here");
                 else
                     Log::get_instance()->message("e.package_dep_spec.tilde_greater_not_allowed", ll_warning, lc_context)
-                        << "~> dependencies not safe for use with this EAPI";
+                        << "~> dependencies not safe for use here";
             }
 
         std::string::size_type q(p);
@@ -330,16 +259,14 @@ paludis::erepository::partial_parse_e_package_dep_spec(
         std::string t(s.substr(p, q - p - 1));
         if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
         {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with eapi '"
-                    + stringify(eapi[k::name()]) + "'");
+            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
 
             if (0 != t.compare(t.length() - 2, 2, "/*"))
                 result.package_name_part(PackageNamePart(t.substr(2)));
         }
         else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
         {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with eapi '"
-                    + stringify(eapi[k::name()]) + "'");
+            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
 
             result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
         }
@@ -350,9 +277,9 @@ paludis::erepository::partial_parse_e_package_dep_spec(
         {
             if (op != vo_equal)
             {
-                if (! (*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_star_operator])
+                if (! options[epdso_strict_star_operator])
                 {
-                    if ((*eapi[k::supported()])[k::package_dep_spec_parse_options()][pdspo_strict_parsing])
+                    if (options[epdso_strict_parsing])
                         throw PackageDepSpecError(
                                 "Package dep spec '" + ss + "' uses * "
                                 "with operator '" + stringify(op) + "'");
@@ -373,16 +300,14 @@ paludis::erepository::partial_parse_e_package_dep_spec(
     {
         if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
         {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse eapi '"
-                    + stringify(eapi[k::name()]) + "'");
+            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
 
             if (0 != s.compare(s.length() - 2, 2, "/*"))
                 result.package_name_part(PackageNamePart(s.substr(2)));
         }
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with EAPI '"
-                    + stringify(eapi[k::name()]) + "'");
+            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
 
             result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
@@ -394,38 +319,9 @@ paludis::erepository::partial_parse_e_package_dep_spec(
 }
 
 PackageDepSpec
-paludis::erepository::parse_e_package_dep_spec(const std::string & ss, const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
+paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions & options,
+        const std::tr1::shared_ptr<const PackageID> & id)
 {
-    return partial_parse_e_package_dep_spec(ss, eapi, id);
-}
-
-ESlotExactRequirement::ESlotExactRequirement(const SlotName & s, const bool e) :
-    _s(s),
-    _e(e)
-{
-}
-
-const std::string
-ESlotExactRequirement::as_string() const
-{
-    return ":" + std::string(_e ? "=" : "") + stringify(_s);
-}
-
-const SlotName
-ESlotExactRequirement::slot() const
-{
-    return _s;
-}
-
-const std::string
-ESlotAnyUnlockedRequirement::as_string() const
-{
-    return ":*";
-}
-
-const std::string
-ESlotAnyLockedRequirement::as_string() const
-{
-    return ":=";
+    return partial_parse_elike_package_dep_spec(ss, options, id);
 }
 

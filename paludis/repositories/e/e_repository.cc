@@ -30,7 +30,6 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_entries.hh>
-#include <paludis/repositories/e/package_dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
@@ -53,6 +52,7 @@
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/qa.hh>
+#include <paludis/elike_package_dep_spec.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -147,8 +147,9 @@ namespace
                         std::tr1::shared_ptr<MetadataKey> key;
                         std::tr1::shared_ptr<const PackageIDSequence> q(
                                 _env->package_database()->query(
-                                    query::Matches(erepository::parse_e_package_dep_spec(*i,
-                                            *erepository::EAPIData::get_instance()->eapi_from_string(_p),
+                                    query::Matches(parse_elike_package_dep_spec(*i,
+                                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(_p))
+                                             [k::supported()])[k::package_dep_spec_parse_options()],
                                             std::tr1::shared_ptr<const PackageID>())) &
                                     query::InstalledAtRoot(_env->root()),
                                     qo_order_by_version));
@@ -582,9 +583,10 @@ ERepository::repository_masked(const PackageID & id) const
         {
             try
             {
-                std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(erepository::parse_e_package_dep_spec(
+                std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(parse_elike_package_dep_spec(
                                 line->first,
-                                *erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi),
+                                (*(*erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi))
+                                 [k::supported()])[k::package_dep_spec_parse_options()],
                                 std::tr1::shared_ptr<const PackageID>())));
                 if (a->package_ptr())
                     _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));

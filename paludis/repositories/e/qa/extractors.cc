@@ -31,7 +31,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/repositories/e/conditional_dep_spec.hh>
+#include <paludis/elike_conditional_dep_spec.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <map>
@@ -118,7 +118,7 @@ namespace
                 GenericSpecTree::ConstSequenceIterator end)
         {
             Save<std::set<UseFlagName> > save_current(&current);
-            current.insert(conditional_dep_spec_flag(u));
+            current.insert(elike_conditional_dep_spec_flag(u));
             std::for_each(cur, end, accept_visitor(*this));
         }
 
@@ -236,8 +236,8 @@ namespace
         {
             Save<std::map<UseFlagName, bool> > save_current(&current);
             std::pair<std::map<UseFlagName, bool>::const_iterator, bool> p(current.insert(std::make_pair(
-                            conditional_dep_spec_flag(u), ! conditional_dep_spec_is_inverse(u))));
-            if (p.second || (p.first->second == ! conditional_dep_spec_is_inverse(u)))
+                            elike_conditional_dep_spec_flag(u), ! elike_conditional_dep_spec_is_inverse(u))));
+            if (p.second || (p.first->second == ! elike_conditional_dep_spec_is_inverse(u)))
                 std::for_each(cur, end, accept_visitor(*this));
         }
 
