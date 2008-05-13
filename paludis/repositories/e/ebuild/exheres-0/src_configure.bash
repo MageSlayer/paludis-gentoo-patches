@@ -24,11 +24,11 @@ default_src_configure()
 {
     if [[ -x ${ECONF_SOURCE:-.}/configure ]] ; then
         econf \
-            ${DEFAULT_SRC_CONFIGURE_PARAMS} \
-            $(for s in ${DEFAULT_SRC_CONFIGURE_OPTION_ENABLES} ; do \
+            ${DEFAULT_SRC_CONFIGURE_PARAMS[@]} \
+            $(for s in ${DEFAULT_SRC_CONFIGURE_OPTION_ENABLES[@]} ; do \
                 option_enable "${s}" ; \
             done ) \
-            $(for s in ${DEFAULT_SRC_CONFIGURE_OPTION_WITHS} ; do \
+            $(for s in ${DEFAULT_SRC_CONFIGURE_OPTION_WITHS[@]} ; do \
                 option_with "${s}" ; \
             done )
     fi
