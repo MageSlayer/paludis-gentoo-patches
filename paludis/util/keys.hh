@@ -175,6 +175,7 @@ namespace paludis
         typedef kc::Key<146> add_handler;
         typedef kc::Key<147> item;
         typedef kc::Key<148> on_use_under_any;
+        typedef kc::Key<149> on_annotations;
     }
 }
 

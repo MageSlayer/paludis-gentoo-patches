@@ -19,6 +19,8 @@
 
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -39,6 +41,15 @@ namespace
 
     void do_nothing()
     {
+    }
+
+    void handle_annotations(std::string & s, const std::tr1::shared_ptr<const Map<std::string, std::string> > & m)
+    {
+        s.append("[");
+        for (Map<std::string, std::string>::ConstIterator i(m->begin()), i_end(m->end()) ;
+                i != i_end ; ++i)
+            s.append(i->first + ":" + i->second + ";");
+        s.append("]");
     }
 }
 
@@ -64,6 +75,7 @@ namespace test_cases
                     (k::on_error(), std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""))
                     (k::on_should_be_empty(), std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""))
                     (k::on_use_under_any(), &do_nothing)
+                    (k::on_annotations(), std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1))
                     );
             parse_elike_dependencies(in, callbacks);
             TEST_CHECK_EQUAL(out, "any<s<a>s<b>all<s<c>s<d>s<e>>>EMPTY");
@@ -90,10 +102,38 @@ namespace test_cases
                     (k::on_error(), std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""))
                     (k::on_should_be_empty(), std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""))
                     (k::on_use_under_any(), &do_nothing)
+                    (k::on_annotations(), std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1))
                     );
             parse_elike_dependencies(in, callbacks);
             TEST_CHECK_EQUAL(out, "all<all<>>EMPTY");
         }
     } elike_dep_parser_test_empty_blocks;
+
+    struct ELikeDepParserAnnotationsTest : TestCase
+    {
+        ELikeDepParserAnnotationsTest() : TestCase("annotations") { }
+
+        void run()
+        {
+            using namespace std::tr1::placeholders;
+
+            std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
+            ELikeDepParserCallbacks callbacks(ELikeDepParserCallbacks::named_create()
+                    (k::on_string(), std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""))
+                    (k::on_arrow(), std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"))
+                    (k::on_any(), std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""))
+                    (k::on_all(), std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""))
+                    (k::on_use(), std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""))
+                    (k::on_label(), std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""))
+                    (k::on_pop(), std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""))
+                    (k::on_error(), std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""))
+                    (k::on_should_be_empty(), std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""))
+                    (k::on_use_under_any(), &do_nothing)
+                    (k::on_annotations(), std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1))
+                    );
+            parse_elike_dependencies(in, callbacks);
+            TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
+        }
+    } elike_dep_parser_annotations_test;
 }
 

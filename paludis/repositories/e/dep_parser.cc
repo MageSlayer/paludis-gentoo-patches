@@ -210,6 +210,10 @@ namespace
     void do_nothing()
     {
     }
+
+    void discard_annotations(const std::tr1::shared_ptr<const Map<std::string, std::string> > &)
+    {
+    }
 }
 
 std::tr1::shared_ptr<DependencySpecTree::ConstItem>
@@ -238,6 +242,7 @@ paludis::erepository::parse_depend(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);
@@ -271,6 +276,7 @@ paludis::erepository::parse_provide(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);
@@ -304,6 +310,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);
@@ -337,6 +344,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), &do_nothing)
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);
@@ -370,6 +378,7 @@ paludis::erepository::parse_license(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);
@@ -403,6 +412,7 @@ paludis::erepository::parse_restrict(const std::string & s,
             (k::on_error(), std::tr1::bind(&error_handler, s, _1))
             (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<RestrictSpecTree>, std::tr1::ref(stack), s))
             (k::on_use_under_any(), &do_nothing)
+            (k::on_annotations(), &discard_annotations)
             );
 
     parse_elike_dependencies(s, callbacks);

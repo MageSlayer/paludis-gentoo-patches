@@ -22,6 +22,8 @@
 #include <paludis/util/kc.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 
 using namespace paludis;
@@ -35,6 +37,96 @@ namespace
         callbacks[k::on_error()](parser.text(), parser.offset(), msg);
         throw InternalError(PALUDIS_HERE, "Got error '" + msg + "' parsing '" + parser.text() +
                 "', but the error function returned");
+    }
+
+    void parse_annotations(SimpleParser & parser, const ELikeDepParserCallbacks & callbacks)
+    {
+        Context context("When parsing annotation block at offset '" + stringify(parser.offset()) + "':");
+
+        if (! parser.consume(*simple_parser::any_of(" \t\r\n") & simple_parser::exact("[[")))
+            return;
+
+        if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+            error(parser, callbacks, "Expected space after '[['");
+
+        std::tr1::shared_ptr<Map<std::string, std::string> > annotations(new Map<std::string, std::string>);
+        while (true)
+        {
+            std::string word;
+
+            if (parser.eof())
+                error(parser, callbacks, "Reached end of text but wanted ']]'");
+            else if (parser.consume(+simple_parser::any_of(" \t\r\n")))
+            {
+            }
+            else if (parser.consume(simple_parser::exact("]]")))
+                break;
+            else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> word))
+            {
+                if ("=" == word)
+                    error(parser, callbacks, "Equals not allowed here");
+                else if ("[" == word || "]" == word)
+                    error(parser, callbacks, "Brackets not allowed here");
+
+                if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                    error(parser, callbacks, "Expected space after annotation key");
+
+                if (! parser.consume(simple_parser::exact("=")))
+                    error(parser, callbacks, "Expected equals after space after annotation key");
+
+                if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                    error(parser, callbacks, "Expected space after equals");
+
+                std::string value;
+
+                if (parser.consume(simple_parser::exact("[")))
+                {
+                    if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                        error(parser, callbacks, "Expected space after annotation quote");
+
+                    while (true)
+                    {
+                        std::string v;
+                        if (parser.eof())
+                            error(parser, callbacks, "Reached end of text but wanted ']'");
+                        else if (parser.consume(+simple_parser::any_of(" \t\r\n")))
+                        {
+                        }
+                        else if (parser.consume(simple_parser::exact("]")))
+                            break;
+                        else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> v))
+                        {
+                            if (! value.empty())
+                                value.append(" ");
+                            value.append(v);
+                        }
+                        else
+                            error(parser, callbacks, "Expected word or ']'");
+                    }
+
+                    if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                        error(parser, callbacks, "Expected space after ']'");
+                }
+                else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> value))
+                {
+                }
+                else
+                    error(parser, callbacks, "Expected word or quoted string after equals");
+
+                if (annotations->end() != annotations->find(word))
+                    error(parser, callbacks, "Duplicate annotation key '" + word + "'");
+                else
+                    annotations->insert(word, value);
+            }
+            else
+                error(parser, callbacks, "Couldn't find annotation key");
+        }
+
+        if (! parser.eof())
+            if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                error(parser, callbacks, "Expected space or eof after ']]'");
+
+        callbacks[k::on_annotations()](annotations);
     }
 
     void
@@ -73,6 +165,7 @@ namespace
                         if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
                             error(parser, callbacks, "Expected space or end of text after ')'");
                     callbacks[k::on_pop()]();
+                    parse_annotations(parser, callbacks);
                     return;
                 }
                 else
@@ -118,6 +211,7 @@ namespace
                 else if (':' == word.at(word.length() - 1))
                 {
                     callbacks[k::on_label()](word);
+                    parse_annotations(parser, callbacks);
                 }
                 else if (parser.consume(+simple_parser::any_of(" \t\r\n") & simple_parser::exact("->")))
                 {
@@ -132,9 +226,13 @@ namespace
                         error(parser, callbacks, "Expected word after '->' then space");
 
                     callbacks[k::on_arrow()](word, second);
+                    parse_annotations(parser, callbacks);
                 }
                 else
+                {
                     callbacks[k::on_string()](word);
+                    parse_annotations(parser, callbacks);
+                }
             }
             else
                 error(parser, callbacks, "Unexpected trailing text");
