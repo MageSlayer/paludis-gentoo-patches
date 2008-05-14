@@ -520,12 +520,14 @@ namespace
     };
 
     /*
+     * Document-method: condition_met?
      * call-seq:
      *     condition_met? -> true or false
      *
      * Whether our condition is met.
      */
     /*
+     * Document-method: condition_meetable?
      * call-seq:
      *     condition_meetable? -> true or false
      *
@@ -769,6 +771,27 @@ namespace
         return INT2FIX(std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_mode());
     }
 
+    /*
+     * Document-method: original_url
+     *     call-seq: original_url -> String
+     *
+     * The original URL (that is, the text to the left of the arrow, if present,
+     * or the entire text otherwise).
+     */
+    /*
+     * Document-method: renamed_url_suffix
+     *     call-seq: renamed_url_suffix -> String
+     *
+     * The renamed URL filename (that is, the text to the right of the arrow,
+     * if present, or an empty string otherwise).
+     */
+    /*
+     * Document-method: filename
+     *     call-seq: filename -> String
+     *
+     * The filename (that is, the renamed URL suffix, if present, or the text
+     * after the final / in the original URL otherwise).
+     */
     template <std::string (FetchableURIDepSpec::* m_) () const>
     struct FetchableURIDepSpecStringValue
     {
