@@ -103,18 +103,7 @@ namespace
 
         virtual const std::tr1::shared_ptr<const DepSpec> base_spec() const = 0;
         virtual const std::tr1::shared_ptr<const Children> children() const = 0;
-
-        static void mark(std::tr1::shared_ptr<const WrappedSpecBase> *);
     };
-
-    void
-    WrappedSpecBase::mark(std::tr1::shared_ptr<const WrappedSpecBase> * ptr)
-    {
-        std::tr1::shared_ptr<const Children> children((*ptr)->children());
-        for (Children::const_iterator it(children->begin()),
-                 it_end(children->end()); it_end != it; ++it)
-            rb_gc_mark(it->first);
-    }
 
     template <typename T_>
     class WrappedSpec :
@@ -159,97 +148,85 @@ namespace
     struct TreeToValue :
         ConstVisitor<GenericSpecTree>
     {
-        std::tr1::shared_ptr<const WrappedSpecBase> * ptr;
-        VALUE value;
+        std::tr1::shared_ptr<const WrappedSpecBase> wrapped;
+        VALUE klass;
 
         void visit_leaf(const PackageDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_package_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(spec.clone())));
+            klass = c_package_dep_spec;
         }
 
         void visit_leaf(const BlockDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<BlockDepSpec>(std::tr1::static_pointer_cast<BlockDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_block_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<BlockDepSpec>(std::tr1::static_pointer_cast<BlockDepSpec>(spec.clone())));
+            klass = c_block_dep_spec;
         }
 
         void visit_leaf(const PlainTextDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<PlainTextDepSpec>(std::tr1::static_pointer_cast<PlainTextDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_plain_text_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<PlainTextDepSpec>(std::tr1::static_pointer_cast<PlainTextDepSpec>(spec.clone())));
+            klass = c_plain_text_dep_spec;
         }
 
         void visit_leaf(const SimpleURIDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<SimpleURIDepSpec>(std::tr1::static_pointer_cast<SimpleURIDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_simple_uri_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<SimpleURIDepSpec>(std::tr1::static_pointer_cast<SimpleURIDepSpec>(spec.clone())));
+            klass = c_simple_uri_dep_spec;
         }
 
         void visit_leaf(const FetchableURIDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<FetchableURIDepSpec>(std::tr1::static_pointer_cast<FetchableURIDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_fetchable_uri_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<FetchableURIDepSpec>(std::tr1::static_pointer_cast<FetchableURIDepSpec>(spec.clone())));
+            klass = c_fetchable_uri_dep_spec;
         }
 
         void visit_leaf(const URILabelsDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<URILabelsDepSpec>(std::tr1::static_pointer_cast<URILabelsDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_uri_labels_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<URILabelsDepSpec>(std::tr1::static_pointer_cast<URILabelsDepSpec>(spec.clone())));
+            klass = c_uri_labels_dep_spec;
         }
 
         void visit_leaf(const DependencyLabelsDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_dependency_labels_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(spec.clone())));
+            klass = c_dependency_labels_dep_spec;
         }
 
         void visit_leaf(const NamedSetDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<NamedSetDepSpec>(std::tr1::static_pointer_cast<NamedSetDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_named_set_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<NamedSetDepSpec>(std::tr1::static_pointer_cast<NamedSetDepSpec>(spec.clone())));
+            klass = c_named_set_dep_spec;
         }
 
         void visit_leaf(const LicenseDepSpec & spec)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    new WrappedSpec<LicenseDepSpec>(std::tr1::static_pointer_cast<LicenseDepSpec>(spec.clone())));
-            value = Data_Wrap_Struct(c_license_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset(new WrappedSpec<LicenseDepSpec>(std::tr1::static_pointer_cast<LicenseDepSpec>(spec.clone())));
+            klass = c_license_dep_spec;
         }
 
         void visit_sequence(const ConditionalDepSpec & spec,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    (new WrappedSpec<ConditionalDepSpec>(std::tr1::static_pointer_cast<ConditionalDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_conditional_dep_spec, &WrappedSpecBase::mark, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset((new WrappedSpec<ConditionalDepSpec>(std::tr1::static_pointer_cast<ConditionalDepSpec>(spec.clone())))->add_children(cur, end));
+            klass = c_conditional_dep_spec;
         }
 
         void visit_sequence(const AllDepSpec & spec,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    (new WrappedSpec<AllDepSpec>(std::tr1::static_pointer_cast<AllDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_all_dep_spec, &WrappedSpecBase::mark, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset((new WrappedSpec<AllDepSpec>(std::tr1::static_pointer_cast<AllDepSpec>(spec.clone())))->add_children(cur, end));
+            klass = c_all_dep_spec;
         }
 
         void visit_sequence(const AnyDepSpec & spec,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(
-                    (new WrappedSpec<AnyDepSpec>(std::tr1::static_pointer_cast<AnyDepSpec>(spec.clone())))->add_children(cur, end));
-            value = Data_Wrap_Struct(c_any_dep_spec, &WrappedSpecBase::mark, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+            wrapped.reset((new WrappedSpec<AnyDepSpec>(std::tr1::static_pointer_cast<AnyDepSpec>(spec.clone())))->add_children(cur, end));
+            klass = c_any_dep_spec;
         }
     };
 
@@ -262,7 +239,7 @@ namespace
         {
             TreeToValue v;
             cur->accept(v);
-            _children->push_back(std::make_pair(v.value, *v.ptr));
+            _children->push_back(std::make_pair(v.klass, v.wrapped));
         }
 
         return this;
@@ -823,7 +800,10 @@ namespace
             if ((*ptr)->children())
                 for (WrappedSpecBase::Children::const_iterator i((*ptr)->children()->begin()), i_end((*ptr)->children()->end()) ;
                         i != i_end ; ++i)
-                    rb_yield(i->first);
+                {
+                    std::tr1::shared_ptr<const WrappedSpecBase> * newptr(new std::tr1::shared_ptr<const WrappedSpecBase>(i->second));
+                    rb_yield(Data_Wrap_Struct(i->first, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, newptr));
+                }
             return self;
         }
     };
@@ -1233,7 +1213,8 @@ paludis::ruby::dep_tree_to_value(const std::tr1::shared_ptr<const typename T_::C
     {
         TreeToValue v;
         m->accept(v);
-        return v.value;
+        std::tr1::shared_ptr<const WrappedSpecBase> * ptr(new std::tr1::shared_ptr<const WrappedSpecBase>(v.wrapped));
+        return Data_Wrap_Struct(v.klass, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
     }
     catch (const std::exception & e)
     {
