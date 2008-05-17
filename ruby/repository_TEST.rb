@@ -378,7 +378,10 @@ module Paludis
         end
 
         def test_mirrors
-            assert_equal ['http://a', 'http://b'], repo.mirrors('cat')
+            cat_mirrors = repo.mirrors('cat')
+            assert_equal 2, cat_mirrors.length
+            assert cat_mirrors.include?('http://a')
+            assert cat_mirrors.include?('http://b')
             assert repo.mirrors('dog').empty?
         end
     end

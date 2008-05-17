@@ -391,7 +391,10 @@ module Paludis
 
 
         def test_mirrors_star
-            assert_equal ['http://a', 'http://b'], env.mirrors('*')
+            star_mirrors = env.mirrors('*')
+            assert_equal 2, star_mirrors.length
+            assert star_mirrors.include?('http://a')
+            assert star_mirrors.include?('http://b')
         end
 
         def test_named_mirror
