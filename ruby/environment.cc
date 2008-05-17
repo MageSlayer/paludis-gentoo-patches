@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
- * Copyright (c) 2007 Richard Brown
+ * Copyright (c) 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/environment_maker.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -161,6 +162,29 @@ namespace
                 knc->insert(KeywordName(StringValuePtr(kw)));
             }
             return value_to_environment(self)->accept_keywords(knc, *value_to_package_id(p)) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     mirrors(mirror_name) -> Array
+     *
+     * Return the mirror URI prefixes for a named mirror.
+     */
+    VALUE
+    environment_mirrors(VALUE self, VALUE mirror)
+    {
+        try
+        {
+            VALUE result(rb_ary_new());
+            std::tr1::shared_ptr<const MirrorsSequence> m(value_to_environment(self)->mirrors(StringValuePtr(mirror)));
+            for (MirrorsSequence::ConstIterator i(m->begin()), i_end(m->end()) ; i != i_end ; i++)
+                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            return result;
         }
         catch (const std::exception & e)
         {
@@ -498,6 +522,7 @@ namespace
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
         rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);
+        rb_define_method(c_environment, "mirrors", RUBY_FUNC_CAST(&environment_mirrors), 1);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

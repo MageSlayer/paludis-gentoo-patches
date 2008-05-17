@@ -37,6 +37,11 @@ foo/bar GPL-2
 foo/baz *
 END
 
+cat <<END > home/.paludis/mirrors.conf
+* http://a http://b
+testmirror http://c
+END
+
 cat <<END > home/.paludis/environment.conf
 world = /dev/null
 END

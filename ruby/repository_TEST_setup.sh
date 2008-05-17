@@ -98,6 +98,10 @@ cat <<END > profiles/use.local.desc || exit 1
 foo/bar:test2 - A test local use flag
 END
 
+cat <<END > profiles/thirdpartymirrors || exit 1
+cat http://a http://b
+END
+
 touch foo/metadata.xml
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1

@@ -361,6 +361,28 @@ module Paludis
         end
     end
 
+    class TestCase_RepositoryMirrorsInterface < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_responds
+            repo = no_config_testrepo.main_repository
+            [:is_mirror?, :mirrors].each do |sym|
+                assert_respond_to repo, sym
+            end
+        end
+
+        def test_is_mirror?
+            repo = no_config_testrepo.main_repository
+            assert repo.is_mirror?('cat')
+            assert !repo.is_mirror?('dog')
+        end
+
+        def test_mirrors
+            assert_equal ['http://a', 'http://b'], repo.mirrors('cat')
+            assert repo.mirrors('dog').empty?
+        end
+    end
+
     class TestCase_RepositoryPortageInterface < Test::Unit::TestCase
         include RepositoryTestCase
 

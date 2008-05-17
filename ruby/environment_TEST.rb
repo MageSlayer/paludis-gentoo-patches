@@ -3,7 +3,7 @@
 
 #
 # Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
-# Copyright (c) 2007 Richard Brown
+# Copyright (c) 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -376,6 +376,30 @@ module Paludis
                 env.accept_unstable=true
                 env.accept_unstable=false
             end
+        end
+    end
+
+    class TestCase_EnvironmentMirrors < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def test_respond_and_return
+            assert_respond_to env, :mirrors
+            assert_kind_of Array, env.mirrors('')
+        end
+
+
+        def test_mirrors_star
+            assert_equal ['http://a', 'http://b'], env.mirrors('*')
+        end
+
+        def test_named_mirror
+            assert_equal ['http://c'], env.mirrors('testmirror')
+        end
+
+        def test_empty_mirror
+            assert env.mirrors('missingmirror').empty?
         end
     end
 end
