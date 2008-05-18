@@ -579,7 +579,7 @@ namespace
                 ++c;
                 break;
             }
-            else if (*c == ' ' || *c == '\t')
+            else if (*c == ' ' || *c == '\t' || *c == '\r')
             {
                 if (opts[kvcfo_disallow_space_inside_unquoted_values])
                     throw ConfigFileError(f, "Extra or trailing whitespace in value");
@@ -596,7 +596,7 @@ namespace
         }
 
         if (! opts[kvcfo_preserve_whitespace])
-            result = strip_leading(strip_trailing(result, " \t"), " \t");
+            result = strip_leading(strip_trailing(result, " \t\r"), " \t\r");
 
         return result;
     }
