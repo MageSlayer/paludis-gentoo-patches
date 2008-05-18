@@ -51,16 +51,16 @@ If it's an installed package, <em>spec</em> can usually just be the qualified pa
         <dd>The entry didn't exist</dd>
         <dt><code>=</code></dt>
         <dd>The entry was reused</dd>
-        <dt><code>&lt;</code><dt>
+        <dt><code>&lt;</code></dt>
         <dd>The entry was unlinked</dd>
     </dl></li>
     <li>The second part refers to how it was merged:
     <dl>
-        <dt><code>&gt;</code><dt>
+        <dt><code>&gt;</code></dt>
         <dd>This entry was copied</dd>
-        <dt><code>-</code><dt>
+        <dt><code>-</code></dt>
         <dd>Merged using <code>rename()</code></dd>
-        <dt><code>^</code><dt>
+        <dt><code>^</code></dt>
         <dd>Merged by using <code>rename()</code> on a parent directory</dd>
         <dt><code>&amp;</code></dt>
         <dd>Merged as a hardlink</dd>
@@ -69,11 +69,11 @@ If it's an installed package, <em>spec</em> can usually just be the qualified pa
     <dl>
         <dt><code>&gt;</code></dt>
         <dd>Nothing done</dd>
-        <dt><code>~</code><dt>
+        <dt><code>~</code></dt>
         <dd>Fixed ownership</dd>
-        <dt><code>*</code><dt>
+        <dt><code>*</code></dt>
         <dd>Added set*id bits</dd>
-        <dt><code>+</code><dt>
+        <dt><code>+</code></dt>
         <dd>Copied xattrs</dd>
     </dl></li>
 </ul>
