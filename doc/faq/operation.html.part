@@ -39,3 +39,41 @@ an arbitrary global configuration no matter what.)</p>
 If it's an installed package, <em>spec</em> can usually just be the qualified package name (for example, <code>paludis
     --info sys-apps/paludis</code>). If you're installing a package, you should instead specify an exact package ID
 (such as <code>paludis --info =sys-apps/paludis-0.26.0_alpha12::paludis-overlay</code>).</p>
+
+<h2 id="arrows">What do those fancy arrows when merging things mean?</h2>
+
+<p>They tell how each file is merged to root. They consist of three parts:</p>
+
+<ul>
+    <li>The first part talks about what happened to the entry this one is replacing (if any):
+    <dl>
+        <dt><code>&gt;</code></dt>
+        <dd>The entry didn't exist</dd>
+        <dt><code>=</code></dt>
+        <dd>The entry was reused</dd>
+        <dt><code>&lt;</code><dt>
+        <dd>The entry was unlinked</dd>
+    </dl></li>
+    <li>The second part refers to how it was merged:
+    <dl>
+        <dt><code>&gt;</code><dt>
+        <dd>This entry was copied</dd>
+        <dt><code>-</code><dt>
+        <dd>Merged using <code>rename()</code></dd>
+        <dt><code>^</code><dt>
+        <dd>Merged by using <code>rename()</code> on a parent directory</dd>
+        <dt><code>&amp;</code></dt>
+        <dd>Merged as a hardlink</dd>
+    </dl></li>
+    <li>The third part refers to permissions and modes:
+    <dl>
+        <dt><code>&gt;</code></dt>
+        <dd>Nothing done</dd>
+        <dt><code>~</code><dt>
+        <dd>Fixed ownership</dd>
+        <dt><code>*</code><dt>
+        <dd>Added set*id bits</dd>
+        <dt><code>+</code><dt>
+        <dd>Copied xattrs</dd>
+    </dl></li>
+</ul>
