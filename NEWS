@@ -8,6 +8,9 @@ trunk/:
     * Compilers without tr1 memory, type traits and functional support are no
       longer supported. This means you, gcc-3.
 
+    * bug fix: importare now really adds packages to world by default, as
+      promised in 0.26.0_pre3.
+
 0.26.0:
     * Fixed gcc-3.4 compile.
 

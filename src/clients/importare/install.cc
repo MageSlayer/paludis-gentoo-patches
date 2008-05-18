@@ -134,6 +134,9 @@ do_install(const std::tr1::shared_ptr<Environment> & env, const std::tr1::shared
 {
     Context context("When performing install action from command line:");
 
+    CommandLine::get_instance()->install_args.a_add_to_world_spec.set_specified(true);
+    CommandLine::get_instance()->install_args.a_add_to_world_spec.set_argument(stringify(target->name()));
+
     DepListOptions options;
     CommandLine::get_instance()->dl_args.populate_dep_list_options(env.get(), options);
     CommandLine::get_instance()->install_args.populate_dep_list_options(env.get(), options);
