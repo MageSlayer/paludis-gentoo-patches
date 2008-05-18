@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
- * Copyright (c) 2006, 2007 Richard Brown
+ * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -977,6 +977,17 @@ namespace
         c_conditional_dep_spec = rb_define_class_under(paludis_module(), "ConditionalDepSpec", c_dep_spec);
         rb_funcall(c_conditional_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_include_module(c_conditional_dep_spec, rb_mEnumerable);
+        /*
+         * Document-method: condition
+         *
+         * call-seq:
+         *     confition -> String
+         *
+         * Our condition
+         */
+        VALUE (* conditional_dep_spec_to_s) (VALUE) = &dep_spec_to_s<ConditionalDepSpec>;
+        rb_define_method(c_conditional_dep_spec, "condition", RUBY_FUNC_CAST(conditional_dep_spec_to_s), 0);
+        rb_define_alias(c_conditional_dep_spec, "to_s", "condition");
         rb_define_method(c_conditional_dep_spec, "condition_met?", RUBY_FUNC_CAST(
                     &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_met>::func), 0);
         rb_define_method(c_conditional_dep_spec, "condition_meetable?", RUBY_FUNC_CAST(
