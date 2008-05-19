@@ -34,7 +34,7 @@ expatch()
     fi
 
     while [[ $# -gt 0 ]]; do
-        if [[ ${1} == -p*([:digit:]]) ]]; then
+        if [[ ${1} == -p*([[:digit:]]) ]]; then
             patchlevel="${1}"
         elif [[ ${1} == -+([^[:space:]]) ]]; then
             options+=("${1}")
