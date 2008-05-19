@@ -661,15 +661,16 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             + stringify(dst_name) + "':");
     MergeStatusFlags result;
 
+    FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
+    FSEntry dst_real(dst_dir / dst_name);
+
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_pre")
                         ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
+                        ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))
+                        ("REAL_DESTINATION", stringify(dst_real)))).max_exit_status)
         Log::get_instance()->message("merger.file.pre_hooks.failure", ll_warning, lc_context) <<
                 "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
-
-    FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
-    FSEntry dst_real(dst_dir / dst_name);
 
     std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
     FSCreateCon createcon(secctx);
@@ -768,7 +769,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))).max_exit_status)
+                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))
+                         ("REAL_DESTINATION", stringify(dst_real)))).max_exit_status)
         Log::get_instance()->message("merger.file.post_hooks.failed", ll_warning, lc_context) <<
             "Merge of '" << src << "' to '" << dst_dir << "' post hooks returned non-zero";
 
