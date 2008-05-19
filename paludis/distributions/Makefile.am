@@ -3,6 +3,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
 SUBDIRS =
 
 distributions = \
+	exherbo.conf \
 	gentoo.conf
 
 distributionsdir = $(datadir)/paludis/distributions/

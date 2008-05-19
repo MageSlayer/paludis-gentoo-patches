@@ -11,6 +11,8 @@ trunk/:
     * bug fix: importare now really adds packages to world by default, as
       promised in 0.26.0_pre3.
 
+    * Support for the Exherbo distribution.
+
 0.26.0:
     * Fixed gcc-3.4 compile.
 
