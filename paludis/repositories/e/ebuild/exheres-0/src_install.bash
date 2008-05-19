@@ -24,9 +24,9 @@ default_src_install()
 {
     local done_docs old_set f d p doc e
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        if make -j1 -n install ; then
+        if make -j1 -n ${DEFAULT_SRC_INSTALL_EMAKE_EXTRA_PARAMS} install ; then
             echo "Found a makefile, using the install target" 
-            emake -j1 DESTDIR="${D}" install || die "default emake install failed";
+            emake -j1 DESTDIR="${D}" ${DEFAULT_SRC_INSTALL_EMAKE_EXTRA_PARAMS} install || die "default emake install failed";
         else
             die "default emake install located a makefile but no install target"
         fi
