@@ -280,6 +280,14 @@ namespace test_cases
             TEST_CHECK(! VersionSpec("9999_alpha2").is_scm());
             TEST_CHECK(VersionSpec("9999").is_scm());
             TEST_CHECK(VersionSpec("9999-r4").is_scm());
+
+            TEST_CHECK(VersionSpec("99999999-r4").is_scm());
+            TEST_CHECK(! VersionSpec("99999998-r4").is_scm());
+            TEST_CHECK(! VersionSpec("999").is_scm());
+            TEST_CHECK(! VersionSpec("1.9999").is_scm());
+            TEST_CHECK(! VersionSpec("9999.1").is_scm());
+            TEST_CHECK(! VersionSpec("9999.9999").is_scm());
+
         }
     } test_version_is_scm;
 

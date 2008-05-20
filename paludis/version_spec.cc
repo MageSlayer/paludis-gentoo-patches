@@ -587,8 +587,11 @@ VersionSpec::is_scm() const
                 break;
             }
 
-        /* is our version without revisions exactly 9999? */
-        if (remove_revision() == VersionSpec("9999"))
+        /* is our version without revisions a sequence of, at least,
+         * four 9's? */
+        std::string mystr = remove_revision()._imp->text;
+        if ((mystr.length() >= 4) &&
+            (std::string::npos == mystr.find_first_not_of("9")))
         {
             result = true;
             break;
