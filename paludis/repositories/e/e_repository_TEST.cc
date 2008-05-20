@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
+#include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
@@ -1689,5 +1690,66 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(pp, "build: build,run: suggested: post: cat/pkg5");
         }
     } test_e_repository_dependencies_rewriter;
+
+    struct ERepositorySymlinkRewritingTest : TestCase
+    {
+        ERepositorySymlinkRewritingTest() : TestCase("symlink_rewriting") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo20");
+            keys->insert("profiles", "e_repository_TEST_dir/repo20/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "symlinked_build"));
+            keys->insert("root", stringify(FSEntry("e_repository_TEST_dir/root").realpath()));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/vdb");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("e_repository_TEST_dir/root").realpath()));
+            std::tr1::shared_ptr<Repository> installed_repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(1, installed_repo);
+
+            InstallAction action(InstallActionOptions::named_create()
+                    (k::debug_build(), iado_none)
+                    (k::checks(), iaco_default)
+                    (k::no_config_protect(), false)
+                    (k::destination(), installed_repo)
+                    );
+
+            const std::tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
+                                    UserPackageDepSpecOptions()))), qo_require_exactly_one)->last());
+            TEST_CHECK(id);
+
+            id->perform_action(action);
+            TEST_CHECK_EQUAL(FSEntry("e_repository_TEST_dir/root/bar").readlink(), "/foo");
+        }
+    } test_e_repository_symlink_rewriting;
 }
 

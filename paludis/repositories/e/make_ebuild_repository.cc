@@ -301,7 +301,7 @@ paludis::make_ebuild_repository(
                 .binary_uri_prefix(binary_uri_prefix)
                 .binary_distdir(binary_distdir)
                 .binary_keywords(binary_keywords)
-                .builddir(builddir)));
+                .builddir(FSEntry(builddir).realpath())));
 }
 
 std::tr1::shared_ptr<Repository>

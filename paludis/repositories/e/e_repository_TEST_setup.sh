@@ -4,10 +4,13 @@
 mkdir e_repository_TEST_dir || exit 1
 cd e_repository_TEST_dir || exit 1
 
+mkdir -p root/etc
+
 mkdir -p vdb
 touch vdb/THISISTHEVDB
 
 mkdir -p build
+ln -s build symlinked_build
 
 mkdir -p distdir
 echo "already fetched" > distdir/already-fetched.txt || exit 1
@@ -1275,6 +1278,27 @@ END
 cat <<END > category/package/package-4.ebuild || exit 1
 SLOT="0"
 KEYWORDS="test"
+END
+cd ..
+
+mkdir -p repo20/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo20/cat/pkg || exit 1
+cd repo20 || exit 1
+echo "test-repo-20" >> profiles/repo_name || exit 1
+echo "cat" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+END
+cat <<END > cat/pkg/pkg-1.ebuild || exit 1
+SLOT="0"
+PLATFORMS="test"
+src_install() {
+	ln -s "\${D}/foo" "\${D}/bar" || die
+}
 END
 cd ..
 
