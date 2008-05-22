@@ -22,7 +22,7 @@ can be dangerous and may break things; many of these variables exist mainly for 
 
 <dl>
     <dt><code>PALUDIS_DISTRIBUTION</code></dt>
-    <dd>The distibution configuration file to use (e.g. 'gentoo'). Usually this is configured at compile time; however,
+    <dd>The distribution configuration file to use (e.g. 'gentoo'). Usually this is configured at compile time; however,
     overriding it can be useful when building a chroot for a different distribution.</dd>
 
     <dt><code>PALUDIS_DISTRIBUTIONS_DIR</code></dt>
