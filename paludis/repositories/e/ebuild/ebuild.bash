@@ -250,7 +250,7 @@ ebuild_scrub_environment()
         unset -v ${!QUALUDIS_CMDLINE_*} QUALUDIS_OPTIONS
         unset -v ${!RECONCILIO_CMDLINE_*} RECONCILIO_OPTIONS
         eval unset -v $(
-            PALUDIS_CLIENT_UPPER=$(tr a-z A-Z <<<${PALUDIS_CLIENT})
+            PALUDIS_CLIENT_UPPER=$(echo ${PALUDIS_CLIENT} | tr a-z A-Z)
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
         unset -v PALUDIS_CLIENT
 
