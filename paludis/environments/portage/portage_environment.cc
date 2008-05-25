@@ -237,9 +237,9 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     /* files */
 
-    _load_atom_file(_imp->conf_dir / "portage" / "package.use", std::back_inserter(_imp->package_use), "");
+    _load_atom_file(_imp->conf_dir / "portage" / "package.use", std::back_inserter(_imp->package_use), "", true);
     _load_atom_file(_imp->conf_dir / "portage" / "package.keywords", std::back_inserter(_imp->package_keywords),
-            "~" + _imp->vars->get("ARCH"));
+            "~" + _imp->vars->get("ARCH"), false);
 
     _load_lined_file(_imp->conf_dir / "portage" / "package.mask", std::back_inserter(_imp->package_mask));
     _load_lined_file(_imp->conf_dir / "portage" / "package.unmask", std::back_inserter(_imp->package_unmask));
@@ -284,7 +284,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
 template<typename I_>
 void
-PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string & def_value)
+PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string & def_value, const bool reject_additional)
 {
     using namespace std::tr1::placeholders;
 
@@ -296,7 +296,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     if (f.is_directory())
     {
         std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(
-                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value));
+                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_additional));
     }
     else
     {
@@ -312,6 +312,14 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
 
             std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), UserPackageDepSpecOptions())));
+            if (reject_additional && p->additional_requirements_ptr())
+            {
+                Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
+                    << "Dependency specification '" << stringify(*p)
+                    << "' includes use requirements, which cannot be used here";
+                continue;
+            }
+
             if (1 == tokens.size())
             {
                 if (! def_value.empty())
@@ -459,15 +467,6 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 {
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Portage environment:");
-
-    PALUDIS_TLS bool recursive(false);
-    if (recursive)
-    {
-        Log::get_instance()->message("portage_environment.query_use.recursive", ll_warning, lc_context) <<
-            "use flag state is defined recursively, forcing it to disabled instead";
-        return false;
-    }
-    Save<bool> save_recursive(&recursive, true);
 
     /* first check package database use masks... */
     if ((*e.repository())[k::use_interface()])

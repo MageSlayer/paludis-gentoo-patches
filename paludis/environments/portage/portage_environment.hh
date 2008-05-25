@@ -72,7 +72,7 @@ namespace paludis
             void _load_lined_file(const FSEntry &, I_);
 
             template<typename I_>
-            void _load_atom_file(const FSEntry &, I_, const std::string &);
+            void _load_atom_file(const FSEntry &, I_, const std::string &, const bool);
 
             void _add_string_to_world(const std::string &) const;
             void _remove_string_from_world(const std::string &) const;

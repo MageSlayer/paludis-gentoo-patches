@@ -173,15 +173,6 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Paludis environment:");
 
-    PALUDIS_TLS bool recursive(false);
-    if (recursive)
-    {
-        Log::get_instance()->message("paludis_environment.query_use.recursive", ll_warning, lc_context) <<
-            "use flag state is defined recursively, forcing it to disabled instead";
-        return false;
-    }
-    Save<bool> save_recursive(&recursive, true);
-
     /* first check package database use masks... */
     if ((*e.repository())[k::use_interface()])
     {
