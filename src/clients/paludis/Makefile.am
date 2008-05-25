@@ -76,13 +76,14 @@ TESTS_ENVIRONMENT = env \
 
 TESTS = version_TEST help_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST \
-	exception_TEST install_TEST upgrade_TEST args_from_environment_TEST \
+	exception_TEST install_TEST pretend_TEST upgrade_TEST args_from_environment_TEST \
 	continue_on_failure_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS) \
 	install_TEST_setup.sh install_TEST_cleanup.sh \
+	pretend_TEST_setup.sh pretend_TEST_cleanup.sh \
 	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh \
 	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh
 

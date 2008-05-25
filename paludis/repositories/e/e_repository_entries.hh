@@ -102,7 +102,7 @@ namespace paludis
                  * Handle a pretend.
                  */
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        std::tr1::shared_ptr<const ERepositoryProfile>) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Handle an info.

@@ -628,7 +628,11 @@ InstallTask::_pretend()
 
             PretendAction pretend_action;
             dep->package_id->perform_action(pretend_action);
-            pretend_failed |= pretend_action.failed();
+            if (pretend_action.failed())
+            {
+                pretend_failed = true;
+                dep->handled.reset(new DepListEntryHandledFailed);
+            }
 
             on_pretend_post(*dep);
         }
@@ -1025,14 +1029,14 @@ InstallTask::_execute()
     _display_task_list();
     bool pretend_failed(_pretend());
 
-    if (_imp->pretend)
-        return;
-
     if (_imp->dep_list.has_errors() || pretend_failed)
     {
         on_not_continuing_due_to_errors();
         return;
     }
+
+    if (_imp->pretend)
+        return;
 
     _main_actions();
 }

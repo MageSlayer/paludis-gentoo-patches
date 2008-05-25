@@ -868,11 +868,12 @@ namespace
                     std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(PretendAction &)
+        void visit(PretendAction & action)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
-                    std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                    std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+            if (! std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
+                        std::tr1::static_pointer_cast<const ERepositoryID>(id),
+                        std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile()))
+                action.set_failed();
         }
 
         void visit(InfoAction &)
