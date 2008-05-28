@@ -192,7 +192,7 @@ CommandLine::CommandLine() :
             "paludis --install --pretend --dl-reinstall if-use-changed world",
             "...also reinstall packages whose use settings have changed.");
     add_example(
-            "paludis --install --pretend --dl-reinstall-scm weekly",
+            "paludis --install --pretend --dl-reinstall-scm weekly world",
             "...also reinstall any scm (cvs, svn, ...) package that was installed over a week ago.");
     add_example(
             "paludis --install --pretend x11-wm/fluxbox",
