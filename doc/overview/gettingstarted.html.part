@@ -271,7 +271,7 @@ used via <code>sync_options = </code>.</p>
 
 <h4>Repositories for Exherbo</h4>
 
-<p>Gentoo users will need at least the following two repositories:</p>
+<p>Exherbo users will need at least the following two repositories:</p>
 
 <h5>repositories/arbor.conf</h5>
 
