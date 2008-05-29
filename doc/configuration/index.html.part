@@ -34,8 +34,9 @@
     <li><a href="bashrc.html">bashrc</a>: for package build environment options.</li>
     <li><a href="sets.html">sets/*.conf</a>: for user defined package sets.</li>
     <li><a href="repositories.html">repositories/*.conf and repository_defaults.conf</a>, in general.</li>
-    <li>... and configuration keys for <a href="erepository.html">ebuild repositories</a>.</li>
+    <li>... and configuration keys for <a href="erepository.html">ebuild and exheres repositories</a>.</li>
     <li>... and configuration keys for <a href="vdb.html">vdb repositories</a>.</li>
+    <li>... and configuration keys for <a href="exndbam.html">exndbam repositories</a>.</li>
     <li>... and configuration keys for <a href="installedunpackaged.html">installed unpackaged repositories</a>.</li>
 </ul>
 

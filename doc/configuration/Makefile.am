@@ -40,7 +40,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	installedunpackaged.html \
 	installedunpackaged.html.part \
 	vdb.html \
-	vdb.html.part
+	vdb.html.part \
+	exndbam.html \
+	exndbam.html.part
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -66,7 +68,8 @@ EXTRA_DIST = \
 	repositories.html.part.in \
 	erepository.html.part.in \
 	installedunpackaged.html.part.in \
-	vdb.html.part.in
+	vdb.html.part.in \
+	exndbam.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -90,7 +93,8 @@ paludisconfigurationhtml_DATA = \
 	repositories.html \
 	erepository.html \
 	installedunpackaged.html \
-	vdb.html
+	vdb.html \
+	exndbam.html
 
 if HAVE_HTMLTIDY
 
@@ -182,6 +186,12 @@ vdb.html.part : $(srcdir)/vdb.html.part.in $(srcdir)/paludisenvironmentonly.html
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/vdb.html.part.in > vdb.html.part
+
+exndbam.html.part : $(srcdir)/exndbam.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/exndbam.html.part.in > exndbam.html.part
 
 environment.html.part : $(srcdir)/environment.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -281,6 +291,9 @@ installedunpackaged.html : header.html.part installedunpackaged.html.part footer
 
 vdb.html : header.html.part vdb.html.part footer.html.part
 	cat header.html.part vdb.html.part footer.html.part > $@
+
+exndbam.html : header.html.part exndbam.html.part footer.html.part
+	cat header.html.part exndbam.html.part footer.html.part > $@
 
 syncers.html : header.html.part syncers.html.part footer.html.part
 	cat header.html.part syncers.html.part footer.html.part > $@

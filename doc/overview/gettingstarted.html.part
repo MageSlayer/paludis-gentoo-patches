@@ -87,11 +87,16 @@ mkdir -p /etc/paludis/repositories
 <h3>environment.conf</h3>
 
 <p>The file <code>/etc/paludis/environment.conf</code> must, at minimum, specify the location of the world file
-(other options are described elsewhere in the documentation).  The usual location for Paludis is:</p>
+(other options are described elsewhere in the documentation).  The usual location for Paludis on Gentoo and
+Gentoo-derived systems is:</p>
 
 <pre>world = /var/db/pkg/world</pre>
 
 <p>The option <code>world = /var/lib/portage/world</code> can be set if Portage's world file is to be used.</p>
+
+<p>On Exherbo systems, we instead use:</p>
+
+<pre>world = /var/db/paludis/world</pre>
 
 <h3>keywords.conf</h3>
 
@@ -178,12 +183,14 @@ reasons, it is strongly recommended that the filename used matches the name of t
 <em>the filename you use here has no meaning to Paludis, and does not have to correspond to the repository's
     name</em>.</p>
 
+<h4>Repositories for Gentoo</h4>
+
 <p>Gentoo users will need at least the following two repositories:</p>
 
-<h4>repositories/gentoo.conf</h4>
+<h5>repositories/gentoo.conf</h5>
 
 <p>The main Gentoo repository, sometimes annoyingly called 'the Portage tree' and sometimes historically called
-'gentoo-x86' will typically look like:</p>
+'gentoo-x86', will typically look like:</p>
 
 <pre>
 location = /usr/portage
@@ -208,7 +215,7 @@ via <code>--sync</code>) modify a repository.</p>
 
 <p>You are responsible for ensuring that any cache directories you use exist and have appropriate permissions.</p>
 
-<h4>repositories/installed.conf</h4>
+<h5>repositories/installed.conf</h5>
 
 <p>You also need a repository that holds your installed packages. <strong>You must not change the location of this
     repository</strong>; its location is hardcoded in various badly written ebuilds.</p>
@@ -237,7 +244,7 @@ manually if you install or uninstall any package using Portage.</p>
 
 <p>You are responsible for ensuring that any cache directories you use exist and have appropriate permissions.</p>
 
-<h4>repositories/paludis-overlay.conf</h4>
+<h5>repositories/paludis-overlay.conf</h5>
 
 <p>You might find the Paludis overlay useful, if you need very up to date or live ebuilds. This also illustrates the
 typical way to set up what Portage calls an 'overlay':</p>
@@ -259,6 +266,32 @@ however, do not provide this.)</p>
 
 <p>For details on <code>sync</code> formats, use <code>paludis --list-sync-protocols</code>. The listed options can be
 used via <code>sync_options = </code>.</p>
+
+<p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
+
+<h4>Repositories for Exherbo</h4>
+
+<p>Gentoo users will need at least the following two repositories:</p>
+
+<h5>repositories/arbor.conf</h5>
+
+<p>The main Exherbo repository is 'arbor':</p>
+
+<pre>
+location = /var/db/paludis/repositories/arbor
+sync = git://git.exherbo.org/arbor.git
+profiles = ${location}/profiles/default-linux/x86/2007.0
+format = exheres
+</pre>
+
+<h5>repositories/installed.conf</h5>
+
+<p>You also need a repository that holds your installed packages.</p>
+
+<pre>
+location = /var/db/paludis/repositories/installed
+format = exndbam
+</pre>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 

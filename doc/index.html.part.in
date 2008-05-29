@@ -10,6 +10,10 @@
 
 <h2>Overview</h2>
 
+<p>Paludis is a multi-format package manager. It can currently be used on <a href="http://www.gentoo.org/">Gentoo</a>
+and derivatives, using the ebuild and VDB repository formats, and on <a href="http://www.exherbo.org/">Exherbo</a> using
+the exheres repository format.</p>
+
 <ul>
     <li><a href="overview/features.html">Features</a>: an overview of Paludis, and how it differs from its predecessor,
     Portage.</li>

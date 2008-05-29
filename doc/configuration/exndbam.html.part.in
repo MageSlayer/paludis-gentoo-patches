@@ -1,0 +1,19 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>exndbam Options</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>As well as the general keys supported for all repositories, the following keys have meaning for exndbam format
+repositories:</p>
+
+<dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+
+    <dt><code>builddir</code></dt>
+    <dd>The directory to use when 'building' a package for an uninstall (a temporary directory is needed for various
+    operations). Optional.</dd>
+</dl>
+
+
