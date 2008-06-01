@@ -18,6 +18,7 @@
  */
 
 #include <paludis/selection.hh>
+#include <paludis/selection_handler.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
@@ -51,26 +52,6 @@ DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const 
 
 namespace paludis
 {
-    class SelectionHandler :
-        private InstantiationPolicy<SelectionHandler, instantiation_method::NonCopyableTag>
-    {
-        protected:
-            const FilteredGenerator _fg;
-
-            SelectionHandler(const FilteredGenerator & g) :
-                _fg(g)
-            {
-            }
-
-        public:
-            virtual ~SelectionHandler() = 0;
-
-            virtual std::string as_string() const = 0;
-
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
     template <>
     struct Implementation<Selection>
     {
@@ -110,10 +91,6 @@ Selection::perform_select(const Environment * const env) const
 {
     Context context("When finding " + _imp->handler->as_string() + ":");
     return _imp->handler->perform_select(env);
-}
-
-SelectionHandler::~SelectionHandler()
-{
 }
 
 std::string

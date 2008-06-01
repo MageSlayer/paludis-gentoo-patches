@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,13 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_GENERATOR_HANDLER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_GENERATOR_HANDLER_FWD_HH 1
+#include <paludis/selection_handler.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
-namespace paludis
+using namespace paludis;
+
+SelectionHandler::~SelectionHandler()
 {
-    class GeneratorHandler;
-    class AllGeneratorHandlerBase;
 }
 
-#endif
+template class InstantiationPolicy<SelectionHandler, instantiation_method::NonCopyableTag>;
+

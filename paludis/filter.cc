@@ -18,6 +18,7 @@
  */
 
 #include <paludis/filter.hh>
+#include <paludis/filter_handler.hh>
 #include <paludis/name.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -37,32 +38,6 @@ using namespace paludis;
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE FilterHandler
-    {
-        public:
-            virtual ~FilterHandler() = 0;
-
-            virtual std::string as_string() const = 0;
-
-            virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
-                    const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &) const = 0;
-
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
-                    const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const = 0;
-
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
-                    const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const = 0;
-
-            virtual std::tr1::shared_ptr<const PackageIDSet> ids(
-                    const Environment * const,
-                    const std::tr1::shared_ptr<const PackageIDSet> &) const = 0;
-    };
-
     template <>
     struct Implementation<Filter>
     {
@@ -73,10 +48,6 @@ namespace paludis
         {
         }
     };
-}
-
-FilterHandler::~FilterHandler()
-{
 }
 
 Filter::Filter(const std::tr1::shared_ptr<const FilterHandler> & h) :
@@ -144,38 +115,8 @@ Filter::as_string() const
 namespace
 {
     struct AllFilterHandler :
-        FilterHandler
+        AllFilterHandlerBase
     {
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & s) const
-        {
-            return s;
-        }
-
-        virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
-                const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                const std::tr1::shared_ptr<const CategoryNamePartSet> & s) const
-        {
-            return s;
-        }
-
-        virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
-                const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s) const
-        {
-            return s;
-        }
-
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & s) const
-        {
-            return s;
-        }
-
         virtual std::string as_string() const
         {
             return "all matches";
@@ -184,7 +125,7 @@ namespace
 
     template <typename A_>
     struct SupportsActionFilterHandler :
-        AllFilterHandler
+        AllFilterHandlerBase
     {
         virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
@@ -225,7 +166,7 @@ namespace
     };
 
     struct NotMaskedFilterHandler :
-        AllFilterHandler
+        AllFilterHandlerBase
     {
         virtual std::tr1::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
@@ -248,7 +189,7 @@ namespace
     };
 
     struct InstalledAtRootFilterHandler :
-        AllFilterHandler
+        AllFilterHandlerBase
     {
         const FSEntry root;
 

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_FILTER_HH 1
 
 #include <paludis/filter-fwd.hh>
+#include <paludis/filter_handler-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/set-fwd.hh>
@@ -33,8 +34,6 @@
 
 namespace paludis
 {
-    class FilterHandler;
-
     class PALUDIS_VISIBLE Filter :
         private PrivateImplementationPattern<Filter>
     {

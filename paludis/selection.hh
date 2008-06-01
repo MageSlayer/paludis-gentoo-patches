@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SELECTION_HH 1
 
 #include <paludis/selection-fwd.hh>
+#include <paludis/selection_handler-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/generator-fwd.hh>
@@ -34,8 +35,6 @@
 
 namespace paludis
 {
-    class SelectionHandler;
-
     class DidNotGetExactlyOneError :
         public Exception
     {

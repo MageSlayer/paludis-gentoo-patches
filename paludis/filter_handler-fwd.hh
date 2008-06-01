@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_GENERATOR_HANDLER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_GENERATOR_HANDLER_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FILTER_HANDLER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_FILTER_HANDLER_FWD_HH 1
 
 namespace paludis
 {
-    class GeneratorHandler;
-    class AllGeneratorHandlerBase;
+    class FilterHandler;
+    class AllFilterHandlerBase;
 }
 
 #endif
