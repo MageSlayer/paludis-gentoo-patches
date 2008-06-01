@@ -60,6 +60,14 @@ namespace
         }
     }
 
+    /*
+     * Document-method: &
+     *
+     * call-seq:
+     *     &(other_generator) -> Generator
+     *
+     * Combine with another Generator using a set intersection.
+     */
     VALUE
     generator_ampersand(VALUE self, VALUE other)
     {
@@ -77,6 +85,14 @@ namespace
         }
     }
 
+    /*
+     * Document-method: |
+     *
+     * call-seq:
+     *     |(filter) -> FilteredGenerator
+     *
+     * Combine with a Filter to produce a FilteredGenerator.
+     */
     VALUE
     generator_bar(VALUE self, VALUE other)
     {
@@ -228,8 +244,19 @@ namespace
 
     void do_register_generator()
     {
+        /*
+         * Document-module: Paludis::Generator
+         *
+         * Collection of classes that produce results for an
+         * Environment selection.
+         */
         c_generator_module = rb_define_module_under(paludis_module(), "Generator");
 
+        /*
+         * Document-class: Paludis::Generator::Generator
+         *
+         * Generator for an Environment selection.
+         */
         c_generator = rb_define_class_under(c_generator_module, "Generator", rb_cObject);
         rb_funcall(c_generator, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_generator, "initialize", RUBY_FUNC_CAST(&generator_init), -1);
@@ -237,21 +264,51 @@ namespace
         rb_define_method(c_generator, "&", RUBY_FUNC_CAST(&generator_ampersand), 1);
         rb_define_method(c_generator, "|", RUBY_FUNC_CAST(&generator_bar), 1);
 
+        /*
+         * Document-class: Paludis::Generator::All
+         *
+         * Generate all packages.
+         */
         c_generator_all = rb_define_class_under(c_generator_module, "All", c_generator);
         rb_define_singleton_method(c_generator_all, "new", RUBY_FUNC_CAST(&generator_all_new), 0);
 
+        /*
+         * Document-class: Paludis::Generator::Matches
+         *
+         * Generate matching packages.
+         */
         c_generator_matches = rb_define_class_under(c_generator_module, "Matches", c_generator);
         rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 1);
 
+        /*
+         * Document-class: Paludis::Generator::Intersection
+         *
+         * Generate packages from the intersection of two other Generator instances.
+         */
         c_generator_intersection = rb_define_class_under(c_generator_module, "Intersection", c_generator);
         rb_define_singleton_method(c_generator_intersection, "new", RUBY_FUNC_CAST(&generator_intersection_new), 2);
 
+        /*
+         * Document-class: Paludis::Generator::Package
+         *
+         * Generate all named packages.
+         */
         c_generator_package = rb_define_class_under(c_generator_module, "Package", c_generator);
         rb_define_singleton_method(c_generator_package, "new", RUBY_FUNC_CAST(&generator_package_new), 1);
 
+        /*
+         * Document-class: Paludis::Generator::Category
+         *
+         * Generate all packages in a given category.
+         */
         c_generator_category = rb_define_class_under(c_generator_module, "Category", c_generator);
         rb_define_singleton_method(c_generator_category, "new", RUBY_FUNC_CAST(&generator_category_new), 1);
 
+        /*
+         * Document-class: Paludis::Generator::Repository
+         *
+         * Generate all packages in a given repository.
+         */
         c_generator_repository = rb_define_class_under(c_generator_module, "Repository", c_generator);
         rb_define_singleton_method(c_generator_repository, "new", RUBY_FUNC_CAST(&generator_repository_new), 1);
 

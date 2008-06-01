@@ -54,6 +54,14 @@ namespace
         }
     }
 
+    /*
+     * Document-method: |
+     *
+     * call-seq:
+     *     |(filter) -> FilteredGenerator
+     *
+     * Add a new Filter.
+     */
     VALUE
     filtered_generator_bar(VALUE self, VALUE other)
     {
@@ -71,6 +79,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     filter -> Filter
+     *
+     * Our Filter.
+     */
     VALUE
     filtered_generator_filter(VALUE self)
     {
@@ -87,6 +101,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     generator -> Generator
+     *
+     * Our Generator.
+     */
     VALUE
     filtered_generator_generator(VALUE self)
     {
@@ -105,6 +125,11 @@ namespace
 
     void do_register_filtered_generator()
     {
+        /*
+         * Document-class: Paludis::FilteredGenerator
+         *
+         * A combined Generator and Filter for an Environment selection.
+         */
         c_filtered_generator = rb_define_class_under(paludis_module(), "FilteredGenerator", rb_cObject);
         rb_define_singleton_method(c_filtered_generator, "new", RUBY_FUNC_CAST(&filtered_generator_new), 2);
         rb_define_method(c_filtered_generator, "initialize", RUBY_FUNC_CAST(&filtered_generator_init), -1);

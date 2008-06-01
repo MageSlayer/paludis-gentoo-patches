@@ -46,19 +46,19 @@ void expose_selection()
 
     bp::class_<selection::SomeArbitraryVersion, bp::bases<Selection> > selection_some_arbitrary_version(
             "SomeArbitraryVersion",
-            "Select some arbitrary version.",
+            "Select some arbitrary version of some arbitrary package.",
             bp::init<const FilteredGenerator &>("__init__(filtered_generator)")
             );
 
     bp::class_<selection::BestVersionOnly, bp::bases<Selection> > selection_best_version_only(
             "BestVersionOnly",
-            "Select the best version only.",
+            "Select the best version only of each package.",
             bp::init<const FilteredGenerator &>("__init__(filtered_generator)")
             );
 
     bp::class_<selection::BestVersionInEachSlot, bp::bases<Selection> > selection_best_version_in_each_slot(
             "BestVersionInEachSlot",
-            "Select the best version in each slot.",
+            "Select the best version in each slot of each package.",
             bp::init<const FilteredGenerator &>("__init__(filtered_generator)")
             );
 
@@ -70,13 +70,13 @@ void expose_selection()
 
     bp::class_<selection::AllVersionsGroupedBySlot, bp::bases<Selection> > selection_all_versions_grouped_by_slot(
             "AllVersionsGroupedBySlot",
-            "All versions grouped by slot.",
+            "Select all versions, sorted and grouped by slot.",
             bp::init<const FilteredGenerator &>("__init__(filtered_generator)")
             );
 
     bp::class_<selection::AllVersionsUnsorted, bp::bases<Selection> > selection_all_versions_unsorted(
             "AllVersionsUnsorted",
-            "All versions, in no particular order.",
+            "Select all versions, in no particular order.",
             bp::init<const FilteredGenerator &>("__init__(filtered_generator)")
             );
 

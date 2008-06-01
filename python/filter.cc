@@ -67,7 +67,7 @@ void expose_filter()
 
     bp::class_<filter::NotMasked, bp::bases<Filter> > filter_not_masked(
             "NotMasked",
-            "Accept not masked packages.",
+            "Accept unmasked packages.",
             bp::init<>("__init__()")
             );
 
@@ -79,7 +79,7 @@ void expose_filter()
 
     bp::class_<filter::And, bp::bases<Filter> > filter_and(
             "And",
-            "Accept packages that match both filters",
+            "Accept packages that match both filters.",
             bp::init<const Filter &, const Filter &>("__init__(filter, filter)")
             );
 

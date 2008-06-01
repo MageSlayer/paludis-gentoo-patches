@@ -115,6 +115,13 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     new(class) -> Filter
+     *
+     * Create a Filter that accepts packages that support the
+     * specified Action subclass.
+     */
     VALUE
     filter_supports_action_new(VALUE self, VALUE action_class)
     {
@@ -153,25 +160,61 @@ namespace
 
     void do_register_filter()
     {
+        /*
+         * Document-module: Paludis::Filter
+         *
+         * Collection of classes that restrict the results of an
+         * Environment selection.
+         */
         c_filter_module = rb_define_module_under(paludis_module(), "Filter");
 
+        /*
+         * Document-class: Paludis::Filter::Filter
+         *
+         * Filter for an Environment selection.
+         */
         c_filter = rb_define_class_under(c_filter_module, "Filter", rb_cObject);
         rb_funcall(c_filter, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_filter, "initialize", RUBY_FUNC_CAST(&filter_init), -1);
         rb_define_method(c_filter, "to_s", RUBY_FUNC_CAST(&Common<Filter>::to_s), 0);
 
+        /*
+         * Document-class: Paludis::Filter::All
+         *
+         * Accept all packages.
+         */
         c_filter_all = rb_define_class_under(c_filter_module, "All", c_filter);
         rb_define_singleton_method(c_filter_all, "new", RUBY_FUNC_CAST(&filter_all_new), 0);
 
+        /*
+         * Document-class: Paludis::Filter::NotMasked
+         *
+         * Accept unmasked packages.
+         */
         c_filter_not_masked = rb_define_class_under(c_filter_module, "NotMasked", c_filter);
         rb_define_singleton_method(c_filter_not_masked, "new", RUBY_FUNC_CAST(&filter_not_masked_new), 0);
 
+        /*
+         * Document-class: Paludis::Filter::InstalledAtRoot
+         *
+         * Accept packages installed at a particular root.
+         */
         c_filter_installed_at_root = rb_define_class_under(c_filter_module, "InstalledAtRoot", c_filter);
         rb_define_singleton_method(c_filter_installed_at_root, "new", RUBY_FUNC_CAST(&filter_installed_at_root_new), 1);
 
+        /*
+         * Document-class: Paludis::Filter::And
+         *
+         * Accept packages that match both filters.
+         */
         c_filter_and = rb_define_class_under(c_filter_module, "And", c_filter);
         rb_define_singleton_method(c_filter_and, "new", RUBY_FUNC_CAST(&filter_and_new), 2);
 
+        /*
+         * Document-class: Paludis::Filter::SupportsAction
+         *
+         * Accept packages that support a particular Action.
+         */
         c_filter_supports_action = rb_define_class_under(c_filter_module, "SupportsAction", c_filter);
         rb_define_singleton_method(c_filter_supports_action, "new", RUBY_FUNC_CAST(&filter_supports_action_new), 1);
     }

@@ -67,37 +67,83 @@ namespace
 
     void do_register_selection()
     {
+        /*
+         * Document-module: Paludis::Selection
+         *
+         * Collection of classes to sort and select the results for an
+         * Environment selection.
+         */
         c_selection_module = rb_define_module_under(paludis_module(), "Selection");
 
+        /*
+         * Document-class: Paludis::Selection::Selection
+         *
+         * Selection for an Environment selection.
+         */
         c_selection = rb_define_class_under(c_selection_module, "Selection", rb_cObject);
         rb_funcall(c_selection, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_selection, "initialize", RUBY_FUNC_CAST(&selection_init), -1);
         rb_define_method(c_selection, "to_s", RUBY_FUNC_CAST(&Common<Selection>::to_s), 0);
 
+        /*
+         * Document-class: Paludis::Selection::SomeArbitraryVersion
+         *
+         * Select some arbitrary version of some arbitrary package.
+         */
         c_selection_some_arbitrary_version = rb_define_class_under(c_selection_module, "SomeArbitraryVersion", c_selection);
         rb_define_singleton_method(c_selection_some_arbitrary_version, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::SomeArbitraryVersion>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::BestVersionOnly
+         *
+         * Select the best version only of each package.
+         */
         c_selection_best_version_only = rb_define_class_under(c_selection_module, "BestVersionOnly", c_selection);
         rb_define_singleton_method(c_selection_best_version_only, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::BestVersionOnly>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::BestVersionInEachSlot
+         *
+         * Select the best version in each slot of each package.
+         */
         c_selection_best_version_in_each_slot = rb_define_class_under(c_selection_module, "BestVersionInEachSlot", c_selection);
         rb_define_singleton_method(c_selection_best_version_in_each_slot, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::BestVersionInEachSlot>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::AllVersionsSorted
+         *
+         * Select all versions, sorted.
+         */
         c_selection_all_versions_sorted = rb_define_class_under(c_selection_module, "AllVersionsSorted", c_selection);
         rb_define_singleton_method(c_selection_all_versions_sorted, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsSorted>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::AllVersionsGroupedBySlot
+         *
+         * Select all versions, sorted and grouped by slot.
+         */
         c_selection_all_versions_grouped_by_slot = rb_define_class_under(c_selection_module, "AllVersionsGroupedBySlot", c_selection);
         rb_define_singleton_method(c_selection_all_versions_grouped_by_slot, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsGroupedBySlot>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::AllVersionsUnsorted
+         *
+         * Select all versions, in no particular order.
+         */
         c_selection_all_versions_unsorted = rb_define_class_under(c_selection_module, "AllVersionsUnsorted", c_selection);
         rb_define_singleton_method(c_selection_all_versions_unsorted, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsUnsorted>::selection_new), 1);
 
+        /*
+         * Document-class: Paludis::Selection::RequireExactlyOne
+         *
+         * Require exactly one matching ID.
+         */
         c_selection_require_exactly_one = rb_define_class_under(c_selection_module, "RequireExactlyOne", c_selection);
         rb_define_singleton_method(c_selection_require_exactly_one, "new",
                 RUBY_FUNC_CAST(&SelectionNew<selection::RequireExactlyOne>::selection_new), 1);
