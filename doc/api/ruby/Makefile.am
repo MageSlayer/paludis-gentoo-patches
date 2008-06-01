@@ -34,6 +34,7 @@ examples = \
 	example_mask.rb \
 	example_match_package.rb \
 	example_repository.rb \
+	example_selection.rb \
 	example_version_operator.rb \
 	example_version_spec.rb
 
