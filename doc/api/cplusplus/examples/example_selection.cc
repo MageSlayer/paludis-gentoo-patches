@@ -28,14 +28,14 @@ using std::endl;
 namespace
 {
     /* Run a particular selection, and show its results. */
-    void show_selection(const std::tr1::shared_ptr<const Environment> & env, const Selection & query)
+    void show_selection(const std::tr1::shared_ptr<const Environment> & env, const Selection & selection)
     {
         /* Selections support a crude form of stringification. */
-        cout << query << ":" << endl;
+        cout << selection << ":" << endl;
 
-        /* Usually the only thing clients will do with a Query object is pass it
+        /* Usually the only thing clients will do with a Selection object is pass it
          * to Environment::operator[]. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[query]);
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection]);
 
         /* Show the results */
         if (! ids->empty())
