@@ -30,8 +30,8 @@
 #include <paludis/name.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
-#include <paludis/generator_handler.hh>
 #include <paludis/filter.hh>
+#include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/util/set.hh>
@@ -63,8 +63,8 @@ namespace
         return res2;
     }
 
-    class FuzzyPackageNameGeneratorHandler :
-        public AllGeneratorHandlerBase
+    class FuzzyPackageNameFilterHandler :
+        public AllFilterHandlerBase
     {
         private:
             std::string _package;
@@ -73,7 +73,7 @@ namespace
             char _first_char;
 
         public:
-            FuzzyPackageNameGeneratorHandler(const std::string & package) :
+            FuzzyPackageNameFilterHandler(const std::string & package) :
                 _package(package),
                 _distance_calculator(tolower_0_cost(package)),
                 _threshold(package.length() <= 4 ? 1 : 2),
@@ -84,7 +84,7 @@ namespace
             virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const;
+                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const;
 
             virtual std::string as_string() const
             {
@@ -93,38 +93,27 @@ namespace
     };
 
     std::tr1::shared_ptr<const QualifiedPackageNameSet>
-    FuzzyPackageNameGeneratorHandler::packages(const Environment * const env,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> & cats) const
+    FuzzyPackageNameFilterHandler::packages(const Environment * const,
+            const std::tr1::shared_ptr<const RepositoryNameSet> &,
+            const std::tr1::shared_ptr<const QualifiedPackageNameSet> & pkgs) const
     {
         std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
-        for (RepositoryNameSet::ConstIterator r(repos->begin()),
-                 r_end(repos->end()); r_end != r; ++r)
-        {
-            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-
-            for (CategoryNamePartSet::ConstIterator c(cats->begin()),
-                     c_end(cats->end()); c_end != c; ++c)
-            {
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(repo->package_names(*c));
-                for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
-                         p_end(pkgs->end()); p_end != p; ++p)
-                    if (tolower(p->package.data()[0]) == _first_char &&
-                        _distance_calculator.distance_with(tolower_0_cost(p->package.data())) <= _threshold)
-                        result->insert(*p);
-            }
-        }
+        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
+                    p_end(pkgs->end()); p_end != p; ++p)
+            if (tolower(p->package.data()[0]) == _first_char &&
+                _distance_calculator.distance_with(tolower_0_cost(p->package.data())) <= _threshold)
+                result->insert(*p);
 
         return result;
     }
 
     class FuzzyPackageName :
-        public Generator
+        public Filter
     {
         public:
             FuzzyPackageName(const std::string & p) :
-                Generator(make_shared_ptr(new FuzzyPackageNameGeneratorHandler(p)))
+                Filter(make_shared_ptr(new FuzzyPackageNameFilterHandler(p)))
             {
             }
     };
@@ -159,7 +148,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
             g = g & generator::Repository(*pds.repository_ptr());
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g & FuzzyPackageName(package) | filter)]);
+    std::tr1::shared_ptr<const PackageIDSequence> ids(e[selection::SomeArbitraryVersion(g | FuzzyPackageName(package) | filter)]);
 
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
             ; i != i_end ; ++i)
