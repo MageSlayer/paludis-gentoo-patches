@@ -120,7 +120,7 @@ end
 
 if mirror_repository then
     env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_dir)
-    relevant_packages = Generator::Repository.new(env.main_repository.name)
+    relevant_packages = Paludis::Generator::Repository.new(env.main_repository.name)
     $check_condition = lambda { true }
     $banned_labels = {
         Paludis::URIListedOnlyLabel       => true,
@@ -129,7 +129,7 @@ if mirror_repository then
     }
 else
     env = Paludis::EnvironmentMaker.instance.make_from_spec(env_spec || "")
-    relevant_packages Generator::SupportsAction.new(InstalledAction)
+    relevant_packages = Paludis::Generator::All.new | Paludis::Filter::SupportsAction.new(Paludis::InstalledAction)
     $check_condition = lambda { | spec | spec.condition_met? }
     $banned_labels = { }
 end
@@ -164,7 +164,7 @@ end
 
 # build up a list of all src_uri things that're used by installed packages
 parts = Hash.new
-env[Selection::AllVersionsUnsorted.new(relevant_packages)].each do | id |
+env[Paludis::Selection::AllVersionsUnsorted.new(relevant_packages)].each do | id |
     key = id.fetches_key
     collect_filenames(parts, id, [key.initial_label.class], key.value) if key && key.value
 end
