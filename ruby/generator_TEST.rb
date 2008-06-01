@@ -90,49 +90,31 @@ module Paludis
         end
     end
 
-    class TestCase_GeneratorSomeIDsMightSupportAction < Test::Unit::TestCase
-        def test_create
-            assert_nothing_raised do
-                Generator::SomeIDsMightSupportAction.new(InstallAction)
-            end
-        end
-
-        def test_bad_create
-            assert_raise TypeError do
-                Generator::SomeIDsMightSupportAction.new(String)
-            end
-        end
-
-        def test_to_s
-            assert_equal Generator::SomeIDsMightSupportAction.new(InstallAction).to_s, "packages that might support action install"
-        end
-    end
-
     class TestCase_GeneratorIntersection < Test::Unit::TestCase
         def test_create
             assert_nothing_raised do
-                Generator::Intersection.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction))
+                Generator::Intersection.new(Generator::All.new, Generator::Repository.new("arbor"))
             end
         end
 
         def test_to_s
-            assert_equal Generator::Intersection.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction)).to_s,
-                "all packages intersected with packages that might support action install"
+            assert_equal Generator::Intersection.new(Generator::All.new, Generator::Repository.new("arbor")).to_s,
+                "all packages intersected with packages with repository arbor"
         end
     end
 
     class TestCase_GeneratorAmpersand < Test::Unit::TestCase
         def test_create
             g1 = Generator::All.new
-            g2 = Generator::SomeIDsMightSupportAction.new(InstallAction)
+            g2 = Generator::Repository.new("arbor")
             assert_nothing_raised do
                 g1 & g2
             end
         end
 
         def test_to_s
-            assert_equal (Generator::All.new & Generator::SomeIDsMightSupportAction.new(InstalledAction)).to_s,
-                "all packages intersected with packages that might support action installed"
+            assert_equal (Generator::All.new & Generator::Repository.new("arbor")).to_s,
+                "all packages intersected with packages with repository arbor"
         end
     end
 end

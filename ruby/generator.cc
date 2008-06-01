@@ -34,7 +34,6 @@ namespace
     static VALUE c_generator_repository;
     static VALUE c_generator_category;
     static VALUE c_generator_intersection;
-    static VALUE c_generator_some_ids_might_support_action;
 
     VALUE
     generator_init(int, VALUE *, VALUE self)
@@ -206,42 +205,6 @@ namespace
         }
     }
 
-    VALUE
-    generator_some_ids_might_support_action_new(VALUE self, VALUE action_class)
-    {
-        Generator * ptr(0);
-        try
-        {
-            if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<InstallAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, installed_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<InstalledAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<UninstallAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<PretendAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, config_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<ConfigAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, fetch_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<FetchAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, info_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<InfoAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_fetch_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<PretendFetchAction>();
-            else
-                rb_raise(rb_eTypeError, "Can't convert %s into an Action subclass", rb_obj_classname(action_class));
-
-            VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
-            rb_obj_call_init(data, 1, &action_class);
-            return data;
-        }
-        catch (const std::exception & e)
-        {
-            delete ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
-
     void do_register_generator()
     {
         /*
@@ -311,9 +274,6 @@ namespace
          */
         c_generator_repository = rb_define_class_under(c_generator_module, "Repository", c_generator);
         rb_define_singleton_method(c_generator_repository, "new", RUBY_FUNC_CAST(&generator_repository_new), 1);
-
-        c_generator_some_ids_might_support_action = rb_define_class_under(c_generator_module, "SomeIDsMightSupportAction", c_generator);
-        rb_define_singleton_method(c_generator_some_ids_might_support_action, "new", RUBY_FUNC_CAST(&generator_some_ids_might_support_action_new), 1);
     }
 }
 
