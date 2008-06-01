@@ -129,7 +129,7 @@ if ($envspec || "") =~ /^(?:paludis)?(?::(.*))?$/ then
     $env = Paludis::PaludisEnvironment.new($1 || "")
     $config_dir = $env.config_dir
 else
-    $stderr.puts "#$0: --environment must specifiy class 'paludis'"
+    $stderr.puts "#$0: --environment must specify class 'paludis'"
     exit 1
 end
 
