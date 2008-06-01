@@ -442,7 +442,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find installable candidates, and find the best visible candidate */
     std::tr1::shared_ptr<const PackageID> best_visible_candidate;
     std::tr1::shared_ptr<const PackageIDSequence> installable_candidates(
-            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a) | filter::SupportsAction<InstallAction>())]);
+            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a) &
+                generator::SomeIDsMightSupportAction<InstallAction>())]);
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
