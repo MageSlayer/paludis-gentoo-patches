@@ -67,6 +67,11 @@ int main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_version.specified())
             throw DoVersion();
 
+        Log::get_instance()->message("contrarius.sucks", ll_warning, lc_no_context) <<
+            "Contrarius is mostly undocumented, unreliable and unsupported. If you're lucky, it might work "
+            "exactly as expected. But it probably won't, and when it breaks, we can't really help you. You "
+            "are welcome to send patches.";
+
         if (! CommandLine::get_instance()->a_target.specified())
             throw DoHelp("you need to specify a --target");
 
