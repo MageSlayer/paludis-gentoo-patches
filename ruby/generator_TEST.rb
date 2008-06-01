@@ -108,15 +108,15 @@ module Paludis
         end
     end
 
-    class TestCase_GeneratorUnion < Test::Unit::TestCase
+    class TestCase_GeneratorIntersection < Test::Unit::TestCase
         def test_create
             assert_nothing_raised do
-                Generator::Union.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction))
+                Generator::Intersection.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction))
             end
         end
 
         def test_to_s
-            assert_equal Generator::Union.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction)).to_s,
+            assert_equal Generator::Intersection.new(Generator::All.new, Generator::SomeIDsMightSupportAction.new(InstallAction)).to_s,
                 "all packages intersected with packages that might support action install"
         end
     end

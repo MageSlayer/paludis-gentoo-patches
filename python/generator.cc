@@ -45,7 +45,7 @@ void expose_generator()
             )
         .def("__and__", static_cast<Generator (*) (const Generator &, const Generator &)>(
                     &paludis::operator& ),
-                "Combine with another Generator using a set union."
+                "Combine with another Generator using a set intersection."
             )
         ;
 
@@ -65,9 +65,9 @@ void expose_generator()
             bp::init<const PackageDepSpec &>("__init__(spec)")
             );
 
-    bp::class_<generator::Union, bp::bases<Generator> > generator_union(
-            "Union",
-            "Generate packages from a union of two other Generator instances.",
+    bp::class_<generator::Intersection, bp::bases<Generator> > generator_intersection(
+            "Intersection",
+            "Generate packages from the intersection of two other Generator instances.",
             bp::init<const Generator &, const Generator &>("__init__(generator, generator)")
             );
 

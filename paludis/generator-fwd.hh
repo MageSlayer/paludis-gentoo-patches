@@ -34,7 +34,7 @@ namespace paludis
         class Package;
         class Repository;
         class Category;
-        class Union;
+        class Intersection;
         template <typename> class SomeIDsMightSupportAction;
     }
 

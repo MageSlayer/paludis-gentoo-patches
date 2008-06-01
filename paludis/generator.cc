@@ -351,13 +351,13 @@ namespace
         }
     };
 
-    struct UnionGeneratorHandler :
+    struct IntersectionGeneratorHandler :
         GeneratorHandler
     {
         const Generator g1;
         const Generator g2;
 
-        UnionGeneratorHandler(const Generator & h1, const Generator & h2) :
+        IntersectionGeneratorHandler(const Generator & h1, const Generator & h2) :
             g1(h1),
             g2(h2)
         {
@@ -509,8 +509,8 @@ generator::Matches::Matches(const PackageDepSpec & spec) :
 {
 }
 
-generator::Union::Union(const Generator & g1, const Generator & g2) :
-    Generator(make_shared_ptr(new UnionGeneratorHandler(g1, g2)))
+generator::Intersection::Intersection(const Generator & g1, const Generator & g2) :
+    Generator(make_shared_ptr(new IntersectionGeneratorHandler(g1, g2)))
 {
 }
 
@@ -523,7 +523,7 @@ generator::SomeIDsMightSupportAction<A_>::SomeIDsMightSupportAction() :
 Generator
 paludis::operator& (const Generator & g1, const Generator & g2)
 {
-    return generator::Union(g1, g2);
+    return generator::Intersection(g1, g2);
 }
 
 std::ostream &

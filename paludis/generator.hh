@@ -106,11 +106,11 @@ namespace paludis
                 Category(const CategoryNamePart &);
         };
 
-        class PALUDIS_VISIBLE Union :
+        class PALUDIS_VISIBLE Intersection :
             public Generator
         {
             public:
-                Union(const Generator &, const Generator &);
+                Intersection(const Generator &, const Generator &);
         };
 
         template <typename>

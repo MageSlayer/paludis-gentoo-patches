@@ -269,10 +269,10 @@ namespace test_cases
         }
     } no_category_generator_test;
 
-    struct UnionGeneratorTestCase : GeneratorTestCaseBase
+    struct IntersectionGeneratorTestCase : GeneratorTestCaseBase
     {
-        UnionGeneratorTestCase() :
-            GeneratorTestCaseBase("union", generator::Union(
+        IntersectionGeneratorTestCase() :
+            GeneratorTestCaseBase("intersection", generator::Intersection(
                     generator::Matches(parse_user_package_dep_spec("*/a", UserPackageDepSpecOptions() + updso_allow_wildcards)),
                     generator::Matches(parse_user_package_dep_spec("cat/*", UserPackageDepSpecOptions() + updso_allow_wildcards))
                     ))
@@ -287,7 +287,7 @@ namespace test_cases
                 "cat/a-1:0::repo2, "
                 "cat/a-2:0::repo2";
         }
-    } union_generator_test;
+    } intersection_generator_test;
 
     struct SomeIDsMightSupportInstallActionGeneratorTestCase : GeneratorTestCaseBase
     {

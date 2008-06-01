@@ -33,7 +33,7 @@ namespace
     static VALUE c_generator_package;
     static VALUE c_generator_repository;
     static VALUE c_generator_category;
-    static VALUE c_generator_union;
+    static VALUE c_generator_intersection;
     static VALUE c_generator_some_ids_might_support_action;
 
     VALUE
@@ -171,14 +171,14 @@ namespace
     }
 
     VALUE
-    generator_union_new(VALUE self, VALUE f1_v, VALUE f2_v)
+    generator_intersection_new(VALUE self, VALUE f1_v, VALUE f2_v)
     {
         Generator * ptr(0);
         try
         {
             Generator f1(value_to_generator(f1_v));
             Generator f2(value_to_generator(f2_v));
-            ptr = new generator::Union(f1, f2);
+            ptr = new generator::Intersection(f1, f2);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
             rb_obj_call_init(data, 2, &f1_v);
             return data;
@@ -243,8 +243,8 @@ namespace
         c_generator_matches = rb_define_class_under(c_generator_module, "Matches", c_generator);
         rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 1);
 
-        c_generator_union = rb_define_class_under(c_generator_module, "Union", c_generator);
-        rb_define_singleton_method(c_generator_union, "new", RUBY_FUNC_CAST(&generator_union_new), 2);
+        c_generator_intersection = rb_define_class_under(c_generator_module, "Intersection", c_generator);
+        rb_define_singleton_method(c_generator_intersection, "new", RUBY_FUNC_CAST(&generator_intersection_new), 2);
 
         c_generator_package = rb_define_class_under(c_generator_module, "Package", c_generator);
         rb_define_singleton_method(c_generator_package, "new", RUBY_FUNC_CAST(&generator_package_new), 1);
