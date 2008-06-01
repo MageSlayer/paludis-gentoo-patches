@@ -35,8 +35,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/fuzzy_finder.hh>
-#include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/filter.hh>
 #include <tr1/functional>
 #include <set>
 #include <map>
@@ -105,7 +105,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(env, e.name(), query::All());
+                FuzzyCandidatesFinder f(env, e.name(), filter::All());
 
                 if (f.begin() == f.end())
                     cerr << "No suggestions found." << endl;

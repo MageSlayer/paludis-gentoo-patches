@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,13 @@
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
-#include <paludis/query.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/action.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -77,11 +81,11 @@ DepPrinter::visit_leaf(const PackageDepSpec & p)
 
     if (_imp->env)
     {
-        if (! _imp->env->package_database()->query(query::Matches(p) &
-                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+                    filter::InstalledAtRoot(_imp->env->root()))]->empty())
             _imp->s << _imp->formatter.format(p, format::Installed());
-        else if (! _imp->env->package_database()->query(query::Matches(p) &
-                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+                    filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             _imp->s << _imp->formatter.format(p, format::Installable());
         else
             _imp->s << _imp->formatter.format(p, format::Plain());

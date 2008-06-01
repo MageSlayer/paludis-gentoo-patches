@@ -24,7 +24,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
 #include <paludis/match_package.hh>
@@ -32,6 +31,10 @@
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/tasks_exceptions.hh>
+#include <paludis/selection.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
@@ -175,9 +178,8 @@ namespace
 
             case 'D':
                 return make_shared_ptr(new DepListEntryHandledSkippedDependent(
-                            *env->package_database()->query(query::Matches(
-                                    parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())),
-                                qo_require_exactly_one)->begin()));
+                            *(*env)[selection::RequireExactlyOne(generator::Matches(
+                                    parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())))]->begin()));
 
             case 'F':
                 if (s.length() != 1)
@@ -221,8 +223,8 @@ InstallTask::set_targets_from_serialisation(const std::string & format, const st
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
-        const std::tr1::shared_ptr<const PackageID> package_id(*_imp->env->package_database()->query(
-                    query::Matches(parse_user_package_dep_spec(*tokens.begin(), UserPackageDepSpecOptions())), qo_require_exactly_one)->begin());
+        const std::tr1::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
+                    generator::Matches(parse_user_package_dep_spec(*tokens.begin(), UserPackageDepSpecOptions())))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
@@ -432,7 +434,7 @@ InstallTask::_add_target(const std::string & target)
             try
             {
                 QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(target), query::MaybeSupportsAction<InstallAction>()));
+                            PackageNamePart(target), filter::SupportsAction<InstallAction>()));
                 modified_target = stringify(q);
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(q)));
                 spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
@@ -745,13 +747,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     std::tr1::shared_ptr<const PackageIDSequence> collision_list;
 
     if (dep->destination)
-        collision_list = _imp->env->package_database()->query(
-                query::Matches(make_package_dep_spec()
+        collision_list = (*_imp->env)[selection::AllVersionsSorted(
+                generator::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .repository(dep->destination->name())) &
-                query::SupportsAction<UninstallAction>(),
-                qo_order_by_version);
+                    .repository(dep->destination->name())) |
+                filter::SupportsAction<UninstallAction>())];
 
     // don't clean the thing we just installed
     PackageIDSequence clean_list;
@@ -1305,7 +1306,7 @@ namespace
         void visit_leaf(const PackageDepSpec & a)
         {
             if (! failure)
-                if (env->package_database()->query(query::Matches(a) & query::SupportsAction<InstalledAction>(), qo_whatever)->empty())
+                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(a) | filter::SupportsAction<InstalledAction>())]->empty())
                     failure.reset(new PackageDepSpec(a));
         }
 
@@ -1495,10 +1496,9 @@ namespace
 
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
-            std::tr1::shared_ptr<const PackageIDSequence> installed(env->package_database()->query(
-                        query::Matches(a) &
-                        query::SupportsAction<InstalledAction>(),
-                        qo_whatever));
+            std::tr1::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
+                        generator::Matches(a) |
+                        filter::SupportsAction<InstalledAction>())]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;
                     i != i_end ; ++i)

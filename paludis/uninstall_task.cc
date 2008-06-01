@@ -24,6 +24,10 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/tasks_exceptions.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -32,7 +36,6 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/kc.hh>
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -192,7 +195,7 @@ UninstallTask::add_target(const std::string & target)
                 _imp->had_package_targets = false;
                 std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
                             .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                                    PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>()))));
+                                    PackageNamePart(target), filter::SupportsAction<UninstallAction>()))));
                 pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets.push_back(pds);
             }
@@ -205,7 +208,7 @@ UninstallTask::add_target(const std::string & target)
             _imp->had_package_targets = false;
             std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
                         .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(target), query::MaybeSupportsAction<UninstallAction>()))));
+                                PackageNamePart(target), filter::SupportsAction<UninstallAction>()))));
             pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets.push_back(pds);
         }
@@ -248,10 +251,9 @@ UninstallTask::execute()
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
-            std::tr1::shared_ptr<const PackageIDSequence> r(_imp->env->package_database()->query(
-                        query::Matches(**t) &
-                        query::SupportsAction<UninstallAction>(),
-                        qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
+                        generator::Matches(**t) |
+                        filter::SupportsAction<UninstallAction>())]);
             if (r->empty())
             {
                 if (! _imp->had_set_targets)
@@ -314,10 +316,10 @@ UninstallTask::execute()
                 i(being_removed.begin()), i_end(being_removed.end()) ; i != i_end ; ++i)
         {
             bool remove(true);
-            std::tr1::shared_ptr<const PackageIDSequence> installed(
-                    _imp->env->package_database()->query(query::Matches(make_package_dep_spec().package(i->first)) &
-                        query::SupportsAction<InstalledAction>(),
-                        qo_whatever));
+            std::tr1::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
+                        generator::Matches(make_package_dep_spec().package(i->first)) |
+                        filter::SupportsAction<InstalledAction>()
+                        )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
                 if (i->second.end() == i->second.find((*r)->version()))

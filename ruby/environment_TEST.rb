@@ -79,9 +79,8 @@ module Paludis
         end
 
         def test_query_use
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])),
-                QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
@@ -104,17 +103,16 @@ module Paludis
         end
 
         def pid
-            env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])),
-                QueryOrder::RequireExactlyOne).first
+            env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
         end
 
         def test_accept_license
             assert env.accept_license('GPL-2', pid)
             assert !env.accept_license('Failure', pid)
 
-            pid2 = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid2 = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', [])))].first
             assert env.accept_license('GPL-2', pid2)
             assert env.accept_license('Failure', pid2)
         end
@@ -132,8 +130,8 @@ module Paludis
         end
 
         def pid
-            env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
         end
 
         def test_accept_keywords
@@ -161,8 +159,8 @@ module Paludis
         end
 
         def test_query_use
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
             assert ! env.query_use("foo", pid)
         end
 
@@ -200,8 +198,8 @@ module Paludis
         end
 
         def test_adapt_use
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(
+                Generator::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
@@ -231,8 +229,8 @@ module Paludis
         end
 
         def test_clear_adaptions
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert env.query_use("enabled", pid)
 
@@ -403,6 +401,94 @@ module Paludis
 
         def test_empty_mirror
             assert env.mirrors('missingmirror').empty?
+        end
+    end
+
+    class TestCase_EnvironmentQuery < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def db
+            return env.package_database
+        end
+
+        def pda
+            Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])
+        end
+
+        def pda2
+            Paludis::parse_user_package_dep_spec('foo/bar', [])
+        end
+
+        def test_arg_count
+            assert_raise ArgumentError do
+                env[1, 2];
+            end
+        end
+
+        def test_package_database_query
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda))]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository_name
+
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda) | Filter::SupportsAction.new(InstallAction))]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository_name
+
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda))]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository_name
+
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda2) | Filter::SupportsAction.new(InstallAction))]
+            assert_kind_of Array, a
+            assert_equal 2, a.length
+            pid = a.shift
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository_name
+            pid2 = a.shift
+            assert_kind_of PackageID, pid2
+            assert_equal pid.name, pid2.name
+            assert_equal '2.0', pid2.version.to_s
+            assert_equal pid.repository_name, pid2.repository_name
+
+            a = env[Selection::AllVersionsSorted.new(Generator::Package.new('foo/bar'))]
+            assert_kind_of Array, a
+            assert_equal 2, a.length
+            pid = a.shift
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository_name
+            pid2 = a.shift
+            assert_kind_of PackageID, pid2
+            assert_equal pid.name, pid2.name
+            assert_equal '2.0', pid2.version.to_s
+            assert_equal pid.repository_name, pid2.repository_name
+
+
+            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec('>=foo/bar-27', [])))]
+            assert a.empty?
+
+            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2) | Filter::SupportsAction.new(InstalledAction))]
+            assert a.empty?
         end
     end
 end

@@ -35,7 +35,6 @@
 #include <paludis/util/set.hh>
 
 #include <paludis/hook.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>

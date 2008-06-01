@@ -239,12 +239,12 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
             const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
-            const std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
-            const std::tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();
 
             ///\name Modifiable keys
             ///\{
 
+            const std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
+            const std::tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();

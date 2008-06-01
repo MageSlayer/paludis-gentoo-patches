@@ -194,9 +194,8 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::SupportsAction<InstalledAction>(),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                    generator::All() | filter::SupportsAction<InstalledAction>())]);
 
         ResultsMap results;
 

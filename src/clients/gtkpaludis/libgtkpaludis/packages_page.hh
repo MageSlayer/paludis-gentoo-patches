@@ -5,7 +5,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
-#include <paludis/query.hh>
+#include <paludis/generator.hh>
 #include <libgtkpaludis/main_notebook_page.hh>
 #include <libgtkpaludis/packages_package_filter_option.hh>
 #include <libgtkpaludis/packages_text_filter_source_option.hh>
@@ -32,8 +32,8 @@ namespace gtkpaludis
             void set_set(std::tr1::shared_ptr<const paludis::SetName>);
             std::tr1::shared_ptr<const paludis::SetName> get_set() const;
 
-            void set_repository_filter(std::tr1::shared_ptr<const paludis::Query>);
-            std::tr1::shared_ptr<const paludis::Query> get_repository_filter() const;
+            void set_repository_filter(std::tr1::shared_ptr<const paludis::Generator>);
+            std::tr1::shared_ptr<const paludis::Generator> get_repository_filter() const;
 
             void set_package_filter(const PackagesPackageFilterOption);
             PackagesPackageFilterOption get_package_filter() const;

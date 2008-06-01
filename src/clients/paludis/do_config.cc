@@ -75,11 +75,11 @@ namespace
         std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
                 new PackageDepSpec(make_package_dep_spec().package(
                         env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(target), query::InstalledAtRoot(env->root())))) :
+                            PackageNamePart(target), filter::InstalledAtRoot(env->root())))) :
                 new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
 
-        std::tr1::shared_ptr<const PackageIDSequence>
-            entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> entries(
+                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
 
         if (entries->empty())
             throw NoSuchPackageError(target);

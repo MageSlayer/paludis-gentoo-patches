@@ -131,9 +131,8 @@ do_one_executables(
                     env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))) :
             new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
 
-    std::tr1::shared_ptr<const PackageIDSequence>
-        entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
-                        env->root()), qo_order_by_version));
+    std::tr1::shared_ptr<const PackageIDSequence> entries(
+            (*env)[selection::AllVersionsSorted(generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(q);
@@ -189,7 +188,7 @@ do_executables(std::tr1::shared_ptr<Environment> env)
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), query::InstalledAtRoot(env->root()));
+                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
 
                 if (f.begin() == f.end())
                     cerr << "No suggestions found." << endl;

@@ -27,13 +27,16 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
-#include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/fuzzy_finder.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 
 #include <set>
 #include <map>
@@ -164,8 +167,7 @@ namespace
     void
     ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> dep_entries(_env->package_database()->query(
-                    query::Matches(a), qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(generator::Matches(a))]);
         std::tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
         bool header_written = false;
@@ -215,8 +217,7 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        std::tr1::shared_ptr<const PackageIDSequence> p_entries(env.package_database()->query(
-                query::Package(p), qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> p_entries(env[selection::AllVersionsSorted(generator::Package(p))]);
 
         bool found_matches(false);
 
@@ -297,7 +298,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         {
             cerr << " Looking for suggestions:" << endl;
 
-            FuzzyCandidatesFinder f(env, e.name(), query::All());
+            FuzzyCandidatesFinder f(env, e.name(), filter::All());
 
             if (f.begin() == f.end())
                 cerr << "No suggestions found." << endl;
@@ -313,8 +314,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 5;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(env.package_database()->query(
-                query::Matches(*spec), qo_order_by_version));
+    std::tr1::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(*spec))]);
     int ret(0);
 
     if (entries->empty())

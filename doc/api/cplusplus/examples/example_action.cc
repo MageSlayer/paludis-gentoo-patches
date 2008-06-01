@@ -37,9 +37,8 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                    generator::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))))]);
 
         /* For each ID: */
         for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;

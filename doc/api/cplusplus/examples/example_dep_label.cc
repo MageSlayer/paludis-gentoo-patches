@@ -159,9 +159,8 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::SupportsAction<InstalledAction>(),
-                    qo_whatever));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+                    generator::All() | filter::SupportsAction<InstalledAction>())]);
 
         /* Store a map from distfile name to whether it is fetch restricted. */
         ResultsMap results;

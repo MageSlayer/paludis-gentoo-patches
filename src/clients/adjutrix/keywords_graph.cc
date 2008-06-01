@@ -26,11 +26,14 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <tr1/functional>
 #include <set>
 #include <map>
@@ -69,11 +72,10 @@ namespace
         cout << endl;
 
         FindUnusedPackagesTask task(&e, &repo);
-        std::tr1::shared_ptr<const PackageIDSequence> packages(e.package_database()->query(
-                query::Matches(make_package_dep_spec()
+        std::tr1::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
+                generator::Matches(make_package_dep_spec()
                     .package(package)
-                    .repository(repo.name())),
-                qo_group_by_slot));
+                    .repository(repo.name())))]);
         std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())

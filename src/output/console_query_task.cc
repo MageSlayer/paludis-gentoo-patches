@@ -30,12 +30,15 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/kc.hh>
-#include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <list>
 
 using namespace paludis;
@@ -73,9 +76,9 @@ ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const Pack
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::tr1::shared_ptr<const PackageIDSequence>
-        entries(_imp->env->package_database()->query(query::Matches(a), qo_order_by_version)),
-        preferred_entries(_imp->env->package_database()->query(
-                    query::Matches(a) & query::InstalledAtRoot(_imp->env->root()), qo_order_by_version));
+        entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a))]),
+        preferred_entries((*_imp->env)[selection::AllVersionsSorted(
+                    generator::Matches(a) | filter::InstalledAtRoot(_imp->env->root()))]);
     if (entries->empty())
         throw NoSuchPackageError(stringify(a));
     if (preferred_entries->empty())

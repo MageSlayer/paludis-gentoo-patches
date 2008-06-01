@@ -9,9 +9,12 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <tr1/functional>
 #include <list>
 
@@ -105,9 +108,8 @@ VersionsListModel::populate_in_paludis_thread()
 {
     std::tr1::shared_ptr<PopulateData> data(new PopulateData);
     std::tr1::shared_ptr<const PackageIDSequence> c(
-            _imp->query_window->environment()->package_database()->query(
-                query::Package(_imp->query_window->get_package_name()),
-                qo_order_by_version));
+            (*_imp->query_window->environment())[selection::AllVersionsSorted(
+                generator::Package(_imp->query_window->get_package_name()))]);
 
     for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
             p != p_end ; ++p)

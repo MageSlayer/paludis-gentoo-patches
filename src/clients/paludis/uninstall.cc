@@ -27,7 +27,9 @@
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/fuzzy_finder.hh>
-#include <paludis/query.hh>
+#include <paludis/generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/filter.hh>
 
 #include <iostream>
 #include <limits>
@@ -300,7 +302,7 @@ namespace
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), query::InstalledAtRoot(env->root()));
+                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
 
                 if (f.begin() == f.end())
                     cerr << "No suggestions found." << endl;

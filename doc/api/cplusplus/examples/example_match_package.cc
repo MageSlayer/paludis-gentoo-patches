@@ -40,9 +40,8 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch all installed packages. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::SupportsAction<InstalledAction>(),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                    generator::All() | filter::SupportsAction<InstalledAction>())]);
 
         /* Fetch the 'system' and 'world' sets. Ordinarily we should check for
          * zero pointers here, but these two sets will always exist. */

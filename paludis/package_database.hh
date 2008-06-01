@@ -24,7 +24,8 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
-#include <paludis/query.hh>
+#include <paludis/selection-fwd.hh>
+#include <paludis/filter-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/join.hh>
@@ -44,8 +45,6 @@
  * \section Examples
  *
  * - \ref example_package_database.cc "example_package_database.cc"
- * - \ref example_query.cc "example_query.cc"
- * - \ref example_query_delegate.cc "example_query_delegate.cc"
  */
 
 namespace paludis
@@ -186,23 +185,6 @@ namespace paludis
     };
 
     /**
-     * Thrown if a PackageDatabase::query() with qo_require_exactly_one does not
-     * get exactly one result.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     */
-    class PALUDIS_VISIBLE NonUniqueQueryResultError :
-        public PackageDatabaseLookupError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NonUniqueQueryResultError(const Query &, const std::tr1::shared_ptr<const PackageIDSequence> &) throw ();
-    };
-
-    /**
      * Thrown if there is no Repository in a RepositoryDatabase with the given
      * name.
      *
@@ -240,6 +222,9 @@ namespace paludis
         private PrivateImplementationPattern<PackageDatabase>,
         private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>
     {
+        private:
+            static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             ///\name Basic operations
             ///\{
@@ -289,21 +274,14 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Disambiguate a package name.  If a query is specified,
+             * Disambiguate a package name.  If a filter is specified,
              * limit the potential results to packages that match.
              *
              * \throw AmbiguousPackageNameError if there is no unambiguous
              * disambiguation.
              */
             QualifiedPackageName fetch_unique_qualified_package_name(
-                    const PackageNamePart &, const Query & = query::All()) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Query the repository.
-             */
-            const std::tr1::shared_ptr<const PackageIDSequence> query(
-                    const Query &, const QueryOrder) const
+                    const PackageNamePart &, const Filter & = all_filter()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

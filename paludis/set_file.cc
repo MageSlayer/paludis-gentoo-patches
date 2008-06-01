@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "set_file.hh"
+#include <paludis/set_file.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -29,8 +29,11 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/system.hh>
 #include <paludis/environment.hh>
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <list>
 #include <vector>
 #include <fstream>
@@ -243,8 +246,9 @@ namespace
                     if (! params.environment)
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ? operator but no environment is available";
-                    else if (! params.environment->package_database()->query(query::Package(*spec->package_ptr()) &
-                                query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
+                    else if (! (*params.environment)[selection::SomeArbitraryVersion(
+                                generator::Package(*spec->package_ptr()) |
+                                filter::InstalledAtRoot(params.environment->root()))]->empty())
                         result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }
@@ -270,11 +274,11 @@ namespace
                     if (! params.environment)
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ?: operator but no environment is available";
-                    else if (! params.environment->package_database()->query(query::Matches(
+                    else if (! (*params.environment)[selection::SomeArbitraryVersion(generator::Matches(
                                     make_package_dep_spec()
-                                        .package(*spec->package_ptr())
-                                        .slot_requirement(spec->slot_requirement_ptr())) &
-                                query::InstalledAtRoot(params.environment->root()), qo_whatever)->empty())
+                                    .package(*spec->package_ptr())
+                                    .slot_requirement(spec->slot_requirement_ptr())) |
+                                filter::InstalledAtRoot(params.environment->root()))]->empty())
                         result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                 }

@@ -16,6 +16,10 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <tr1/functional>
 #include <list>
 #include <algorithm>
@@ -135,23 +139,21 @@ namespace
         PackagesPackageFilterOption best_option(ppfo_all_packages);
         std::string status;
         std::tr1::shared_ptr<const PackageIDSequence> ci(
-                environment->package_database()->query(
-                    query::InstalledAtRoot(environment->root()) &
-                    query::Matches(pds) &
-                    query::Matches(make_package_dep_spec()
+                (*environment)[selection::AllVersionsSorted(
+                    generator::Matches(pds) &
+                    generator::Matches(make_package_dep_spec()
                         .package(id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))),
-                    qo_order_by_version));
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                    filter::InstalledAtRoot(environment->root()))]);
 
         std::tr1::shared_ptr<const PackageIDSequence> av(
-                environment->package_database()->query(
-                    query::SupportsAction<InstallAction>() &
-                    query::Matches(pds) &
-                    query::Matches(make_package_dep_spec()
+                (*environment)[selection::AllVersionsSorted(
+                    generator::Matches(pds) &
+                    generator::Matches(make_package_dep_spec()
                         .package(id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) &
-                    query::NotMasked(),
-                    qo_order_by_version));
+                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                    filter::SupportsAction<InstallAction>() |
+                    filter::NotMasked())]);
 
         if (! ci->empty())
         {
@@ -175,14 +177,13 @@ namespace
         else
         {
             std::tr1::shared_ptr<const PackageIDSequence> av(
-                    environment->package_database()->query(
-                        query::Matches(pds) &
-                        query::Matches(make_package_dep_spec()
+                    (*environment)[selection::AllVersionsSorted(
+                        generator::Matches(pds) &
+                        generator::Matches(make_package_dep_spec()
                             .package(id->name())
-                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) &
-                        query::SupportsAction<InstallAction>() &
-                        query::NotMasked(),
-                        qo_order_by_version));
+                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                        filter::SupportsAction<InstallAction>() |
+                        filter::NotMasked())]);
             if (av->empty())
             {
                 status.append(markup_foreground("grey", markup_escape("masked")));
@@ -215,10 +216,9 @@ PackagesListModel::populate_in_paludis_thread()
     if (_imp->packages_page->get_category())
     {
         std::tr1::shared_ptr<const PackageIDSequence> c(
-                _imp->main_window->environment()->package_database()->query(
-                    *_imp->packages_page->get_repository_filter() &
-                    query::Category(*_imp->packages_page->get_category()),
-                    qo_best_version_in_slot_only));
+                (*_imp->main_window->environment())[selection::BestVersionInEachSlot(
+                    generator::Category(*_imp->packages_page->get_category()) &
+                    *_imp->packages_page->get_repository_filter())]);
 
         QualifiedPackageName old_qpn("OLD/OLD");
 
@@ -256,10 +256,9 @@ PackagesListModel::populate_in_paludis_thread()
             if (ds.package_ptr())
             {
                 std::tr1::shared_ptr<const PackageIDSequence> c(
-                        _imp->main_window->environment()->package_database()->query(
+                        (*_imp->main_window->environment())[selection::BestVersionInEachSlot(
                             *_imp->packages_page->get_repository_filter() &
-                            query::Matches(ds),
-                            qo_best_version_in_slot_only));
+                            generator::Matches(ds))]);
 
                 for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
                         p != p_end ; ++p)
@@ -272,10 +271,9 @@ PackagesListModel::populate_in_paludis_thread()
             else
             {
                 std::tr1::shared_ptr<const PackageIDSequence> c(
-                        _imp->main_window->environment()->package_database()->query(
+                        (*_imp->main_window->environment())[selection::BestVersionInEachSlot(
                             *_imp->packages_page->get_repository_filter() &
-                            query::Matches(ds),
-                            qo_best_version_in_slot_only));
+                            generator::Matches(ds))]);
 
                 QualifiedPackageName old_qpn("OLD/OLD");
                 std::list<PopulateItem>::iterator pkg_iter;

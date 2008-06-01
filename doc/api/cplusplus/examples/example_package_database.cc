@@ -40,8 +40,7 @@ int main(int argc, char * argv[])
         std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
                     CommandLine::get_instance()->a_environment.argument()));
 
-        /* The most useful PackageDatabase method is PackageDatabase::query,
-         * which is covered in other examples. But there are others: */
+        /* Mostly PackageDatabase is used by Environment. But some methods are useful: */
         if (env->package_database()->has_repository_named(RepositoryName("gentoo")))
         {
             std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName("gentoo")));

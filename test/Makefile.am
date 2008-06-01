@@ -7,11 +7,13 @@ libtest_a_SOURCES = \
 	test_framework.cc \
 	test_framework.hh \
 	test_runner.cc \
-	test_runner.hh
+	test_runner.hh \
+	test_concepts.hh
 
 libtestnomain_a_SOURCES = \
 	test_framework.cc \
-	test_framework.hh
+	test_framework.hh \
+	test_concepts.hh
 
 XFAIL_TESTS = test_fail_TEST
 TESTS = test_pass_TEST $(XFAIL_TESTS)

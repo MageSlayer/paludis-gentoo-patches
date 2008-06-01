@@ -195,7 +195,7 @@ module Paludis
         end
 
         def test_composites
-            spec = env.package_database.query(Query::Package.new("foo/bar"), QueryOrder::RequireExactlyOne).last.build_dependencies_key.value
+            spec = env[Selection::RequireExactlyOne.new(Generator::Package.new("foo/bar"))].last.build_dependencies_key.value
             assert_kind_of AllDepSpec, spec
 
             assert_equal 2, spec.to_a.length
@@ -237,7 +237,7 @@ module Paludis
         end
 
         def spec_key
-            env.package_database.query(Query::Package.new("bar/foo"), QueryOrder::RequireExactlyOne).last.fetches_key
+            env[Selection::RequireExactlyOne.new(Generator::Package.new("bar/foo"))].last.fetches_key
         end
 
         def test_no_create

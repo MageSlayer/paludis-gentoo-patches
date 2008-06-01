@@ -56,7 +56,11 @@ namespace
     static VALUE c_uninstall_action_options;
     static VALUE c_uninstall_action;
 
+    static VALUE c_installed_action;
+
     static VALUE c_pretend_action;
+
+    static VALUE c_pretend_fetch_action;
 
     bool
     value_to_bool(VALUE v)
@@ -992,6 +996,17 @@ namespace
         rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
 
         /*
+         * Document-class: Paludis::InstalledAction
+         *
+         * An InstalledAction can be used to test whether a PackageID is
+         * installed.
+         */
+        c_installed_action = rb_define_class_under(paludis_module(), "InstalledAction", c_action);
+        rb_define_singleton_method(c_installed_action, "new",
+                RUBY_FUNC_CAST((&EasyActionNew<InstalledAction>::easy_action_new)), 0);
+        rb_define_method(c_installed_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
          * Document-class: Paludis::PretendAction
          *
          * A PretendAction is used by InstallTask to handle install-pretend-phase checks on a PackageID.
@@ -1002,6 +1017,9 @@ namespace
         rb_define_method(c_pretend_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_pretend_action, "failed?", RUBY_FUNC_CAST(&pretend_action_failed), 0);
         rb_define_method(c_pretend_action, "set_failed", RUBY_FUNC_CAST(&pretend_action_set_failed), 0);
+
+        c_pretend_fetch_action = rb_define_class_under(paludis_module(), "PretendFetchAction", c_action);
+        rb_funcall(c_pretend_fetch_action, rb_intern("private_class_method"), 1, rb_str_new2("new"));
     }
 }
 
@@ -1049,6 +1067,54 @@ paludis::ruby::fetch_action_failure_to_value(const FetchActionFailure & m)
         delete m_ptr;
         exception_to_ruby_exception(e);
     }
+}
+
+VALUE *
+paludis::ruby::install_action_value_ptr()
+{
+    return &c_install_action;
+}
+
+VALUE *
+paludis::ruby::installed_action_value_ptr()
+{
+    return &c_installed_action;
+}
+
+VALUE *
+paludis::ruby::pretend_action_value_ptr()
+{
+    return &c_pretend_action;
+}
+
+VALUE *
+paludis::ruby::fetch_action_value_ptr()
+{
+    return &c_fetch_action;
+}
+
+VALUE *
+paludis::ruby::config_action_value_ptr()
+{
+    return &c_config_action;
+}
+
+VALUE *
+paludis::ruby::uninstall_action_value_ptr()
+{
+    return &c_uninstall_action;
+}
+
+VALUE *
+paludis::ruby::info_action_value_ptr()
+{
+    return &c_info_action;
+}
+
+VALUE *
+paludis::ruby::pretend_fetch_action_value_ptr()
+{
+    return &c_pretend_fetch_action;
 }
 
 RegisterRubyClass::Register paludis_ruby_register_action PALUDIS_ATTRIBUTE((used))

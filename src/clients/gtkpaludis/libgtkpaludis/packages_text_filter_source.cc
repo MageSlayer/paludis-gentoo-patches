@@ -3,7 +3,7 @@
 #include "packages_text_filter_source.hh"
 #include "packages_text_filter_source_model.hh"
 #include "packages_page.hh"
-#include <paludis/query.hh>
+#include <paludis/filter.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace gtkpaludis;

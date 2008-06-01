@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -56,7 +56,7 @@ module Paludis
 
         def test_package_database_fetch_unique_qualified_package_name
             assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
-            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar", Query::SupportsInstallAction.new)
+            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar", Filter::SupportsAction.new(InstallAction))
         end
 
         def test_error
@@ -67,7 +67,7 @@ module Paludis
                 db.fetch_unique_qualified_package_name('foobarbaz')
             end
             assert_raise NoSuchPackageError do
-                db.fetch_unique_qualified_package_name('bar', Query::SupportsInstalledAction.new)
+                db.fetch_unique_qualified_package_name('bar', Filter::SupportsAction.new(InstalledAction))
             end
         end
 
@@ -83,114 +83,6 @@ module Paludis
             end
             assert_raise TypeError do
                 db.fetch_unique_qualified_package_name('bar', db)
-            end
-        end
-    end
-
-    class TestCase_PackageDatabaseQuery < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def db
-            return env.package_database
-        end
-
-        def pda
-            Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])
-        end
-
-        def pda2
-            Paludis::parse_user_package_dep_spec('foo/bar', [])
-        end
-
-        def test_arg_count
-            assert_raise ArgumentError do
-                db.query(1);
-            end
-
-            assert_nothing_raised do
-                db.query(Query::Matches.new(pda), QueryOrder::Whatever)
-            end
-
-            assert_raise ArgumentError do
-                db.query(1,2,3,4);
-            end
-        end
-
-        def test_package_database_query
-            a = db.query(Query::Matches.new(pda), QueryOrder::Whatever)
-            assert_kind_of Array, a
-            assert_equal 1, a.length
-            pid = a.first
-            assert_kind_of PackageID, pid
-            assert_equal 'foo/bar', pid.name
-            assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository_name
-
-            a = db.query(Query::Matches.new(pda) & Query::SupportsInstallAction.new,
-                         QueryOrder::Whatever)
-            assert_kind_of Array, a
-            assert_equal 1, a.length
-            pid = a.first
-            assert_kind_of PackageID, pid
-            assert_equal 'foo/bar', pid.name
-            assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository_name
-
-            a = db.query(Query::Matches.new(pda), QueryOrder::Whatever)
-            assert_kind_of Array, a
-            assert_equal 1, a.length
-            pid = a.first
-            assert_kind_of PackageID, pid
-            assert_equal 'foo/bar', pid.name
-            assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository_name
-
-            a = db.query(Query::Matches.new(pda2) & Query::SupportsInstallAction.new, QueryOrder::OrderByVersion)
-            assert_kind_of Array, a
-            assert_equal 2, a.length
-            pid = a.shift
-            assert_kind_of PackageID, pid
-            assert_equal 'foo/bar', pid.name
-            assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository_name
-            pid2 = a.shift
-            assert_kind_of PackageID, pid2
-            assert_equal pid.name, pid2.name
-            assert_equal '2.0', pid2.version.to_s
-            assert_equal pid.repository_name, pid2.repository_name
-
-
-            a = db.query(Query::Package.new('foo/bar'), QueryOrder::OrderByVersion)
-            assert_kind_of Array, a
-            assert_equal 2, a.length
-            pid = a.shift
-            assert_kind_of PackageID, pid
-            assert_equal 'foo/bar', pid.name
-            assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository_name
-            pid2 = a.shift
-            assert_kind_of PackageID, pid2
-            assert_equal pid.name, pid2.name
-            assert_equal '2.0', pid2.version.to_s
-            assert_equal pid.repository_name, pid2.repository_name
-
-
-            a = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('>=foo/bar-27', [])),
-                         QueryOrder::Whatever)
-            assert a.empty?
-
-            a = db.query(Query::Matches.new(pda2) & Query::SupportsInstalledAction.new, QueryOrder::Whatever)
-            assert a.empty?
-        end
-
-        def test_package_database_query_bad
-            assert_raise TypeError do
-                db.query(123, QueryOrder::Whatever)
-            end
-            assert_raise TypeError do
-                db.query(pda2, "Either")
             end
         end
     end

@@ -16,8 +16,7 @@ exit_status = 0
 # We start with an Environment, respecting the user's '--environment' choice.
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
-# The most useful PackageDatabase method is PackageDatabase::query,
-# which is covered in other examples. But there are others:
+# Mostly PackageDatabase is used by Environment. But other methods are useful:
 if env.package_database.has_repository_named?('gentoo')
     repo = env.package_database.fetch_repository('gentoo')
     puts "Repository 'gentoo' exists, and has format '" +

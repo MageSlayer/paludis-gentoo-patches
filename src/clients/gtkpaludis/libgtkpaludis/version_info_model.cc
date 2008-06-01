@@ -13,7 +13,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/kc.hh>
-#include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <list>

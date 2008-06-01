@@ -202,10 +202,7 @@ module Paludis
 
         def test_add_bad_tree
             assert_raise TypeError do
-                dl.add(env.package_database.
-                       query(Query::Matches.new(pda),
-                             QueryOrder::BestVersionOnly).
-                       last.build_dependencies_key.value, dd)
+                dl.add(env[Selection::BestVersionOnly.new(Generator::Matches.new(pda))].last.build_dependencies_key.value, dd)
             end
         end
 

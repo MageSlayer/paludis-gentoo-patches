@@ -36,10 +36,13 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/slot_requirement.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <tr1/unordered_map>
 #include <list>
 #include <algorithm>
@@ -286,9 +289,10 @@ namespace
             if (a.slot_requirement_ptr())
                 best_only = visitor_cast<const SlotAnyUnlockedRequirement>(*a.slot_requirement_ptr());
 
-            std::tr1::shared_ptr<const PackageIDSequence> m(env->package_database()->query(
-                        query::Matches(a) & query::InstalledAtRoot(env->root()),
-                        best_only ? qo_best_version_only : qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> m(
+                    best_only ?
+                    (*env)[selection::BestVersionOnly(generator::Matches(a) | filter::InstalledAtRoot(env->root()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(a) | filter::InstalledAtRoot(env->root()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(DepTagEntry(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)), 0));

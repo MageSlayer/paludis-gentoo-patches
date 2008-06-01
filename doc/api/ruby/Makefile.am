@@ -27,14 +27,12 @@ examples = \
 	example_action.rb \
 	example_command_line.rb \
 	example_contents.rb \
-	example_dep_spec.rb \
 	example_dep_tree.rb \
 	example_environment.rb \
 	example_package_database.rb \
 	example_package_id.rb \
 	example_mask.rb \
 	example_match_package.rb \
-	example_query.rb \
 	example_repository.rb \
 	example_version_operator.rb \
 	example_version_spec.rb

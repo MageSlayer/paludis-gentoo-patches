@@ -46,9 +46,8 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                    generator::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))))]);
 
         /* For each ID: */
         for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -123,7 +122,9 @@ int main(int argc, char * argv[])
 
             /* And various misc methods. Clients don't usually use these
              * directly. */
-            cout << left << setw(30) << "    breaks_portage:" << " " << boolalpha << (*i)->breaks_portage() << endl;
+            std::tr1::shared_ptr<const Set<std::string> > breaks_portage((*i)->breaks_portage());
+            cout << left << setw(30) << "    breaks_portage:" << " " << join(breaks_portage->begin(),
+                    breaks_portage->end(), ", ") << endl;
             cout << left << setw(30) << "    extra_hash_value:" << " " << "0x" << hex << (*i)->extra_hash_value() << endl;
 
             cout << endl;

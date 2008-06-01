@@ -26,7 +26,6 @@
 #include "query_task.hh"
 
 #include <paludis/environment.hh>
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>

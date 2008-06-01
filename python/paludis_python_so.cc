@@ -42,7 +42,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_dep_list();
     expose_name();
     expose_log();
-    expose_query();
     expose_environment();
     expose_metadata_key();
     expose_mask();
@@ -51,6 +50,10 @@ BOOST_PYTHON_MODULE(paludis)
     expose_package_database();
     expose_repository();
     expose_formatter();
+    expose_filter();
+    expose_filtered_generator();
+    expose_generator();
+    expose_selection();
 #ifdef ENABLE_QA
     expose_qa();
 #endif

@@ -21,10 +21,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/environment.hh>
-#include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -92,8 +95,7 @@ namespace
     void
     VulnerableChecker::visit_leaf(const PackageDepSpec & a)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> insecure(
-                _env.package_database()->query(query::Matches(a), qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(generator::Matches(a))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (a.tag() && visitor_cast<const GLSADepTag>(*a.tag()))
@@ -200,13 +202,12 @@ ReportTask::execute()
                         repo_name.reset(new RepositoryName((*v)->source_origin_key()->value()));
 
                         std::tr1::shared_ptr<const PackageIDSequence> installable(
-                            e->package_database()->query(
-                                query::Matches(make_package_dep_spec()
+                            (*e)[selection::BestVersionOnly(
+                                generator::Matches(make_package_dep_spec()
                                     .package((*v)->name())
                                     .version_requirement(VersionRequirement(vo_equal, (*v)->version()))
-                                    .repository(*repo_name)) &
-                                query::SupportsAction<InstallAction>(),
-                                qo_best_version_only));
+                                    .repository(*repo_name)) |
+                                filter::SupportsAction<InstallAction>())]);
 
                         if (installable->empty())
                             is_missing = ! ((*v)->transient_key() && (*v)->transient_key()->value());

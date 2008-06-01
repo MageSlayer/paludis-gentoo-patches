@@ -5,7 +5,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/query.hh>
+#include <paludis/filter.hh>
 
 using namespace paludis;
 using namespace gtkpaludis;

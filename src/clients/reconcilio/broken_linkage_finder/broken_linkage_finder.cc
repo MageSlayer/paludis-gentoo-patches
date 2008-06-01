@@ -42,7 +42,10 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/query.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -307,12 +310,11 @@ Implementation<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const st
 
         Context ctx("When building map from files to packages:");
 
-        std::tr1::shared_ptr<const PackageDatabase> db(env->package_database());
-        std::tr1::shared_ptr<const PackageIDSequence> pkgs(
-            db->query(query::InstalledAtRoot(env->root()), qo_whatever));
+        std::tr1::shared_ptr<const PackageIDSequence> pkgs((*env)[selection::AllVersionsUnsorted(
+                    generator::All() | filter::InstalledAtRoot(env->root()))]);
 
         std::for_each(pkgs->begin(), pkgs->end(),
-                          std::tr1::bind(&Implementation<BrokenLinkageFinder>::gather_package, this, _1));
+                std::tr1::bind(&Implementation<BrokenLinkageFinder>::gather_package, this, _1));
     }
 
     FSEntry without_root(file.strip_leading(env->root()));

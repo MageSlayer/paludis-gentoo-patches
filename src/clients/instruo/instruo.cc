@@ -23,6 +23,10 @@
 #include <paludis/about.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -34,7 +38,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <iostream>
@@ -231,8 +234,8 @@ main(int argc, char *argv[])
                 .extra_params(keys)
                 .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
-        std::tr1::shared_ptr<const PackageIDSequence> ids(
-                env.package_database()->query(query::Repository(env.main_repository()->name()), qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
+                    generator::Repository(env.main_repository()->name()))]);
         std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(env.package_database().get());
         unsigned success(0), total(0);
 

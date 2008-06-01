@@ -24,9 +24,12 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <cstdlib>
@@ -46,10 +49,10 @@ namespace test_cases
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
-            const std::tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))))]->begin());
+            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))))]->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
@@ -78,8 +81,8 @@ namespace test_cases
 
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))))]->begin());
             std::tr1::shared_ptr<const UseFlagNameSet> k1(env->known_use_expand_names(UseFlagName("foo_cards"), *one));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
         }
@@ -96,10 +99,10 @@ namespace test_cases
 
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))))]->begin());
+            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))))]->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
@@ -127,10 +130,10 @@ namespace test_cases
 
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
-                        query::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))), qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1", UserPackageDepSpecOptions()))))]->begin());
+            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3", UserPackageDepSpecOptions()))))]->begin());
 
             TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));

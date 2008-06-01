@@ -18,6 +18,7 @@
  */
 
 #include <paludis/fuzzy_finder.hh>
+#include <paludis/filter.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
@@ -50,22 +51,22 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("r2")));
             e.package_database()->add_repository(2, r2);
 
-            FuzzyCandidatesFinder f1(e, std::string("some-cat/one-two-thee"), query::All());
+            FuzzyCandidatesFinder f1(e, std::string("some-cat/one-two-thee"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f1.begin(), f1.end()), 1);
 
-            FuzzyCandidatesFinder f2(e, std::string("fio"), query::All());
+            FuzzyCandidatesFinder f2(e, std::string("fio"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f2.begin(), f2.end()), 2);
 
-            FuzzyCandidatesFinder f3(e, std::string("bra"), query::All());
+            FuzzyCandidatesFinder f3(e, std::string("bra"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f3.begin(), f3.end()), 1);
 
-            FuzzyCandidatesFinder f4(e, std::string("foobarandfriends"), query::All());
+            FuzzyCandidatesFinder f4(e, std::string("foobarandfriends"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f4.begin(), f4.end()), 0);
 
-            FuzzyCandidatesFinder f5(e, std::string("some-cat/foo::r2"), query::All());
+            FuzzyCandidatesFinder f5(e, std::string("some-cat/foo::r2"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f5.begin(), f5.end()), 0);
 
-            FuzzyCandidatesFinder f6(e, std::string("some-cat/OnE-tWo-THEE"), query::All());
+            FuzzyCandidatesFinder f6(e, std::string("some-cat/OnE-tWo-THEE"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f6.begin(), f6.end()), 1);
 
         }

@@ -27,11 +27,14 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/query.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -138,8 +141,8 @@ namespace
                 if (! r)
                     break;
 
-                std::tr1::shared_ptr<const PackageIDSequence> matches(env->package_database()->query(
-                            query::Matches(s) & query::InstalledAtRoot(FSEntry("/")), qo_order_by_version));
+                std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
+                            generator::Matches(s) | filter::InstalledAtRoot(FSEntry("/")))]);
                 if (matches->empty())
                     break;
 

@@ -30,12 +30,15 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
-#include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/contents.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/selection.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 
@@ -71,8 +74,6 @@ namespace paludis
 
         VALUE paludis_module();
 
-        bool is_kind_of_query(VALUE query);
-
         /* constructors */
 
         VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
@@ -85,6 +86,9 @@ namespace paludis
         VALUE repository_mask_info_to_value(std::tr1::shared_ptr<const RepositoryMaskInfo>);
         VALUE metadata_key_to_value(std::tr1::shared_ptr<const MetadataKey> m);
         VALUE fetch_action_failure_to_value(const FetchActionFailure &);
+        VALUE generator_to_value(const Generator &);
+        VALUE filter_to_value(const Filter &);
+        VALUE filtered_generator_to_value(const FilteredGenerator &);
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
@@ -103,10 +107,23 @@ namespace paludis
         std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
         std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
-        Query value_to_query(VALUE v);
         std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
         std::tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
         std::tr1::shared_ptr<Action> value_to_action(VALUE v);
+
+        Filter value_to_filter(VALUE v);
+        Selection value_to_selection(VALUE v);
+        FilteredGenerator value_to_filtered_generator(VALUE v);
+        Generator value_to_generator(VALUE v);
+
+        VALUE * install_action_value_ptr();
+        VALUE * fetch_action_value_ptr();
+        VALUE * info_action_value_ptr();
+        VALUE * config_action_value_ptr();
+        VALUE * uninstall_action_value_ptr();
+        VALUE * pretend_action_value_ptr();
+        VALUE * installed_action_value_ptr();
+        VALUE * pretend_fetch_action_value_ptr();
 
 #ifdef ENABLE_RUBY_QA
         QACheckProperties value_to_qa_check_properties(VALUE);

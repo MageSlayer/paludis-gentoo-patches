@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
 # Copyright (c) 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -41,8 +41,8 @@ module Paludis
             env = EnvironmentMaker.instance.make_from_spec("")
             spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', [])
             spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', [])
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert Paludis::match_package(env, spec_good, pid)
             assert !Paludis::match_package(env, spec_bad, pid)
@@ -52,8 +52,8 @@ module Paludis
         def test_match_package_in_set
             env = EnvironmentMaker.instance.make_from_spec("")
             world = env.set('world')
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert Paludis::match_package_in_set(env, world, pid)
         end
@@ -61,8 +61,8 @@ module Paludis
         def test_type_errors
             env = EnvironmentMaker.instance.make_from_spec("")
             spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', [])
-            pid = env.package_database.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
 
             assert_raise TypeError do
                 Paludis::match_package(spec,spec,pid)

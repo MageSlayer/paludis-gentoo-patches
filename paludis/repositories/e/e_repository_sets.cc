@@ -25,7 +25,6 @@
 
 #include <paludis/environment.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/query.hh>
 #include <paludis/set_file.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
@@ -45,6 +44,11 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/action-fwd.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -257,12 +261,11 @@ ERepositorySets::security_set(bool insecurity) const
             {
                 std::tr1::shared_ptr<const PackageIDSequence> candidates;
                 if (insecurity)
-                    candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
+                    candidates = (*_imp->environment)[selection::AllVersionsSorted(generator::Package(glsa_pkg->name()))];
                 else
-                    candidates = _imp->environment->package_database()->query(
-                            query::Package(glsa_pkg->name()) &
-                            query::SupportsAction<InstalledAction>(),
-                            qo_order_by_version);
+                    candidates = (*_imp->environment)[selection::AllVersionsSorted(
+                            generator::Package(glsa_pkg->name()) |
+                            filter::SupportsAction<InstalledAction>())];
 
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
@@ -294,13 +297,12 @@ ERepositorySets::security_set(bool insecurity) const
                          * that's in the same slot as our vulnerable installed package. */
                         bool ok(false);
                         std::tr1::shared_ptr<const PackageIDSequence> available(
-                                _imp->environment->package_database()->query(
-                                    query::Matches(make_package_dep_spec()
+                                (*_imp->environment)[selection::AllVersionsSorted(
+                                    generator::Matches(make_package_dep_spec()
                                         .package(glsa_pkg->name())
-                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false)))) &
-                                    query::SupportsAction<InstallAction>() &
-                                    query::NotMasked(),
-                                    qo_order_by_version));
+                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false)))) |
+                                    filter::SupportsAction<InstallAction>() |
+                                    filter::NotMasked())]);
 
                         for (PackageIDSequence::ReverseConstIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {

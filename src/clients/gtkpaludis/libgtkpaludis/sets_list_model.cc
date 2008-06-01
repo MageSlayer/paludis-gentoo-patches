@@ -54,12 +54,12 @@ SetsListModel::populate_in_paludis_thread()
 {
     std::tr1::shared_ptr<SetNameSet> columns(new SetNameSet);
 
-    std::tr1::shared_ptr<RepositoryNameSequence> repos(
-            _imp->packages_page->get_repository_filter()->repositories(*_imp->main_window->environment()));
+    std::tr1::shared_ptr<const RepositoryNameSet> repos(
+            _imp->packages_page->get_repository_filter()->repositories(_imp->main_window->environment()));
 
     if (repos)
     {
-        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             RepositorySetsInterface * const i((*_imp->main_window->environment()->package_database()->fetch_repository(*r))[k::sets_interface()]);

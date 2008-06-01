@@ -3,7 +3,7 @@
 #include "packages_repository_filter.hh"
 #include "packages_repository_filter_model.hh"
 #include "packages_page.hh"
-#include <paludis/query.hh>
+#include <paludis/filter.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace gtkpaludis;
@@ -55,7 +55,7 @@ void
 PackagesRepositoryFilter::handle_signal_changed()
 {
     if (get_active())
-        _imp->packages_page->set_repository_filter((*get_active())[_imp->model->columns().col_query].operator
-                std::tr1::shared_ptr<const Query>());
+        _imp->packages_page->set_repository_filter((*get_active())[_imp->model->columns().col_generator].operator
+                std::tr1::shared_ptr<const Generator>());
 }
 

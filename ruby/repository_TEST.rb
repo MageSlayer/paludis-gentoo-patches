@@ -38,19 +38,15 @@ module Paludis
 
     module RepositoryTestCase
         def installed_repo
-            db.fetch_repository "installed"
+            env.package_database.fetch_repository "installed"
         end
 
         def repo
-            db.fetch_repository "testrepo"
+            env.package_database.fetch_repository "testrepo"
         end
 
         def env
             @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def db
-            env.package_database
         end
 
         def no_config_testrepo
@@ -58,8 +54,8 @@ module Paludis
         end
 
         def p
-            db.query(Query::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', [])), QueryOrder::RequireExactlyOne).first
+            env[Selection::RequireExactlyOne.new(Generator::Matches.new(
+                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', [])))].first
         end
 
         def installed_pid
@@ -188,7 +184,7 @@ module Paludis
         end
 
         def test_get_environment_variable
-            pid = db.query(Query::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])), QueryOrder::BestVersionOnly).first;
+            pid = env[Selection::BestVersionOnly.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])))].first;
             assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
             assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end

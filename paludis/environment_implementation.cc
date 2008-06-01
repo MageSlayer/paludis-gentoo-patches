@@ -30,6 +30,7 @@
 #include <paludis/util/kc.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
+#include <paludis/selection.hh>
 #include <algorithm>
 #include "config.h"
 
@@ -186,5 +187,11 @@ bool
 EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) const
 {
     return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(default_distribution()))[k::paludis_package()];
+}
+
+std::tr1::shared_ptr<PackageIDSequence>
+EnvironmentImplementation::operator[] (const Selection & selection) const
+{
+    return selection.perform_select(this);
 }
 

@@ -17,14 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "find_unused_packages_task.hh"
-
+#include <paludis/find_unused_packages_task.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/selection.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
@@ -42,11 +44,11 @@ std::tr1::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
     std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    std::tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
-                query::Matches(make_package_dep_spec()
+    std::tr1::shared_ptr<const PackageIDSequence> packages((*_env)[selection::AllVersionsGroupedBySlot(
+                generator::Matches(make_package_dep_spec()
                     .package(package)
-                    .repository(_repo->name())),
-                qo_group_by_slot));
+                    .repository(_repo->name()))
+                )]);
 
     SlotName old_slot("I_am_a_slot");
     std::set<KeywordName> keywords;

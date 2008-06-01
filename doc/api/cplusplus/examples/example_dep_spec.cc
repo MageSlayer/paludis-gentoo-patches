@@ -122,8 +122,7 @@ int main(int argc, char * argv[])
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
-            std::tr1::shared_ptr<const PackageIDSequence> ids(
-                    env->package_database()->query(query::Matches(spec), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec))]);
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)

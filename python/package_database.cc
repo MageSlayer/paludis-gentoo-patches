@@ -21,8 +21,8 @@
 #include <python/exception.hh>
 
 #include <paludis/dep_spec.hh>
-#include <paludis/query.hh>
 #include <paludis/environment.hh>
+#include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -60,12 +60,6 @@ void expose_package_database()
          "Thrown if there is no Repository in a RepositoryDatabase with the given name.");
 
     /**
-     * Enums
-     */
-    enum_auto("QueryOrder", last_qo,
-            "How to order query results.");
-
-    /**
      * PackageDatabase
      */
     register_shared_ptrs_to_python<PackageDatabase>();
@@ -77,11 +71,6 @@ void expose_package_database()
          "A PackageDatabase can be queried for Package instances.\n",
          bp::no_init
         )
-        .def("query", &PackageDatabase::query, bp::with_custodian_and_ward_postcall<0, 1>(),
-
-                "query(Query, QueryOrder) -> PackageIDIterable\n"
-                "Query the repository."
-            )
 
         .add_property("favourite_repository", &PackageDatabase::favourite_repository,
                 "[ro] RepositoryName\n"
@@ -95,8 +84,8 @@ void expose_package_database()
 
         .def("fetch_unique_qualified_package_name", &PackageDatabase::fetch_unique_qualified_package_name,
              fetch_unique_qualified_package_name_overloads(
-                "fetch_unique_qualified_package_name(PackageNamePart[, Query]) -> QualifiedPackageName\n"
-                "Disambiguate a package name.  If a query is specified, "
+                "fetch_unique_qualified_package_name(PackageNamePart[, Filter]) -> QualifiedPackageName\n"
+                "Disambiguate a package name.  If a filter is specified, "
                 "limit the potential results to packages that match."
                  )
             )

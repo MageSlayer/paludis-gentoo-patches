@@ -46,13 +46,16 @@
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/match_package.hh>
-#include <paludis/query.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/qa.hh>
 #include <paludis/elike_package_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -145,14 +148,12 @@ namespace
                             i_end(info_pkgs.end()) ; i != i_end ; ++i)
                     {
                         std::tr1::shared_ptr<MetadataKey> key;
-                        std::tr1::shared_ptr<const PackageIDSequence> q(
-                                _env->package_database()->query(
-                                    query::Matches(parse_elike_package_dep_spec(*i,
+                        std::tr1::shared_ptr<const PackageIDSequence> q((*_env)[selection::AllVersionsSorted(
+                                    generator::Matches(parse_elike_package_dep_spec(*i,
                                             (*(*erepository::EAPIData::get_instance()->eapi_from_string(_p))
                                              [k::supported()])[k::package_dep_spec_parse_options()],
-                                            std::tr1::shared_ptr<const PackageID>())) &
-                                    query::InstalledAtRoot(_env->root()),
-                                    qo_order_by_version));
+                                            std::tr1::shared_ptr<const PackageID>())) |
+                                    filter::InstalledAtRoot(_env->root()))]);
                         if (q->empty())
                             key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
                         else

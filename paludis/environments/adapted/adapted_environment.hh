@@ -58,6 +58,9 @@ namespace paludis
 
             ///\}
 
+            virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

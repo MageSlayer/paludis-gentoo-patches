@@ -79,6 +79,31 @@ namespace
 
     /*
      * call-seq:
+     *     [](Selection) -> Array of PackageID
+     *
+     * Fetch PackageID instances using the supplied Selection.
+     */
+
+    VALUE
+    environment_square_brackets(VALUE self, VALUE selection)
+    {
+        try
+        {
+            std::tr1::shared_ptr<const PackageIDSequence> ids(value_to_environment(self)->operator[] (value_to_selection(selection)));
+            VALUE result(rb_ary_new());
+            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                    i != i_end ; ++i)
+                rb_ary_push(result, package_id_to_value(*i));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     package_database -> PackageDatabase
      *
      * Fetch our PackageDatabase.
@@ -122,7 +147,7 @@ namespace
 
     /*
      * call-seq:
-     *     accept_license(license, package_id) -> true of false
+     *     accept_license(license, package_id) -> true or false
      *
      * Do we accept a particular license for a particular package?
      */
@@ -510,7 +535,7 @@ namespace
         /*
          * Document-class: Paludis::Environment
          *
-         * Represents a working environment, which contains an available packages database and provides 
+         * Represents a working environment, which contains an available packages database and provides
          * various methods for querying package visibility and options.
          */
         c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
@@ -523,6 +548,7 @@ namespace
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
         rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);
         rb_define_method(c_environment, "mirrors", RUBY_FUNC_CAST(&environment_mirrors), 1);
+        rb_define_method(c_environment, "[]", RUBY_FUNC_CAST(&environment_square_brackets), 1);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

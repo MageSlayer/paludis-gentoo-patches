@@ -32,8 +32,11 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <tr1/functional>
 #include <iostream>
 #include <fstream>
@@ -110,10 +113,10 @@ main(int argc, char *argv[])
                     .extra_params(keys)
                     .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
-            std::tr1::shared_ptr<const PackageIDSequence> ids(
-                    env.package_database()->query(query::Repository(env.main_repository()->name()), qo_order_by_version));
-            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(PackageIDComparator(
-                        env.package_database().get()));
+            std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
+                        generator::Repository(env.main_repository()->name()))]);
+            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(
+                    PackageIDComparator(env.package_database().get()));
             unsigned success(0), total(0);
 
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

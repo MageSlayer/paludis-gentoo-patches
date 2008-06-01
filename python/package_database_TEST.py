@@ -42,24 +42,15 @@ class TestCase_PackageDatabase(unittest.TestCase):
     def test_03_fech_unique_qpn(self):
         self.get_db()
         self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar")))
-        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar", Query.SupportsInstallAction())))
+        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar",
+            Filter.SupportsInstallAction())))
 
     def test_04_exceptions(self):
         self.get_db()
         self.assertRaises(AmbiguousPackageNameError, self.db.fetch_unique_qualified_package_name, "baz")
         self.assertRaises(NoSuchPackageError, self.db.fetch_unique_qualified_package_name, "foobarbaz")
-        self.assertRaises(NoSuchPackageError, self.db.fetch_unique_qualified_package_name, "bar", Query.SupportsUninstallAction())
-
-    def test_5_query(self):
-        self.get_db()
-        pkgs = list(self.db.query(Query.Package("foo/bar"), QueryOrder.ORDER_BY_VERSION))
-        self.assertEqual([x.canonical_form(PackageIDCanonicalForm.FULL) for x in pkgs], [
-            "foo/bar-1.0::testrepo",
-            "foo/bar-2.0::testrepo"])
-
-        pkgs = list(self.db.query(Query.Matches(parse_user_package_dep_spec(">=foo/bar-10", [])),
-            QueryOrder.ORDER_BY_VERSION))
-        self.assertEqual(len(pkgs), 0)
+        self.assertRaises(NoSuchPackageError, self.db.fetch_unique_qualified_package_name, "bar",
+                Filter.SupportsUninstallAction())
 
     def test_6_repositories(self):
         self.get_db()
@@ -71,3 +62,4 @@ class TestCase_PackageDatabase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

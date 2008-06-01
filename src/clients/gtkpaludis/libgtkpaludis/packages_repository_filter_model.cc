@@ -6,7 +6,10 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -46,17 +49,17 @@ PackagesRepositoryFilterModel::populate()
     r = append();
     (*r)[_imp->columns.col_text] = "All repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::All);
+    (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::All());
 
     r = append();
     (*r)[_imp->columns.col_text] = "Installable repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::SupportsAction<InstallAction>());
+    (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::SomeIDsMightSupportAction<InstallAction>());
 
     r = append();
     (*r)[_imp->columns.col_text] = "Installed repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::SupportsAction<InstalledAction>());
+    (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::SomeIDsMightSupportAction<InstalledAction>());
 
     _imp->main_window->paludis_thread_action(
             sigc::mem_fun(this, &PackagesRepositoryFilterModel::populate_in_paludis_thread), "Populating repository filter model");
@@ -90,7 +93,7 @@ PackagesRepositoryFilterModel::populate_in_gui_thread(std::tr1::shared_ptr<const
         iterator r(append(repositories->children()));
         (*r)[_imp->columns.col_text] = stringify(*n);
         (*r)[_imp->columns.col_sensitive] = true;
-        (*r)[_imp->columns.col_query] = std::tr1::shared_ptr<Query>(new query::Repository(*n));
+        (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::Repository(*n));
     }
 }
 
@@ -99,7 +102,7 @@ PackagesRepositoryFilterModel::Columns::Columns()
 {
     add(col_sensitive);
     add(col_text);
-    add(col_query);
+    add(col_generator);
 }
 
 PackagesRepositoryFilterModel::Columns::~Columns()

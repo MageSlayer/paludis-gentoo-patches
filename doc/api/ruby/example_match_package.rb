@@ -17,7 +17,8 @@ exit_status = 0
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
 # Fetch all installed packages
-ids = env.package_database.query(Query::SupportsInstalledAction.new, QueryOrder::OrderByVersion);
+ids = env[Selection::AllVersionsSorted.new(
+    Generator::All.new | Filter::SupportsAction.new(InstalledAction))]
 
 # Fetch the 'system' and 'world' sets. Ordinarily we should check for
 # Nil here, but these two sets will always exist.

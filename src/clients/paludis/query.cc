@@ -26,6 +26,7 @@
 #include <paludis/paludis.hh>
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/filter.hh>
 #include <string>
 
 /** \file
@@ -200,7 +201,7 @@ int do_query(std::tr1::shared_ptr<Environment> env)
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), query::All());
+                FuzzyCandidatesFinder f(*env, e.name(), filter::All());
 
                 if (f.begin() == f.end())
                     cerr << "No suggestions found." << endl;

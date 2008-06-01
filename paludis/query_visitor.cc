@@ -21,7 +21,10 @@
 #include <paludis/dep_list.hh>
 #include <paludis/range_rewriter.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
@@ -84,8 +87,8 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
     _imp->result = false;
 
     // TODO: check destinations
-    std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
-                query::InstalledAtRoot(_imp->environment->root()) & query::Matches(a), qo_whatever));
+    std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
+                generator::Matches(a) | filter::InstalledAtRoot(_imp->environment->root()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
                 std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))

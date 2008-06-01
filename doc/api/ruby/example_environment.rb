@@ -23,17 +23,16 @@ exit_status = 0
 # environment's constructor.
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
-# A lot of the Environment members aren't very useful to clients. The
-# mask related methods are used by PackageID, and shouldn't usually be
-# called directly from clients. The system information and mirror
-# functions are mostly for use by Repository subclasses. That leaves
-# the package database, sets and (currently, although this may well
-# change in the future) use flag queries. The package database has its
-# own examples, so we'll start with sets:
+# A lot of the Environment members aren't very useful to clients. The mask
+# related methods are used by PackageID, and shouldn't usually be called
+# directly from clients. The system information and mirror functions are mostly
+# for use by Repository subclasses. The [] operator, for selections, is covered
+# in other examples. That leaves the package database, sets and (currently,
+# although this may well change in the future) use flag queries. The package
+# database has its own examples, so we'll start with sets:
 
 world = env.set('world')
 if (world)
-
     # see examples_dep_tree.rb for how to make use of this set
     puts "World set exists"
 else
@@ -41,13 +40,13 @@ else
 end
 
 # And use flags, for which we need package IDs:
-ids = env.package_database.query(
-    Query::Matches.new(Paludis::parse_user_package_dep_spec('sys-apps/paludis', [])) &
-    Query::SupportsInstalledAction.new,
-    QueryOrder::OrderByVersion)
+ids = env[Selection::AllVersionsSorted.new(
+    Generator::Matches.new(Paludis::parse_user_package_dep_spec('sys-apps/paludis', [])) |
+    Filter::SupportsAction.new(InstalledAction))]
 
 if (ids.length > 0)
     id = ids.last
     print "Use flag 'ruby' for ID '#{id.to_s}' is "
     puts env.query_use('ruby', id) ? 'enabled' : 'disabled'
 end
+

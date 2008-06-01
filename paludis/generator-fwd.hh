@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,52 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QUERY_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_QUERY_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_GENERATOR_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_GENERATOR_FWD_HH 1
 
-#include <iosfwd>
 #include <paludis/util/attributes.hh>
-
-/** \file
- * Forward declarations for paludis/query.hh .
- *
- * \ingroup g_query
- */
+#include <iosfwd>
 
 namespace paludis
 {
-    class Query;
+    class Generator;
 
-    namespace query
+    namespace generator
     {
+        class All;
         class Matches;
         class Package;
         class Repository;
         class Category;
-        class NotMasked;
-        template <typename A_> class SupportsAction;
-        template <typename A_> class MaybeSupportsAction;
-        class InstalledAtRoot;
-        class All;
+        class Union;
+        template <typename> class SomeIDsMightSupportAction;
     }
 
-    /**
-     * Create a Query that returns packages for which both Query parameters
-     * hold.
-     *
-     * \see Query
-     * \see PackageDatabase::query
-     * \ingroup g_query
-     */
-    Query operator& (const Query &, const Query &) PALUDIS_VISIBLE;
+    Generator operator& (const Generator &, const Generator &)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    /**
-     * Output a human-readable description of a Query.
-     *
-     * \see Query
-     * \ingroup g_query
-     */
-    std::ostream & operator<< (std::ostream &, const Query &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const Generator &)
+        PALUDIS_VISIBLE;
 }
 
 #endif

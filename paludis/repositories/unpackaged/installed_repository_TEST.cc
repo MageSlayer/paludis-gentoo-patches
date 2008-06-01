@@ -21,11 +21,14 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -97,7 +100,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+                    env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "),
                     "cat-one/foo-1:0::installed-unpackaged cat-one/foo-2:1::installed-unpackaged");
         }
@@ -119,9 +122,8 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1"));
             TEST_CHECK_EQUAL(id1->slot(), SlotName("0"));
@@ -137,9 +139,8 @@ namespace test_cases
                     indirect_iterator(id1->contents_key()->value()->end()), accept_visitor(d1));
             TEST_CHECK_EQUAL(d1.s.str(), "dir</fnord>");
 
-            const std::tr1::shared_ptr<const PackageID> id2(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2"));
             TEST_CHECK_EQUAL(id2->slot(), SlotName("1"));
@@ -173,15 +174,13 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id1->masked());
 
-            const std::tr1::shared_ptr<const PackageID> id2(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id2->masked());
         }
@@ -210,9 +209,8 @@ namespace test_cases
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<UninstallAction>()));
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
-            const std::tr1::shared_ptr<const PackageID> id1(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id1->supports_action(SupportsActionTest<InstallAction>()));
             TEST_CHECK(! id1->supports_action(SupportsActionTest<ConfigAction>()));
@@ -240,8 +238,7 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged");
 
@@ -251,8 +248,7 @@ namespace test_cases
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
 
-            const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::All())]->begin());
 
             UninstallAction action(UninstallActionOptions::named_create()
                     (k::no_config_protect(), false)
@@ -267,8 +263,7 @@ namespace test_cases
 
             repo->invalidate();
 
-            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(post_ids->begin()), indirect_iterator(post_ids->end()), " "), "");
         }
 
@@ -295,17 +290,15 @@ namespace test_cases
                         ));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged cat-one/foo-3.2.1:barney::installed-unpackaged");
 
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
-            const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin());
+            const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())))]->begin());
 
             UninstallAction action(UninstallActionOptions::named_create()
                     (k::no_config_protect(), false)
@@ -317,8 +310,7 @@ namespace test_cases
 
             repo->invalidate();
 
-            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> post_ids(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(post_ids->begin()), indirect_iterator(post_ids->end()), " "),
                     "cat-one/foo-3.2.1:barney::installed-unpackaged");
         }
@@ -348,8 +340,7 @@ namespace test_cases
                             ));
                 env.package_database()->add_repository(1, repo);
 
-                const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                        env.package_database()->query(query::All(), qo_order_by_version));
+                const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").exists());
@@ -384,8 +375,8 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
                 }
 
@@ -396,16 +387,15 @@ namespace test_cases
                         (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
-                (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
-                                                qo_require_exactly_one)->begin())->perform_action(action);
+                (*env[selection::RequireExactlyOne(generator::Repository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
 
                 repo->invalidate();
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
                 }
@@ -440,8 +430,8 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
                 }
@@ -451,8 +441,7 @@ namespace test_cases
                         (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
-                (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
-                                                qo_require_exactly_one)->begin())->perform_action(action);
+                (*env[selection::RequireExactlyOne(generator::Repository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -462,8 +451,8 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
@@ -498,8 +487,8 @@ namespace test_cases
                 env.package_database()->add_repository(1, source_repo);
 
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
@@ -509,8 +498,7 @@ namespace test_cases
                         (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
-                (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
-                                                qo_require_exactly_one)->begin())->perform_action(action);
+                (*env[selection::RequireExactlyOne(generator::Repository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -520,8 +508,8 @@ namespace test_cases
 
                 repo->invalidate();
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
@@ -541,16 +529,16 @@ namespace test_cases
                 env.package_database()->add_repository(0, repo);
 
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
                 UninstallAction action(UninstallActionOptions::named_create()
                         (k::no_config_protect(), false));
-                (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4a", UserPackageDepSpecOptions())),
-                                                qo_require_exactly_one)->begin())->perform_action(action);
+                (*env[selection::RequireExactlyOne(generator::Matches(
+                        parse_user_package_dep_spec("cat/pkg4a", UserPackageDepSpecOptions())))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -561,7 +549,7 @@ namespace test_cases
                 repo->invalidate();
                 {
                     const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                            env[selection::RequireExactlyOne(generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
@@ -581,23 +569,23 @@ namespace test_cases
                 env.package_database()->add_repository(0, repo);
 
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
                 UninstallAction action(UninstallActionOptions::named_create()
                         (k::no_config_protect(), false));
-                (*env.package_database()->query(query::Matches(parse_user_package_dep_spec("cat/pkg4b", UserPackageDepSpecOptions())),
-                                                qo_require_exactly_one)->begin())->perform_action(action);
+                (*env[selection::RequireExactlyOne(generator::Matches(
+                        parse_user_package_dep_spec("cat/pkg4b", UserPackageDepSpecOptions())))]->begin())->perform_action(action);
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
 
                 repo->invalidate();
                 {
-                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(
-                            env.package_database()->query(query::Repository(RepositoryName("installed-unpackaged")), qo_order_by_version));
+                    const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
+                                generator::Repository(RepositoryName("installed-unpackaged")))]);
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                             "");
                 }

@@ -22,9 +22,12 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
-#include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
 #include <string>
 #include <tr1/memory>
@@ -51,10 +54,9 @@ AuxiliaryStage::is_rebuild() const
 
     for (std::list<std::string>::const_iterator p(packages.begin()), p_end(packages.end()) ;
             p != p_end ; ++p)
-        if ( _env->package_database()->query(
-                    query::Matches(parse_user_package_dep_spec(*p, UserPackageDepSpecOptions())) &
-                    query::InstalledAtRoot(_env->root()),
-                    qo_whatever)->empty())
+        if ((*_env)[selection::SomeArbitraryVersion(
+                    generator::Matches(parse_user_package_dep_spec(*p, UserPackageDepSpecOptions())) |
+                    filter::InstalledAtRoot(_env->root()))]->empty())
             return false;
 
     return true;
@@ -76,10 +78,9 @@ BinutilsStage::build(const StageOptions &) const
 bool
 BinutilsStage::is_rebuild() const
 {
-    return (! _env->package_database()->query(
-                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())) &
-                    query::InstalledAtRoot(_env->root()),
-                qo_whatever)->empty());
+    return (! (*_env)[selection::SomeArbitraryVersion(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
 int
@@ -100,10 +101,9 @@ KernelHeadersStage::build(const StageOptions &) const
 bool
 KernelHeadersStage::is_rebuild() const
 {
-    return (! _env->package_database()->query(
-                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())) &
-                query::InstalledAtRoot(_env->root()),
-                qo_whatever)->empty());
+    return (! (*_env)[selection::SomeArbitraryVersion(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
 int
@@ -132,10 +132,9 @@ MinimalStage::build(const StageOptions &) const
 bool
 MinimalStage::is_rebuild() const
 {
-   return (! _env->package_database()->query(
-               query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) &
-               query::InstalledAtRoot(_env->root()),
-               qo_whatever)->empty());
+    return (! (*_env)[selection::SomeArbitraryVersion(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
 int
@@ -156,10 +155,9 @@ LibCHeadersStage::build(const StageOptions &) const
 bool
 LibCHeadersStage::is_rebuild() const
 {
-    return (! std::tr1::shared_ptr<const PackageIDSequence>(_env->package_database()->query(
-                    query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
-                    query::InstalledAtRoot(_env->root()),
-                qo_whatever))->empty());
+    return (! (*_env)[selection::SomeArbitraryVersion(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
 int
@@ -178,10 +176,9 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    std::tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
-                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) &
-                query::InstalledAtRoot(_env->root()),
-                qo_whatever));
+    std::tr1::shared_ptr<const PackageIDSequence> c((*_env)[selection::BestVersionOnly(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]);
 
     if (c->empty())
         return false;
@@ -212,10 +209,9 @@ FullStage::build(const StageOptions &) const
 bool
 FullStage::is_rebuild() const
 {
-    std::tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
-                query::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) &
-                query::InstalledAtRoot(_env->root()),
-                qo_whatever));
+    std::tr1::shared_ptr<const PackageIDSequence> c((*_env)[selection::BestVersionOnly(
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) |
+                filter::InstalledAtRoot(_env->root()))]);
 
     if (c->empty())
         return false;

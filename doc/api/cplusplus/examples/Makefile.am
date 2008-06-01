@@ -26,9 +26,8 @@ noinst_PROGRAMS = \
 	example_mask \
 	example_repository \
 	example_match_package \
-	example_query \
-	example_query_delegate \
 	example_package_database \
+	example_selection \
 	example_version_operator \
 	example_version_spec \
 	example_name
@@ -138,14 +137,8 @@ example_match_package_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la
 
-example_query_delegate_SOURCES = example_query_delegate.cc
-example_query_delegate_LDADD = \
-	libpaludisexamples.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la
-
-example_query_SOURCES = example_query.cc
-example_query_LDADD = \
+example_selection_SOURCES = example_selection.cc
+example_selection_LDADD = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

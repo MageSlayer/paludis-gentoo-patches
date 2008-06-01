@@ -22,10 +22,13 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -62,7 +65,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> ids(
-                    env.package_database()->query(query::All(), qo_order_by_version));
+                    env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "),
                     "cat/pkg-1.0:foo::unpackaged");
         }
@@ -91,7 +94,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+                    *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0"));
             TEST_CHECK_EQUAL(id->slot(), SlotName("foo"));
@@ -125,7 +128,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+                    *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             TEST_CHECK(! id->masked());
         }
@@ -161,7 +164,7 @@ namespace test_cases
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
             const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+                    *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             TEST_CHECK(id->supports_action(SupportsActionTest<InstallAction>()));
             TEST_CHECK(! id->supports_action(SupportsActionTest<ConfigAction>()));
@@ -207,7 +210,7 @@ namespace test_cases
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/root/first").is_regular_file());
 
             const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+                    *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::no_config_protect(), false)
@@ -261,7 +264,7 @@ namespace test_cases
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
 
             const std::tr1::shared_ptr<const PackageID> id(
-                    *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
+                    *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::no_config_protect(), false)

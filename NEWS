@@ -18,6 +18,9 @@ trunk/:
       (ticket:568). Symlink rewriting now works when builddir contains symlinks
       (ticket:571). The dreaded Ruby bindings segfaults are fixed (ticket:558).
 
+    * New Selection + Filter + Generator interface using Environment, replacing
+      the old PackageDatabase Query (ticket:559).
+
 0.26.1:
     * Bug fix: if we install a directory using rename(), call utime() on all
       file children.

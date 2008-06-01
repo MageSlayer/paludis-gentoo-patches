@@ -79,6 +79,7 @@ using namespace paludis;
  * \section Examples
  *
  * - \ref example_environment.cc "example_environment.cc"
+ * - \ref example_selection.cc "example_selection.cc"
  */
 
 /** \defgroup g_exceptions Exceptions
@@ -155,32 +156,16 @@ using namespace paludis;
  * - \ref example_repository.cc "example_repository.cc"
  */
 
-/** \defgroup g_query Query
- *
- * \ingroup g_package_database
- *
- * Queries are used by PackageDatabase::query. They provide a flexible, mergeable,
- * efficient way of specifying which IDs should be returned in the result.
- *
- * \section Examples
- *
- * - \ref example_query.cc "example_query.cc"
- * - \ref example_query_delegate.cc "example_query_delegate.cc"
- * - \ref example_match_package.cc "example_match_package.cc"
- */
-
 /** \defgroup g_package_database Package Database
  *
  * \ingroup g_paludis
  *
  * A PackageDatabase, which is owned by an Environment, contains a number of
- * Repository instances and supports various querying methods.
+ * Repository instances.
  *
  * \section Examples
  *
  * - \ref example_package_database.cc "example_package_database.cc"
- * - \ref example_query.cc "example_query.cc"
- * - \ref example_query_delegate.cc "example_query_delegate.cc"
  */
 
 /** \defgroup g_names Names and Versions

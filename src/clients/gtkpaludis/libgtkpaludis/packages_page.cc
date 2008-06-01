@@ -7,7 +7,6 @@
 #include "packages_list.hh"
 #include "package_buttons.hh"
 
-#include <paludis/query.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <gtkmm/scrolledwindow.h>
 
@@ -33,7 +32,7 @@ namespace paludis
         PackagesList packages_list;
         PackageButtons package_buttons;
 
-        std::tr1::shared_ptr<const Query> repository_filter;
+        std::tr1::shared_ptr<const Generator> repository_filter;
         std::tr1::shared_ptr<const CategoryNamePart> category;
         std::tr1::shared_ptr<const SetName> set;
         std::tr1::shared_ptr<const QualifiedPackageName> qpn;
@@ -48,7 +47,7 @@ namespace paludis
             sets_list(m, p),
             packages_list(m, p),
             package_buttons(m, p),
-            repository_filter(new query::All()),
+            repository_filter(new generator::All()),
             package_filter(ppfo_all_packages),
             text_filter(ptfso_name)
         {
@@ -136,7 +135,7 @@ PackagesPage::get_qpn() const
 }
 
 void
-PackagesPage::set_repository_filter(std::tr1::shared_ptr<const Query> q)
+PackagesPage::set_repository_filter(std::tr1::shared_ptr<const Generator> q)
 {
     _imp->repository_filter = q;
     _imp->categories_list.populate();
@@ -145,7 +144,7 @@ PackagesPage::set_repository_filter(std::tr1::shared_ptr<const Query> q)
     _imp->package_buttons.populate();
 }
 
-std::tr1::shared_ptr<const Query>
+std::tr1::shared_ptr<const Generator>
 PackagesPage::get_repository_filter() const
 {
     return _imp->repository_filter;

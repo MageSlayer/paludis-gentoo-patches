@@ -32,7 +32,6 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_package_database;
-    static VALUE c_package_database_query_order;
 
     /*
      * call-seq:
@@ -58,9 +57,9 @@ namespace
     /*
      * call-seq:
      *     fetch_unique_qualified_package_name(package_name) -> QualifiedPackageName
-     *     fetch_unique_qualified_package_name(package_name, query) -> QualifiedPackageName
+     *     fetch_unique_qualified_package_name(package_name, filter) -> QualifiedPackageName
      *
-     * Disambiguate a package name.  If a query is specified, limit
+     * Disambiguate a package name.  If a filter is specified, limit
      * the potential results to packages that match.
      */
     VALUE
@@ -73,7 +72,7 @@ namespace
                 std::tr1::shared_ptr<PackageDatabase> * self_ptr;
                 Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
                 return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
-                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_query(argv[1]) : query::All())).c_str());
+                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_filter(argv[1]) : filter::All())).c_str());
             }
             else
                 rb_raise(rb_eArgError, "fetch_unique_qualified_package_name expects one or two arguments, but got %d",argc);
@@ -82,45 +81,6 @@ namespace
         {
             exception_to_ruby_exception(e);
         }
-    }
-
-    /*
-     * call-seq:
-     *     query(query, query_order) -> Array
-     *     query(spec, install_state, query_order) -> Array
-     *
-     *  Query the repository, the first argument is either a PackageDepSpec or a Query.
-     *  Returns an array of PackageID.
-     */
-
-    VALUE
-    package_database_query(int argc, VALUE *argv, VALUE self)
-    {
-        std::tr1::shared_ptr<const PackageIDSequence> items;
-        try
-        {
-            if (2 == argc)
-            {
-                Query q = value_to_query(argv[0]);
-                QueryOrder qo = static_cast<QueryOrder>(NUM2INT(argv[1]));
-
-                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
-
-                items = ((*self_ptr)->query(q, qo));
-            }
-            else
-                rb_raise(rb_eArgError, "query expects two arguments, but got %d",argc);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-        VALUE result(rb_ary_new());
-        for (PackageIDSequence::ConstIterator i(items->begin()),
-                i_end(items->end()) ; i != i_end ; ++i)
-            rb_ary_push(result, package_id_to_value(*i));
-        return result;
     }
 
     /*
@@ -238,8 +198,6 @@ namespace
         rb_define_method(c_package_database, "favourite_repository", RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
         rb_define_method(c_package_database, "fetch_unique_qualified_package_name",
                 RUBY_FUNC_CAST(&package_database_fetch_unique_qualified_package_name), -1);
-        rb_define_method(c_package_database, "query",
-                RUBY_FUNC_CAST(&package_database_query), -1);
         rb_define_method(c_package_database, "repositories",
                 RUBY_FUNC_CAST(&package_database_repositories), 0);
         rb_define_method(c_package_database, "fetch_repository",
@@ -249,17 +207,6 @@ namespace
         rb_define_method(c_package_database, "has_repository_named?",
                 RUBY_FUNC_CAST(&package_database_has_repository_named), 1);
 
-        /*
-         * Document-module: Paludis::QueryOrder
-         *
-         * How to order query results.
-         */
-        c_package_database_query_order = rb_define_module_under(paludis_module(), "QueryOrder");
-        for (QueryOrder l(static_cast<QueryOrder>(0)), l_end(last_qo) ; l != l_end ;
-                l = static_cast<QueryOrder>(static_cast<int>(l) + 1))
-            rb_define_const(c_package_database_query_order, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/package_database-se.hh, QueryOrder, c_package_database_query_order>
     }
 }
 

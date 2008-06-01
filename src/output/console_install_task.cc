@@ -38,7 +38,6 @@
 #include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pretty_print.hh>
-#include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -48,6 +47,10 @@
 #include <paludis/hook.hh>
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -197,7 +200,8 @@ ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_pt
         {
             output_stream() << " Looking for suggestions:" << endl;
 
-            FuzzyCandidatesFinder f(*environment(), e.name(), query::SupportsAction<InstallAction>() & query::NotMasked());
+            FuzzyCandidatesFinder f(*environment(), e.name(),
+                    filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
 
             if (f.begin() == f.end())
                 output_stream() << "No suggestions found." << endl;
@@ -359,23 +363,21 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     if (d.destination)
         repo.reset(new RepositoryName(d.destination->name()));
 
-    std::tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
-            query(query::Matches(repo ?
+    std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(
+                generator::Matches(repo ?
                     make_package_dep_spec().package(d.package_id->name()).repository(*repo) :
-                    make_package_dep_spec().package(d.package_id->name())),
-                qo_order_by_version));
+                    make_package_dep_spec().package(d.package_id->name())))]);
 
-    std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
-            query(query::Matches(repo ?
+    std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted(
+                generator::Matches(repo ?
                     make_package_dep_spec()
-                        .package(d.package_id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
-                        .repository(*repo) :
+                    .package(d.package_id->name())
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
+                    .repository(*repo) :
                     make_package_dep_spec()
-                        .package(d.package_id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
-                        ),
-                qo_order_by_version));
+                    .package(d.package_id->name())
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
+                    ))]);
 
     display_merge_list_entry_start(d, m);
     display_merge_list_entry_package_name(d, m);
@@ -980,13 +982,11 @@ void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode m)
 {
     // XXX fix this once the new resolver's in
-    std::tr1::shared_ptr<const PackageIDSequence> inst(
-        environment()->package_database()->query(
-            query::Matches(make_package_dep_spec()
-                           .package(d.package_id->name())
-                           .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))) &
-            query::InstalledAtRoot(environment()->root()),
-            qo_best_version_only));
+    std::tr1::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
+                generator::Matches(make_package_dep_spec()
+                    .package(d.package_id->name())
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))) |
+                filter::InstalledAtRoot(environment()->root()))]);
     bool changed(normal_entry == m &&
                  ! inst->empty() && (*inst->begin())->source_origin_key() &&
                  (*inst->begin())->source_origin_key()->value() !=
@@ -1388,10 +1388,9 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
 
         std::tr1::shared_ptr<const PackageDepSpec> spec(
             std::tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
-        if (d.kind != dlk_masked && d.kind != dlk_block && environment()->package_database()->query(
-                query::Matches(*spec) &
-                query::SupportsAction<InstalledAction>(),
-                qo_whatever)->empty())
+        if (d.kind != dlk_masked && d.kind != dlk_block && (*environment())[selection::SomeArbitraryVersion(
+                generator::Matches(*spec) |
+                filter::SupportsAction<InstalledAction>())]->empty())
             unsatisfied_dependents.insert(tag->tag->short_text());
         else
             dependents.insert(tag->tag->short_text());
@@ -1605,7 +1604,7 @@ ConsoleInstallTask::on_no_such_package_error(const NoSuchPackageError & e)
         output_stream() << " Looking for suggestions:" << endl;
 
         FuzzyCandidatesFinder f(*environment(), e.name(),
-                query::SupportsAction<InstallAction>() & query::NotMasked());
+                filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
 
         if (f.begin() == f.end())
             output_stream() << "No suggestions found." << endl;
@@ -1626,8 +1625,8 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
     try
     {
         std::tr1::shared_ptr<const PackageIDSequence> p(
-                environment()->package_database()->query(
-                    query::Matches(e.query()) & query::SupportsAction<InstallAction>(), qo_order_by_version));
+                (*environment())[selection::AllVersionsSorted(
+                    generator::Matches(e.query()) | filter::SupportsAction<InstallAction>())]);
         if (p->empty())
         {
             output_stream() << endl;
@@ -1641,7 +1640,7 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
                 output_stream() << " Looking for suggestions:" << endl;
 
                 FuzzyCandidatesFinder f(*environment(), stringify(e.query()),
-                        query::SupportsAction<InstallAction>() & query::NotMasked());
+                        filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
 
                 if (f.begin() == f.end())
                     output_stream() << "No suggestions found." << endl;

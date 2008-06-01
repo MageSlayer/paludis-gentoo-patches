@@ -31,10 +31,13 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/about.hh>
 #include <paludis/repository_maker.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 
 #include <algorithm>
 #include <iterator>
@@ -132,8 +135,7 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_preserve_metadata.specified())
         {
-            std::tr1::shared_ptr<const PackageIDSequence> old_ids(
-                    env->package_database()->query(query::Package(q), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(q))]);
             std::tr1::shared_ptr<const PackageID> old_id;
             for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                     i != i_end ; ++i)

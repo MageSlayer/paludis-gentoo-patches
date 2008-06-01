@@ -24,39 +24,45 @@ IF_RUBY_TESTS = \
 	dep_spec_TEST.rb \
 	dep_tag_TEST.rb \
 	environment_TEST.rb \
+	filter_TEST.rb \
+	filtered_generator_TEST.rb \
 	find_unused_packages_task_TEST.rb \
+	generator_TEST.rb \
 	log_TEST.rb \
 	package_database_TEST.rb \
 	package_id_TEST.rb \
 	paludis_ruby_TEST.rb \
 	qualified_package_name_TEST.rb \
-	query_TEST.rb \
 	repository_TEST.rb \
+	selection_TEST.rb \
 	version_spec_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	qa_TEST.rb
 
 IF_RUBY_SOURCES = \
-	paludis_ruby.cc paludis_ruby.hh \
 	action.cc \
 	contents.cc \
 	dep_list.cc \
 	dep_spec.cc \
 	dep_tag.cc \
 	environment.cc \
+	filter.cc \
+	filtered_generator.cc \
 	find_unused_packages_task.cc \
+	generator.cc \
 	log.cc \
+	mask.cc \
 	metadata_key.cc \
 	name.cc \
 	nice_names-nn.hh nice_names-nn.cc \
 	package_database.cc \
 	package_id.cc \
+	paludis_ruby.cc paludis_ruby.hh \
 	qualified_package_name.cc \
-	query.cc \
 	repository.cc \
-	version_spec.cc \
-	mask.cc
+	selection.cc \
+	version_spec.cc
 
 BUILT_SOURCES = \
 	nice_names-nn.hh nice_names-nn.cc

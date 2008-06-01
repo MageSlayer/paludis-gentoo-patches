@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_FWD_HH 1
 
-#include <iosfwd>
-#include <paludis/util/attributes.hh>
-
 /** \file
  * Forward declarations for paludis/package_database.hh .
  *
@@ -36,10 +33,7 @@ namespace paludis
     class AmbiguousPackageNameError;
     class DuplicateRepositoryError;
     class NoSuchPackageError;
-    class NonUniqueQueryResultError;
     class NoSuchRepositoryError;
-
-#include <paludis/package_database-se.hh>
 
     class PackageDatabase;
 }

@@ -32,6 +32,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/package_database-fwd.hh>
+#include <paludis/selection-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -165,6 +166,12 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Select some packages.
+             */
+            virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

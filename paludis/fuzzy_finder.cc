@@ -22,14 +22,18 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/damerau_levenshtein.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
-#include <paludis/query.hh>
-#include <paludis/query_delegate.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/generator.hh>
+#include <paludis/generator_handler.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <list>
@@ -59,8 +63,8 @@ namespace
         return res2;
     }
 
-    class FuzzyPackageNameDelegate :
-        public QueryDelegate
+    class FuzzyPackageNameGeneratorHandler :
+        public AllGeneratorHandlerBase
     {
         private:
             std::string _package;
@@ -69,7 +73,7 @@ namespace
             char _first_char;
 
         public:
-            FuzzyPackageNameDelegate(const std::string & package) :
+            FuzzyPackageNameGeneratorHandler(const std::string & package) :
                 _package(package),
                 _distance_calculator(tolower_0_cost(package)),
                 _threshold(package.length() <= 4 ? 1 : 2),
@@ -77,27 +81,28 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
-                    std::tr1::shared_ptr<const RepositoryNameSequence>,
-                    std::tr1::shared_ptr<const CategoryNamePartSet>) const;
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+                    const Environment * const,
+                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
+                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const;
 
-            std::string as_human_readable_string() const
+            virtual std::string as_string() const
             {
-                return "package name fuzzy-matches '" + _package + "'";
+                return "packages fuzzily like " + _package;
             }
     };
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet>
-    FuzzyPackageNameDelegate::packages(const Environment & e,
-                    std::tr1::shared_ptr<const RepositoryNameSequence> repos,
-                    std::tr1::shared_ptr<const CategoryNamePartSet> cats) const
+    std::tr1::shared_ptr<const QualifiedPackageNameSet>
+    FuzzyPackageNameGeneratorHandler::packages(const Environment * const env,
+                    const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
+                    const std::tr1::shared_ptr<const CategoryNamePartSet> & cats) const
     {
         std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
-        for (RepositoryNameSequence::ConstIterator r(repos->begin()),
+        for (RepositoryNameSet::ConstIterator r(repos->begin()),
                  r_end(repos->end()); r_end != r; ++r)
         {
-            std::tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
+            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
 
             for (CategoryNamePartSet::ConstIterator c(cats->begin()),
                      c_end(cats->end()); c_end != c; ++c)
@@ -115,11 +120,11 @@ namespace
     }
 
     class FuzzyPackageName :
-        public Query
+        public Generator
     {
         public:
             FuzzyPackageName(const std::string & p) :
-                Query(std::tr1::shared_ptr<QueryDelegate>(new FuzzyPackageNameDelegate(p)))
+                Generator(make_shared_ptr(new FuzzyPackageNameGeneratorHandler(p)))
             {
             }
     };
@@ -134,10 +139,10 @@ namespace paludis
     };
 }
 
-FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Query & generator) :
+FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Filter & filter) :
     PrivateImplementationPattern<FuzzyCandidatesFinder>(new Implementation<FuzzyCandidatesFinder>)
 {
-    Query real_generator(generator);
+    Generator g = generator::All();
     std::string package(name);
 
     if (std::string::npos != name.find('/'))
@@ -146,15 +151,15 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
         if (pds.package_ptr())
         {
-            real_generator = real_generator & query::Category(pds.package_ptr()->category);
+            g = g & generator::Category(pds.package_ptr()->category);
             package = stringify(pds.package_ptr()->package);
         }
 
         if (pds.repository_ptr())
-            real_generator = real_generator & query::Repository(*pds.repository_ptr());
+            g = g & generator::Repository(*pds.repository_ptr());
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator & FuzzyPackageName(package), qo_best_version_only));
+    std::tr1::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g & FuzzyPackageName(package) | filter)]);
 
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
             ; i != i_end ; ++i)
@@ -224,3 +229,4 @@ FuzzyRepositoriesFinder::end() const
 {
     return RepositoriesConstIterator(_imp->candidates.end());
 }
+

@@ -30,6 +30,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
@@ -388,6 +389,22 @@ class EnvironmentImplementationWrapper :
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "world_set");
         }
+
+        virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("__getitem__"))
+                return f(fg);
+            return EnvironmentImplementation::operator[] (fg);
+        }
+
+        virtual std::tr1::shared_ptr<PackageIDSequence> default_operator_square_brackets(const Selection & fg) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::operator[] (fg);
+        }
 };
 
 struct NoConfigEnvironmentWrapper :
@@ -494,6 +511,11 @@ void expose_environment()
         .add_property("set_names", &Environment::set_names,
                 "[ro] SetNamesIterable\n"
                 "All known named sets."
+            )
+
+        .def("__getitem__", &Environment::operator[],
+                "[selection] -> list of PackageID\n"
+                "Return PackageID instances matching a given selection."
             )
         ;
 
@@ -629,6 +651,11 @@ void expose_environment()
                 "default_distribution() -> str\n"
                 "NEED_DOC"
             )
+
+        .def("__getitem__", &EnvImp::operator[], &EnvImpW::default_operator_square_brackets,
+                "[selection] -> list of PackageID\n"
+                "Return PackageID instances matching a given selection."
+            )
         ;
 
     /**
@@ -712,3 +739,4 @@ void expose_environment()
          bp::init<>("__init__()")
         );
 }
+

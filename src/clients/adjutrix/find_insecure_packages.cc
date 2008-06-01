@@ -21,13 +21,16 @@
 #include "command_line.hh"
 
 #include <paludis/util/tokeniser.hh>
-#include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 
 #include <set>
 #include <map>
@@ -84,8 +87,7 @@ namespace
 
             void visit_leaf(const PackageDepSpec & a)
             {
-                std::tr1::shared_ptr<const PackageIDSequence> insecure(
-                        _env.package_database()->query(query::Matches(a), qo_order_by_version));
+                std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(generator::Matches(a))]);
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a.tag())

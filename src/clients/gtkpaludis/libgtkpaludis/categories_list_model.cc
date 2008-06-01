@@ -54,12 +54,12 @@ CategoriesListModel::populate_in_paludis_thread()
 {
     std::tr1::shared_ptr<CategoryNamePartSet> columns(new CategoryNamePartSet);
 
-    std::tr1::shared_ptr<RepositoryNameSequence> repos(
-            _imp->packages_page->get_repository_filter()->repositories(*_imp->main_window->environment()));
+    std::tr1::shared_ptr<const RepositoryNameSet> repos(
+            _imp->packages_page->get_repository_filter()->repositories(_imp->main_window->environment()));
 
     if (repos)
     {
-        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             std::tr1::shared_ptr<const CategoryNamePartSet> cats(

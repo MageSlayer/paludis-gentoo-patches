@@ -44,6 +44,7 @@ template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, Support
 template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
 template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
 template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
 
 template class Sequence<FetchActionFailure>;
 

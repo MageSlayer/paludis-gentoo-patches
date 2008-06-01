@@ -19,7 +19,6 @@
 
 #include "downgrade_check.hh"
 #include "command_line.hh"
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/tokeniser.hh>
@@ -29,6 +28,10 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -48,8 +51,7 @@ namespace
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> matches(
-                env.package_database()->query(query::NotMasked(), qo_group_by_slot));
+        std::tr1::shared_ptr<const PackageIDSequence> matches(env[selection::AllVersionsGroupedBySlot(generator::All() | filter::NotMasked())]);
 
         QualifiedPackageName old_package("dummy/dummy");
         SlotName old_slot("dummy");
@@ -138,10 +140,9 @@ namespace
             std::map<QPNS, VersionSpec>::const_iterator a(after.find(b->first));
             if (after.end() == a)
             {
-                if (! env.package_database()->query(query::Matches(make_package_dep_spec()
+                if (! env[selection::SomeArbitraryVersion(generator::Matches(make_package_dep_spec()
                                 .package(b->first.name)
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot)))),
-                            qo_whatever)->empty())
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot)))))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
                     exit_status |= 2;

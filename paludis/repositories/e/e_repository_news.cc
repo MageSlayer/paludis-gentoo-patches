@@ -31,8 +31,11 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/query.hh>
 #include <paludis/elike_package_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <set>
 #include <ostream>
@@ -136,13 +139,12 @@ ERepositoryNews::update_news() const
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
-                    if (! _imp->environment->package_database()->query(
-                                query::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
+                    if (! (*_imp->environment)[selection::SomeArbitraryVersion(
+                                generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             (*(*erepository::EAPIData::get_instance()->eapi_from_string(
                                                 _imp->e_repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
-                                            std::tr1::shared_ptr<const PackageID>()))) &
-                                query::SupportsAction<InstalledAction>(),
-                                qo_whatever)->empty())
+                                            std::tr1::shared_ptr<const PackageID>()))) |
+                                filter::SupportsAction<InstalledAction>())]->empty())
                         local_show = true;
                 show &= local_show;
             }

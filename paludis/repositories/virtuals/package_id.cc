@@ -36,9 +36,12 @@
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -100,11 +103,11 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {
-        if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
-                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item()) |
+                    filter::InstalledAtRoot(_imp->env->root()))]->empty())
             return f.format(*_imp->value->item(), format::Installed());
-        else if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
-                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item()) |
+                    filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             return f.format(*_imp->value->item(), format::Installable());
         else
             return f.format(*_imp->value->item(), format::Plain());
@@ -116,19 +119,7 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 std::string
 VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
-    if (_imp->env)
-    {
-        if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
-                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
-            return f.format(*_imp->value->item(), format::Installed());
-        else if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
-                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
-            return f.format(*_imp->value->item(), format::Installable());
-        else
-            return f.format(*_imp->value->item(), format::Plain());
-    }
-    else
-        return f.format(*_imp->value->item(), format::Plain());
+    return pretty_print(f);
 }
 
 const std::tr1::shared_ptr<const DependencyLabelSequence>

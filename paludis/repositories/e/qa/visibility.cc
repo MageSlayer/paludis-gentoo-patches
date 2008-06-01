@@ -27,7 +27,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/query.hh>
 #include <paludis/qa.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -37,6 +36,10 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <set>
 #include <algorithm>
 
@@ -138,8 +141,8 @@ namespace
                 }
             }
 
-            const std::tr1::shared_ptr<const PackageIDSequence> matches(env->package_database()->query(
-                        query::Matches(*p) & query::SupportsAction<InstallAction>(), qo_order_by_version));
+            const std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
+                        generator::Matches(*p) | filter::SupportsAction<InstallAction>())]);
             if (matches->empty())
             {
                 if (reporter)

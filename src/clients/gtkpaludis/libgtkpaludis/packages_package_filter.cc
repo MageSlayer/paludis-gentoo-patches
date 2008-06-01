@@ -3,7 +3,6 @@
 #include "packages_package_filter.hh"
 #include "packages_package_filter_model.hh"
 #include "packages_page.hh"
-#include <paludis/query.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace gtkpaludis;

@@ -263,3 +263,9 @@ AdaptedEnvironment::remove_from_world(const SetName & s) const
     _imp->env->remove_from_world(s);
 }
 
+std::tr1::shared_ptr<PackageIDSequence>
+AdaptedEnvironment::operator[] (const Selection & s) const
+{
+    return _imp->env->operator[] (s);
+}
+

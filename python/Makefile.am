@@ -23,25 +23,28 @@ DISTCLEANFILES = *-nn.hh *-nn.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_PYTHON_TESTS = \
-	version_spec_TEST.py \
-	version_operator_TEST.py \
-	version_requirements_TEST.py \
+	action_TEST.py \
 	contents_TEST.py \
+	dep_label_TEST.py \
+	dep_list_TEST.py \
 	dep_spec_TEST.py \
 	dep_tag_TEST.py \
-	dep_label_TEST.py \
-	log_TEST.py \
-	name_TEST.py \
-	query_TEST.py \
 	environment_TEST.py \
-	package_database_TEST.py \
-	repository_TEST.py \
-	action_TEST.py \
-	metadata_key_TEST.py \
+	filter_TEST.py \
+	filtered_generator_TEST.py \
+	formatter_TEST.py \
+	generator_TEST.py \
+	log_TEST.py \
 	mask_TEST.py \
+	metadata_key_TEST.py \
+	name_TEST.py \
+	package_database_TEST.py \
 	package_id_TEST.py \
-	dep_list_TEST.py \
-	formatter_TEST.py
+	repository_TEST.py \
+	selection_TEST.py \
+	version_operator_TEST.py \
+	version_requirements_TEST.py \
+	version_spec_TEST.py
 
 IF_PYTHON_QA_TESTS = \
 	qa_TEST.py
@@ -60,8 +63,11 @@ IF_PYTHON_SOURCES = \
 	dep_tag.cc \
 	environment.cc \
 	exception.hh exception.cc \
+	filter.cc \
+	filtered_generator.cc \
 	formatter.cc \
 	fs_entry.cc \
+	generator.cc \
 	mask.cc \
 	metadata_key.cc \
 	mutex.hh mutex.cc \
@@ -70,8 +76,8 @@ IF_PYTHON_SOURCES = \
 	log.cc \
 	package_database.cc \
 	package_id.cc \
-	query.cc \
 	repository.cc \
+	selection.cc \
 	version_operator.cc \
 	version_requirements.cc \
 	version_spec.cc
@@ -93,7 +99,6 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	nice_names.nn \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
-	query_TEST_setup.sh query_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	paludis_output_wrapper.py
 

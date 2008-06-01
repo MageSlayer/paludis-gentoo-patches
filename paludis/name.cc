@@ -38,6 +38,10 @@ using namespace paludis;
 template struct Sequence<RepositoryName>;
 template struct WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
 
+template struct Set<RepositoryName, RepositoryNameComparator>;
+template struct WrappedForwardIterator<Set<RepositoryName, RepositoryNameComparator>::ConstIteratorTag, const RepositoryName>;
+template struct WrappedOutputIterator<Set<RepositoryName, RepositoryNameComparator>::InserterTag, RepositoryName>;
+
 template struct Set<PackageNamePart>;
 template struct WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
 template struct WrappedOutputIterator<Set<PackageNamePart>::InserterTag, PackageNamePart>;

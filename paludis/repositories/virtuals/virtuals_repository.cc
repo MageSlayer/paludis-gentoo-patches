@@ -23,9 +23,12 @@
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -222,10 +225,9 @@ VirtualsRepository::need_ids() const
     for (std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >::const_iterator
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->env->package_database()->query(
-                    query::Matches(*v->second) &
-                    query::SupportsAction<InstallAction>(),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->env)[selection::AllVersionsSorted(
+                    generator::Matches(*v->second) |
+                    filter::SupportsAction<InstallAction>())]);
 
         if (matches->empty())
             Log::get_instance()->message("virtuals.no_match", ll_warning, lc_context) << "No packages matching '"

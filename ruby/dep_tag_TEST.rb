@@ -37,7 +37,7 @@ module Paludis
         end
 
         def get_dt
-            DependencyDepTag.new(env.package_database.query(Query::All.new, QueryOrder::RequireExactlyOne).last,
+            DependencyDepTag.new(env[Selection::RequireExactlyOne.new(Generator::All.new)].last,
                                  Paludis::parse_user_package_dep_spec('foo/bar', []))
         end
 

@@ -19,9 +19,8 @@ exit_status = 0
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
 # Fetch package IDs for installed 'sys-apps/paludis'
-ids = env.package_database.query(
-    Query::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])),
-    QueryOrder::OrderByVersion)
+ids = env[Selection::AllVersionsSorted.new(
+    Generator::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", [])))]
 
 # For each ID:
 ids.each do | id |
@@ -68,10 +67,6 @@ ids.each do | id |
     actions << "info" if id.supports_action(SupportsInfoActionTest.new)
 
     puts "    Actions: ".ljust(40) + actions.join(' ')
-
-    # And various misc methods. Clients don't usually use these
-    # directly.
-    puts "    breaks_portage?: ".ljust(40) + id.breaks_portage?.to_s
 
     puts
 end

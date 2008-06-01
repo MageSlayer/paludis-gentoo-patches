@@ -90,6 +90,9 @@ namespace paludis
 
             virtual bool is_paludis_package(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

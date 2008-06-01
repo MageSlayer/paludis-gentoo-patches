@@ -22,9 +22,12 @@
 #include <paludis/condition_tracker.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
-#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -184,9 +187,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
-    std::tr1::shared_ptr<const PackageIDSequence> installed_matches(_imp->environment->package_database()->query(
-                query::SupportsAction<InstalledAction>() &
-                query::Matches(a), qo_order_by_version));
+    std::tr1::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
+                generator::Matches(a) | filter::SupportsAction<InstalledAction>())]);
     if (! installed_matches->empty())
     {
         Log::get_instance()->message("dep_list.show_suggest_visitor.already_installed", ll_debug, lc_context)
@@ -196,9 +198,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         return;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
-                query::SupportsAction<InstallAction>() &
-                query::Matches(a), qo_order_by_version));
+    std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsSorted(
+                generator::Matches(a) | filter::SupportsAction<InstallAction>())]);
     if (matches->empty())
     {
         Log::get_instance()->message("dep_list.show_suggest_visitor.nothing_found", ll_warning, lc_context)

@@ -32,9 +32,12 @@
 #include <paludis/distribution.hh>
 #include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -277,10 +280,9 @@ namespace
         const PackageDepSpec * const u(get_const_item(i)->as_package_dep_spec());
         if (0 != u && u->package_ptr())
         {
-            return ! env.package_database()->query(
-                    query::SupportsAction<InstalledAction>() &
-                    query::Matches(make_package_dep_spec().package(*u->package_ptr())),
-                    qo_whatever)->empty();
+            return ! env[selection::SomeArbitraryVersion(
+                    generator::Package(*u->package_ptr()) |
+                    filter::SupportsAction<InstalledAction>())]->empty();
         }
         else
             return false;
@@ -383,10 +385,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
     /* find already installed things */
     // TODO: check destinations
-    std::tr1::shared_ptr<const PackageIDSequence> already_installed(d->_imp->env->package_database()->query(
-                query::SupportsAction<InstalledAction>() &
-                query::Matches(a),
-                qo_order_by_version));
+    std::tr1::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
+                generator::Matches(a) | filter::SupportsAction<InstalledAction>())]);
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -442,10 +442,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find installable candidates, and find the best visible candidate */
     std::tr1::shared_ptr<const PackageID> best_visible_candidate;
     std::tr1::shared_ptr<const PackageIDSequence> installable_candidates(
-            d->_imp->env->package_database()->query(
-                query::MaybeSupportsAction<InstallAction>() &
-                query::Matches(a),
-                qo_order_by_version));
+            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a) | filter::SupportsAction<InstallAction>())]);
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
@@ -543,8 +540,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (! a.additional_requirements_ptr())
                 throw AllMaskedError(a);
 
-            std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
-                        query::Matches(*a.without_additional_requirements()), qo_whatever));
+            std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsUnsorted(
+                        generator::Matches(*a.without_additional_requirements()))]);
 
             for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
@@ -618,13 +615,12 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         case dl_downgrade_warning:
             {
                 std::tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
-                        d->_imp->env->package_database()->query(
-                            query::SupportsAction<InstalledAction>() &
-                            query::Matches(make_package_dep_spec()
+                        (*d->_imp->env)[selection::AllVersionsSorted(
+                            generator::Matches(make_package_dep_spec()
                                 .package(best_visible_candidate->name())
                                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot())))
-                                ),
-                            qo_order_by_version));
+                                ) |
+                            filter::SupportsAction<InstalledAction>())]);
 
                 if (are_we_downgrading->empty())
                     break;
@@ -829,10 +825,9 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     if (a.blocked_spec()->package_ptr())
     {
         PackageDepSpec just_package(make_package_dep_spec().package(*a.blocked_spec()->package_ptr()));
-        already_installed = d->_imp->env->package_database()->query(
-                query::SupportsAction<InstalledAction>() &
-                query::Matches(just_package),
-                qo_whatever);
+        already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
+                generator::Matches(just_package) |
+                filter::SupportsAction<InstalledAction>())];
 
         MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package);
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
@@ -856,9 +851,8 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     {
         check_whole_list = true;
         /* TODO: InstalledAtRoot? */
-        already_installed = d->_imp->env->package_database()->query(
-                query::SupportsAction<InstalledAction>(),
-                qo_whatever);
+        already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
+                generator::All() | filter::SupportsAction<InstalledAction>())];
     }
 
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)

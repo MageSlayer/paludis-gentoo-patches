@@ -28,10 +28,13 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
-#include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <iostream>
 #include <iomanip>
 #include <set>
@@ -211,12 +214,11 @@ int do_one_info(
                         env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))));
 
     std::tr1::shared_ptr<const PackageIDSequence>
-        entries(env->package_database()->query(query::Matches(*spec), qo_order_by_version)),
-        installed_entries(env->package_database()->query(
-                    query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version)),
-        installable_entries(env->package_database()->query(
-                    query::Matches(*spec) & query::SupportsAction<InstallAction>() & query::NotMasked(),
-                    qo_order_by_version));
+        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec))]),
+        installed_entries((*env)[selection::AllVersionsSorted(
+                    generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]),
+        installable_entries((*env)[selection::AllVersionsSorted(
+                    generator::Matches(*spec) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
     std::tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
 

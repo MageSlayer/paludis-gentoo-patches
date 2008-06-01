@@ -115,8 +115,8 @@ end
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
 # Fetch package IDs for all installed packages.
-ids = env.package_database.query(
-    Query::SupportsInstalledAction.new, QueryOrder::OrderByVersion)
+ids = env[Selection::AllVersionsSorted.new(
+    Generator::All.new | Filter::SupportsAction.new(InstalledAction))]
 
 # Our results table, mapping the ID to { :has_dep => ?, :has_ext => ? }
 results = { }

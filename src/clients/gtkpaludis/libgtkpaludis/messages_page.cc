@@ -3,7 +3,6 @@
 #include "messages_page.hh"
 #include "main_notebook.hh"
 
-#include <paludis/query.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>

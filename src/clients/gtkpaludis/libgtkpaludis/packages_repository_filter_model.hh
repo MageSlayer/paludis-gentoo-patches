@@ -6,7 +6,8 @@
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
-#include <paludis/query.hh>
+#include <paludis/generator.hh>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
@@ -35,7 +36,7 @@ namespace gtkpaludis
 
                     Gtk::TreeModelColumn<bool> col_sensitive;
                     Gtk::TreeModelColumn<Glib::ustring> col_text;
-                    Gtk::TreeModelColumn<std::tr1::shared_ptr<const paludis::Query> > col_query;
+                    Gtk::TreeModelColumn<std::tr1::shared_ptr<const paludis::Generator> > col_generator;
             };
 
             Columns & columns();

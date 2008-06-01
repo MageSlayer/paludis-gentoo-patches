@@ -159,10 +159,9 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for installable 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                    query::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) &
-                    query::SupportsAction<InstallAction>(),
-                    qo_order_by_version));
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                    generator::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) |
+                    filter::SupportsAction<InstallAction>())]);
 
         /* Write nice valid XHTML, because we're good like that. */
         cout << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"" << endl;

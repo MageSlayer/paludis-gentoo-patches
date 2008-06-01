@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,18 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QUERY_DELEGATE_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_QUERY_DELEGATE_FWD_HH 1
-
-/** \file
- * Forward declarations for paludis/query_delegate.hh .
- *
- * \ingroup g_query
- */
+#ifndef PALUDIS_GUARD_PALUDIS_ACTION_NAMES_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_ACTION_NAMES_FWD_HH 1
 
 namespace paludis
 {
-    class QueryDelegate;
+    template <typename>
+    struct ActionNames;
 }
 
 #endif

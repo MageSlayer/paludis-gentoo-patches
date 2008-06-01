@@ -27,8 +27,11 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
-#include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <fstream>
@@ -55,8 +58,8 @@ namespace test_cases
             TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
 
             const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
-            FetchVisitor v(&env, *env.package_database()->query(query::Matches(parse_user_package_dep_spec("=cat/pkg-1", UserPackageDepSpecOptions())),
-                        qo_require_exactly_one)->begin(),
+            FetchVisitor v(&env, *env[selection::RequireExactlyOne(
+                        generator::Matches(parse_user_package_dep_spec("=cat/pkg-1", UserPackageDepSpecOptions())))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->accept(v);

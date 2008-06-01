@@ -26,12 +26,15 @@
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
-#include <paludis/query.hh>
 #include <paludis/user_dep_spec.hh>
 
 using namespace test;
@@ -67,7 +70,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "cat/pkg-1:0::repo | cat/pkg-2:0::repo | virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo)");
         }
@@ -105,7 +108,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "cat/pkg-1:0::repo1 | cat/pkg-2:0::repo1 | "
                     "virtual/foo-1::virtuals (virtual for cat/pkg-1:0::repo1) | "
@@ -140,7 +143,7 @@ namespace test_cases
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
 
-            std::tr1::shared_ptr<const PackageIDSequence> r(env.package_database()->query(query::All(), qo_order_by_version));
+            std::tr1::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
                     "virtual/gkp-1:0::repo1 | virtual/pkg-1::virtuals (virtual for virtual/gkp-1:0::repo1) | "
                     "virtual/pkg-2:0::repo2 | virtual/pkg-2::virtuals (virtual for virtual/pkg-2:0::repo2)");

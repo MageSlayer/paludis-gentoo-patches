@@ -17,19 +17,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <algorithm>
-#include <sstream>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/formatter.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
-#include <paludis/query.hh>
-#include <paludis/package_database.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/action-fwd.hh>
+#include <algorithm>
+#include <sstream>
 
 /** \file
  * Implementation of dep_spec_pretty_printer.hh.
@@ -216,11 +220,11 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 
     if (_imp->env)
     {
-        if (! _imp->env->package_database()->query(query::Matches(p) &
-                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+                    filter::InstalledAtRoot(_imp->env->root()))]->empty())
             _imp->s << _imp->formatter.format(p, format::Installed());
-        else if (! _imp->env->package_database()->query(query::Matches(p) &
-                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+                    filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             _imp->s << _imp->formatter.format(p, format::Installable());
         else
             _imp->s << _imp->formatter.format(p, format::Plain());

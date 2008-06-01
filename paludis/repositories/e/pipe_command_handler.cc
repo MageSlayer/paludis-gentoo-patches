@@ -38,6 +38,10 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 #include <vector>
 
 using namespace paludis;
@@ -105,8 +109,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
                             package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
+                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
+                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
@@ -145,8 +149,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
                             package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
+                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
+                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
                 if (entries->empty())
                     return "O1;";
                 else
@@ -168,8 +172,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], (*(*eapi)[k::supported()])[k::package_dep_spec_parse_options()],
                             package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries(environment->package_database()->query(
-                            query::Matches(spec) & query::InstalledAtRoot(environment->root()), qo_order_by_version));
+                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
+                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
                 if ((*(*eapi)[k::supported()])[k::pipe_commands()][k::rewrite_virtuals()] && (! entries->empty()))
                 {
                     std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
