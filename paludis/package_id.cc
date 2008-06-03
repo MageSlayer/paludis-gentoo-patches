@@ -51,9 +51,9 @@ template class WrappedOutputIterator<Sequence<std::tr1::shared_ptr<const Package
          std::tr1::shared_ptr<const PackageID> >;
 
 template class Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
-template class WrappedForwardIterator<Set<std::tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+template class WrappedForwardIterator<Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>::ConstIteratorTag,
          const std::tr1::shared_ptr<const PackageID> >;
-template class WrappedOutputIterator<Set<std::tr1::shared_ptr<const PackageID> >::InserterTag,
+template class WrappedOutputIterator<Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>::InserterTag,
          std::tr1::shared_ptr<const PackageID> >;
 
 template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, std::tr1::shared_ptr<const MetadataKey> >;

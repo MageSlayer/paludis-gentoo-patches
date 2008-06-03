@@ -25,6 +25,7 @@
 #include <paludis/action.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>

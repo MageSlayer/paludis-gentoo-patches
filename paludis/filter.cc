@@ -26,6 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
