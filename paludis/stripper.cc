@@ -26,13 +26,17 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/hashes.hh>
 #include <tr1/functional>
 #include <sstream>
 #include <list>
+#include <set>
 #include <algorithm>
 #include <sys/stat.h>
 
 using namespace paludis;
+
+typedef std::set<std::pair<dev_t, ino_t> > StrippedSet;
 
 namespace paludis
 {
@@ -40,6 +44,7 @@ namespace paludis
     struct Implementation<Stripper>
     {
         StripperOptions options;
+        StrippedSet stripped_ids;
 
         Implementation(const StripperOptions & o) :
             options(o)
@@ -81,6 +86,8 @@ Stripper::do_dir_recursive(const FSEntry & f)
     for (DirIterator d(f, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         if (d->is_symbolic_link())
+            continue;
+        if (_imp->stripped_ids.end() != _imp->stripped_ids.find(d->lowlevel_id()))
             continue;
 
         if (d->is_directory())
@@ -135,6 +142,7 @@ Stripper::do_strip(const FSEntry & f, const std::string & options)
     on_strip(f);
     if (0 != run_command(Command("strip " + options + " '" + stringify(f) + "'")))
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't strip '" << f << "'";
+    _imp->stripped_ids.insert(f.lowlevel_id());
 }
 
 void
