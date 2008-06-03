@@ -26,7 +26,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/hashes.hh>
 #include <tr1/functional>
 #include <sstream>
 #include <list>
