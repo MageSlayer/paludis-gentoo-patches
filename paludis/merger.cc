@@ -703,13 +703,15 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
     {
         result += msi_rename;
-        if (! dst_real.utime())
+
+        bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(src.lowlevel_id()));
+        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
+
+        if (touch && ! dst_real.utime())
             throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
 
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
-
-        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
     else
     {
@@ -842,10 +844,13 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
                 continue;
 
             case et_file:
-                if (! FSEntry(*d).utime())
+                {
+                bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
+                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                if (touch && ! FSEntry(*d).utime())
                     throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
                 record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
-                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                }
                 continue;
 
             case et_dir:
