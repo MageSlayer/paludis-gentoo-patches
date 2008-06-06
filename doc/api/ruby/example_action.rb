@@ -22,9 +22,9 @@ ids = env[Selection::AllVersionsSorted.new(Generator::Matches.new(
 
 # For each ID:
 ids.each do | id |
-    # Do we support a FetchAction? We find out by creating a SupportsFetchActionTest object, and
+    # Do we support a FetchAction? We find out by creating a SupportsActionTest object, and
     # querying via the PackageID#supports_action method.
-    supports_fetch_action = SupportsFetchActionTest.new
+    supports_fetch_action = SupportsActionTest.new(FetchAction)
     if not id.supports_action(supports_fetch_action)
         puts "ID #{id} does not support the fetch action."
     else

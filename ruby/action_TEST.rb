@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2007 Ciaran McCreesh
+# Copyright (c) 2007, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,68 +45,45 @@ module Paludis
         end
     end
 
-    class TestCase_SupportsActionTestBase < Test::Unit::TestCase
-        def test_no_create
-            assert_raise NoMethodError do
-                ce = SupportsActionTestBase.new('test')
-            end
-        end
-    end
-
     class TestCase_SupportsFetchActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsFetchActionTest, SupportsFetchActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsFetchActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(FetchAction)
         end
     end
 
     class TestCase_SupportsInfoActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsInfoActionTest, SupportsInfoActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsInfoActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(InfoAction)
         end
     end
 
     class TestCase_SupportsConfigActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsConfigActionTest, SupportsConfigActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsConfigActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(ConfigAction)
         end
     end
 
     class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(InstallAction)
         end
     end
 
     class TestCase_SupportsUninstallActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsUninstallActionTest, SupportsUninstallActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsUninstallActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(UninstallAction)
         end
     end
 
     class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(InstallAction)
         end
     end
 
     class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
         def test_create
-            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
-            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
-        end
-    end
-
-    class TestCase_Action < Test::Unit::TestCase
-        def test_no_create
-            assert_raise NoMethodError do
-                ce = Action.new('test')
-            end
+            assert_kind_of SupportsActionTest, SupportsActionTest.new(InstallAction)
         end
     end
 

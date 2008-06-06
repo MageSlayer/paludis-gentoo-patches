@@ -58,13 +58,13 @@ ids.each do | id |
     # way of doing this, since it's not something we'd expect to be
     # doing.
     actions = []
-    actions << "install" if id.supports_action(SupportsInstallActionTest.new)
-    actions << "installed" if id.supports_action(SupportsInstalledActionTest.new)
-    actions << "uninstall" if id.supports_action(SupportsUninstallActionTest.new)
-    actions << "pretend" if id.supports_action(SupportsPretendActionTest.new)
-    actions << "config" if id.supports_action(SupportsConfigActionTest.new)
-    actions << "fetch" if id.supports_action(SupportsFetchActionTest.new)
-    actions << "info" if id.supports_action(SupportsInfoActionTest.new)
+    actions << "install" if id.supports_action(SupportsActionTest.new(InstallAction))
+    actions << "installed" if id.supports_action(SupportsActionTest.new(InstalledAction))
+    actions << "uninstall" if id.supports_action(SupportsActionTest.new(UninstallAction))
+    actions << "pretend" if id.supports_action(SupportsActionTest.new(PretendAction))
+    actions << "config" if id.supports_action(SupportsActionTest.new(ConfigAction))
+    actions << "fetch" if id.supports_action(SupportsActionTest.new(FetchAction))
+    actions << "info" if id.supports_action(SupportsActionTest.new(InfoAction))
 
     puts "    Actions: ".ljust(40) + actions.join(' ')
 

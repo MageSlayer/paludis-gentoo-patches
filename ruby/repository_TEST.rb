@@ -476,10 +476,10 @@ module Paludis
         include RepositoryTestCase
 
         def test_some_ids_might_support
-            assert repo.some_ids_might_support_action(SupportsInstallActionTest.new)
-            assert ! repo.some_ids_might_support_action(SupportsInstalledActionTest.new)
-            assert ! installed_repo.some_ids_might_support_action(SupportsInstallActionTest.new)
-            assert installed_repo.some_ids_might_support_action(SupportsInstalledActionTest.new)
+            assert repo.some_ids_might_support_action(SupportsActionTest.new(InstallAction))
+            assert ! repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
+            assert ! installed_repo.some_ids_might_support_action(SupportsActionTest.new(InstallAction))
+            assert installed_repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
         end
     end
 

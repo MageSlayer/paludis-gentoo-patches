@@ -138,7 +138,7 @@ module Paludis
         end
 
         def test_supports_action_test
-            assert pid_testrepo.supports_action(SupportsFetchActionTest.new)
+            assert pid_testrepo.supports_action(SupportsActionTest.new(FetchAction))
             assert_raise TypeError do
                 pid_testrepo.supports_action(1)
             end

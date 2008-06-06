@@ -22,6 +22,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -31,14 +32,7 @@ using namespace paludis::ruby;
 
 namespace
 {
-    static VALUE c_supports_action_test_base;
-    static VALUE c_supports_fetch_action_test;
-    static VALUE c_supports_info_action_test;
-    static VALUE c_supports_config_action_test;
-    static VALUE c_supports_install_action_test;
-    static VALUE c_supports_uninstall_action_test;
-    static VALUE c_supports_pretend_action_test;
-    static VALUE c_supports_installed_action_test;
+    static VALUE c_supports_action_test;
 
     static VALUE c_action;
     static VALUE c_fetch_action;
@@ -188,74 +182,49 @@ namespace
     }
 
     /*
-     * Document-method: SupportsFetchActionTest.new
+     * Document-method: SupportsActionTest.new
      *
      * call-seq:
-     *     SupportsFetchActionTest.new -> SupportsFetchActionTest
+     *     SupportsActionTest.new(ActionClass) -> SupportsActionTest
      *
-     * Create new SupportsFetchActionTest object.
+     * Create new SupportsActionTest object. The ActionClass should be, e.g. InstallAction.
      */
-    /*
-     * Document-method: SupportsInfoActionTest.new
-     *
-     * call-seq:
-     *     SupportsInfoActionTest.new -> SupportsInfoActionTest
-     *
-     * Create new SupportsInfoActionTest object.
-     */
-    /*
-     * Document-method: SupportsConfigActionTest.new
-     *
-     * call-seq:
-     *     SupportsConfigActionTest.new -> SupportsInfoActionTest
-     *
-     * Create new SupportsConfigActionTest object.
-     */
-    /*
-     * Document-method: SupportsInstallActionTest.new
-     *
-     * call-seq:
-     *     SupportsInstallActionTest.new -> SupportsInstallActionTest
-     *
-     * Create new SupportsInstallActionTest object.
-     */
-    /*
-     * Document-method: SupportsUninstallActionTest.new
-     *
-     * call-seq:
-     *     SupportsUninstallActionTest.new -> SupportsUninstallActionTest
-     *
-     * Create new SupportsUninstallActionTest object.
-     */
-    /*
-     * Document-method: SupportsPretendActionTest.new
-     *
-     * call-seq:
-     *     SupportsPretendActionTest.new -> SupportsPretendActionTest
-     *
-     * Create new SupportsPretendActionTest object.
-     */
-    /*
-     * Document-method: SupportsInstalledActionTest.new
-     *
-     * call-seq:
-     *     SupportsInstalledActionTest.new -> SupportsInstalledActionTest
-     *
-     * Create new SupportsInstalledActionTest object.
-     */
-    template <typename A_>
-    struct SupportsActionTestNew
+    static VALUE
+    supports_action_test_new(VALUE self, VALUE action_class)
     {
-        static VALUE
-        supports_action_test_new(VALUE self)
+        std::tr1::shared_ptr<const SupportsActionTestBase> * ptr(0);
+
+        try
         {
-            std::tr1::shared_ptr<const SupportsActionTestBase> * a(
-                    new std::tr1::shared_ptr<const SupportsActionTestBase>(new SupportsActionTest<A_>));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const SupportsActionTestBase> >::free, a));
+            if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstallAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, installed_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstalledAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<UninstallAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, config_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<ConfigAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, fetch_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<FetchAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, info_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InfoAction>()));
+            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_fetch_action_value_ptr()))
+                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendFetchAction>()));
+            else
+                rb_raise(rb_eTypeError, "Can't convert %s into an Action subclass", rb_obj_classname(action_class));
+
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const SupportsActionTestBase> >::free, ptr));
             rb_obj_call_init(tdata, 0, &self);
             return tdata;
         }
-    };
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
 
     /*
      * call-seq:
@@ -775,82 +744,12 @@ namespace
     void do_register_action()
     {
         /*
-         * Document-class: Paludis::SupportsActionTestBase
+         * Document-class: Paludis::SupportsActionTest
          *
-         * Base class for action tests, used by Paludis::PackageID#supports_action.
+         * Tests whether a Paludis::PackageID supports a particular action.
          */
-        c_supports_action_test_base = rb_define_class_under(paludis_module(), "SupportsActionTestBase", rb_cObject);
-        rb_funcall(c_supports_action_test_base, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-
-        /*
-         * Document-class: Paludis::SupportsFetchActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::FetchAction.
-         */
-        c_supports_fetch_action_test = rb_define_class_under(paludis_module(), "SupportsFetchActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_fetch_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<FetchAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_fetch_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsInfoActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::InfoAction.
-         */
-        c_supports_info_action_test = rb_define_class_under(paludis_module(), "SupportsInfoActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_info_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<InfoAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_info_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsConfigActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::ConfigAction.
-         */
-        c_supports_config_action_test = rb_define_class_under(paludis_module(), "SupportsConfigActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_config_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<ConfigAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_config_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsInstallActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::InstallAction.
-         */
-        c_supports_install_action_test = rb_define_class_under(paludis_module(), "SupportsInstallActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_install_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<InstallAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_install_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsUninstallActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::UninstallAction.
-         */
-        c_supports_uninstall_action_test = rb_define_class_under(paludis_module(), "SupportsUninstallActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_uninstall_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<UninstallAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_uninstall_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsPretendActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::PretendAction.
-         */
-        c_supports_pretend_action_test = rb_define_class_under(paludis_module(), "SupportsPretendActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_pretend_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<PretendAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_pretend_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
-         * Document-class: Paludis::SupportsInstalledActionTest
-         *
-         * Tests whether a Paludis::PackageID supports a Paludis::InstalledAction.
-         */
-        c_supports_installed_action_test = rb_define_class_under(paludis_module(), "SupportsInstalledActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_installed_action_test, "new",
-                RUBY_FUNC_CAST((&SupportsActionTestNew<InstalledAction>::supports_action_test_new)), 0);
-        rb_define_method(c_supports_installed_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        c_supports_action_test = rb_define_class_under(paludis_module(), "SupportsActionTest", rb_cObject);
+        rb_define_singleton_method(c_supports_action_test, "new", RUBY_FUNC_CAST(&supports_action_test_new), 1);
 
         /*
          * Document-class: Paludis::Action
@@ -1026,7 +925,7 @@ namespace
 std::tr1::shared_ptr<const SupportsActionTestBase>
 paludis::ruby::value_to_supports_action_test_base(VALUE v)
 {
-    if (rb_obj_is_kind_of(v, c_supports_action_test_base))
+    if (rb_obj_is_kind_of(v, c_supports_action_test))
     {
         std::tr1::shared_ptr<const SupportsActionTestBase> * v_ptr;
         Data_Get_Struct(v, std::tr1::shared_ptr<const SupportsActionTestBase>, v_ptr);
@@ -1034,7 +933,7 @@ paludis::ruby::value_to_supports_action_test_base(VALUE v)
     }
     else
     {
-        rb_raise(rb_eTypeError, "Can't convert %s into SupportsActionTestBase", rb_obj_classname(v));
+        rb_raise(rb_eTypeError, "Can't convert %s into SupportsActionTest", rb_obj_classname(v));
     }
 
 }
