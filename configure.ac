@@ -595,7 +595,6 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	if test "x$cxxflag_success" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WSHADOW=-Wno-shadow
 	fi
-	CHECK_CXXFLAG([-Wlogical-op])
 	CHECK_CXXFLAG([-Wwrite-strings])
 	CHECK_CXXFLAG([-Wsignature-shadow])
 	CHECK_CXXFLAG([-Wfloat-equal])
