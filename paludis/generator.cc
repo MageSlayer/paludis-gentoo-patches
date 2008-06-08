@@ -324,10 +324,11 @@ namespace
                 std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-                            c != c_end ; ++c)
-                        if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr()))
-                            result->insert(*spec.package_ptr());
+                    if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr()))
+                    {
+                        result->insert(*spec.package_ptr());
+                        break;
+                    }
 
                 return result;
             }
