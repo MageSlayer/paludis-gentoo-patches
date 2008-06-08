@@ -271,6 +271,20 @@ namespace
 
                 return result;
             }
+            else if (spec.package_name_part_ptr())
+            {
+                std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
+                        r != r_end ; ++r)
+                {
+                    std::tr1::shared_ptr<const CategoryNamePartSet> cats(
+                        env->package_database()->fetch_repository(*r)
+                        ->category_names_containing_package(*spec.package_name_part_ptr()));
+                    std::copy(cats->begin(), cats->end(), result->inserter());
+                }
+
+                return result;
+            }
             else if (spec.package_ptr())
             {
                 std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
