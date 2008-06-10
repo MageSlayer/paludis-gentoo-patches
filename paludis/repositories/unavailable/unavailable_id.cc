@@ -46,7 +46,7 @@ namespace paludis
         const UnavailableRepository * const repo;
 
         const std::tr1::shared_ptr<const MetadataKey> description_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > owning_repository_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > owning_repository_key, repository_homepage_key, repository_description_key;
         const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
@@ -57,6 +57,8 @@ namespace paludis
             repo(e[k::repository()]),
             description_key(e[k::description()]),
             owning_repository_key(e[k::owning_repository()]),
+            repository_homepage_key(e[k::repository_homepage()]),
+            repository_description_key(e[k::repository_description()]),
             mask(e[k::mask()])
         {
         }
@@ -69,6 +71,10 @@ UnavailableID::UnavailableID(const UnavailableIDParams & entry) :
 {
     add_metadata_key(_imp->description_key);
     add_metadata_key(_imp->owning_repository_key);
+    if (_imp->repository_homepage_key)
+        add_metadata_key(_imp->repository_homepage_key);
+    if (_imp->repository_description_key)
+        add_metadata_key(_imp->repository_description_key);
     add_mask(_imp->mask);
 }
 

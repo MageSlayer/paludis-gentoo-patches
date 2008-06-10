@@ -34,6 +34,8 @@ namespace paludis
             kc::Field<k::slot, SlotName>,
             kc::Field<k::repository, const UnavailableRepository *>,
             kc::Field<k::owning_repository, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
+            kc::Field<k::repository_homepage, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
+            kc::Field<k::repository_description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
             kc::Field<k::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
             kc::Field<k::mask, std::tr1::shared_ptr<const Mask> >
                 > UnavailableIDParams;

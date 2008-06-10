@@ -45,6 +45,8 @@ namespace paludis
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 std::string repo_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::string homepage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

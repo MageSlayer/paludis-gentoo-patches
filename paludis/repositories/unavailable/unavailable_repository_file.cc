@@ -39,7 +39,7 @@ namespace paludis
     template <>
     struct Implementation<UnavailableRepositoryFile>
     {
-        std::string repo_name;
+        std::string repo_name, homepage, description;
         std::list<UnavailableRepositoryFileEntry> entries;
     };
 }
@@ -97,6 +97,10 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
             }
             else if (key == "repo_name")
                 _imp->repo_name = value;
+            else if (key == "homepage")
+                _imp->homepage = value;
+            else if (key == "description")
+                _imp->description = value;
             else
                 Log::get_instance()->message("unavailable_repository.file.unknown_key", ll_warning, lc_context)
                     << "Ignoring unknown key '" << key << "' with value '" << value << "'";
@@ -201,6 +205,18 @@ std::string
 UnavailableRepositoryFile::repo_name() const
 {
     return _imp->repo_name;
+}
+
+std::string
+UnavailableRepositoryFile::homepage() const
+{
+    return _imp->homepage;
+}
+
+std::string
+UnavailableRepositoryFile::description() const
+{
+    return _imp->description;
 }
 
 template class PrivateImplementationPattern<UnavailableRepositoryFile>;

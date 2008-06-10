@@ -125,6 +125,14 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
             new LiteralMetadataValueKey<std::string>("OWNING_REPOSITORY", "Owning repository",
                 mkt_significant, file.repo_name()));
 
+    std::tr1::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description;
+    if (! file.homepage().empty())
+        repository_homepage.reset(new LiteralMetadataValueKey<std::string>(
+                "REPOSITORY_HOMEPAGE", "Repository homepage", mkt_normal, file.homepage()));
+    if (! file.description().empty())
+        repository_description.reset(new LiteralMetadataValueKey<std::string>(
+                "REPOSITORY_DESCRIPTION", "Repository description", mkt_normal, file.description()));
+
     QualifiedPackageName old_name("x/x");
     std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
     std::tr1::shared_ptr<PackageIDSequence> ids;
@@ -159,6 +167,8 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                         (k::slot(), (*i)[k::slot()])
                         (k::description(), (*i)[k::description()])
                         (k::owning_repository(), owning_repository)
+                        (k::repository_homepage(), repository_homepage)
+                        (k::repository_description(), repository_description)
                         (k::mask(), mask)
                         )));
 

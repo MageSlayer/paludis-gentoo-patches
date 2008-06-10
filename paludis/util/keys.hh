@@ -181,6 +181,8 @@ namespace paludis
         typedef kc::Key<152> owning_repository;
         typedef kc::Key<153> mask;
         typedef kc::Key<154> repository;
+        typedef kc::Key<155> repository_homepage;
+        typedef kc::Key<156> repository_description;
     }
 }
 
