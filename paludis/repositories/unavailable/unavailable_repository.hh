@@ -38,6 +38,7 @@ namespace paludis
 
         typedef kc::KeyedClass<
             kc::Field<k::environment, Environment *>,
+            kc::Field<k::name, RepositoryName>,
             kc::Field<k::location, FSEntry>,
             kc::Field<k::sync, std::string>,
             kc::Field<k::sync_options, std::string>

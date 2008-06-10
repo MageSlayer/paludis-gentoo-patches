@@ -82,7 +82,7 @@ UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError
 UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams & p) :
     PrivateImplementationPattern<UnavailableRepository>(new Implementation<UnavailableRepository>(this, p)),
     Repository(
-            RepositoryName("unavailable"),
+            p[k::name()],
             RepositoryCapabilities::named_create()
             (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
             (k::syncable_interface(), this)

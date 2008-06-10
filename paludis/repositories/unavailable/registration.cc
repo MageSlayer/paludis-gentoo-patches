@@ -42,6 +42,10 @@ namespace
 
         Context context("When making unavailable repository from repo_file '" + repo_file + "':");
 
+        std::string name_str;
+        RepositoryName name(m->end() == m->find("name") || (name_str = m->find("name")->second).empty()
+                            ? "unavailable" : name_str);
+
         std::string location;
         if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
             throw UnavailableRepositoryConfigurationError("Key 'location' not specified or empty");
@@ -56,6 +60,7 @@ namespace
 
         return std::tr1::shared_ptr<UnavailableRepository>(new UnavailableRepository(
                     UnavailableRepositoryParams::named_create()
+                    (k::name(), name)
                     (k::location(), location)
                     (k::sync(), sync)
                     (k::sync_options(), sync_options)

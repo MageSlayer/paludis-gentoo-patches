@@ -49,6 +49,7 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         UnavailableRepositoryParams::named_create()
+                        (k::name(), RepositoryName("unavailable"))
                         (k::sync(), "")
                         (k::sync_options(), "")
                         (k::location(), FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1")
@@ -68,6 +69,7 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         UnavailableRepositoryParams::named_create()
+                        (k::name(), RepositoryName("unavailable"))
                         (k::sync(), "")
                         (k::sync_options(), "")
                         (k::location(), FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2")
