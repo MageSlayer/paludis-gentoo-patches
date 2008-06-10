@@ -21,14 +21,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 if [[ ! -d ${PALUDIS_EBUILD_MODULES_DIR} ]]; then
-    echo "${0}: \${PALUDIS_EBUILD_MODULES_DIR} not valid; aborting" >&2
-    exit 1
+    paludis_die_or_error "\${PALUDIS_EBUILD_MODULES_DIR} not valid; aborting"
 fi
 
 source "${PALUDIS_EBUILD_MODULES_DIR}/multilib_functions.bash"
@@ -36,12 +36,11 @@ source "${PALUDIS_EBUILD_MODULES_DIR}/multilib_functions.bash"
 libdir="${D}${DESTTREE}/$(ebuild_get_libdir)"
 
 if [[ ${#} -lt 1 ]]; then
-    echo "${0}: at least one argument needed"
-    exit 1
+    paludis_die_or_error "at least one argument needed"
 fi
 
 if [[ ! -d ${libdir} ]]; then
-    install -d "${libdir}" || exit 3
+    install -d "${libdir}" || paludis_die_or_error "could not create ${libdir}"
 fi
 
 ret=0
@@ -59,4 +58,5 @@ for x in "$@"; do
     fi
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "dolib returned error ${ret}"
 exit ${ret}

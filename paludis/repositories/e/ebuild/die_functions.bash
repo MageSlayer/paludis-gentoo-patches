@@ -20,11 +20,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-export EBUILD_KILL_PID=$$
-declare -r EBUILD_KILL_PID
+shopt -s expand_aliases
 
-alias die='diefunc "$FUNCNAME" "$LINENO"'
-alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
+alias die='diefunc "${FUNCNAME:-$0}" "$LINENO"'
+alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "${FUNCNAME:-$0}" "$LINENO" "$_pipestatus"'
+# paludis_die_or_error is only for use in scripts
+alias paludis_die_or_error='paludis_die_or_error_func "$0" "$LINENO"'
+# paludis_die_unless_nonfatal and paludis_assert_unless_nonfatal are only for use in shell functions
+alias paludis_die_unless_nonfatal='paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO"'
+alias paludis_assert_unless_nonfatal='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO" "$_pipestatus"'
+
 trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' SIGUSR1
 
 diefunc()
@@ -56,4 +61,26 @@ diefunc()
     exit 249
 }
 
+paludis_die_or_error_func()
+{
+    if [[ -n ${PALUDIS_FAILURE_IS_FATAL} ]]; then
+        diefunc "$@"
+    else
+        local func=${1}
+        shift 2
+        echo "${func}: $*" >&2
+        exit 247
+    fi
+}
 
+paludis_die_unless_nonfatal_func()
+{
+    if [[ -z ${PALUDIS_FAILURE_IS_NONFATAL} ]]; then
+        diefunc "$@"
+    else
+        local func=${1}
+        shift 2
+        echo "${func}: $*" >&2
+        return 247
+    fi
+}

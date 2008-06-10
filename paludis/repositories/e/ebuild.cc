@@ -179,6 +179,8 @@ EbuildCommand::operator() ()
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].unpack_fix_permissions ? "yes" : "")
             .with_setenv("PALUDIS_DOSYM_NO_MKDIR",
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].dosym_mkdir ? "" : "yes")
+            .with_setenv("PALUDIS_FAILURE_IS_FATAL",
+                    (*(*params[k::package_id()]->eapi())[k::supported()])[k::tools_options()].failure_is_fatal ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FROM_VAR",
                     (*(*params[k::package_id()]->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_distdir()])
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")

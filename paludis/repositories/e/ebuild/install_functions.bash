@@ -37,11 +37,11 @@ keepdir()
     if [[ "${1}" == "-R" ]] || [[ "${1}" == "-r" ]] ; then
         shift
         find "$@" -type d -printf "${D}/%p/.keep_${CATEGORY}_${PN}-${SLOT}\0" | xargs -0 touch
-        assert "Failed to create .keep_${CATEGORY}_${PN}-${SLOT} files"
+        paludis_assert_unless_nonfatal "Failed to create .keep_${CATEGORY}_${PN}-${SLOT} files" || return 247
     else
         local f
         for f in "$@" ; do
-            touch "${D}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || die "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}"
+            touch "${D}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || paludis_die_unless_nonfatal "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}" || return 247
         done
     fi
 }

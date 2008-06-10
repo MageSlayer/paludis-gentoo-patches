@@ -254,6 +254,8 @@ namespace paludis
                                                          k.get("unpack_fix_permissions")))
                                                  .dosym_mkdir(destringify<bool>(
                                                          k.get("dosym_mkdir")))
+                                                 .failure_is_fatal(destringify<bool>(
+                                                         k.get("failure_is_fatal")))
                                                  ))
 
                                             ))));

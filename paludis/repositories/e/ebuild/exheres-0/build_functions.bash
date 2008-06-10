@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2008 Bo Ørsted Andresen
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -19,6 +20,11 @@
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
+
+nonfatal()
+{
+    PALUDIS_FAILURE_IS_FATAL= PALUDIS_FAILURE_IS_NONFATAL=yes "${@}"
+}
 
 expatch()
 {
@@ -39,7 +45,7 @@ expatch()
         elif [[ ${1} == -+([^[:space:]]) ]]; then
             options+=("${1}")
         elif [[ -d ${1} ]]; then
-            expatch --recognised-suffixes ${patchlevel} "${options[@]}" "${1}"/*
+            expatch --recognised-suffixes ${patchlevel} "${options[@]}" "${1}"/* || return 247
             ((appliedpatches++))
         else
             case "${1}" in
@@ -66,7 +72,7 @@ expatch()
 
             echo "${cmd} -- '${1}' | patch -s -f ${patchlevel:--p1} ${options[@]}" 1>&2
             ${cmd} -- "${1}" | patch -s -f ${patchlevel:--p1} "${options[@]}"
-            assert "applying '${1}' failed"
+            paludis_assert_unless_nonfatal "applying '${1}' failed" || return 247
             ((appliedpatches++))
         fi
         shift
@@ -74,7 +80,7 @@ expatch()
     # Die if no patches were applied and no directories were supplied. Since
     # directories get handled recursively by separate instances of expatch we cannot
     # reliably count applied patches when directories were supplied.
-    [[ ${appliedpatches} -gt 0 || -n ${recognise} ]] || die "No patches applied."
+    [[ ${appliedpatches} -gt 0 || -n ${recognise} ]] || paludis_die_unless_nonfatal "No patches applied." || return 247
 }
 
 econf()
@@ -137,10 +143,10 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
-            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || die "econf failed"
+            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
 
     else
-        die "No configure script for econf"
+        paludis_die_unless_nonfatal "No configure script for econf" || return 247
     fi
 }
 
@@ -162,9 +168,9 @@ einstall()
         cmd="${cmd} libdir=${D}/usr/$(ebuild_get_libdir)"
         cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
         echo "${cmd}" 1>&2
-        ${cmd} || die "einstall failed"
+        ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247
     else
-        die "No Makefile for einstall"
+        paludis_die_unless_nonfatal "No Makefile for einstall" || return 247
     fi
 }
 

@@ -21,30 +21,31 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 1
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 if [[ ${#} -lt 1 ]]; then
-    echo "${0}: at least one argument needed" >&2
-    exit 1
+    paludis_die_or_error "at least one argument needed"
 fi
 
 if [[ ! -d "${D}usr/share/info" ]]; then
-    install -d "${D}usr/share/info" || exit 3
+    install -d "${D}usr/share/info" || paludis_die_or_error "could not create ${D}usr/share/info"
 fi
 
 ret=0
 
 for x in "$@"; do
     if [[ -e "${x}" ]]; then
-        install -m0644 "${x}" "${D}usr/share/info"
+        install -m0644 "${x}" "${D}usr/share/info" || ret=2
     else
         echo "${0}: ${x} does not exist"
         ret=2
     fi
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "doinfo returned error ${ret}"
 exit ${ret}
 

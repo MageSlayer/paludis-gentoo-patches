@@ -14,6 +14,14 @@ ln -s build symlinked_build
 
 mkdir -p distdir
 echo "already fetched" > distdir/already-fetched.txt || exit 1
+cat <<END > distdir/expatch-success-1.patch || exit 1
+--- a/bar
++++ b/bar
+@@ -1 +1,3 @@
+ foo
++bar
++baz
+END
 
 mkdir -p fetchable
 echo "one" > fetchable/fetchable-1.txt || exit 1
@@ -569,6 +577,20 @@ src_unpack() {
     unpack ./f.bz2
 }
 END
+mkdir -p "cat/econf-die"
+cat <<END > cat/econf-die/econf-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    econf
+}
+END
 mkdir -p "cat/emake-fail"
 cat <<END > cat/emake-fail/emake-fail-1.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -581,6 +603,106 @@ KEYWORDS="test"
 
 src_compile() {
     emake monkey
+}
+END
+mkdir -p "cat/emake-die"
+cat <<END > cat/emake-die/emake-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    emake monkey || die
+}
+END
+mkdir -p "cat/einstall-die"
+cat <<END > cat/einstall-die/einstall-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    einstall
+}
+END
+mkdir -p "cat/keepdir-die"
+cat <<"END" > cat/keepdir-die/keepdir-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dodir /usr/share
+    touch "${D}"/usr/share/monkey
+    keepdir /usr/share/monkey
+}
+END
+mkdir -p "cat/dobin-fail"
+cat <<END > cat/dobin-fail/dobin-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dobin monkey
+}
+END
+mkdir -p "cat/dobin-die"
+cat <<END > cat/dobin-die/dobin-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dobin monkey || die
+}
+END
+mkdir -p "cat/fperms-fail"
+cat <<END > cat/fperms-fail/fperms-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    fperms 755 monkey
+}
+END
+mkdir -p "cat/fperms-die"
+cat <<END > cat/fperms-die/fperms-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    fperms 755 monkey || die
 }
 END
 mkdir -p "cat/pretend-installed"
@@ -937,6 +1059,66 @@ pkg_setup() {
     optionq spork && die "boom"
 }
 END
+mkdir -p "packages/cat/expatch-success"
+cat <<"END" > packages/cat/expatch-success/expatch-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_unpack() {
+    echo foo > bar
+}
+
+src_prepare() {
+    expatch "${FETCHEDDIR}"/${P}.patch
+}
+END
+mkdir -p "packages/cat/expatch-die"
+cat <<END > packages/cat/expatch-die/expatch-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_prepare() {
+    expatch monkey.patch
+}
+END
+mkdir -p "packages/cat/nonfatal-expatch-fail"
+cat <<END > packages/cat/nonfatal-expatch-fail/nonfatal-expatch-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_prepare() {
+    nonfatal expatch monkey.patch
+}
+END
+mkdir -p "packages/cat/nonfatal-expatch-die"
+cat <<END > packages/cat/nonfatal-expatch-die/nonfatal-expatch-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_prepare() {
+    nonfatal expatch monkey.patch || die
+}
+END
 mkdir -p "packages/cat/unpack-die"
 cat <<END > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -952,6 +1134,78 @@ src_unpack() {
     unpack ./f.bz2
 }
 END
+mkdir -p "packages/cat/nonfatal-unpack-fail"
+cat <<END > packages/cat/nonfatal-unpack-fail/nonfatal-unpack-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_unpack() {
+    echo "123" > f.bz2
+    nonfatal unpack ./f.bz2
+}
+END
+mkdir -p "packages/cat/nonfatal-unpack-die"
+cat <<END > packages/cat/nonfatal-unpack-die/nonfatal-unpack-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_unpack() {
+    echo "123" > f.bz2
+    nonfatal unpack ./f.bz2 || die
+}
+END
+mkdir -p "packages/cat/econf-fail"
+cat <<END > packages/cat/econf-fail/econf-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_configure() {
+    econf
+}
+END
+mkdir -p "packages/cat/nonfatal-econf"
+cat <<END > packages/cat/nonfatal-econf/nonfatal-econf-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_configure() {
+    nonfatal econf
+}
+END
+mkdir -p "packages/cat/nonfatal-econf-die"
+cat <<END > packages/cat/nonfatal-econf-die/nonfatal-econf-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_configure() {
+    nonfatal econf || die
+}
+END
 mkdir -p "packages/cat/emake-fail"
 cat <<END > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -964,6 +1218,294 @@ PLATFORMS="test"
 
 src_compile() {
     emake monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-emake"
+cat <<END > packages/cat/nonfatal-emake/nonfatal-emake-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    nonfatal emake monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-emake-die"
+cat <<END > packages/cat/nonfatal-emake-die/nonfatal-emake-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    nonfatal emake monkey || die
+}
+END
+mkdir -p "packages/cat/keepdir-success"
+cat <<END > packages/cat/keepdir-success/keepdir-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    keepdir /usr/share/monkey
+}
+END
+mkdir -p "packages/cat/keepdir-fail"
+cat <<"END" > packages/cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    dodir /usr/share
+    touch "${D}"/usr/share/monkey
+    keepdir /usr/share/monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-keepdir"
+cat <<"END" > packages/cat/nonfatal-keepdir/nonfatal-keepdir-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    dodir /usr/share
+    touch "${D}"/usr/share/monkey
+    nonfatal keepdir /usr/share/monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-keepdir-die"
+cat <<"END" > packages/cat/nonfatal-keepdir-die/nonfatal-keepdir-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    dodir /usr/share
+    touch "${D}"/usr/share/monkey
+    nonfatal keepdir /usr/share/monkey || die
+}
+END
+mkdir -p "packages/cat/einstall-fail"
+cat <<END > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    einstall
+}
+END
+mkdir -p "packages/cat/nonfatal-einstall"
+cat <<END > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal einstall
+}
+END
+mkdir -p "packages/cat/nonfatal-einstall-die"
+cat <<END > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal einstall || die
+}
+END
+mkdir -p "packages/cat/dobin-success"
+cat <<END > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    touch foo
+}
+
+src_install() {
+    dobin foo
+}
+END
+mkdir -p "packages/cat/dobin-fail"
+cat <<END > packages/cat/dobin-fail/dobin-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    dobin monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-dobin-success"
+cat <<END > packages/cat/nonfatal-dobin-success/nonfatal-dobin-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    touch foo
+}
+
+src_install() {
+    nonfatal dobin foo || die
+}
+END
+mkdir -p "packages/cat/nonfatal-dobin-fail"
+cat <<END > packages/cat/nonfatal-dobin-fail/nonfatal-dobin-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal dobin monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-dobin-die"
+cat <<END > packages/cat/nonfatal-dobin-die/nonfatal-dobin-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal dobin monkey || die
+}
+END
+mkdir -p "packages/cat/fperms-success"
+cat <<END > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    touch foo
+}
+
+src_install() {
+    fperms 755 foo
+}
+END
+mkdir -p "packages/cat/fperms-fail"
+cat <<END > packages/cat/fperms-fail/fperms-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    fperms 755 monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-fperms-success"
+cat <<END > packages/cat/nonfatal-fperms-success/nonfatal-fperms-success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    touch foo
+}
+
+src_install() {
+    nonfatal fperms 755 foo || die
+}
+END
+mkdir -p "packages/cat/nonfatal-fperms-fail"
+cat <<END > packages/cat/nonfatal-fperms-fail/nonfatal-fperms-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal fperms 755 monkey
+}
+END
+mkdir -p "packages/cat/nonfatal-fperms-die"
+cat <<END > packages/cat/nonfatal-fperms-die/nonfatal-fperms-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal fperms 755 monkey || die
 }
 END
 mkdir -p "packages/cat/best-version"

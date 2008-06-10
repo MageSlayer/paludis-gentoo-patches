@@ -21,9 +21,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 ret=0
@@ -31,4 +32,5 @@ for x in "$@"; do
     install -d ${DIROPTIONS} "${D}${x}" || ret=2
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "dodir returned error ${ret}"
 exit ${ret}

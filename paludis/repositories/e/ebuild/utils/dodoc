@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Stephen Bennett
+# Copyright (c) 2007 Ciaran McCreesh
 #
 # Based in part upon dodoc from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -21,19 +22,19 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 if [[ $# -lt 1 ]]; then
-    echo "${0}: at least one argument needed" >&2
-    exit 1
+    paludis_die_or_error "at least one argument needed"
 fi
 
 dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}"
 if [[ ! -d "${dir}" ]]; then
-    install -d "${dir}" || exit 3
+    install -d "${dir}" || paludis_die_or_error "could not create ${dir}"
 fi
 
 ret=0
@@ -47,4 +48,5 @@ for x in "$@"; do
     fi
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "dodoc returned error ${ret}"
 exit ${ret}

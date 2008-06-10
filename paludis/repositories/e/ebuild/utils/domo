@@ -21,18 +21,18 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 if [[ ${#} -lt 1 ]]; then
-    echo "${0}: at least one argument needed" >&2
-    exit 1
+    paludis_die_or_error "at least one argument needed"
 fi
 
 if [[ ! -d "${D}${DESTTREE}/share/locale" ]]; then
-    install -d "${D}${DESTTREE}/share/locale" || exit 3
+    install -d "${D}${DESTTREE}/share/locale" || paludis_die_or_error "could not create ${D}${DESTTREE}/share/locale"
 fi
 
 ret=0
@@ -51,4 +51,5 @@ for x in "$@"; do
     fi
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "domo returned error ${ret}"
 exit ${ret}

@@ -85,6 +85,9 @@ EBUILD_MODULES_DIRS="${EBUILD_MODULES_DIRS} ${EBUILD_MODULES_DIR}"
 
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
+export EBUILD_KILL_PID=$$
+declare -r EBUILD_KILL_PID
+
 ebuild_load_module()
 {
     local t= d=

@@ -22,28 +22,25 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
+source ${PALUDIS_EBUILD_DIR}/die_functions.bash
 source ${PALUDIS_EBUILD_DIR}/pipe_functions.bash
 source ${PALUDIS_EBUILD_DIR}/output_functions.bash
 
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting"
 fi
 
 if [[ ${#} -ne 2 ]]; then
-    echo "${0}: exactly two arguments needed" >&2
-    exit 1
+    paludis_die_or_error "exactly two arguments needed."
 fi
 
 if [[ ! -d $(dirname "${D}$2") ]]; then
     if [[ -n "${PALUDIS_DOSYM_NO_MKDIR}" ]] ; then
-        echo "dosym: error: target directory $(dirname "${D}$2" ) does not exist" 1>&2
-        kill -s SIGUSR1 "${EBUILD_KILL_PID}"
-        exit 123
+        die "error: target directory $(dirname "${D}$2" ) does not exist"
     else
         ebuild_notice "qa" "$0: target directory $(dirname "${D}$2") does not exist; creating. Please fix the ebuild to create it explicitly."
         dodir $(dirname $2)
     fi
 fi
 
-ln -snf "${1}" "${D}${2}"
+ln -snf "${1}" "${D}${2}" || paludis_die_or_error "creation of symlink ${D}${2} failed"

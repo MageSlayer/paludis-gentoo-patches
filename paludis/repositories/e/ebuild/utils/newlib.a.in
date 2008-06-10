@@ -22,15 +22,14 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
 if [[ ! -d ${T} ]]; then
-    echo "${0}: \${T} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${T} not valid; aborting"
 fi
 
 if [[ ${#} -ne 2 ]]; then
-    echo "${0}: exactly two arguments needed" >&2
-    exit 1
+    paludis_die_or_error "exactly two arguments needed"
 fi
 
 rm -rf "${T}/${2}"

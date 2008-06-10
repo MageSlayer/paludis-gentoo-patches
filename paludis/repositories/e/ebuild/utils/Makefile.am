@@ -81,7 +81,6 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
 TESTS = \
-	dobin_TEST.bash \
 	wrapped_getfsize_TEST.bash \
 	sed_TEST.bash \
 	awk_TEST.bash \

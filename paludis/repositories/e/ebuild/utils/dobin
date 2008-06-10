@@ -21,18 +21,18 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
 if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
-    exit 247
+    paludis_die_or_error "\${D} not valid; aborting" >&2
 fi
 
 if [[ ${#} -lt 1 ]]; then
-    echo "${0}: at least one argument needed" >&2
-    exit 1
+    paludis_die_or_error "at least one argument needed" >&2
 fi
 
 if [[ ! -d "${D}${DESTTREE}/bin" ]]; then
-    install -d "${D}${DESTTREE}/bin" || exit 3
+    install -d "${D}${DESTTREE}/bin" || paludis_die_or_error "${D}${DESTTREE}/bin is not a dir"
 fi
 
 ret=0
@@ -44,4 +44,5 @@ for x in "$@" ; do
     fi
 done
 
+[[ 0 != "${ret}" ]] && paludis_die_or_error "dobin returned error ${ret}"
 exit ${ret}

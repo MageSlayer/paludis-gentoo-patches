@@ -24,7 +24,10 @@
 die()
 {
     echo "unpack: error: $@" 1>&2
-    kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+    if [[ -z ${PALUDIS_FAILURE_IS_NONFATAL} ]]; then
+        echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
+        kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+    fi
     exit 123
 }
 assert()
