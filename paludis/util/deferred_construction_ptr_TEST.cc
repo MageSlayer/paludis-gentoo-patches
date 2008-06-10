@@ -86,5 +86,52 @@ namespace test_cases
             TEST_CHECK_EQUAL(q->length(), 5u);
         }
     } test_dereferred_active;
+
+    struct TestConstructOnlyOnce : TestCase
+    {
+        TestConstructOnlyOnce() : TestCase("construct only once") { }
+
+        struct Flag
+        {
+            bool value;
+            Flag() : value(false) { }
+        };
+
+        static std::tr1::shared_ptr<Flag> make_flag()
+        {
+            return make_shared_ptr(new Flag);
+        }
+
+        void run()
+        {
+            DeferredConstructionPtr<std::tr1::shared_ptr<Flag> > f(make_flag);
+            f->value = true;
+            TEST_CHECK(f->value);
+        }
+    } test_construct_only_once;
+
+    struct TestConstructOnlyOnceActive : TestCase
+    {
+        TestConstructOnlyOnceActive() : TestCase("construct only once active") { }
+
+        struct Flag
+        {
+            bool value;
+            Flag() : value(false) { }
+        };
+
+        static std::tr1::shared_ptr<Flag> make_flag()
+        {
+            return make_shared_ptr(new Flag);
+        }
+
+        void run()
+        {
+            ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<Flag> > > f((
+                    DeferredConstructionPtr<std::tr1::shared_ptr<Flag> >(make_flag)));
+            f->value = true;
+            TEST_CHECK(f->value);
+        }
+    } test_construct_only_once_active;
 }
 

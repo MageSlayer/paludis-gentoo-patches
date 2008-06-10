@@ -47,7 +47,7 @@ namespace paludis
                     {
                     }
 
-                    T_ operator-> () const
+                    const T_ & operator-> () const
                     {
                         return _ptr->_ptr;
                     }
