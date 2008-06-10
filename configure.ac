@@ -1052,7 +1052,7 @@ dnl }}}
 
 dnl {{{ repositories
 ALL_REPOSITORIES="cran e fake gems unavailable unpackaged virtuals"
-DEFAULT_REPOSITORIES="e fake virtuals"
+DEFAULT_REPOSITORIES="e fake unpackaged virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
@@ -1065,7 +1065,7 @@ AC_ARG_WITH([repositories],
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby gems (experimental)
 			  unavailable     Unavailable (experimental)
-			  unpackaged      Unpackaged (experimental, for importare)
+			  unpackaged      Unpackaged (for importare)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
@@ -1132,7 +1132,7 @@ for a in $ALL_CLIENTS ; do
 		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 	fi
 done
-DEFAULT_CLIENTS="adjutrix paludis reconcilio"
+DEFAULT_CLIENTS="adjutrix importare paludis reconcilio"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
 fi
