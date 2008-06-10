@@ -12,6 +12,8 @@ done
 LOCAL=
 REMOTE=
 
+TMPDIR=/var/tmp
+
 FETCHER_OPTIONS=( )
 UNPACK_OPTIONS=( )
 RSYNC_OPTIONS=( )
@@ -31,6 +33,10 @@ while [[ $# -gt 0 ]]; do
         --exclude-from=*)
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude-from
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --tmpdir=*)
+            TMPDIR="${1#*=}"
             ;;
 
         --fetcher-option=*)
@@ -65,6 +71,8 @@ while [[ $# -gt 0 ]]; do
             echo "        --exclude-from=FILE             Use FILE as a list of exclude patterns"
             echo "        --strip-components=N            Ignore the first N components of the"
             echo "                                          paths from the tarball"
+            echo "        --tmpdir=DIR                    Use DIR as base directory for"
+            echo "                                          temporary files (/var/tmp by default)"
             echo "        --fetcher-option=OPTION         Pass OPTION to the fetcher"
             echo "                                          (The standard fetchers do not"
             echo "                                           accept any options - this is only"
@@ -128,7 +136,7 @@ if [[ -z "${FETCHER}" ]]; then
     exit 1
 fi
 
-TEMP="$( mktemp -d -p /var/tmp paludis-tarsync-XXXXXX )" || exit $?
+TEMP="$( mktemp -d -p "${TMPDIR}" paludis-tarsync-XXXXXX )" || exit $?
 TARFILE="${URL##*/}"
 
 "${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || exit $?
@@ -150,7 +158,9 @@ fi
 ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
     --compress --force --whole-file --delete --delete-after --stats --timeout=180 \
     ${PALUDIS_SYNC_FILTER_FILE:+--filter "merge ${PALUDIS_SYNC_FILTER_FILE}"} \
-    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/" || exit $?
+    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/"
+STATUS=${?}
 
 rm -rf "${TEMP}"
+exit ${STATUS}
 
