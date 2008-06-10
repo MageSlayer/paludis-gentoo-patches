@@ -176,6 +176,11 @@ namespace paludis
         typedef kc::Key<147> item;
         typedef kc::Key<148> on_use_under_any;
         typedef kc::Key<149> on_annotations;
+        typedef kc::Key<150> sync;
+        typedef kc::Key<151> sync_options;
+        typedef kc::Key<152> owning_repository;
+        typedef kc::Key<153> mask;
+        typedef kc::Key<154> repository;
     }
 }
 

@@ -1051,7 +1051,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran e fake gems unpackaged virtuals"
+ALL_REPOSITORIES="cran e fake gems unavailable unpackaged virtuals"
 DEFAULT_REPOSITORIES="e fake virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -1064,6 +1064,7 @@ AC_ARG_WITH([repositories],
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby gems (experimental)
+			  unavailable     Unavailable (experimental)
 			  unpackaged      Unpackaged (experimental, for importare)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -1339,6 +1340,7 @@ AC_OUTPUT(
 	paludis/repositories/e/qa/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
+	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile

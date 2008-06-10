@@ -9,6 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`action_queue',                      `hh', `cc', `test')
+add(`active_object_ptr',                 `hh', `cc', `fwd', `test')
 add(`attributes',                        `hh')
 add(`byte_swap',                         `hh', `test')
 add(`config_file',                       `hh', `cc', `fwd', `se', `test', `testscript')
@@ -18,6 +19,7 @@ add(`cookie',                            `hh', `cc')
 add(`create_iterator',                   `hh', `fwd', `impl', `test')
 add(`damerau_levenshtein',               `hh', `cc', `test')
 add(`destringify',                       `hh', `cc', `test')
+add(`deferred_construction_ptr',         `hh', `cc', `fwd', `test')
 add(`dir_iterator',                      `hh', `cc', `fwd', `se', `test', `testscript')
 add(`exception',                         `hh', `cc')
 add(`fast_unique_copy',                  `hh', `test')
