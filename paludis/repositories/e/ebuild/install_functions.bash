@@ -34,7 +34,7 @@ export MOPREFIX="${PN}"
 keepdir()
 {
     if [[ ${@} != ${@#${D}} ]]; then
-        paludis_assert_unless_nonfatal "You should not use \${D} with helpers."
+        paludis_die_unless_nonfatal "You should not use \${D} with helpers."
     fi
     dodir "$@"
     if [[ "${1}" == "-R" ]] || [[ "${1}" == "-r" ]] ; then
