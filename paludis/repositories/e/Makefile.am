@@ -1,5 +1,5 @@
 SUBDIRS = eapis ebuild . qa
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
 	e_installed_repository-sr.hh e_installed_repository-sr.cc \

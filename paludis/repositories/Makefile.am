@@ -10,7 +10,7 @@ endif
 
 DIST_SUBDIRS = $(ALL_REPOSITORIES)
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 MAINTAINERCLEANFILES = Makefile.in
 
 built-sources : $(BUILT_SOURCES)

@@ -18,7 +18,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o paludis.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o paludis.so
 DISTCLEANFILES = *-nn.hh *-nn.cc
 MAINTAINERCLEANFILES = Makefile.in
 

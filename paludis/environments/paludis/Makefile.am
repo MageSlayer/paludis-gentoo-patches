@@ -1,4 +1,4 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = \
 	use_config_entry-sr.hh use_config_entry-sr.cc \
 	repository_config_entry-sr.hh repository_config_entry-sr.cc

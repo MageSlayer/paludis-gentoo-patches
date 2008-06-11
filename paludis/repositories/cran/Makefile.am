@@ -1,5 +1,5 @@
 SUBDIRS = cran .
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = cran_repository-sr.hh cran_repository-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 

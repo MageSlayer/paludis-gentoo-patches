@@ -14,7 +14,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o Paludis.so .libs/Paludis.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o Paludis.so .libs/Paludis.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_TESTS = \

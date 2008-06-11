@@ -80,7 +80,7 @@ EXTRA_DIST = \
 	downgrade_check-sr.hh downgrade_check-sr.cc downgrade_check.sr \
 	find_stable_candidates_TEST_setup.sh find_stable_candidates_TEST_cleanup.sh
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA) \
 	find_stable_candidates-sr.hh find_stable_candidates-sr.cc
 MAINTAINERCLEANFILES = Makefile.in

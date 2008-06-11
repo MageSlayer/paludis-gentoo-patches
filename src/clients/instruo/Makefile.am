@@ -66,7 +66,7 @@ EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS)
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 

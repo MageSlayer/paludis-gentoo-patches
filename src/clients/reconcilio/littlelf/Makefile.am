@@ -23,7 +23,7 @@ check_PROGRAMS = $(TESTS)
 EXTRA_DIST = \
 	$(TESTS)
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 MAINTAINERCLEANFILES = Makefile.in
 
 built-sources : $(BUILT_SOURCES)

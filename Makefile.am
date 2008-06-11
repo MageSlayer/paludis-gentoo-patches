@@ -1,4 +1,4 @@
-CLEANFILES = *~ done-check gmon.out *.gcov *.gcno *.gcda \
+CLEANFILES = *~ done-check gmon.out *.gcov *.gcno  *.gcda *.loT \
 	automake-deps-dist-hack.tmp automake-deps-built-hack.tmp
 MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL

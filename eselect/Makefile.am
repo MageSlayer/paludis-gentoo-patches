@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep
 SUBDIRS = .
 
 installeselectdir = $(datadir)/eselect/modules/

@@ -63,7 +63,7 @@ INCLUDES = $(gtkmm_CFLAGS) $(vte_CFLAGS)
 clean-local :
 	rm -fr private || true
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda $(vte_generated_sources) automake-deps-hack.tmp
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT $(vte_generated_sources) automake-deps-hack.tmp
 MAINTAINERCLEANFILES = Makefile.in
 
 built-sources : $(BUILT_SOURCES)
