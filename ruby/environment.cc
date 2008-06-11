@@ -248,6 +248,13 @@ namespace
 
     }
 
+    VALUE
+    environment_distribution(VALUE self)
+    {
+        return rb_str_new2(value_to_environment(self)->distribution().c_str());
+
+    }
+
     std::tr1::shared_ptr<PaludisEnvironment>
     value_to_paludis_environment(VALUE v)
     {
@@ -545,6 +552,7 @@ namespace
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
+        rb_define_method(c_environment, "distribution", RUBY_FUNC_CAST(&environment_distribution), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
         rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);
         rb_define_method(c_environment, "mirrors", RUBY_FUNC_CAST(&environment_mirrors), 1);
