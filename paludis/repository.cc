@@ -31,6 +31,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <map>
@@ -213,7 +214,7 @@ RepositoryMirrorsInterface::is_mirror(const std::string & s) const
 bool
 Repository::can_be_favourite_repository() const
 {
-    return true;
+    return some_ids_might_support_action(SupportsActionTest<InstallAction>());
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>
