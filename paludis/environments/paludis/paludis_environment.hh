@@ -122,7 +122,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string default_distribution() const
+            virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const

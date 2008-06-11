@@ -1095,7 +1095,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, std::tr1::
         p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
-                    _imp->env->default_distribution()))[k::support_old_style_virtuals()])
+                    _imp->env->distribution()))[k::support_old_style_virtuals()])
             throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 

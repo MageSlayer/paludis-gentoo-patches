@@ -85,7 +85,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string default_distribution() const
+            virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool is_paludis_package(const QualifiedPackageName &) const

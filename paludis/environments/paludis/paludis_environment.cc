@@ -487,7 +487,7 @@ PaludisEnvironment::package_database() const
 }
 
 std::string
-PaludisEnvironment::default_distribution() const
+PaludisEnvironment::distribution() const
 {
     return _imp->config->distribution();
 }

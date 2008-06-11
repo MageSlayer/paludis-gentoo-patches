@@ -56,7 +56,7 @@ namespace
 
         std::string builddir;
         if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::default_ebuild_builddir()];
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
 
         return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
                     .location(location)
@@ -78,7 +78,7 @@ namespace
 
         std::string builddir;
         if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->default_distribution()))[k::default_ebuild_builddir()];
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
 
         std::string root;
         if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())

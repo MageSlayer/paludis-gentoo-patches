@@ -476,7 +476,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
             (k::environment_variable_interface(), this)
             (k::mirrors_interface(), this)
             (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    p.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
+                    p.environment->distribution()))[k::support_old_style_virtuals()] ? this : 0)
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
             (k::destination_interface(), p.binary_destination ? this : 0)
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
@@ -892,7 +892,7 @@ ERepository::invalidate_masks()
 {
     _imp->layout->invalidate_masks();
 
-    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
+    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->distribution()))
             [k::support_old_style_virtuals()])
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
@@ -1105,7 +1105,7 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
         << "Using profile '" << ((*iter)[k::path()]) << "'";
     _imp->profile_ptr = (*iter)[k::profile()];
 
-    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution()))
+    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->distribution()))
             [k::support_old_style_virtuals()])
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(

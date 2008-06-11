@@ -201,8 +201,8 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
             e = EnvironmentMaker.instance.make_from_spec("")
             return [x for x in e.package_database.repositories]
 
-        def default_distribution(self):
-            return EnvironmentImplementation.default_distribution(self)
+        def distribution(self):
+            return EnvironmentImplementation.distribution(self)
 
     def test_01_environment_implementation(self):
         test_env(self.SubEnv())

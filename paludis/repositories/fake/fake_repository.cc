@@ -68,7 +68,7 @@ FakeRepository::FakeRepository(const Environment * const env, const RepositoryNa
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
             (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
+                    env->distribution()))[k::support_old_style_virtuals()] ? this : 0)
             (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
             (k::e_interface(), static_cast<RepositoryEInterface *>(0))
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
@@ -90,7 +90,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
             (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
             (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
             (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    params.environment->default_distribution()))[k::support_old_style_virtuals()] ? this : 0)
+                    params.environment->distribution()))[k::support_old_style_virtuals()] ? this : 0)
             (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
             (k::e_interface(), static_cast<RepositoryEInterface *>(0))
             (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))

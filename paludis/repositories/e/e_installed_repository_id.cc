@@ -468,10 +468,10 @@ EInstalledRepositoryID::eapi() const
     else
     {
         Log::get_instance()->message("e.no_eapi", ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
-            << _imp->environment->default_distribution() << "'";
+            << _imp->environment->distribution() << "'";
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(
                 (*DistributionData::get_instance()->distribution_from_string(
-                    _imp->environment->default_distribution()))[k::default_ebuild_eapi_when_unspecified()]);
+                    _imp->environment->distribution()))[k::default_ebuild_eapi_when_unspecified()]);
     }
 
     return _imp->eapi;

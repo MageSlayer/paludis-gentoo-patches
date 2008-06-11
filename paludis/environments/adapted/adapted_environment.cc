@@ -210,9 +210,9 @@ AdaptedEnvironment::perform_hook(const Hook & h) const
 }
 
 std::string
-AdaptedEnvironment::default_distribution() const
+AdaptedEnvironment::distribution() const
 {
-    return _imp->env->default_distribution();
+    return _imp->env->distribution();
 }
 
 const std::tr1::shared_ptr<const Mask>

@@ -117,7 +117,7 @@ namespace paludis
             virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string default_distribution() const
+            virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const

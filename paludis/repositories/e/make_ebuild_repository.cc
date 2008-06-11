@@ -119,7 +119,7 @@ paludis::make_ebuild_repository(
         else
         {
             distdir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_distdir()];
+                    env->distribution()))[k::default_ebuild_distdir()];
             if (distdir.empty())
                 distdir = location + "/distfiles";
             else if ('/' != distdir.at(0))
@@ -150,7 +150,7 @@ paludis::make_ebuild_repository(
     std::string write_cache;
     if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
         write_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution()))[k::default_ebuild_write_cache()];
+                env->distribution()))[k::default_ebuild_write_cache()];
 
     bool append_repository_name_to_write_cache(true);
     if (m->end() != m->find("append_repository_name_to_write_cache") && ! m->find("append_repository_name_to_write_cache")->second.empty())
@@ -172,7 +172,7 @@ paludis::make_ebuild_repository(
         if (! layout_conf
                 || (eapi_when_unknown = layout_conf->get("eapi_when_unknown")).empty())
             eapi_when_unknown = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_eapi_when_unknown()];
+                    env->distribution()))[k::default_ebuild_eapi_when_unknown()];
     }
 
     std::string eapi_when_unspecified;
@@ -181,7 +181,7 @@ paludis::make_ebuild_repository(
         if (! layout_conf 
                 || (eapi_when_unspecified = layout_conf->get("eapi_when_unspecified")).empty())
             eapi_when_unspecified = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_eapi_when_unspecified()];
+                    env->distribution()))[k::default_ebuild_eapi_when_unspecified()];
     }
 
     std::string profile_eapi;
@@ -190,14 +190,14 @@ paludis::make_ebuild_repository(
         if (! layout_conf
                 || (profile_eapi = layout_conf->get("eapi_when_unspecified")).empty())
             profile_eapi = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_profile_eapi()];
+                    env->distribution()))[k::default_ebuild_profile_eapi()];
     }
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
         names_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution()))[k::default_ebuild_names_cache()];
+                env->distribution()))[k::default_ebuild_names_cache()];
         if (names_cache.empty())
         {
             Log::get_instance()->message("e.ebuild.configuration.no_names_cache", ll_warning, lc_no_context)
@@ -229,7 +229,7 @@ paludis::make_ebuild_repository(
     {
         if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_builddir()];
+                    env->distribution()))[k::default_ebuild_builddir()];
         else
             Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";
@@ -241,7 +241,7 @@ paludis::make_ebuild_repository(
         if (! layout_conf
                 || (layout = layout_conf->get("layout")).empty())
             layout = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_layout()];
+                    env->distribution()))[k::default_ebuild_layout()];
     }
 
     erepository::UseManifest use_manifest(erepository::manifest_use);

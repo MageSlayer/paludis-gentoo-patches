@@ -171,7 +171,7 @@ EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e)
 }
 
 std::string
-EnvironmentImplementation::default_distribution() const
+EnvironmentImplementation::distribution() const
 {
     static const std::string result(getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION));
     return result;
@@ -186,7 +186,7 @@ EnvironmentImplementation::set_names() const
 bool
 EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) const
 {
-    return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(default_distribution()))[k::paludis_package()];
+    return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(distribution()))[k::paludis_package()];
 }
 
 std::tr1::shared_ptr<PackageIDSequence>

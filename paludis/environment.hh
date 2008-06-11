@@ -296,7 +296,7 @@ namespace paludis
             ///\name Distribution information
             ///\{
 
-            virtual std::string default_distribution() const
+            virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

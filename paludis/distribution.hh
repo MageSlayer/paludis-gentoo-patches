@@ -67,7 +67,7 @@ namespace paludis
      * make things easier for other distributions. Instead, DistributionData
      * is used to fetch a Distribution class instance. The
      * distribution_from_string method is almost always called with the return
-     * value of Environment::default_distribution as its parameter.
+     * value of Environment::distribution as its parameter.
      *
      * \ingroup g_distribution
      * \since 0.26

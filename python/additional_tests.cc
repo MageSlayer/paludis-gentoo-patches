@@ -97,7 +97,7 @@ namespace environment
 
         e.perform_hook(Hook("test"));
 
-        e.default_distribution();
+        e.distribution();
     }
 }
 

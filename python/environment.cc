@@ -329,20 +329,20 @@ class EnvironmentImplementationWrapper :
             return HookResult(0, "");
         }
 
-        virtual std::string default_distribution() const
+        virtual std::string distribution() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
-            if (bp::override f = get_override("default_distribution"))
+            if (bp::override f = get_override("distribution"))
                 return f();
-            return EnvironmentImplementation::default_distribution();
+            return EnvironmentImplementation::distribution();
         }
 
-        std::string default_default_distribution() const
+        std::string distribution() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            return EnvironmentImplementation::default_distribution();
+            return EnvironmentImplementation::distribution();
         }
 
         virtual void add_to_world(const QualifiedPackageName & s) const
@@ -647,8 +647,8 @@ void expose_environment()
                 "Default destination candidates for installing packages."
             )
 
-        .def("default_distribution", &EnvImp::default_distribution, &EnvImpW::default_default_distribution,
-                "default_distribution() -> str\n"
+        .def("distribution", &EnvImp::distribution, &EnvImpW::distribution,
+                "distribution() -> str\n"
                 "NEED_DOC"
             )
 

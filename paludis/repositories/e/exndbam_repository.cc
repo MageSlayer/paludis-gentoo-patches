@@ -150,7 +150,7 @@ ExndbamRepository::make_exndbam_repository(
     {
         if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->default_distribution()))[k::default_ebuild_builddir()];
+                    env->distribution()))[k::default_ebuild_builddir()];
         else
             Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";
