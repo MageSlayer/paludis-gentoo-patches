@@ -23,7 +23,7 @@
 default_src_compile()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        emake || die "emake failed"
+        emake ${DEFAULT_SRC_COMPILE_PARAMS[@]} || die "emake failed"
     fi
 }
 
