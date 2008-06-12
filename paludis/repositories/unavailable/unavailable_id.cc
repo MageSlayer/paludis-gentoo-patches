@@ -45,7 +45,7 @@ namespace paludis
         const SlotName slot;
         const UnavailableRepository * const repo;
 
-        const std::tr1::shared_ptr<const MetadataKey> description_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > owning_repository_key, repository_homepage_key, repository_description_key;
         const std::tr1::shared_ptr<const Mask> mask;
 
@@ -261,7 +261,7 @@ UnavailableID::suggested_dependencies_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableID::short_description_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return _imp->description_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
