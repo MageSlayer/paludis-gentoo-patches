@@ -9,6 +9,7 @@ make_class_Params()
     key write_cache "FSEntry"
     key disable_metadata_cache bool
     key accept_unstable bool
+    key extra_accept_keywords std::string
     key repository_type no_config_environment::RepositoryType
     key master_repository_dir "FSEntry"
     key extra_params "std::tr1::shared_ptr<Map<std::string, std::string> >"

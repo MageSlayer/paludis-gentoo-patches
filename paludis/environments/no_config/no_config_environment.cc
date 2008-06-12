@@ -45,6 +45,7 @@ using namespace paludis;
 using namespace paludis::no_config_environment;
 
 #include <paludis/environments/no_config/no_config_environment-sr.cc>
+#include <paludis/environments/no_config/no_config_environment-se.cc>
 
 namespace paludis
 {
@@ -86,6 +87,7 @@ namespace
             case ncer_vdb:
                 return true;
             case ncer_auto:
+            case last_ncer:
                 ;
         }
 
@@ -341,20 +343,42 @@ NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> 
         std::string arch_var((*_imp->main_repo)[k::e_interface()]->arch_variable());
 
         if (arch_var.empty())
-            throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
+        {
+            if (_imp->params.extra_accept_keywords.empty())
+                throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
+        }
+        else
+        {
+            std::string arch((*_imp->main_repo)[k::e_interface()]->profile_variable(arch_var));
 
-        std::string arch((*_imp->main_repo)[k::e_interface()]->profile_variable(arch_var));
+            if (keywords->end() != keywords->find(KeywordName(arch)))
+                return true;
 
-        if (keywords->end() != keywords->find(KeywordName(arch)))
-            return true;
-
-        if (_imp->accept_unstable && keywords->end() != keywords->find(KeywordName("~" + arch)))
-            return true;
+            if (_imp->accept_unstable && keywords->end() != keywords->find(KeywordName("~" + arch)))
+                return true;
+        }
     }
     else
     {
         std::list<KeywordName> accepted;
         tokenise_whitespace(ak, create_inserter<KeywordName>(std::back_inserter(accepted)));
+
+        for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
+                k != k_end ; ++k)
+        {
+            if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
+                return true;
+
+            if (_imp->accept_unstable && stringify(*k).at(0) == '~')
+                if (accepted.end() != std::find(accepted.begin(), accepted.end(), KeywordName(stringify(*k).substr(1))))
+                    return true;
+        }
+    }
+
+    {
+        std::list<KeywordName> accepted;
+        tokenise_whitespace(_imp->params.extra_accept_keywords,
+                create_inserter<KeywordName>(std::back_inserter(accepted)));
 
         for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                 k != k_end ; ++k)

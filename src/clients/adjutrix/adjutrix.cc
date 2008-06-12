@@ -138,6 +138,7 @@ main(int argc, char *argv[])
                     no_config_environment::ncer_ebuild)
                 .disable_metadata_cache(false)
                 .master_repository_dir(CommandLine::get_instance()->a_master_repository_dir.argument())
+                .extra_accept_keywords("")
                 .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >()));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())

@@ -373,6 +373,7 @@ namespace
                         .disable_metadata_cache(false)
                         .repository_type(no_config_environment::ncer_auto)
                         .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
+                        .extra_accept_keywords("")
                         .master_repository_dir(FSEntry(master_repository_dir))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);

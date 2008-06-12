@@ -343,6 +343,7 @@ int main(int argc, char *argv[])
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
                     .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
+                    .extra_accept_keywords("")
                     ));
 
         if (! (*env->main_repository())[k::qa_interface()])

@@ -232,6 +232,7 @@ main(int argc, char *argv[])
                 .repository_type(no_config_environment::ncer_ebuild)
                 .disable_metadata_cache(true)
                 .extra_params(keys)
+                .extra_accept_keywords("")
                 .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
         std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
