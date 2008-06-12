@@ -107,6 +107,12 @@ UnavailableRepository::~UnavailableRepository()
 {
 }
 
+bool
+UnavailableRepository::can_be_favourite_repository() const
+{
+    return false;
+}
+
 void
 UnavailableRepository::_add_metadata_keys()
 {
