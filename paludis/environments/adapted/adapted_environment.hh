@@ -39,6 +39,13 @@ namespace paludis
         public Environment,
         private PrivateImplementationPattern<AdaptedEnvironment>
     {
+        private:
+            PrivateImplementationPattern<AdaptedEnvironment>::ImpPtr & _imp;
+
+        protected:
+            virtual void clear_metadata_keys() const;
+            virtual void need_keys_added() const;
+
         public:
             AdaptedEnvironment(std::tr1::shared_ptr<Environment>);
             ~AdaptedEnvironment();

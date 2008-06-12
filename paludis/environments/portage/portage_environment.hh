@@ -59,6 +59,8 @@ namespace paludis
         private PrivateImplementationPattern<PortageEnvironment>
     {
         private:
+            PrivateImplementationPattern<PortageEnvironment>::ImpPtr & _imp;
+
             void _load_profile(const FSEntry &);
             void _add_virtuals_repository();
             void _add_installed_virtuals_repository();
@@ -83,6 +85,8 @@ namespace paludis
 
             virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations

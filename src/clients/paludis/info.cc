@@ -314,6 +314,15 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
 
     cout << endl;
 
+    {
+        cout << "Environment:" << endl;
+        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
+                env->begin_metadata(), env->end_metadata());
+        InfoDisplayer i("    ");
+        std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
+        cout << endl;
+    }
+
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -327,7 +336,6 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
 
     if (CommandLine::get_instance()->empty())
     {
-        cout << endl;
         cout << "No packages were specified on the command line, so detailed information is not" << endl;
         cout << "available (Paludis can display detailed information for both installed and" << endl;
         cout << "installable packages)." << endl;

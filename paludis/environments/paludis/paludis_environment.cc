@@ -37,6 +37,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/literal_metadata_key.hh>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
@@ -83,11 +84,22 @@ namespace paludis
         mutable Mutex sets_mutex;
         mutable std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > conf_dir_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
+
         Implementation(PaludisEnvironment * const e, std::tr1::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
             paludis_command("paludis"),
-            package_database(new PackageDatabase(e))
+            package_database(new PackageDatabase(e)),
+            format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "paludis")),
+            conf_dir_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+                        config->config_dir())),
+            world_file_key(config->world()->location_if_set() ? make_shared_ptr(
+                        new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
+                            *config->world()->location_if_set()))
+                    : std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> >())
         {
         }
 
@@ -132,7 +144,8 @@ namespace paludis
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
-                this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))))
+                this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
+    _imp(PrivateImplementationPattern<PaludisEnvironment>::_imp)
 {
     Context context("When loading paludis environment:");
 
@@ -161,6 +174,11 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
         _imp->package_database->add_repository(r->importance,
                 RepositoryMaker::get_instance()->find_maker(r->format)(this, r->keys));
     }
+
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->conf_dir_key);
+    if (_imp->world_file_key)
+        add_metadata_key(_imp->world_file_key);
 }
 
 PaludisEnvironment::~PaludisEnvironment()
@@ -564,5 +582,10 @@ PaludisEnvironment::mask_for_user(const PackageID & d) const
         return make_shared_ptr(new UserConfigMask);
 
     return std::tr1::shared_ptr<const Mask>();
+}
+
+void
+PaludisEnvironment::need_keys_added() const
+{
 }
 

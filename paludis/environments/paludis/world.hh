@@ -50,6 +50,8 @@ namespace paludis
 
                 void remove_from_world(const SetName &) const;
                 void remove_from_world(const QualifiedPackageName &) const;
+
+                std::tr1::shared_ptr<const FSEntry> location_if_set() const;
         };
     }
 }

@@ -57,12 +57,17 @@ namespace paludis
         private PrivateImplementationPattern<NoConfigEnvironment>,
         private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
     {
+        private:
+            PrivateImplementationPattern<NoConfigEnvironment>::ImpPtr & _imp;
+
         protected:
             virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations

@@ -48,8 +48,14 @@ namespace paludis
         public EnvironmentImplementation,
         public InstantiationPolicy<PaludisEnvironment, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<PaludisEnvironment>
-   {
+    {
+
+        private:
+            PrivateImplementationPattern<PaludisEnvironment>::ImpPtr & _imp;
+
         protected:
+            virtual void need_keys_added() const;
+
             virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & id) const;
 
             virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const;

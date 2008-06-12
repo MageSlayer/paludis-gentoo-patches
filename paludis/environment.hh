@@ -33,6 +33,7 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/package_database-fwd.hh>
 #include <paludis/selection-fwd.hh>
+#include <paludis/metadata_key_holder.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -67,7 +68,8 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Environment :
-        private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>
+        private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>,
+        public MetadataKeyHolder
     {
         public:
             ///\name Basic operations

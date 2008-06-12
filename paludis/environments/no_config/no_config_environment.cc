@@ -36,6 +36,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -63,6 +64,9 @@ namespace paludis
         std::string paludis_command;
 
         std::tr1::shared_ptr<PackageDatabase> package_database;
+
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
 
         Implementation(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -136,7 +140,10 @@ Implementation<NoConfigEnvironment>::Implementation(
     accept_unstable(p.accept_unstable),
     is_vdb(is_vdb_repository(p.repository_dir, p.repository_type)),
     paludis_command("false"),
-    package_database(new PackageDatabase(env))
+    package_database(new PackageDatabase(env)),
+    format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "no_config")),
+    repository_dir_key(new LiteralMetadataValueKey<FSEntry>("repository_dir", "Repository dir",
+                mkt_normal, p.repository_dir))
 {
 }
 
@@ -230,7 +237,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
 NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
     PrivateImplementationPattern<NoConfigEnvironment>(
-            new Implementation<NoConfigEnvironment>(this, params))
+            new Implementation<NoConfigEnvironment>(this, params)),
+    _imp(PrivateImplementationPattern<NoConfigEnvironment>::_imp)
 {
     _imp->initialise(this);
 
@@ -243,6 +251,9 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
                 (*_imp->master_repo)[k::e_interface()]->begin_profiles())
             (*_imp->master_repo)[k::e_interface()]->set_profile(
                     (*_imp->master_repo)[k::e_interface()]->begin_profiles());
+
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->repository_dir_key);
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -456,5 +467,10 @@ std::tr1::shared_ptr<const UseFlagNameSet>
 NoConfigEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
 {
     return make_shared_ptr(new UseFlagNameSet);
+}
+
+void
+NoConfigEnvironment::need_keys_added() const
+{
 }
 

@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/match_package.hh>
 #include <tr1/unordered_map>
 
@@ -38,16 +39,19 @@ namespace paludis
     {
         std::tr1::shared_ptr<Environment> env;
         Use use;
+        bool has_metadata_keys;
 
         Implementation(std::tr1::shared_ptr<Environment> e) :
-            env(e)
+            env(e),
+            has_metadata_keys(false)
         {
         }
     };
 }
 
 AdaptedEnvironment::AdaptedEnvironment(std::tr1::shared_ptr<Environment> e) :
-    PrivateImplementationPattern<AdaptedEnvironment>(new Implementation<AdaptedEnvironment>(e))
+    PrivateImplementationPattern<AdaptedEnvironment>(new Implementation<AdaptedEnvironment>(e)),
+    _imp(PrivateImplementationPattern<AdaptedEnvironment>::_imp)
 {
 }
 
@@ -267,5 +271,21 @@ std::tr1::shared_ptr<PackageIDSequence>
 AdaptedEnvironment::operator[] (const Selection & s) const
 {
     return _imp->env->operator[] (s);
+}
+
+void
+AdaptedEnvironment::need_keys_added() const
+{
+    if (! _imp->has_metadata_keys)
+        for (Environment::MetadataConstIterator i(_imp->env->begin_metadata()), i_end(_imp->env->end_metadata()) ;
+                i != i_end ; ++i)
+            add_metadata_key(*i);
+}
+
+void
+AdaptedEnvironment::clear_metadata_keys() const
+{
+    Environment::clear_metadata_keys();
+    _imp->has_metadata_keys = false;
 }
 

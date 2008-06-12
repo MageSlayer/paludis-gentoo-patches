@@ -48,7 +48,8 @@ namespace paludis
 }
 
 TestEnvironment::TestEnvironment() :
-    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this))
+    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this)),
+    _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
 {
 }
 
@@ -212,6 +213,11 @@ TestEnvironment::add_to_world(const SetName &) const
 
 void
 TestEnvironment::remove_from_world(const SetName &) const
+{
+}
+
+void
+TestEnvironment::need_keys_added() const
 {
 }
 

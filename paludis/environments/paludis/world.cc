@@ -182,3 +182,9 @@ World::world_set() const
                 std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 }
 
+std::tr1::shared_ptr<const FSEntry>
+World::location_if_set() const
+{
+    return _imp->maybe_world_file;
+}
+

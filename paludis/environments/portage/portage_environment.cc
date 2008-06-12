@@ -47,6 +47,7 @@
 #include <paludis/set_file.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
 #include <functional>
 #include <algorithm>
@@ -104,6 +105,10 @@ namespace paludis
         const FSEntry world_file;
         mutable Mutex world_mutex;
 
+        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > conf_dir_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
+
         Implementation(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
@@ -111,7 +116,12 @@ namespace paludis
             done_hooks(false),
             overlay_importance(10),
             package_database(new PackageDatabase(e)),
-            world_file("/var/lib/portage/world")
+            world_file("/var/lib/portage/world"),
+            format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "portage")),
+            conf_dir_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+                        conf_dir)),
+            world_file_key(new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
+                        world_file))
         {
         }
 
@@ -176,7 +186,8 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(this, s))
+    PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(this, s)),
+    _imp(PrivateImplementationPattern<PortageEnvironment>::_imp)
 {
     using namespace std::tr1::placeholders;
 
@@ -280,6 +291,10 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         }
         else
             _imp->ignore_breaks_portage.insert(*it);
+
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->conf_dir_key);
+    add_metadata_key(_imp->world_file_key);
 }
 
 template<typename I_>
@@ -888,5 +903,10 @@ PortageEnvironment::world_set() const
 
     return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                 std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+}
+
+void
+PortageEnvironment::need_keys_added() const
+{
 }
 
