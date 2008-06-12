@@ -21,7 +21,7 @@ prepended to each individual file.</p>
 <p>The following keys are predefined. They should not be modified.</p>
 
 <dl>
-    <dt>root</dt>
+    <dt><code>root<code></dt>
     <dd>The filesystem root. Relevant if <code>specpath.conf</code> is in use. Using this variable can create a
     configuration system that works both inside and outside of a chroot (e.g. <code>location =
         ${root}/var/db/paludis/repositories/paludis-overlay</code>).</dd>
@@ -32,11 +32,11 @@ prepended to each individual file.</p>
 <p>The following keys are meaningful for all repository formats.</p>
 
 <dl>
-    <dt>format</dt>
+    <dt><code>format</code></dt>
     <dd>Determines which repository class Paludis uses to create the repository. Example formats are
     <code>ebuild</code>, <code>vdb</code> and <code>installed_unpackaged</code>. Mandatory.</dd>
 
-    <dt>importance</dt>
+    <dt><code>importance</code></dt>
     <dd>Must be an integer. Used by Paludis to determine from which repository a package should be selected, all other
     things being equal (a higher importance is preferred over a lower importance). By default, <code>0</code>, except
     if the <code>master_repository</code> key is set, in which case it is <code>10</code> instead.</dd>
