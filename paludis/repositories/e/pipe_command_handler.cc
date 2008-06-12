@@ -227,7 +227,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "REWRITE_VAR")
         {
-            if (tokens.size() < 5)
+            if (tokens.size() < 4)
             {
                 Log::get_instance()->message("e.pipe_commands.rewrite_var.bad", ll_warning, lc_context) << "Got bad REWRITE_VAR pipe command";
                 return "Ebad REWRITE_VAR command";
