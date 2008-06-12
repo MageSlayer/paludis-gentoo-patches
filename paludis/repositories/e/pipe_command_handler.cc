@@ -227,7 +227,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "REWRITE_VAR")
         {
-            if (tokens.size() < 4)
+            if (tokens.size() < 5)
             {
                 Log::get_instance()->message("e.pipe_commands.rewrite_var.bad", ll_warning, lc_context) << "Got bad REWRITE_VAR pipe command";
                 return "Ebad REWRITE_VAR command";
@@ -237,7 +237,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             if (! (*eapi)[k::supported()])
                 return "EREWRITE_VAR EAPI " + tokens[1] + " unsupported";
 
-            std::string var(tokens[2]);
+            std::string var(tokens[3]);
 
             if ((var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_build_depend) ||
                     (var == (*(*eapi)[k::supported()])[k::ebuild_metadata_variables()].metadata_run_depend) ||
