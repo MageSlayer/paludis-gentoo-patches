@@ -117,11 +117,6 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
-            if (number_part.size() > 8)
-                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                    "(Paludis supports arbitrary lengths, but other package managers do not)";
-
             _imp->parts.push_back(Part(number, number_part));
 
             if (! parser.consume(simple_parser::exact(".")))
@@ -155,11 +150,6 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
-            if (number_str.size() > 8)
-                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                    "(Paludis supports arbitrary lengths, but other package managers do not)";
-
             if (number_str.size() > 0)
             {
                 number_str = strip_leading(number_str, "0");
@@ -176,11 +166,6 @@ VersionSpec::VersionSpec(const std::string & text) :
             std::string number_str;
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
-
-            if (number_str.size() > 8)
-                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             if (number_str.size() > 0)
             {
@@ -216,11 +201,6 @@ VersionSpec::VersionSpec(const std::string & text) :
             std::string number_str;
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
-
-            if (number_str.size() > 8)
-                Log::get_instance()->message("version_spec.too_long", ll_qa, lc_context) <<
-                    "Number part '" << number_str << "' exceeds 8 digit limit permitted by the Package Manager Specification "
-                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             /* Are we -r */
             bool empty(number_str.empty());
