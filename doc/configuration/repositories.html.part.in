@@ -21,7 +21,7 @@ prepended to each individual file.</p>
 <p>The following keys are predefined. They should not be modified.</p>
 
 <dl>
-    <dt><code>root<code></dt>
+    <dt><code>root</code></dt>
     <dd>The filesystem root. Relevant if <code>specpath.conf</code> is in use. Using this variable can create a
     configuration system that works both inside and outside of a chroot (e.g. <code>location =
         ${root}/var/db/paludis/repositories/paludis-overlay</code>).</dd>
