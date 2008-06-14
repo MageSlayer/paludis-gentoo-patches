@@ -181,7 +181,8 @@ int do_has_version(std::tr1::shared_ptr<Environment> env)
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
                 generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
 
@@ -198,7 +199,8 @@ int do_best_version(std::tr1::shared_ptr<Environment> env)
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
 
@@ -238,7 +240,8 @@ int do_match(std::tr1::shared_ptr<Environment> env)
     Context context("When performing match action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(query, UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
 
@@ -281,7 +284,8 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(spec_str, UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                parse_user_package_dep_spec(spec_str, env.get(), UserPackageDepSpecOptions())));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);

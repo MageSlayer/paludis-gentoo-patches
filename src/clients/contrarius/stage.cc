@@ -55,7 +55,7 @@ AuxiliaryStage::is_rebuild() const
     for (std::list<std::string>::const_iterator p(packages.begin()), p_end(packages.end()) ;
             p != p_end ; ++p)
         if ((*_env)[selection::SomeArbitraryVersion(
-                    generator::Matches(parse_user_package_dep_spec(*p, UserPackageDepSpecOptions())) |
+                    generator::Matches(parse_user_package_dep_spec(*p, _env.get(), UserPackageDepSpecOptions())) |
                     filter::InstalledAtRoot(_env->root()))]->empty())
             return false;
 
@@ -68,7 +68,8 @@ BinutilsStage::build(const StageOptions &) const
     Context context("When building BinutilsStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(
-                parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), _env.get(),
+                    UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -79,7 +80,8 @@ bool
 BinutilsStage::is_rebuild() const
 {
     return (! (*_env)[selection::SomeArbitraryVersion(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->binutils(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(
+                        TargetConfig::get_instance()->binutils(), _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
@@ -89,7 +91,8 @@ KernelHeadersStage::build(const StageOptions &) const
     Context context("When building KernelHeadersStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(
-                parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(TargetConfig::get_instance()->headers(),
+                    _env.get(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -102,7 +105,8 @@ bool
 KernelHeadersStage::is_rebuild() const
 {
     return (! (*_env)[selection::SomeArbitraryVersion(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->headers(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->headers(),
+                        _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
@@ -111,8 +115,9 @@ MinimalStage::build(const StageOptions &) const
 {
     Context context("When executing MinimalStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
-                    UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(
+                    TargetConfig::get_instance()->gcc(),
+                    _env.get(), UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
 
@@ -133,7 +138,8 @@ bool
 MinimalStage::is_rebuild() const
 {
     return (! (*_env)[selection::SomeArbitraryVersion(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(
+                        TargetConfig::get_instance()->gcc(), _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
@@ -142,7 +148,8 @@ LibCHeadersStage::build(const StageOptions &) const
 {
     Context context("When building LIbCHeaderStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(
+                parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), _env.get(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -156,7 +163,8 @@ bool
 LibCHeadersStage::is_rebuild() const
 {
     return (! (*_env)[selection::SomeArbitraryVersion(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(
+                        TargetConfig::get_instance()->libc(), _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]->empty());
 }
 
@@ -165,7 +173,8 @@ LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(
+                parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), _env.get(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -177,7 +186,8 @@ bool
 LibCStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageIDSequence> c((*_env)[selection::BestVersionOnly(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->libc(),
+                        _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]);
 
     if (c->empty())
@@ -191,7 +201,8 @@ FullStage::build(const StageOptions &) const
 {
     Context context("When building FullStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(parse_user_package_dep_spec(
+                    TargetConfig::get_instance()->gcc(), _env.get(),
                     UserPackageDepSpecOptions())));
 
     _env->clear_adaptions();
@@ -210,7 +221,8 @@ bool
 FullStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageIDSequence> c((*_env)[selection::BestVersionOnly(
-                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(), UserPackageDepSpecOptions())) |
+                generator::Matches(parse_user_package_dep_spec(TargetConfig::get_instance()->gcc(),
+                        _env.get(), UserPackageDepSpecOptions())) |
                 filter::InstalledAtRoot(_env->root()))]);
 
     if (c->empty())

@@ -87,12 +87,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     {
         try
         {
-            if (std::string::npos == p->find('/'))
-                d.add(make_package_dep_spec().package(env.package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(*CommandLine::get_instance()->begin_parameters()))),
-                        env.default_destinations());
-            else
-                d.add(parse_user_package_dep_spec(*p, UserPackageDepSpecOptions()), env.default_destinations());
+            d.add(parse_user_package_dep_spec(*p, &env, UserPackageDepSpecOptions()), env.default_destinations());
         }
         catch (const NoSuchPackageError & e)
         {

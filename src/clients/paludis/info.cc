@@ -206,12 +206,8 @@ int do_one_info(
 {
     Context local_context("When handling query '" + q + "':");
 
-    std::tr1::shared_ptr<PackageDepSpec> spec;
-    if (std::string::npos != q.find('/'))
-        spec.reset(new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
-    else
-        spec.reset(new PackageDepSpec(make_package_dep_spec().package(
-                        env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))));
+    std::tr1::shared_ptr<PackageDepSpec> spec(
+            new PackageDepSpec(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
 
     std::tr1::shared_ptr<const PackageIDSequence>
         entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec))]),

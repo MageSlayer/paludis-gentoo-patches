@@ -158,60 +158,31 @@ UninstallTask::add_target(const std::string & target)
 {
     Context context("When adding uninstall target '" + target + "':");
 
-    /* we might have a dep spec, but we might just have a simple package name
-     * without a category. either should work. */
-    if (std::string::npos != target.find('/'))
+    try
     {
+        std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
+                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set)));
+
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();
-
         _imp->had_package_targets = true;
-        std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
+
         pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
         _imp->targets.push_back(pds);
     }
-    else
-        try
-        {
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(target)));
-            if (spec)
-            {
-                if (_imp->had_package_targets)
-                    throw HadBothPackageAndSetTargets();
+    catch (const GotASetNotAPackageDepSpec &)
+    {
+        if (_imp->had_set_targets)
+            throw MultipleSetTargetsSpecified();
+        if (_imp->had_package_targets)
+            throw HadBothPackageAndSetTargets();
+        _imp->had_set_targets = true;
 
-                if (_imp->had_set_targets)
-                    throw MultipleSetTargetsSpecified();
-
-                _imp->had_set_targets = true;
-                DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
-                spec->accept(f);
-                std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
-            }
-            else
-            {
-                if (_imp->had_set_targets)
-                    throw HadBothPackageAndSetTargets();
-
-                _imp->had_package_targets = false;
-                std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
-                            .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                                    PackageNamePart(target), filter::SupportsAction<UninstallAction>()))));
-                pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-                _imp->targets.push_back(pds);
-            }
-        }
-        catch (const SetNameError &)
-        {
-            if (_imp->had_set_targets)
-                throw HadBothPackageAndSetTargets();
-
-            _imp->had_package_targets = false;
-            std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(make_package_dep_spec()
-                        .package(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(target), filter::SupportsAction<UninstallAction>()))));
-            pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-            _imp->targets.push_back(pds);
-        }
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(target)));
+        DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
+        spec->accept(f);
+        std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
+    }
 
     _imp->raw_targets.push_back(target);
 

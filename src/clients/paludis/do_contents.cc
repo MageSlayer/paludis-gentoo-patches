@@ -94,12 +94,8 @@ do_one_contents(
 {
     Context local_context("When handling query '" + q + "':");
 
-    /* we might have a dep spec, but we might just have a simple package name
-     * without a category. either should work. */
-    std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
-            new PackageDepSpec(make_package_dep_spec().package(
-                    env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))) :
-            new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);

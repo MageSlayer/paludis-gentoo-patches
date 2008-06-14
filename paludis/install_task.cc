@@ -174,12 +174,13 @@ namespace
 
             case 'U':
                 return make_shared_ptr(new DepListEntryHandledSkippedUnsatisfied(
-                            parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())));
+                            parse_user_package_dep_spec(s.substr(1), env, UserPackageDepSpecOptions())));
 
             case 'D':
                 return make_shared_ptr(new DepListEntryHandledSkippedDependent(
                             *(*env)[selection::RequireExactlyOne(generator::Matches(
-                                    parse_user_package_dep_spec(s.substr(1), UserPackageDepSpecOptions())))]->begin()));
+                                    parse_user_package_dep_spec(s.substr(1), env,
+                                        UserPackageDepSpecOptions())))]->begin()));
 
             case 'F':
                 if (s.length() != 1)
@@ -203,7 +204,8 @@ namespace
 }
 
 void
-InstallTask::set_targets_from_serialisation(const std::string & format, const std::tr1::shared_ptr<const Sequence<std::string> > & ss)
+InstallTask::set_targets_from_serialisation(const std::string & format,
+        const std::tr1::shared_ptr<const Sequence<std::string> > & ss)
 {
     if (format != "0.25")
         throw InternalError(PALUDIS_HERE, "Serialisation format '" + format + "' not supported by this version of Paludis");
@@ -224,7 +226,8 @@ InstallTask::set_targets_from_serialisation(const std::string & format, const st
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
         const std::tr1::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
-                    generator::Matches(parse_user_package_dep_spec(*tokens.begin(), UserPackageDepSpecOptions())))]->begin());
+                    generator::Matches(parse_user_package_dep_spec(*tokens.begin(),
+                            _imp->env, UserPackageDepSpecOptions())))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
@@ -378,78 +381,38 @@ InstallTask::_add_target(const std::string & target)
     Context context("When adding install target '" + target + "':");
 
     std::tr1::shared_ptr<SetSpecTree::ConstItem> s;
-    std::string modified_target(target);
 
-    bool done(false);
     try
     {
-        if ((target != "insecurity") && ((s = ((_imp->env->set(SetName(target)))))))
-        {
-            if (_imp->had_set_targets)
-            {
-                _imp->had_resolution_failures = true;
-                throw MultipleSetTargetsSpecified();
-            }
-
-            if (_imp->had_package_targets)
-            {
-                _imp->had_resolution_failures = true;
-                throw HadBothPackageAndSetTargets();
-            }
-
-            _imp->had_set_targets = true;
-            if (! _imp->override_target_type)
-                _imp->dep_list.options()->target_type = dl_target_set;
-            _imp->targets->add(s);
-            done = true;
-        }
-    }
-    catch (const SetNameError &)
-    {
-    }
-
-    if (! done)
-    {
-        Log::get_instance()->message("install_task.target_is_package", ll_debug, lc_context) << "target '" << target << "' is a package";
+        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
+                        _imp->env, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_throw_if_set)));
 
         if (_imp->had_set_targets)
-        {
-            _imp->had_resolution_failures = true;
             throw HadBothPackageAndSetTargets();
-        }
-
         _imp->had_package_targets = true;
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type = dl_target_package;
 
-        if (std::string::npos != target.find('/'))
-        {
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target, UserPackageDepSpecOptions())));
-            spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-            _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
-        }
-        else
-        {
-            try
-            {
-                QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(target), filter::SupportsAction<InstallAction>()));
-                modified_target = stringify(q);
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(q)));
-                spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-                _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
-            }
-            catch (const NoSuchPackageError &)
-            {
-                _imp->had_resolution_failures = true;
-                throw;
-            }
-        }
+        spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+        _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        _imp->raw_targets.push_back(stringify(*spec));
     }
+    catch (const GotASetNotAPackageDepSpec &)
+    {
+        if (_imp->had_set_targets)
+            throw MultipleSetTargetsSpecified();
+        if (_imp->had_package_targets)
+            throw HadBothPackageAndSetTargets();
+        _imp->had_set_targets = true;
 
-    _imp->raw_targets.push_back(modified_target);
+        _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(std::tr1::shared_ptr<NamedSetDepSpec>(
+                            new NamedSetDepSpec(SetName(target))))));
+        _imp->had_set_targets = true;
+        if (! _imp->override_target_type)
+            _imp->dep_list.options()->target_type = dl_target_set;
+    }
 }
 
 void
@@ -974,7 +937,8 @@ InstallTask::_main_actions()
                     if (s_had_package_targets)
                         all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
-                                            new PackageDepSpec(parse_user_package_dep_spec(*t, UserPackageDepSpecOptions()))))));
+                                            new PackageDepSpec(parse_user_package_dep_spec(*t, _imp->env,
+                                                    UserPackageDepSpecOptions()))))));
                     else
                         all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
                                     new TreeLeaf<SetSpecTree, NamedSetDepSpec>(std::tr1::shared_ptr<NamedSetDepSpec>(

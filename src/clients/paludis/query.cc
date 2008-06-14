@@ -128,30 +128,15 @@ void do_one_query(
 {
     Context local_context("When handling query '" + q + "':");
 
-    /* we might have a dep spec, but we might just have a simple package name
-     * without a category. or it might be a set... all should work. */
-    std::tr1::shared_ptr<PackageDepSpec> spec;
-    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set;
-    if (std::string::npos == q.find('/'))
+    try
     {
-        try
-        {
-            set = env->set(SetName(q));
-        }
-        catch (const SetNameError &)
-        {
-        }
-        if (0 == set)
-            spec.reset(new PackageDepSpec(make_package_dep_spec().package(
-                            env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q)))));
+        do_one_package_query(env, masks_to_explain, make_shared_ptr(new PackageDepSpec(
+                        parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_throw_if_set))));
     }
-    else
-        spec.reset(new PackageDepSpec(parse_user_package_dep_spec(q, UserPackageDepSpecOptions())));
-
-    if (spec)
-        do_one_package_query(env, masks_to_explain, spec);
-    else
-        do_one_set_query(env, q, masks_to_explain, set);
+    catch (const GotASetNotAPackageDepSpec &)
+    {
+        do_one_set_query(env, q, masks_to_explain, env->set(SetName(q)));
+    }
 }
 
 int do_query(std::tr1::shared_ptr<Environment> env)

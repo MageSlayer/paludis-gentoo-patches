@@ -266,14 +266,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     std::tr1::shared_ptr<PackageDepSpec> spec;
     try
     {
-        if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
-        {
-            spec.reset(new PackageDepSpec(make_package_dep_spec().package(env.package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(*CommandLine::get_instance()->begin_parameters())))));
-        }
-        else
-            spec.reset(new PackageDepSpec(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
-                            UserPackageDepSpecOptions())));
+        spec.reset(new PackageDepSpec(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
+                        &env, UserPackageDepSpecOptions())));
     }
     catch (const AmbiguousPackageNameError & e)
     {
