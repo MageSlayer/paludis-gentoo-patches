@@ -62,7 +62,7 @@ namespace test_cases
             repo->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
             repo->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
             repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
-                            parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+                            parse_user_package_dep_spec(">=cat/pkg-2", &env, UserPackageDepSpecOptions()))));
 
             TEST_CHECK(repo->virtual_packages());
             TEST_CHECK_EQUAL(std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()), 1);
@@ -96,14 +96,14 @@ namespace test_cases
             repo1->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
             repo1->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
             repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(
-                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", &env, UserPackageDepSpecOptions()))));
             repo1->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(
-                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+                        new PackageDepSpec(parse_user_package_dep_spec(">=cat/pkg-2", &env, UserPackageDepSpecOptions()))));
 
             repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
-                            parse_user_package_dep_spec(">=cat/pkg-2", UserPackageDepSpecOptions()))));
+                            parse_user_package_dep_spec(">=cat/pkg-2", &env, UserPackageDepSpecOptions()))));
             repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), make_shared_ptr(new PackageDepSpec(
-                            parse_user_package_dep_spec("<=cat/pkg-1", UserPackageDepSpecOptions()))));
+                            parse_user_package_dep_spec("<=cat/pkg-1", &env, UserPackageDepSpecOptions()))));
 
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
@@ -134,11 +134,11 @@ namespace test_cases
 
             repo1->add_version("virtual", "gkp", "1")->provide_key()->set_from_string("virtual/pkg");
             repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(
-                        new PackageDepSpec(parse_user_package_dep_spec("virtual/gkp", UserPackageDepSpecOptions()))));
+                        new PackageDepSpec(parse_user_package_dep_spec("virtual/gkp", &env, UserPackageDepSpecOptions()))));
 
             repo2->add_version("virtual", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
             repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), make_shared_ptr(new PackageDepSpec(
-                            parse_user_package_dep_spec("virtual/pkg", UserPackageDepSpecOptions()))));
+                            parse_user_package_dep_spec("virtual/pkg", &env, UserPackageDepSpecOptions()))));
 
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
             TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));

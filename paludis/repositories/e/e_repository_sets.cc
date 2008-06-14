@@ -118,7 +118,8 @@ ERepositorySets::package_set(const SetName & ss) const
                 .file_name(ff)
                 .environment(_imp->environment)
                 .type(sft_paludis_conf)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, UserPackageDepSpecOptions()))
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
+                        _imp->environment, UserPackageDepSpecOptions(), filter::All()))
                 .set_operator_mode(s.second)
                 .tag(tag));
 

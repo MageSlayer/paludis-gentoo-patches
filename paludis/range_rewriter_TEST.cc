@@ -22,6 +22,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/environments/test/test_environment.hh>
 
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -40,10 +41,13 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
             std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1", UserPackageDepSpecOptions())))));
+                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1",
+                                    &env, UserPackageDepSpecOptions())))));
             std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2", UserPackageDepSpecOptions())))));
+                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2",
+                                    &env, UserPackageDepSpecOptions())))));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());

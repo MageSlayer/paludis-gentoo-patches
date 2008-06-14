@@ -123,7 +123,8 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1"));
             TEST_CHECK_EQUAL(id1->slot(), SlotName("0"));
@@ -140,7 +141,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(d1.s.str(), "dir</fnord>");
 
             const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2"));
             TEST_CHECK_EQUAL(id2->slot(), SlotName("1"));
@@ -175,12 +177,14 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id1->masked());
 
             const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id2->masked());
         }
@@ -210,7 +214,8 @@ namespace test_cases
             TEST_CHECK(repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             TEST_CHECK(! id1->supports_action(SupportsActionTest<InstallAction>()));
             TEST_CHECK(! id1->supports_action(SupportsActionTest<ConfigAction>()));
@@ -298,7 +303,8 @@ namespace test_cases
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred", UserPackageDepSpecOptions())))]->begin());
+                        generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
+                                &env, UserPackageDepSpecOptions())))]->begin());
 
             UninstallAction action(UninstallActionOptions::named_create()
                     (k::no_config_protect(), false)
@@ -538,7 +544,8 @@ namespace test_cases
                 UninstallAction action(UninstallActionOptions::named_create()
                         (k::no_config_protect(), false));
                 (*env[selection::RequireExactlyOne(generator::Matches(
-                        parse_user_package_dep_spec("cat/pkg4a", UserPackageDepSpecOptions())))]->begin())->perform_action(action);
+                        parse_user_package_dep_spec("cat/pkg4a",
+                            &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -578,7 +585,8 @@ namespace test_cases
                 UninstallAction action(UninstallActionOptions::named_create()
                         (k::no_config_protect(), false));
                 (*env[selection::RequireExactlyOne(generator::Matches(
-                        parse_user_package_dep_spec("cat/pkg4b", UserPackageDepSpecOptions())))]->begin())->perform_action(action);
+                        parse_user_package_dep_spec("cat/pkg4b",
+                            &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
 

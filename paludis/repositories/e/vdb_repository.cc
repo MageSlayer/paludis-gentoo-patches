@@ -915,7 +915,8 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 if (std::string::npos == s.rfind('-'))
                     continue;
 
-                PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s, UserPackageDepSpecOptions()));
+                PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
+                            _imp->params.environment, UserPackageDepSpecOptions()));
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)

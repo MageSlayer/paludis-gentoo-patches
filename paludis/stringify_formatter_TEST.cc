@@ -24,6 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/clone-impl.hh>
@@ -109,12 +110,15 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+
             PartialFormatter f;
             StringifyFormatter ff(f);
-            BlockDepSpec b(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()))));
+            BlockDepSpec b(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/pkg", &env,
+                                UserPackageDepSpecOptions()))));
             NamedSetDepSpec u(SetName("foo"));
             std::string s(format_three(
-                        parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()),
+                        parse_user_package_dep_spec("cat/pkg", &env, UserPackageDepSpecOptions()),
                         b, u,
                         ff));
             TEST_CHECK_EQUAL(s, "<cat/pkg> !cat/pkg foo");

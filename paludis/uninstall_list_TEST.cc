@@ -346,7 +346,7 @@ namespace test_cases
                         std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("foo/moo", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))))));
             installed_repo->add_package_set(SetName("world"), world);
         }
 
@@ -387,10 +387,10 @@ namespace test_cases
                         std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("foo/moo", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))))));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()))))));
             installed_repo->add_package_set(SetName("world"), world);
         }
 
@@ -431,16 +431,16 @@ namespace test_cases
                         std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("cat/needs-a", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("cat/needs-a", &env, UserPackageDepSpecOptions()))))));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("cat/needs-b", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("cat/needs-b", &env, UserPackageDepSpecOptions()))))));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("cat/needs-c", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("cat/needs-c", &env, UserPackageDepSpecOptions()))))));
             world->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
                             std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_user_package_dep_spec("cat/needs-d", UserPackageDepSpecOptions()))))));
+                                    parse_user_package_dep_spec("cat/needs-d", &env, UserPackageDepSpecOptions()))))));
             installed_repo->add_package_set(SetName("world"), world);
         }
 

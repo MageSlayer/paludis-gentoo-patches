@@ -47,12 +47,12 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions()),
+            TEST_CHECK_THROWS(d.add(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions()),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
             d.options()->blocks = dl_blocks_accumulate;
-            d.add(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions()), env.default_destinations());
+            d.add(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions()), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 2);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
             TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "cat/two-1:0::installed");
@@ -123,12 +123,12 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
             d.options()->blocks = dl_blocks_accumulate;
-            d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())), env.default_destinations());
+            d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 4);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
             TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "virtual/two-1::installed-virtuals (virtual for other/two-1:0::installed)");
@@ -162,7 +162,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -302,7 +302,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -331,7 +331,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -360,7 +360,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions())),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }

@@ -201,7 +201,7 @@ namespace
                 if (! f)
                     throw FSError("Couldn't open '" + stringify(_f) + "' for read");
 
-                _v = DepParser::parse(strip_trailing(
+                _v = DepParser::parse(_env, strip_trailing(
                             std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
                 return _v;
             }

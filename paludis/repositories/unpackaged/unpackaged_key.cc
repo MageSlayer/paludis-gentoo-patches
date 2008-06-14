@@ -39,7 +39,7 @@ namespace paludis
         Implementation(const Environment * const e, const std::string & v,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l) :
             env(e),
-            value(DepParser::parse(v)),
+            value(DepParser::parse(env, v)),
             labels(l)
         {
         }

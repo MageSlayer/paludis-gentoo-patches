@@ -133,7 +133,8 @@ namespace test_cases
             {
                 DepList d(&env, DepListOptions());
                 set_options(*d.options());
-                d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, UserPackageDepSpecOptions() + updso_allow_wildcards)),
+                d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
+                                &env, UserPackageDepSpecOptions() + updso_allow_wildcards)),
                         env.default_destinations());
                 TEST_CHECK(true);
 

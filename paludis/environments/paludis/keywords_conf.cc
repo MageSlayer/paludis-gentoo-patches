@@ -117,7 +117,8 @@ KeywordsConf::add(const FSEntry & filename)
         else
         {
             std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
-                            tokens.at(0), UserPackageDepSpecOptions() + updso_allow_wildcards)));
+                            tokens.at(0), _imp->env,
+                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation)));
             if (d->package_ptr())
             {
                 KeywordsList & k(_imp->qualified[*d->package_ptr()][d]);

@@ -30,7 +30,7 @@ using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
 std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
-DepParser::parse(const std::string & s)
+DepParser::parse(const Environment * const env, const std::string & s)
 {
     Context context("When parsing '" + s + "':");
 
@@ -51,7 +51,7 @@ DepParser::parse(const std::string & s)
 
         std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
                 new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(parse_user_package_dep_spec(a, UserPackageDepSpecOptions())))));
+                        new PackageDepSpec(parse_user_package_dep_spec(a, env, UserPackageDepSpecOptions())))));
         result->add(spec);
     }
 

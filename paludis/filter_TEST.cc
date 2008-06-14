@@ -82,7 +82,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "), expected);
 
             std::tr1::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
-                        generator::Matches(parse_user_package_dep_spec("not/exist", UserPackageDepSpecOptions())) | filter)]);
+                        generator::Matches(parse_user_package_dep_spec("not/exist", &env,
+                                UserPackageDepSpecOptions())) | filter)]);
             TEST_CHECK(got_none);
             TEST_CHECK_EQUAL(join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "), "");
         }

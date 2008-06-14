@@ -38,7 +38,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec(DepParser::parse("cat/one  , cat/two, cat/three\n"));
+            std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec(
+                    DepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
             DepPrinter p(&env, f, true);
             spec->accept(p);

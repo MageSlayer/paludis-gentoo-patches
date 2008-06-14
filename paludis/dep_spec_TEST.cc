@@ -28,6 +28,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -74,7 +75,9 @@ namespace test_cases
 
         void run()
         {
-            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]", UserPackageDepSpecOptions()));
+            TestEnvironment env;
+            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]",
+                        &env, UserPackageDepSpecOptions()));
 
             std::tr1::shared_ptr<PackageDepSpec> b(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *b);

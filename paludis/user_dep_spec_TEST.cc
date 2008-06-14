@@ -28,6 +28,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -42,13 +43,15 @@ namespace test_cases
 
         void run()
         {
-            PackageDepSpec a(parse_user_package_dep_spec("foo/bar", UserPackageDepSpecOptions()));
+            TestEnvironment env;
+
+            PackageDepSpec a(parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(a, "foo/bar");
             TEST_CHECK_STRINGIFY_EQUAL(*a.package_ptr(), "foo/bar");
             TEST_CHECK(! a.slot_requirement_ptr());
             TEST_CHECK(! a.version_requirements_ptr());
 
-            PackageDepSpec b(parse_user_package_dep_spec(">=foo/bar-1.2.3", UserPackageDepSpecOptions()));
+            PackageDepSpec b(parse_user_package_dep_spec(">=foo/bar-1.2.3", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(b, ">=foo/bar-1.2.3");
             TEST_CHECK_STRINGIFY_EQUAL(*b.package_ptr(), "foo/bar");
             TEST_CHECK(! b.slot_requirement_ptr());
@@ -58,14 +61,14 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(b.version_requirements_ptr()->begin()->version_spec, "1.2.3");
             TEST_CHECK_EQUAL(b.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            PackageDepSpec c(parse_user_package_dep_spec("foo/bar:baz", UserPackageDepSpecOptions()));
+            PackageDepSpec c(parse_user_package_dep_spec("foo/bar:baz", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(c, "foo/bar:baz");
             TEST_CHECK_STRINGIFY_EQUAL(*c.package_ptr(), "foo/bar");
             TEST_CHECK(c.slot_requirement_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*c.slot_requirement_ptr(), ":baz");
             TEST_CHECK(! c.version_requirements_ptr());
 
-            PackageDepSpec d(parse_user_package_dep_spec("=foo/bar-1.2*:1.2.1", UserPackageDepSpecOptions()));
+            PackageDepSpec d(parse_user_package_dep_spec("=foo/bar-1.2*:1.2.1", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(d, "=foo/bar-1.2*:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(*d.package_ptr(), "foo/bar");
             TEST_CHECK(d.slot_requirement_ptr());
@@ -74,35 +77,35 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(d.version_requirements_ptr()->begin()->version_spec, "1.2");
             TEST_CHECK_EQUAL(d.version_requirements_ptr()->begin()->version_operator, vo_equal_star);
 
-            PackageDepSpec e(parse_user_package_dep_spec("foo/bar:1.2.1", UserPackageDepSpecOptions()));
+            PackageDepSpec e(parse_user_package_dep_spec("foo/bar:1.2.1", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(e, "foo/bar:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(*e.package_ptr(), "foo/bar");
             TEST_CHECK(e.slot_requirement_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*e.slot_requirement_ptr(), ":1.2.1");
             TEST_CHECK(! e.version_requirements_ptr());
 
-            PackageDepSpec f(parse_user_package_dep_spec("foo/bar:0", UserPackageDepSpecOptions()));
+            PackageDepSpec f(parse_user_package_dep_spec("foo/bar:0", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(f, "foo/bar:0");
             TEST_CHECK_STRINGIFY_EQUAL(*f.package_ptr(), "foo/bar");
             TEST_CHECK(f.slot_requirement_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*f.slot_requirement_ptr(), ":0");
             TEST_CHECK(! f.version_requirements_ptr());
 
-            PackageDepSpec g(parse_user_package_dep_spec("foo/bar-100dpi", UserPackageDepSpecOptions()));
+            PackageDepSpec g(parse_user_package_dep_spec("foo/bar-100dpi", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(g, "foo/bar-100dpi");
             TEST_CHECK_STRINGIFY_EQUAL(*g.package_ptr(), "foo/bar-100dpi");
 
-            PackageDepSpec h(parse_user_package_dep_spec(">=foo/bar-100dpi-1.23", UserPackageDepSpecOptions()));
+            PackageDepSpec h(parse_user_package_dep_spec(">=foo/bar-100dpi-1.23", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(h, ">=foo/bar-100dpi-1.23");
             TEST_CHECK_STRINGIFY_EQUAL(*h.package_ptr(), "foo/bar-100dpi");
             TEST_CHECK(h.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(h.version_requirements_ptr()->begin()->version_spec, "1.23");
             TEST_CHECK_EQUAL(h.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("", UserPackageDepSpecOptions()), PackageDepSpecError);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar-1.2[=1.3]", UserPackageDepSpecOptions()), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar-1.2[=1.3]", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
 
-            PackageDepSpec i(parse_user_package_dep_spec("foo/bar[one][-two]", UserPackageDepSpecOptions()));
+            PackageDepSpec i(parse_user_package_dep_spec("foo/bar[one][-two]", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(i, "foo/bar[-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*i.package_ptr(), "foo/bar");
             TEST_CHECK(! i.version_requirements_ptr());
@@ -110,21 +113,21 @@ namespace test_cases
             TEST_CHECK(! i.slot_requirement_ptr());
             TEST_CHECK(i.additional_requirements_ptr());
 
-            PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", UserPackageDepSpecOptions()));
+            PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(j, "=foo/bar-scm-r3");
             TEST_CHECK_STRINGIFY_EQUAL(*j.package_ptr(), "foo/bar");
             TEST_CHECK(j.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(j.version_requirements_ptr()->begin()->version_spec, "scm-r3");
             TEST_CHECK_EQUAL(j.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
-            PackageDepSpec k(parse_user_package_dep_spec("=foo/bar-scm", UserPackageDepSpecOptions()));
+            PackageDepSpec k(parse_user_package_dep_spec("=foo/bar-scm", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(k, "=foo/bar-scm");
             TEST_CHECK_STRINGIFY_EQUAL(*k.package_ptr(), "foo/bar");
             TEST_CHECK(k.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(k.version_requirements_ptr()->begin()->version_spec, "scm");
             TEST_CHECK_EQUAL(k.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
-            PackageDepSpec l(parse_user_package_dep_spec("foo/bar[one][-two][>=1.2&<2.0]", UserPackageDepSpecOptions()));
+            PackageDepSpec l(parse_user_package_dep_spec("foo/bar[one][-two][>=1.2&<2.0]", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(l, "foo/bar[>=1.2&<2.0][-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*l.package_ptr(), "foo/bar");
             TEST_CHECK(l.version_requirements_ptr());
@@ -135,7 +138,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(next(l.version_requirements_ptr()->begin())->version_operator, vo_less);
             TEST_CHECK(! l.slot_requirement_ptr());
 
-            PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", UserPackageDepSpecOptions()));
+            PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(m, "foo/bar[=1.2|=1.3*|~1.4]");
             TEST_CHECK_STRINGIFY_EQUAL(*m.package_ptr(), "foo/bar");
             TEST_CHECK(m.version_requirements_ptr());
@@ -156,40 +159,42 @@ namespace test_cases
 
         void run()
         {
-            PackageDepSpec a(parse_user_package_dep_spec("*/*", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            TestEnvironment env;
+
+            PackageDepSpec a(parse_user_package_dep_spec("*/*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(a, "*/*");
             TEST_CHECK(! a.package_ptr());
             TEST_CHECK(! a.package_name_part_ptr());
             TEST_CHECK(! a.category_name_part_ptr());
 
-            PackageDepSpec b(parse_user_package_dep_spec("foo/*", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec b(parse_user_package_dep_spec("foo/*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(b, "foo/*");
             TEST_CHECK(! b.package_ptr());
             TEST_CHECK(! b.package_name_part_ptr());
             TEST_CHECK(b.category_name_part_ptr());
             TEST_CHECK_EQUAL(*b.category_name_part_ptr(), CategoryNamePart("foo"));
 
-            PackageDepSpec c(parse_user_package_dep_spec("*/foo", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec c(parse_user_package_dep_spec("*/foo", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(c, "*/foo");
             TEST_CHECK(! c.package_ptr());
             TEST_CHECK(c.package_name_part_ptr());
             TEST_CHECK_EQUAL(*c.package_name_part_ptr(), PackageNamePart("foo"));
             TEST_CHECK(! c.category_name_part_ptr());
 
-            PackageDepSpec d(parse_user_package_dep_spec("~*/*-0", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec d(parse_user_package_dep_spec("~*/*-0", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(d, "~*/*-0");
             TEST_CHECK(! d.package_ptr());
             TEST_CHECK(! d.package_name_part_ptr());
             TEST_CHECK(! d.category_name_part_ptr());
 
-            PackageDepSpec e(parse_user_package_dep_spec(">=foo/*-1.23", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec e(parse_user_package_dep_spec(">=foo/*-1.23", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(e, ">=foo/*-1.23");
             TEST_CHECK(! e.package_ptr());
             TEST_CHECK(! e.package_name_part_ptr());
             TEST_CHECK(e.category_name_part_ptr());
             TEST_CHECK_EQUAL(*e.category_name_part_ptr(), CategoryNamePart("foo"));
 
-            PackageDepSpec f(parse_user_package_dep_spec("=*/foo-1*", UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec f(parse_user_package_dep_spec("=*/foo-1*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             TEST_CHECK_STRINGIFY_EQUAL(f, "=*/foo-1*");
             TEST_CHECK(! f.package_ptr());
             TEST_CHECK(f.package_name_part_ptr());
