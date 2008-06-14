@@ -78,6 +78,7 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh \
+	generator_TEST_setup.sh generator_TEST_cleanup.sh \
 	nice_names.nn \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \

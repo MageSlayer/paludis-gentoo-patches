@@ -118,7 +118,7 @@ module Paludis
         end
 
         def pda
-            Paludis::parse_user_package_dep_spec('foo/bar', [])
+            Paludis::parse_user_package_dep_spec('foo/bar', env, [])
         end
 
         def dd

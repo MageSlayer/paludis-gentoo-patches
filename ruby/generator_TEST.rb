@@ -21,6 +21,8 @@
 require 'test/unit'
 require 'Paludis'
 
+ENV['PALUDIS_HOME'] = Dir.getwd() + '/generator_TEST_dir/home'
+
 module Paludis
     class TestCase_Generator < Test::Unit::TestCase
         def test_no_create
@@ -43,14 +45,19 @@ module Paludis
     end
 
     class TestCase_GeneratorMatches < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_create
             assert_nothing_raised do
-                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", []))
+                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []))
             end
         end
 
         def test_to_s
-            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", [])).to_s, "packages matching a/b"
+            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, [])).to_s,
+                "packages matching a/b"
         end
     end
 

@@ -826,35 +826,55 @@ namespace
      * Document-method: parse_user_package_dep_spec
      *
      * call-seq:
-     *     parse_user_package_dep_spec(String, Array) -> PackageDepSpec
+     *     parse_user_package_dep_spec(String, Env, Array) -> PackageDepSpec
+     *     parse_user_package_dep_spec(String, Env, Array, Filter) -> PackageDepSpec
      *
      * Return a PackageDepSpec parsed from user input. The second parameter is either an empty
-     * array, or [ :allow_wildcards ] to allow wildcards.
+     * array, or can contain :allow_wildcards to allow wildcards, :throw_if_set to get a
+     * GotASetNotAPackageDepSpec exception if the string is a set name and :no_disambiguation
+     * to disallow disambiguation (require an explicit category). The Filter, if
+     * provided, is used to restrict disambiguation as per
+     * PackageDatabase#fetch_unique_qualified_package_name.
      *
      */
-    VALUE paludis_parse_user_dep_spec(VALUE, VALUE str, VALUE opts)
+    VALUE paludis_parse_user_dep_spec(int argc, VALUE * argv, VALUE)
     {
         std::tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
 
+        if (argc < 3 || argc > 4)
+            rb_raise(rb_eArgError, "parse_user_package_dep_spec expects three to four arguments, but got %d", argc);
+
         try
         {
-            std::string s(StringValuePtr(str));
+            std::string s(StringValuePtr(argv[0]));
+            std::tr1::shared_ptr<Environment> e(value_to_environment(argv[1]));
 
-            Check_Type(opts, T_ARRAY);
+            Check_Type(argv[2], T_ARRAY);
             UserPackageDepSpecOptions o;
-            for (unsigned i(0) ; i < RARRAY(opts)->len ; ++i)
+            for (int i(0) ; i < RARRAY(argv[2])->len ; ++i)
             {
-                VALUE entry(rb_ary_entry(opts, i));
+                VALUE entry(rb_ary_entry(argv[2], i));
                 Check_Type(entry, T_SYMBOL);
                 if (SYM2ID(entry) == rb_intern("allow_wildcards"))
                     o += updso_allow_wildcards;
+                else if (SYM2ID(entry) == rb_intern("throw_if_set"))
+                    o += updso_throw_if_set;
+                else if (SYM2ID(entry) == rb_intern("no_disambiguation"))
+                    o += updso_no_disambiguation;
                 else
                     rb_raise(rb_eArgError, "Unknown parse_user_package_dep_spec option '%s'", rb_obj_as_string(entry));
             }
 
+            Filter f(
+                    argc >= 4 ?
+                    value_to_filter(argv[3]) :
+                    filter::All()
+                    );
+
             ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<PackageDepSpec>(
-                        make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(s, o)))));
-            return Data_Wrap_Struct(c_package_dep_spec, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
+                        make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(s, e.get(), o, f)))));
+            return Data_Wrap_Struct(c_package_dep_spec, 0,
+                    &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
         catch (const std::exception & e)
         {
@@ -1159,7 +1179,7 @@ namespace
 
         // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
 
-        rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), 2);
+        rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), -1);
     }
 }
 

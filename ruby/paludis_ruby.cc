@@ -75,6 +75,7 @@ namespace
     static VALUE c_uninstall_action_error;
     static VALUE c_action_error;
     static VALUE c_bad_version_operator_error;
+    static VALUE c_got_a_set_not_a_package_dep_spec;
 
     /*
      * Document-method: match_package
@@ -180,6 +181,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     if (0 != dynamic_cast<const paludis::InternalError *>(&ee))
         rb_raise(rb_eRuntimeError, "Unexpected paludis::InternalError: %s (%s)",
                 dynamic_cast<const paludis::InternalError *>(&ee)->message().c_str(), ee.what());
+    else if (0 != dynamic_cast<const paludis::GotASetNotAPackageDepSpec *>(&ee))
+        rb_raise(c_got_a_set_not_a_package_dep_spec, dynamic_cast<const paludis::GotASetNotAPackageDepSpec *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::BadVersionSpecError *>(&ee))
         rb_raise(c_bad_version_spec_error, dynamic_cast<const paludis::BadVersionSpecError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::SetNameError *>(&ee))
@@ -471,6 +474,14 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      * Thrown if a PackageID fails to perform a InstallAction.
      */
     c_uninstall_action_error = rb_define_class_under(c_paludis_module, "UninstallActionError", c_action_error);
+
+    /*
+     * Document-class: Paludis::GotASetNotAPackageDepSpec
+     *
+     * Thrown if parse_user_package_dep_spec gets a set.
+     */
+    c_got_a_set_not_a_package_dep_spec = rb_define_class_under(c_paludis_module, "GotASetNotAPackageDepSpec",
+            rb_eRuntimeError);
 
     /*
      * Document-class: Paludis::BadVersionOperatorError

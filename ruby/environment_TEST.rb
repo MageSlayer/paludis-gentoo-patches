@@ -80,7 +80,7 @@ module Paludis
 
         def test_query_use
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
@@ -104,7 +104,7 @@ module Paludis
 
         def pid
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
         end
 
         def test_accept_license
@@ -112,7 +112,7 @@ module Paludis
             assert !env.accept_license('Failure', pid)
 
             pid2 = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', env, [])))].first
             assert env.accept_license('GPL-2', pid2)
             assert env.accept_license('Failure', pid2)
         end
@@ -131,7 +131,7 @@ module Paludis
 
         def pid
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
         end
 
         def test_accept_keywords
@@ -160,7 +160,7 @@ module Paludis
 
         def test_query_use
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
             assert ! env.query_use("foo", pid)
         end
 
@@ -199,26 +199,26 @@ module Paludis
 
         def test_adapt_use
             pid = env[Selection::RequireExactlyOne.new(
-                Generator::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Generator::Matches.new(Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert env.query_use("enabled", pid)
             assert ! env.query_use("not_enabled", pid)
             assert env.query_use("sometimes_enabled", pid)
 
-            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 'enabled', false);
             assert ! env.query_use('enabled', pid);
-            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'not_enabled', true);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 'not_enabled', true);
             assert env.query_use("not_enabled", pid)
-            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'sometimes_enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 'sometimes_enabled', false);
             assert ! env.query_use("sometimes_enabled", pid)
         end
 
         def test_adapt_use_bad
             assert_raise TypeError do
-                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'not_enabled', 'lemon');
+                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 'not_enabled', 'lemon');
             end
             assert_raise TypeError do
-                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 7, false);
+                env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 7, false);
             end
         end
     end
@@ -230,11 +230,11 @@ module Paludis
 
         def test_clear_adaptions
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert env.query_use("enabled", pid)
 
-            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', []), 'enabled', false);
+            env.adapt_use(Paludis::parse_user_package_dep_spec('foo/bar', env, []), 'enabled', false);
             assert ! env.query_use('enabled', pid);
 
             env.clear_adaptions;
@@ -425,11 +425,11 @@ module Paludis
         end
 
         def pda
-            Paludis::parse_user_package_dep_spec('=foo/bar-1.0', [])
+            Paludis::parse_user_package_dep_spec('=foo/bar-1.0', env, [])
         end
 
         def pda2
-            Paludis::parse_user_package_dep_spec('foo/bar', [])
+            Paludis::parse_user_package_dep_spec('foo/bar', env, [])
         end
 
         def test_arg_count
@@ -495,7 +495,8 @@ module Paludis
             assert_equal pid.repository_name, pid2.repository_name
 
 
-            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec('>=foo/bar-27', [])))]
+            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec(
+                '>=foo/bar-27', env, [])))]
             assert a.empty?
 
             a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2) | Filter::SupportsAction.new(InstalledAction))]

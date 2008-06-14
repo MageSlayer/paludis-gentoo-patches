@@ -18,7 +18,7 @@ cat <<END > home/.paludis/environment.conf
 world = /dev/null
 END
 
-mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files,bar/foo/files} || exit 1
+mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar,bar/foo,bar/bar} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
@@ -55,5 +55,9 @@ MYOPTIONS=""
 LICENSE="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
+END
+
+cat <<"END" > bar/bar/bar-1.0.ebuild || exit 1
+EAPI="giant-space-monkey"
 END
 

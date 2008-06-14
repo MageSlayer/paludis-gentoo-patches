@@ -38,7 +38,7 @@ module Paludis
 
         def get_dt
             DependencyDepTag.new(env[Selection::RequireExactlyOne.new(Generator::All.new)].last,
-                                 Paludis::parse_user_package_dep_spec('foo/bar', []))
+                                 Paludis::parse_user_package_dep_spec('foo/bar', env, []))
         end
 
         def test_create

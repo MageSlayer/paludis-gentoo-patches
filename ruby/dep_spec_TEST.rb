@@ -42,12 +42,16 @@ module Paludis
     end
 
     class TestCase_PackageDepSpec < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def pda
-            Paludis::parse_user_package_dep_spec('>=foo/bar-1:100::testrepo[a][-b]', [])
+            Paludis::parse_user_package_dep_spec('>=foo/bar-1:100::testrepo[a][-b]', env, [])
         end
 
         def pdb
-            Paludis::parse_user_package_dep_spec('*/bar', [:allow_wildcards])
+            Paludis::parse_user_package_dep_spec('*/bar', env, [:allow_wildcards])
         end
 
         def test_create
@@ -60,16 +64,19 @@ module Paludis
                 v = PackageDepSpec.new("foo")
             end
             assert_raise PackageDepSpecError do
-                Paludis::parse_user_package_dep_spec("=sys-apps/foo", [])
+                Paludis::parse_user_package_dep_spec("=sys-apps/foo", env, [])
             end
             assert_raise TypeError do
-                Paludis::parse_user_package_dep_spec("sys-apps/foo", {})
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", env, {})
             end
             assert_raise TypeError do
-                Paludis::parse_user_package_dep_spec("sys-apps/foo", ["foo"])
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", env, ["foo"])
             end
             assert_raise ArgumentError do
-                Paludis::parse_user_package_dep_spec("sys-apps/foo", [:unknown])
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", env, [:unknown])
+            end
+            assert_raise TypeError do
+                Paludis::parse_user_package_dep_spec("sys-apps/foo", env, [], "foo")
             end
             assert_raise ArgumentError do
                 Paludis::parse_user_package_dep_spec("sys-apps/foo")
@@ -84,6 +91,21 @@ module Paludis
         def test_text
             assert_equal ">=foo/bar-1:100::testrepo[-b][a]", pda.text
             assert_equal "*/bar", pdb.text
+        end
+
+        def test_disambiguate
+            assert_equal Paludis::parse_user_package_dep_spec("foo", env, []).to_s, "bar/foo"
+            assert_raise NoSuchPackageError do
+                Paludis::parse_user_package_dep_spec("foo", env, [], Filter::SupportsAction.new(InstalledAction))
+            end
+            assert_raise AmbiguousPackageNameError do
+                Paludis::parse_user_package_dep_spec("bar", env, [])
+            end
+            assert_raise AmbiguousPackageNameError do
+                Paludis::parse_user_package_dep_spec("bar", env, [], Filter::All.new())
+            end
+            assert_equal Paludis::parse_user_package_dep_spec("bar", env, [],
+                Filter::SupportsAction.new(InstallAction)).to_s, "foo/bar"
         end
 
 ###        def test_slot
@@ -170,8 +192,12 @@ module Paludis
     end
 
     class TestCase_BlockDepSpec < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_create
-            v = BlockDepSpec.new(Paludis::parse_user_package_dep_spec(">=foo/bar-1", []))
+            v = BlockDepSpec.new(Paludis::parse_user_package_dep_spec(">=foo/bar-1", env, []))
         end
 
         def test_create_error
@@ -185,7 +211,8 @@ module Paludis
         end
 
         def test_blocked_spec
-            assert_equal "foo/baz", BlockDepSpec.new(Paludis::parse_user_package_dep_spec("foo/baz", [])).blocked_spec.to_s
+            assert_equal "foo/baz", BlockDepSpec.new(Paludis::parse_user_package_dep_spec(
+                "foo/baz", env, [])).blocked_spec.to_s
         end
     end
 

@@ -39,10 +39,10 @@ module Paludis
 
         def test_match_package
             env = EnvironmentMaker.instance.make_from_spec("")
-            spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', [])
-            spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', [])
+            spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
+            spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert Paludis::match_package(env, spec_good, pid)
             assert !Paludis::match_package(env, spec_bad, pid)
@@ -53,16 +53,16 @@ module Paludis
             env = EnvironmentMaker.instance.make_from_spec("")
             world = env.set('world')
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert Paludis::match_package_in_set(env, world, pid)
         end
 
         def test_type_errors
             env = EnvironmentMaker.instance.make_from_spec("")
-            spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', [])
+            spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
 
             assert_raise TypeError do
                 Paludis::match_package(spec,spec,pid)
