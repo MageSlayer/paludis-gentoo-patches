@@ -125,7 +125,8 @@ do_one_executables(
     Context local_context("When handling query '" + q + "':");
 
     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions(),
+                    filter::InstalledAtRoot(env->root()))));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);

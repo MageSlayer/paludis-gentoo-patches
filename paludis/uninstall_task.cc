@@ -161,7 +161,8 @@ UninstallTask::add_target(const std::string & target)
     try
     {
         std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
-                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set)));
+                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set,
+                        filter::SupportsAction<UninstallAction>())));
 
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();
