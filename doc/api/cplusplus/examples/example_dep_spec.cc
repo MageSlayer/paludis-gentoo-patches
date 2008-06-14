@@ -51,10 +51,12 @@ int main(int argc, char * argv[])
             /* Create a PackageDepSpec from the parameter. For user-inputted
              * data, parse_user_package_dep_spec() should be used. If wildcards
              * are to be permitted, the updso_allow_wildcards option should be
-             * included. If data about the spec is known at compile time,
+             * included. If you might be getting a set, also include
+             * updso_throw_if_set and catch the GotASetNotAPackageDepSpec
+             * exception. If data about the spec is known at compile time,
              * make_package_dep_spec() should be used instead. */
             PackageDepSpec spec(parse_user_package_dep_spec(
-                        *q, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        *q, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
 
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
