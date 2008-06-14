@@ -489,8 +489,8 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     rb_define_const(c_paludis_module, "VersionMicro", INT2FIX(PALUDIS_VERSION_MICRO));
     rb_define_const(c_paludis_module, "VersionSuffix",
             rb_str_new2(stringify(PALUDIS_VERSION_SUFFIX).c_str()));
-    rb_define_const(c_paludis_module, "SubversionRevision",
-            rb_str_new2(stringify(PALUDIS_SUBVERSION_REVISION).c_str()));
+    rb_define_const(c_paludis_module, "GitHead",
+            rb_str_new2(stringify(PALUDIS_GIT_HEAD).c_str()));
     RegisterRubyClass::get_instance()->execute();
 }
 

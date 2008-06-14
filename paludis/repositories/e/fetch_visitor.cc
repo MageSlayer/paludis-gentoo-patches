@@ -215,8 +215,8 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
                     .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                             stringify(PALUDIS_VERSION_MINOR) + "." +
                             stringify(PALUDIS_VERSION_MICRO) +
-                            (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
-                             std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+                            (std::string(PALUDIS_GIT_HEAD).empty() ?
+                             std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
                     .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
                     .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
                     .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))

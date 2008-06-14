@@ -10,8 +10,8 @@ require 'Paludis'
 print "Built using Paludis ", Paludis::VersionMajor, ".", Paludis::VersionMinor,
     ".", Paludis::VersionMicro, Paludis::VersionSuffix
 
-if not Paludis::SubversionRevision.empty?
-    print ' ', Paludis::SubversionRevision
+if not Paludis::GitHead.empty?
+    print ' ', Paludis::GitHead
 end
 
 print "\n"

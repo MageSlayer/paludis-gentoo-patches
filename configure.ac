@@ -1277,18 +1277,24 @@ AC_SUBST([BUILDHOST])
 BUILDDATE=`date +%Y-%m-%dT%H:%M:%S%z`
 AC_SUBST([BUILDDATE])
 
-if test -d "${ac_top_srcdir:-./}/.svn" ; then
-	SVNVERSION=`svnversion "${ac_top_srcdir:-./}"`
+if test -d "${ac_top_srcdir:-./}/.git" ; then
+	GITHEAD=`git describe 2>/dev/null`
+	if test -z ${GITHEAD} ; then
+		GITHEAD=`git rev-parse HEAD`
+	fi
+	if test -n "`git diff-index --name-only HEAD`" ; then
+		GITHEAD=${GITHEAD}-dirty
+	fi
 else
-	SVNVERSION=
+	GITVERSION=
 fi
-AC_MSG_CHECKING([for svn revision])
-AC_ARG_WITH([svn-revision],
-	AS_HELP_STRING([--with-svn-revision], [Specify svn revision]),
-	SVNVERSION=`eval echo $withval`,
-	SVNVERSION=`eval echo $SVNVERSION`)
-AC_MSG_RESULT([$SVNVERSION])
-AC_SUBST([SVNVERSION])
+AC_MSG_CHECKING([for git head])
+AC_ARG_WITH([git-head],
+	AS_HELP_STRING([--with-git-head], [Specify Git head]),
+	GITHEAD=`eval echo $withval`,
+	GITHEAD=`eval echo $GITHEAD`)
+AC_MSG_RESULT([$GITHEAD])
+AC_SUBST([GITHEAD])
 dnl }}}
 
 dnl {{{ output

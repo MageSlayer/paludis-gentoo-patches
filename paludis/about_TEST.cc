@@ -56,7 +56,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(PALUDIS_VERSION, 10000 * PALUDIS_VERSION_MAJOR +
                     100 * PALUDIS_VERSION_MINOR + PALUDIS_VERSION_MICRO);
 
-            TEST_CHECK(std::string(PALUDIS_SUBVERSION_REVISION) != "i am a fish");
+            TEST_CHECK(std::string(PALUDIS_GIT_HEAD) != "i am a fish");
         }
     } test_case_about;
 

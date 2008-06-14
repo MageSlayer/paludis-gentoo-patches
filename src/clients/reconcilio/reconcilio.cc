@@ -46,8 +46,8 @@ namespace
     {
         std::cout << "reconcilio, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO << PALUDIS_VERSION_SUFFIX;
-        if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
-            std::cout << " svn " << PALUDIS_SUBVERSION_REVISION;
+        if (! std::string(PALUDIS_GIT_HEAD).empty())
+            std::cout << " git " << PALUDIS_GIT_HEAD;
         std::cout << std::endl;
     }
 }

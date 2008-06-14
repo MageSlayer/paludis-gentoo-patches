@@ -77,11 +77,12 @@
         + (100 * PALUDIS_VERSION_MINOR) + PALUDIS_VERSION_MICRO)
 
 /**
- * The subversion revision, if applicable (eg "65" or "65M" or "").
+ * The Git head used to build this binary, if applicable (eg "deadbeef" or "1.0.0-40-f00-dirty" or "").
  *
  * \ingroup g_about
+ * \since 0.28
  */
-#define PALUDIS_SUBVERSION_REVISION "@SVNVERSION@"
+#define PALUDIS_GIT_HEAD "@GITHEAD@"
 
 /**
  * The CXXFLAGS used to build Paludis.

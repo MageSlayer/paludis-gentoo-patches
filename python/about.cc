@@ -34,5 +34,5 @@ void expose_about()
     s.attr("VERSION") = stringify(PALUDIS_VERSION_MAJOR) + "."
         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO);
     s.attr("VERSION_SUFFIX") = stringify(PALUDIS_VERSION_SUFFIX);
-    s.attr("SUBVERSION_REVISION") = stringify(PALUDIS_SUBVERSION_REVISION);
+    s.attr("GIT_HEAD") = stringify(PALUDIS_GIT_HEAD);
 }

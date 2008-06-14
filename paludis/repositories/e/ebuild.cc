@@ -126,8 +126,8 @@ EbuildCommand::operator() ()
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) + stringify(PALUDIS_VERSION_SUFFIX) +
-                (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
-                 std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+                (std::string(PALUDIS_GIT_HEAD).empty() ?
+                 std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
             .with_setenv("PALUDIS_TMPDIR", stringify(params[k::builddir()]))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
@@ -715,8 +715,8 @@ WriteVDBEntryCommand::operator() ()
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) +
-                (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
-                 std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+                (std::string(PALUDIS_GIT_HEAD).empty() ?
+                 std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
             .with_setenv("EAPI", stringify((*params[k::package_id()]->eapi())[k::exported_name()]))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
@@ -918,8 +918,8 @@ WriteBinaryEbuildCommand::operator() ()
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) +
-                (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
-                 std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+                (std::string(PALUDIS_GIT_HEAD).empty() ?
+                 std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
             .with_setenv("EAPI", stringify((*params[k::package_id()]->eapi())[k::exported_name()]))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_TMPDIR", stringify(params[k::builddir()]))

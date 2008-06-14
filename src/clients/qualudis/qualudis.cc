@@ -376,8 +376,8 @@ int main(int argc, char *argv[])
     {
         cout << "qualudis, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO << PALUDIS_VERSION_SUFFIX;
-        if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
-            cout << " svn " << PALUDIS_SUBVERSION_REVISION;
+        if (! std::string(PALUDIS_GIT_HEAD).empty())
+            cout << " git " << PALUDIS_GIT_HEAD;
         cout << endl << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;
