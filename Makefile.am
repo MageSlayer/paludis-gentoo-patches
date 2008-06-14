@@ -2,7 +2,7 @@ CLEANFILES = *~ done-check gmon.out *.gcov *.gcno  *.gcda *.loT \
 	automake-deps-dist-hack.tmp automake-deps-built-hack.tmp
 MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL
-AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options
+AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options foreign
 EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp ChangeLog.old.bz2
 SUBDIRS = misc test paludis python ruby src doc hooks eselect vim bash-completion zsh-completion pkg-config
 
