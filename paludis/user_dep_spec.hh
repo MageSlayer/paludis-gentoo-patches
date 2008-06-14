@@ -23,9 +23,22 @@
 #include <paludis/user_dep_spec-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/slot_requirement.hh>
+#include <paludis/filter.hh>
 
 namespace paludis
 {
+    /**
+     * Create a PackageDepSpec from user input.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.28
+     */
+    PackageDepSpec parse_user_package_dep_spec(
+            const std::string &,
+            const Environment * const,
+            const UserPackageDepSpecOptions &,
+            const Filter & = filter::All()) PALUDIS_VISIBLE;
+
     class PALUDIS_VISIBLE UserSlotExactRequirement :
         public SlotExactRequirement
     {

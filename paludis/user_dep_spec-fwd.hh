@@ -22,8 +22,10 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <tr1/memory>
 #include <iosfwd>
 
@@ -41,12 +43,24 @@ namespace paludis
     typedef Options<UserPackageDepSpecOption> UserPackageDepSpecOptions;
 
     /**
-     * Create a PackageDepSpec from user input.
+     * Thrown by paludis::parse_user_package_dep_spec if options includes
+     * updso_throw_if_set and we're given a set.
      *
+     * \since 0.28
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \ingroup g_exceptions
      */
-    PackageDepSpec parse_user_package_dep_spec(const std::string &, const UserPackageDepSpecOptions &) PALUDIS_VISIBLE;
+    class PALUDIS_VISIBLE GotASetNotAPackageDepSpec :
+        public Exception
+    {
+        public:
+            ///\name Basic Operations
+            ///\{
+
+            GotASetNotAPackageDepSpec(const std::string &) throw ();
+
+            ///\}
+    };
 
     struct UserSlotExactRequirement;
 }

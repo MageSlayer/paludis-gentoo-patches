@@ -5,11 +5,13 @@ make_enum_UserPackageDepSpecOption()
 {
     prefix updso
 
-    key updso_allow_wildcards                   "Allow wildcards for category, package"
+    key updso_allow_wildcards    "Allow wildcards for category, package"
+    key updso_throw_if_set       "Check if it's a set, and throw GotASetNotAPackageDepSpec if so. \since 0.28"
+    key updso_no_disambiguation  "Require an explicit category. \since 0.28"
 
     doxygen_comment << "END"
         /**
-         * Options for parse_user_package_dep_spec
+         * Options for parse_user_package_dep_spec.
          *
          * \ingroup g_dep_spec
          * \since 0.26

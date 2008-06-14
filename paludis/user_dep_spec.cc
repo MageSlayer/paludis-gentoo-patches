@@ -23,6 +23,8 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/package_database.hh>
+#include <paludis/filter.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -32,13 +34,58 @@ using namespace paludis;
 
 #include <paludis/user_dep_spec-se.cc>
 
+namespace
+{
+    void parse_package_bit(PartiallyMadePackageDepSpec & result, const std::string & ss, const std::string & t,
+            const Environment * const env, const UserPackageDepSpecOptions & options,
+            const Filter & filter)
+    {
+        if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
+        {
+            if (! options[updso_allow_wildcards])
+                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
+
+            if (0 != t.compare(t.length() - 2, 2, "/*"))
+                result.package_name_part(PackageNamePart(t.substr(2)));
+        }
+        else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
+        {
+            if (! options[updso_allow_wildcards])
+                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
+
+            result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
+        }
+        else if (t == "*")
+            throw PackageDepSpecError("Use '*/*' not '*' to match everything in '" + stringify(ss) + "'");
+        else if (std::string::npos != t.find('/'))
+            result.package(QualifiedPackageName(t));
+        else
+        {
+            if (options[updso_no_disambiguation])
+                throw PackageDepSpecError("Need an explicit category specified in '" + stringify(ss) + "'");
+            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(t), filter));
+        }
+    }
+}
+
 PackageDepSpec
-paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDepSpecOptions & options)
+paludis::parse_user_package_dep_spec(const std::string & ss, const Environment * const env,
+        const UserPackageDepSpecOptions & options, const Filter & filter)
 {
     Context context("When parsing package dep spec '" + ss + "':");
 
     if (ss.empty())
         throw PackageDepSpecError("Got empty dep spec");
+
+    if (options[updso_throw_if_set] && std::string::npos == ss.find_first_of("/:[<>=~"))
+        try
+        {
+            if (env->set(SetName(ss)))
+                throw GotASetNotAPackageDepSpec(ss);
+        }
+        catch (const SetNameError &)
+        {
+        }
 
     std::string s(ss);
     PartiallyMadePackageDepSpec result;
@@ -184,23 +231,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
         }
 
         std::string t(s.substr(p, q - p - 1));
-        if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
-        {
-            if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            if (0 != t.compare(t.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(t.substr(2)));
-        }
-        else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
-        {
-            if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
-        }
-        else
-            result.package(QualifiedPackageName(t));
+        parse_package_bit(result, ss, t, env, options, filter);
 
         if ('*' == s.at(s.length() - 1))
         {
@@ -216,25 +247,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const UserPackageDe
             result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q))));
     }
     else
-    {
-        if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
-        {
-            if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(s.substr(2)));
-        }
-        else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
-        {
-            if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
-        }
-        else
-            result.package(QualifiedPackageName(s));
-    }
+        parse_package_bit(result, ss, s, env, options, filter);
 
     return result;
 }
@@ -253,5 +266,10 @@ const std::string
 UserSlotExactRequirement::as_string() const
 {
     return ":" + stringify(_s);
+}
+
+GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :
+    Exception("'" + s + "' is a set, not a package")
+{
 }
 
