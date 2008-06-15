@@ -252,7 +252,8 @@ PackagesListModel::populate_in_paludis_thread()
         {
             std::list<PopulateItem>::iterator atom_iter(data->items.insert(data->items.end(), PopulateItem(*i)));
             atom_iter->merge_if_one_child = false;
-            PackageDepSpec ds(parse_user_package_dep_spec(*i, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec ds(parse_user_package_dep_spec(*i, _imp->main_window->environment(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation));
             if (ds.package_ptr())
             {
                 std::tr1::shared_ptr<const PackageIDSequence> c(
