@@ -98,6 +98,11 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class ConstVisitor<DependencySpecTree>;
+    extern template class ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>;
+#endif
 }
 
 #endif

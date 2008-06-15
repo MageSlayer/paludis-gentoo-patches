@@ -482,6 +482,53 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class AcceptInterface<ActionVisitorTypes>;
+    extern template class AcceptInterface<SupportsActionTestVisitorTypes>;
+
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>;
+    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
+
+    extern template class Visits<ConfigAction>;
+    extern template class Visits<FetchAction>;
+    extern template class Visits<InfoAction>;
+    extern template class Visits<InstallAction>;
+    extern template class Visits<InstalledAction>;
+    extern template class Visits<PretendAction>;
+    extern template class Visits<PretendFetchAction>;
+    extern template class Visits<UninstallAction>;
+
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
+    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
+
+    extern template class Visits<SupportsActionTest<ConfigAction> >;
+    extern template class Visits<SupportsActionTest<FetchAction> >;
+    extern template class Visits<SupportsActionTest<InfoAction> >;
+    extern template class Visits<SupportsActionTest<InstallAction> >;
+    extern template class Visits<SupportsActionTest<InstalledAction> >;
+    extern template class Visits<SupportsActionTest<PretendAction> >;
+    extern template class Visits<SupportsActionTest<PretendFetchAction> >;
+    extern template class Visits<SupportsActionTest<UninstallAction> >;
+
+    extern template class PrivateImplementationPattern<FetchAction>;
+    extern template class PrivateImplementationPattern<InstallAction>;
+    extern template class PrivateImplementationPattern<PretendAction>;
+    extern template class PrivateImplementationPattern<PretendFetchAction>;
+    extern template class PrivateImplementationPattern<UninstallAction>;
+#endif
 }
 
 #endif

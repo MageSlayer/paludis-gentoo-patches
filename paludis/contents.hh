@@ -260,6 +260,29 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
+    extern template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
+
+    extern template class ConstAcceptInterface<ContentsVisitorTypes>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>;
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>;
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>;
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>;
+    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
+
+    extern template class PrivateImplementationPattern<Contents>;
+
+    extern template class Visits<const ContentsFileEntry>;
+    extern template class Visits<const ContentsDirEntry>;
+    extern template class Visits<const ContentsSymEntry>;
+    extern template class Visits<const ContentsFifoEntry>;
+    extern template class Visits<const ContentsDevEntry>;
+    extern template class Visits<const ContentsMiscEntry>;
+#endif
 }
 
 #endif

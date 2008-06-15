@@ -29,25 +29,6 @@ using namespace paludis;
 
 #include <paludis/action-se.cc>
 
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
-
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
-
-template class Sequence<FetchActionFailure>;
-
 Action::~Action()
 {
 }
@@ -304,4 +285,51 @@ InfoActionError::InfoActionError(const std::string & msg) throw () :
     ActionError("Info error: " + msg)
 {
 }
+
+template class AcceptInterface<ActionVisitorTypes>;
+template class AcceptInterface<SupportsActionTestVisitorTypes>;
+
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
+
+template class Visits<ConfigAction>;
+template class Visits<FetchAction>;
+template class Visits<InfoAction>;
+template class Visits<InstallAction>;
+template class Visits<InstalledAction>;
+template class Visits<PretendAction>;
+template class Visits<PretendFetchAction>;
+template class Visits<UninstallAction>;
+
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
+
+template class Visits<SupportsActionTest<ConfigAction> >;
+template class Visits<SupportsActionTest<FetchAction> >;
+template class Visits<SupportsActionTest<InfoAction> >;
+template class Visits<SupportsActionTest<InstallAction> >;
+template class Visits<SupportsActionTest<InstalledAction> >;
+template class Visits<SupportsActionTest<PretendAction> >;
+template class Visits<SupportsActionTest<PretendFetchAction> >;
+template class Visits<SupportsActionTest<UninstallAction> >;
+
+template class PrivateImplementationPattern<FetchAction>;
+template class PrivateImplementationPattern<InstallAction>;
+template class PrivateImplementationPattern<PretendAction>;
+template class PrivateImplementationPattern<PretendFetchAction>;
+template class PrivateImplementationPattern<UninstallAction>;
+
+template class Sequence<FetchActionFailure>;
 

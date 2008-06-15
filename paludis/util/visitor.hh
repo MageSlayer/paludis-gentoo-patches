@@ -1113,7 +1113,7 @@ namespace paludis
          * \ingroup g_visitors
          */
         template <typename H_>
-        class ConstVisitor :
+        class PALUDIS_VISIBLE ConstVisitor :
             public virtual Visits<const typename H_::ContainedItem1>,
             public virtual Visits<const typename H_::ContainedItem2>,
             public virtual Visits<const typename H_::ContainedItem3>,
@@ -1252,7 +1252,7 @@ namespace paludis
          * \ingroup g_visitors
          */
         template <typename H_>
-        class Visitor :
+        class PALUDIS_VISIBLE Visitor :
             public virtual Visits<typename H_::ContainedItem1>,
             public virtual Visits<typename H_::ContainedItem2>,
             public virtual Visits<typename H_::ContainedItem3>,

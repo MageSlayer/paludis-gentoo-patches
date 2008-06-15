@@ -25,15 +25,21 @@
 
 using namespace paludis;
 
-template class ConstVisitor<ContentsVisitorTypes>;
+template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
+template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
+
 template class ConstAcceptInterface<ContentsVisitorTypes>;
 
 template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>;
 template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
 template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>;
 template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
+
+template class PrivateImplementationPattern<Contents>;
+
+template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 
 template class Visits<const ContentsFileEntry>;
 template class Visits<const ContentsDirEntry>;
@@ -41,8 +47,6 @@ template class Visits<const ContentsSymEntry>;
 template class Visits<const ContentsFifoEntry>;
 template class Visits<const ContentsDevEntry>;
 template class Visits<const ContentsMiscEntry>;
-
-template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 
 ContentsEntry::ContentsEntry(const std::string & n) :
     _name(n)

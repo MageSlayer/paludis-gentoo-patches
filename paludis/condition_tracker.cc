@@ -142,3 +142,6 @@ ConditionTracker::visit_leaf(const NamedSetDepSpec &)
     throw InternalError(PALUDIS_HERE, "ConditionTracker saw a NamedSetDepSpec");
 }
 
+template class ConstVisitor<DependencySpecTree>;
+template class ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>;
+

@@ -371,6 +371,125 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class ConstAcceptInterface<DependencyABIsLabelVisitorTypes>;
+    extern template class ConstAcceptInterface<DependencyLabelVisitorTypes>;
+    extern template class ConstAcceptInterface<DependencySuggestLabelVisitorTypes>;
+    extern template class ConstAcceptInterface<DependencySystemLabelVisitorTypes>;
+    extern template class ConstAcceptInterface<DependencyTypeLabelVisitorTypes>;
+    extern template class ConstAcceptInterface<URILabelVisitorTypes>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>;
+
+    extern template class Visits<DependencyABIsLabel>;
+    extern template class Visits<DependencySuggestLabel>;
+    extern template class Visits<DependencySystemLabel>;
+    extern template class Visits<DependencyTypeLabel>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsThenListedLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsOnlyLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedOnlyLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedThenMirrorsLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URILocalMirrorsOnlyLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIManualOnlyLabel>;
+
+    extern template class Visits<URIMirrorsThenListedLabel>;
+    extern template class Visits<URIMirrorsOnlyLabel>;
+    extern template class Visits<URIListedOnlyLabel>;
+    extern template class Visits<URIListedThenMirrorsLabel>;
+    extern template class Visits<URILocalMirrorsOnlyLabel>;
+    extern template class Visits<URIManualOnlyLabel>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyHostLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyTargetLabel>;
+
+    extern template class Visits<DependencySystemLabel>;
+    extern template class Visits<DependencyHostLabel>;
+    extern template class Visits<DependencyTargetLabel>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyBuildLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyRunLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyPostLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyInstallLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyCompileLabel>;
+
+    extern template class Visits<DependencyBuildLabel>;
+    extern template class Visits<DependencyRunLabel>;
+    extern template class Visits<DependencyPostLabel>;
+    extern template class Visits<DependencyInstallLabel>;
+    extern template class Visits<DependencyCompileLabel>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencySuggestedLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRecommendedLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRequiredLabel>;
+
+    extern template class Visits<DependencySuggestedLabel>;
+    extern template class Visits<DependencyRecommendedLabel>;
+    extern template class Visits<DependencyRequiredLabel>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyAnyLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyMineLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyPrimaryLabel>;
+    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyABILabel>;
+
+    extern template class Visits<DependencyAnyLabel>;
+    extern template class Visits<DependencyMineLabel>;
+    extern template class Visits<DependencyPrimaryLabel>;
+    extern template class Visits<DependencyABILabel>;
+
+    extern template class InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>;
+    extern template class InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>;
+
+    extern template class ConcreteDependencyLabel<DependencyHostLabelTag, DependencySystemLabel>;
+    extern template class ConcreteDependencyLabel<DependencyTargetLabelTag, DependencySystemLabel>;
+    extern template class ConcreteDependencyLabel<DependencyBuildLabelTag, DependencyTypeLabel>;
+    extern template class ConcreteDependencyLabel<DependencyRunLabelTag, DependencyTypeLabel>;
+    extern template class ConcreteDependencyLabel<DependencyPostLabelTag, DependencyTypeLabel>;
+    extern template class ConcreteDependencyLabel<DependencyInstallLabelTag, DependencyTypeLabel>;
+    extern template class ConcreteDependencyLabel<DependencyCompileLabelTag, DependencyTypeLabel>;
+    extern template class ConcreteDependencyLabel<DependencySuggestedLabelTag, DependencySuggestLabel>;
+    extern template class ConcreteDependencyLabel<DependencyRecommendedLabelTag, DependencySuggestLabel>;
+    extern template class ConcreteDependencyLabel<DependencyRequiredLabelTag, DependencySuggestLabel>;
+    extern template class ConcreteDependencyLabel<DependencyAnyLabelTag, DependencyABIsLabel>;
+    extern template class ConcreteDependencyLabel<DependencyMineLabelTag, DependencyABIsLabel>;
+    extern template class ConcreteDependencyLabel<DependencyPrimaryLabelTag, DependencyABIsLabel>;
+    extern template class ConcreteDependencyLabel<DependencyABILabelTag, DependencyABIsLabel>;
+
+    extern template class ConcreteURILabel<URIMirrorsThenListedLabelTag>;
+    extern template class ConcreteURILabel<URIMirrorsOnlyLabelTag>;
+    extern template class ConcreteURILabel<URIListedOnlyLabelTag>;
+    extern template class ConcreteURILabel<URIListedThenMirrorsLabelTag>;
+    extern template class ConcreteURILabel<URILocalMirrorsOnlyLabelTag>;
+    extern template class ConcreteURILabel<URIManualOnlyLabelTag>;
+
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URIMirrorsThenListedLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URIMirrorsOnlyLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URIListedOnlyLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URIListedThenMirrorsLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URILocalMirrorsOnlyLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteURILabel<URIManualOnlyLabel> >;
+
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyHostLabelTag, DependencySystemLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyTargetLabelTag, DependencySystemLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyBuildLabelTag, DependencyTypeLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyRunLabelTag, DependencyTypeLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyPostLabelTag, DependencyTypeLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyInstallLabelTag, DependencyTypeLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyCompileLabelTag, DependencyTypeLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencySuggestedLabelTag, DependencySuggestLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyRecommendedLabelTag, DependencySuggestLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyRequiredLabelTag, DependencySuggestLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyAnyLabelTag, DependencyABIsLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyMineLabelTag, DependencyABIsLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyPrimaryLabelTag, DependencyABIsLabel> >;
+    extern template class PrivateImplementationPattern<ConcreteDependencyLabel<DependencyABILabelTag, DependencyABIsLabel> >;
+
+    extern template class PrivateImplementationPattern<ActiveDependencyLabels>;
+#endif
 }
 
 #endif
