@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -29,6 +30,8 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -202,5 +205,90 @@ namespace test_cases
             TEST_CHECK(! f.category_name_part_ptr());
         }
     } test_user_package_dep_spec_unspecific;
+
+    struct UserPackageDepSpecDisambiguationTest : TestCase
+    {
+        UserPackageDepSpecDisambiguationTest() : TestCase("user package dep spec disambiguation") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            std::tr1::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(&env, RepositoryName("fake_inst")));
+            env.package_database()->add_repository(1, fake);
+            env.package_database()->add_repository(2, fake_inst);
+            fake->add_version("cat", "pkg1", "1");
+            fake->add_version("cat", "pkg2", "1");
+            fake->add_version("dog", "pkg2", "1");
+            fake->add_version("cat", "pkg3", "1");
+            fake_inst->add_version("dog", "pkg3", "1");
+
+            PackageDepSpec a(parse_user_package_dep_spec("pkg1", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(a, "cat/pkg1");
+            TEST_CHECK_STRINGIFY_EQUAL(*a.package_ptr(), "cat/pkg1");
+            TEST_CHECK(! a.package_name_part_ptr());
+            TEST_CHECK(! a.category_name_part_ptr());
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg2", &env, UserPackageDepSpecOptions()), AmbiguousPackageNameError);
+            PackageDepSpec b(parse_user_package_dep_spec("pkg3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(b, "dog/pkg3");
+            TEST_CHECK_STRINGIFY_EQUAL(*b.package_ptr(), "dog/pkg3");
+            TEST_CHECK(! b.package_name_part_ptr());
+            TEST_CHECK(! b.category_name_part_ptr());
+            PackageDepSpec c(parse_user_package_dep_spec("pkg3", &env, UserPackageDepSpecOptions(), filter::SupportsAction<InstallAction>()));
+            TEST_CHECK_STRINGIFY_EQUAL(c, "cat/pkg3");
+            TEST_CHECK_STRINGIFY_EQUAL(*c.package_ptr(), "cat/pkg3");
+            TEST_CHECK(! c.package_name_part_ptr());
+            TEST_CHECK(! c.category_name_part_ptr());
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg4", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg5", &env, UserPackageDepSpecOptions() + updso_no_disambiguation), PackageDepSpecError);
+
+            PackageDepSpec d(parse_user_package_dep_spec("=pkg1-42", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(d, "=cat/pkg1-42");
+            PackageDepSpec e(parse_user_package_dep_spec("=pkg1-42:0", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(e, "=cat/pkg1-42:0");
+            PackageDepSpec f(parse_user_package_dep_spec("pkg1:0", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(f, "cat/pkg1:0");
+            PackageDepSpec g(parse_user_package_dep_spec("pkg1[foo]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(g, "cat/pkg1[foo]");
+            PackageDepSpec h(parse_user_package_dep_spec("pkg1[=42]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(h, "=cat/pkg1-42");
+            PackageDepSpec i(parse_user_package_dep_spec("pkg1::fake", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(i, "cat/pkg1::fake");
+        }
+    } test_user_package_dep_spec_disambiguation;
+
+    struct UserPackageDepSpecSetsTest : TestCase
+    {
+        UserPackageDepSpecSetsTest() : TestCase("user package dep spec sets") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            fake->add_version("cat", "world", "1");
+            fake->add_version("cat", "moon", "1");
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, UserPackageDepSpecOptions() + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions() + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            PackageDepSpec a(parse_user_package_dep_spec("moon", &env, UserPackageDepSpecOptions() + updso_throw_if_set));
+            TEST_CHECK_STRINGIFY_EQUAL(a, "cat/moon");
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, UserPackageDepSpecOptions() + updso_throw_if_set), NoSuchPackageError);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("moon", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=world-123", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world*", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world**", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), PackageDepSpecError);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+        }
+    } test_user_package_dep_spec_sets;
 }
 
