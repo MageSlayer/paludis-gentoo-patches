@@ -3,7 +3,7 @@
 <h1>Paludis</h1>
 
 <ul>
-    <li>We use <a href="http://paludis.pioto.org/trac/">Trac</a> for bug reports, feature requests etc.</li>
+    <li>We use <a href="http://trac.pioto.org/paludis/">Trac</a> for bug reports, feature requests etc.</li>
     <li>The current version is ###PALUDIS_VERSION###. See <a href="news.html">the release notes</a> and <a
         href="changelog.html">changelog</a>.</li>
 </ul>
