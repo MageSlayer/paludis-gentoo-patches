@@ -385,7 +385,7 @@ InstallTask::_add_target(const std::string & target)
     try
     {
         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
-                        _imp->env, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_throw_if_set,
+                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set,
                         filter::SupportsAction<InstallAction>())));
 
         if (_imp->had_set_targets)
