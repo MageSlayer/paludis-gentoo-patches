@@ -373,7 +373,7 @@ PaludisEnvironment::local_set(const SetName & ss) const
                 .file_name(dir / (stringify(s.first) + ".bash"))
                 .type(sft_paludis_bash)
                 .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                        UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All()))
+                        UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set, filter::All()))
                 .tag(tag)
                 .set_operator_mode(s.second)
                 .environment(this));

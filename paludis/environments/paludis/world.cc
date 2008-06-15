@@ -114,7 +114,7 @@ World::_add_string_to_world(const std::string & n) const
     SetFile world(SetFileParams::create()
             .file_name(*_imp->maybe_world_file)
             .type(sft_simple)
-            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions(),
+            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
                     filter::All()))
             .tag(std::tr1::shared_ptr<DepTag>())
             .set_operator_mode(sfsmo_natural)
@@ -144,7 +144,7 @@ World::_remove_string_from_world(const std::string & n) const
         SetFile world(SetFileParams::create()
                 .file_name(*_imp->maybe_world_file)
                 .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions(),
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
                         filter::All()))
                 .tag(std::tr1::shared_ptr<DepTag>())
                 .set_operator_mode(sfsmo_natural)
@@ -169,7 +169,7 @@ World::world_set() const
             SetFile world(SetFileParams::create()
                     .file_name(*_imp->maybe_world_file)
                     .type(sft_simple)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions(),
+                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
                             filter::All()))
                     .tag(tag)
                     .set_operator_mode(sfsmo_natural)

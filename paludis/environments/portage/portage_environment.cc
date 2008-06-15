@@ -844,7 +844,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
     SetFile world(SetFileParams::create()
             .file_name(_imp->world_file)
             .type(sft_simple)
-            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions(), filter::All()))
+            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All()))
             .tag(std::tr1::shared_ptr<DepTag>())
             .set_operator_mode(sfsmo_natural)
             .environment(this));
@@ -866,7 +866,7 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
         SetFile world(SetFileParams::create()
                 .file_name(_imp->world_file)
                 .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions(),
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation,
                         filter::All()))
                 .tag(std::tr1::shared_ptr<DepTag>())
                 .set_operator_mode(sfsmo_natural)
@@ -893,7 +893,7 @@ PortageEnvironment::world_set() const
         SetFile world(SetFileParams::create()
                 .file_name(_imp->world_file)
                 .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions(),
+                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation,
                         filter::All()))
                 .tag(tag)
                 .set_operator_mode(sfsmo_natural)

@@ -252,7 +252,7 @@ EInstalledRepository::package_set(const SetName & s) const
                     .file_name(_imp->params.deprecated_world)
                     .type(sft_simple)
                     .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
-                            _imp->params.environment, UserPackageDepSpecOptions(), filter::All()))
+                            _imp->params.environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()))
                     .tag(tag)
                     .set_operator_mode(sfsmo_natural)
                     .environment(_imp->params.environment));
