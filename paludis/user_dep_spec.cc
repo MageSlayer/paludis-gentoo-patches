@@ -80,7 +80,8 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     if (options[updso_throw_if_set] && std::string::npos == ss.find_first_of("/:[<>=~"))
         try
         {
-            if (env->set(SetName(ss)))
+            SetName sn(ss);
+            if (options[updso_no_disambiguation] || env->set(sn))
                 throw GotASetNotAPackageDepSpec(ss);
         }
         catch (const SetNameError &)

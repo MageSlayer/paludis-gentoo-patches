@@ -82,12 +82,16 @@ PackageMaskConf::add(const FSEntry & filename)
     for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
     {
-        if (std::string::npos == line->find("/"))
-            _imp->sets.push_back(std::make_pair(SetName(*line), std::tr1::shared_ptr<const SetSpecTree::ConstItem>()));
-        else
+        try
+        {
             _imp->masks.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
                                 *line, _imp->env,
-                                UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation))));
+                                UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set))));
+        }
+        catch (const GotASetNotAPackageDepSpec &)
+        {
+            _imp->sets.push_back(std::make_pair(SetName(*line), std::tr1::shared_ptr<const SetSpecTree::ConstItem>()));
+        }
     }
 }
 

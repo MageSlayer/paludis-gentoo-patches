@@ -105,20 +105,11 @@ KeywordsConf::add(const FSEntry & filename)
             tokens.at(0) = "*/*";
         }
 
-        if (std::string::npos == tokens.at(0).find("/"))
-        {
-            NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                std::tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
-
-            for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-                i->second.second.push_back(KeywordName(*t));
-        }
-        else
+        try
         {
             std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
-                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation)));
+                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
             if (d->package_ptr())
             {
                 KeywordsList & k(_imp->qualified[*d->package_ptr()][d]);
@@ -133,6 +124,15 @@ KeywordsConf::add(const FSEntry & filename)
                         t != t_end ; ++t)
                     k.push_back(KeywordName(*t));
             }
+        }
+        catch (const GotASetNotAPackageDepSpec &)
+        {
+            NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
+                                std::tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
+
+            for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+                i->second.second.push_back(KeywordName(*t));
         }
     }
 }

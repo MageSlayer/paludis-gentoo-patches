@@ -107,35 +107,11 @@ UseConf::add(const FSEntry & filename)
             tokens.at(0) = "*/*";
         }
 
-        if (std::string::npos == tokens.at(0).find("/"))
-        {
-            Sets::iterator i(_imp->sets.insert(std::make_pair(SetName(tokens.at(0)), DSWithUseInfo())).first);
-            std::string prefix_upper, prefix_lower;
-            for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-            {
-                if (*t == "-*")
-                    i->second.second.second.push_back(strip_trailing(prefix_lower, "_"));
-                else if ('-' == t->at(0))
-                    i->second.second.first.insert(std::make_pair(
-                                UseFlagName(prefix_lower + t->substr(1)), use_disabled)).first->second = use_disabled;
-                else if (':' == t->at(t->length() - 1))
-                {
-                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_lower), &::tolower);
-                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_upper), &::toupper);
-                    prefix_lower.append("_");
-                    prefix_upper.append("_");
-                }
-                else
-                    i->second.second.first.insert(std::make_pair(
-                                UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
-            }
-        }
-        else
+        try
         {
             std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
-                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation)));
+                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
 
             if (d->additional_requirements_ptr())
             {
@@ -193,6 +169,30 @@ UseConf::add(const FSEntry & filename)
                     else
                         i->second.first.insert(std::make_pair(UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
                 }
+            }
+        }
+        catch (const GotASetNotAPackageDepSpec &)
+        {
+            Sets::iterator i(_imp->sets.insert(std::make_pair(SetName(tokens.at(0)), DSWithUseInfo())).first);
+            std::string prefix_upper, prefix_lower;
+            for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+            {
+                if (*t == "-*")
+                    i->second.second.second.push_back(strip_trailing(prefix_lower, "_"));
+                else if ('-' == t->at(0))
+                    i->second.second.first.insert(std::make_pair(
+                                UseFlagName(prefix_lower + t->substr(1)), use_disabled)).first->second = use_disabled;
+                else if (':' == t->at(t->length() - 1))
+                {
+                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_lower), &::tolower);
+                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_upper), &::toupper);
+                    prefix_lower.append("_");
+                    prefix_upper.append("_");
+                }
+                else
+                    i->second.second.first.insert(std::make_pair(
+                                UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
             }
         }
     }
