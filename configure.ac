@@ -1313,7 +1313,6 @@ AC_OUTPUT(
 	doc/configuration/Makefile
 	doc/faq/Makefile
 	doc/overview/Makefile
-	eselect/Makefile
 	hooks/Makefile
 	hooks/demos/Makefile
 	misc/Makefile
