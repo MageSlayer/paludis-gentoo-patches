@@ -90,12 +90,12 @@ news.subst : $(top_srcdir)/NEWS
 	    -e 's,>,\&gt;,g' \
 	    < $(top_srcdir)/NEWS > news.subst
 
-changelog.subst : $(top_srcdir)/ChangeLog
-	sed \
+changelog.subst :
+	git log | sed \
 	    -e 's,&,\&amp;,g' \
 	    -e 's,<,\&lt;,g' \
 	    -e 's,>,\&gt;,g' \
-	    < $(top_srcdir)/ChangeLog > changelog.subst
+	    > changelog.subst
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
