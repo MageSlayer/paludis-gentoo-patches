@@ -1277,7 +1277,7 @@ AC_SUBST([BUILDHOST])
 BUILDDATE=`date +%Y-%m-%dT%H:%M:%S%z`
 AC_SUBST([BUILDDATE])
 
-if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
+if test -d "${ac_top_srcdir:-./}/.git" ; then
 	GITHEAD=`git describe 2>/dev/null`
 	if test -z ${GITHEAD} ; then
 		GITHEAD=`git rev-parse HEAD`
