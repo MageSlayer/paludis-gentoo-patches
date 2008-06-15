@@ -89,22 +89,9 @@ TESTS = \
 
 prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 
-EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
-	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in $(TESTS)
+EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash prep.in $(TESTS)
 
-CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a $(prep_scripts)
-
-newlib.a : newlib.a.in
-	cat $? > $@
-
-newlib.so : newlib.so.in
-	cat $? > $@
-
-dolib.so : dolib.so.in
-	cat $? > $@
-
-dolib.a : dolib.a.in
-	cat $? > $@
+CLEANFILES = *~ $(prep_scripts)
 
 $(prep_scripts) : prep.in
 	cat $? > $@

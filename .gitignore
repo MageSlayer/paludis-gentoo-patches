@@ -23,6 +23,11 @@ Makefile
 man-*
 .keep
 
+!/paludis/repositories/e/ebuild/utils/dolib.a
+!/paludis/repositories/e/ebuild/utils/dolib.so
+!/paludis/repositories/e/ebuild/utils/newlib.a
+!/paludis/repositories/e/ebuild/utils/newlib.so
+
 /INSTALL
 /aclocal.m4
 /autom4te.cache
