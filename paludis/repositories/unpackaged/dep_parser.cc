@@ -51,7 +51,7 @@ DepParser::parse(const Environment * const env, const std::string & s)
 
         std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
                 new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(parse_user_package_dep_spec(a, env, UserPackageDepSpecOptions())))));
+                        new PackageDepSpec(parse_user_package_dep_spec(a, env, UserPackageDepSpecOptions() + updso_no_disambiguation)))));
         result->add(spec);
     }
 

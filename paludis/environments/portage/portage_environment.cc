@@ -326,7 +326,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
                 continue;
 
             std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(parse_user_package_dep_spec(
-                            tokens.at(0), this, UserPackageDepSpecOptions())));
+                            tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
             if (reject_additional && p->additional_requirements_ptr())
             {
                 Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
@@ -373,7 +373,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
                 line != line_end ; ++line)
             *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                         parse_user_package_dep_spec(strip_trailing(strip_leading(*line, " \t"), " \t"),
-                            this, UserPackageDepSpecOptions())));
+                            this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
     }
 }
 
