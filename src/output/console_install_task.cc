@@ -200,8 +200,7 @@ ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_pt
         {
             output_stream() << " Looking for suggestions:" << endl;
 
-            FuzzyCandidatesFinder f(*environment(), e.name(),
-                    filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
+            FuzzyCandidatesFinder f(*environment(), e.name(), filter::SupportsAction<InstallAction>());
 
             if (f.begin() == f.end())
                 output_stream() << "No suggestions found." << endl;
@@ -1603,8 +1602,7 @@ ConsoleInstallTask::on_no_such_package_error(const NoSuchPackageError & e)
     {
         output_stream() << " Looking for suggestions:" << endl;
 
-        FuzzyCandidatesFinder f(*environment(), e.name(),
-                filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
+        FuzzyCandidatesFinder f(*environment(), e.name(), filter::SupportsAction<InstallAction>());
 
         if (f.begin() == f.end())
             output_stream() << "No suggestions found." << endl;
@@ -1639,8 +1637,7 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             {
                 output_stream() << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*environment(), stringify(e.query()),
-                        filter::And(filter::SupportsAction<InstallAction>(), filter::NotMasked()));
+                FuzzyCandidatesFinder f(*environment(), stringify(e.query()), filter::SupportsAction<InstallAction>());
 
                 if (f.begin() == f.end())
                     output_stream() << "No suggestions found." << endl;
