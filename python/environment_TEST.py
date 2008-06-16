@@ -204,6 +204,9 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
         def distribution(self):
             return EnvironmentImplementation.distribution(self)
 
+        def need_keys_added(self):
+            return
+
     def test_01_environment_implementation(self):
         test_env(self.SubEnv())
 

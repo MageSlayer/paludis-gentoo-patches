@@ -339,7 +339,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::distribution();
         }
 
-        std::string distribution() const
+        std::string default_distribution() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::distribution();
@@ -405,6 +405,16 @@ class EnvironmentImplementationWrapper :
         {
             return EnvironmentImplementation::operator[] (fg);
         }
+
+        virtual void need_keys_added() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("need_keys_added"))
+                f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "need_keys_added");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :
@@ -412,8 +422,9 @@ struct NoConfigEnvironmentWrapper :
 {
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
             const FSEntry & master_repo_dir) :
-        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false, false,
-                    no_config_environment::ncer_auto, master_repo_dir, std::tr1::shared_ptr<Map<std::string, std::string> >())
+        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false, false, "",
+                    no_config_environment::ncer_auto, master_repo_dir,
+                    std::tr1::shared_ptr<Map<std::string, std::string> >())
                 )
     {
     }
@@ -647,7 +658,7 @@ void expose_environment()
                 "Default destination candidates for installing packages."
             )
 
-        .def("distribution", &EnvImp::distribution, &EnvImpW::distribution,
+        .def("distribution", &EnvImp::distribution, &EnvImpW::default_distribution,
                 "distribution() -> str\n"
                 "NEED_DOC"
             )

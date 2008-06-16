@@ -98,6 +98,8 @@ namespace environment
         e.perform_hook(Hook("test"));
 
         e.distribution();
+
+        e.begin_metadata();
     }
 }
 
