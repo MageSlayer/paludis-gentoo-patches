@@ -71,6 +71,8 @@ template class Sequence<std::tr1::function<bool (const PackageID &, const Mask &
 template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
 template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
 
+template class PrivateImplementationPattern<DepList>;
+
 #include <paludis/dep_list-sr.cc>
 
 DepListOptions::DepListOptions() :

@@ -52,6 +52,9 @@ template class Set<DepTagEntry>;
 template class WrappedForwardIterator<Set<DepTagEntry>::ConstIteratorTag, const DepTagEntry>;
 template class WrappedOutputIterator<Set<DepTagEntry>::InserterTag, DepTagEntry>;
 
+template class PrivateImplementationPattern<GeneralSetDepTag>;
+template class PrivateImplementationPattern<DependencyDepTag>;
+
 #include <paludis/dep_tag-sr.cc>
 
 namespace

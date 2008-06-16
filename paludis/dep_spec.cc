@@ -903,3 +903,12 @@ template class WrappedForwardIterator<LabelsDepSpec<DependencyLabelVisitorTypes>
 
 template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 
+template class Cloneable<DepSpec>;
+template class PrivateImplementationPattern<ConditionalDepSpec>;
+template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
+template class PrivateImplementationPattern<PartiallyMadePackageDepSpec>;
+template class PrivateImplementationPattern<PackageDepSpec>;
+template class CloneUsingThis<DepSpec, PackageDepSpec>;
+template class PrivateImplementationPattern<DependencyLabelsDepSpec>;
+template class PrivateImplementationPattern<URILabelsDepSpec>;
+

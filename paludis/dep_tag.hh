@@ -361,6 +361,27 @@ namespace paludis
 
 #include <paludis/dep_tag-sr.hh>
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
+           virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
+
+    extern template class ConstAcceptInterface<DepTagVisitorTypes>;
+
+    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
+    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>;
+    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>;
+    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>;
+
+    extern template class Visits<const GeneralSetDepTag>;
+    extern template class Visits<const GLSADepTag>;
+    extern template class Visits<const DependencyDepTag>;
+    extern template class Visits<const TargetDepTag>;
+
+    extern template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
+    extern template class PrivateImplementationPattern<DependencyDepTag>;
+    extern template class PrivateImplementationPattern<GeneralSetDepTag>;
+#endif
+
 }
 
 #endif

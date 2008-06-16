@@ -226,6 +226,10 @@ namespace paludis
                     const PackageDepSpec &, std::tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     std::tr1::shared_ptr<const DestinationsSet> destinations);
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<DepList>;
+#endif
 }
 
 #endif
