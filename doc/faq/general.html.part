@@ -77,14 +77,10 @@ the code now does.</p>
 <h2 id="compilers">Known compiler issues</h2>
 
 <p>The primary supported compiler for building Paludis is GCC, version
-4.1 or later; 3.4 can be used on most platforms if the Boost library
-is installed.  Some versions of GCC, and some compiler flags, are
+4.1 or later.  Some versions of GCC, and some compiler flags, are
 known to have problems (these are all GCC's fault):</p>
 
 <ul>
-    <li>GCC 3.4.6 on the x86_64 architecture segfaults while building
-    Paludis.</li>
-
     <li>GCC 4.1.1 segfaults while building Paludis.</li>
 
     <li>GCC 4.2.2 fails with an internal error while building Paludis
