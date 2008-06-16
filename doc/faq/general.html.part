@@ -60,9 +60,7 @@ the code now does.</p>
     internationalisation in principle, but as we're not gettextised it'll be a
     fair bit of effort.</li>
 
-    <li>Paludis' current hosting is sub-par. We're working on acquiring better
-    hosting, and any donations would be appreciated. Please use this button to
-    donate:
+    <li>Donate to the hosting fund, using this button:
 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
     <input type="hidden" name="cmd" value="_s-xclick" />
