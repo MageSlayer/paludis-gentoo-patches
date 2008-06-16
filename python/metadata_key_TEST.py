@@ -202,16 +202,17 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
         class TestKey(MetadataProvideSpecTreeKey):
             def __init__(self):
                 MetadataProvideSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                self.e = NoConfigEnvironment(repo_path, "/var/empty")
 
             def value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", [])
+                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", [])
+                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
 
         test_metadata_provide_spec_tree_key(TestKey())
@@ -219,17 +220,18 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_12_dependency_spec_tree(self):
         class TestKey(MetadataDependencySpecTreeKey):
             def __init__(self):
+                self.e = NoConfigEnvironment(repo_path, "/var/empty")
                 MetadataDependencySpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", [])
+                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", [])
+                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
 
         test_metadata_dependency_spec_tree_key(TestKey())

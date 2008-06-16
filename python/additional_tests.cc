@@ -280,7 +280,8 @@ namespace formatter
     // CanFormat for PackageRoles
     void test_package_roles(CanFormat<PackageDepSpec> & f)
     {
-        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", UserPackageDepSpecOptions()));
+        TestEnvironment e;
+        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", &e, UserPackageDepSpecOptions()));
         f.format(p, Plain());
         f.format(p, Installed());
         f.format(p, Installable());

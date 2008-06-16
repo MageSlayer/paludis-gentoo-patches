@@ -58,7 +58,7 @@ class TestCase_04_DependencyDepTag(unittest.TestCase):
         env = TestEnvironment()
         repo = FakeRepository(env, "repo")
         pid = repo.add_version("cat/foo", "1.0")
-        pds = parse_user_package_dep_spec("=cat/boo-1", [])
+        pds = parse_user_package_dep_spec("=cat/boo-1", env, [])
         cds = env.set("everything")
         dt = DependencyDepTag(pid, pds, cds);
 

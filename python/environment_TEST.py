@@ -53,7 +53,7 @@ class TestCase_01_Environments(unittest.TestCase):
 
     def test_04_query_use(self):
         pid = iter(self.e[Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=foo/bar-1.0", [])))]).next()
+            parse_user_package_dep_spec("=foo/bar-1.0", self.e, [])))]).next()
 
         self.assert_(self.e.query_use("enabled", pid))
         self.assert_(not self.e.query_use("not_enabled", pid))
@@ -102,8 +102,8 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
     def test_02_adapt_use(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
         pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=foo/bar-1.0", UserPackageDepSpecOptions())))]).next()
-        pds = parse_user_package_dep_spec("foo/bar", [])
+            parse_user_package_dep_spec("=foo/bar-1.0", env, UserPackageDepSpecOptions())))]).next()
+        pds = parse_user_package_dep_spec("foo/bar", env, [])
 
         self.assert_(env.query_use("enabled", pid))
         self.assert_(not env.query_use("not_enabled", pid))
@@ -120,8 +120,9 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
 
     def test_03_clear_adaptions(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
-        pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=foo/bar-1.0", [])))]).next()
-        pds = parse_user_package_dep_spec("foo/bar", [])
+        pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=foo/bar-1.0", env, [])))]).next()
+        pds = parse_user_package_dep_spec("foo/bar", env, [])
 
         self.assert_(env.query_use("enabled", pid))
 

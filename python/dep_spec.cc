@@ -25,6 +25,7 @@
 
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
@@ -1054,6 +1055,11 @@ void expose_dep_spec()
         ("NotAllowedInThisHeirarchy", "BaseException",
          "Thrown if a spec part not suitable for a particular heirarchy is present.");
 
+    ExceptionRegister::get_instance()->add_exception<GotASetNotAPackageDepSpec>
+        ("GotASetNotAPackageDepSpec", "BaseException",
+         "Thrown by parse_user_package_dep_spec if options includes THROW_IF_SET"
+         " and we're given a set.");
+
     /**
      * Enums
      */
@@ -1179,7 +1185,9 @@ void expose_dep_spec()
      */
 
     bp::def("parse_user_package_dep_spec", &parse_user_package_dep_spec,
-            "parse_user_package_dep_spec(str, options=UserPackageDepSpecOptions()) -> PackageDepSpec\n"
+            (bp::arg("str"), bp::arg("env"), bp::arg("options"), bp::arg("filter")=filter::All()),
+            "parse_user_package_dep_spec(str, Environment, options=UserPackageDepSpecOptions(), Filter)"
+            " -> PackageDepSpec\n"
             "Create a PackageDepSpec from user input."
            );
 

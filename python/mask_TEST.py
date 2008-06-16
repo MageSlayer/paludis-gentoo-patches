@@ -34,7 +34,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.e = EnvironmentMaker.instance.make_from_spec("")
 
     def test_01_user_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=masked/user-1.0", [])))
+        q = Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=masked/user-1.0", self.e, [])))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -45,7 +46,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.description(), "user")
 
     def test_02_unaccepted_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=masked/unaccepted-1.0", [])))
+        q = Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, [])))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -57,7 +59,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m.unaccepted_key(), MetadataKeywordNameIterableKey))
 
     def test_03_repository_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=masked/repo-1.0", [])))
+        q = Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=masked/repo-1.0", self.e, [])))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -73,7 +76,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m.mask_key().value().comment, StringIterable))
 
     def test_04_unsupported_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=masked/unsupported-1.0", [])))
+        q = Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, [])))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -85,7 +89,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
 
     def test_05_association_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=virtual/association-1.0", [])))
+        q = Selection.RequireExactlyOne(Generator.Matches(
+            parse_user_package_dep_spec("=virtual/association-1.0", self.e, [])))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -156,7 +161,8 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
 
             def associated_package(self):
                 e = EnvironmentMaker.instance.make_from_spec("")
-                q = Selection.RequireExactlyOne(Generator.Matches(parse_user_package_dep_spec("=masked/user-1.0", [])))
+                q = Selection.RequireExactlyOne(Generator.Matches(
+                    parse_user_package_dep_spec("=masked/user-1.0", e, [])))
                 pid = iter(e[q]).next()
                 return pid
 

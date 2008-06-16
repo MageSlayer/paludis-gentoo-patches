@@ -36,6 +36,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_version_requirements();
     expose_fs_entry();
     expose_contents();
+    expose_filter(); /* must be before dep_spec */
     expose_dep_spec();
     expose_dep_tag();
     expose_dep_label();
@@ -50,7 +51,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_package_database();
     expose_repository();
     expose_formatter();
-    expose_filter();
     expose_filtered_generator();
     expose_generator();
     expose_selection();

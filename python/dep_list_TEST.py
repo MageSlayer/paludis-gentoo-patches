@@ -122,7 +122,7 @@ class TestCase_02_DepList(unittest.TestCase):
         env = EnvironmentMaker.instance.make_from_spec("")
         dl = DepList(env, DepListOptions())
         dd = env.default_destinations
-        pds = parse_user_package_dep_spec("foo/bar", [])
+        pds = parse_user_package_dep_spec("foo/bar", env, [])
         cds = env.set("bar")
 
     def test_01_create(self):

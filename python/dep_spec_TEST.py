@@ -23,12 +23,14 @@ import unittest
 
 class TestCase_1_DepSpecs(unittest.TestCase):
     def get_depspecs(self):
+        self.env = TestEnvironment()
         self.ptds = PlainTextDepSpec("foo")
-        self.pds = parse_user_package_dep_spec(">=foo/bar-1:100::testrepo", [])
-        self.pds2 = parse_user_package_dep_spec("*/*::testrepo",
+        self.pds = parse_user_package_dep_spec(">=foo/bar-1:100::testrepo", self.env, [])
+        self.pds2 = parse_user_package_dep_spec("*/*::testrepo", self.env,
                 UserPackageDepSpecOptions() + UserPackageDepSpecOption.ALLOW_WILDCARDS)
-        self.pds3 = parse_user_package_dep_spec("*/*::testrepo", [UserPackageDepSpecOption.ALLOW_WILDCARDS])
-        self.pds4 = parse_user_package_dep_spec("cat/pkg::testrepo", [])
+        self.pds3 = parse_user_package_dep_spec("*/*::testrepo", self.env,
+                [UserPackageDepSpecOption.ALLOW_WILDCARDS])
+        self.pds4 = parse_user_package_dep_spec("cat/pkg::testrepo", self.env, [])
         self.bds = BlockDepSpec(self.pds)
         self.nds = NamedSetDepSpec("system")
 
@@ -36,17 +38,18 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.get_depspecs()
 
     def test_02_create_error(self):
+        self.get_depspecs()
         self.assertRaises(Exception, DepSpec)
         self.assertRaises(Exception, PackageDepSpec)
         self.assertRaises(Exception, StringDepSpec)
         self.assertRaises(BadVersionOperatorError, parse_user_package_dep_spec,
-                "<>foo/bar", UserPackageDepSpecOptions())
+                "<>foo/bar", self.env, UserPackageDepSpecOptions())
         self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
-                "=foo/bar", [])
+                "=foo/bar", self.env, [])
         self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
-                "*/*::testrepo", UserPackageDepSpecOptions())
+                "*/*::testrepo", self.env, UserPackageDepSpecOptions())
         self.assertRaises(PackageDepSpecError, parse_user_package_dep_spec,
-                "*/*::testrepo", [])
+                "*/*::testrepo", self.env, [])
 
     def test_03_str(self):
         self.get_depspecs()
@@ -85,7 +88,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 ###        self.assert_(isinstance(ur, EnabledUseRequirement))
 
     def test_10_without_additional_requirements(self):
-        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
+        spec = parse_user_package_dep_spec("foo/monkey[foo]", TestEnvironment(), UserPackageDepSpecOptions())
         pds = spec.without_additional_requirements()
 ###        self.assertEquals(pds.additional_requirements, None)
 ###        self.assertEquals(str(pds), "foo/monkey")
