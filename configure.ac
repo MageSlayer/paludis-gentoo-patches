@@ -1277,12 +1277,12 @@ AC_SUBST([BUILDHOST])
 BUILDDATE=`date +%Y-%m-%dT%H:%M:%S%z`
 AC_SUBST([BUILDDATE])
 
-if test -d "${ac_top_srcdir:-./}/.git" ; then
+if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
 	GITHEAD=`git describe 2>/dev/null`
 	if test -z ${GITHEAD} ; then
 		GITHEAD=`git rev-parse HEAD`
 	fi
-	if test -n "`git diff-index --name-only HEAD`" ; then
+	if test -n "`git diff-index -m --name-only HEAD`" ; then
 		GITHEAD=${GITHEAD}-dirty
 	fi
 else
