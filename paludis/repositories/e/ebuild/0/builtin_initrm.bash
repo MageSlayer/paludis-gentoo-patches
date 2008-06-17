@@ -65,6 +65,10 @@ builtin_initrm()
     declare -r T="${T}"
     export HOME="${T}"
     export TMPDIR="${T}"
+
+    if [[ "${EBUILD}" != "-" ]] ; then
+        ebuild_load_ebuild "${EBUILD}"
+    fi
 }
 
 ebuild_f_initrm()

@@ -327,7 +327,6 @@ ebuild_load_environment()
 
 ebuild_load_ebuild()
 {
-    export EBUILD="${1}"
     unset ${SOURCE_MERGED_VARIABLES} ${BRACKET_MERGED_VARIABLES}
 
     local v e_v
@@ -399,10 +398,11 @@ ebuild_main()
         ebuild_notice "warning" "This will cause problems."
     fi
 
-    local action ebuild="$1"
+    local action
+    export EBUILD="${1}"
     shift
 
-    ebuild_notice "debug" "Using ebuild '${ebuild}', EAPI before source is '${EAPI}'"
+    ebuild_notice "debug" "Using ebuild '${EBUILD}', EAPI before source is '${EAPI}'"
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
@@ -434,10 +434,10 @@ ebuild_main()
         esac
     done
 
-    if [[ $1 == metadata ]] || [[ $1 == variable ]] ; then
+    if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] ; then
         export EBUILD_PHASE="${1}"
         perform_hook ebuild_${action}_pre
-        if [[ $1 != variable ]] || [[ -n "${ebuild}" ]] ; then
+        if [[ $1 != variable ]] || [[ -n "${EBUILD}" ]] ; then
             for f in cut tr date ; do
                 eval "export ebuild_real_${f}=\"$(which $f )\""
                 eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
@@ -445,7 +445,7 @@ ebuild_main()
             for f in locked_pipe_command ; do
                 eval "${f}() { $(which $f ) \"\$@\" ; }"
             done
-            PATH="" ebuild_load_ebuild "${ebuild}"
+            PATH="" ebuild_load_ebuild "${EBUILD}"
         fi
         if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${1} ; then
             perform_hook ebuild_${action}_fail
@@ -454,19 +454,12 @@ ebuild_main()
         perform_hook ebuild_${action}_post
     else
         ebuild_load_environment
-        if [[ "${ebuild}" != "-" ]] ; then
-            ebuild_load_ebuild "${ebuild}"
-        fi
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 perform_hook ebuild_${action}_fail
                 die "${action} failed"
-            fi
-            if [[ ${action} == "init" ]] ; then
-                # source again with WORKDIR set, so S=${WORKDIR}/blahblahblah works
-                ebuild_load_ebuild "${ebuild}"
             fi
             perform_hook ebuild_${action}_post
         done

@@ -79,6 +79,10 @@ builtin_init()
     declare -r IMAGE="${IMAGE}"
 
     export S="${WORKDIR}/${P}"
+
+    if [[ "${EBUILD}" != "-" ]] ; then
+        ebuild_load_ebuild "${EBUILD}"
+    fi
 }
 
 ebuild_f_init()
