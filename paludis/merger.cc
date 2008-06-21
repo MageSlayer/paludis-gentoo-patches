@@ -1054,16 +1054,7 @@ Merger::unlink_file(FSEntry d)
         Log::get_instance()->message("merger.unlink_file.pre_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' pre hooks returned non-zero";
 
-    if (d.is_regular_file())
-    {
-        mode_t mode(d.permissions());
-        if ((mode & S_ISUID) || (mode & S_ISGID))
-        {
-            mode &= 0400;
-            d.chmod(mode);
-        }
-    }
-
+    d.chmod(0);
     d.unlink();
 
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
