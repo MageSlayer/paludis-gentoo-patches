@@ -391,6 +391,29 @@ perform_hook()
     true
 }
 
+paludis_phase_to_function_name() {
+    case "${1}" in
+        metadata|variable|init|initmisc|initrm|killold|killoldmisc|killoldrm|merge|\
+                unmerge|tidyup|tidyupmisc|tidyuprm|loadenv|saveenv|initbin|\
+                unpackbin|infovars|pivotbin|installbin)
+            echo builtin_${1}
+        ;;
+
+        unpack|prepare|configure|compile|install|test)
+            echo src_${1}
+        ;;
+
+        setup|config|nofetch|preinst|postinst|prerm|postrm|pretend|info)
+            echo pkg_${1}
+        ;;
+
+        *)
+            die "Usage error: Unknown phase '${1}'"
+            exit 1
+        ;;
+    esac
+}
+
 ebuild_main()
 {
     if ! [[ -e /proc/self ]] && [[ "$(uname -s)" == Linux ]] ; then
@@ -411,27 +434,7 @@ ebuild_main()
     fi
 
     for action in $@ ; do
-        case ${action} in
-            metadata|variable|init|initmisc|initrm|killold|killoldmisc|killoldrm|merge|\
-                    unmerge|tidyup|tidyupmisc|tidyuprm|loadenv|saveenv|initbin|\
-                    unpackbin|infovars|pivotbin|installbin)
-                ebuild_load_module builtin_${action}
-            ;;
-
-            unpack|prepare|configure|compile|install|test)
-                ebuild_load_module src_${action}
-            ;;
-
-            setup|config|nofetch|preinst|postinst|prerm|postrm|pretend|info)
-                ebuild_load_module pkg_${action}
-            ;;
-
-            *)
-                ebuild_load_module usage_error
-                ebuild_f_usage_error "Unknown action '${action}'"
-                exit 1
-            ;;
-        esac
+        ebuild_load_module $(paludis_phase_to_function_name "${action}")
     done
 
     if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] ; then

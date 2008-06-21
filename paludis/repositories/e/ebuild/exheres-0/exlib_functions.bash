@@ -81,6 +81,7 @@ require()
 
 default()
 {
-    [[ $(type -t "default_${FUNCNAME[1]}" ) == "function" ]] || die "default_${FUNCNAME[1]} not a function"
-    default_${FUNCNAME[1]} "$@"
+    [[ $(type -t "default_$(paludis_phase_to_function_name "${EBUILD_PHASE}")" ) == "function" ]] || \
+        die "default_$(paludis_phase_to_function_name "${EBUILD_PHASE}") is not a function"
+    default_$(paludis_phase_to_function_name "${EBUILD_PHASE}") "$@"
 }
