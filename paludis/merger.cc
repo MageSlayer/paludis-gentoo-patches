@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <cstring>
 #include <list>
+#include <set>
 #include <tr1/unordered_map>
 
 #include "config.h"
@@ -54,6 +55,7 @@ namespace paludis
     template <>
     struct Implementation<Merger>
     {
+        std::set<FSEntry> fixed_entries;
         MergedMap merged_ids;
         MergerParams params;
         bool result;
@@ -157,6 +159,9 @@ Merger::merge()
             else
                 record_install_under_dir(*d, MergeStatusFlags() + msi_used_existing);
     }
+
+    if (! _imp->params[k::no_chown()])
+        do_ownership_fixes_recursive(_imp->params[k::image()]);
 
     do_dir_recursive(false, _imp->params[k::image()], (_imp->params[k::root()] / _imp->params[k::install_under()]).realpath());
 
@@ -654,6 +659,55 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
     record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
+void
+Merger::do_ownership_fixes_recursive(const FSEntry & dir)
+{
+    for (DirIterator d(dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
+    {
+        uid_t new_uid(d->owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
+        gid_t new_gid(d->group() == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
+        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
+        {
+            FSEntry f(*d);
+            f.lchown(new_uid, new_gid);
+
+            if (et_dir == entry_type(*d))
+            {
+                mode_t mode(f.permissions());
+                if (uid_t(-1) != new_uid)
+                    mode &= ~S_ISUID;
+                if (gid_t(-1) != new_gid)
+                    mode &= ~S_ISGID;
+                f.chmod(mode);
+            }
+
+            _imp->fixed_entries.insert(f);
+        }
+
+        EntryType m(entry_type(*d));
+        switch (m)
+        {
+            case et_sym:
+            case et_file:
+                continue;
+
+            case et_dir:
+                do_ownership_fixes_recursive(*d);
+                continue;
+
+            case et_misc:
+                throw MergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
+                continue;
+
+            case et_nothing:
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    }
+}
+
 MergeStatusFlags
 Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
@@ -682,21 +736,6 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     if (0 != (src_perms & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
-    uid_t dest_uid(src.owner());
-    gid_t dest_gid(src.group());
-
-    if (! _imp->params[k::no_chown()])
-    {
-        uid_t new_uid(dest_uid == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
-        gid_t new_gid(dest_gid == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
-        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
-        {
-            FSEntry(src).chown(new_uid, new_gid);
-            result += msi_fixed_ownership;
-        }
-        dest_uid = new_uid == 0 ? 0 : dest_uid;
-        dest_gid = new_gid == 0 ? 0 : dest_gid;
-    }
 
     bool do_copy(false);
 
@@ -736,6 +775,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     {
         Log::get_instance()->message("merger.file.will_copy", ll_debug, lc_context) <<
             "rename/link failed: " << ::strerror(errno) << ". Falling back to regular read/write copy";
+
         FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
         if (-1 == input_fd)
             throw MergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
@@ -745,7 +785,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             throw MergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         if (! _imp->params[k::no_chown()])
-            if (0 != ::fchown(output_fd, dest_uid, dest_gid))
+            if (0 != ::fchown(output_fd, src.owner(), src.group()))
                 throw MergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         /* set*id bits */
@@ -767,6 +807,9 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 
         _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
+
+    if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
+        result += msi_fixed_ownership;
 
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_post")
@@ -813,33 +856,15 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
 {
     for (DirIterator d(dst, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
-        if (! _imp->params[k::no_chown()])
-        {
-            uid_t new_uid(d->owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
-            gid_t new_gid(d->group() == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
-            if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
-            {
-                FSEntry f(*d);
-                f.lchown(new_uid, new_gid);
-
-                if (et_dir == entry_type(*d))
-                {
-                    mode_t mode(f.permissions());
-                    if (uid_t(-1) != new_uid)
-                        mode &= ~S_ISUID;
-                    if (gid_t(-1) != new_gid)
-                        mode &= ~S_ISGID;
-                    f.chmod(mode);
-                }
-            }
-        }
-
+        MergeStatusFlags merged_how;
+        if (_imp->fixed_entries.end() != _imp->fixed_entries.find(_imp->params[k::image()] / *d))
+            merged_how += msi_fixed_ownership;
         EntryType m(entry_type(*d));
         switch (m)
         {
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
-                record_install_sym(*d, dst, MergeStatusFlags() + msi_parent_rename);
+                record_install_sym(*d, dst, merged_how + msi_parent_rename);
                 _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
@@ -849,12 +874,12 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
                 _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 if (touch && ! FSEntry(*d).utime())
                     throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
-                record_install_file(*d, dst, stringify(d->basename()), MergeStatusFlags() + msi_parent_rename);
+                record_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
                 continue;
 
             case et_dir:
-                record_install_dir(*d, d->dirname(), MergeStatusFlags() + msi_parent_rename);
+                record_install_dir(*d, d->dirname(), merged_how + msi_parent_rename);
                 record_renamed_dir_recursive(*d);
                 continue;
 
@@ -902,30 +927,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
     mode_t mode(src.permissions());
-    uid_t dest_uid(src.owner());
-    gid_t dest_gid(src.group());
-
     if (0 != (mode & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
-
-    if (! _imp->params[k::no_chown()])
-    {
-        uid_t new_uid(dest_uid == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
-        gid_t new_gid(dest_gid == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
-        if (uid_t(-1) != new_uid)
-            mode &= ~S_ISUID;
-        if (gid_t(-1) != new_gid)
-            mode &= ~S_ISGID;
-        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
-        {
-            result += msi_fixed_ownership;
-            FSEntry f(src);
-            f.chown(new_uid, new_gid);
-            f.chmod(mode);
-        }
-        dest_uid = new_uid == 0 ? 0 : dest_uid;
-        dest_gid = new_gid == 0 ? 0 : dest_gid;
-    }
 
     FSEntry dst(dst_dir / src.basename());
     std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
@@ -954,11 +957,14 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
             throw MergerError("Could not get an FD for the directory '"
                     + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
         if (! _imp->params[k::no_chown()])
-            ::fchown(dst_fd, dest_uid, dest_gid);
+            ::fchown(dst_fd, src.owner(), src.group());
         /* pick up set*id bits */
         ::fchmod(dst_fd, mode);
         try_to_copy_xattrs(src, dst_fd, result);
     }
+
+    if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
+        result += msi_fixed_ownership;
 
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_dir_post")
@@ -985,9 +991,6 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          ("INSTALL_DESTINATION", stringify(dst)))).max_exit_status)
         Log::get_instance()->message("merger.sym.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
-
-    uid_t dest_uid(src.owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : src.owner());
-    gid_t dest_gid(src.group() == _imp->params[k::environment()]->reduced_gid() ? 0 : src.group());
 
     if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
@@ -1027,9 +1030,9 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 
     if (! _imp->params[k::no_chown()])
     {
-        if (src.owner() != dest_uid || src.group() != dest_gid)
+        dst.lchown(src.owner(), src.group());
+        if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
             result += msi_fixed_ownership;
-        dst.lchown(dest_uid, dest_gid);
     }
 
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
