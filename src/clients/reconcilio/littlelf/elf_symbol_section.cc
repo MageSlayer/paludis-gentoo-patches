@@ -118,9 +118,6 @@ Symbol<ElfType_>::Symbol(const typename ElfType_::Symbol & my_symbol) :
         case STB_WEAK:
             _binding = "weak";
             break;
-        case STB_NUM:
-            _binding = "num";
-            break;
         case STB_LOOS:
             _binding = "loos";
             break;
