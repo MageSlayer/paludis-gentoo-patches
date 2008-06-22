@@ -952,10 +952,16 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
             "rename failed. Falling back to recursive copy.";
 
         dst.mkdir(mode);
-        FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY | O_DIRECTORY));
+        FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY));
+        struct stat sb;
         if (-1 == dst_fd)
             throw MergerError("Could not get an FD for the directory '"
                     + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
+        if (-1 == ::fstat(dst_fd, &sb))
+            throw MergerError("Could not fstat the directory '"
+	            + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
+        if ( !S_ISDIR(sb.st_mode))
+            throw MergerError("The directory that we just created is not a directory anymore");
         if (! _imp->params[k::no_chown()])
             ::fchown(dst_fd, src.owner(), src.group());
         /* pick up set*id bits */
