@@ -51,7 +51,9 @@ namespace
     struct ElfArchitecture
     {
         // not in elf.h; from glibc-2.5/sysdeps/s390/s390-32/dl-machine.h
-        static const unsigned EM_S390_OLD = 0xA390;
+        static const unsigned S390_OLD = 0xA390;
+        // not in FreeBSD elf.h
+        static const unsigned MIPS_ABI2 = 32;
 
         unsigned _machine;
         unsigned char _class, _os_abi, _os_abi_version;
@@ -65,7 +67,7 @@ namespace
             {
                 case EM_MIPS_RS3_LE:
                     return EM_MIPS;
-                case EM_S390_OLD:
+                case S390_OLD:
                     return EM_S390;
             }
             return arch;
@@ -78,7 +80,7 @@ namespace
             _os_abi(elf.get_os_abi()),
             _os_abi_version(elf.get_os_abi_version()),
             _bigendian(elf.is_big_endian()),
-            _mips_n32(EM_MIPS == _machine && EF_MIPS_ABI2 & elf.get_flags())
+            _mips_n32(EM_MIPS == _machine && MIPS_ABI2 & elf.get_flags())
         {
         }
     };
