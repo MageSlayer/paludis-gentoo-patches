@@ -19,7 +19,8 @@
 
 #include <string>
 #include <iostream>
-#include <unistd.h>
+
+extern char ** environ;
 
 int
 main()
