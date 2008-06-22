@@ -39,8 +39,6 @@ struct Elf32Type
     typedef Elf32_Off    Offset;
     typedef Elf32_Half   Half;
     typedef Elf32_Word   Word;
-    typedef Elf32_Xword  Xword;
-    typedef Elf32_Sxword Sxword;
     typedef Elf32_Addr   Address;
 
     typedef Elf32_Word  DynamicValue;
@@ -74,7 +72,7 @@ struct Elf64Type
     typedef Elf64_Sxword Sxword;
     typedef Elf64_Addr   Address;
 
-    typedef Elf32_Xword  DynamicValue;
+    typedef Elf64_Xword  DynamicValue;
     typedef Elf64_Addr   DynamicPointer;
     typedef Elf64_Sxword DynamicTag;
 
