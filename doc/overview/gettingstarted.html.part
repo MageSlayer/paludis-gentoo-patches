@@ -195,7 +195,7 @@ reasons, it is strongly recommended that the filename used matches the name of t
 <pre>
 location = /usr/portage
 sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
-profiles = ${location}/profiles/default-linux/x86/2007.0
+profiles = ${location}/profiles/default-linux/x86/2007.1
 format = ebuild
 names_cache = (see below)
 </pre>
