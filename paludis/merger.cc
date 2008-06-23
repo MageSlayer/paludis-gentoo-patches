@@ -959,7 +959,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                     + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
         if (-1 == ::fstat(dst_fd, &sb))
             throw MergerError("Could not fstat the directory '"
-	            + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
+                    + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
         if ( !S_ISDIR(sb.st_mode))
             throw MergerError("The directory that we just created is not a directory anymore");
         if (! _imp->params[k::no_chown()])
