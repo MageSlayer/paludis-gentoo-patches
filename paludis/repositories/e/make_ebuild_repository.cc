@@ -228,8 +228,11 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
     {
         if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution()))[k::default_ebuild_builddir()];
+            if (master_repository)
+                builddir = stringify(master_repository->params().builddir);
+            else
+                builddir = (*DistributionData::get_instance()->distribution_from_string(
+                         env->distribution()))[k::default_ebuild_builddir()];
         else
             Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";
