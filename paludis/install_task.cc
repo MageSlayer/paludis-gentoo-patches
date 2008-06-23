@@ -588,6 +588,10 @@ InstallTask::_pretend()
     SupportsActionTest<PretendAction> pretend_action_query;
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
+    {
+        if ((dlk_package != dep->kind) || already_done(*dep))
+            continue;
+
         if (dep->package_id->supports_action(pretend_action_query))
         {
             on_pretend_pre(*dep);
@@ -602,6 +606,7 @@ InstallTask::_pretend()
 
             on_pretend_post(*dep);
         }
+    }
 
     on_pretend_all_post();
 
