@@ -67,12 +67,12 @@ inherit()
 
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
             local e_v="E_${v}"
-            export ${e_v}="${!e_v} ${!v}"
+            export -n ${e_v}="${!e_v} ${!v}"
         done
 
         for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local e_v="E_${v}"
-            export ${e_v}="${!e_v} ( ${!v} )"
+            export -n ${e_v}="${!e_v} ( ${!v} )"
         done
 
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
