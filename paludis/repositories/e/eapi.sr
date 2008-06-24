@@ -40,7 +40,6 @@ make_class_EAPIEbuildMetadataVariables()
     key metadata_license             std::string
     key metadata_description         std::string
     key metadata_keywords            std::string
-    key metadata_eclass_keywords     std::string
     key metadata_inherited           std::string
     key metadata_iuse                std::string
     key metadata_pdepend             std::string
@@ -58,7 +57,6 @@ make_class_EAPIEbuildMetadataVariables()
     key description_license          std::string
     key description_description      std::string
     key description_keywords         std::string
-    key description_eclass_keywords  std::string
     key description_inherited        std::string
     key description_iuse             std::string
     key description_pdepend          std::string
@@ -77,7 +75,6 @@ make_class_EAPIEbuildMetadataVariables()
     key flat_cache_license           int
     key flat_cache_description       int
     key flat_cache_keywords          int
-    key flat_cache_eclass_keywords   int
     key flat_cache_inherited         int
     key flat_cache_iuse              int
     key flat_cache_pdepend           int
@@ -140,6 +137,7 @@ make_class_EAPIEbuildOptions()
     key directory_variables std::string
     key directory_if_exists_variables std::string
     key ebuild_must_not_set_variables std::string
+    key eclass_must_not_set_variables std::string
     key source_merged_variables std::string
     key bracket_merged_variables std::string
     key must_not_change_variables std::string

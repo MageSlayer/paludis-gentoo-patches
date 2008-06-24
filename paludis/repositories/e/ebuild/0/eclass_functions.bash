@@ -47,7 +47,7 @@ inherit()
 {
     [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
 
-    local e ee location= v
+    local e ee location= v v_qa
     for e in "$@" ; do
         for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
             [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
@@ -60,6 +60,13 @@ inherit()
             local ${c_v}="${!v}"
             local ${u_v}="${!v-unset}"
             unset ${v}
+        done
+
+        for v_qa in ${PALUDIS_ECLASS_MUST_NOT_SET_VARIABLES} ; do
+            local v=${v_qa#qa:}
+            local c_v="current_${v}" u_v="unset_${v}"
+            export -n ${c_v}="${!v}"
+            export -n ${u_v}="${!v-unset}"
         done
 
         [[ -z "${location}" ]] && die "Error finding eclass ${e}"
@@ -79,6 +86,20 @@ inherit()
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local c_v="current_${v}" u_v="unset_${v}"
             [[ "unset" == ${!u_v} ]] && unset ${v} || export ${v}="${!c_v}"
+        done
+
+        for v_qa in ${PALUDIS_ECLASS_MUST_NOT_SET_VARIABLES} ; do
+            local v=${v_qa#qa:}
+            local c_v="current_${v}" u_v="unset_${v}"
+            if [[ ${!c_v} != ${!v} || ${!u_v} != ${!v-unset} ]]; then
+                if [[ ${v} == ${v_qa} ]] ; then
+                    die "Variable '${v}' illegally set by ${location}"
+                else
+                    ebuild_notice "qa" "Variable '${v}' should not be set by ${location}"
+                    export -n ${c_v}="${!v}"
+                    export -n ${u_v}="${!v-unset}"
+                fi
+            fi
         done
 
         export ECLASS="${old_ECLASS}"

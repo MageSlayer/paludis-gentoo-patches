@@ -489,12 +489,6 @@ EInstalledRepositoryID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
-EInstalledRepositoryID::eclass_keywords_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
 EInstalledRepositoryID::use_key() const
 {

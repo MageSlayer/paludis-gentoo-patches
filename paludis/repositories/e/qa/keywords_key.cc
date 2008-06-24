@@ -60,13 +60,6 @@ paludis::erepository::keywords_key_check(
                         "Empty '" + id->keywords_key()->raw_name() + "' (use package.mask and keyword properly)")
                                 .with_associated_id(id)
                                 .with_associated_key(id, id->keywords_key()));
-
-            if (id->eclass_keywords_key() && ! id->eclass_keywords_key()->value()->empty())
-                    reporter.message(QAMessage(entry, qaml_normal, name,
-                            "'" + id->keywords_key()->raw_name() + "' was altered by an eclass")
-                                    .with_associated_id(id)
-                                    .with_associated_key(id, id->keywords_key())
-                                    .with_associated_key(id, id->eclass_keywords_key()));
         }
         catch (const InternalError &)
         {

@@ -258,13 +258,6 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
                 cache << s << std::endl;
             }
-            else if (x == m.flat_cache_eclass_keywords)
-            {
-                if (id->eclass_keywords_key())
-                    cache << join(id->eclass_keywords_key()->value()->begin(), id->eclass_keywords_key()->value()->end(), " ") << std::endl;
-                else
-                    cache << std::endl;
-            }
             else if (x == m.flat_cache_use)
             {
                 if (id->use_key())
