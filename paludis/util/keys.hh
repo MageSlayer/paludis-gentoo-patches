@@ -183,6 +183,8 @@ namespace paludis
         typedef kc::Key<154> repository;
         typedef kc::Key<155> repository_homepage;
         typedef kc::Key<156> repository_description;
+        typedef kc::Key<157> get_new_ids_or_minus_one;
+        typedef kc::Key<158> rewrite_ids_over_to_root;
     }
 }
 

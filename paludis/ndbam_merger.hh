@@ -24,6 +24,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/kc-fwd.hh>
 #include <paludis/util/keys.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -36,7 +37,8 @@ namespace paludis
         kc::Field<k::config_protect, std::string>,
         kc::Field<k::config_protect_mask, std::string>,
         kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-        kc::Field<k::options, MergerOptions>
+        kc::Field<k::options, MergerOptions>,
+        kc::Field<k::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> >
             > NDBAMMergerParams;
 
     /**

@@ -62,6 +62,18 @@ namespace paludis
     };
 }
 
+namespace
+{
+    std::pair<uid_t, gid_t>
+    get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
+    {
+        if (f.owner() == env->reduced_uid() || f.group() == env->reduced_gid())
+            return std::make_pair(0, 0);
+        else
+            return std::make_pair(-1, -1);
+    }
+}
+
 VDBMerger::VDBMerger(const VDBMergerParams & p) :
     Merger(MergerParams::named_create()
             (k::environment(), p[k::environment()])
@@ -69,6 +81,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
             (k::install_under(), FSEntry("/"))
             (k::root(), p[k::root()])
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
+            (k::get_new_ids_or_minus_one(), std::tr1::bind(&get_new_ids_or_minus_one, p[k::environment()], std::tr1::placeholders::_1))
             (k::options(), p[k::options()])),
     PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(p)),
     _imp(PrivateImplementationPattern<VDBMerger>::_imp)

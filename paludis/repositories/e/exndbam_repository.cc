@@ -43,6 +43,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <tr1/functional>
 #include <fstream>
 
 using namespace paludis;
@@ -264,6 +265,18 @@ ExndbamRepository::need_keys_added() const
 {
 }
 
+namespace
+{
+    std::pair<uid_t, gid_t>
+    get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
+    {
+        if (f.owner() == env->reduced_uid() || f.group() == env->reduced_gid())
+            return std::make_pair(0, 0);
+        else
+            return std::make_pair(-1, -1);
+    }
+}
+
 void
 ExndbamRepository::merge(const MergeParams & m)
 {
@@ -337,6 +350,8 @@ ExndbamRepository::merge(const MergeParams & m)
             (k::config_protect(), config_protect)
             (k::config_protect_mask(), config_protect_mask)
             (k::package_id(), m[k::package_id()])
+            (k::get_new_ids_or_minus_one(), std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment,
+                                                           std::tr1::placeholders::_1))
             (k::options(), m[k::options()]));
 
     if (! merger.check())

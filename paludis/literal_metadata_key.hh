@@ -68,6 +68,23 @@ namespace paludis
     };
 
     /**
+     * Implement extra methods for LiteralMetadataValueKey for long.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.28
+     */
+    template <>
+    class ExtraLiteralMetadataValueKeyMethods<long> :
+        public virtual ExtraMetadataValueKeyMethods<long>
+    {
+        public:
+            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
+
+            virtual std::string pretty_print() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
      * A LiteralMetadataValueKey is a MetadataValueKey whose value is a
      * copyable literal that is known at construction time.
      *

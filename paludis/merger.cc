@@ -664,19 +664,18 @@ Merger::do_ownership_fixes_recursive(const FSEntry & dir)
 {
     for (DirIterator d(dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
-        uid_t new_uid(d->owner() == _imp->params[k::environment()]->reduced_uid() ? 0 : -1);
-        gid_t new_gid(d->group() == _imp->params[k::environment()]->reduced_gid() ? 0 : -1);
-        if (uid_t(-1) != new_uid || gid_t(-1) != new_gid)
+        std::pair<uid_t, gid_t> new_ids(_imp->params[k::get_new_ids_or_minus_one()](*d));
+        if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
         {
             FSEntry f(*d);
-            f.lchown(new_uid, new_gid);
+            f.lchown(new_ids.first, new_ids.second);
 
             if (et_dir == entry_type(*d))
             {
                 mode_t mode(f.permissions());
-                if (uid_t(-1) != new_uid)
+                if (uid_t(-1) != new_ids.first)
                     mode &= ~S_ISUID;
-                if (gid_t(-1) != new_gid)
+                if (gid_t(-1) != new_ids.second)
                     mode &= ~S_ISGID;
                 f.chmod(mode);
             }

@@ -61,6 +61,7 @@ namespace test_cases
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
                         (k::description(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -89,6 +90,7 @@ namespace test_cases
                         (k::install_under(), FSEntry("/"))
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
@@ -123,6 +125,7 @@ namespace test_cases
                         (k::install_under(), FSEntry("/"))
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
@@ -152,6 +155,7 @@ namespace test_cases
                         (k::install_under(), FSEntry("/"))
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
@@ -194,6 +198,7 @@ namespace test_cases
                         (k::install_under(), FSEntry("/"))
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);
@@ -248,6 +253,7 @@ namespace test_cases
                         (k::install_under(), FSEntry("/magic/pixie"))
                         (k::build_dependencies(), "")
                         (k::run_dependencies(), "")
+                        (k::rewrite_ids_over_to_root(), -1)
                         (k::description(), "")
                         ));
             env.package_database()->add_repository(1, repo);

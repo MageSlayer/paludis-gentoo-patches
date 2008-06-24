@@ -21,6 +21,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
 #include <paludis/repositories/unpackaged/exceptions.hh>
@@ -68,6 +69,13 @@ namespace
         if (m->end() != m->find("description"))
             description = m->find("description")->second;
 
+        int rewrite_ids_over_to_root(-1);
+        if (m->end() != m->find("rewrite_ids_over_to_root") && ! m->find("rewrite_ids_over_to_root")->second.empty())
+        {
+            Context item_context("When handling rewrite_ids_over_to_root key:");
+            rewrite_ids_over_to_root = destringify<int>(m->find("rewrite_ids_over_to_root")->second);
+        }
+
         return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
                     unpackaged_repositories::UnpackagedRepositoryParams::named_create()
                     (k::environment(), env)
@@ -78,6 +86,7 @@ namespace
                     (k::slot(), SlotName(slot))
                     (k::build_dependencies(), build_dependencies)
                     (k::run_dependencies(), run_dependencies)
+                    (k::rewrite_ids_over_to_root(), rewrite_ids_over_to_root)
                     (k::description(), description)));
     }
 

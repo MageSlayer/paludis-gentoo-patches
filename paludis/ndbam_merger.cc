@@ -69,6 +69,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
             (k::root(), p[k::root()])
             (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
             (k::install_under(), p[k::install_under()])
+            (k::get_new_ids_or_minus_one(), p[k::get_new_ids_or_minus_one()])
             (k::options(), p[k::options()])),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p)),
     _imp(PrivateImplementationPattern<NDBAMMerger>::_imp)

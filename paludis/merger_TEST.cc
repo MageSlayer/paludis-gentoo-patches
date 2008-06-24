@@ -32,6 +32,15 @@
 using namespace paludis;
 using namespace test;
 
+namespace
+{
+    std::pair<uid_t, gid_t>
+    get_new_ids_or_minus_one(const FSEntry &)
+    {
+        return std::make_pair(-1, -1);
+    }
+}
+
 namespace paludis
 {
     class HookTestEnvironment :
@@ -158,6 +167,7 @@ namespace
                         (k::install_under(), FSEntry("/"))
                         (k::environment(), &env)
                         (k::no_chown(), true)
+                        (k::get_new_ids_or_minus_one(), &get_new_ids_or_minus_one)
                         (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
             {
             }
@@ -173,6 +183,7 @@ namespace
                         (k::install_under(), FSEntry("/"))
                         (k::environment(), &env)
                         (k::no_chown(), true)
+                        (k::get_new_ids_or_minus_one(), &get_new_ids_or_minus_one)
                         (k::options(), o))
             {
             }

@@ -39,7 +39,8 @@ namespace paludis
             kc::Field<k::slot, SlotName>,
             kc::Field<k::build_dependencies, std::string>,
             kc::Field<k::run_dependencies, std::string>,
-            kc::Field<k::description, std::string>
+            kc::Field<k::description, std::string>,
+            kc::Field<k::rewrite_ids_over_to_root, int>
                 > UnpackagedRepositoryParams;
     }
 

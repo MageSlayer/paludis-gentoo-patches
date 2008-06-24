@@ -376,6 +376,7 @@ namespace test_cases
                             (k::install_under(), FSEntry("/"))
                             (k::build_dependencies(), "")
                             (k::run_dependencies(), "")
+                            (k::rewrite_ids_over_to_root(), -1)
                             (k::description(), "")
                             ));
                 env.package_database()->add_repository(1, source_repo);
@@ -431,6 +432,7 @@ namespace test_cases
                             (k::install_under(), FSEntry("/"))
                             (k::build_dependencies(), "")
                             (k::run_dependencies(), "")
+                            (k::rewrite_ids_over_to_root(), -1)
                             (k::description(), "")
                             ));
                 env.package_database()->add_repository(1, source_repo);
@@ -487,6 +489,7 @@ namespace test_cases
                             (k::location(), FSEntry("installed_repository_TEST_dir/src4b2"))
                             (k::install_under(), FSEntry("/"))
                             (k::build_dependencies(), "")
+                            (k::rewrite_ids_over_to_root(), -1)
                             (k::run_dependencies(), "")
                             (k::description(), "")
                             ));

@@ -136,6 +136,17 @@ LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f)
     return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
 }
 
+ExtraLiteralMetadataValueKeyMethods<long>::~ExtraLiteralMetadataValueKeyMethods()
+{
+}
+
+std::string
+ExtraLiteralMetadataValueKeyMethods<long>::pretty_print() const
+{
+    long v(static_cast<const LiteralMetadataValueKey<long> *>(this)->value());
+    return stringify(v);
+}
+
 ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
 {
 }
@@ -181,5 +192,6 @@ LiteralMetadataValueKey<T_>::value() const
 template class LiteralMetadataValueKey<FSEntry>;
 template class LiteralMetadataValueKey<std::string>;
 template class LiteralMetadataValueKey<bool>;
+template class LiteralMetadataValueKey<long>;
 template class LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
 

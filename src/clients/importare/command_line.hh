@@ -56,6 +56,7 @@ class CommandLine :
         paludis::args::ArgsGroup source_args;
         paludis::args::StringArg a_location;
         paludis::args::StringArg a_install_under;
+        paludis::args::IntegerArg a_rewrite_ids_over_to_root;
 
         paludis::args::ArgsGroup metadata_args;
         paludis::args::StringArg a_description;

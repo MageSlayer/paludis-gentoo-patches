@@ -27,6 +27,7 @@
 #include <paludis/util/keys.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <tr1/functional>
 
 /** \file
  * Forward declarations for paludis/merger.hh .
@@ -68,7 +69,8 @@ namespace paludis
         kc::Field<k::root, FSEntry>,
         kc::Field<k::no_chown, bool>,
         kc::Field<k::options, MergerOptions>,
-        kc::Field<k::install_under, FSEntry>
+        kc::Field<k::install_under, FSEntry>,
+        kc::Field<k::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> >
             > MergerParams;
 
     class MergerError;

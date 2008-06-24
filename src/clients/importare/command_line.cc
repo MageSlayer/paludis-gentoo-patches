@@ -46,6 +46,8 @@ CommandLine::CommandLine() :
             "Options affecting the source image"),
     a_location(&source_args, "location", 'l', "Location of source image (default: current directory)"),
     a_install_under(&source_args, "install-under", 'u', "Install under a given directory (default: /)"),
+    a_rewrite_ids_over_to_root(&source_args, "rewrite-ids-over-to-root", 'r',
+            "Change any UID or GID over this value to 0 (-1 disables, default)"),
 
     metadata_args(this, "Metadata options",
             "Options affecting generated metadata"),

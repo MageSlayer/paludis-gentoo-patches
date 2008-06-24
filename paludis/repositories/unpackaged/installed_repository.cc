@@ -223,9 +223,26 @@ InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActio
     return v.result;
 }
 
+namespace
+{
+    std::pair<uid_t, gid_t>
+    get_new_ids_or_minus_one(const Environment * const env, const int rewrite_ids_over_to_root, const FSEntry & f)
+    {
+        if (f.owner() == env->reduced_uid() || f.group() == env->reduced_gid())
+            return std::make_pair(0, 0);
+        else if ((-1 != rewrite_ids_over_to_root) && (f.owner() > static_cast<unsigned int>(rewrite_ids_over_to_root)
+                    || f.group() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
+            return std::make_pair(0, 0);
+        else
+            return std::make_pair(-1, -1);
+    }
+}
+
 void
 InstalledUnpackagedRepository::merge(const MergeParams & m)
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
 
@@ -241,6 +258,17 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         if (! kk)
             throw InstallActionError("Fetched install_under key but did not get an FSEntry key from owning repository");
         install_under = kk->value();
+    }
+
+    int rewrite_ids_over_to_root(-1);
+    {
+        Repository::MetadataConstIterator k(m[k::package_id()]->repository()->find_metadata("rewrite_ids_over_to_root"));
+        if (k == m[k::package_id()]->repository()->end_metadata())
+            throw InstallActionError("Could not fetch rewrite_ids_over_to_root key from owning repository");
+        const MetadataValueKey<long> * kk(visitor_cast<const MetadataValueKey<long> >(**k));
+        if (! kk)
+            throw InstallActionError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
+        rewrite_ids_over_to_root = kk->value();
     }
 
     std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
@@ -321,6 +349,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
             (k::config_protect(), getenv_with_default("CONFIG_PROTECT", ""))
             (k::config_protect_mask(), getenv_with_default("CONFIG_PROTECT_MASK", ""))
             (k::package_id(), m[k::package_id()])
+            (k::get_new_ids_or_minus_one(), std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment,
+                                                           rewrite_ids_over_to_root, _1))
             (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs));
 
     if (! merger.check())

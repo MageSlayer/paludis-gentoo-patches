@@ -181,6 +181,9 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_install_under.specified() ?
                     FSEntry(CommandLine::get_instance()->a_install_under.argument()) :
                     FSEntry("/")));
+        keys->insert("rewrite_ids_over_to_root", stringify(
+                    CommandLine::get_instance()->a_rewrite_ids_over_to_root.specified() ?
+                    CommandLine::get_instance()->a_rewrite_ids_over_to_root.argument() : -1));
         keys->insert("format", "unpackaged");
         keys->insert("name", stringify(q));
         keys->insert("version", stringify(v));

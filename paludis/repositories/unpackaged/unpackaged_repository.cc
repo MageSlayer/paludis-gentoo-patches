@@ -45,6 +45,7 @@ namespace paludis
 
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_under_key;
+        std::tr1::shared_ptr<const MetadataValueKey<long> > rewrite_ids_over_to_root_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > name_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > slot_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
@@ -64,6 +65,8 @@ namespace paludis
                         mkt_significant, params[k::location()])),
             install_under_key(new LiteralMetadataValueKey<FSEntry> ("install_under", "install_under",
                         mkt_significant, params[k::install_under()])),
+            rewrite_ids_over_to_root_key(new LiteralMetadataValueKey<long> ("rewrite_ids_over_to_root", "rewrite_ids_over_to_root",
+                        mkt_normal, params[k::rewrite_ids_over_to_root()])),
             name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
                         mkt_normal, stringify(params[k::name()]))),
             slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
@@ -116,6 +119,7 @@ UnpackagedRepository::_add_metadata_keys() const
     clear_metadata_keys();
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->install_under_key);
+    add_metadata_key(_imp->rewrite_ids_over_to_root_key);
     add_metadata_key(_imp->name_key);
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->format_key);
