@@ -32,6 +32,7 @@
 #include <iosfwd>
 #include <string>
 #include <tr1/memory>
+#include <tr1/functional>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -90,8 +91,7 @@ namespace paludis
      * \ingroup g_config_file
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE ConfigFile :
-        private InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE ConfigFile
     {
         public:
             /**
@@ -120,29 +120,20 @@ namespace paludis
                     ///\}
 
                     /**
-                     * Our stream, for use by ConfigFile.
+                     * Our text, for use by ConfigFile.
                      */
-                    std::istream & stream() const;
+                    const std::string & text() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                     /**
                      * Our filename (may be empty), for use by ConfigFile.
                      */
-                    std::string filename() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::string & filename() const PALUDIS_ATTRIBUTE((warn_unused_result));
             };
 
             ///\name Basic operations
             ///\{
 
-            virtual ~ConfigFile();
-
-            ///\}
-
-        protected:
-
-            ///\name Basic operations
-            ///\{
-
-            ConfigFile(const Source &);
+            virtual ~ConfigFile() = 0;
 
             ///\}
     };
@@ -173,19 +164,9 @@ namespace paludis
         public ConfigFile,
         private PrivateImplementationPattern<LineConfigFile>
     {
-        private:
-            void _parse(const Source &, const LineConfigFileOptions &);
-
         public:
             ///\name Basic operations
             ///\{
-
-            /**
-             * Deprecated constructor.
-             *
-             * \deprecated Use the two argument form.
-             */
-            LineConfigFile(const Source &) PALUDIS_ATTRIBUTE((deprecated));
 
             LineConfigFile(const Source &, const LineConfigFileOptions &);
 
@@ -237,83 +218,27 @@ namespace paludis
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
         public:
-            /**
-             * A source of default values for a KeyValueConfigFile.
-             *
-             * \ingroup g_config_file
-             * \see KeyValueConfigFile
-             * \nosubgrouping
-             */
-            class PALUDIS_VISIBLE Defaults :
-                private PrivateImplementationPattern<Defaults>
-            {
-                public:
-                    ///\name Basic operations
-                    ///\{
+            typedef std::tr1::function<std::string (const KeyValueConfigFile &, const std::string &)> DefaultFunction;
+            typedef std::tr1::function<std::string (const KeyValueConfigFile &,
+                    const std::string & var, const std::string & old_value, const std::string & new_value)> TransformationFunction;
 
-                    /**
-                     * Avoid various C++ syntax oddities by providing a default constructor that
-                     * can't be used by anything.
-                     *
-                     * This is specialised for permissible parameters.
-                     */
-                    template <typename T_>
-                    Defaults(T_)
-                    {
-                        T_::WrongTypeForDefaults;
-                    }
+            static std::string no_defaults(const KeyValueConfigFile &, const std::string &);
+            static std::string no_transformation(const KeyValueConfigFile &, const std::string &, const std::string &, const std::string &);
 
-                    /**
-                     * Defaults, from a function.
-                     */
-                    Defaults(std::string (*)(const std::string &, const std::string &));
-
-                    /**
-                     * Defaults, from an empty string.
-                     */
-                    Defaults();
-
-                    Defaults(const Defaults &);
-                    const Defaults & operator= (const Defaults &);
-
-                    ~Defaults();
-
-                    ///\}
-
-                    /**
-                     * Get the default value for a particular key.
-                     */
-                    std::string get(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                    ///\name Iterate over our default keys
-                    ///\{
-
-                    struct ConstIteratorTag;
-                    typedef WrappedForwardIterator<ConstIteratorTag,
-                            const std::pair<const std::string, std::string> > ConstIterator;
-                    ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                    ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                    ///\}
-            };
-
-        private:
-            void _parse(const Source &, const KeyValueConfigFileOptions &, const Defaults &);
-
-        public:
             ///\name Basic operations
             ///\{
 
             /**
              * Constructor.
              *
-             * \deprecated Use the form taking KeyValueConfigFileOptions.
+             * \since 0.28
              */
-            KeyValueConfigFile(const Source &, const Defaults & = Defaults(),
-                    bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0) PALUDIS_ATTRIBUTE((deprecated));
-
-            KeyValueConfigFile(const Source &, const KeyValueConfigFileOptions &, const Defaults & = Defaults(),
-                    bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0);
+            KeyValueConfigFile(
+                    const Source &,
+                    const KeyValueConfigFileOptions &,
+                    const DefaultFunction &,
+                    const TransformationFunction &
+                    );
 
             ~KeyValueConfigFile();
 
@@ -334,46 +259,16 @@ namespace paludis
              * Fetch the value for a particular key.
              */
             std::string get(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const KeyValueConfigFileOptions & options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const DefaultFunction & default_function() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const TransformationFunction & transformation_function() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    /**
-     * Use another KeyValueConfigFile for defaults.
-     *
-     * \ingroup g_config_file
-     */
-    template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile>);
-
-    /**
-     * Use a string pair collection for defaults.
-     *
-     * \ingroup g_config_file
-     */
-    template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const Map<std::string, std::string> >);
-
-    /**
-     * Use another KeyValueConfigFile for defaults (non-const).
-     *
-     * \ingroup g_config_file
-     */
-    template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile>);
-
-    /**
-     * Use a string pair collection for defaults (non-const).
-     *
-     * \ingroup g_config_file
-     */
-    template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<Map<std::string, std::string> >);
-
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>;
     extern template class PrivateImplementationPattern<ConfigFile::Source>;
     extern template class PrivateImplementationPattern<LineConfigFile>;
     extern template class PrivateImplementationPattern<KeyValueConfigFile>;
-    extern template class PrivateImplementationPattern<KeyValueConfigFile::Defaults>;
 #endif
 
 }

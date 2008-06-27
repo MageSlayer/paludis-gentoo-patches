@@ -9,6 +9,7 @@ make_enum_LineConfigFileOption()
     key lcfo_disallow_comments          "Do not recognise comments"
     key lcfo_preserve_whitespace        "Preserve exact whitespace"
     key lcfo_no_skip_blank_lines        "Do not skip blank lines"
+    key lcfo_allow_inline_comments      "Allow inline comments. \since 0.28"
 
     doxygen_comment << "END"
         /**
@@ -36,6 +37,7 @@ make_enum_KeyValueConfigFileOption()
     key kvcfo_disallow_source                        "Do not allow the source command"
     key kvcfo_preserve_whitespace                    "Do not strip trailing whitespace from values"
     key kvcfo_ignore_export                          "Accept and ignore the word export at the beginning of a line"
+    key kvcfo_allow_inline_comments                  "Allow inline comments. \since 0.28"
 
     doxygen_comment << "END"
         /**
