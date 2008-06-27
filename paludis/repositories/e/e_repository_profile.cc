@@ -306,7 +306,8 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         return;
 
     KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
-            kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values);
+            kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
             k != k_end ; ++k)
@@ -557,7 +558,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
         return;
 
     Context context("When loading basic use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions());
+    LineConfigFile f(file, LineConfigFileOptions() + lcfo_allow_inline_comments);
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
@@ -596,7 +597,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
         return;
 
     Context context("When loading specised use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions());
+    LineConfigFile f(file, LineConfigFileOptions() + lcfo_allow_inline_comments);
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {

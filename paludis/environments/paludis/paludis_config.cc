@@ -74,6 +74,21 @@ template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag,
 #include <paludis/environments/paludis/use_config_entry-sr.cc>
 #include <paludis/environments/paludis/repository_config_entry-sr.cc>
 
+namespace
+{
+    std::string predefined(
+            const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const KeyValueConfigFile &,
+            const std::string & k)
+    {
+        const Map<std::string, std::string>::ConstIterator i(m->find(k));
+        if (m->end() != i)
+            return i->second;
+        else
+            return "";
+    }
+}
+
 namespace paludis
 {
     /**
@@ -154,7 +169,9 @@ namespace paludis
         std::tr1::shared_ptr<FSEntry> world_file;
 
         if ((FSEntry(config_dir) / "environment.conf").exists())
-            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions(),
+                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                        &KeyValueConfigFile::no_transformation));
         else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
             std::stringstream s;
@@ -164,7 +181,9 @@ namespace paludis
                     .with_stderr_prefix("environment.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
+                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                        &KeyValueConfigFile::no_transformation));
 
             if (exit_status != 0)
             {
@@ -179,7 +198,9 @@ namespace paludis
             Log::get_instance()->message("paludis_environment.no_environment_conf", ll_debug, lc_context)
                 << "No environment.conf or environment.bash in '" << config_dir << "'";
             std::stringstream str;
-            kv.reset(new KeyValueConfigFile(str, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+            kv.reset(new KeyValueConfigFile(str, KeyValueConfigFileOptions(),
+                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                        &KeyValueConfigFile::no_transformation));
         }
 
         if (! kv->get("reduced_username").empty())
@@ -267,10 +288,12 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         KeyValueConfigFile* specpath;
         if ((local_config_dir / "specpath.conf").exists())
-            specpath = new KeyValueConfigFile(local_config_dir / "specpath.conf", KeyValueConfigFileOptions());
+            specpath = new KeyValueConfigFile(local_config_dir / "specpath.conf", KeyValueConfigFileOptions(),
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
         else
         {
-            specpath = new KeyValueConfigFile(local_config_dir / "specpath", KeyValueConfigFileOptions());
+            specpath = new KeyValueConfigFile(local_config_dir / "specpath", KeyValueConfigFileOptions(),
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
             Log::get_instance()->message("paludis_environment.paludis_config.specpath.deprecated", ll_warning, lc_no_context)
                 << "Using specpath is deprecated, use specpath.conf instead";
         }
@@ -332,7 +355,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
             KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(),
-                    KeyValueConfigFile::Defaults(conf_vars));
+                    std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation);
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
         }
         else if ((local_config_dir / "repository_defaults.bash").exists())
@@ -344,7 +368,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     .with_stderr_prefix("repository_defaults.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
+            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(),
+                    std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation);
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
             if (exit_status != 0)
                 Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)
@@ -384,7 +410,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                         .with_stderr_prefix(repo_file->basename() + "> ")
                         .with_captured_stdout_stream(&s));
                 int exit_status(run_command(cmd));
-                kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+                kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
+                            std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            &KeyValueConfigFile::no_transformation));
 
                 if (exit_status != 0)
                 {
@@ -394,7 +422,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 }
             }
             else
-                kv.reset(new KeyValueConfigFile(*repo_file, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+                kv.reset(new KeyValueConfigFile(*repo_file, KeyValueConfigFileOptions(),
+                            std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            &KeyValueConfigFile::no_transformation));
 
             if (! kv)
                 continue;

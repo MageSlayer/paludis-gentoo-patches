@@ -51,8 +51,8 @@ paludis::make_ebuild_repository(
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
     std::tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf",
-                KeyValueConfigFileOptions())
+            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", KeyValueConfigFileOptions(),
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
             : 0);
 
     std::tr1::shared_ptr<const RepositoryName> master_repository_name;

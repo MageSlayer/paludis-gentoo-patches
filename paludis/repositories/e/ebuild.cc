@@ -311,7 +311,8 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         std::stringstream input_stream(input);
         KeyValueConfigFile f(input_stream, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
                 + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
-                + kvcfo_disallow_variables + kvcfo_preserve_whitespace);
+                + kvcfo_disallow_variables + kvcfo_preserve_whitespace,
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         std::copy(f.begin(), f.end(), keys->inserter());
         if (0 == exit_status)
@@ -838,7 +839,7 @@ EbuildInfoCommand::extend_command(const Command & cmd)
     std::string info_vars;
     if (info_params[k::info_vars()].is_regular_file_or_symlink_to_regular_file())
     {
-        LineConfigFile info_vars_f(info_params[k::info_vars()], LineConfigFileOptions());
+        LineConfigFile info_vars_f(info_params[k::info_vars()], LineConfigFileOptions() + lcfo_allow_inline_comments);
         info_vars = join(info_vars_f.begin(), info_vars_f.end(), " ");
     }
 

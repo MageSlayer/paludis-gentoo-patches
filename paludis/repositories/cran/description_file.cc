@@ -22,6 +22,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
+#include <sstream>
 #include <istream>
 #include <map>
 
@@ -37,17 +38,17 @@ namespace paludis
     };
 }
 
-DescriptionFile::DescriptionFile(const Source & s) :
-    ConfigFile(s),
+DescriptionFile::DescriptionFile(const Source & sr) :
     PrivateImplementationPattern<DescriptionFile>(new Implementation<DescriptionFile>)
 {
-    Context c("When parsing CRAN description file '" + s.filename() + "':");
+    Context c("When parsing CRAN description file '" + sr.filename() + "':");
 
-    if (! s.stream())
-        throw ConfigFileError(s.filename(), "Cannot read input");
+    std::istringstream s(sr.text());
+    if (! s)
+        throw ConfigFileError(sr.filename(), "Cannot read input");
 
     std::string line, line_full;
-    while (std::getline(s.stream(), line))
+    while (std::getline(s, line))
     {
         /* cran needs to be taken out and shot in the nuts for this... */
         line = strip_trailing(line, "\r");
@@ -55,7 +56,7 @@ DescriptionFile::DescriptionFile(const Source & s) :
         if ((! line.empty()) && (std::string::npos != std::string(" \t").find_first_of(line.at(0))))
         {
             if (line_full.empty())
-                throw ConfigFileError(s.filename(), "Unexpected continuation");
+                throw ConfigFileError(sr.filename(), "Unexpected continuation");
 
             line_full += " ";
             line_full += strip_leading(strip_trailing(line, " \t"), " \t");

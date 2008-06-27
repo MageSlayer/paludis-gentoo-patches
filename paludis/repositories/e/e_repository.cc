@@ -138,7 +138,7 @@ namespace
                 std::set<std::string> info_pkgs;
                 if (_f.exists())
                 {
-                    LineConfigFile vars(_f, LineConfigFileOptions());
+                    LineConfigFile vars(_f, LineConfigFileOptions() + lcfo_allow_inline_comments);
                     info_pkgs.insert(vars.begin(), vars.end());
                 }
 
@@ -389,7 +389,7 @@ namespace paludis
 
             found_one = true;
 
-            LineConfigFile f(*p, LineConfigFileOptions());
+            LineConfigFile f(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
             for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -445,7 +445,7 @@ namespace
                 if (! name_file.is_regular_file())
                     break;
 
-                LineConfigFile f(name_file, LineConfigFileOptions());
+                LineConfigFile f(name_file, LineConfigFileOptions() + lcfo_allow_inline_comments);
                 if (f.begin() == f.end())
                     break;
                 return RepositoryName(*f.begin());
@@ -756,7 +756,7 @@ ERepository::arch_flags() const
             if (! p->exists())
                 continue;
 
-            LineConfigFile archs(*p, LineConfigFileOptions());
+            LineConfigFile archs(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
             std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -786,7 +786,7 @@ ERepository::need_mirrors() const
         {
             if (p->exists())
             {
-                LineConfigFile mirrors(*p, LineConfigFileOptions());
+                LineConfigFile mirrors(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
                 for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> ee;

@@ -62,7 +62,7 @@ namespace paludis
 
                 Context cc("When loading distribution file '" + stringify(*d) + "':");
 
-                KeyValueConfigFile k(*d, KeyValueConfigFileOptions());
+                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
                             make_shared_ptr(new Distribution(Distribution::named_create()

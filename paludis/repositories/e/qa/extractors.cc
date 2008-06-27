@@ -52,7 +52,8 @@ namespace
         {
             try
             {
-                file.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions()));
+                file.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions(),
+                            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
             }
             catch (const InternalError &)
             {
@@ -63,7 +64,8 @@ namespace
                 Log::get_instance()->message("e.metadata_key.extractors.configuration_error", ll_warning, lc_context)
                     << "Got error '" << e.message() << "' (" << e.what()
                     << ") when loading extractors.conf for QA extractors_check";
-                file.reset(new KeyValueConfigFile(std::string(), KeyValueConfigFileOptions()));
+                file.reset(new KeyValueConfigFile(std::string(), KeyValueConfigFileOptions(),
+                            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
             }
         }
     };

@@ -163,25 +163,71 @@ namespace paludis
 
 namespace
 {
-    bool is_incremental_excluding_use_expand(const std::string & s, const KeyValueConfigFile &)
+    bool is_incremental_excluding_use_expand(const KeyValueConfigFile &, const std::string & s)
     {
         return (s == "USE" || s == "USE_EXPAND" || s == "USE_EXPAND_HIDDEN" ||
                 s == "CONFIG_PROTECT" || s == "CONFIG_PROTECT_MASK" || s == "FEATURES"
                 || s == "ACCEPT_KEYWORDS");
     }
 
-    bool is_incremental(const std::string & s, const KeyValueConfigFile & k)
+    bool is_incremental(const KeyValueConfigFile & k, const std::string & s)
     {
-        if (is_incremental_excluding_use_expand(s, k))
+        if (is_incremental_excluding_use_expand(k, s))
             return true;
 
         std::set<std::string> use_expand;
-        tokenise_whitespace(k.get("USE_EXPAND"),
-                std::inserter(use_expand, use_expand.begin()));
+        tokenise_whitespace(k.get("USE_EXPAND"), std::inserter(use_expand, use_expand.begin()));
         if (use_expand.end() != use_expand.find(s))
             return true;
 
         return false;
+    }
+
+    std::string predefined(const std::tr1::shared_ptr<const KeyValueConfigFile> & k,
+            const KeyValueConfigFile &, const std::string & s)
+    {
+        return k->get(s);
+    }
+
+    std::string make_incremental(const KeyValueConfigFile &, const std::string &, const std::string & before, const std::string & value)
+    {
+        if (before.empty())
+            return value;
+
+        std::list<std::string> values;
+        std::set<std::string> new_values;
+        tokenise_whitespace(before, std::back_inserter(values));
+        tokenise_whitespace(value, std::back_inserter(values));
+
+        for (std::list<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
+                v != v_end ; ++v)
+        {
+            if (v->empty())
+                continue;
+            else if ("-*" == *v)
+                new_values.clear();
+            else if ('-' == v->at(0))
+                new_values.erase(v->substr(1));
+            else
+                new_values.insert(*v);
+        }
+
+        return join(new_values.begin(), new_values.end(), " ");
+    }
+
+    std::string do_incremental(const KeyValueConfigFile & k, const std::string & var, const std::string & before, const std::string & value)
+    {
+        if (! is_incremental(k, var))
+            return value;
+        return make_incremental(k, var, before, value);
+    }
+
+    std::string do_incremental_excluding_use_expand(
+            const KeyValueConfigFile & k, const std::string & var, const std::string & before, const std::string & value)
+    {
+        if (! is_incremental_excluding_use_expand(k, var))
+            return value;
+        return make_incremental(k, var, before, value);
     }
 }
 
@@ -198,13 +244,19 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         "functionality. Full support for Portage configuration formats is not "
         "guaranteed; issues should be reported via trac.";
 
-    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions()));
+    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions(),
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
     if ((_imp->conf_dir / "make.globals").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions(), _imp->vars, &is_incremental));
+        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
+                    kvcfo_allow_inline_comments,
+                    std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &do_incremental));
     if ((_imp->conf_dir / "make.conf").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions(), _imp->vars,
-                    &is_incremental_excluding_use_expand));
+        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
+                    kvcfo_allow_inline_comments,
+                    std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &do_incremental_excluding_use_expand));
 
     /* TODO: load USE etc from env? */
 
@@ -265,7 +317,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
-        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions());
+        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions() + lcfo_allow_inline_comments);
         for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
                 line != line_end ; ++line)
         {
@@ -315,7 +367,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions());
+        LineConfigFile file(f, LineConfigFileOptions() + lcfo_allow_inline_comments);
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
         {
@@ -368,7 +420,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions());
+        LineConfigFile file(f, LineConfigFileOptions() + lcfo_allow_inline_comments);
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
@@ -393,7 +445,11 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     }
 
     if ((d / "make.defaults").exists())
-        _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions(), _imp->vars, &is_incremental));
+        _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions()
+                    + kvcfo_allow_inline_comments,
+                    std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &do_incremental));
+
 }
 
 void

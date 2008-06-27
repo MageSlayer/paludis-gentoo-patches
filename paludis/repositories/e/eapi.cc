@@ -48,6 +48,17 @@ using namespace paludis::erepository;
 
 template class InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>;
 
+namespace
+{
+    std::string predefined(const std::string & d, const KeyValueConfigFile &, const std::string & v)
+    {
+        if (v == "PALUDIS_EAPIS_DIR")
+            return d;
+        else
+            return "";
+    }
+}
+
 namespace paludis
 {
     template<>
@@ -66,10 +77,9 @@ namespace paludis
                     continue;
 
                 Context cc("When loading EAPI file '" + stringify(*d) + "':");
-
-                std::tr1::shared_ptr<Map<std::string, std::string> > predefined(new Map<std::string, std::string>);
-                predefined->insert("PALUDIS_EAPIS_DIR", stringify(d->dirname()));
-                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), predefined);
+                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(),
+                        std::tr1::bind(&predefined, stringify(d->dirname()), std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                        &KeyValueConfigFile::no_transformation);
 
                 ELikePackageDepSpecOptions package_dep_spec_parse_options;
                 {

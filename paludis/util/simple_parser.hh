@@ -80,6 +80,7 @@ namespace paludis
             bool eof() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             std::string::size_type offset() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            unsigned current_line_number() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 

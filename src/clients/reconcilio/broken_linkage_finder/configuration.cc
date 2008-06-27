@@ -206,7 +206,8 @@ Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root
 
             if (it->is_regular_file_or_symlink_to_regular_file())
             {
-                KeyValueConfigFile kvs(*it, opts);
+                KeyValueConfigFile kvs(*it, opts,
+                        &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
                 std::tr1::function<std::string (const std::string &)> fromfile(
                     std::tr1::bind(&KeyValueConfigFile::get, std::tr1::cref(kvs), _1));
@@ -240,7 +241,8 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
         opts += kvcfo_disallow_space_inside_unquoted_values;
         opts += kvcfo_ignore_export;
 
-        KeyValueConfigFile kvs(etc_profile_env, opts);
+        KeyValueConfigFile kvs(etc_profile_env, opts,
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         std::tr1::function<std::string (const std::string &)> fromfile(
             std::tr1::bind(&KeyValueConfigFile::get, std::tr1::cref(kvs), _1));

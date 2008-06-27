@@ -72,7 +72,7 @@ namespace
 
         Suffixes() :
             file(FSEntry(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
-                    KeyValueConfigFileOptions())
+                    KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
         {
         }
 

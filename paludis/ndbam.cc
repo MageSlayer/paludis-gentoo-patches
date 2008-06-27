@@ -108,7 +108,8 @@ NDBAM::NDBAM(const FSEntry & l,
     if ((l / "ndbam.conf").exists())
     {
         Context cc("When reading '" + stringify(l / "ndbam.conf") + "':");
-        KeyValueConfigFile k(l / "ndbam.conf", KeyValueConfigFileOptions());
+        KeyValueConfigFile k(l / "ndbam.conf", KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults,
+                &KeyValueConfigFile::no_transformation);
         if (k.get("ndbam_format") != "1")
             throw ConfigurationError("Unsupported NDBAM format '" + k.get("ndbam_format") + "'");
         if (! check_format(k.get("repository_format")))

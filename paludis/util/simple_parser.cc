@@ -264,5 +264,16 @@ SimpleParser::text() const
     return _imp->text;
 }
 
+unsigned
+SimpleParser::current_line_number() const
+{
+    unsigned line_number(1);
+    for (std::string::size_type p(0) ; p < _imp->offset ; ++p)
+        if (_imp->text[p] == '\n')
+            ++line_number;
+
+    return line_number;
+}
+
 template struct PrivateImplementationPattern<SimpleParser>;
 
