@@ -258,6 +258,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
                     if (! parser.eof())
                         throw ConfigFileError(sr.filename(),
                                 "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                break;
             }
             else if (parser.consume(simple_parser::exact("#") >> word))
             {

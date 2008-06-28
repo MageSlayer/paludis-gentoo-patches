@@ -401,5 +401,58 @@ namespace test_cases
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
         }
     } test_key_value_config_file_errors;
+
+    struct LineConfigFileInlineCommentsTest : TestCase
+    {
+        LineConfigFileInlineCommentsTest() : TestCase("line config file inline comments") { }
+
+        void run()
+        {
+            std::stringstream s;
+            s << "one # moo" << std::endl;
+            s << "tw\\" << std::endl;
+            s << "o # moo" << std::endl;
+            s << "" << std::endl;
+            s << "three #" << std::endl;
+            s << "#" << std::endl;
+            s << "four" << std::endl;
+            s << "five # moo" << std::endl;
+
+            LineConfigFile f(s, LineConfigFileOptions() + lcfo_allow_inline_comments);
+            TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 5);
+            std::vector<std::string> lines;
+            std::copy(f.begin(), f.end(), std::back_inserter(lines));
+            TEST_CHECK_EQUAL(lines.at(0), "one");
+            TEST_CHECK_EQUAL(lines.at(1), "two");
+            TEST_CHECK_EQUAL(lines.at(2), "three");
+            TEST_CHECK_EQUAL(lines.at(3), "four");
+            TEST_CHECK_EQUAL(lines.at(4), "five");
+        }
+    } test_line_config_file_inline_comments;
+
+    struct KeyValueConfigFileInlineCommentsTest : TestCase
+    {
+        KeyValueConfigFileInlineCommentsTest() : TestCase("key value config inline comments") { }
+
+        void run()
+        {
+            std::stringstream d_s;
+            d_s << "one=\"one\" # foo" << std::endl;
+            d_s << "two=two # bar" << std::endl;
+            d_s << "three = \\" << std::endl;
+            d_s << "three # bar" << std::endl;
+            d_s << "four = four # foo" << std::endl;
+            d_s << "five = five # moo" << std::endl;
+            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions(),
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+            TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 5);
+            TEST_CHECK_EQUAL(ff.get("one"), "one");
+            TEST_CHECK_EQUAL(ff.get("two"), "two");
+            TEST_CHECK_EQUAL(ff.get("three"), "three");
+            TEST_CHECK_EQUAL(ff.get("four"), "four");
+            TEST_CHECK_EQUAL(ff.get("five"), "five");
+        }
+    } test_key_value_config_file_inline_comments;
 }
 
