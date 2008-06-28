@@ -33,6 +33,9 @@ export MOPREFIX="${PN}"
 
 keepdir()
 {
+    if [[ ${#} -lt 1 ]]; then
+        paludis_die_unless_nonfatal "at least one argument needed"
+    fi
     if [[ ${@} != ${@#${D}} ]]; then
         paludis_die_unless_nonfatal "You should not use \${D} with helpers."
     fi
