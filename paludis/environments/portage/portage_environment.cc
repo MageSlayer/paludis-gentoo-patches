@@ -249,12 +249,12 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _load_profile((_imp->conf_dir / "make.profile").realpath());
     if ((_imp->conf_dir / "make.globals").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
-                    kvcfo_allow_inline_comments,
+                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental));
     if ((_imp->conf_dir / "make.conf").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
-                    kvcfo_allow_inline_comments,
+                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental_excluding_use_expand));
 
@@ -317,7 +317,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
-        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions() + lcfo_disallow_continuations);
         for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
                 line != line_end ; ++line)
         {
@@ -367,7 +367,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
         {
@@ -420,7 +420,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
@@ -438,7 +438,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     {
         Context context_local("When loading parent profiles:");
 
-        LineConfigFile f(d / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
+        LineConfigFile f(d / "parent", LineConfigFileOptions() + lcfo_disallow_continuations);
         for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
             _load_profile((d / *line).realpath());
@@ -446,7 +446,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
 
     if ((d / "make.defaults").exists())
         _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions()
-                    + kvcfo_allow_inline_comments,
+                    + kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental));
 
