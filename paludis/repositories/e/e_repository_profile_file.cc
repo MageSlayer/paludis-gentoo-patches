@@ -97,7 +97,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     if (! f.exists())
         return;
 
-    F_ file(f, LineConfigFileOptions() + lcfo_allow_inline_comments);
+    F_ file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
         const std::string & key(FileEntryTraits<typename std::tr1::remove_const<typename std::tr1::remove_reference<

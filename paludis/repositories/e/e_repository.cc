@@ -138,7 +138,7 @@ namespace
                 std::set<std::string> info_pkgs;
                 if (_f.exists())
                 {
-                    LineConfigFile vars(_f, LineConfigFileOptions() + lcfo_allow_inline_comments);
+                    LineConfigFile vars(_f, LineConfigFileOptions() + lcfo_disallow_continuations);
                     info_pkgs.insert(vars.begin(), vars.end());
                 }
 
@@ -389,7 +389,7 @@ namespace paludis
 
             found_one = true;
 
-            LineConfigFile f(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
+            LineConfigFile f(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
             for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -445,7 +445,7 @@ namespace
                 if (! name_file.is_regular_file())
                     break;
 
-                LineConfigFile f(name_file, LineConfigFileOptions() + lcfo_allow_inline_comments);
+                LineConfigFile f(name_file, LineConfigFileOptions() + lcfo_disallow_comments + lcfo_disallow_continuations + lcfo_no_skip_blank_lines);
                 if (f.begin() == f.end())
                     break;
                 return RepositoryName(*f.begin());
@@ -756,7 +756,7 @@ ERepository::arch_flags() const
             if (! p->exists())
                 continue;
 
-            LineConfigFile archs(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
+            LineConfigFile archs(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
             std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -786,7 +786,7 @@ ERepository::need_mirrors() const
         {
             if (p->exists())
             {
-                LineConfigFile mirrors(*p, LineConfigFileOptions() + lcfo_allow_inline_comments);
+                LineConfigFile mirrors(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
                 for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> ee;

@@ -839,7 +839,7 @@ EbuildInfoCommand::extend_command(const Command & cmd)
     std::string info_vars;
     if (info_params[k::info_vars()].is_regular_file_or_symlink_to_regular_file())
     {
-        LineConfigFile info_vars_f(info_params[k::info_vars()], LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile info_vars_f(info_params[k::info_vars()], LineConfigFileOptions() + lcfo_disallow_continuations);
         info_vars = join(info_vars_f.begin(), info_vars_f.end(), " ");
     }
 

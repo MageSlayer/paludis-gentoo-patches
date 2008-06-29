@@ -259,7 +259,7 @@ Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
     if (! (dir / "parent").exists())
         return;
 
-    LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
+    LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations);
 
     LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
     bool once(false);
@@ -306,7 +306,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         return;
 
     KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
-            kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+            kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
@@ -558,7 +558,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
         return;
 
     Context context("When loading basic use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions() + lcfo_allow_inline_comments);
+    LineConfigFile f(file, LineConfigFileOptions() + lcfo_disallow_continuations);
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
@@ -597,7 +597,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
         return;
 
     Context context("When loading specised use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions() + lcfo_allow_inline_comments);
+    LineConfigFile f(file, LineConfigFileOptions() + lcfo_disallow_continuations);
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {

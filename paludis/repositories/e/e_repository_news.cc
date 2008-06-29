@@ -105,7 +105,7 @@ ERepositoryNews::update_news() const
     {
         Context local_context("When handling news skip file '" + stringify(
                 _imp->skip_file) + "':");
-        LineConfigFile s(_imp->skip_file, LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile s(_imp->skip_file, LineConfigFileOptions() + lcfo_disallow_continuations);
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 

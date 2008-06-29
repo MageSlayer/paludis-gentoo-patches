@@ -149,7 +149,7 @@ TraditionalLayout::need_category_names() const
         if (! i->exists())
             continue;
 
-        LineConfigFile cats(*i, LineConfigFileOptions() + lcfo_allow_inline_comments);
+        LineConfigFile cats(*i, LineConfigFileOptions() + lcfo_disallow_continuations);
 
         for (LineConfigFile::ConstIterator line(cats.begin()), line_end(cats.end()) ;
                 line != line_end ; ++line)
