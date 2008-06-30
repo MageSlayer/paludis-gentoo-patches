@@ -520,10 +520,7 @@ Merger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & ds
         record_install_file(src, dst, cfgpro_name, install_file(src, dst, cfgpro_name));
     }
     else
-    {
-        unlink_file(dst / src.basename());
         record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
-    }
 }
 
 void
@@ -539,7 +536,6 @@ Merger::on_file_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst
     if (is_check)
         return;
 
-    unlink_sym(dst / src.basename());
     record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
@@ -549,7 +545,6 @@ Merger::on_file_over_misc(bool is_check, const FSEntry & src, const FSEntry & ds
     if (is_check)
         return;
 
-    unlink_misc(dst / src.basename());
     record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
@@ -716,6 +711,9 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 
     FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
     FSEntry dst_real(dst_dir / dst_name);
+
+    if (dst_real.is_regular_file())
+        dst_real.chmod(0);
 
     if (0 != _imp->params[k::environment()]->perform_hook(extend_hook(
                          Hook("merger_install_file_pre")
