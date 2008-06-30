@@ -48,17 +48,21 @@
 using namespace test;
 using namespace paludis;
 
-/** \file
- * Test cases for VDBRepository.
- *
- */
+namespace
+{
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+}
 
 namespace test_cases
 {
-    /**
-     * \test Test VDBRepository repo names
-     *
-     */
     struct VDBRepositoryRepoNameTest : TestCase
     {
         VDBRepositoryRepoNameTest() : TestCase("repo name") { }
@@ -73,15 +77,12 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_vdb_repository_repo_name;
 
-    /**
-     * \test Test VDBRepository has_category_named
-     *
-     */
     struct VDBRepositoryHasCategoryNamedTest : TestCase
     {
         VDBRepositoryHasCategoryNamedTest() : TestCase("has category named") { }
@@ -97,8 +98,8 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
@@ -106,10 +107,6 @@ namespace test_cases
         }
     } test_vdb_repository_has_category_named;
 
-    /**
-     * \test Test VDBRepository query_use
-     *
-     */
     struct VDBRepositoryQueryUseTest : TestCase
     {
         VDBRepositoryQueryUseTest() : TestCase("query USE") { }
@@ -125,7 +122,8 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
@@ -138,9 +136,6 @@ namespace test_cases
         }
     } test_vdb_repository_query_use;
 
-    /**
-     * \test Test VDBRepository CONTENTS.
-     */
     struct VDBRepositoryContentsTest : TestCase
     {
         VDBRepositoryContentsTest() : TestCase("CONTENTS") { }
@@ -206,8 +201,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
@@ -261,8 +256,8 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo2");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
@@ -324,7 +319,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -334,7 +330,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo3");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(InstallActionOptions::named_create()
@@ -439,7 +436,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -449,7 +447,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo3");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(InstallActionOptions::named_create()
@@ -554,7 +553,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -564,7 +564,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/namesincrtest");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(InstallActionOptions::named_create()
@@ -807,7 +808,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/providestest");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             TEST_CHECK(! provides_cache.exists());
@@ -897,7 +899,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -912,7 +915,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
             keys.reset(new Map<std::string, std::string>);
@@ -922,7 +926,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/providesincrtest");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(InstallActionOptions::named_create()
@@ -1110,7 +1115,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1125,7 +1131,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo2(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1135,7 +1142,8 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/reinstalltest");
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(InstallActionOptions::named_create()

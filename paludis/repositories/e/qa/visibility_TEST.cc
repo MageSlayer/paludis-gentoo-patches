@@ -64,6 +64,16 @@ namespace
         {
         }
     };
+
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
 }
 
 namespace test_cases
@@ -80,7 +90,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "visibility_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "visibility_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             {

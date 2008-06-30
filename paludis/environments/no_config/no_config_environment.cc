@@ -132,6 +132,16 @@ namespace
 
         throw ConfigurationError("Can't work out what kind of repository this is");
     }
+
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
 }
 
 Implementation<NoConfigEnvironment>::Implementation(
@@ -180,7 +190,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                     keys->insert("cache", "/var/empty");
 
                 package_database->add_repository(1, ((master_repo =
-                                RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
+                                RepositoryMaker::get_instance()->find_maker("ebuild")(env,
+                                    std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
             }
         }
 
@@ -206,11 +217,12 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             keys->insert("layout", "exheres");
 
         package_database->add_repository(2, ((main_repo =
-                        RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
+                        RepositoryMaker::get_instance()->find_maker("ebuild")(env,
+                            std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
 
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
+                        std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
     }
     else
     {
@@ -225,7 +237,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
+        package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env,
+                    std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
         std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                 new Map<std::string, std::string>);
@@ -233,7 +246,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                        iv_keys));
+                        std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
     }
 }
 

@@ -129,40 +129,39 @@ ExndbamRepository::_add_metadata_keys() const
     add_metadata_key(_imp->builddir_key);
 }
 
-
 std::tr1::shared_ptr<Repository>
 ExndbamRepository::make_exndbam_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
-    std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
-    Context context("When making Exndbam repository from repo_file '" + repo_file + "':");
+    Context context("When making Exndbam repository from repo_file '" + f("repo_file") + "':");
 
-    std::string location;
-    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+    std::string location(f("location"));
+    if (location.empty())
         throw ExndbamRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+    std::string root(f("root"));
+    if (root.empty())
         root = "/";
 
-    std::string builddir;
-    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    std::string builddir(f("builddir"));
+    if (builddir.empty())
     {
-        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+        builddir = f("buildroot");
+        if (builddir.empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution()))[k::default_ebuild_builddir()];
+                        env->distribution()))[k::default_ebuild_builddir()];
         else
             Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
-    std::string name;
-    if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
+    std::string name(f("name"));
+    if (name.empty())
         name = "installed";
 
-    std::string deprecated_world;
-    if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
+    std::string deprecated_world(f("world"));
+    if (deprecated_world.empty())
         deprecated_world = "/DOESNOTEXIST";
     else
         Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context) << "Specifying world location " <<

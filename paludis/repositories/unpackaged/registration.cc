@@ -33,47 +33,39 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_unpackaged_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
         Context context("When creating UnpackagedRepository:");
 
-        std::string location;
-        if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+        std::string location(f("location"));
+        if (location.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'location' not specified or empty");
 
-        std::string install_under;
-        if (m->end() == m->find("install_under") || ((install_under = m->find("install_under")->second)).empty())
+        std::string install_under(f("install_under"));
+        if (install_under.empty())
             install_under = "/";
 
-        std::string name;
-        if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
+        std::string name(f("name"));
+        if (name.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'name' not specified or empty");
 
-        std::string version;
-        if (m->end() == m->find("version") || ((version = m->find("version")->second)).empty())
+        std::string version(f("version"));
+        if (version.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'version' not specified or empty");
 
-        std::string slot;
-        if (m->end() == m->find("slot") || ((slot = m->find("slot")->second)).empty())
+        std::string slot(f("slot"));
+        if (slot.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'slot' not specified or empty");
 
-        std::string build_dependencies;
-        if (m->end() != m->find("build_dependencies"))
-            build_dependencies = m->find("build_dependencies")->second;
-
-        std::string run_dependencies;
-        if (m->end() != m->find("run_dependencies"))
-            run_dependencies = m->find("run_dependencies")->second;
-
-        std::string description;
-        if (m->end() != m->find("description"))
-            description = m->find("description")->second;
+        std::string build_dependencies(f("build_dependencies"));
+        std::string run_dependencies(f("run_dependencies"));
+        std::string description(f("description"));
 
         int rewrite_ids_over_to_root(-1);
-        if (m->end() != m->find("rewrite_ids_over_to_root") && ! m->find("rewrite_ids_over_to_root")->second.empty())
+        if (! f("rewrite_ids_over_to_root").empty())
         {
             Context item_context("When handling rewrite_ids_over_to_root key:");
-            rewrite_ids_over_to_root = destringify<int>(m->find("rewrite_ids_over_to_root")->second);
+            rewrite_ids_over_to_root = destringify<int>(f("rewrite_ids_over_to_root"));
         }
 
         return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
@@ -93,16 +85,16 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_installed_unpackaged_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
         Context context("When creating InstalledUnpackagedRepository:");
 
-        std::string location;
-        if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+        std::string location(f("location"));
+        if (location.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'location' not specified or empty");
 
-        std::string root;
-        if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+        std::string root(f("root"));
+        if (root.empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'root' not specified or empty");
 
         return make_shared_ptr(new InstalledUnpackagedRepository(RepositoryName("installed-unpackaged"),

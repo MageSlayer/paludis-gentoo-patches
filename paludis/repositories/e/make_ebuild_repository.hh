@@ -34,7 +34,7 @@ namespace paludis
     std::tr1::shared_ptr<ERepository>
     make_ebuild_repository(
             Environment * const,
-            std::tr1::shared_ptr<const Map<std::string, std::string> >) PALUDIS_VISIBLE;
+            const std::tr1::function<std::string (const std::string &)> &) PALUDIS_VISIBLE;
 
     /**
      * Create an ebuild format repository (wrapper for our virtual constructor).
@@ -45,7 +45,7 @@ namespace paludis
     std::tr1::shared_ptr<Repository>
     make_ebuild_repository_wrapped(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m);
+            const std::tr1::function<std::string (const std::string &)> &) PALUDIS_VISIBLE;
 }
 
 #endif

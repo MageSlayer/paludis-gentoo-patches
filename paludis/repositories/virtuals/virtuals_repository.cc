@@ -254,7 +254,7 @@ VirtualsRepository::need_ids() const
 std::tr1::shared_ptr<Repository>
 VirtualsRepository::make_virtuals_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> >)
+        const std::tr1::function<std::string (const std::string &)> &)
 {
     return std::tr1::shared_ptr<Repository>(new VirtualsRepository(env));
 }

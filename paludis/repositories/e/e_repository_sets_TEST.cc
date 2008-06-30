@@ -34,17 +34,21 @@
 using namespace test;
 using namespace paludis;
 
-/** \file
- * Test cases for ERepositorySets.
- *
- */
+namespace
+{
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+}
 
 namespace test_cases
 {
-    /**
-     * \test Test ERepositorySets sets list.
-     *
-     */
     struct ERepositorySetsSetsListTest : TestCase
     {
         ERepositorySetsSetsListTest() : TestCase("sets list") { }
@@ -52,14 +56,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
             std::tr1::shared_ptr<const SetNameSet> sets_list((*repo)[k::sets_interface()]->sets_list());
             TEST_CHECK_EQUAL(sets_list->size(), 4U);
@@ -70,10 +73,6 @@ namespace test_cases
         }
     } test_e_repository_sets_sets_list;
 
-    /**
-     * \test Test ERepositorySets maintainer-defined sets.
-     *
-     */
     struct ERepositorySetsMaintainerDefinedSetsTest : TestCase
     {
         ERepositorySetsMaintainerDefinedSetsTest() : TestCase("maintainer-defined sets") { }
@@ -81,14 +80,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(
                 new FakeInstalledRepository(&env, RepositoryName("installed")));
             installed->add_version("cat-two", "bar", "1.5");
@@ -103,10 +101,6 @@ namespace test_cases
     } test_e_repository_sets_maintainer_defined_sets_list;
 
 #if ENABLE_GLSA
-    /**
-     * \test Test ERepositorySets insecurity set.
-     *
-     */
     struct ERepositorySetsInsecuritySetTest : TestCase
     {
         ERepositorySetsInsecuritySetTest() : TestCase("insecurity set") { }
@@ -119,14 +113,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<SetSpecTree::ConstItem> insecurity((*repo)[k::sets_interface()]->package_set(SetName("insecurity")));
@@ -139,10 +132,6 @@ namespace test_cases
         }
     } test_e_repository_sets_insecurity_set;
 
-    /**
-     * \test Test ERepositorySets security set.
-     *
-     */
     struct ERepositorySetsSecuritySetTest : TestCase
     {
         ERepositorySetsSecuritySetTest() : TestCase("security set") { }
@@ -161,8 +150,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
-                        &env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> installed(
                 new FakeInstalledRepository(&env, RepositoryName("installed")));

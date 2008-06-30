@@ -61,7 +61,7 @@ namespace paludis
              */
             static std::tr1::shared_ptr<Repository> make_virtuals_repository(
                     Environment * const env,
-                    std::tr1::shared_ptr<const Map<std::string, std::string> >);
+                    const std::tr1::function<std::string (const std::string &)> &);
 
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 

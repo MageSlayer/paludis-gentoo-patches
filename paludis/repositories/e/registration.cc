@@ -40,18 +40,14 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_portage_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
-        std::string repo_file = "?";
-        if (m->end() != m->find("repo_file"))
-            repo_file = m->find("repo_file")->second;
-
-        Context context("When creating repository using '" + repo_file + "':");
+        Context context("When creating repository using '" + f("repo_file") + "':");
 
         Log::get_instance()->message("e.portage.configuration.deprecated", ll_warning, lc_context)
             << "Format 'portage' is deprecated, use 'ebuild' instead";
 
-        return make_ebuild_repository_wrapped(env, m);
+        return make_ebuild_repository_wrapped(env, f);
     }
 }
 

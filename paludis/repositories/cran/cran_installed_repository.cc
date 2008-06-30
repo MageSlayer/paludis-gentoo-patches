@@ -373,21 +373,19 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
 std::tr1::shared_ptr<Repository>
 CRANInstalledRepository::make_cran_installed_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
-    Context context("When making CRAN installed repository from repo_file '" + 
-            (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
+    Context context("When making CRAN installed repository from repo_file '" + f("repo_file") + "':");
 
-    std::string location;
-    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+    std::string location(f("location"));
+    if (location.empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+    std::string root(f("root"));
+    if (root.empty())
         root = stringify(env->root());
 
-    std::string world;
-    if (m->end() != m->find("world") && ! ((world = m->find("world")->second)).empty())
+    if (! f("world").empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
     return std::tr1::shared_ptr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()

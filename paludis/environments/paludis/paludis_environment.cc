@@ -142,6 +142,19 @@ namespace paludis
     };
 }
 
+namespace
+{
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+}
+
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
                 this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
@@ -172,7 +185,8 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
         }
 
         _imp->package_database->add_repository(r->importance,
-                RepositoryMaker::get_instance()->find_maker(r->format)(this, r->keys));
+                RepositoryMaker::get_instance()->find_maker(r->format)(this,
+                    std::tr1::bind(from_keys, r->keys, std::tr1::placeholders::_1)));
     }
 
     add_metadata_key(_imp->format_key);

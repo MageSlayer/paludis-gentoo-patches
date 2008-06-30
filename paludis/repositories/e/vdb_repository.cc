@@ -279,21 +279,20 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
 std::tr1::shared_ptr<Repository>
 VDBRepository::make_vdb_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
-    std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
-    Context context("When making VDB repository from repo_file '" + repo_file + "':");
+    Context context("When making VDB repository from repo_file '" + f("repo_file") + "':");
 
-    std::string location;
-    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+    std::string location(f("location"));
+    if (location.empty())
         throw VDBRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+    std::string root(f("root"));
+    if (root.empty())
         root = "/";
 
-    std::string deprecated_world;
-    if (m->end() == m->find("world") || ((deprecated_world = m->find("world")->second)).empty())
+    std::string deprecated_world(f("world"));
+    if (deprecated_world.empty())
         deprecated_world = "/DOESNOTEXIST";
     else
         Log::get_instance()->message("e.vdb.configuration.deprecated", ll_warning, lc_context) << "Specifying world location " <<
@@ -301,38 +300,39 @@ VDBRepository::make_vdb_repository(
             "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";
 
-    std::string provides_cache;
-    if (m->end() == m->find("provides_cache") || ((provides_cache = m->find("provides_cache")->second)).empty())
+    std::string provides_cache(f("provides_cache"));
+    if (provides_cache.empty())
     {
         provides_cache = (*DistributionData::get_instance()->distribution_from_string(
                 env->distribution()))[k::default_vdb_provides_cache()];
         if (provides_cache.empty())
         {
             Log::get_instance()->message("e.vdb.configuration.no_provides_cache", ll_warning, lc_no_context)
-                << "The provides_cache key is not set in '" << repo_file
+                << "The provides_cache key is not set in '" << f("repo_file")
                 << "'. You should read the Paludis documentation and select an appropriate value.";
             provides_cache = "/var/empty";
         }
     }
 
-    std::string names_cache;
-    if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
+    std::string names_cache(f("names_cache"));
+    if (names_cache.empty())
     {
         names_cache = (*DistributionData::get_instance()->distribution_from_string(
                 env->distribution()))[k::default_vdb_names_cache()];
         if (names_cache.empty())
         {
             Log::get_instance()->message("e.vdb.configuration.no_names_cache", ll_warning, lc_no_context)
-                << "The names_cache key is not set in '" << repo_file
+                << "The names_cache key is not set in '" << f("repo_file")
                 <<"'. You should read the Paludis documentation and select an appropriate value.";
             names_cache = "/var/empty";
         }
     }
 
-    std::string builddir;
-    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    std::string builddir(f("builddir"));
+    if (builddir.empty())
     {
-        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+        builddir = f("buildroot");
+        if (builddir.empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))[k::default_ebuild_builddir()];
         else
@@ -340,8 +340,8 @@ VDBRepository::make_vdb_repository(
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";
     }
 
-    std::string name;
-    if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
+    std::string name(f("name"));
+    if (name.empty())
         name = "installed";
 
     return std::tr1::shared_ptr<Repository>(new VDBRepository(VDBRepositoryParams::create()

@@ -24,7 +24,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/map-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <tr1/memory>
 #include <string>
@@ -80,7 +79,7 @@ namespace paludis
              */
             static std::tr1::shared_ptr<Repository> make_cran_repository(
                     Environment * const env,
-                    std::tr1::shared_ptr<const Map<std::string, std::string> > m);
+                    const std::tr1::function<std::string (const std::string &)> &);
 
             /**
              * Destructor.

@@ -35,32 +35,25 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_unavailable_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
-        std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
-                m->find("repo_file")->second);
+        Context context("When making unavailable repository from repo_file '" + f("repo_file") + "':");
 
-        Context context("When making unavailable repository from repo_file '" + repo_file + "':");
+        std::string name_str(f("name"));
+        if (name_str.empty())
+            name_str = "unavailable";
 
-        std::string name_str;
-        RepositoryName name(m->end() == m->find("name") || (name_str = m->find("name")->second).empty()
-                            ? "unavailable" : name_str);
-
-        std::string location;
-        if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+        std::string location(f("location"));
+        if (location.empty())
             throw UnavailableRepositoryConfigurationError("Key 'location' not specified or empty");
 
-        std::string sync;
-        if (m->end() != m->find("sync"))
-            sync = m->find("sync")->second;
+        std::string sync(f("sync"));
 
-        std::string sync_options;
-        if (m->end() != m->find("sync_options"))
-            sync_options = m->find("sync_options")->second;
+        std::string sync_options(f("sync_options"));
 
         return std::tr1::shared_ptr<UnavailableRepository>(new UnavailableRepository(
                     UnavailableRepositoryParams::named_create()
-                    (k::name(), name)
+                    (k::name(), RepositoryName(name_str))
                     (k::location(), location)
                     (k::sync(), sync)
                     (k::sync_options(), sync_options)

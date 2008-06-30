@@ -24,6 +24,7 @@
 #include <paludis/util/fd_holder.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <test/test_framework.hh>
@@ -58,6 +59,16 @@ namespace
         {
         }
     };
+
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
 }
 
 namespace test_cases
@@ -79,7 +90,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/not-signed");
@@ -104,7 +116,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/good");
@@ -128,7 +141,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/bad-type");
@@ -152,7 +166,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/bad-size");
@@ -176,7 +191,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/bad-hash");
@@ -200,7 +216,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/missing");
@@ -224,7 +241,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/stray");
@@ -248,7 +266,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/unused-distfile");
@@ -272,7 +291,8 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "manifest_TEST_dir/repo1");
             keys->insert("profiles", stringify(FSEntry::cwd() / "manifest_TEST_dir/repo1/profiles/test"));
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             QualifiedPackageName qpn("cat/undigested-distfile");

@@ -399,35 +399,35 @@ CRANRepository::sync() const
 std::tr1::shared_ptr<Repository>
 CRANRepository::make_cran_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
-    Context context("When making CRAN repository from repo_file '" +
-            (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
+    Context context("When making CRAN repository from repo_file '" + f("repo_file") + "':");
 
-    std::string location;
-    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+    std::string location(f("location"));
+    if (location.empty())
         throw CRANRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string library;
-    if (m->end() == m->find("library") || ((library = m->find("library")->second)).empty())
+    std::string library(f("library"));
+    if (library.empty())
         throw CRANRepositoryConfigurationError("Key 'library' not specified or empty");
 
-    std::string distdir;
-    if (m->end() == m->find("distdir") || ((distdir = m->find("distdir")->second)).empty())
+    std::string distdir(f("distdir"));
+    if (distdir.empty())
         distdir = location + "/distfiles";
 
-    std::string mirror;
-    if (m->end() == m->find("mirror") || ((mirror = m->find("mirror")->second)).empty())
+    std::string mirror(f("mirror"));
+    if (mirror.empty())
         mirror = "http://cran.r-project.org/";
 
-    std::string sync;
-    if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
+    std::string sync(f("sync"));
+    if (sync.empty())
         sync = "rsync://cran.r-project.org/CRAN";
 
-    std::string builddir;
-    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    std::string builddir(f("builddir"));
+    if (builddir.empty())
     {
-        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+        builddir = f("buildroot");
+        if (builddir.empty())
             builddir = "/var/tmp/paludis";
         else
             Log::get_instance()->message("cran.configuration.deprecated", ll_warning, lc_context)

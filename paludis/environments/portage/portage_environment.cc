@@ -229,6 +229,16 @@ namespace
             return value;
         return make_incremental(k, var, before, value);
     }
+
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
@@ -458,7 +468,8 @@ PortageEnvironment::_add_virtuals_repository()
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     package_database()->add_repository(-2,
-            RepositoryMaker::get_instance()->find_maker("virtuals")(this, keys));
+            RepositoryMaker::get_instance()->find_maker("virtuals")(this,
+                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 void
@@ -468,7 +479,8 @@ PortageEnvironment::_add_installed_virtuals_repository()
             new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     package_database()->add_repository(-1,
-            RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this, keys));
+            RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this,
+                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 void
@@ -500,7 +512,8 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
     keys->insert("builddir", builddir);
 
     package_database()->add_repository(importance,
-            RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
+            RepositoryMaker::get_instance()->find_maker("ebuild")(this,
+                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 void
@@ -527,7 +540,8 @@ PortageEnvironment::_add_vdb_repository()
         builddir.append("/portage");
     keys->insert("builddir", builddir);
     package_database()->add_repository(1,
-            RepositoryMaker::get_instance()->find_maker("vdb")(this, keys));
+            RepositoryMaker::get_instance()->find_maker("vdb")(this,
+                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 PortageEnvironment::~PortageEnvironment()

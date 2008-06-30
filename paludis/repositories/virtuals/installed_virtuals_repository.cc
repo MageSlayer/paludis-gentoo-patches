@@ -172,13 +172,9 @@ InstalledVirtualsRepository::need_ids() const
 std::tr1::shared_ptr<Repository>
 InstalledVirtualsRepository::make_installed_virtuals_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const Map<std::string, std::string> > k)
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
-    std::string root_str;
-
-    if (k && (k->end() != k->find("root")))
-        root_str = k->find("root")->second;
-
+    std::string root_str(f("root"));
     if (root_str.empty())
         throw ConfigurationError("No root specified for InstalledVirtualsRepository");
 

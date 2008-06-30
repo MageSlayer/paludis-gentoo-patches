@@ -36,26 +36,22 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_gems_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
-        std::string location;
-        if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
+        std::string location(f("location"));
+        if (location.empty())
             throw gems::RepositoryConfigurationError("Key 'location' not specified or empty");
 
-        std::string install_dir;
-        if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())
+        std::string install_dir(f("install_dir"));
+        if (install_dir.empty())
             throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
 
-        std::string sync;
-        if (m->end() != m->find("sync"))
-            sync = m->find("sync")->second;
+        std::string sync(f("sync"));
 
-        std::string sync_options;
-        if (m->end() != m->find("sync_options"))
-            sync_options = m->find("sync_options")->second;
+        std::string sync_options(f("sync_options"));
 
-        std::string builddir;
-        if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+        std::string builddir(f("builddir"));
+        if (builddir.empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
 
         return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
@@ -70,18 +66,18 @@ namespace
     std::tr1::shared_ptr<Repository>
     make_installed_gems_repository(
             Environment * const env,
-            std::tr1::shared_ptr<const Map<std::string, std::string> > m)
+            const std::tr1::function<std::string (const std::string &)> & f)
     {
-        std::string install_dir;
-        if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())
+        std::string install_dir(f("install_dir"));
+        if (install_dir.empty())
             throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
 
-        std::string builddir;
-        if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+        std::string builddir(f("builddir"));
+        if (builddir.empty())
             builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
 
-        std::string root;
-        if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+        std::string root(f("root"));
+        if (root.empty())
             root = "/";
 
         return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()

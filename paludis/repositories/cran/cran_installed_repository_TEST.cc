@@ -25,11 +25,25 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 using namespace test;
 using namespace paludis;
+
+namespace
+{
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+}
 
 namespace test_cases
 {
@@ -45,7 +59,8 @@ namespace test_cases
             keys->insert("library", "cran_installed_repository_TEST_dir/library");
             keys->insert("location", "cran_installed_repository_TEST_dir/repo1");
             keys->insert("builddir", "cran_installed_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANInstalledRepository::make_cran_installed_repository(&env, keys));
+            std::tr1::shared_ptr<Repository> repo(CRANInstalledRepository::make_cran_installed_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
         }
     } test_cran_repository_installed_packages;
