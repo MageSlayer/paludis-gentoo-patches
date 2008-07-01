@@ -1,6 +1,6 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = \
-	use_config_entry-sr.hh use_config_entry-sr.cc \
+	use_config_entry-sr.hh use_config_entry-sr.cc
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
