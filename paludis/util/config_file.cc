@@ -188,7 +188,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
                 {
                     if (parser.eof())
                     {
-                        Log::get_instance()->message("line_config_file.no_trailing_newline", ll_warning, lc_context)
+                        Log::get_instance()->message("line_config_file.no_trailing_newline", ll_debug, lc_context)
                             << "No newline at end of file";
                         break;
                     }
@@ -206,7 +206,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
 
         if (parser.eof())
         {
-            Log::get_instance()->message("line_config_file.no_trailing_newline", ll_warning, lc_context)
+            Log::get_instance()->message("line_config_file.no_trailing_newline", ll_debug, lc_context)
                 << "No newline at end of file";
             break;
         }
@@ -225,7 +225,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
         {
             if (parser.eof())
             {
-                Log::get_instance()->message("line_config_file.no_trailing_newline", ll_warning, lc_context)
+                Log::get_instance()->message("line_config_file.no_trailing_newline", ll_debug, lc_context)
                     << "No newline at end of file";
                 break;
             }
@@ -528,7 +528,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                 {
                     if (parser.eof())
                     {
-                        Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_warning, lc_context)
+                        Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
                             << "No newline at end of file";
                         break;
                     }
@@ -545,7 +545,7 @@ KeyValueConfigFile::KeyValueConfigFile(
 
         if (parser.eof())
         {
-            Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_warning, lc_context)
+            Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
                 << "No newline at end of file";
             break;
         }
@@ -561,7 +561,7 @@ KeyValueConfigFile::KeyValueConfigFile(
             if (! parser.consume(simple_parser::exact("\n")))
             {
                 if (parser.eof())
-                    Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_warning, lc_context)
+                    Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
                         << "No newline at end of file";
                 else
                     throw ConfigFileError(sr.filename(),
@@ -591,7 +591,7 @@ KeyValueConfigFile::KeyValueConfigFile(
             if (! parser.consume(simple_parser::exact("\n")))
             {
                 if (parser.eof())
-                    Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_warning, lc_context)
+                    Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
                         << "No newline at end of file";
                 else
                     throw ConfigFileError(sr.filename(), "Expected newline after source command in line " + stringify(parser.current_line_number()));
@@ -667,7 +667,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                 if (! parser.consume(simple_parser::exact("\n")))
                 {
                     if (parser.eof())
-                        Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_warning, lc_context)
+                        Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
                             << "No newline at end of file";
                     else
                         throw ConfigFileError(sr.filename(),
