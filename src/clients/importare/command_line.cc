@@ -64,7 +64,6 @@ CommandLine::CommandLine() :
     add_usage_line("[ --install ] [ --location path/ ] category/package [ version ] [ slot ]");
 
     install_args.a_add_to_world_spec.remove();
-    install_args.a_debug_build.remove();
     install_args.a_checks.remove();
     install_args.a_fetch.remove();
     install_args.a_no_safe_resume.remove();
