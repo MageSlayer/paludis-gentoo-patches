@@ -51,6 +51,12 @@ namespace paludis
         struct MirrorsConf;
         struct World;
 
+        typedef kc::KeyedClass<
+            kc::Field<k::format, std::string>,
+            kc::Field<k::importance, int>,
+            kc::Field<k::keys, std::tr1::function<std::string (const std::string &)> >
+                > RepositoryConfigEntry;
+
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered
          * by PaludisConfig.
@@ -89,7 +95,6 @@ namespace paludis
         };
 
 #include <paludis/environments/paludis/use_config_entry-sr.hh>
-#include <paludis/environments/paludis/repository_config_entry-sr.hh>
 
         /**
          * PaludisConfig is used by PaludisEnvironment to access the user's

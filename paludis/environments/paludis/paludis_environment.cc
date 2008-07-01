@@ -142,19 +142,6 @@ namespace paludis
     };
 }
 
-namespace
-{
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
-            const std::string & k)
-    {
-        Map<std::string, std::string>::ConstIterator mm(m->find(k));
-        if (m->end() == mm)
-            return "";
-        else
-            return mm->second;
-    }
-}
-
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
                 this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
@@ -164,30 +151,8 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
 
     for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
-    {
-        std::string keys;
-        if (Log::get_instance()->log_level() <= ll_debug)
-        {
-            if (r->keys)
-                for (Map<std::string, std::string>::ConstIterator
-                        i(r->keys->begin()), i_end(r->keys->end()) ; i != i_end ; ++i)
-                {
-                    if (! keys.empty())
-                        keys.append(", ");
-                    keys.append("'" + i->first + "'='" + i->second + "'");
-                }
-            else
-                keys = "empty";
-
-            Log::get_instance()->message("paludis_environment.making_repository", ll_debug, lc_context) <<
-                "Creating repository with format='" << r->format << "', importance='" << r->importance
-                << "', keys " << keys;
-        }
-
-        _imp->package_database->add_repository(r->importance,
-                RepositoryMaker::get_instance()->find_maker(r->format)(this,
-                    std::tr1::bind(from_keys, r->keys, std::tr1::placeholders::_1)));
-    }
+        _imp->package_database->add_repository((*r)[k::importance()],
+                RepositoryMaker::get_instance()->find_maker((*r)[k::format()])(this, (*r)[k::keys()]));
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->conf_dir_key);

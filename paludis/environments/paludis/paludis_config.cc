@@ -45,6 +45,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/kc.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <tr1/functional>
 #include <fstream>
@@ -72,20 +73,25 @@ using namespace paludis::paludis_environment;
 template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const RepositoryConfigEntry>;
 
 #include <paludis/environments/paludis/use_config_entry-sr.cc>
-#include <paludis/environments/paludis/repository_config_entry-sr.cc>
 
 namespace
 {
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+
     std::string predefined(
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
             const KeyValueConfigFile &,
             const std::string & k)
     {
-        const Map<std::string, std::string>::ConstIterator i(m->find(k));
-        if (m->end() != i)
-            return i->second;
-        else
-            return "";
+        return from_keys(m, k);
     }
 }
 
@@ -344,10 +350,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                     new Map<std::string, std::string>);
             iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-            _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
+            _imp->repos.push_back(RepositoryConfigEntry::named_create()
+                    (k::format(), "installed_virtuals")
+                    (k::importance(), -1)
+                    (k::keys(), std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1))
+                    );
 
-            _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                        std::tr1::shared_ptr<Map<std::string, std::string> >()));
+            _imp->repos.push_back(RepositoryConfigEntry::named_create()
+                    (k::format(), "virtuals")
+                    (k::importance(), -2)
+                    (k::keys(), std::tr1::bind(&from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1))
+                    );
         }
 
         /* add normal repositories */
@@ -459,14 +472,21 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             {
                 Log::get_instance()->message("paludis_environment.repositories.not_delaying", ll_debug, lc_context)
                     << "Not delaying '" << *repo_file << "'";
-                _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
+                _imp->repos.push_back(RepositoryConfigEntry::named_create()
+                        (k::format(), format)
+                        (k::importance(), importance)
+                        (k::keys(), std::tr1::bind(&from_keys, keys, std::tr1::placeholders::_1))
+                        );
             }
         }
 
         for (std::list<std::tr1::shared_ptr<Map<std::string, std::string> > >::const_iterator
                 k(later_keys.begin()), k_end(later_keys.end()) ; k != k_end ; ++k)
-            _imp->repos.push_back(RepositoryConfigEntry((*k)->find("format")->second,
-                        destringify<int>((*k)->find("importance")->second), *k));
+            _imp->repos.push_back(RepositoryConfigEntry::named_create()
+                    (k::format(), (*k)->find("format")->second)
+                    (k::importance(), destringify<int>((*k)->find("importance")->second))
+                    (k::keys(), std::tr1::bind(&from_keys, *k, std::tr1::placeholders::_1))
+                    );
 
         if (_imp->repos.empty())
             throw PaludisConfigError("No repositories specified");

@@ -1,7 +1,6 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
 DISTCLEANFILES = \
 	use_config_entry-sr.hh use_config_entry-sr.cc \
-	repository_config_entry-sr.hh repository_config_entry-sr.cc
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -50,7 +49,6 @@ paludis_environment_paludis_include_HEADERS = \
 	paludis_config.hh \
 	paludis_environment.hh \
 	use_config_entry-sr.hh \
-	repository_config_entry-sr.hh \
 	use_conf.hh \
 	keywords_conf.hh \
 	licenses_conf.hh \
@@ -64,8 +62,7 @@ EXTRA_DIST = \
 	paludis_environment_TEST.cc \
 	paludis_environment_TEST_cleanup.sh \
 	$(BUILT_SOURCES) \
-	use_config_entry.sr \
-	repository_config_entry.sr
+	use_config_entry.sr
 
 TESTS = paludis_environment_TEST
 
@@ -126,12 +123,6 @@ use_config_entry-sr.hh : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
 use_config_entry-sr.cc : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/use_config_entry.sr > $@
 
-repository_config_entry-sr.hh : repository_config_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/repository_config_entry.sr > $@
-
-repository_config_entry-sr.cc : repository_config_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/repository_config_entry.sr > $@
-
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
@@ -139,3 +130,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
