@@ -86,12 +86,44 @@ namespace
             return mm->second;
     }
 
+    std::string from_kv(const std::tr1::shared_ptr<const KeyValueConfigFile> & m,
+            const std::string & k)
+    {
+        return m->get(k);
+    }
+
     std::string predefined(
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
             const KeyValueConfigFile &,
             const std::string & k)
     {
         return from_keys(m, k);
+    }
+
+    std::string initial_conf_vars(const std::string & r, const std::string & k)
+    {
+        if (k == "root" || k == "ROOT")
+            return r;
+        return "";
+    }
+
+    std::string to_kv_func(
+            const std::tr1::function<std::string (const std::string &)> & f,
+            const KeyValueConfigFile &,
+            const std::string & k)
+    {
+        return f(k);
+    }
+
+    std::string override(
+            const std::string & o,
+            const std::string & v,
+            const std::tr1::function<std::string (const std::string &)> & f,
+            const std::string & k)
+    {
+        if (k == o)
+            return v;
+        return f(k);
     }
 }
 
@@ -332,10 +364,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
-            new Map<std::string, std::string>);
-    conf_vars->insert("ROOT", root_prefix);
-    conf_vars->insert("root", root_prefix);
+    std::tr1::function<std::string (const std::string &)> predefined_conf_vars_func(
+            std::tr1::bind(&initial_conf_vars, root_prefix, std::tr1::placeholders::_1));
 
     Log::get_instance()->message("paludis_environment.paludis_config.real_dir", ll_debug, lc_no_context)
         << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << root_prefix
@@ -367,10 +397,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
-            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(),
-                    std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                    &KeyValueConfigFile::no_transformation);
-            std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
+            predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+                            local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(),
+                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            &KeyValueConfigFile::no_transformation)),
+                    std::tr1::placeholders::_1);
         }
         else if ((local_config_dir / "repository_defaults.bash").exists())
         {
@@ -381,10 +412,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     .with_stderr_prefix("repository_defaults.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(),
-                    std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                    &KeyValueConfigFile::no_transformation);
-            std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
+            predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+                            s, KeyValueConfigFileOptions(),
+                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            &KeyValueConfigFile::no_transformation)),
+                    std::tr1::placeholders::_1);
             if (exit_status != 0)
                 Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)
                     << "Script '" << (local_config_dir / "repository_defaults.bash")
@@ -407,7 +439,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        std::list<std::tr1::shared_ptr<Map<std::string, std::string> > > later_keys;
+        std::list<std::tr1::function<std::string (const std::string &)> > later_repo_files;
         for (std::list<FSEntry>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
                 repo_file != repo_file_end ; ++repo_file)
         {
@@ -424,7 +456,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                         .with_captured_stdout_stream(&s));
                 int exit_status(run_command(cmd));
                 kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
-                            std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                             &KeyValueConfigFile::no_transformation));
 
                 if (exit_status != 0)
@@ -436,7 +468,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             }
             else
                 kv.reset(new KeyValueConfigFile(*repo_file, KeyValueConfigFileOptions(),
-                            std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                             &KeyValueConfigFile::no_transformation));
 
             if (! kv)
@@ -450,23 +482,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! kv->get("importance").empty())
                 importance = destringify<int>(kv->get("importance"));
 
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            std::copy(kv->begin(), kv->end(), keys->inserter());
+            std::tr1::function<std::string (const std::string &)> repo_func(std::tr1::bind(&from_kv, kv, std::tr1::placeholders::_1));
 
-            keys->erase(stringify("importance"));
-            keys->insert("importance", stringify(importance));
+            repo_func = std::tr1::bind(&override, "importance", stringify(importance), repo_func, std::tr1::placeholders::_1);
+            repo_func = std::tr1::bind(&override, "repo_file", stringify(*repo_file), repo_func, std::tr1::placeholders::_1);
+            repo_func = std::tr1::bind(&override, "root", root_prefix.empty() ? "/" : root_prefix, repo_func, std::tr1::placeholders::_1);
 
-            keys->erase(stringify("repo_file"));
-            keys->insert("repo_file", stringify(*repo_file));
-
-            keys->erase(stringify("root"));
-            keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-
-            if (! kv->get("master_repository").empty())
+            if (! repo_func("master_repository").empty())
             {
                 Log::get_instance()->message("paludis_environment.repositories.delaying", ll_debug, lc_context)
                     << "Delaying '" << *repo_file << "' because it uses master_repository";
-                later_keys.push_back(keys);
+                later_repo_files.push_back(repo_func);
             }
             else
             {
@@ -475,17 +501,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 _imp->repos.push_back(RepositoryConfigEntry::named_create()
                         (k::format(), format)
                         (k::importance(), importance)
-                        (k::keys(), std::tr1::bind(&from_keys, keys, std::tr1::placeholders::_1))
+                        (k::keys(), repo_func)
                         );
             }
         }
 
-        for (std::list<std::tr1::shared_ptr<Map<std::string, std::string> > >::const_iterator
-                k(later_keys.begin()), k_end(later_keys.end()) ; k != k_end ; ++k)
+        for (std::list<std::tr1::function<std::string (const std::string &)> >::const_iterator
+                k(later_repo_files.begin()), k_end(later_repo_files.end()) ; k != k_end ; ++k)
             _imp->repos.push_back(RepositoryConfigEntry::named_create()
-                    (k::format(), (*k)->find("format")->second)
-                    (k::importance(), destringify<int>((*k)->find("importance")->second))
-                    (k::keys(), std::tr1::bind(&from_keys, *k, std::tr1::placeholders::_1))
+                    (k::format(), (*k)("format"))
+                    (k::importance(), destringify<int>((*k)("importance")))
+                    (k::keys(), *k)
                     );
 
         if (_imp->repos.empty())
