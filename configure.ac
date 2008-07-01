@@ -1060,11 +1060,11 @@ AC_ARG_WITH([repositories],
 			  all             All available repositories
 			  default         Equivalent to e,fake,virtuals
 
-			  cran            The Comprehensive R Archive Network (experimental)
+			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
-			  gems            Ruby gems (experimental)
-			  unavailable     Unavailable (experimental)
+			  gems            Ruby gems (unusable)
+			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -1097,7 +1097,7 @@ AC_ARG_WITH([environments],
 			  adapted         An environment adapter, for contrarius etc
 			  no_config       Configurationless environment, for adjutrix etc
 			  paludis         Standard Paludis environments
-			  portage         Portage configuration (experimental)
+			  portage         Portage configuration (dodgy)
 			  test            For test cases],
 			[environments="`echo $with_environments | tr ',' ' '`"],
 			[environments="$DEFAULT_ENVIRONMENTS"])
@@ -1147,7 +1147,7 @@ AC_ARG_WITH([clients],
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
-			  gtkpaludis      GUI client (experimental)
+			  gtkpaludis      GUI client (unusable)
 			  importare       On-the-fly unpackaged installer
 			  inquisitio      A search client
 			  instruo         A metadata generation client
