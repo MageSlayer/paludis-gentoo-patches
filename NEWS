@@ -12,18 +12,23 @@ trunk/:
 
     * Better detection of SCM versions.
 
-    * bug fixes: importare now really adds packages to world by default, as
-      promised in 0.26.0_pre3. pkg_pretend is now properly fatal (ticket:579).
-      There are no longer bogus 'use flags defined recursively' messages
-      (ticket:568). Symlink rewriting now works when builddir contains symlinks
-      (ticket:571). The dreaded Ruby bindings segfaults are fixed (ticket:558).
-      pkg_pretend now behaves correctly with resumes (ticket:604). Better
-      support for Portage config files (ticket:597).
+    * bug fixes: pkg_pretend now behaves correctly with resumes (ticket:604).
+      Better support for Portage config files (ticket:597).
 
     * New Selection + Filter + Generator interface using Environment, replacing
       the old PackageDatabase Query (ticket:559).
 
     * importare can now change file ownership to root (ticket:599).
+
+0.26.2:
+
+    * Bug fixes: importare now really adds packages to world by default, as
+      promised in 0.26.0_pre3.  pkg_pretend is now properly fatal (ticket:579).
+      There are no longer bogus 'use flags defined recursively' messages
+      (ticket:568).  Symlink rewriting now works when builddir contains symlinks
+      (ticket:571).  The dreaded Ruby bindings segfaults are fixed (ticket:558).
+
+    * The Ruby bindings have been extended somewhat.
 
 0.26.1:
     * Bug fix: if we install a directory using rename(), call utime() on all
