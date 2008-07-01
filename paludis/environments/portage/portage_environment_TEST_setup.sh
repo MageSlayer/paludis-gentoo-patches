@@ -11,7 +11,7 @@ ARCH="arch"
 ACCEPT_KEYWORDS="arch"
 USE_EXPAND="FOO_CARDS"
 FOO_CARDS="four"
-USE="foo_c"
+USE="foo_c six"
 END
 
 mkdir -p var/db/pkg
@@ -30,7 +30,7 @@ touch repo/cat-one/pkg-x/pkg-x-1.ebuild || exit 4
 mkdir -p query_use/${SYSCONFDIR}/portage
 ln -s $(pwd )/profile query_use/${SYSCONFDIR}/make.profile
 cat <<END > query_use/${SYSCONFDIR}/make.conf
-USE="one two -three"
+USE="one two -three -six"
 PORTDIR="`pwd`/repo"
 END
 cat <<"END" > query_use/${SYSCONFDIR}/portage/package.use

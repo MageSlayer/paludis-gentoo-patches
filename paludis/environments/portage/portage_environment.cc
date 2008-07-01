@@ -80,7 +80,7 @@ namespace paludis
 
         std::tr1::shared_ptr<KeyValueConfigFile> vars;
 
-        std::set<std::string> use_with_expands;
+        std::list<std::string> use_with_expands;
         std::set<std::string> use_expand;
         std::set<std::string> accept_keywords;
         std::multimap<std::string, std::string> mirrors;
@@ -208,8 +208,7 @@ namespace
                 new_values.clear();
             else if ('-' == v->at(0))
                 new_values.erase(v->substr(1));
-            else
-                new_values.insert(*v);
+            new_values.insert(*v);
         }
 
         return join(new_values.begin(), new_values.end(), " ");
@@ -286,10 +285,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     /* use etc */
 
-    tokenise_whitespace(_imp->vars->get("USE"), std::inserter(_imp->use_with_expands,
-                _imp->use_with_expands.begin()));
-    tokenise_whitespace(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand,
-                _imp->use_expand.begin()));
+    tokenise_whitespace(_imp->vars->get("USE"), std::back_inserter(_imp->use_with_expands));
+    tokenise_whitespace(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand, _imp->use_expand.begin()));
     for (std::set<std::string>::const_iterator i(_imp->use_expand.begin()), i_end(_imp->use_expand.end()) ;
             i != i_end ; ++i)
     {
@@ -301,7 +298,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                     values.begin()));
         for (std::set<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
                 v != v_end ; ++v)
-            _imp->use_with_expands.insert(lower_i + "_" + *v);
+            _imp->use_with_expands.push_back(lower_i + "_" + *v);
     }
 
     /* accept keywords */
@@ -570,9 +567,14 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
         state = (*e.repository())[k::use_interface()]->query_use(f, e);
 
     /* check use: general user config */
-    std::set<std::string>::const_iterator u(_imp->use_with_expands.find(stringify(f)));
-    if (u != _imp->use_with_expands.end())
-        state = use_enabled;
+    for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()), i_end(_imp->use_with_expands.end()) ;
+            i != i_end ; ++i)
+        if (*i == "-*")
+            state = use_disabled;
+        else if (*i == stringify(f))
+            state = use_enabled;
+        else if (*i == "-" + stringify(f))
+            state = use_disabled;
 
     /* check use: per package config */
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
@@ -685,7 +687,7 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");
 
-    for (std::set<std::string>::const_iterator i(_imp->use_with_expands.begin()),
+    for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()),
             i_end(_imp->use_with_expands.end()) ; i != i_end ; ++i)
         if (0 == i->compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
             result->insert(UseFlagName(*i));

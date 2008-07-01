@@ -84,12 +84,14 @@ namespace test_cases
             TEST_CHECK(! env.query_use(UseFlagName("three"), *idx));
             TEST_CHECK(! env.query_use(UseFlagName("four"), *idx));
             TEST_CHECK(! env.query_use(UseFlagName("five"), *idx));
+            TEST_CHECK(! env.query_use(UseFlagName("six"), *idx));
 
             TEST_CHECK(! env.query_use(UseFlagName("one"), *id1));
             TEST_CHECK(env.query_use(UseFlagName("two"), *id1));
             TEST_CHECK(! env.query_use(UseFlagName("three"), *id1));
             TEST_CHECK(env.query_use(UseFlagName("four"), *id1));
             TEST_CHECK(! env.query_use(UseFlagName("five"), *id1));
+            TEST_CHECK(! env.query_use(UseFlagName("six"), *id1));
         }
     } test_query_use;
 
