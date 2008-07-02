@@ -255,6 +255,18 @@ namespace
 
     }
 
+    template <typename T_, const std::tr1::shared_ptr<const T_> (Environment::* m_) () const>
+    struct EnvironmentKey
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            std::tr1::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Environment>, self_ptr);
+            return (((**self_ptr).*m_)()) ? metadata_key_to_value(((**self_ptr).*m_)()) : Qnil;
+        }
+    };
+
     std::tr1::shared_ptr<PaludisEnvironment>
     value_to_paludis_environment(VALUE v)
     {
@@ -558,6 +570,10 @@ namespace
         rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);
         rb_define_method(c_environment, "mirrors", RUBY_FUNC_CAST(&environment_mirrors), 1);
         rb_define_method(c_environment, "[]", RUBY_FUNC_CAST(&environment_square_brackets), 1);
+        rb_define_method(c_environment, "format_key",
+                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<std::string> , &Environment::format_key>::fetch)), 0);
+        rb_define_method(c_environment, "config_location_key",
+                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSEntry>, &Environment::config_location_key>::fetch)), 0);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

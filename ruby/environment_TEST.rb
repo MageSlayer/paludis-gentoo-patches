@@ -503,5 +503,37 @@ module Paludis
             assert a.empty?
         end
     end
+
+    class TestCase_EnvironmentMetadataKeys < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def ncenv
+            @ncenv or @ncenv = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_format_key
+            assert_respond_to env, :format_key
+            assert_not_nil env.format_key
+            assert_kind_of MetadataStringKey, env.format_key
+            assert_equal 'paludis', env.format_key.value
+
+            assert_respond_to ncenv, :format_key
+            assert_not_nil ncenv.format_key
+            assert_kind_of MetadataStringKey, ncenv.format_key
+            assert_equal 'no_config', ncenv.format_key.value
+        end
+
+        def test_config_location_key
+            assert_respond_to env, :config_location_key
+            assert_not_nil env.config_location_key
+            assert_kind_of MetadataFSEntryKey, env.config_location_key
+            assert_equal Dir.getwd().to_s + "/environment_TEST_dir/home/.paludis", env.config_location_key.value
+
+            assert_respond_to ncenv, :config_location_key
+            assert_nil ncenv.config_location_key
+        end
+    end
 end
 
