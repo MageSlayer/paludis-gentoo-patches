@@ -112,13 +112,12 @@ HELP
     end
 end
 
-if ($envspec || "") =~ /^(?:paludis)?(?::(.*))?$/ then
-    $env = Paludis::PaludisEnvironment.new($1 || "")
-    $config_dir = $env.config_dir
-else
+$env = EnvironmentMaker.instance.make_from_spec($envspec || "")
+if $env.format_key.value != "paludis" then
     $stderr.puts "#$0: --environment must specify class 'paludis'"
     exit 1
 end
+$config_dir = $env.config_location_key.value
 
 if $mode.empty?
     $stderr.puts "You must choose a mode of operation."
