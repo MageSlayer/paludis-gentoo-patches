@@ -443,7 +443,7 @@ namespace test_cases
             d_s << "three # bar" << std::endl;
             d_s << "four = four # foo" << std::endl;
             d_s << "five = five # moo" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() + kvcfo_allow_inline_comments,
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 5);

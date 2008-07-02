@@ -449,7 +449,7 @@ namespace
                 else
                     need_single_space_unless_eol = true;
             }
-            else if ((! k.options()[kvcfo_allow_inline_comments]) && parser.consume(simple_parser::exact("#")))
+            else if ((k.options()[kvcfo_allow_inline_comments]) && parser.consume(simple_parser::exact("#")))
             {
                 if (! parser.consume(*simple_parser::any_except("\n")))
                     throw InternalError(PALUDIS_HERE, "failed to consume a zero width match");
