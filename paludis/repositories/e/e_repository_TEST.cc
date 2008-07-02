@@ -1563,6 +1563,15 @@ namespace test_cases
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            iv_keys->insert("root", "/");
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env,
+                        std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
+                        std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
+#endif
+
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
