@@ -45,8 +45,6 @@ opts = GetoptLong.new(
     [ '--no-write-cache',      GetoptLong::NO_ARGUMENT ])
 
 $mode = ""
-$config_suffix = ""
-$environment = ""
 $names_cache = true
 $write_cache = true
 
@@ -98,20 +96,9 @@ HELP
             exit 1
         end
     when '--environment'
-        $environment = arg
-        if Paludis.const_defined?(:EnvironmentMaker) then
-            $envspec = arg
-        else
-            $stderr.puts "#$0: --environment needs >= Paludis 0.21"
-            exit 1
-        end
+        $envspec = arg
     when '--config-suffix'
-        $config_suffix = arg
-        if Paludis.const_defined?(:EnvironmentMaker) then
-            $envspec = ":#{arg}"
-        else
-            Paludis::DefaultConfig.config_suffix = arg
-        end
+        $envspec = "paludis:#{arg}"
 
     when '--list'
         $mode="list"
@@ -239,8 +226,7 @@ when 'add'
         puts
         puts "You should now run:"
         print "  paludis"
-        print " -c #{$config_suffix}" unless $config_suffix.empty?
-        print " -E #{$environment}" unless $environment.empty?
+        print " -E #{$envspec}" unless $envspec.empty?
         print " -s x-#{overlay_name} \n"
     end
 end
