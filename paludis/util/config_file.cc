@@ -442,8 +442,13 @@ namespace
             else if (parser.consume(+simple_parser::any_of(" \t") >> w))
             {
                 if (k.options()[kvcfo_disallow_space_inside_unquoted_values])
-                    throw ConfigFileError(sr.filename(), "Not allowed space inside unquoted values at line "
-                            + stringify(parser.current_line_number()));
+                {
+                    if (k.options()[kvcfo_allow_multiple_assigns_per_line])
+                        break;
+                    else
+                        throw ConfigFileError(sr.filename(), "Not allowed space inside unquoted values at line "
+                                + stringify(parser.current_line_number()));
+                }
                 else if (k.options()[kvcfo_preserve_whitespace])
                     result.append(w);
                 else
