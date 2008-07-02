@@ -1167,6 +1167,7 @@ namespace test_cases
         }
     } test_dep_list_55;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     /**
      * \test Test DepList resolution behaviour.
      *
@@ -1188,6 +1189,7 @@ namespace test_cases
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_56;
+#endif
 
     /**
      * \test Test DepList resolution behaviour.
@@ -1211,6 +1213,7 @@ namespace test_cases
         }
     } test_dep_list_57;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     /**
      * \test Test DepList resolution behaviour.
      *
@@ -1229,6 +1232,7 @@ namespace test_cases
             expected.push_back("virtual/two-1::virtuals (virtual for cat/one-1:0::repo)");
         }
     } test_dep_list_58;
+#endif
 
     /**
      * \test Test DepList resolution behaviour.
@@ -1274,6 +1278,7 @@ namespace test_cases
         }
     } test_dep_list_60;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     struct DepListTestCase61 : DepListTestCase<61>
     {
         void populate_repo()
@@ -1293,6 +1298,7 @@ namespace test_cases
             expected.push_back("virtual/foo-2::virtuals (virtual for cat/two-2:0::repo)");
         }
     } test_dep_list_61;
+#endif
 
     /**
      * \test Test DepList resolution behaviour.

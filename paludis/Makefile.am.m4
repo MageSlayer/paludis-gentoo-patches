@@ -22,7 +22,6 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
@@ -125,7 +124,6 @@ dep_list_TEST_blockers_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)

@@ -51,6 +51,8 @@
 #include <fstream>
 #include <string>
 
+#include "config.h"
+
 using namespace test;
 using namespace paludis;
 
@@ -1071,6 +1073,12 @@ namespace test_cases
 
         void run()
         {
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+#else
+            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+#endif
+
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
@@ -1094,12 +1102,14 @@ namespace test_cases
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
             std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
             iv_keys->insert("root", "/");
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env,
                         std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
                         std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
+#endif
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
@@ -1108,12 +1118,14 @@ namespace test_cases
                     (k::destination(), installed_repo)
                     );
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
             {
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=virtual/virtual-pretend-installed-0",
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(id);
             }
+#endif
 
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
@@ -1524,6 +1536,11 @@ namespace test_cases
 
         void run()
         {
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+#else
+            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+#endif
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
@@ -1545,13 +1562,6 @@ namespace test_cases
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
-
-            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
-            iv_keys->insert("root", "/");
-            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(&env,
-                        std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
-            env.package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(&env,
-                        std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
 
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)

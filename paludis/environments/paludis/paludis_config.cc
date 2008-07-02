@@ -373,8 +373,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     /* repositories */
     {
-        /* add virtuals repositories */
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+        /* add virtuals repositories */
         if ((*DistributionData::get_instance()->distribution_from_string(distribution()))[k::support_old_style_virtuals()])
         {
             std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
@@ -392,6 +393,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     (k::keys(), std::tr1::bind(&from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1))
                     );
         }
+#endif
 
         /* add normal repositories */
 

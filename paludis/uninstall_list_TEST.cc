@@ -21,17 +21,19 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/user_dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
 #include <list>
 #include <ostream>
+
+#include "config.h"
 
 using namespace paludis;
 using namespace test;
@@ -46,6 +48,16 @@ namespace paludis
     }
 }
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+namespace
+{
+    std::string virtuals_repo_keys(const std::string &)
+    {
+        return "";
+    }
+}
+#endif
+
 namespace test_cases
 {
     /**
@@ -58,7 +70,9 @@ namespace test_cases
         protected:
             TestEnvironment env;
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
-            std::tr1::shared_ptr<VirtualsRepository> virtuals_repo;
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+            std::tr1::shared_ptr<Repository> virtuals_repo;
+#endif
             std::tr1::shared_ptr<PackageIDSequence> targets;
             std::list<std::string> expected;
             bool done_populate;
@@ -71,13 +85,17 @@ namespace test_cases
                 TestCase("uninstall list " + s),
                 env(),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
-                virtuals_repo(new VirtualsRepository(&env)),
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+                virtuals_repo((*(*RepositoryMaker::get_instance())["virtuals"])(&env, virtuals_repo_keys)),
+#endif
                 targets(new PackageIDSequence),
                 done_populate(false),
                 unused_target(false)
             {
                 env.package_database()->add_repository(2, installed_repo);
+#ifdef ENABLE_VIRTUALS_REPOSITORY
                 env.package_database()->add_repository(1, virtuals_repo);
+#endif
             }
 
             /**

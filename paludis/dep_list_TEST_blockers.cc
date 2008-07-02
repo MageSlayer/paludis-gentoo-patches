@@ -79,6 +79,7 @@ namespace test_cases
         }
     } test_dep_list_list_block;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     struct DepListTestCaseSelfBlock : DepListTestCaseBase
     {
         DepListTestCaseSelfBlock() : DepListTestCaseBase("self block via provide on list") { }
@@ -140,6 +141,7 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(*next(next(next(d.begin())))->package_id, "cat/one-1:0::repo");
         }
     } test_dep_list_provided_block;
+#endif
 
     struct DepListTestCaseBlockOnList : DepListTestCaseBase
     {
@@ -208,6 +210,7 @@ namespace test_cases
         }
     } test_dep_list_no_block_on_no_upgrade;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     struct DepListTestCaseNoBlockOnNoUpgradeViaProvided : DepListTestCaseBase
     {
         DepListTestCaseNoBlockOnNoUpgradeViaProvided() : DepListTestCaseBase("no block on no upgrade via provided") { }
@@ -280,6 +283,7 @@ namespace test_cases
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_no_block_on_replaced_provide;
+#endif
 
     struct DepListTestCaseRestrictedOlderSelf : DepListTestCaseBase
     {
@@ -308,6 +312,7 @@ namespace test_cases
         }
     } test_dep_list_restricted_older_self;
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     struct DepListTestCaseRestrictedOlderSelfProvide : DepListTestCaseBase
     {
         DepListTestCaseRestrictedOlderSelfProvide() : DepListTestCaseBase("restricted older self provide") { }
@@ -365,6 +370,7 @@ namespace test_cases
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_restricted_older_other_provide;
+#endif
 }
 
 

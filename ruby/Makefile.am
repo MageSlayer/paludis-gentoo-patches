@@ -86,6 +86,12 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	action_TEST_setup.sh action_TEST_cleanup.sh
 
+if ENABLE_VIRTUALS_REPOSITORY
+PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=yes
+else
+PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=no
+endif
+
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
@@ -101,6 +107,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \
+	PALUDIS_ENABLE_VIRTUALS_REPOSITORY="$(PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE)" \
 	SYSCONFDIR="$(sysconfdir)" \
 	LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \

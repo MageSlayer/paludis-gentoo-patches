@@ -41,6 +41,8 @@
 #include <set>
 #include <list>
 
+#include "config.h"
+
 using namespace paludis;
 using namespace paludis::no_config_environment;
 
@@ -220,9 +222,11 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env,
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                         std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
+#endif
     }
     else
     {
@@ -244,9 +248,11 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
 
+#ifdef ENABLE_VIRTUALS_REPOSITORY
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                         std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
+#endif
     }
 }
 

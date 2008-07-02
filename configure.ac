@@ -1078,6 +1078,19 @@ BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
 AC_SUBST([BUILD_REPOSITORIES])
 
+for r in e fake ; do
+	if ! echo $repositories | tr ' ' '\n' | grep "^$r\$" >/dev/null ; then
+		AC_MSG_ERROR([Building without $r repository is unsupported])
+	fi
+done
+
+enable_virtuals_repository=
+if echo $repositories | tr ' ' '\n' | grep '^virtuals$' >/dev/null ; then
+	AC_DEFINE_UNQUOTED([ENABLE_VIRTUALS_REPOSITORY], [1], [Enable virtuals repository])
+	enable_virtuals_repository=yes
+fi
+AM_CONDITIONAL([ENABLE_VIRTUALS_REPOSITORY], test "x$enable_virtuals_repository" = "xyes")
+
 if echo $repositories | tr ' ' '\n' | grep '^gems$' >/dev/null ; then
 	need_syck_check=yes
 	need_gem_check=yes

@@ -97,7 +97,11 @@ module Paludis
         end
 
         def test_repositories
-            assert_equal 3, db.repositories.length
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert_equal 3, db.repositories.length
+            else
+                assert_equal 1, db.repositories.length
+            end
 
             a = db.repositories.find_all do | repo |
                 repo.name == "testrepo"
@@ -121,13 +125,22 @@ module Paludis
         end
 
         def test_more_important_than
-            assert db.more_important_than('testrepo', 'virtuals')
-            assert ! db.more_important_than('virtuals', 'testrepo')
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert db.more_important_than('testrepo', 'virtuals')
+                assert ! db.more_important_than('virtuals', 'testrepo')
+            elsif ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "no" then
+            else
+                throw "oops"
+            end
         end
 
         def test_has_repository_named?
             assert db.has_repository_named?('testrepo')
-            assert db.has_repository_named?('virtuals')
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert db.has_repository_named?('virtuals')
+            else
+                assert ! db.has_repository_named?('virtuals')
+            end
             assert ! db.has_repository_named?('foobarbaz')
         end
     end

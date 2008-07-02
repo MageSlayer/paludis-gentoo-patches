@@ -56,6 +56,7 @@
 #include <vector>
 #include <list>
 #include <fstream>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::portage_environment;
@@ -462,22 +463,26 @@ PortageEnvironment::_load_profile(const FSEntry & d)
 void
 PortageEnvironment::_add_virtuals_repository()
 {
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     package_database()->add_repository(-2,
             RepositoryMaker::get_instance()->find_maker("virtuals")(this,
                 std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+#endif
 }
 
 void
 PortageEnvironment::_add_installed_virtuals_repository()
 {
+#ifdef ENABLE_VIRTUALS_REPOSITORY
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(
             new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     package_database()->add_repository(-1,
             RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this,
                 std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+#endif
 }
 
 void
