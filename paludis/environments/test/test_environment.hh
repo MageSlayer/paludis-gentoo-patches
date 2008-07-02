@@ -127,6 +127,9 @@ namespace paludis
 
             virtual void remove_from_world(const SetName &) const;
 
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
+
             void add_set(const SetName &, const std::string &);
     };
 }

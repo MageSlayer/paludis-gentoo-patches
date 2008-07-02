@@ -234,6 +234,18 @@ TestEnvironment::need_keys_added() const
 {
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+TestEnvironment::format_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+TestEnvironment::config_location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
 void
 TestEnvironment::add_set(const SetName & s, const std::string & members_str)
 {

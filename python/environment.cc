@@ -415,6 +415,26 @@ class EnvironmentImplementationWrapper :
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "need_keys_added");
         }
+
+        virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("format_key"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "format_key");
+        }
+
+        virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("config_location_key"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "config_location_key");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :

@@ -289,3 +289,15 @@ AdaptedEnvironment::clear_metadata_keys() const
     _imp->has_metadata_keys = false;
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+AdaptedEnvironment::format_key() const
+{
+    return _imp->env->format_key();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+AdaptedEnvironment::config_location_key() const
+{
+    return _imp->env->config_location_key();
+}
+

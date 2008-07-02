@@ -85,7 +85,7 @@ namespace paludis
         mutable std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > conf_dir_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
 
         Implementation(PaludisEnvironment * const e, std::tr1::shared_ptr<PaludisConfig> c) :
@@ -94,7 +94,7 @@ namespace paludis
             paludis_command("paludis"),
             package_database(new PackageDatabase(e)),
             format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "paludis")),
-            conf_dir_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+            config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
                         config->config_dir())),
             world_file_key(config->world()->location_if_set() ? make_shared_ptr(
                         new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
@@ -155,7 +155,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
                 RepositoryMaker::get_instance()->find_maker((*r)[k::format()])(this, (*r)[k::keys()]));
 
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->conf_dir_key);
+    add_metadata_key(_imp->config_location_key);
     if (_imp->world_file_key)
         add_metadata_key(_imp->world_file_key);
 }
@@ -568,5 +568,17 @@ PaludisEnvironment::mask_for_user(const PackageID & d) const
 void
 PaludisEnvironment::need_keys_added() const
 {
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+PaludisEnvironment::format_key() const
+{
+    return _imp->format_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+PaludisEnvironment::config_location_key() const
+{
+    return _imp->config_location_key;
 }
 

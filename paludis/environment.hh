@@ -327,6 +327,24 @@ namespace paludis
             virtual void remove_from_world(const SetName &) const = 0;
 
             ///\}
+
+            ///\name Specific metadata keys
+            ///\{
+
+            /**
+             * The format_key, if non-zero, holds our environment's format. Environment
+             * implementations should not return zero here, but clients should still
+             * check.
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
+
+            /**
+             * The config_location_key, if non-zero, specifies the location of the configuration file or directory,
+             * the contents of which depends on the format returned by format_key.
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const = 0;
+
+            ///\}
     };
 }
 

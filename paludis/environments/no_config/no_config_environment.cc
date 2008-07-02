@@ -517,3 +517,15 @@ NoConfigEnvironment::need_keys_added() const
 {
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+NoConfigEnvironment::format_key() const
+{
+    return _imp->format_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+NoConfigEnvironment::config_location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+

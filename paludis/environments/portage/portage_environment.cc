@@ -107,7 +107,7 @@ namespace paludis
         mutable Mutex world_mutex;
 
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > conf_dir_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
 
         Implementation(Environment * const e, const std::string & s) :
@@ -119,7 +119,7 @@ namespace paludis
             package_database(new PackageDatabase(e)),
             world_file("/var/lib/portage/world"),
             format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "portage")),
-            conf_dir_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+            config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
                         conf_dir)),
             world_file_key(new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
                         world_file))
@@ -353,7 +353,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
             _imp->ignore_breaks_portage.insert(*it);
 
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->conf_dir_key);
+    add_metadata_key(_imp->config_location_key);
     add_metadata_key(_imp->world_file_key);
 }
 
@@ -988,5 +988,17 @@ PortageEnvironment::world_set() const
 void
 PortageEnvironment::need_keys_added() const
 {
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+PortageEnvironment::format_key() const
+{
+    return _imp->format_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+PortageEnvironment::config_location_key() const
+{
+    return _imp->config_location_key;
 }
 
