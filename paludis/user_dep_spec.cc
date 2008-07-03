@@ -18,6 +18,7 @@
  */
 
 #include <paludis/user_dep_spec.hh>
+#include <paludis/elike_package_dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/elike_use_requirement.hh>
 #include <paludis/version_operator.hh>
@@ -36,65 +37,62 @@ using namespace paludis;
 
 namespace
 {
-    void parse_package_bit(PartiallyMadePackageDepSpec & result, const std::string & ss, const std::string & t,
+    void user_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result,
             const Environment * const env, const UserPackageDepSpecOptions & options,
             const Filter & filter)
     {
-        if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
+        if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
         {
             if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
+                throw PackageDepSpecError("Wildcard '*' not allowed");
 
-            if (0 != t.compare(t.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(t.substr(2)));
+            if (0 != s.compare(s.length() - 2, 2, "/*"))
+                result.package_name_part(PackageNamePart(s.substr(2)));
         }
-        else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
+        else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
             if (! options[updso_allow_wildcards])
-                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
+                throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(s) + "'");
 
-            result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
+            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
-        else if (t == "*")
-            throw PackageDepSpecError("Use '*/*' not '*' to match everything in '" + stringify(ss) + "'");
-        else if (std::string::npos != t.find('/'))
-            result.package(QualifiedPackageName(t));
+        else if (s == "*")
+            throw PackageDepSpecError("Use '*/*' not '*' to match everything");
+        else if (std::string::npos != s.find('/'))
+            result.package(QualifiedPackageName(s));
         else
         {
             if (options[updso_no_disambiguation])
-                throw PackageDepSpecError("Need an explicit category specified in '" + stringify(ss) + "'");
-            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(t), filter));
+                throw PackageDepSpecError("Need an explicit category specified");
+            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s), filter));
         }
     }
-}
 
-PackageDepSpec
-paludis::parse_user_package_dep_spec(const std::string & ss, const Environment * const env,
-        const UserPackageDepSpecOptions & options, const Filter & filter)
-{
-    Context context("When parsing package dep spec '" + ss + "':");
-
-    if (ss.empty())
-        throw PackageDepSpecError("Got empty dep spec");
-
-    if (options[updso_throw_if_set] && std::string::npos == ss.find_first_of("/:[<>=~"))
-        try
-        {
-            SetName sn(ss);
-            if (options[updso_no_disambiguation] || env->set(sn))
-                throw GotASetNotAPackageDepSpec(ss);
-        }
-        catch (const SetNameError &)
-        {
-        }
-
-    std::string s(ss);
-    PartiallyMadePackageDepSpec result;
-    bool had_bracket_version_requirements(false);
-
-    std::string::size_type use_group_p;
-    while (std::string::npos != ((use_group_p = s.rfind('['))))
+    void user_check_sanity(const std::string & s, const UserPackageDepSpecOptions & options,
+            const Environment * const env)
     {
+        if (s.empty())
+            throw PackageDepSpecError("Got empty dep spec");
+
+        if (options[updso_throw_if_set] && std::string::npos == s.find_first_of("/:[<>=~"))
+            try
+            {
+                SetName sn(s);
+                if (options[updso_no_disambiguation] || env->set(sn))
+                    throw GotASetNotAPackageDepSpec(s);
+            }
+            catch (const SetNameError &)
+            {
+            }
+    }
+
+    bool user_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+            bool & had_bracket_version_requirements)
+    {
+        std::string::size_type use_group_p;
+        if (std::string::npos == ((use_group_p = s.rfind('['))))
+            return false;
+
         if (s.at(s.length() - 1) != ']')
             throw PackageDepSpecError("Mismatched []");
 
@@ -147,7 +145,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
                             else if (needed_mode != flag.at(opos))
                                 throw PackageDepSpecError("Mixed & and | inside []");
 
-                            result.version_requirements_mode(flag.at(opos) == '|' ? vr_or : vr_and);
+                            result.version_requirements_mode((flag.at(opos) == '|' ? vr_or : vr_and));
                             ver = flag.substr(0, opos++);
                             flag.erase(0, opos);
                         }
@@ -181,76 +179,45 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
         };
 
         s.erase(use_group_p);
+
+        return true;
     }
 
-    std::string::size_type repo_p;
-    if (std::string::npos != ((repo_p = s.rfind("::"))))
+    void
+    user_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
     {
-        result.repository(RepositoryName(s.substr(repo_p + 2)));
-        s.erase(repo_p);
-    }
-
-    std::string::size_type slot_p;
-    if (std::string::npos != ((slot_p = s.rfind(':'))))
-    {
-        result.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(s.substr(slot_p + 1)))));
-        s.erase(slot_p);
-    }
-
-    if (std::string::npos != std::string("<>=~").find(s.at(0)))
-    {
-        if (had_bracket_version_requirements)
-            throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
-
-        std::string::size_type p(1);
-        if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
-            ++p;
-        VersionOperator op(s.substr(0, p));
-        std::string::size_type q(p);
-
-        while (true)
+        std::string::size_type slot_p(s.rfind(':'));
+        if (std::string::npos != slot_p)
         {
-            if (p >= s.length())
-                throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
-            q = s.find('-', q + 1);
-            if ((std::string::npos == q) || (++q >= s.length()))
-                throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
-            if ((s.at(q) >= '0' && s.at(q) <= '9') || (0 == s.compare(q, 3, "scm")))
-                break;
+            result.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(s.substr(slot_p + 1)))));
+            s.erase(slot_p);
         }
-
-        std::string::size_type new_q(q);
-        while (true)
-        {
-            if (new_q >= s.length())
-                break;
-            new_q = s.find('-', new_q + 1);
-            if ((std::string::npos == new_q) || (++new_q >= s.length()))
-                break;
-            if (s.at(new_q) >= '0' && s.at(new_q) <= '9')
-                q = new_q;
-        }
-
-        std::string t(s.substr(p, q - p - 1));
-        parse_package_bit(result, ss, t, env, options, filter);
-
-        if ('*' == s.at(s.length() - 1))
-        {
-            if (op != vo_equal)
-                Log::get_instance()->message("user_dep_spec.bad_operator", ll_qa, lc_context) <<
-                    "Package dep spec '" << ss << "' uses * "
-                    "with operator '" << op << "', pretending it uses the equals operator instead";
-            op = vo_equal_star;
-
-            result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));
-        }
-        else
-            result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q))));
     }
-    else
-        parse_package_bit(result, ss, s, env, options, filter);
+}
 
-    return result;
+PackageDepSpec
+paludis::parse_user_package_dep_spec(const std::string & ss, const Environment * const env,
+        const UserPackageDepSpecOptions & options, const Filter & filter)
+{
+    using namespace std::tr1::placeholders;
+
+    Context context("When parsing user package dep spec '" + ss + "':");
+
+    bool had_bracket_version_requirements(false);
+    return partial_parse_generic_elike_package_dep_spec(ss, GenericELikePackageDepSpecParseFunctions::named_create()
+            (k::check_sanity(), std::tr1::bind(&user_check_sanity, _1, options, env))
+            (k::remove_trailing_square_bracket_if_exists(), std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
+                    _1, _2, std::tr1::ref(had_bracket_version_requirements)))
+            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&elike_remove_trailing_repo_if_exists,
+                    _1, _2, ELikePackageDepSpecOptions() + epdso_allow_repository_deps))
+            (k::remove_trailing_slot_if_exists(), std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2))
+            (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
+            (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1,
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_strict_star_operator))
+            (k::get_remove_trailing_version(), std::tr1::bind(&elike_get_remove_trailing_version, _1))
+            (k::add_version_requirement(), std::tr1::bind(&elike_add_version_requirement, _1, _2, _3))
+            (k::add_package_requirement(), std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter))
+            );
 }
 
 UserSlotExactRequirement::UserSlotExactRequirement(const SlotName & s) :

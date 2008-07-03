@@ -153,6 +153,23 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_spec, "1.4");
             TEST_CHECK_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_operator, vo_tilde);
             TEST_CHECK(! m.slot_requirement_ptr());
+
+            PackageDepSpec n(parse_user_package_dep_spec("=foo/bar--1.2.3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(n, "=foo/bar--1.2.3");
+            TEST_CHECK_STRINGIFY_EQUAL(*n.package_ptr(), "foo/bar-");
+            TEST_CHECK(n.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(n.version_requirements_ptr()->begin()->version_spec, "1.2.3");
+            TEST_CHECK_EQUAL(n.version_requirements_ptr()->begin()->version_operator, vo_equal);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar--", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+
+            PackageDepSpec o(parse_user_package_dep_spec("=foo/bar---1.2.3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(o, "=foo/bar---1.2.3");
+            TEST_CHECK_STRINGIFY_EQUAL(*o.package_ptr(), "foo/bar--");
+            TEST_CHECK(o.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(o.version_requirements_ptr()->begin()->version_spec, "1.2.3");
+            TEST_CHECK_EQUAL(o.version_requirements_ptr()->begin()->version_operator, vo_equal);
+
         }
     } test_user_package_dep_spec;
 

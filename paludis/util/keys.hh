@@ -188,6 +188,15 @@ namespace paludis
         typedef kc::Key<159> importance;
         typedef kc::Key<160> keys;
         typedef kc::Key<161> format;
+        typedef kc::Key<162> remove_trailing_square_bracket_if_exists;
+        typedef kc::Key<163> remove_trailing_slot_if_exists;
+        typedef kc::Key<164> has_version_operator;
+        typedef kc::Key<165> get_remove_version_operator;
+        typedef kc::Key<166> get_remove_trailing_version;
+        typedef kc::Key<167> add_version_requirement;
+        typedef kc::Key<168> add_package_requirement;
+        typedef kc::Key<169> check_sanity;
+        typedef kc::Key<170> remove_trailing_repo_if_exists;
     }
 }
 

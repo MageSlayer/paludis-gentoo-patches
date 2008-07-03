@@ -23,6 +23,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/kc.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -33,289 +34,398 @@ using namespace paludis;
 #include <paludis/elike_package_dep_spec-se.cc>
 
 PartiallyMadePackageDepSpec
-paludis::partial_parse_elike_package_dep_spec(
-        const std::string & ss, const ELikePackageDepSpecOptions & options, const std::tr1::shared_ptr<const PackageID> & id)
+paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
 {
-    Context context("When parsing package dep spec '" + ss + "':");
+    Context context("When parsing generic package dep spec '" + ss + "':");
 
-    if (ss.empty())
-        throw PackageDepSpecError("Got empty dep spec");
+    /* Check that it's not, e.g. a set with updso_throw_if_set, or empty. */
+    fns[k::check_sanity()](ss);
 
-    PartiallyMadePackageDepSpec result;
     std::string s(ss);
-    bool had_bracket_version_requirements(false);
+    PartiallyMadePackageDepSpec result;
 
-    std::string::size_type use_group_p;
-    while (std::string::npos != ((use_group_p = s.rfind('['))))
+    /* Remove trailing [use], [version] etc parts. */
+    while (fns[k::remove_trailing_square_bracket_if_exists()](s, result))
     {
-        if (! options[epdso_allow_square_bracket_deps])
-        {
-            if (options[epdso_strict_parsing])
-                throw PackageDepSpecError("[] dependencies not safe for use here");
-            else
-                Log::get_instance()->message("e.package_dep_spec.brackets_not_allowed", ll_warning, lc_context)
-                    << "[] dependencies not safe for use here";
-        }
-
-        if (s.at(s.length() - 1) != ']')
-            throw PackageDepSpecError("Mismatched []");
-
-        std::string flag(s.substr(use_group_p + 1));
-        if (flag.length() < 2)
-            throw PackageDepSpecError("Invalid [] contents");
-
-        flag.erase(flag.length() - 1);
-
-        switch (flag.at(0))
-        {
-            case '<':
-            case '>':
-            case '=':
-            case '~':
-                {
-                    char needed_mode(0);
-
-                    while (! flag.empty())
-                    {
-                        Context cc("When parsing [] segment '" + flag + "':");
-
-                        std::string op;
-                        std::string::size_type opos(0);
-                        while (opos < flag.length())
-                            if (std::string::npos == std::string("><=~").find(flag.at(opos)))
-                                break;
-                            else
-                                ++opos;
-
-                        op = flag.substr(0, opos);
-                        flag.erase(0, opos);
-
-                        if (op.empty())
-                            throw PackageDepSpecError("Missing operator inside []");
-
-                        VersionOperator vop(op);
-
-                        std::string ver;
-                        opos = flag.find_first_of("|&");
-                        if (std::string::npos == opos)
-                        {
-                            ver = flag;
-                            flag.clear();
-                        }
-                        else
-                        {
-                            if (0 == needed_mode)
-                                needed_mode = flag.at(opos);
-                            else if (needed_mode != flag.at(opos))
-                                throw PackageDepSpecError("Mixed & and | inside []");
-
-                            result.version_requirements_mode((flag.at(opos) == '|' ? vr_or : vr_and));
-                            ver = flag.substr(0, opos++);
-                            flag.erase(0, opos);
-                        }
-
-                        if (ver.empty())
-                            throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
-
-                        if ('*' == ver.at(ver.length() - 1))
-                        {
-                            ver.erase(ver.length() - 1);
-                            if (vop == vo_equal)
-                                vop = vo_equal_star;
-                            else
-                                throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
-                        }
-
-                        VersionSpec vs(ver);
-                        result.version_requirement(VersionRequirement(vop, vs));
-                        had_bracket_version_requirements = true;
-                    }
-                }
-                break;
-
-            default:
-                {
-                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                                id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-                    result.additional_requirement(req);
-                }
-                break;
-        };
-
-        s.erase(use_group_p);
     }
 
-    std::string::size_type repo_p;
-    if (std::string::npos != ((repo_p = s.rfind("::"))))
+    /* Remove trailing ::repo and :slot parts. */
+    fns[k::remove_trailing_repo_if_exists()](s, result);
+    fns[k::remove_trailing_slot_if_exists()](s, result);
+
+    if (fns[k::has_version_operator()](s))
     {
-        if (! options[epdso_allow_repository_deps])
-        {
-            if (options[epdso_strict_parsing])
-                throw PackageDepSpecError("Repository dependencies not safe for use here");
-            else
-                Log::get_instance()->message("e.package_dep_spec.repository_not_allowed", ll_warning, lc_context)
-                    << "Repository dependencies not safe for use here";
-        }
-
-        result.repository(RepositoryName(s.substr(repo_p + 2)));
-        s.erase(repo_p);
-    }
-
-    std::string::size_type slot_p;
-    if (std::string::npos != ((slot_p = s.rfind(':'))))
-    {
-        std::string match(s.substr(slot_p + 1));
-        if (match.empty())
-            throw PackageDepSpecError("Empty slot dependency specified");
-
-        if ("*" == match)
-        {
-            if (! options[epdso_allow_slot_star_deps])
-            {
-                if (options[epdso_strict_parsing])
-                    throw PackageDepSpecError("Slot '*' dependencies not safe for use here");
-                else
-                    Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
-                        << "Slot '*' dependencies not safe for use here";
-            }
-            result.slot_requirement(make_shared_ptr(new ELikeSlotAnyUnlockedRequirement));
-        }
-        else if ('=' == match.at(0))
-        {
-            if (! options[epdso_allow_slot_equal_deps])
-            {
-                if (options[epdso_strict_parsing])
-                    throw PackageDepSpecError("Slot '=' dependencies not safe for use here");
-                else
-                    Log::get_instance()->message("e.package_dep_spec.slot_equals_not_allowed", ll_warning, lc_context)
-                        << "Slot '=' dependencies not safe for use here";
-            }
-
-            if (1 == match.length())
-                result.slot_requirement(make_shared_ptr(new ELikeSlotAnyLockedRequirement));
-            else
-                result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 2)), true)));
-        }
-        else
-        {
-            if (! options[epdso_allow_slot_deps])
-            {
-                if (options[epdso_strict_parsing])
-                    throw PackageDepSpecError("Slot dependencies not safe for use here");
-                else
-                    Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
-                        << "Slot dependencies not safe for use here";
-            }
-            result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
-        }
-        s.erase(slot_p);
-    }
-
-    if (std::string::npos != std::string("<>=~").find(s.at(0)))
-    {
-        if (had_bracket_version_requirements)
-            throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
-
-        std::string::size_type p(1);
-        if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
-            ++p;
-        VersionOperator op(s.substr(0, p));
-
-        if (op == vo_tilde_greater)
-            if (! options[epdso_allow_tilde_greater_deps])
-            {
-                if (options[epdso_strict_parsing])
-                    throw PackageDepSpecError("~> dependencies not safe for use here");
-                else
-                    Log::get_instance()->message("e.package_dep_spec.tilde_greater_not_allowed", ll_warning, lc_context)
-                        << "~> dependencies not safe for use here";
-            }
-
-        std::string::size_type q(p);
-
-        while (true)
-        {
-            if (p >= s.length())
-                throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
-            q = s.find('-', q + 1);
-            if ((std::string::npos == q) || (++q >= s.length()))
-                throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
-            if ((s.at(q) >= '0' && s.at(q) <= '9') || (0 == s.compare(q, 3, "scm")))
-                break;
-        }
-
-        std::string::size_type new_q(q);
-        while (true)
-        {
-            if (new_q >= s.length())
-                break;
-            new_q = s.find('-', new_q + 1);
-            if ((std::string::npos == new_q) || (++new_q >= s.length()))
-                break;
-            if (s.at(new_q) >= '0' && s.at(new_q) <= '9')
-                q = new_q;
-        }
-
-        std::string t(s.substr(p, q - p - 1));
-        if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
-        {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            if (0 != t.compare(t.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(t.substr(2)));
-        }
-        else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
-        {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            result.category_name_part(CategoryNamePart(t.substr(0, t.length() - 2)));
-        }
-        else
-            result.package(QualifiedPackageName(t));
-
-        if ('*' == s.at(s.length() - 1))
-        {
-            if (op != vo_equal)
-            {
-                if (! options[epdso_strict_star_operator])
-                {
-                    if (options[epdso_strict_parsing])
-                        throw PackageDepSpecError(
-                                "Package dep spec '" + ss + "' uses * "
-                                "with operator '" + stringify(op) + "'");
-                    else
-                        Log::get_instance()->message("e.package_dep_spec.bad_operator", ll_qa, lc_context)
-                            << "Package dep spec '" << ss << "' uses * with operator '" << op <<
-                            "', pretending it uses the equals operator instead";
-                }
-            }
-            op = vo_equal_star;
-
-            result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));
-        }
-        else
-            result.version_requirement(VersionRequirement(op, VersionSpec(s.substr(q))));
+        /* Leading (or maybe =*) operator, so trailing version. */
+        VersionOperator op(fns[k::get_remove_version_operator()](s));
+        VersionSpec spec(fns[k::get_remove_trailing_version()](s));
+        fns[k::add_version_requirement()](op, spec, result);
+        fns[k::add_package_requirement()](s, result);
     }
     else
     {
-        if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
-        {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(s.substr(2)));
-        }
-        else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
-        {
-            throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "'");
-
-            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
-        }
-        else
-            result.package(QualifiedPackageName(s));
+        /* No leading operator, so no version. */
+        fns[k::add_package_requirement()](s, result);
     }
 
     return result;
+}
+
+PackageDepSpec
+paludis::parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
+{
+    return partial_parse_generic_elike_package_dep_spec(ss, fns);
+}
+
+void
+paludis::elike_check_sanity(const std::string & s)
+{
+    if (s.empty())
+        throw PackageDepSpecError("Got empty dep spec");
+}
+
+bool
+paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+        const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
+        const std::tr1::shared_ptr<const PackageID> & id)
+{
+    std::string::size_type use_group_p;
+    if (std::string::npos == ((use_group_p = s.rfind('['))))
+        return false;
+
+    if (! options[epdso_allow_square_bracket_deps])
+    {
+        if (options[epdso_strict_parsing])
+            throw PackageDepSpecError("[] dependencies not safe for use here");
+        else
+            Log::get_instance()->message("e.package_dep_spec.brackets_not_allowed", ll_warning, lc_context)
+                << "[] dependencies not safe for use here";
+    }
+
+    if (s.at(s.length() - 1) != ']')
+        throw PackageDepSpecError("Mismatched []");
+
+    std::string flag(s.substr(use_group_p + 1));
+    if (flag.length() < 2)
+        throw PackageDepSpecError("Invalid [] contents");
+
+    flag.erase(flag.length() - 1);
+
+    switch (flag.at(0))
+    {
+        case '<':
+        case '>':
+        case '=':
+        case '~':
+            {
+                char needed_mode(0);
+
+                while (! flag.empty())
+                {
+                    Context cc("When parsing [] segment '" + flag + "':");
+
+                    std::string op;
+                    std::string::size_type opos(0);
+                    while (opos < flag.length())
+                        if (std::string::npos == std::string("><=~").find(flag.at(opos)))
+                            break;
+                        else
+                            ++opos;
+
+                    op = flag.substr(0, opos);
+                    flag.erase(0, opos);
+
+                    if (op.empty())
+                        throw PackageDepSpecError("Missing operator inside []");
+
+                    VersionOperator vop(op);
+
+                    std::string ver;
+                    opos = flag.find_first_of("|&");
+                    if (std::string::npos == opos)
+                    {
+                        ver = flag;
+                        flag.clear();
+                    }
+                    else
+                    {
+                        if (0 == needed_mode)
+                            needed_mode = flag.at(opos);
+                        else if (needed_mode != flag.at(opos))
+                            throw PackageDepSpecError("Mixed & and | inside []");
+
+                        result.version_requirements_mode((flag.at(opos) == '|' ? vr_or : vr_and));
+                        ver = flag.substr(0, opos++);
+                        flag.erase(0, opos);
+                    }
+
+                    if (ver.empty())
+                        throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
+
+                    if ('*' == ver.at(ver.length() - 1))
+                    {
+                        ver.erase(ver.length() - 1);
+                        if (vop == vo_equal)
+                            vop = vo_equal_star;
+                        else
+                            throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
+                    }
+
+                    VersionSpec vs(ver);
+                    result.version_requirement(VersionRequirement(vop, vs));
+                    had_bracket_version_requirements = true;
+                }
+            }
+            break;
+
+        default:
+            {
+                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
+                            id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+                result.additional_requirement(req);
+            }
+            break;
+    };
+
+    s.erase(use_group_p);
+
+    return true;
+}
+
+void
+paludis::elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+        const ELikePackageDepSpecOptions & options)
+{
+    std::string::size_type repo_p;
+    if (std::string::npos == ((repo_p = s.rfind("::"))))
+        return;
+
+    if (! options[epdso_allow_repository_deps])
+    {
+        if (options[epdso_strict_parsing])
+            throw PackageDepSpecError("Repository dependencies not safe for use here");
+        else
+            Log::get_instance()->message("e.package_dep_spec.repository_not_allowed", ll_warning, lc_context)
+                << "Repository dependencies not safe for use here";
+    }
+
+    result.repository(RepositoryName(s.substr(repo_p + 2)));
+    s.erase(repo_p);
+}
+
+void
+paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+        const ELikePackageDepSpecOptions & options)
+{
+    std::string::size_type slot_p;
+    if (std::string::npos == ((slot_p = s.rfind(':'))))
+        return;
+
+    std::string match(s.substr(slot_p + 1));
+    if (match.empty())
+        throw PackageDepSpecError("Empty slot dependency specified");
+
+    if ("*" == match)
+    {
+        if (! options[epdso_allow_slot_star_deps])
+        {
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("Slot '*' dependencies not safe for use here");
+            else
+                Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
+                    << "Slot '*' dependencies not safe for use here";
+        }
+        result.slot_requirement(make_shared_ptr(new ELikeSlotAnyUnlockedRequirement));
+    }
+    else if ('=' == match.at(0))
+    {
+        if (! options[epdso_allow_slot_equal_deps])
+        {
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("Slot '=' dependencies not safe for use here");
+            else
+                Log::get_instance()->message("e.package_dep_spec.slot_equals_not_allowed", ll_warning, lc_context)
+                    << "Slot '=' dependencies not safe for use here";
+        }
+
+        if (1 == match.length())
+            result.slot_requirement(make_shared_ptr(new ELikeSlotAnyLockedRequirement));
+        else
+            result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 2)), true)));
+    }
+    else
+    {
+        if (! options[epdso_allow_slot_deps])
+        {
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("Slot dependencies not safe for use here");
+            else
+                Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
+                    << "Slot dependencies not safe for use here";
+        }
+        result.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(SlotName(s.substr(slot_p + 1)), false)));
+    }
+    s.erase(slot_p);
+}
+
+bool
+paludis::elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements)
+{
+    if ((! s.empty()) && std::string::npos != std::string("<>=~").find(s.at(0)))
+    {
+        if (had_bracket_version_requirements)
+            throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
+        return true;
+    }
+    else
+        return false;
+}
+
+VersionOperator
+paludis::elike_get_remove_version_operator(std::string & s, const ELikePackageDepSpecOptions & options)
+{
+    std::string::size_type p(1);
+    if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
+        ++p;
+    VersionOperator op(s.substr(0, p));
+    s.erase(0, p);
+
+    if (op == vo_tilde_greater)
+        if (! options[epdso_allow_tilde_greater_deps])
+        {
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("~> dependencies not safe for use here");
+            else
+                Log::get_instance()->message("e.package_dep_spec.tilde_greater_not_allowed", ll_warning, lc_context)
+                    << "~> dependencies not safe for use here";
+        }
+
+    if ((! s.empty()) && ('*' == s.at(s.length() - 1)))
+    {
+        if (op != vo_equal)
+        {
+            if (! options[epdso_strict_star_operator])
+            {
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Package dep spec uses * with operator '" + stringify(op) + "'");
+                else
+                    Log::get_instance()->message("e.package_dep_spec.bad_operator", ll_qa, lc_context)
+                        << "Package dep spec uses * with operator '" << op << "', pretending it uses the equals operator instead";
+            }
+        }
+        op = vo_equal_star;
+        s.erase(s.length() - 1);
+    }
+
+    return op;
+}
+
+VersionSpec
+paludis::elike_get_remove_trailing_version(std::string & s)
+{
+    /* find the last place a version spec could start (that is, a hyphen
+     * followed by a digit, or a hyphen followed by 'scm'). if it's the scm
+     * thing, find the second last place instead, if it exists. */
+    std::string::size_type hyphen_pos(s.rfind('-')), last_hyphen_pos(std::string::npos);
+    while (true)
+    {
+        if (std::string::npos == hyphen_pos || 0 == hyphen_pos)
+        {
+            /* - at start or no - is an error. but if we've already found a
+             * trailing -scm, use that. */
+            if (std::string::npos != last_hyphen_pos)
+            {
+                hyphen_pos = last_hyphen_pos;
+                break;
+            }
+            else
+                throw PackageDepSpecError("No version found");
+        }
+
+        /* make sure we've got room for the match */
+        if (! (hyphen_pos + 1 >= s.length()))
+        {
+            if (std::string::npos != std::string("0123456789").find(s.at(hyphen_pos + 1)))
+            {
+                /* can't have an -scm before this */
+                break;
+            }
+            else if (0 == s.compare(hyphen_pos + 1, 3, "scm"))
+            {
+                if (std::string::npos == last_hyphen_pos)
+                {
+                    /* we can still go back further, but we don't have to */
+                    last_hyphen_pos = hyphen_pos;
+                }
+                else
+                {
+                    /* -scm-scm not allowed, use our later match */
+                    hyphen_pos = last_hyphen_pos;
+                    break;
+                }
+            }
+        }
+
+        hyphen_pos = s.rfind('-', hyphen_pos - 1);
+    }
+
+    VersionSpec result(s.substr(hyphen_pos + 1));
+    s.erase(hyphen_pos);
+    return result;
+}
+
+void
+paludis::elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
+{
+    result.version_requirement(VersionRequirement(op, spec));
+}
+
+void
+paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result)
+{
+    if (std::string::npos == s.find('/'))
+        throw PackageDepSpecError("No category/ found in '" + s + "' (cat/pkg is required, a simple pkg is not allowed here)");
+
+    if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
+    {
+        throw PackageDepSpecError("Wildcard '*' not allowed here");
+
+        if (0 != s.compare(s.length() - 2, 2, "/*"))
+            result.package_name_part(PackageNamePart(s.substr(2)));
+    }
+    else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
+    {
+        throw PackageDepSpecError("Wildcard '*' not allowed here");
+
+        result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+    }
+    else
+        result.package(QualifiedPackageName(s));
+}
+
+PartiallyMadePackageDepSpec
+paludis::partial_parse_elike_package_dep_spec(
+        const std::string & ss, const ELikePackageDepSpecOptions & options, const std::tr1::shared_ptr<const PackageID> & id)
+{
+    using namespace std::tr1::placeholders;
+
+    Context context("When parsing elike package dep spec '" + ss + "':");
+
+    bool had_bracket_version_requirements(false);
+
+    return partial_parse_generic_elike_package_dep_spec(ss, GenericELikePackageDepSpecParseFunctions::named_create()
+            (k::check_sanity(), &elike_check_sanity)
+            (k::remove_trailing_square_bracket_if_exists(), std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
+                    _1, _2, options, std::tr1::ref(had_bracket_version_requirements), id))
+            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&elike_remove_trailing_repo_if_exists,
+                    _1, _2, options))
+            (k::remove_trailing_slot_if_exists(), std::tr1::bind(&elike_remove_trailing_slot_if_exists,
+                    _1, _2, options))
+            (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
+            (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1, options))
+            (k::get_remove_trailing_version(), std::tr1::bind(&elike_get_remove_trailing_version, _1))
+            (k::add_version_requirement(), std::tr1::bind(&elike_add_version_requirement, _1, _2, _3))
+            (k::add_package_requirement(), std::tr1::bind(&elike_add_package_requirement, _1, _2))
+            );
 }
 
 PackageDepSpec
