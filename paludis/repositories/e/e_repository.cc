@@ -434,6 +434,7 @@ namespace
     RepositoryName
     fetch_repo_name(const FSEntry & tree_root)
     {
+        bool illegal(false);
         try
         {
             do
@@ -452,6 +453,10 @@ namespace
 
             } while (false);
         }
+        catch (const RepositoryNameError &)
+        {
+            illegal = true;
+        }
         catch (...)
         {
         }
@@ -459,9 +464,14 @@ namespace
         std::string modified_location(tree_root.basename());
         std::replace(modified_location.begin(), modified_location.end(), '/', '-');
 
-        Log::get_instance()->message("e.repo_name.unusable", ll_qa, lc_no_context)
-            << "Couldn't open repo_name file in '" << tree_root << "/profiles/', falling back to generated name 'x-"
-            << modified_location << "' (ignore this message if you have yet to sync this repository).";
+        if (illegal)
+            Log::get_instance()->message("e.repo_name.invalid", ll_qa, lc_no_context)
+                << "repo_name file in '" << tree_root << "/profiles/', specifies an illegal repository name, falling back to generated name 'x-"
+                << modified_location << "'.";
+        else
+            Log::get_instance()->message("e.repo_name.unusable", ll_qa, lc_no_context)
+                << "Couldn't open repo_name file in '" << tree_root << "/profiles/', falling back to generated name 'x-"
+                << modified_location << "' (ignore this message if you have yet to sync this repository).";
 
         return RepositoryName("x-" + modified_location);
     }
