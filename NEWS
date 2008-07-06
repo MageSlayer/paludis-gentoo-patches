@@ -13,7 +13,8 @@ trunk/:
     * Better detection of SCM versions.
 
     * bug fixes: pkg_pretend now behaves correctly with resumes (ticket:604).
-      Better support for Portage config files (ticket:597).
+      Better support for Portage config files (ticket:597). Package dep spec
+      parsing no longer has trailing hyphen issues (ticket:590).
 
     * New Selection + Filter + Generator interface using Environment, replacing
       the old PackageDatabase Query (ticket:559).
