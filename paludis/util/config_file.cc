@@ -591,7 +591,9 @@ KeyValueConfigFile::KeyValueConfigFile(
 
             if (_imp->options[kvcfo_allow_inline_comments] && parser.consume(simple_parser::exact("#") &
                         *simple_parser::any_except("\n")))
-                /* skippity skippity */ ;
+            {
+                /* skippity skippity */
+            }
 
             if (! parser.consume(simple_parser::exact("\n")))
             {
