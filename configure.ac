@@ -269,7 +269,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([std::tr1::unordered_map])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 unordered containers])])
 dnl }}}
 
 dnl {{{ tr1 shared pointers
@@ -284,7 +284,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 shared pointers])])
 dnl }}}
 
 dnl {{{ tr1 type traits
@@ -299,7 +299,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 type traits])])
 dnl }}}
 
 dnl {{{ tr1 binders
@@ -326,7 +326,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
 dnl }}}
 
 need_xml_check=
