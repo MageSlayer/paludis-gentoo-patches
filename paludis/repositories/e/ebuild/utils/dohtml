@@ -72,6 +72,8 @@ parse_args() {
                 doc_prefix="$2"
                 shift
                 ;;
+            */)
+                args=( "${args[@]}" "$1"* );;
             *)
                 args=( "${args[@]}" "$1" ) ;;
         esac
