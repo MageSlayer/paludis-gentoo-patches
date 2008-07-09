@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PALUDIS_HOME=./ \
     ./paludis --config-suffix paludis-build-test -pi asdf 2>&1 \

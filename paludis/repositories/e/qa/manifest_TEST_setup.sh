@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir -p manifest_TEST_dir/repo1 || exit 2

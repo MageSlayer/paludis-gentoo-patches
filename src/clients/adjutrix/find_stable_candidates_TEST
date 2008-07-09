@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ./adjutrix --find-stable-candidates -D find_stable_candidates_TEST_dir/ best | \
     tee find_stable_candidates_TEST_dir/out1.txt

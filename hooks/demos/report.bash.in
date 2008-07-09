@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set et sw=4 sts=4 :
 
 # This hook makes Paludis display a report about vulnerable, masked and unused

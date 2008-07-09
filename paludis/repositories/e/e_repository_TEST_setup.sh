@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir e_repository_TEST_dir || exit 1
@@ -1655,7 +1655,7 @@ DEFAULT_SRC_CONFIGURE_OPTION_WITHS="dormouse"
 src_unpack() {
     mkdir ${S}
     cat <<'END2' > ${S}/configure
-#!/bin/bash
+#!/usr/bin/env bash
 echo "${@}" | grep -q -- '--enable-enabled-hamster' || exit 1
 echo "${@}" | grep -q -- '--disable-gerbil' || exit 2
 echo "${@}" | grep -q -- '--nice-juicy-steak' || exit 3

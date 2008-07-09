@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if /bin/sed --version &>/dev/null ; then
     /bin/sed "$@"

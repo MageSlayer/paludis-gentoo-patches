@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir continue_on_failure_TEST_dir || exit 1

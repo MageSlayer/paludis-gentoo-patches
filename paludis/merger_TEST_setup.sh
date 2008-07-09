@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir merger_TEST_dir || exit 2
