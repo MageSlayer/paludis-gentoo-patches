@@ -1156,10 +1156,8 @@ ERepository::describe_use_flag(const UseFlagName & f,
     {
         std::string expand_sep(stringify((*(*erepository::EAPIData::get_instance()->eapi_from_string(
                                 _imp->params.profile_eapi))[k::supported()])[k::ebuild_options()].use_expand_separator));
-        std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
-        for (FSEntrySequence::ConstIterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
-                p != p_end ; ++p)
-            _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(*p, expand_sep)));
+        std::tr1::shared_ptr<const UseDescFileInfoSequence> use_desc_info(_imp->layout->use_desc_files());
+        _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(use_desc_info, expand_sep)));
     }
 
     std::string result;

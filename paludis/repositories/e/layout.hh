@@ -29,6 +29,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/repositories/e/use_desc.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -124,7 +125,7 @@ namespace paludis
                 virtual std::tr1::shared_ptr<const FSEntrySequence> mirror_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                virtual std::tr1::shared_ptr<const UseDescFileInfoSequence> use_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual FSEntry profiles_base_dir() const

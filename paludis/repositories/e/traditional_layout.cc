@@ -74,7 +74,7 @@ namespace paludis
         std::tr1::shared_ptr<FSEntrySequence> repository_mask_files;
         std::tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
         std::tr1::shared_ptr<FSEntrySequence> mirror_files;
-        std::tr1::shared_ptr<FSEntrySequence> use_desc_dirs;
+        std::tr1::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
         Implementation(const ERepository * const r, const FSEntry & t,
                 std::tr1::shared_ptr<const ERepositoryEntries> e) :
@@ -86,7 +86,7 @@ namespace paludis
             repository_mask_files(new FSEntrySequence),
             profiles_desc_files(new FSEntrySequence),
             mirror_files(new FSEntrySequence),
-            use_desc_dirs(new FSEntrySequence)
+            use_desc_files(new UseDescFileInfoSequence)
         {
         }
     };
@@ -104,14 +104,38 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
         _imp->repository_mask_files->push_back(*master_repository_location() / "profiles" / "package.mask");
         _imp->profiles_desc_files->push_back(*master_repository_location() / "profiles" / "profiles.desc");
         _imp->mirror_files->push_back(*master_repository_location() / "profiles" / "thirdpartymirrors");
-        _imp->use_desc_dirs->push_back(*master_repository_location() / "profiles");
+
+        _imp->use_desc_files->push_back(std::make_pair(*master_repository_location() / "profiles" / "use.desc", ""));
+        _imp->use_desc_files->push_back(std::make_pair(*master_repository_location() / "profiles" / "use.local.desc", ""));
+        FSEntry descs(*master_repository_location() / "profiles" / "desc");
+        if (descs.is_directory_or_symlink_to_directory())
+        {
+            for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+            {
+                if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
+                    continue;
+                _imp->use_desc_files->push_back(std::make_pair(*d, strip_trailing_string(d->basename(), ".desc")));
+            }
+        }
     }
 
     _imp->arch_list_files->push_back(_imp->tree_root / "profiles" / "arch.list");
     _imp->repository_mask_files->push_back(_imp->tree_root / "profiles" / "package.mask");
     _imp->profiles_desc_files->push_back(_imp->tree_root / "profiles" / "profiles.desc");
     _imp->mirror_files->push_back(_imp->tree_root / "profiles" / "thirdpartymirrors");
-    _imp->use_desc_dirs->push_back(_imp->tree_root / "profiles");
+
+    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.desc", ""));
+    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.local.desc", ""));
+    FSEntry descs(_imp->tree_root / "profiles" / "desc");
+    if (descs.is_directory_or_symlink_to_directory())
+    {
+        for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+        {
+            if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
+                continue;
+            _imp->use_desc_files->push_back(std::make_pair(*d, strip_trailing_string(d->basename(), ".desc")));
+        }
+    }
 }
 
 TraditionalLayout::~TraditionalLayout()
@@ -437,10 +461,10 @@ TraditionalLayout::mirror_files() const
     return _imp->mirror_files;
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
-TraditionalLayout::use_desc_dirs() const
+std::tr1::shared_ptr<const UseDescFileInfoSequence>
+TraditionalLayout::use_desc_files() const
 {
-    return _imp->use_desc_dirs;
+    return _imp->use_desc_files;
 }
 
 FSEntry

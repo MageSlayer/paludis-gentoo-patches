@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,12 +22,15 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <utility>
 
 namespace paludis
 {
-    class FSEntry;
+    typedef std::pair<FSEntry, std::string> UseDescFileInfo;
+    typedef Sequence<UseDescFileInfo> UseDescFileInfoSequence;
 
     /**
      * Implements use.desc options for ERepository.
@@ -42,7 +45,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UseDesc(const FSEntry &, const std::string & expand_sep);
+            UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> &, const std::string & expand_sep);
             ~UseDesc();
 
             ///\}
