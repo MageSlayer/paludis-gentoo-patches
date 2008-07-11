@@ -74,6 +74,8 @@ namespace paludis
         std::tr1::shared_ptr<FSEntrySequence> repository_mask_files;
         std::tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
         std::tr1::shared_ptr<FSEntrySequence> mirror_files;
+        std::tr1::shared_ptr<FSEntrySequence> info_packages_files;
+        std::tr1::shared_ptr<FSEntrySequence> info_variables_files;
         std::tr1::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
         Implementation(const ERepository * const r, const FSEntry & t,
@@ -86,6 +88,8 @@ namespace paludis
             repository_mask_files(new FSEntrySequence),
             profiles_desc_files(new FSEntrySequence),
             mirror_files(new FSEntrySequence),
+            info_packages_files(new FSEntrySequence),
+            info_variables_files(new FSEntrySequence),
             use_desc_files(new UseDescFileInfoSequence)
         {
         }
@@ -104,6 +108,7 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
         _imp->repository_mask_files->push_back(*master_repository_location() / "profiles" / "package.mask");
         _imp->profiles_desc_files->push_back(*master_repository_location() / "profiles" / "profiles.desc");
         _imp->mirror_files->push_back(*master_repository_location() / "profiles" / "thirdpartymirrors");
+        _imp->info_variables_files->push_back(*master_repository_location() / "profiles" / "info_vars");
 
         _imp->use_desc_files->push_back(std::make_pair(*master_repository_location() / "profiles" / "use.desc", ""));
         _imp->use_desc_files->push_back(std::make_pair(*master_repository_location() / "profiles" / "use.local.desc", ""));
@@ -123,6 +128,8 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
     _imp->repository_mask_files->push_back(_imp->tree_root / "profiles" / "package.mask");
     _imp->profiles_desc_files->push_back(_imp->tree_root / "profiles" / "profiles.desc");
     _imp->mirror_files->push_back(_imp->tree_root / "profiles" / "thirdpartymirrors");
+    _imp->info_variables_files->push_back(_imp->tree_root / "profiles" / "info_vars");
+    _imp->info_packages_files->push_back(_imp->tree_root / "profiles" / "info_pkgs");
 
     _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.desc", ""));
     _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.local.desc", ""));
@@ -413,16 +420,16 @@ TraditionalLayout::package_ids(const QualifiedPackageName & n) const
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 }
 
-FSEntry
-TraditionalLayout::info_packages_file(const FSEntry & dir) const
+const std::tr1::shared_ptr<const FSEntrySequence>
+TraditionalLayout::info_packages_files() const
 {
-    return dir / "info_pkgs";
+    return _imp->info_packages_files;
 }
 
-FSEntry
-TraditionalLayout::info_variables_file(const FSEntry & dir) const
+const std::tr1::shared_ptr<const FSEntrySequence>
+TraditionalLayout::info_variables_files() const
 {
-    return dir / "info_vars";
+    return _imp->info_variables_files;
 }
 
 FSEntry

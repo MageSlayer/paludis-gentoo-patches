@@ -76,10 +76,10 @@ namespace paludis
                         const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSEntry info_packages_file(const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const FSEntrySequence> info_packages_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSEntry info_variables_file(const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const FSEntrySequence> info_variables_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry package_directory(const QualifiedPackageName &) const

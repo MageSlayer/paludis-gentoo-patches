@@ -1,0 +1,191 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2008 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis/repositories/e/info_metadata_key.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/config_file.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/kc.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/visitor-impl.hh>
+#include <paludis/literal_metadata_key.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_id.hh>
+#include <set>
+#include <algorithm>
+#include <tr1/functional>
+
+using namespace paludis;
+using namespace paludis::erepository;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<InfoVarsMetadataKey>
+    {
+        const std::tr1::shared_ptr<const FSEntrySequence> locations;
+
+        mutable Mutex mutex;
+        mutable std::tr1::shared_ptr<Set<std::string> > value;
+
+        Implementation(const std::tr1::shared_ptr<const FSEntrySequence> & l) :
+            locations(l)
+        {
+        }
+    };
+
+    template <>
+    struct Implementation<InfoPkgsMetadataKey>
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const FSEntrySequence> locations;
+        const std::string eapi;
+
+        mutable Mutex mutex;
+        mutable bool added;
+
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const FSEntrySequence> & l,
+                const std::string & p) :
+            env(e),
+            locations(l),
+            eapi(p),
+            added(false)
+        {
+        }
+    };
+}
+
+InfoVarsMetadataKey::InfoVarsMetadataKey(const std::tr1::shared_ptr<const FSEntrySequence> & f) :
+    MetadataCollectionKey<Set<std::string> >("info_vars", "Variable information names", mkt_internal),
+    PrivateImplementationPattern<InfoVarsMetadataKey>(new Implementation<InfoVarsMetadataKey>(f)),
+    _imp(PrivateImplementationPattern<InfoVarsMetadataKey>::_imp)
+{
+}
+
+InfoVarsMetadataKey::~InfoVarsMetadataKey()
+{
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+InfoVarsMetadataKey::value() const
+{
+    Lock l(_imp->mutex);
+
+    if (_imp->value)
+        return _imp->value;
+    _imp->value.reset(new Set<std::string>);
+
+    for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
+            location != location_end ; ++location)
+    {
+        Context context("When loading info variables file '" + stringify(*location) + "':");
+
+        if (location->is_regular_file_or_symlink_to_regular_file())
+        {
+            LineConfigFile f(*location, LineConfigFileOptions() + lcfo_disallow_continuations);
+            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                    line != line_end ; ++line)
+                _imp->value->insert(*line);
+        }
+    }
+
+    return _imp->value;
+}
+
+InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
+        const std::tr1::shared_ptr<const FSEntrySequence> & f, const std::string & p) :
+    MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
+    PrivateImplementationPattern<InfoPkgsMetadataKey>(new Implementation<InfoPkgsMetadataKey>(e, f, p)),
+    _imp(PrivateImplementationPattern<InfoPkgsMetadataKey>::_imp)
+{
+}
+
+InfoPkgsMetadataKey::~InfoPkgsMetadataKey()
+{
+}
+
+void
+InfoPkgsMetadataKey::need_keys_added() const
+{
+    Lock l(_imp->mutex);
+    if (_imp->added)
+        return;
+
+    std::set<std::string> info_pkgs;
+    for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
+            location != location_end ; ++location)
+    {
+        Context context("When loading info packages file '" + stringify(*location) + "':");
+        _imp->added = true;
+
+        if (location->is_regular_file_or_symlink_to_regular_file())
+        {
+            LineConfigFile p(*location, LineConfigFileOptions() + lcfo_disallow_continuations);
+            std::copy(p.begin(), p.end(), std::inserter(info_pkgs, info_pkgs.begin()));
+        }
+    }
+
+    for (std::set<std::string>::const_iterator i(info_pkgs.begin()), i_end(info_pkgs.end()) ;
+            i != i_end ; ++i)
+    {
+        std::tr1::shared_ptr<MetadataKey> key;
+        std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
+                    generator::Matches(parse_elike_package_dep_spec(*i,
+                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi))
+                             [k::supported()])[k::package_dep_spec_parse_options()],
+                            std::tr1::shared_ptr<const PackageID>())) |
+                    filter::InstalledAtRoot(_imp->env->root()))]);
+
+        if (q->empty())
+            key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
+        else
+        {
+            using namespace std::tr1::placeholders;
+            std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
+            std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
+                    std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
+            key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
+        }
+
+        add_metadata_key(key);
+    }
+}
+
+std::string
+InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> &) const
+{
+    return join(value()->begin(), value()->end(), " ");
+}
+
+template class PrivateImplementationPattern<InfoPkgsMetadataKey>;
+template class PrivateImplementationPattern<InfoVarsMetadataKey>;
+

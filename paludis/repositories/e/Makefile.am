@@ -71,6 +71,7 @@ paludis_repositories_e_include_HEADERS = \
 	exndbam_repository.hh \
 	exndbam_repository-sr.hh \
 	fetch_visitor.hh \
+	info_metadata_key.hh \
 	pretend_fetch_visitor.hh \
 	fix_locked_dependencies.hh \
 	glsa-sr.hh \
@@ -122,6 +123,7 @@ libpaludiserepository_la_SOURCES = \
 	exndbam_repository.cc \
 	exheres_layout.cc \
 	fetch_visitor.cc \
+	info_metadata_key.cc \
 	pretend_fetch_visitor.cc \
 	fix_locked_dependencies.cc \
 	glsa.cc \

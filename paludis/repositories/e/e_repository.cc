@@ -33,6 +33,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
+#include <paludis/repositories/e/info_metadata_key.hh>
 
 #ifdef ENABLE_QA
 #  include <paludis/repositories/e/qa/qa_controller.hh>
@@ -52,10 +53,6 @@
 #include <paludis/mask.hh>
 #include <paludis/qa.hh>
 #include <paludis/elike_package_dep_spec.hh>
-#include <paludis/selection.hh>
-#include <paludis/generator.hh>
-#include <paludis/filter.hh>
-#include <paludis/filtered_generator.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -112,79 +109,6 @@ typedef std::tr1::unordered_map<QualifiedPackageName,
 typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > MirrorMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
-
-namespace
-{
-    class PkgInfoSectionKey :
-        public MetadataSectionKey
-    {
-        private:
-            mutable Mutex _mutex;
-            mutable bool _added;
-
-            const Environment * const _env;
-            const FSEntry _f;
-            const std::string & _p;
-
-        protected:
-            virtual void need_keys_added() const
-            {
-                Lock l(_mutex);
-                if (_added)
-                    return;
-                _added = true;
-
-                // don't inherit from master_repository, just causes clutter
-                std::set<std::string> info_pkgs;
-                if (_f.exists())
-                {
-                    LineConfigFile vars(_f, LineConfigFileOptions() + lcfo_disallow_continuations);
-                    info_pkgs.insert(vars.begin(), vars.end());
-                }
-
-                if (! info_pkgs.empty())
-                {
-                    for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
-                            i_end(info_pkgs.end()) ; i != i_end ; ++i)
-                    {
-                        std::tr1::shared_ptr<MetadataKey> key;
-                        std::tr1::shared_ptr<const PackageIDSequence> q((*_env)[selection::AllVersionsSorted(
-                                    generator::Matches(parse_elike_package_dep_spec(*i,
-                                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(_p))
-                                             [k::supported()])[k::package_dep_spec_parse_options()],
-                                            std::tr1::shared_ptr<const PackageID>())) |
-                                    filter::InstalledAtRoot(_env->root()))]);
-                        if (q->empty())
-                            key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
-                        else
-                        {
-                            using namespace std::tr1::placeholders;
-                            std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
-                            std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
-                                    std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
-                            key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
-                        }
-
-                        add_metadata_key(key);
-                    }
-                }
-            }
-
-        public:
-            PkgInfoSectionKey(const Environment * const e, const FSEntry & f, const std::string & p) :
-                MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
-                _added(false),
-                _env(e),
-                _f(f),
-                _p(p)
-            {
-            }
-
-            ~PkgInfoSectionKey()
-            {
-            }
-    };
-}
 
 namespace paludis
 {
@@ -266,6 +190,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
         std::tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
@@ -335,10 +260,21 @@ namespace paludis
                     "profile_eapi", "profile_eapi", mkt_normal, params.profile_eapi)),
         use_manifest_key(new LiteralMetadataValueKey<std::string> (
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest))),
-        info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
-                std::tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
-                        params.environment, layout->info_packages_file(params.location / "profiles"), params.profile_eapi)) :
-                std::tr1::shared_ptr<MetadataSectionKey>()),
+        info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
+                    layout->info_packages_files()->end(),
+                    std::tr1::bind(std::tr1::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
+                        std::tr1::placeholders::_1)) ?
+                make_shared_ptr(new erepository::InfoPkgsMetadataKey(params.environment, layout->info_packages_files(),
+                        params.profile_eapi)) :
+                std::tr1::shared_ptr<erepository::InfoPkgsMetadataKey>()
+                ),
+        info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
+                    layout->info_variables_files()->end(),
+                    std::tr1::bind(std::tr1::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
+                        std::tr1::placeholders::_1)) ?
+                make_shared_ptr(new erepository::InfoVarsMetadataKey(layout->info_variables_files())) :
+                std::tr1::shared_ptr<erepository::InfoVarsMetadataKey>()
+                ),
         binary_destination_key(new LiteralMetadataValueKey<std::string> (
                     "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination))),
         binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
@@ -537,6 +473,8 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->use_manifest_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
+    if (_imp->info_vars_key)
+        add_metadata_key(_imp->info_vars_key);
     add_metadata_key(_imp->binary_destination_key);
     add_metadata_key(_imp->binary_src_uri_prefix_key);
     add_metadata_key(_imp->binary_keywords);
@@ -1473,12 +1411,6 @@ ERepository::arch_variable() const
             [k::supported()])[k::ebuild_environment_variables()][k::env_arch()];
 }
 
-FSEntry
-ERepository::info_variables_file(const FSEntry & f) const
-{
-    return layout()->info_variables_file(f);
-}
-
 void
 ERepository::need_keys_added() const
 {
@@ -1494,5 +1426,11 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 ERepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+ERepository::info_vars_key() const
+{
+    return _imp->info_vars_key;
 }
 

@@ -166,7 +166,7 @@ namespace paludis
             kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::load_environment, const FSEntry *>,
-            kc::Field<k::info_vars, FSEntry>,
+            kc::Field<k::info_vars, std::tr1::shared_ptr<const Set<std::string> > >,
             kc::Field<k::use_ebuild_file, bool>
                 > EbuildInfoCommandParams;
 

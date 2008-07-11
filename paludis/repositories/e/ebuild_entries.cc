@@ -52,6 +52,7 @@
 #include <paludis/util/kc.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <tr1/functional>
 #include <fstream>
 #include <list>
@@ -777,13 +778,6 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 (k::userpriv(), phase->option("userpriv") && userpriv_ok)
                 (k::builddir(), _imp->params.builddir));
 
-        FSEntry i(_imp->e_repository->layout()->info_variables_file(
-                    _imp->e_repository->params().location / "profiles"));
-
-        if (_imp->e_repository->params().master_repository && ! i.exists())
-            i = _imp->e_repository->params().master_repository->layout()->info_variables_file(
-                    _imp->e_repository->params().master_repository->params().location / "profiles");
-
         EbuildInfoCommandParams info_params(
                 EbuildInfoCommandParams::named_create()
                 (k::use(), use)
@@ -792,7 +786,9 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 (k::root(), stringify(_imp->params.environment->root()))
                 (k::profiles(), _imp->params.profiles)
                 (k::load_environment(), static_cast<const FSEntry *>(0))
-                (k::info_vars(), i)
+                (k::info_vars(), _imp->e_repository->info_vars_key() ?
+                 _imp->e_repository->info_vars_key()->value() :
+                 make_shared_ptr(new const Set<std::string>))
                 (k::use_ebuild_file(), true)
                 );
 
