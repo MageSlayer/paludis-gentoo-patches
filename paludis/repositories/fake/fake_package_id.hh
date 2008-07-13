@@ -177,6 +177,18 @@ namespace paludis
             const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
     };
 
+    class PALUDIS_VISIBLE FakeUnsupportedMask :
+        public UnsupportedMask
+    {
+        public:
+            FakeUnsupportedMask();
+            ~FakeUnsupportedMask();
+
+            char key() const;
+            const std::string description() const;
+            const std::string explanation() const;
+    };
+
     /**
      * A PackageID in a FakeRepository or a FakeInstalledRepository.
      *
@@ -268,6 +280,8 @@ namespace paludis
             virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void invalidate_masks() const;
+
+            void make_unsupported();
 
     };
 }

@@ -350,6 +350,32 @@ FakeUnacceptedMask::unaccepted_key() const
     return _imp->unaccepted_key;
 }
 
+FakeUnsupportedMask::FakeUnsupportedMask()
+{
+}
+
+FakeUnsupportedMask::~FakeUnsupportedMask()
+{
+}
+
+char
+FakeUnsupportedMask::key() const
+{
+    return 'E';
+}
+
+const std::string
+FakeUnsupportedMask::description() const
+{
+    return "Unsupported";
+}
+
+const std::string
+FakeUnsupportedMask::explanation() const
+{
+    return "Marked as unsupported";
+}
+
 namespace paludis
 {
     using namespace std::tr1::placeholders;
@@ -384,6 +410,7 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
 
+        std::tr1::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const FakeRepositoryBase> & r,
@@ -825,6 +852,9 @@ FakePackageID::need_masks_added() const
     std::tr1::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));
     if (breaks_mask)
         add_mask(breaks_mask);
+
+    if (_imp->unsupported_mask)
+        add_mask(_imp->unsupported_mask);
 }
 
 void
@@ -837,6 +867,13 @@ FakePackageID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
+}
+
+void
+FakePackageID::make_unsupported()
+{
+    invalidate_masks();
+    _imp->unsupported_mask.reset(new FakeUnsupportedMask);
 }
 
 namespace
