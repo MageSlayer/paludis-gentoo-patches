@@ -23,13 +23,21 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
+#include <paludis/user_dep_spec.hh>
 #include <tr1/functional>
+#include <tr1/unordered_map>
 #include <string>
+#include <list>
 
 using namespace paludis;
+
+typedef std::tr1::unordered_map<SetName, std::tr1::shared_ptr<const SetSpecTree::ConstItem>, Hash<SetName> > Sets;
 
 namespace paludis
 {
@@ -38,6 +46,7 @@ namespace paludis
     {
         std::tr1::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
+        Sets sets;
 
         Implementation(Environment * const e) :
             package_database(new PackageDatabase(e)),
@@ -117,9 +126,13 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
 }
 
 std::tr1::shared_ptr<SetSpecTree::ConstItem>
-TestEnvironment::local_set(const SetName &) const
+TestEnvironment::local_set(const SetName & s) const
 {
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    Sets::const_iterator i(_imp->sets.find(s));
+    if (_imp->sets.end() == i)
+        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    else
+        return i->second;
 }
 
 uid_t
@@ -193,7 +206,7 @@ TestEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) 
 std::tr1::shared_ptr<SetSpecTree::ConstItem>
 TestEnvironment::world_set() const
 {
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return local_set(SetName("world"));
 }
 
 void
@@ -219,5 +232,32 @@ TestEnvironment::remove_from_world(const SetName &) const
 void
 TestEnvironment::need_keys_added() const
 {
+}
+
+void
+TestEnvironment::add_set(const SetName & s, const std::string & members_str)
+{
+    Context context("When adding set '" + stringify(s) + "' to test environment:");
+
+    std::list<std::string> members;
+    tokenise_whitespace(members_str, std::back_inserter(members));
+
+    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > top(
+            new ConstTreeSequence<SetSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
+    for (std::list<std::string>::const_iterator m(members.begin()), m_end(members.end()) ;
+            m != m_end ; ++m)
+    {
+        try
+        {
+            top->add(make_shared_ptr(new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
+                                    parse_user_package_dep_spec(*m, this, UserPackageDepSpecOptions() + updso_throw_if_set))))));
+        }
+        catch (const GotASetNotAPackageDepSpec &)
+        {
+            top->add(make_shared_ptr(new TreeLeaf<SetSpecTree, NamedSetDepSpec>(make_shared_ptr(new NamedSetDepSpec(SetName(*m))))));
+        }
+    }
+
+    _imp->sets[s] = top;
 }
 
