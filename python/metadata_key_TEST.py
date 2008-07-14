@@ -46,8 +46,8 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.assert_(isinstance(self.ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey))
 
     def test_03_repository(self):
-        self.assertEquals(self.pid.find_metadata("REPOSITORY"), None)
-        self.assert_(isinstance(self.ipid.find_metadata("REPOSITORY"), MetadataStringKey))
+        self.assertEquals(self.pid.find_metadata("REPOSITORIES"), None)
+        self.assert_(isinstance(self.ipid.find_metadata("REPOSITORIES"), MetadataStringIterableKey))
 
     def test_04_keywords(self):
         self.assert_(isinstance(self.pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey))
