@@ -25,7 +25,9 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/slot_requirement.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <tr1/functional>
 #include <algorithm>
 
@@ -107,9 +109,19 @@ paludis::match_package(
                 ;
         }
 
-    if (spec.repository_ptr())
-        if (*spec.repository_ptr() != entry.repository()->name())
+    if (spec.in_repository_ptr())
+        if (*spec.in_repository_ptr() != entry.repository()->name())
             return false;
+
+    if (spec.from_repository_ptr())
+    {
+        if (! entry.from_repositories_key())
+            return false;
+
+        if (entry.from_repositories_key()->value()->end() == entry.from_repositories_key()->value()->find(
+                    stringify(*spec.from_repository_ptr())))
+            return false;
+    }
 
     if (spec.slot_requirement_ptr())
     {
