@@ -1639,16 +1639,23 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             {
                 output_stream() << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*environment(), stringify(e.query()), filter::SupportsAction<InstallAction>());
+                try
+                {
+                    FuzzyCandidatesFinder f(*environment(), stringify(e.query()), filter::SupportsAction<InstallAction>());
 
-                if (f.begin() == f.end())
-                    output_stream() << "No suggestions found." << endl;
-                else
-                    output_stream() << "Suggestions:" << endl;
+                    if (f.begin() == f.end())
+                        output_stream() << "No suggestions found." << endl;
+                    else
+                        output_stream() << "Suggestions:" << endl;
 
-                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
-                        ; c != c_end ; ++c)
-                    output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+                    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
+                            ; c != c_end ; ++c)
+                        output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+                }
+                catch (const PackageDepSpecError &)
+                {
+                    output_stream() << "Query too complicated or confusing to make suggestions." << endl;
+                }
             }
         }
         else

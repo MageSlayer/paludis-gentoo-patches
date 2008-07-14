@@ -385,7 +385,7 @@ InstallTask::_add_target(const std::string & target)
     try
     {
         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
-                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set,
+                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<InstallAction>())));
 
         if (_imp->had_set_targets)
@@ -394,9 +394,38 @@ InstallTask::_add_target(const std::string & target)
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type = dl_target_package;
 
-        spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-        _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        if (spec->package_ptr())
+        {
+            /* no wildcards */
+            spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        }
+        else
+        {
+            std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
+                        generator::Matches(*spec) | filter::SupportsAction<InstallAction>())]);
+
+            if (names->empty())
+            {
+                /* no match. we'll get an error from this later anyway. */
+                spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            }
+            else
+                for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
+                        i != i_end ; ++i)
+                {
+                    PartiallyMadePackageDepSpec p(*spec);
+                    p.package((*i)->name());
+                    std::tr1::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
+                    specn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                    _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                new TreeLeaf<SetSpecTree, PackageDepSpec>(specn)));
+                }
+        }
+
         _imp->raw_targets.push_back(stringify(*spec));
     }
     catch (const GotASetNotAPackageDepSpec &)
