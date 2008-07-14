@@ -328,20 +328,12 @@ namespace
      * Our installed time
      */
     /*
-     * Document-method: source_origin_key
+     * Document-method: from_repositories_key
      *
      * call-seq:
-     *     source_origin_key -> MetadataStringKey
+     *     from_repositories_key -> MetadataCollectionKey
      *
      * Our source origin repository
-     */
-    /*
-     * Document-method: binary_origin_key
-     *
-     * call-seq:
-     *     binary_origin_key -> MetadataStringKey
-     *
-     * Our binary origin repository
      */
     /*
      * Document-method: virtual_for_key
@@ -467,10 +459,8 @@ namespace
         rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
                         &PackageID::contents_key>::fetch)), 0);
         rb_define_method(c_package_id, "installed_time_key", RUBY_FUNC_CAST((&KeyValue<MetadataTimeKey,&PackageID::installed_time_key>::fetch)), 0);
-        rb_define_method(c_package_id, "source_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
-                        &PackageID::source_origin_key>::fetch)), 0);
-        rb_define_method(c_package_id, "binary_origin_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
-                        &PackageID::binary_origin_key>::fetch)), 0);
+        rb_define_method(c_package_id, "from_repositories_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<Set<std::string> >,
+                        &PackageID::from_repositories_key>::fetch)), 0);
         rb_define_method(c_package_id, "fs_location_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataValueKey<FSEntry>, &PackageID::fs_location_key>::fetch)), 0);
         rb_define_method(c_package_id, "fetches_key", RUBY_FUNC_CAST((

@@ -113,8 +113,7 @@ module Paludis
                 :keywords_key => MetadataKeywordNameSetKey, :iuse_key => MetadataIUseFlagSetKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
-                :source_origin_key => MetadataStringKey, :binary_origin_key => MetadataStringKey,
-                :masks => Array
+                :from_repositories_key => Array, :masks => Array
             }.each_pair do | method, type |
 
                 assert_respond_to pid_testrepo, method
@@ -237,14 +236,6 @@ module Paludis
             assert_nil pid_testrepo.installed_time_key
         end
 
-        def test_source_origin_key
-            assert_nil pid_testrepo.source_origin_key
-        end
-
-        def test_binary_origin_key
-            assert_nil pid_testrepo.binary_origin_key
-        end
-
         def test_keywords_key
             assert_kind_of MetadataKeywordNameSetKey, pid_testrepo.keywords_key
             assert_kind_of Array, pid_testrepo.keywords_key.value
@@ -331,13 +322,9 @@ module Paludis
             assert_kind_of Time, pid_installed.installed_time_key.value
         end
 
-        def test_source_origin_key
-            assert_kind_of MetadataStringKey, pid_installed.source_origin_key
-            assert_equal 'origin_test', pid_installed.source_origin_key.value
-        end
-
-        def test_binary_origin_key
-            assert_nil pid_installed.binary_origin_key
+        def test_from_repositories_key
+            assert_kind_of MetadataStringSetKey, pid_installed.from_repositories_key
+            assert_equal ['origin_test'], pid_installed.from_repositories_key.value
         end
 
         def test_keywords_key
