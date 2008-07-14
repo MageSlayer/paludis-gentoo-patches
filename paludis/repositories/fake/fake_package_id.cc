@@ -664,18 +664,11 @@ FakePackageID::installed_time_key() const
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-FakePackageID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+FakePackageID::from_repositories_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-FakePackageID::binary_origin_key() const
-{
-    need_keys_added();
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 void
