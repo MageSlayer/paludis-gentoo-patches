@@ -294,16 +294,10 @@ UnavailableID::installed_time_key() const
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-UnavailableID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+UnavailableID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-UnavailableID::binary_origin_key() const
-{
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 template class PrivateImplementationPattern<UnavailableID>;
