@@ -66,9 +66,10 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.get_depspecs()
         self.assertEqual(str(self.pds.package), "foo/bar")
 
-    def test_06_repository(self):
+    def test_06_in_from_repository(self):
         self.get_depspecs()
-        self.assertEqual(str(self.pds.repository), "testrepo")
+        self.assertEqual(str(self.pds.in_repository), "testrepo")
+        self.assertEqual(self.pds.from_repository, None)
 
     def test_07_version_requirements(self):
         self.get_depspecs()
