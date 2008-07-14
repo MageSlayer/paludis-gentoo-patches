@@ -302,16 +302,23 @@ namespace
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
+                try
+                {
+                    FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
 
-                if (f.begin() == f.end())
-                    cerr << "No suggestions found." << endl;
-                else
-                    cerr << "Suggestions:" << endl;
+                    if (f.begin() == f.end())
+                        cerr << "No suggestions found." << endl;
+                    else
+                        cerr << "Suggestions:" << endl;
 
-                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
-                         c_end(f.end()) ; c != c_end ; ++c)
-                    cerr << "  * " << colour(cl_package_name, *c) << endl;
+                    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                             c_end(f.end()) ; c != c_end ; ++c)
+                        cerr << "  * " << colour(cl_package_name, *c) << endl;
+                }
+                catch (const PackageDepSpecError &)
+                {
+                    cerr << "Query too complicated or confusing to make suggestions." << endl;
+                }
             }
 
             cerr << endl;
