@@ -193,6 +193,35 @@ namespace
             s.erase(slot_p);
         }
     }
+
+    void
+    user_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
+    {
+        std::string::size_type repo_p;
+        if (std::string::npos == ((repo_p = s.rfind("::"))))
+            return;
+
+        std::string repo_name(s.substr(repo_p + 2));
+        s.erase(repo_p);
+
+        std::string::size_type arrow_p(repo_name.find("->"));
+        if (std::string::npos == arrow_p)
+            result.in_repository(RepositoryName(repo_name));
+        else
+        {
+            std::string from_repository(repo_name.substr(0, arrow_p));
+            std::string to_repository(repo_name.substr(arrow_p + 2));
+
+            if (from_repository.empty() && to_repository.empty())
+                throw PackageDepSpecError("::-> requires either a from or a to repository");
+
+            if (! to_repository.empty())
+                result.in_repository(RepositoryName(to_repository));
+
+            if (! from_repository.empty())
+                result.from_repository(RepositoryName(from_repository));
+        }
+    }
 }
 
 PackageDepSpec
@@ -208,8 +237,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             (k::check_sanity(), std::tr1::bind(&user_check_sanity, _1, options, env))
             (k::remove_trailing_square_bracket_if_exists(), std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
                     _1, _2, std::tr1::ref(had_bracket_version_requirements)))
-            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&elike_remove_trailing_repo_if_exists,
-                    _1, _2, ELikePackageDepSpecOptions() + epdso_allow_repository_deps))
+            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2))
             (k::remove_trailing_slot_if_exists(), std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2))
             (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
             (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1,
