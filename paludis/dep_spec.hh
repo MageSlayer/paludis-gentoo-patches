@@ -309,6 +309,7 @@ namespace paludis
 
             PartiallyMadePackageDepSpec();
             ~PartiallyMadePackageDepSpec();
+            PartiallyMadePackageDepSpec(const PackageDepSpec &);
             PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec &);
 
             ///\}
@@ -479,6 +480,11 @@ namespace paludis
              * Fetch a copy of ourself without additional requirements.
              */
             std::tr1::shared_ptr<PackageDepSpec> without_additional_requirements() const;
+
+            /**
+             * Access to our data.
+             */
+            std::tr1::shared_ptr<const PackageDepSpecData> data() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
     };

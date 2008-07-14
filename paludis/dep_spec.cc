@@ -600,6 +600,12 @@ PackageDepSpec::_as_string() const
     return _imp->data->as_string();
 }
 
+std::tr1::shared_ptr<const PackageDepSpecData>
+PackageDepSpec::data() const
+{
+    return _imp->data;
+}
+
 AdditionalPackageDepSpecRequirement::~AdditionalPackageDepSpecRequirement()
 {
 }
@@ -615,20 +621,41 @@ namespace
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
-        std::tr1::shared_ptr<QualifiedPackageName> package;
-        std::tr1::shared_ptr<PackageNamePart> package_name_part;
-        std::tr1::shared_ptr<CategoryNamePart> category_name_part;
+        std::tr1::shared_ptr<const QualifiedPackageName> package;
+        std::tr1::shared_ptr<const PackageNamePart> package_name_part;
+        std::tr1::shared_ptr<const CategoryNamePart> category_name_part;
         std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<RepositoryName> from_repository;
-        std::tr1::shared_ptr<RepositoryName> in_repository;
+        std::tr1::shared_ptr<const RepositoryName> from_repository;
+        std::tr1::shared_ptr<const RepositoryName> in_repository;
         std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
 
         PartiallyMadePackageDepSpecData() :
             PackageDepSpecData(),
             version_requirements_mode_v(vr_and)
         {
+        }
+
+        PartiallyMadePackageDepSpecData(const PackageDepSpecData & other) :
+            PackageDepSpecData(other),
+            package(other.package_ptr()),
+            package_name_part(other.package_name_part_ptr()),
+            category_name_part(other.category_name_part_ptr()),
+            version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
+            version_requirements_mode_v(other.version_requirements_mode()),
+            slot(other.slot_requirement_ptr()),
+            from_repository(other.from_repository_ptr()),
+            in_repository(other.in_repository_ptr()),
+            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0)
+        {
+            if (version_requirements)
+                std::copy(other.version_requirements_ptr()->begin(), other.version_requirements_ptr()->end(),
+                        version_requirements->back_inserter());
+
+            if (additional_requirements)
+                std::copy(other.additional_requirements_ptr()->begin(), other.additional_requirements_ptr()->end(),
+                        additional_requirements->back_inserter());
         }
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecData & other) :
@@ -826,6 +853,11 @@ namespace paludis
             data(new PartiallyMadePackageDepSpecData(*other.data))
         {
         }
+
+        Implementation(const PackageDepSpec & other) :
+            data(new PartiallyMadePackageDepSpecData(*other.data()))
+        {
+        }
     };
 }
 
@@ -836,6 +868,11 @@ PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec() :
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec & other) :
     PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(*other._imp.get()))
+{
+}
+
+PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PackageDepSpec & other) :
+    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(other))
 {
 }
 
