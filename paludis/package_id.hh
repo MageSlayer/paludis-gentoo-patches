@@ -257,16 +257,11 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const = 0;
 
             /**
-             * The source_origin_key, if non-zero, contains a string describing
-             * the source repository whence a package originated.
+             * The from_repositories key, if non-zero, contains the set of repositories
+             * that the ID is 'from'. An ID can be 'from' multiple repositories if, for
+             * example, it was built via a binary package.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > source_origin_key() const = 0;
-
-            /**
-             * The binary_origin_key, if non-zero, contains a string describing
-             * the binary repository whence a package originated.
-             */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_origin_key() const = 0;
+            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const = 0;
 
             /**
              * The fs_location_key, if non-zero, indicates the filesystem
