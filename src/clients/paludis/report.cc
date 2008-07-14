@@ -24,7 +24,9 @@
 #include <paludis/mask.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/join.hh>
 #include <iostream>
 
 /** \file
@@ -58,11 +60,11 @@ namespace
             virtual void on_report_check_package_pre(const QualifiedPackageName & p);
             virtual void on_report_package_success(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_failure_pre(const std::tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id, const std::tr1::shared_ptr<const PackageID> & origin);
+            virtual void on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id, const std::tr1::shared_ptr<const PackageIDSequence> & origin);
             virtual void on_report_package_is_vulnerable_pre(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_vulnerable(const std::tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag);
             virtual void on_report_package_is_vulnerable_post(const std::tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> & id, const RepositoryName & repo_name);
+            virtual void on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_unused(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_failure_post(const std::tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_check_package_post(const QualifiedPackageName & p);
@@ -98,24 +100,33 @@ namespace
 
     void
     OurReportTask::on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const PackageID> & origin)
+            const std::tr1::shared_ptr<const PackageIDSequence> & origins)
     {
         cout << endl << "    Masked by: ";
 
-        bool comma(false);
-        for (PackageID::MasksConstIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
-                m != m_end ; ++m)
+        bool outer_comma(false);
+        for (PackageIDSequence::ConstIterator o(origins->begin()), o_end(origins->end()) ;
+                o != o_end ; ++o)
         {
-            if (comma)
-                cout << ", ";
+            if (outer_comma)
+                cout << "; ";
 
-            MaskDisplayer d(env, id, true);
-            (*m)->accept(d);
-            cout << d.result();
+            bool comma(false);
+            for (PackageID::MasksConstIterator m((*o)->begin_masks()), m_end((*o)->end_masks()) ;
+                    m != m_end ; ++m)
+            {
+                if (comma)
+                    cout << ", ";
 
-            comma = true;
+                MaskDisplayer d(env, id, true);
+                (*m)->accept(d);
+                cout << d.result();
+
+                comma = true;
+            }
+            cout << " in '" << (*o)->repository()->name() << "'";
+            outer_comma = true;
         }
-        cout << " in its original repository '" << origin->repository()->name() << "'";
         ++_n_errors;
     }
 
@@ -139,10 +150,11 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> &,
-            const RepositoryName & repo_name)
+    OurReportTask::on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> & id)
     {
-        cout << endl << "    No longer exists in its original repository '" << repo_name << "'";
+        cout << endl << "    No longer exists in original repositories '" <<
+            join(id->from_repositories_key()->value()->begin(), id->from_repositories_key()->value()->end(),
+                    "', '") << "'";
         ++_n_errors;
     }
 
