@@ -208,7 +208,7 @@ paludis::elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePack
                 << "Repository dependencies not safe for use here";
     }
 
-    result.repository(RepositoryName(s.substr(repo_p + 2)));
+    result.in_repository(RepositoryName(s.substr(repo_p + 2)));
     s.erase(repo_p);
 }
 
