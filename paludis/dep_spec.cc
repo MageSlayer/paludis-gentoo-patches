@@ -531,9 +531,15 @@ PackageDepSpec::slot_requirement_ptr() const
 }
 
 std::tr1::shared_ptr<const RepositoryName>
-PackageDepSpec::repository_ptr() const
+PackageDepSpec::from_repository_ptr() const
 {
-    return _imp->data->repository_ptr();
+    return _imp->data->from_repository_ptr();
+}
+
+std::tr1::shared_ptr<const RepositoryName>
+PackageDepSpec::in_repository_ptr() const
+{
+    return _imp->data->in_repository_ptr();
 }
 
 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
@@ -567,8 +573,11 @@ PackageDepSpec::without_additional_requirements() const
     if (slot_requirement_ptr())
         result.slot_requirement(slot_requirement_ptr());
 
-    if (repository_ptr())
-        result.repository(*repository_ptr());
+    if (from_repository_ptr())
+        result.from_repository(*from_repository_ptr());
+
+    if (in_repository_ptr())
+        result.in_repository(*in_repository_ptr());
 
     return make_shared_ptr(new PackageDepSpec(result));
 }
@@ -612,7 +621,8 @@ namespace
         std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<RepositoryName> repository;
+        std::tr1::shared_ptr<RepositoryName> from_repository;
+        std::tr1::shared_ptr<RepositoryName> in_repository;
         std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
 
         PartiallyMadePackageDepSpecData() :
@@ -629,7 +639,8 @@ namespace
             version_requirements(other.version_requirements),
             version_requirements_mode_v(other.version_requirements_mode_v),
             slot(other.slot),
-            repository(other.repository),
+            from_repository(other.from_repository),
+            in_repository(other.in_repository),
             additional_requirements(other.additional_requirements)
         {
         }
@@ -684,8 +695,13 @@ namespace
 
             if (slot_requirement_ptr())
                 s << stringify(*slot_requirement_ptr());
-            if (repository_ptr())
-                s << "::" << *repository_ptr();
+
+            if (in_repository_ptr() && from_repository_ptr())
+                s << "::" << *from_repository_ptr() << "->" << *in_repository_ptr();
+            else if (in_repository_ptr())
+                s << "::" << *in_repository_ptr();
+            else if (from_repository_ptr())
+                s << "::" << *from_repository_ptr() << "->";
 
             if (version_requirements_ptr())
             {
@@ -777,9 +793,14 @@ namespace
             return slot;
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
         {
-            return repository;
+            return from_repository;
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        {
+            return in_repository;
         }
 
         virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
@@ -837,9 +858,16 @@ PartiallyMadePackageDepSpec::slot_requirement(const std::tr1::shared_ptr<const S
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::repository(const RepositoryName & repo)
+PartiallyMadePackageDepSpec::from_repository(const RepositoryName & repo)
 {
-   _imp->data->repository.reset(new RepositoryName(repo));
+   _imp->data->from_repository.reset(new RepositoryName(repo));
+   return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::in_repository(const RepositoryName & repo)
+{
+   _imp->data->in_repository.reset(new RepositoryName(repo));
    return *this;
 }
 
