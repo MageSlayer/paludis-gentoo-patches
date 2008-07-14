@@ -150,7 +150,6 @@ EInstalledRepositoryID::need_keys_added() const
         return;
     _imp->has_keys = true;
 
-
     // fs_location key could have been loaded by the ::fs_location_key() already. keep this
     // at the top, other keys use it.
     if (! _imp->fs_location)
