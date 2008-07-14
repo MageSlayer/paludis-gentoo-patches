@@ -73,6 +73,29 @@ ConsoleQueryTask::~ConsoleQueryTask()
 void
 ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
 {
+    /* we might be wildcarded. */
+    if (! a.package_ptr())
+    {
+        std::tr1::shared_ptr<const PackageIDSequence> entries(
+                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a))]);
+        if (entries->empty())
+            throw NoSuchPackageError(stringify(a));
+
+        for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
+                i != i_end ; ++i)
+        {
+            PartiallyMadePackageDepSpec p(a);
+            p.package((*i)->name());
+            show_one(p, display_entry);
+        }
+    }
+    else
+        show_one(a, display_entry);
+}
+
+void
+ConsoleQueryTask::show_one(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
+{
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::tr1::shared_ptr<const PackageIDSequence>

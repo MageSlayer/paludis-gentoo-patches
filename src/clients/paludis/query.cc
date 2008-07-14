@@ -131,7 +131,7 @@ void do_one_query(
     try
     {
         do_one_package_query(env, masks_to_explain, make_shared_ptr(new PackageDepSpec(
-                        parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_throw_if_set))));
+                        parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards))));
     }
     catch (const GotASetNotAPackageDepSpec &)
     {
@@ -186,16 +186,23 @@ int do_query(std::tr1::shared_ptr<Environment> env)
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), filter::All());
+                try
+                {
+                    FuzzyCandidatesFinder f(*env, e.name(), filter::All());
 
-                if (f.begin() == f.end())
-                    cerr << "No suggestions found." << endl;
-                else
-                    cerr << "Suggestions:" << endl;
+                    if (f.begin() == f.end())
+                        cerr << "No suggestions found." << endl;
+                    else
+                        cerr << "Suggestions:" << endl;
 
-                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
-                         c_end(f.end()) ; c != c_end ; ++c)
-                    cerr << "  * " << colour(cl_package_name, *c) << endl;
+                    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                             c_end(f.end()) ; c != c_end ; ++c)
+                        cerr << "  * " << colour(cl_package_name, *c) << endl;
+                }
+                catch (const PackageDepSpecError &)
+                {
+                    cerr << "Query too complicated or confusing to make suggestions." << endl;
+                }
             }
 
             cerr << endl;
