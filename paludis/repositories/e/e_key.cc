@@ -959,10 +959,19 @@ EInheritedKey::value() const
     return _imp->value;
 }
 
-std::string
-EInheritedKey::pretty_print_flat(const Formatter<std::string> &) const
+namespace
 {
-    return join(value()->begin(), value()->end(), " ");
+    std::string format_string(const std::string & i, const Formatter<std::string> & f)
+    {
+        return f.format(i, format::Plain());
+    }
+}
+
+std::string
+EInheritedKey::pretty_print_flat(const Formatter<std::string> & f) const
+{
+    using namespace std::tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
 }
 
 namespace paludis

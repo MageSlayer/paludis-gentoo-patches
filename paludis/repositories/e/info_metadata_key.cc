@@ -40,6 +40,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/formatter.hh>
 #include <set>
 #include <algorithm>
 #include <tr1/functional>
@@ -180,10 +181,19 @@ InfoPkgsMetadataKey::need_keys_added() const
     }
 }
 
-std::string
-InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> &) const
+namespace
 {
-    return join(value()->begin(), value()->end(), " ");
+    std::string format_string(const std::string & i, const Formatter<std::string> & f)
+    {
+        return f.format(i, format::Plain());
+    }
+}
+
+std::string
+InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> & f) const
+{
+    using namespace std::tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
 }
 
 template class PrivateImplementationPattern<InfoPkgsMetadataKey>;
