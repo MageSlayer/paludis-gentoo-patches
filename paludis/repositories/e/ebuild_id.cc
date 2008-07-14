@@ -584,16 +584,10 @@ EbuildID::installed_time_key() const
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-EbuildID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-EbuildID::binary_origin_key() const
-{
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
