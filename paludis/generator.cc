@@ -34,6 +34,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <tr1/functional>
 
@@ -121,12 +122,12 @@ Generator::as_string() const
 
 namespace
 {
-    struct RepositoryGeneratorHandler :
+    struct InRepositoryGeneratorHandler :
         AllGeneratorHandlerBase
     {
         const RepositoryName name;
 
-        RepositoryGeneratorHandler(const RepositoryName & n) :
+        InRepositoryGeneratorHandler(const RepositoryName & n) :
             name(n)
         {
         }
@@ -144,6 +145,48 @@ namespace
         virtual std::string as_string() const
         {
             return "packages with repository " + stringify(name);
+        }
+    };
+
+    struct FromRepositoryGeneratorHandler :
+        AllGeneratorHandlerBase
+    {
+        const RepositoryName name;
+
+        FromRepositoryGeneratorHandler(const RepositoryName & n) :
+            name(n)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
+                const std::tr1::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
+                    r != r_end ; ++r)
+            {
+                for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
+                        q != q_end ; ++q)
+                {
+                    std::tr1::shared_ptr<const PackageIDSequence> id(
+                            env->package_database()->fetch_repository(*r)->package_ids(*q));
+                    for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
+                            i != i_end ; ++i)
+                        if ((*i)->from_repositories_key() && ((*i)->from_repositories_key()->value()->end() !=
+                                    (*i)->from_repositories_key()->value()->find(stringify(name))))
+                            result->insert(*i);
+                }
+            }
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "packages originally from repository " + stringify(name);
         }
     };
 
@@ -244,12 +287,12 @@ namespace
         virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env) const
         {
-            if (! spec.repository_ptr())
+            if (! spec.in_repository_ptr())
                 return AllGeneratorHandlerBase::repositories(env);
 
             std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
-            if (env->package_database()->has_repository_named(*spec.repository_ptr()))
-                result->insert(*spec.repository_ptr());
+            if (env->package_database()->has_repository_named(*spec.in_repository_ptr()))
+                result->insert(*spec.in_repository_ptr());
 
             return result;
         }
@@ -505,8 +548,13 @@ generator::All::All() :
 {
 }
 
-generator::Repository::Repository(const RepositoryName & n) :
-    Generator(make_shared_ptr(new RepositoryGeneratorHandler(n)))
+generator::InRepository::InRepository(const RepositoryName & n) :
+    Generator(make_shared_ptr(new InRepositoryGeneratorHandler(n)))
+{
+}
+
+generator::FromRepository::FromRepository(const RepositoryName & n) :
+    Generator(make_shared_ptr(new FromRepositoryGeneratorHandler(n)))
 {
 }
 
