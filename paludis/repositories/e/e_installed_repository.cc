@@ -409,20 +409,28 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
 
         /* try to find an info_vars file from the original repo */
         std::tr1::shared_ptr<const Set<std::string> > i;
-        if (id->source_origin_key())
+        if (id->from_repositories_key())
         {
-            RepositoryName rn(id->source_origin_key()->value());
-            if (_imp->params.environment->package_database()->has_repository_named(rn))
+            for (Set<std::string>::ConstIterator o(id->from_repositories_key()->value()->begin()),
+                    o_end(id->from_repositories_key()->value()->end()) ;
+                    o != o_end ; ++o)
             {
-                const std::tr1::shared_ptr<const Repository> r(
-                        _imp->params.environment->package_database()->fetch_repository(rn));
-                Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
-                if (r->end_metadata() != m)
+                RepositoryName rn(*o);
+                if (_imp->params.environment->package_database()->has_repository_named(rn))
                 {
-                    const MetadataCollectionKey<Set<std::string> > * const mm(
-                            visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
-                    if (mm)
-                        i = mm->value();
+                    const std::tr1::shared_ptr<const Repository> r(
+                            _imp->params.environment->package_database()->fetch_repository(rn));
+                    Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
+                    if (r->end_metadata() != m)
+                    {
+                        const MetadataCollectionKey<Set<std::string> > * const mm(
+                                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                        if (mm)
+                        {
+                            i = mm->value();
+                            break;
+                        }
+                    }
                 }
             }
         }
