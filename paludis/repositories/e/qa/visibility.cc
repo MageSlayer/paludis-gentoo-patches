@@ -132,8 +132,8 @@ namespace
                     pp.package(*v->second->package_ptr());
                     if (orig_p.slot_requirement_ptr())
                         pp.slot_requirement(orig_p.slot_requirement_ptr());
-                    if (orig_p.repository_ptr())
-                        pp.repository(*orig_p.repository_ptr());
+                    if (orig_p.in_repository_ptr())
+                        pp.in_repository(*orig_p.in_repository_ptr());
 
                     local_p.reset(new PackageDepSpec(pp));
                     local_p->set_tag(orig_p.tag());

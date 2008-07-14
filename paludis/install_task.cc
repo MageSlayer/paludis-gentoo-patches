@@ -435,7 +435,7 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
                 .package(target->name())
                 .version_requirement(VersionRequirement(vo_equal, target->version()))
                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
-                .repository(target->repository()->name())));
+                .in_repository(target->repository()->name())));
 
     spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
     _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -720,7 +720,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 generator::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .repository(dep->destination->name())) |
+                    .in_repository(dep->destination->name())) |
                 filter::SupportsAction<UninstallAction>())];
 
     // don't clean the thing we just installed

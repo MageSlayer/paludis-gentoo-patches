@@ -47,7 +47,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
     std::tr1::shared_ptr<const PackageIDSequence> packages((*_env)[selection::AllVersionsGroupedBySlot(
                 generator::Matches(make_package_dep_spec()
                     .package(package)
-                    .repository(_repo->name()))
+                    .in_repository(_repo->name()))
                 )]);
 
     SlotName old_slot("I_am_a_slot");

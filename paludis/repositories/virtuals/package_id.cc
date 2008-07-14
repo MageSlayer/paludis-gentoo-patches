@@ -65,7 +65,7 @@ namespace paludis
                                 .package(v->name())
                                 .version_requirement(VersionRequirement(vo_equal, v->version()))
                                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
-                                .repository(v->repository()->name()))))
+                                .in_repository(v->repository()->name()))))
                     :
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
                                 make_package_dep_spec()

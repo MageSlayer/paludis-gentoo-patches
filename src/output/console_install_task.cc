@@ -364,7 +364,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(
                 generator::Matches(repo ?
-                    make_package_dep_spec().package(d.package_id->name()).repository(*repo) :
+                    make_package_dep_spec().package(d.package_id->name()).in_repository(*repo) :
                     make_package_dep_spec().package(d.package_id->name())))]);
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted(
@@ -372,7 +372,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                     make_package_dep_spec()
                     .package(d.package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
-                    .repository(*repo) :
+                    .in_repository(*repo) :
                     make_package_dep_spec()
                     .package(d.package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
