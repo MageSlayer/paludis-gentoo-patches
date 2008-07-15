@@ -107,6 +107,13 @@ namespace paludis
             public:
                 And(const Filter &, const Filter &);
         };
+
+        class PALUDIS_VISIBLE Slot :
+            public Filter
+        {
+            public:
+                Slot(const SlotName &);
+        };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

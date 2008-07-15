@@ -34,6 +34,7 @@ namespace paludis
         class NotMasked;
         class InstalledAtRoot;
         class And;
+        class Slot;
     }
 
     std::ostream & operator<< (std::ostream &, const Filter &)
