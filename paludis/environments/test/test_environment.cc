@@ -250,7 +250,7 @@ TestEnvironment::add_set(const SetName & s, const std::string & members_str)
         try
         {
             top->add(make_shared_ptr(new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                    parse_user_package_dep_spec(*m, this, UserPackageDepSpecOptions() + updso_throw_if_set))))));
+                                    parse_user_package_dep_spec(*m, this, UserPackageDepSpecOptions() + updso_throw_if_set + updso_no_disambiguation))))));
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
