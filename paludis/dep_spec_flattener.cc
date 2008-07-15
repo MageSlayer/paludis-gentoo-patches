@@ -21,6 +21,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/environment.hh>
+#include <paludis/repository.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
@@ -125,16 +126,10 @@ dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::vis
     std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(f->_imp->env->set(s.name()));
 
     if (! set)
-    {
-        Log::get_instance()->message("flattener.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
-        return;
-    }
+        throw NoSuchSetError(stringify(s.name()));
 
     if (! this->_imp->recursing_sets.insert(s.name()).second)
-    {
-        Log::get_instance()->message("flattener.recursive_set", ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
-        return;
-    }
+        throw RecursivelyDefinedSetError(stringify(s.name()));
 
     set->accept(*f);
 
