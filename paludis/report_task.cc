@@ -222,7 +222,7 @@ ReportTask::execute()
                         }
                     }
 
-                    bool is_masked(origins && origins->end() == std::find_if(origins->begin(),
+                    bool is_masked(origins && origins->end() != std::find_if(origins->begin(),
                                 origins->end(), std::tr1::bind(std::tr1::mem_fn(&PackageID::masked),
                                     std::tr1::placeholders::_1)));
                     bool is_vulnerable(false);
