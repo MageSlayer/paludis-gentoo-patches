@@ -87,7 +87,6 @@ namespace paludis
     struct Implementation<UninstallTask>
     {
         Environment * const env;
-        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::list<std::tr1::shared_ptr<const PackageDepSpec> > targets;
@@ -105,7 +104,6 @@ namespace paludis
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
-            uninstall_options(false),
             pretend(false),
             preserve_world(false),
             all_versions(false),
@@ -133,12 +131,6 @@ void
 UninstallTask::set_pretend(const bool v)
 {
     _imp->pretend = v;
-}
-
-void
-UninstallTask::set_no_config_protect(const bool v)
-{
-    _imp->uninstall_options[k::no_config_protect()] = v;
 }
 
 void
@@ -367,7 +359,7 @@ UninstallTask::execute()
 
         try
         {
-            UninstallAction uninstall_action(_imp->uninstall_options);
+            UninstallAction uninstall_action;
             i->package_id->perform_action(uninstall_action);
         }
         catch (const UninstallActionError & e)

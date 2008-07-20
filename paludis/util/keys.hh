@@ -28,7 +28,6 @@ namespace paludis
     {
         typedef kc::Key<1> fetch_unneeded;
         typedef kc::Key<2> safe_resume;
-        typedef kc::Key<3> no_config_protect;
         typedef kc::Key<4> debug_build;
         typedef kc::Key<5> checks;
         typedef kc::Key<6> destination;
@@ -131,7 +130,6 @@ namespace paludis
         typedef kc::Key<102> tools_options;
         typedef kc::Key<103> rewrite_virtuals;
         typedef kc::Key<104> no_slot_or_repo;
-        typedef kc::Key<105> disable_cfgpro;
         typedef kc::Key<106> slot;
         typedef kc::Key<107> loadsaveenv_dir;
         typedef kc::Key<108> unmerge_only;

@@ -91,17 +91,11 @@ void expose_action()
         (
          "InstallActionOptions",
          "Options for InstallAction.",
-         bp::init<const bool &, const InstallActionDebugOption &, const InstallActionChecksOption &,
+         bp::init<const InstallActionDebugOption &, const InstallActionChecksOption &,
                 const std::tr1::shared_ptr<paludis::Repository> &>(
-                    "__init__(no_config_protect_bool, InstallActionDebugOption,\n"
-                    "InstallActionChecksOption, Repository)"
+                    "__init__(InstallActionDebugOption, InstallActionChecksOption, Repository)"
                     )
         )
-        .add_property("no_config_protect",
-                &kc_getter<InstallActionOptions, bool, k::no_config_protect>,
-                &kc_setter<InstallActionOptions, bool, k::no_config_protect>,
-                "[rw] bool"
-                )
 
         .add_property("debug_build",
                 &kc_getter<InstallActionOptions, InstallActionDebugOption, k::debug_build>,
@@ -140,22 +134,6 @@ void expose_action()
         .add_property("safe_resume",
                 &kc_getter<FetchActionOptions, bool, k::safe_resume>,
                 &kc_setter<FetchActionOptions, bool, k::safe_resume>,
-                "[rw] bool"
-                )
-        ;
-
-    /**
-     * UninstallActionOptions
-     */
-    bp::class_<UninstallActionOptions>
-        (
-         "UninstallActionOptions",
-         "Options for UninstallAction.",
-         bp::init<const bool &>("__init__(no_config_protect_bool)")
-        )
-        .add_property("no_config_protect",
-                &kc_getter<UninstallActionOptions, bool, k::no_config_protect>,
-                &kc_setter<UninstallActionOptions, bool, k::no_config_protect>,
                 "[rw] bool"
                 )
         ;
@@ -200,7 +178,7 @@ void expose_action()
         (
          "UninstallAction",
          "An UninstallAction is used by UninstallTask to uninstall a PackageID.",
-         bp::init<const UninstallActionOptions &>("__init__(UninstallActionOptions)")
+         bp::init<>("__init__()")
         );
 
     /**

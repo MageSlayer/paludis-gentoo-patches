@@ -227,7 +227,6 @@ namespace
         OurUninstallTask task(env);
 
         task.set_pretend(CommandLine::get_instance()->install_args.a_pretend.specified());
-        task.set_no_config_protect(CommandLine::get_instance()->install_args.a_no_config_protection.specified());
         task.set_preserve_world(CommandLine::get_instance()->install_args.a_preserve_world.specified());
         task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
         task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());

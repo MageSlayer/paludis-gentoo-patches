@@ -1114,7 +1114,6 @@ namespace test_cases
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), installed_repo)
                     );
 
@@ -1340,7 +1339,6 @@ namespace test_cases
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), installed_repo)
                     );
 
@@ -1405,7 +1403,6 @@ namespace test_cases
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), installed_repo)
                     );
 
@@ -1575,7 +1572,6 @@ namespace test_cases
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), installed_repo)
                     );
 
@@ -2033,7 +2029,6 @@ namespace test_cases
             InstallAction action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), installed_repo)
                     );
 

@@ -368,8 +368,7 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 void
-VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const UninstallActionOptions & o, bool reinstalling) const
+VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id, bool reinstalling) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
@@ -437,7 +436,6 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
 
             EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::named_create()
                     (k::root(), stringify(_imp->params.root))
-                    (k::disable_cfgpro(), o[k::no_config_protect()])
                     (k::unmerge_only(), false)
                     (k::loadsaveenv_dir(), pkg_dir)
                     (k::load_environment(), load_env.get()));
@@ -843,10 +841,7 @@ VDBRepository::merge(const MergeParams & m)
     merger.merge();
 
     if (is_replace)
-    {
-        UninstallActionOptions uninstall_options(false);
-        perform_uninstall(is_replace, uninstall_options, true);
-    }
+        perform_uninstall(is_replace, true);
 
     VDBPostMergeCommand post_merge_command(
             VDBPostMergeCommandParams::named_create()

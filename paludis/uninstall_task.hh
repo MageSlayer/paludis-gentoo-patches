@@ -112,7 +112,6 @@ namespace paludis
             ///\name Behaviour options
             ///\{
 
-            void set_no_config_protect(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
             void set_all_versions(const bool value);

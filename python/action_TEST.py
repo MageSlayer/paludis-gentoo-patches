@@ -31,13 +31,12 @@ class TestCase_01_InstallActionOptions(unittest.TestCase):
         repo2 = FakeRepository(env, "2")
 
     def test_01_create(self):
-        InstallActionOptions(True, InstallActionDebugOption.values[0], InstallActionChecksOption.values[0], repo1)
+        InstallActionOptions(InstallActionDebugOption.values[0], InstallActionChecksOption.values[0], repo1)
 
     def test_02_data_members(self):
-        iao = InstallActionOptions(True, InstallActionDebugOption.values[0],
+        iao = InstallActionOptions(InstallActionDebugOption.values[0],
                 InstallActionChecksOption.values[0], repo1)
 
-        self.assertEquals(iao.no_config_protect, True)
         self.assertEquals(iao.debug_build, InstallActionDebugOption.values[0])
         self.assertEquals(iao.checks, InstallActionChecksOption.values[0])
         self.assertEquals(str(iao.destination.name), "1")
@@ -68,23 +67,11 @@ class TestCase_02_FetchActionOptions(unittest.TestCase):
         self.assertEquals(fao.fetch_unneeded, False)
         self.assertEquals(fao.safe_resume, False)
 
-class TestCase_03_UninstallActionOptions(unittest.TestCase):
-    def test_01_create(self):
-        UninstallActionOptions(True)
-
-    def test_02_data_members(self):
-        uao = UninstallActionOptions(True)
-
-        self.assertEquals(uao.no_config_protect, True)
-        uao.no_config_protect = False
-        self.assertEquals(uao.no_config_protect, False)
-
-
 class TestCase_04_InstallAction(unittest.TestCase):
     def test_01_create(self):
         env = TestEnvironment()
         repo1 = FakeRepository(env, "1")
-        iao = InstallActionOptions(True, InstallActionDebugOption.values[0],
+        iao = InstallActionOptions(InstallActionDebugOption.values[0],
                 InstallActionChecksOption.values[0], repo1)
         InstallAction(iao)
 
@@ -94,7 +81,7 @@ class TestCase_05_FetchAction(unittest.TestCase):
 
 class TestCase_06_UninstallAction(unittest.TestCase):
     def test_01_create(self):
-        UninstallAction(UninstallActionOptions(True))
+        UninstallAction()
 
 class TestCase_07_InstalledAction(unittest.TestCase):
     def test_01_create(self):

@@ -578,8 +578,6 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(install_params[k::loadsaveenv_dir()]))
             .with_setenv("PALUDIS_CONFIG_PROTECT", install_params[k::config_protect()])
             .with_setenv("PALUDIS_CONFIG_PROTECT_MASK", install_params[k::config_protect_mask()])
-            .with_setenv("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
-                install_params[k::disable_cfgpro()] ? "/" : "")
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params[k::profiles()]->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params[k::profiles()]->begin(),
                                           install_params[k::profiles()]->end(), " "))
@@ -634,8 +632,7 @@ EbuildUninstallCommand::extend_command(const Command & cmd)
     Command result(Command(cmd)
             .with_setenv("ROOT", uninstall_params[k::root()])
             .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(uninstall_params[k::loadsaveenv_dir()]))
-            .with_setenv("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
-                uninstall_params[k::disable_cfgpro()] ? "/" : ""));
+            );
 
     if (uninstall_params[k::load_environment()])
         result

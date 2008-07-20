@@ -69,7 +69,6 @@ namespace paludis
         DepList dep_list;
         FetchActionOptions fetch_options;
         InstallActionOptions install_options;
-        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
@@ -99,12 +98,10 @@ namespace paludis
                     ),
             install_options(
                     InstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
                     (k::destination(), std::tr1::shared_ptr<Repository>())
                     ),
-            uninstall_options(false),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
@@ -785,7 +782,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             try
             {
-                UninstallAction uninstall_action(_imp->uninstall_options);
+                UninstallAction uninstall_action;
                 (*c)->perform_action(uninstall_action);
             }
             catch (const UninstallActionError & e)
@@ -1110,13 +1107,6 @@ const DepList &
 InstallTask::dep_list() const
 {
     return _imp->dep_list;
-}
-
-void
-InstallTask::set_no_config_protect(const bool value)
-{
-    _imp->install_options[k::no_config_protect()] = value;
-    _imp->uninstall_options[k::no_config_protect()] = value;
 }
 
 void

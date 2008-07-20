@@ -81,22 +81,10 @@ namespace paludis
      * \since 0.26
      */
     typedef kc::KeyedClass<
-        kc::Field<k::no_config_protect, bool>,
         kc::Field<k::debug_build, InstallActionDebugOption>,
         kc::Field<k::checks, InstallActionChecksOption>,
         kc::Field<k::destination, std::tr1::shared_ptr<Repository> >
             > InstallActionOptions;
-
-    /**
-     * Options for an UninstallAction.
-     *
-     * \see UninstallAction
-     * \ingroup g_actions
-     * \since 0.26
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::no_config_protect, bool>
-            > UninstallActionOptions;
 
     /**
      * A failed fetch action part.

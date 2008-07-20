@@ -708,7 +708,6 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             (k::root(), o[k::destination()]->installed_root_key() ?
                              stringify(o[k::destination()]->installed_root_key()->value()) : "/")
                             (k::profiles(), _imp->params.profiles)
-                            (k::disable_cfgpro(), o[k::no_config_protect()])
                             (k::config_protect(), _imp->e_repository->profile_variable("CONFIG_PROTECT"))
                             (k::config_protect_mask(), _imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
                             (k::loadsaveenv_dir(), _imp->params.builddir / (stringify(id->name().category) + "-" +

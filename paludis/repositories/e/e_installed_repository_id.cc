@@ -702,10 +702,9 @@ namespace
         {
         }
 
-        void visit(const UninstallAction & a)
+        void visit(const UninstallAction &)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id,
-                    a.options, false);
+            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, false);
         }
 
         void visit(const InstalledAction &)

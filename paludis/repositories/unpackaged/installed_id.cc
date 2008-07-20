@@ -676,9 +676,9 @@ namespace
         {
         }
 
-        void visit(UninstallAction & a)
+        void visit(UninstallAction &)
         {
-            id->uninstall(a.options, false);
+            id->uninstall(false);
         }
     };
 }
@@ -724,7 +724,7 @@ InstalledUnpackagedID::extra_hash_value() const
 }
 
 void
-InstalledUnpackagedID::uninstall(const UninstallActionOptions &, const bool replace) const
+InstalledUnpackagedID::uninstall(const bool replace) const
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 

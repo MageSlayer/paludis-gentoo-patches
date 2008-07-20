@@ -255,9 +255,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::All())]->begin());
 
-            UninstallAction action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction action;
             id->perform_action(action);
 
             TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root2/first").exists());
@@ -306,9 +304,7 @@ namespace test_cases
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
                                 &env, UserPackageDepSpecOptions())))]->begin());
 
-            UninstallAction action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction action;
             id->perform_action(action);
 
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
@@ -391,7 +387,6 @@ namespace test_cases
 
                 InstallAction action(InstallActionOptions::named_create()
                         (k::destination(), repo)
-                        (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -446,7 +441,6 @@ namespace test_cases
 
                 InstallAction action(InstallActionOptions::named_create()
                         (k::destination(), repo)
-                        (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -504,7 +498,6 @@ namespace test_cases
 
                 InstallAction action(InstallActionOptions::named_create()
                         (k::destination(), repo)
-                        (k::no_config_protect(), false)
                         (k::checks(), iaco_default)
                         (k::debug_build(), iado_none));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -544,8 +537,7 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action(UninstallActionOptions::named_create()
-                        (k::no_config_protect(), false));
+                UninstallAction action;
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
                             &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
@@ -585,8 +577,7 @@ namespace test_cases
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action(UninstallActionOptions::named_create()
-                        (k::no_config_protect(), false));
+                UninstallAction action;
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",
                             &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);

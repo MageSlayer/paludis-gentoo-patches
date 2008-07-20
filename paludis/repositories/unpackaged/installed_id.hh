@@ -87,7 +87,7 @@ namespace paludis
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void uninstall(const UninstallActionOptions &, const bool replace) const;
+                void uninstall(const bool replace) const;
         };
     }
 }
