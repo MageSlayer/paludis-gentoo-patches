@@ -46,7 +46,8 @@ namespace paludis
         const UnavailableRepository * const repo;
 
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > owning_repository_key, repository_homepage_key, repository_description_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > repository_homepage_key, repository_description_key;
+        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
         const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
@@ -56,9 +57,9 @@ namespace paludis
             slot(e[k::slot()]),
             repo(e[k::repository()]),
             description_key(e[k::description()]),
-            owning_repository_key(e[k::owning_repository()]),
             repository_homepage_key(e[k::repository_homepage()]),
             repository_description_key(e[k::repository_description()]),
+            from_repositories_key(e[k::from_repositories()]),
             mask(e[k::mask()])
         {
         }
@@ -70,7 +71,7 @@ UnavailableID::UnavailableID(const UnavailableIDParams & entry) :
     _imp(PrivateImplementationPattern<UnavailableID>::_imp)
 {
     add_metadata_key(_imp->description_key);
-    add_metadata_key(_imp->owning_repository_key);
+    add_metadata_key(_imp->from_repositories_key);
     if (_imp->repository_homepage_key)
         add_metadata_key(_imp->repository_homepage_key);
     if (_imp->repository_description_key)
@@ -100,16 +101,16 @@ UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
                 ":" + stringify(_imp->slot) + "::" + stringify(_imp->repo->name()) +
-                " (in ::" + stringify(_imp->owning_repository_key->value()) + ")";
+                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case idcf_no_version:
             return stringify(_imp->name) + ":" + stringify(_imp->slot) +
                 "::" + stringify(_imp->repo->name()) +
-                " (in ::" + stringify(_imp->owning_repository_key->value()) + ")";
+                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case idcf_version:
             return stringify(_imp->version) +
-                " (in ::" + stringify(_imp->owning_repository_key->value()) + ")";
+                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case last_idcf:
             break;
@@ -168,22 +169,20 @@ UnavailableID::arbitrary_less_than_comparison(const PackageID & other) const
     if (slot() > other.slot())
         return false;
 
-    UnavailableID::MetadataConstIterator k(other.find_metadata("OWNING_REPOSITORY"));
-    if (other.end_metadata() == k)
-        throw InternalError(PALUDIS_HERE, "other has no OWNING_REPOSITORY");
+    std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > k(other.from_repositories_key());
+    if (! k)
+        throw InternalError(PALUDIS_HERE, "other has no from_repositories_key()");
+    if (1 != k->value()->size())
+        throw InternalError(PALUDIS_HERE, "other has bad from_repositories_key");
 
-    const MetadataValueKey<std::string> * const kk(visitor_cast<const MetadataValueKey<std::string> >(**k));
-    if (! kk)
-        throw InternalError(PALUDIS_HERE, "other has bad OWNING_REPOSITORY");
-
-    return _imp->owning_repository_key->value() < kk->value();
+    return *_imp->from_repositories_key->value()->begin() < *k->value()->begin();
 }
 
 std::size_t
 UnavailableID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
-                slot(), _imp->owning_repository_key->value()));
+                slot(), *_imp->from_repositories_key->value()->begin()));
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
@@ -297,7 +296,7 @@ UnavailableID::installed_time_key() const
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return _imp->from_repositories_key;
 }
 
 template class PrivateImplementationPattern<UnavailableID>;

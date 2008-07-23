@@ -121,9 +121,11 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
     }
 
     std::tr1::shared_ptr<Mask> mask(new UnavailableMask);
-    std::tr1::shared_ptr<MetadataValueKey<std::string> > owning_repository(
-            new LiteralMetadataValueKey<std::string>("OWNING_REPOSITORY", "Owning repository",
-                mkt_significant, file.repo_name()));
+    std::tr1::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
+    from_repositories_set->insert(file.repo_name());
+    std::tr1::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
+            new LiteralMetadataStringSetKey("OWNING_REPOSITORY", "Owning repository",
+                mkt_significant, from_repositories_set));
 
     std::tr1::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description;
     if (! file.homepage().empty())
@@ -166,7 +168,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                         (k::version(), (*i)[k::version()])
                         (k::slot(), (*i)[k::slot()])
                         (k::description(), (*i)[k::description()])
-                        (k::owning_repository(), owning_repository)
+                        (k::from_repositories(), from_repositories)
                         (k::repository_homepage(), repository_homepage)
                         (k::repository_description(), repository_description)
                         (k::mask(), mask)
