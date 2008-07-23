@@ -214,7 +214,7 @@ namespace test_cases
     struct RepositoryGeneratorTestCase : GeneratorTestCaseBase
     {
         RepositoryGeneratorTestCase() :
-            GeneratorTestCaseBase("repository", generator::Repository(RepositoryName("repo1")))
+            GeneratorTestCaseBase("repository", generator::InRepository(RepositoryName("repo1")))
         {
         }
 
@@ -229,7 +229,7 @@ namespace test_cases
     struct NoRepositoryGeneratorTestCase : GeneratorTestCaseBase
     {
         NoRepositoryGeneratorTestCase() :
-            GeneratorTestCaseBase("no repository", generator::Repository(RepositoryName("repo3")))
+            GeneratorTestCaseBase("no repository", generator::InRepository(RepositoryName("repo3")))
         {
         }
 

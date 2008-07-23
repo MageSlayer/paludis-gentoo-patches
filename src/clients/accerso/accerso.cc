@@ -115,7 +115,7 @@ main(int argc, char *argv[])
                     .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
 
             std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
-                        generator::Repository(env.main_repository()->name()))]);
+                        generator::InRepository(env.main_repository()->name()))]);
             std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(
                     PackageIDComparator(env.package_database().get()));
             unsigned success(0), total(0);

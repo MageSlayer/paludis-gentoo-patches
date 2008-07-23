@@ -227,7 +227,6 @@ namespace
         OurUninstallTask task(env);
 
         task.set_pretend(CommandLine::get_instance()->install_args.a_pretend.specified());
-        task.set_no_config_protect(CommandLine::get_instance()->install_args.a_no_config_protection.specified());
         task.set_preserve_world(CommandLine::get_instance()->install_args.a_preserve_world.specified());
         task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
         task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
@@ -302,16 +301,23 @@ namespace
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
+                try
+                {
+                    FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
 
-                if (f.begin() == f.end())
-                    cerr << "No suggestions found." << endl;
-                else
-                    cerr << "Suggestions:" << endl;
+                    if (f.begin() == f.end())
+                        cerr << "No suggestions found." << endl;
+                    else
+                        cerr << "Suggestions:" << endl;
 
-                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
-                         c_end(f.end()) ; c != c_end ; ++c)
-                    cerr << "  * " << colour(cl_package_name, *c) << endl;
+                    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                             c_end(f.end()) ; c != c_end ; ++c)
+                        cerr << "  * " << colour(cl_package_name, *c) << endl;
+                }
+                catch (const PackageDepSpecError &)
+                {
+                    cerr << "Query too complicated or confusing to make suggestions." << endl;
+                }
             }
 
             cerr << endl;

@@ -6,7 +6,7 @@ AC_INIT([paludis/paludis.hh])
 AC_CONFIG_AUX_DIR(config)
 
 VERSION_MAJOR=0
-VERSION_MINOR=27
+VERSION_MINOR=29
 VERSION_MICRO=0
 VERSION_SUFFIX=
 VERSION_FULL="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_MICRO$VERSION_SUFFIX"
@@ -269,7 +269,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([std::tr1::unordered_map])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 unordered containers])])
 dnl }}}
 
 dnl {{{ tr1 shared pointers
@@ -284,7 +284,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 shared pointers])])
 dnl }}}
 
 dnl {{{ tr1 type traits
@@ -299,7 +299,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 type traits])])
 dnl }}}
 
 dnl {{{ tr1 binders
@@ -326,7 +326,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1])])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
 dnl }}}
 
 need_xml_check=
@@ -1060,11 +1060,11 @@ AC_ARG_WITH([repositories],
 			  all             All available repositories
 			  default         Equivalent to e,fake,virtuals
 
-			  cran            The Comprehensive R Archive Network (experimental)
+			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
-			  gems            Ruby gems (experimental)
-			  unavailable     Unavailable (experimental)
+			  gems            Ruby gems (unusable)
+			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -1077,6 +1077,19 @@ AC_MSG_RESULT([$repositories])
 BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
 AC_SUBST([BUILD_REPOSITORIES])
+
+for r in e fake ; do
+	if ! echo $repositories | tr ' ' '\n' | grep "^$r\$" >/dev/null ; then
+		AC_MSG_ERROR([Building without $r repository is unsupported])
+	fi
+done
+
+enable_virtuals_repository=
+if echo $repositories | tr ' ' '\n' | grep '^virtuals$' >/dev/null ; then
+	AC_DEFINE_UNQUOTED([ENABLE_VIRTUALS_REPOSITORY], [1], [Enable virtuals repository])
+	enable_virtuals_repository=yes
+fi
+AM_CONDITIONAL([ENABLE_VIRTUALS_REPOSITORY], test "x$enable_virtuals_repository" = "xyes")
 
 if echo $repositories | tr ' ' '\n' | grep '^gems$' >/dev/null ; then
 	need_syck_check=yes
@@ -1097,7 +1110,7 @@ AC_ARG_WITH([environments],
 			  adapted         An environment adapter, for contrarius etc
 			  no_config       Configurationless environment, for adjutrix etc
 			  paludis         Standard Paludis environments
-			  portage         Portage configuration (experimental)
+			  portage         Portage configuration (dodgy)
 			  test            For test cases],
 			[environments="`echo $with_environments | tr ',' ' '`"],
 			[environments="$DEFAULT_ENVIRONMENTS"])
@@ -1147,7 +1160,7 @@ AC_ARG_WITH([clients],
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
-			  gtkpaludis      GUI client (experimental)
+			  gtkpaludis      GUI client (unusable)
 			  importare       On-the-fly unpackaged installer
 			  inquisitio      A search client
 			  instruo         A metadata generation client

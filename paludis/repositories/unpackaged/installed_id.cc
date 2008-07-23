@@ -49,6 +49,11 @@ using namespace paludis::unpackaged_repositories;
 
 namespace
 {
+    std::string format_string(const std::string & i, const Formatter<std::string> & f)
+    {
+        return f.format(i, format::Plain());
+    }
+
     class InstalledUnpackagedFSEntryKey :
         public MetadataValueKey<FSEntry>
     {
@@ -168,6 +173,54 @@ namespace
             }
     };
 
+    class InstalledUnpackagedStringSetKey :
+        public MetadataCollectionKey<Set<std::string> >
+    {
+        private:
+            mutable std::tr1::shared_ptr<Set<std::string> > _v;
+            mutable Mutex _mutex;
+            FSEntrySequence _f;
+
+        public:
+            InstalledUnpackagedStringSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+                MetadataCollectionKey<Set<std::string> > (r, h, t)
+            {
+            }
+
+            void add_source(const FSEntry & f)
+            {
+                _f.push_back(f);
+            }
+
+            const std::tr1::shared_ptr<const Set<std::string> > value() const
+            {
+                Lock l(_mutex);
+                if (_v)
+                    return _v;
+
+                _v.reset(new Set<std::string>());
+                for (FSEntrySequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
+                        a != a_end ; ++a)
+                {
+                    std::ifstream f(stringify(*a).c_str());
+                    if (! f)
+                    {
+                        Context context("When reading '" + stringify(*a) + "' as an InstalledUnpackagedStringKey:");
+                        throw FSError("Couldn't open '" + stringify(*a) + "' for read");
+                    }
+                    _v->insert(strip_trailing(std::string((std::istreambuf_iterator<char>(f)),
+                                    std::istreambuf_iterator<char>()), "\n"));
+                }
+                return _v;
+            }
+
+            std::string pretty_print_flat(const Formatter<std::string> & f) const
+            {
+                using namespace std::tr1::placeholders;
+                return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
+            }
+    };
+
     class InstalledUnpackagedDependencyKey :
         public MetadataSpecTreeKey<DependencySpecTree>
     {
@@ -248,8 +301,7 @@ namespace paludis
         std::tr1::shared_ptr<InstalledUnpackagedFSEntryKey> fs_location_key;
         std::tr1::shared_ptr<InstalledUnpackagedContentsKey> contents_key;
         std::tr1::shared_ptr<InstalledUnpackagedTimeKey> installed_time_key;
-        std::tr1::shared_ptr<InstalledUnpackagedStringKey> source_origin_key;
-        std::tr1::shared_ptr<InstalledUnpackagedStringKey> binary_origin_key;
+        std::tr1::shared_ptr<InstalledUnpackagedStringSetKey> from_repositories_key;
         std::tr1::shared_ptr<InstalledUnpackagedStringKey> description_key;
         std::tr1::shared_ptr<InstalledUnpackagedDependencyKey> build_dependencies_key;
         std::tr1::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_key;
@@ -284,13 +336,12 @@ namespace paludis
                 installed_time_key.reset(new InstalledUnpackagedTimeKey(l / "contents"));
             }
 
+            from_repositories_key.reset(new InstalledUnpackagedStringSetKey("source_repository",
+                        "Source repository", mkt_normal));
             if ((l / "source_repository").exists())
-                source_origin_key.reset(new InstalledUnpackagedStringKey("source_repository", "Source repository", l / "source_repository",
-                            mkt_normal));
-
+                from_repositories_key->add_source(l / "source_repository");
             if ((l / "binary_repository").exists())
-                binary_origin_key.reset(new InstalledUnpackagedStringKey("binary_repository", "Binary repository", l / "binary_repository",
-                            mkt_normal));
+                from_repositories_key->add_source(l / "binary_repository");
 
             if ((l / "description").exists())
                 description_key.reset(new InstalledUnpackagedStringKey("description", "Description", l / "description", mkt_significant));
@@ -319,10 +370,8 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
         add_metadata_key(_imp->contents_key);
     if (_imp->installed_time_key)
         add_metadata_key(_imp->installed_time_key);
-    if (_imp->source_origin_key)
-        add_metadata_key(_imp->source_origin_key);
-    if (_imp->binary_origin_key)
-        add_metadata_key(_imp->binary_origin_key);
+    if (_imp->from_repositories_key)
+        add_metadata_key(_imp->from_repositories_key);
     if (_imp->description_key)
         add_metadata_key(_imp->description_key);
     if (_imp->build_dependencies_key)
@@ -488,16 +537,10 @@ InstalledUnpackagedID::installed_time_key() const
     return _imp->installed_time_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-InstalledUnpackagedID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+InstalledUnpackagedID::from_repositories_key() const
 {
-    return _imp->source_origin_key;
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-InstalledUnpackagedID::binary_origin_key() const
-{
-    return _imp->binary_origin_key;
+    return _imp->from_repositories_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
@@ -633,9 +676,9 @@ namespace
         {
         }
 
-        void visit(UninstallAction & a)
+        void visit(UninstallAction &)
         {
-            id->uninstall(a.options, false);
+            id->uninstall(false);
         }
     };
 }
@@ -681,7 +724,7 @@ InstalledUnpackagedID::extra_hash_value() const
 }
 
 void
-InstalledUnpackagedID::uninstall(const UninstallActionOptions &, const bool replace) const
+InstalledUnpackagedID::uninstall(const bool replace) const
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 

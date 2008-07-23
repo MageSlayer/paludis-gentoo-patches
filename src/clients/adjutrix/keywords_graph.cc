@@ -75,7 +75,7 @@ namespace
         std::tr1::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
                 generator::Matches(make_package_dep_spec()
                     .package(package)
-                    .repository(repo.name())))]);
+                    .in_repository(repo.name())))]);
         std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())

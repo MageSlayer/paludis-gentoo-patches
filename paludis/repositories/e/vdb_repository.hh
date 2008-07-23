@@ -105,7 +105,7 @@ namespace paludis
             virtual void regenerate_cache() const;
 
             virtual void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                    const UninstallActionOptions & o, bool reinstalling) const;
+                    bool reinstalling) const;
 
             /* RepositoryProvidesInterface */
 

@@ -95,7 +95,12 @@ namespace
             return std::tr1::shared_ptr<const SlotRequirement>();
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
+        {
+            return std::tr1::shared_ptr<const RepositoryName>();
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
         {
             return std::tr1::shared_ptr<const RepositoryName>();
         }

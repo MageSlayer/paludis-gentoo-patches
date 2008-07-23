@@ -65,7 +65,7 @@ namespace paludis
                                 .package(v->name())
                                 .version_requirement(VersionRequirement(vo_equal, v->version()))
                                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
-                                .repository(v->repository()->name()))))
+                                .in_repository(v->repository()->name()))))
                     :
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
                                 make_package_dep_spec()
@@ -318,16 +318,10 @@ VirtualsPackageID::installed_time_key() const
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-VirtualsPackageID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+VirtualsPackageID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-VirtualsPackageID::binary_origin_key() const
-{
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 bool

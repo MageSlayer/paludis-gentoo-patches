@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir upgrade_TEST_dir || exit 1
@@ -72,12 +72,12 @@ mkdir -p repo1/{eclass,distfiles,profiles/testprofile,test-category/target/files
 
 mkdir -p src/target-1
 cat <<"END" > src/target-1/testbin
-#!/bin/bash
+#!/usr/bin/env bash
 echo "This is testbin-1"
 END
 chmod +x src/target-1/testbin
 cat <<"END" > src/target-1/testbin1
-#!/bin/bash
+#!/usr/bin/env bash
 echo "This is testbin1"
 END
 chmod +x src/target-1/testbin1
@@ -89,12 +89,12 @@ rm -fr src
 
 mkdir -p src/target-2
 cat <<"END" > src/target-2/testbin
-#!/bin/bash
+#!/usr/bin/env bash
 echo "This is testbin-2"
 END
 chmod +x src/target-2/testbin
 cat <<"END" > src/target-2/testbin2
-#!/bin/bash
+#!/usr/bin/env bash
 echo "This is testbin2"
 END
 chmod +x src/target-2/testbin2

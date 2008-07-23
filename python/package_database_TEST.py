@@ -53,12 +53,13 @@ class TestCase_PackageDatabase(unittest.TestCase):
                 Filter.SupportsUninstallAction())
 
     def test_6_repositories(self):
-        self.get_db()
-        self.assert_(self.db.more_important_than("testrepo", "virtuals"))
-        self.assert_(not self.db.more_important_than("virtuals", "testrepo"))
-        self.assertRaises(NoSuchRepositoryError, self.db.fetch_repository, "blah")
+        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
+            self.get_db()
+            self.assert_(self.db.more_important_than("testrepo", "virtuals"))
+            self.assert_(not self.db.more_important_than("virtuals", "testrepo"))
+            self.assertRaises(NoSuchRepositoryError, self.db.fetch_repository, "blah")
 
-        self.assertEqual(len(list(self.db.repositories)), 3)
+            self.assertEqual(len(list(self.db.repositories)), 3)
 
 if __name__ == "__main__":
     unittest.main()

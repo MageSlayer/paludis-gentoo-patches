@@ -103,7 +103,6 @@ namespace paludis
             kc::Field<k::root, std::string>,
             kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
-            kc::Field<k::disable_cfgpro, bool>,
             kc::Field<k::slot, SlotName>,
             kc::Field<k::config_protect, std::string>,
             kc::Field<k::config_protect_mask, std::string>,
@@ -134,7 +133,6 @@ namespace paludis
          */
         typedef kc::KeyedClass<
             kc::Field<k::root, std::string>,
-            kc::Field<k::disable_cfgpro, bool>,
             kc::Field<k::unmerge_only, bool>,
             kc::Field<k::load_environment, const FSEntry *>,
             kc::Field<k::loadsaveenv_dir, FSEntry>
@@ -166,7 +164,7 @@ namespace paludis
             kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
             kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
             kc::Field<k::load_environment, const FSEntry *>,
-            kc::Field<k::info_vars, FSEntry>,
+            kc::Field<k::info_vars, std::tr1::shared_ptr<const Set<std::string> > >,
             kc::Field<k::use_ebuild_file, bool>
                 > EbuildInfoCommandParams;
 

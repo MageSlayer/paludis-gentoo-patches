@@ -122,7 +122,12 @@ namespace
             return std::tr1::shared_ptr<const SlotRequirement>();
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
+        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
+        {
+            return std::tr1::shared_ptr<const RepositoryName>();
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
         {
             return std::tr1::shared_ptr<const RepositoryName>();
         }
@@ -217,8 +222,8 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
     if (_imp->invalid)
         return;
 
-    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.repository_ptr() || a.package_name_part_ptr()
-            || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr())
+    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.in_repository_ptr() || a.package_name_part_ptr()
+            || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr() || a.from_repository_ptr())
     {
         _imp->invalid = true;
         return;

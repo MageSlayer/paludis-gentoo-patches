@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir e_repository_TEST_dir || exit 1
@@ -786,19 +786,21 @@ pkg_setup() {
     BV2=$(best_version cat/doesnotexist )
     [[ "$BV2" == "" ]] || die "BV2 is $BV2"
 
-    if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
-        die "failed virtual/virtual-pretend-installed"
+    if [[ -n "$PALUDIS_ENABLE_VIRTUALS_REPOSITORY" ]] ; then
+        if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
+            die "failed virtual/virtual-pretend-installed"
+        fi
+
+        BV3=$(best_version virtual/virtual-pretend-installed )
+        [[ "$BV3" == "cat/pretend-installed-1" ]] || die "BV3 is $BV3"
+
+        if best_version virtual/virtual-doesnotexist >/dev/null ; then
+            die "not failed virtual/virtual-doesnotexist"
+        fi
+
+        BV2=$(best_version virtual/virtual-doesnotexist )
+        [[ "$BV4" == "" ]] || die "BV4 is $BV4"
     fi
-
-    BV3=$(best_version virtual/virtual-pretend-installed )
-    [[ "$BV3" == "cat/pretend-installed-1" ]] || die "BV3 is $BV3"
-
-    if best_version virtual/virtual-doesnotexist >/dev/null ; then
-        die "not failed virtual/virtual-doesnotexist"
-    fi
-
-    BV2=$(best_version virtual/virtual-doesnotexist )
-    [[ "$BV4" == "" ]] || die "BV4 is $BV4"
 }
 END
 mkdir -p "cat/has-version"
@@ -1533,20 +1535,22 @@ pkg_setup() {
     BV2=$(best_version cat/doesnotexist )
     [[ "$BV2" == "" ]] || die "BV2 is $BV2"
 
-    if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
-        die "failed virtual/virtual-pretend-installed"
+    if [[ -n "$PALUDIS_ENABLE_VIRTUALS_REPOSITORY" ]] ; then
+        if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
+            die "failed virtual/virtual-pretend-installed"
+        fi
+
+        BV3=$(best_version virtual/virtual-pretend-installed )
+        [[ "$BV3" == "virtual/virtual-pretend-installed-1::installed-virtuals (virtual for cat/pretend-installed-1:0::installed)" ]] \
+            || die "BV3 is $BV3"
+
+        if best_version virtual/virtual-doesnotexist >/dev/null ; then
+            die "not failed virtual/virtual-doesnotexist"
+        fi
+
+        BV2=$(best_version virtual/virtual-doesnotexist )
+        [[ "$BV4" == "" ]] || die "BV4 is $BV4"
     fi
-
-    BV3=$(best_version virtual/virtual-pretend-installed )
-    [[ "$BV3" == "virtual/virtual-pretend-installed-1::installed-virtuals (virtual for cat/pretend-installed-1:0::installed)" ]] \
-        || die "BV3 is $BV3"
-
-    if best_version virtual/virtual-doesnotexist >/dev/null ; then
-        die "not failed virtual/virtual-doesnotexist"
-    fi
-
-    BV2=$(best_version virtual/virtual-doesnotexist )
-    [[ "$BV4" == "" ]] || die "BV4 is $BV4"
 }
 END
 mkdir -p "packages/cat/has-version"
@@ -1651,7 +1655,7 @@ DEFAULT_SRC_CONFIGURE_OPTION_WITHS="dormouse"
 src_unpack() {
     mkdir ${S}
     cat <<'END2' > ${S}/configure
-#!/bin/bash
+#!/usr/bin/env bash
 echo "${@}" | grep -q -- '--enable-enabled-hamster' || exit 1
 echo "${@}" | grep -q -- '--disable-gerbil' || exit 2
 echo "${@}" | grep -q -- '--nice-juicy-steak' || exit 3

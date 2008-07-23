@@ -561,8 +561,6 @@ namespace paludis
             virtual ~RepositoryDestinationInterface();
     };
 
-    class ERepositoryParams;
-
     /**
      * Interface for handling ERepository specific functionality.
      *
@@ -580,8 +578,6 @@ namespace paludis
             virtual std::string accept_keywords_variable() const = 0;
             virtual std::string arch_variable() const = 0;
 
-            virtual const ERepositoryParams & params() const = 0;
-
             ///\}
 
             ///\name Profile setting and querying functions
@@ -597,13 +593,6 @@ namespace paludis
             virtual ProfilesConstIterator find_profile(const FSEntry & location) const = 0;
             virtual void set_profile(const ProfilesConstIterator & iter) = 0;
             virtual void set_profile_by_arch(const UseFlagName &) = 0;
-
-            ///\}
-
-            ///\name Layout helpers
-            ///\{
-
-            virtual FSEntry info_variables_file(const FSEntry &) const = 0;
 
             ///\}
 

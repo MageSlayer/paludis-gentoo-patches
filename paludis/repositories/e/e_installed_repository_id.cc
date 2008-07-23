@@ -91,8 +91,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description;
         std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents;
         std::tr1::shared_ptr<const MetadataTimeKey> installed_time;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > source_origin;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_origin;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories;
 
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > asflags;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > cbuild;
@@ -149,7 +148,6 @@ EInstalledRepositoryID::need_keys_added() const
     if (_imp->has_keys)
         return;
     _imp->has_keys = true;
-
 
     // fs_location key could have been loaded by the ::fs_location_key() already. keep this
     // at the top, other keys use it.
@@ -302,24 +300,18 @@ EInstalledRepositoryID::need_keys_added() const
                 _imp->dir / contents_filename(), mkt_normal));
     add_metadata_key(_imp->installed_time);
 
+    std::tr1::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
     if ((_imp->dir / "REPOSITORY").exists())
-    {
-        _imp->source_origin.reset(new LiteralMetadataValueKey<std::string> ("REPOSITORY", "Source repository",
-                    mkt_normal, file_contents(_imp->dir / "REPOSITORY")));
-        add_metadata_key(_imp->source_origin);
-    }
-    else if ((_imp->dir / "repository").exists())
-    {
-        _imp->source_origin.reset(new LiteralMetadataValueKey<std::string> ("repository", "Source repository",
-                    mkt_normal, file_contents(_imp->dir / "repository")));
-        add_metadata_key(_imp->source_origin);
-    }
-
+        from_repositories_value->insert(file_contents(_imp->dir / "REPOSITORY"));
+    if ((_imp->dir / "repository").exists())
+        from_repositories_value->insert(file_contents(_imp->dir / "repository"));
     if ((_imp->dir / "BINARY_REPOSITORY").exists())
+        from_repositories_value->insert(file_contents(_imp->dir / "BINARY_REPOSITORY"));
+    if (! from_repositories_value->empty())
     {
-        _imp->binary_origin.reset(new LiteralMetadataValueKey<std::string> ("BINARY_REPOSITORY", "Binary repository",
-                    mkt_normal, file_contents(_imp->dir / "BINARY_REPOSITORY")));
-        add_metadata_key(_imp->binary_origin);
+        _imp->from_repositories.reset(new LiteralMetadataStringSetKey("REPOSITORIES",
+                    "From repositories", mkt_normal, from_repositories_value));
+        add_metadata_key(_imp->from_repositories);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
@@ -605,18 +597,11 @@ EInstalledRepositoryID::installed_time_key() const
     return _imp->installed_time;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-EInstalledRepositoryID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::from_repositories_key() const
 {
     need_keys_added();
-    return _imp->source_origin;
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-EInstalledRepositoryID::binary_origin_key() const
-{
-    need_keys_added();
-    return _imp->binary_origin;
+    return _imp->from_repositories;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
@@ -717,10 +702,9 @@ namespace
         {
         }
 
-        void visit(const UninstallAction & a)
+        void visit(const UninstallAction &)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id,
-                    a.options, false);
+            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, false);
         }
 
         void visit(const InstalledAction &)

@@ -36,7 +36,6 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
     a_preserve_world(this, "preserve-world", '1', "Don't modify the world file", true),
     a_add_to_world_spec(this, "add-to-world-spec", '\0',
             "Use this spec, rather than all targets, for updating world (for resume commands)"),
-    a_no_config_protection(this, "no-config-protection", '\0', "Disable config file protection (dangerous)", false),
     a_debug_build(this, "debug-build", '\0'),
     a_checks(this, "checks", '\0'),
     a_fetch(this, "fetch", 'f', "Only fetch sources; don't install anything", false),
@@ -111,7 +110,6 @@ InstallArgsGroup::destinations(Environment * env) const
 void
 InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task) const
 {
-    task.set_no_config_protect(a_no_config_protection.specified());
     task.set_fetch_only(a_fetch.specified());
     task.set_pretend(a_pretend.specified());
     task.set_preserve_world(a_preserve_world.specified());
@@ -200,9 +198,6 @@ std::string
 InstallArgsGroup::paludis_command_fragment() const
 {
     std::string paludis_command;
-
-    if (a_no_config_protection.specified())
-        paludis_command.append(" --" + a_no_config_protection.long_name());
 
     if (a_preserve_world.specified())
         paludis_command.append(" --" + a_preserve_world.long_name());

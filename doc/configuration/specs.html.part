@@ -25,7 +25,11 @@ the following order:</p>
 
 <ul>
     <li><code>:slot</code>: Match only in that slot.</li>
-    <li><code>::repository</code>: Match only in the named repository.</li>
+    <li><code>::fromrepository-&gt;inrepository</code>: Match only from (originally, so <code>::foo-&gt;</code> will
+    match things that were installed from the <code>foo</code> repository) and in (now, so <code>::-&gt;installed</code>
+    matches things that are now in the <code>installed</code> repository). At most one of the two names can be
+    blank.</li>
+    <li><code>::repository</code>: like <code>::-&gt;repository</code>.</li>
     <li><code>[use]</code> and <code>[-use]</code>: Match only if the named USE flag is enabled / disabled for this
     package. May be specified multiple times with different USE flag names.</li>
     <li><code>[=1.23]</code>: Match a particular version. Any operator described below

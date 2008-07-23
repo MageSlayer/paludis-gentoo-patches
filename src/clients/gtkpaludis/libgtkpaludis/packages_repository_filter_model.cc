@@ -93,7 +93,7 @@ PackagesRepositoryFilterModel::populate_in_gui_thread(std::tr1::shared_ptr<const
         iterator r(append(repositories->children()));
         (*r)[_imp->columns.col_text] = stringify(*n);
         (*r)[_imp->columns.col_sensitive] = true;
-        (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::Repository(*n));
+        (*r)[_imp->columns.col_generator] = std::tr1::shared_ptr<Generator>(new generator::InRepository(*n));
     }
 }
 

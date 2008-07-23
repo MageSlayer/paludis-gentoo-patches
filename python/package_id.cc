@@ -197,14 +197,9 @@ void expose_package_id()
                 "using dl_reinstall_scm_daily or dl_reinstall_scm_weekly."
             )
 
-        .def("source_origin_key", &PackageID::source_origin_key,
-                "The source_origin_key, if not None, contains a string describing\n"
-                "the source repository whence a package originated."
-            )
-
-        .def("binary_origin_key", &PackageID::binary_origin_key,
-                "The binary_origin_key, if not None, contains a string describing\n"
-                "the binary repository whence a package originated."
+        .def("from_repositories_key", &PackageID::from_repositories_key,
+                "The from_repositories_key, if not None, contains strings describing\n"
+                "the repositories whence a package originated."
             )
 
         .def("fs_location_key", &PackageID::fs_location_key,

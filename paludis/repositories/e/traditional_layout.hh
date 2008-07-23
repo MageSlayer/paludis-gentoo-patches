@@ -77,10 +77,10 @@ namespace paludis
                         const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSEntry info_packages_file(const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const FSEntrySequence> info_packages_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSEntry info_variables_file(const FSEntry &) const
+                virtual const std::tr1::shared_ptr<const FSEntrySequence> info_variables_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry package_directory(const QualifiedPackageName &) const
@@ -105,7 +105,7 @@ namespace paludis
                 virtual std::tr1::shared_ptr<const FSEntrySequence> mirror_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                virtual std::tr1::shared_ptr<const UseDescFileInfoSequence> use_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry profiles_base_dir() const

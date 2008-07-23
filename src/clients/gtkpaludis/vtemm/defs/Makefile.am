@@ -25,7 +25,7 @@ CLEANFILES = *~ force_automake_to_include_cxxcompile.cc generate_defs_vte
 MAINTAINERCLEANFILES = Makefile.in $(vte_defs)
 
 vte_methods.defs :
-	if ! python `pkg-config --variable=datadir pygtk-2.0`/pygtk/2.0/codegen/h2def.py \
+	if ! python `pkg-config --variable=codegendir pygtk-2.0`/h2def.py \
 	    `pkg-config --variable=includedir vte`/vte/*.h \
 	    > $@ ; then rm $@ ; false ; fi
 

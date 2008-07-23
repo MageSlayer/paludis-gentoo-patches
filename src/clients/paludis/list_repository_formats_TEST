@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PALUDIS_SKIP_CONFIG=yes ./paludis --list-repository-formats

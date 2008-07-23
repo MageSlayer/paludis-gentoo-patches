@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PALUDIS_HOME=./pretend_TEST_dir/config/ ./paludis --environment :pretend-test \
     --list-packages || exit 12

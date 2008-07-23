@@ -24,17 +24,18 @@
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/repositories/virtuals/virtuals_repository.hh>
-#include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/repository_maker.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
 #include <list>
 #include <ostream>
+
+#include "config.h"
 
 using namespace paludis;
 using namespace test;
@@ -73,6 +74,15 @@ namespace paludis
 
         return s;
     }
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    std::string virtuals_repo_keys(const std::string & k)
+    {
+        if (k == "root")
+            return "/";
+        return "";
+    }
+#endif
 }
 
 namespace test_cases
@@ -88,8 +98,10 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo;
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
-            std::tr1::shared_ptr<VirtualsRepository> virtuals_repo;
-            std::tr1::shared_ptr<InstalledVirtualsRepository> installed_virtuals_repo;
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+            std::tr1::shared_ptr<Repository> virtuals_repo;
+            std::tr1::shared_ptr<Repository> installed_virtuals_repo;
+#endif
             std::list<std::string> expected;
             std::string merge_target;
             bool done_populate;
@@ -102,14 +114,18 @@ namespace test_cases
                 env(),
                 repo(new FakeRepository(&env, RepositoryName("repo"))),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
-                virtuals_repo(new VirtualsRepository(&env)),
-                installed_virtuals_repo(new InstalledVirtualsRepository(&env, FSEntry("/"))),
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+                virtuals_repo((*(*RepositoryMaker::get_instance())["virtuals"])(&env, virtuals_repo_keys)),
+                installed_virtuals_repo((*(*RepositoryMaker::get_instance())["installed_virtuals"])(&env, virtuals_repo_keys)),
+#endif
                 done_populate(false)
             {
                 env.package_database()->add_repository(4, repo);
                 env.package_database()->add_repository(3, installed_repo);
+#ifdef ENABLE_VIRTUALS_REPOSITORY
                 env.package_database()->add_repository(2, virtuals_repo);
                 env.package_database()->add_repository(1, installed_virtuals_repo);
+#endif
             }
 
             /**

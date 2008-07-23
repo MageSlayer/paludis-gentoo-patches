@@ -92,11 +92,18 @@ namespace paludis
                 Package(const QualifiedPackageName &);
         };
 
-        class PALUDIS_VISIBLE Repository :
+        class PALUDIS_VISIBLE FromRepository :
             public Generator
         {
             public:
-                Repository(const RepositoryName &);
+                FromRepository(const RepositoryName &);
+        };
+
+        class PALUDIS_VISIBLE InRepository :
+            public Generator
+        {
+            public:
+                InRepository(const RepositoryName &);
         };
 
         class PALUDIS_VISIBLE Category :

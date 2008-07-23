@@ -309,6 +309,7 @@ namespace paludis
 
             PartiallyMadePackageDepSpec();
             ~PartiallyMadePackageDepSpec();
+            PartiallyMadePackageDepSpec(const PackageDepSpec &);
             PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec &);
 
             ///\}
@@ -324,9 +325,14 @@ namespace paludis
             PartiallyMadePackageDepSpec & slot_requirement(const std::tr1::shared_ptr<const SlotRequirement> &);
 
             /**
-             * Set our repository requirements, return ourself.
+             * Set our in-repository requirements, return ourself.
              */
-            PartiallyMadePackageDepSpec & repository(const RepositoryName &);
+            PartiallyMadePackageDepSpec & in_repository(const RepositoryName &);
+
+            /**
+             * Set our from-repository requirements, return ourself.
+             */
+            PartiallyMadePackageDepSpec & from_repository(const RepositoryName &);
 
             /**
              * Set our package name part requirements, return ourself.
@@ -446,9 +452,14 @@ namespace paludis
             std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
-             * Fetch the repo name (may be a zero pointer).
+             * Fetch the in-repo name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const RepositoryName> repository_ptr() const;
+            std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const;
+
+            /**
+             * Fetch the from-repo name (may be a zero pointer).
+             */
+            std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const;
 
             /**
              * Fetch any additional requirements (may be a zero pointer).
@@ -469,6 +480,11 @@ namespace paludis
              * Fetch a copy of ourself without additional requirements.
              */
             std::tr1::shared_ptr<PackageDepSpec> without_additional_requirements() const;
+
+            /**
+             * Access to our data.
+             */
+            std::tr1::shared_ptr<const PackageDepSpecData> data() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
     };
@@ -525,9 +541,14 @@ namespace paludis
             virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
 
             /**
-             * Fetch the repo name (may be a zero pointer).
+             * Fetch the in-repo name (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const RepositoryName> repository_ptr() const = 0;
+            virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
+
+            /**
+             * Fetch the from-repo name (may be a zero pointer).
+             */
+            virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
 
             /**
              * Fetch the additional requirements (may be a zero pointer).

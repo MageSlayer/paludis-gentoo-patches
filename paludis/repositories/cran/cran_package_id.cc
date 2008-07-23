@@ -409,16 +409,10 @@ CRANPackageID::installed_time_key() const
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-CRANPackageID::source_origin_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+CRANPackageID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
-}
-
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-CRANPackageID::binary_origin_key() const
-{
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 std::size_t

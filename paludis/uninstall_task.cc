@@ -87,7 +87,6 @@ namespace paludis
     struct Implementation<UninstallTask>
     {
         Environment * const env;
-        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::list<std::tr1::shared_ptr<const PackageDepSpec> > targets;
@@ -105,7 +104,6 @@ namespace paludis
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
-            uninstall_options(false),
             pretend(false),
             preserve_world(false),
             all_versions(false),
@@ -136,12 +134,6 @@ UninstallTask::set_pretend(const bool v)
 }
 
 void
-UninstallTask::set_no_config_protect(const bool v)
-{
-    _imp->uninstall_options[k::no_config_protect()] = v;
-}
-
-void
 UninstallTask::set_preserve_world(const bool v)
 {
     _imp->preserve_world = v;
@@ -161,15 +153,43 @@ UninstallTask::add_target(const std::string & target)
     try
     {
         std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
-                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set,
+                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<UninstallAction>())));
 
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();
         _imp->had_package_targets = true;
 
-        pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-        _imp->targets.push_back(pds);
+        if (pds->package_ptr())
+        {
+            /* don't need to dewildcard */
+            pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            _imp->targets.push_back(pds);
+        }
+        else
+        {
+            /* blech. wildcards. */
+            std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
+                        generator::Matches(*pds) | filter::SupportsAction<UninstallAction>())]);
+            if (names->empty())
+            {
+                /* no match. we'll get an error from this later anyway. */
+                pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets.push_back(pds);
+            }
+            else
+            {
+                for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
+                        i != i_end ; ++i)
+                {
+                    PartiallyMadePackageDepSpec p(*pds);
+                    p.package((*i)->name());
+                    std::tr1::shared_ptr<PackageDepSpec> pdsn(new PackageDepSpec(p));
+                    pdsn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                    _imp->targets.push_back(pdsn);
+                }
+            }
+        }
     }
     catch (const GotASetNotAPackageDepSpec &)
     {
@@ -339,7 +359,7 @@ UninstallTask::execute()
 
         try
         {
-            UninstallAction uninstall_action(_imp->uninstall_options);
+            UninstallAction uninstall_action;
             i->package_id->perform_action(uninstall_action);
         }
         catch (const UninstallActionError & e)

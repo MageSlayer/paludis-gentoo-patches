@@ -126,6 +126,8 @@ namespace paludis
             virtual void remove_from_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const SetName &) const;
+
+            void add_set(const SetName &, const std::string &);
     };
 }
 

@@ -73,6 +73,29 @@ ConsoleQueryTask::~ConsoleQueryTask()
 void
 ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
 {
+    /* we might be wildcarded. */
+    if (! a.package_ptr())
+    {
+        std::tr1::shared_ptr<const PackageIDSequence> entries(
+                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a))]);
+        if (entries->empty())
+            throw NoSuchPackageError(stringify(a));
+
+        for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
+                i != i_end ; ++i)
+        {
+            PartiallyMadePackageDepSpec p(a);
+            p.package((*i)->name());
+            show_one(p, display_entry);
+        }
+    }
+    else
+        show_one(a, display_entry);
+}
+
+void
+ConsoleQueryTask::show_one(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
+{
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::tr1::shared_ptr<const PackageIDSequence>
@@ -111,7 +134,7 @@ void
 ConsoleQueryTask::display_header(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.repository_ptr())
+            a.in_repository_ptr() || a.from_repository_ptr())
         output_starred_item(render_as_package_name(stringify(a)));
     else
         output_starred_item(render_as_package_name(stringify(e->name())));
@@ -121,7 +144,7 @@ void
 ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.repository_ptr())
+            a.in_repository_ptr() || a.from_repository_ptr())
     {
         std::string pad(std::max<long>(1, 30 - stringify(a).length()), ' ');
         output_starred_item_no_endl(render_as_package_name(stringify(a)) + pad);

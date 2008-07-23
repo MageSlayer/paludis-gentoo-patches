@@ -75,7 +75,9 @@ namespace paludis
         std::tr1::shared_ptr<FSEntrySequence> repository_mask_files;
         std::tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
         std::tr1::shared_ptr<FSEntrySequence> mirror_files;
-        std::tr1::shared_ptr<FSEntrySequence> use_desc_dirs;
+        std::tr1::shared_ptr<FSEntrySequence> info_variables_files;
+        std::tr1::shared_ptr<FSEntrySequence> info_packages_files;
+        std::tr1::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
         Implementation(const ERepository * const n, const FSEntry & t,
                 std::tr1::shared_ptr<const ERepositoryEntries> e) :
@@ -87,7 +89,9 @@ namespace paludis
             repository_mask_files(new FSEntrySequence),
             profiles_desc_files(new FSEntrySequence),
             mirror_files(new FSEntrySequence),
-            use_desc_dirs(new FSEntrySequence)
+            info_variables_files(new FSEntrySequence),
+            info_packages_files(new FSEntrySequence),
+            use_desc_files(new UseDescFileInfoSequence)
         {
         }
     };
@@ -105,14 +109,47 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
         _imp->repository_mask_files->push_back(*master_repository_location() / "metadata" / "repository_mask.conf");
         _imp->profiles_desc_files->push_back(*master_repository_location() / "metadata" / "profiles_desc.conf");
         _imp->mirror_files->push_back(*master_repository_location() / "metadata" / "mirrors.conf");
-        _imp->use_desc_dirs->push_back(*master_repository_location() / "metadata" / "desc");
+        _imp->info_variables_files->push_back(*master_repository_location() / "metadata" / "info" / "variables.conf");
+
+        FSEntry descs(*master_repository_location() / "metadata" / "options" / "descriptions");
+        if (descs.is_directory_or_symlink_to_directory())
+        {
+            for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+            {
+                if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                    continue;
+
+                std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
+                if (p == "options")
+                    _imp->use_desc_files->push_back(std::make_pair(*d, ""));
+                else
+                    _imp->use_desc_files->push_back(std::make_pair(*d, p));
+            }
+        }
     }
 
     _imp->arch_list_files->push_back(_imp->tree_root / "metadata" / "arch.conf");
     _imp->repository_mask_files->push_back(_imp->tree_root / "metadata" / "repository_mask.conf");
     _imp->profiles_desc_files->push_back(_imp->tree_root / "metadata" / "profiles_desc.conf");
     _imp->mirror_files->push_back(_imp->tree_root / "metadata" / "mirrors.conf");
-    _imp->use_desc_dirs->push_back(_imp->tree_root / "metadata" / "desc");
+    _imp->info_variables_files->push_back(_imp->tree_root / "metadata" / "info" / "variables.conf");
+    _imp->info_packages_files->push_back(_imp->tree_root / "metadata" / "info" / "packages.conf");
+
+    FSEntry descs(_imp->tree_root / "metadata" / "options" / "descriptions");
+    if (descs.is_directory_or_symlink_to_directory())
+    {
+        for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+        {
+            if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                continue;
+
+            std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
+            if (p == "options")
+                _imp->use_desc_files->push_back(std::make_pair(*d, ""));
+            else
+                _imp->use_desc_files->push_back(std::make_pair(*d, p));
+        }
+    }
 }
 
 ExheresLayout::~ExheresLayout()
@@ -371,16 +408,16 @@ ExheresLayout::package_ids(const QualifiedPackageName & n) const
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 }
 
-FSEntry
-ExheresLayout::info_packages_file(const FSEntry & dir) const
+const std::tr1::shared_ptr<const FSEntrySequence>
+ExheresLayout::info_packages_files() const
 {
-    return dir / "info_packages.conf";
+    return _imp->info_packages_files;
 }
 
-FSEntry
-ExheresLayout::info_variables_file(const FSEntry & dir) const
+const std::tr1::shared_ptr<const FSEntrySequence>
+ExheresLayout::info_variables_files() const
 {
-    return dir / "info_variables.conf";
+    return _imp->info_variables_files;
 }
 
 FSEntry
@@ -419,10 +456,10 @@ ExheresLayout::mirror_files() const
     return _imp->mirror_files;
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
-ExheresLayout::use_desc_dirs() const
+std::tr1::shared_ptr<const UseDescFileInfoSequence>
+ExheresLayout::use_desc_files() const
 {
-    return _imp->use_desc_dirs;
+    return _imp->use_desc_files;
 }
 
 FSEntry

@@ -168,20 +168,16 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
-        private PrivateImplementationPattern<UninstallAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            UninstallAction(const UninstallActionOptions &);
+            UninstallAction();
             ~UninstallAction();
 
             ///\}
-
-            /// Options for the action.
-            const UninstallActionOptions & options;
     };
 
     /**

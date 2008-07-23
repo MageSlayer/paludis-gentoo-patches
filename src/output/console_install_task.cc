@@ -364,7 +364,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(
                 generator::Matches(repo ?
-                    make_package_dep_spec().package(d.package_id->name()).repository(*repo) :
+                    make_package_dep_spec().package(d.package_id->name()).in_repository(*repo) :
                     make_package_dep_spec().package(d.package_id->name())))]);
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted(
@@ -372,7 +372,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                     make_package_dep_spec()
                     .package(d.package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
-                    .repository(*repo) :
+                    .in_repository(*repo) :
                     make_package_dep_spec()
                     .package(d.package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
@@ -987,14 +987,16 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))) |
                 filter::InstalledAtRoot(environment()->root()))]);
     bool changed(normal_entry == m &&
-                 ! inst->empty() && (*inst->begin())->source_origin_key() &&
-                 (*inst->begin())->source_origin_key()->value() !=
-                 stringify(d.package_id->repository()->name()));
+            ! inst->empty() && (*inst->begin())->from_repositories_key() &&
+            (*inst->begin())->from_repositories_key()->value()->end() ==
+            (*inst->begin())->from_repositories_key()->value()->find(
+                stringify(d.package_id->repository()->name())));
 
     if (changed || environment()->package_database()->favourite_repository() != d.package_id->repository()->name())
         output_no_endl("::" + stringify(d.package_id->repository()->name()));
     if (changed)
-        output_no_endl(" (previously ::" + (*inst->begin())->source_origin_key()->value() + ")");
+        output_no_endl(" (previously ::" + join((*inst->begin())->from_repositories_key()->value()->begin(),
+                        (*inst->begin())->from_repositories_key()->value()->end(), ", ::") + ")");
 }
 
 void
@@ -1637,16 +1639,23 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             {
                 output_stream() << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*environment(), stringify(e.query()), filter::SupportsAction<InstallAction>());
+                try
+                {
+                    FuzzyCandidatesFinder f(*environment(), stringify(e.query()), filter::SupportsAction<InstallAction>());
 
-                if (f.begin() == f.end())
-                    output_stream() << "No suggestions found." << endl;
-                else
-                    output_stream() << "Suggestions:" << endl;
+                    if (f.begin() == f.end())
+                        output_stream() << "No suggestions found." << endl;
+                    else
+                        output_stream() << "Suggestions:" << endl;
 
-                for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
-                        ; c != c_end ; ++c)
-                    output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+                    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()), c_end(f.end())
+                            ; c != c_end ; ++c)
+                        output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+                }
+                catch (const PackageDepSpecError &)
+                {
+                    output_stream() << "Query too complicated or confusing to make suggestions." << endl;
+                }
             }
         }
         else

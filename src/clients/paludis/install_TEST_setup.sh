@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir install_TEST_dir || exit 1
@@ -75,7 +75,7 @@ mkdir -p repo1/{eclass,distfiles,profiles/{testprofile,anothertestprofile},test-
 
 mkdir -p src/target-2
 cat <<"END" > src/target-2/testbin
-#!/bin/bash
+#!/usr/bin/env bash
 echo "Test was a success"
 END
 chmod +x src/target-2/testbin

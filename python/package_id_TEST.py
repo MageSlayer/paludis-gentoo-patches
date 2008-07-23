@@ -33,7 +33,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
         self.ie = NoConfigEnvironment(irepo_path)
         self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar")).next()
-        self.vpid = iter(self.e.package_database.fetch_repository("virtuals").package_ids("virtual/bar")).next()
+        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
+            self.vpid = iter(self.e.package_database.fetch_repository("virtuals").package_ids("virtual/bar")).next()
         self.ipid = iter(self.ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one")).next()
         self.mpid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("cat/masked")).next()
 
@@ -113,9 +114,10 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(isinstance(mask, UnacceptedMask))
 
     def test_14_virtual_for_key(self):
-        self.assertEquals(self.vpid.virtual_for_key().value(), self.pid)
-        self.assertEquals(self.pid.virtual_for_key(), None)
-        self.assertEquals(self.ipid.virtual_for_key(), None)
+        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
+            self.assertEquals(self.vpid.virtual_for_key().value(), self.pid)
+            self.assertEquals(self.pid.virtual_for_key(), None)
+            self.assertEquals(self.ipid.virtual_for_key(), None)
 
     def test_15_provide_key(self):
         self.assert_(isinstance(self.pid.provide_key(), MetadataProvideSpecTreeKey))
@@ -169,13 +171,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.pid.installed_time_key(), None)
         self.assert_(isinstance(self.ipid.installed_time_key(), MetadataTimeKey))
 
-    def test_28_source_origin_key(self):
-        self.assertEquals(self.pid.source_origin_key(), None)
-        self.assertEquals(self.ipid.source_origin_key().value(), "origin_test")
-
-    def test_29_binary_origin_key(self):
-        self.assertEquals(self.pid.binary_origin_key(), None)
-        self.assertEquals(self.ipid.binary_origin_key(), None)
+    def test_28_from_repositories_key(self):
+        self.assertEquals(self.pid.from_repositories_key(), None)
+        self.assertEquals(iter(self.ipid.from_repositories_key().value()).next(), "origin_test")
 
     def test_30_fs_location_key(self):
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))

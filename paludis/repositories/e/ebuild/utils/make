@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if /bin/make --version &>/dev/null ; then
     /bin/make "$@"

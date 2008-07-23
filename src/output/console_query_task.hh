@@ -40,6 +40,8 @@ namespace paludis
         protected:
             ConsoleQueryTask(const Environment * const env);
 
+            virtual void show_one(const PackageDepSpec &, std::tr1::shared_ptr<const PackageID> = std::tr1::shared_ptr<const PackageID>()) const;
+
         public:
             virtual ~ConsoleQueryTask();
 

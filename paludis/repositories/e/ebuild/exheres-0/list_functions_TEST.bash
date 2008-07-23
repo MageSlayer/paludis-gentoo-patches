@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006, 2008 Ciaran McCreesh

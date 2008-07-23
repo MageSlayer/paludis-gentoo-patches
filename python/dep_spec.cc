@@ -112,7 +112,8 @@ namespace paludis
         std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
         std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<const RepositoryName> repository;
+        std::tr1::shared_ptr<const RepositoryName> in_repository;
+        std::tr1::shared_ptr<const RepositoryName> from_repository;
         std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
         std::tr1::shared_ptr<const DepTag> tag;
         const std::string str;
@@ -124,7 +125,8 @@ namespace paludis
                 const std::tr1::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
                 const std::tr1::shared_ptr<const SlotRequirement> & s,
-                const std::tr1::shared_ptr<const RepositoryName> & r,
+                const std::tr1::shared_ptr<const RepositoryName> & ri,
+                const std::tr1::shared_ptr<const RepositoryName> & rf,
                 const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const std::tr1::shared_ptr<const DepTag> & t,
                 const std::string & st) :
@@ -134,7 +136,8 @@ namespace paludis
             version_requirements(v),
             version_requirements_mode(m),
             slot(s),
-            repository(r),
+            in_repository(ri),
+            from_repository(rf),
             additional_requirements(u),
             tag(t),
             str(st)
@@ -260,7 +263,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
                 make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
                 p.slot_requirement_ptr(),
-                deep_copy(p.repository_ptr()),
+                deep_copy(p.in_repository_ptr()),
+                deep_copy(p.from_repository_ptr()),
                 p.additional_requirements_ptr(),
                 p.tag(),
                 stringify(p)))
@@ -281,7 +285,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
                 p.slot_requirement_ptr(),
-                deep_copy(p.repository_ptr()),
+                deep_copy(p.in_repository_ptr()),
+                deep_copy(p.from_repository_ptr()),
                 p.additional_requirements_ptr(),
                 p.tag(),
                 p.py_str()))
@@ -312,8 +317,11 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (slot_requirement_ptr())
         p.slot_requirement(slot_requirement_ptr());
 
-    if (repository_ptr())
-        p.repository(*repository_ptr());
+    if (in_repository_ptr())
+        p.in_repository(*in_repository_ptr());
+
+    if (from_repository_ptr())
+        p.from_repository(*from_repository_ptr());
 
     if (additional_requirements_ptr())
     {
@@ -395,9 +403,15 @@ PythonPackageDepSpec::slot_requirement_ptr() const
 }
 
 std::tr1::shared_ptr<const RepositoryName>
-PythonPackageDepSpec::repository_ptr() const
+PythonPackageDepSpec::in_repository_ptr() const
 {
-    return _imp->repository;
+    return _imp->in_repository;
+}
+
+std::tr1::shared_ptr<const RepositoryName>
+PythonPackageDepSpec::from_repository_ptr() const
+{
+    return _imp->from_repository;
 }
 
 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
@@ -1236,9 +1250,15 @@ void expose_dep_spec()
                 )
 #endif
 
-        .add_property("repository", &PythonPackageDepSpec::repository_ptr,
+        .add_property("in_repository", &PythonPackageDepSpec::in_repository_ptr,
                 "[ro] RepositoryName\n"
-                "Repository name (may be None)."
+                "In repository name (may be None)."
+
+                )
+
+        .add_property("from_repository", &PythonPackageDepSpec::from_repository_ptr,
+                "[ro] RepositoryName\n"
+                "From repository name (may be None)."
                 )
 
 #if 0

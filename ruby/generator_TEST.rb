@@ -76,12 +76,12 @@ module Paludis
     class TestCase_GeneratorRepository < Test::Unit::TestCase
         def test_create
             assert_nothing_raised do
-                Generator::Repository.new("repo")
+                Generator::InRepository.new("repo")
             end
         end
 
         def test_to_s
-            assert_equal Generator::Repository.new("repo").to_s, "packages with repository repo"
+            assert_equal Generator::InRepository.new("repo").to_s, "packages with repository repo"
         end
     end
 
@@ -100,12 +100,12 @@ module Paludis
     class TestCase_GeneratorIntersection < Test::Unit::TestCase
         def test_create
             assert_nothing_raised do
-                Generator::Intersection.new(Generator::All.new, Generator::Repository.new("arbor"))
+                Generator::Intersection.new(Generator::All.new, Generator::InRepository.new("arbor"))
             end
         end
 
         def test_to_s
-            assert_equal Generator::Intersection.new(Generator::All.new, Generator::Repository.new("arbor")).to_s,
+            assert_equal Generator::Intersection.new(Generator::All.new, Generator::InRepository.new("arbor")).to_s,
                 "all packages intersected with packages with repository arbor"
         end
     end
@@ -113,14 +113,14 @@ module Paludis
     class TestCase_GeneratorAmpersand < Test::Unit::TestCase
         def test_create
             g1 = Generator::All.new
-            g2 = Generator::Repository.new("arbor")
+            g2 = Generator::InRepository.new("arbor")
             assert_nothing_raised do
                 g1 & g2
             end
         end
 
         def test_to_s
-            assert_equal (Generator::All.new & Generator::Repository.new("arbor")).to_s,
+            assert_equal (Generator::All.new & Generator::InRepository.new("arbor")).to_s,
                 "all packages intersected with packages with repository arbor"
         end
     end

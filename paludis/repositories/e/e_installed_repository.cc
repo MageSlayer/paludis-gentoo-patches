@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -407,38 +408,52 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
             continue;
 
         /* try to find an info_vars file from the original repo */
-        FSEntry i("/dev/null");
-        if (id->source_origin_key())
+        std::tr1::shared_ptr<const Set<std::string> > i;
+        if (id->from_repositories_key())
         {
-            RepositoryName rn(id->source_origin_key()->value());
-            if (_imp->params.environment->package_database()->has_repository_named(rn))
+            for (Set<std::string>::ConstIterator o(id->from_repositories_key()->value()->begin()),
+                    o_end(id->from_repositories_key()->value()->end()) ;
+                    o != o_end ; ++o)
             {
-                const std::tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
-                if ((*r)[k::e_interface()])
+                RepositoryName rn(*o);
+                if (_imp->params.environment->package_database()->has_repository_named(rn))
                 {
-                    i = (*r)[k::e_interface()]->info_variables_file((*r)[k::e_interface()]->params().location / "profiles");
-
-                    /* also try its master, if it has one */
-                    if ((! i.exists()) && (*r)[k::e_interface()]->params().master_repository)
-                        i = (*r)[k::e_interface()]->info_variables_file(
-                                (*r)[k::e_interface()]->params().master_repository->params().location / "profiles");
+                    const std::tr1::shared_ptr<const Repository> r(
+                            _imp->params.environment->package_database()->fetch_repository(rn));
+                    Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
+                    if (r->end_metadata() != m)
+                    {
+                        const MetadataCollectionKey<Set<std::string> > * const mm(
+                                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                        if (mm)
+                        {
+                            i = mm->value();
+                            break;
+                        }
+                    }
                 }
             }
         }
 
         /* try to find an info_vars file from any repo */
-        if (i == FSEntry("/dev/null"))
+        if (! i)
         {
-            for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment->package_database()->begin_repositories()),
+            for (PackageDatabase::RepositoryConstIterator
+                    r(_imp->params.environment->package_database()->begin_repositories()),
                     r_end(_imp->params.environment->package_database()->end_repositories()) ;
                     r != r_end ; ++r)
             {
-                if (! (**r)[k::e_interface()])
-                    continue;
-
-                i = (**r)[k::e_interface()]->info_variables_file((**r)[k::e_interface()]->params().location / "profiles");
-                if (i.exists())
-                    break;
+                Repository::MetadataConstIterator m((*r)->find_metadata("info_vars"));
+                if ((*r)->end_metadata() != m)
+                {
+                    const MetadataCollectionKey<Set<std::string> > * const mm(
+                            visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                    if (mm)
+                    {
+                        i = mm->value();
+                        break;
+                    }
+                }
             }
         }
 
@@ -463,7 +478,7 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
                 (k::use_expand(), "")
                 (k::expand_vars(), make_shared_ptr(new Map<std::string, std::string>))
                 (k::profiles(), make_shared_ptr(new FSEntrySequence))
-                (k::info_vars(), i)
+                (k::info_vars(), i ? i : make_shared_ptr(new const Set<std::string>))
                 (k::use_ebuild_file(), false)
                 (k::load_environment(), load_env.get()));
 

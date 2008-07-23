@@ -207,8 +207,6 @@ namespace paludis
 
             const ERepositoryParams & params() const;
 
-            virtual FSEntry info_variables_file(const FSEntry &) const;
-
             ///\}
 
             ///\name Profile setting and querying functions
@@ -245,6 +243,7 @@ namespace paludis
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
     };
 }
 

@@ -177,6 +177,18 @@ namespace paludis
             const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
     };
 
+    class PALUDIS_VISIBLE FakeUnsupportedMask :
+        public UnsupportedMask
+    {
+        public:
+            FakeUnsupportedMask();
+            ~FakeUnsupportedMask();
+
+            char key() const;
+            const std::string description() const;
+            const std::string explanation() const;
+    };
+
     /**
      * A PackageID in a FakeRepository or a FakeInstalledRepository.
      *
@@ -229,14 +241,13 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents_key() const;
             virtual const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > source_origin_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_origin_key() const;
             virtual const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > contained_in_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
 
             const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
@@ -268,6 +279,8 @@ namespace paludis
             virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void invalidate_masks() const;
+
+            void make_unsupported();
 
     };
 }

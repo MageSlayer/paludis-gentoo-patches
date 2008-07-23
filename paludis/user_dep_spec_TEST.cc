@@ -112,7 +112,8 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(i, "foo/bar[-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*i.package_ptr(), "foo/bar");
             TEST_CHECK(! i.version_requirements_ptr());
-            TEST_CHECK(! i.repository_ptr());
+            TEST_CHECK(! i.in_repository_ptr());
+            TEST_CHECK(! i.from_repository_ptr());
             TEST_CHECK(! i.slot_requirement_ptr());
             TEST_CHECK(i.additional_requirements_ptr());
 
@@ -134,7 +135,8 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(l, "foo/bar[>=1.2&<2.0][-two][one]");
             TEST_CHECK_STRINGIFY_EQUAL(*l.package_ptr(), "foo/bar");
             TEST_CHECK(l.version_requirements_ptr());
-            TEST_CHECK(! l.repository_ptr());
+            TEST_CHECK(! l.in_repository_ptr());
+            TEST_CHECK(! l.from_repository_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(l.version_requirements_ptr()->begin()->version_spec, "1.2");
             TEST_CHECK_EQUAL(l.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
             TEST_CHECK_STRINGIFY_EQUAL(next(l.version_requirements_ptr()->begin())->version_spec, "2.0");
@@ -145,7 +147,8 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(m, "foo/bar[=1.2|=1.3*|~1.4]");
             TEST_CHECK_STRINGIFY_EQUAL(*m.package_ptr(), "foo/bar");
             TEST_CHECK(m.version_requirements_ptr());
-            TEST_CHECK(! m.repository_ptr());
+            TEST_CHECK(! m.in_repository_ptr());
+            TEST_CHECK(! m.from_repository_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(m.version_requirements_ptr()->begin()->version_spec, "1.2");
             TEST_CHECK_EQUAL(m.version_requirements_ptr()->begin()->version_operator, vo_equal);
             TEST_CHECK_STRINGIFY_EQUAL(next(m.version_requirements_ptr()->begin())->version_spec, "1.3");
@@ -153,6 +156,23 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_spec, "1.4");
             TEST_CHECK_EQUAL(next(next(m.version_requirements_ptr()->begin()))->version_operator, vo_tilde);
             TEST_CHECK(! m.slot_requirement_ptr());
+
+            PackageDepSpec n(parse_user_package_dep_spec("=foo/bar--1.2.3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(n, "=foo/bar--1.2.3");
+            TEST_CHECK_STRINGIFY_EQUAL(*n.package_ptr(), "foo/bar-");
+            TEST_CHECK(n.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(n.version_requirements_ptr()->begin()->version_spec, "1.2.3");
+            TEST_CHECK_EQUAL(n.version_requirements_ptr()->begin()->version_operator, vo_equal);
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar--", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+
+            PackageDepSpec o(parse_user_package_dep_spec("=foo/bar---1.2.3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(o, "=foo/bar---1.2.3");
+            TEST_CHECK_STRINGIFY_EQUAL(*o.package_ptr(), "foo/bar--");
+            TEST_CHECK(o.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(o.version_requirements_ptr()->begin()->version_spec, "1.2.3");
+            TEST_CHECK_EQUAL(o.version_requirements_ptr()->begin()->version_operator, vo_equal);
+
         }
     } test_user_package_dep_spec;
 
@@ -205,6 +225,41 @@ namespace test_cases
             TEST_CHECK(! f.category_name_part_ptr());
         }
     } test_user_package_dep_spec_unspecific;
+
+    struct UserPackageDepSpecReposTest : TestCase
+    {
+        UserPackageDepSpecReposTest() : TestCase("user package dep spec repos") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg::repo",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            TEST_CHECK(a.in_repository_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*a.in_repository_ptr(), "repo");
+            TEST_CHECK(! a.from_repository_ptr());
+
+            PackageDepSpec b(parse_user_package_dep_spec("cat/pkg::->repo",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            TEST_CHECK(b.in_repository_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*b.in_repository_ptr(), "repo");
+            TEST_CHECK(! b.from_repository_ptr());
+
+            PackageDepSpec c(parse_user_package_dep_spec("cat/pkg::repo->",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            TEST_CHECK(c.from_repository_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*c.from_repository_ptr(), "repo");
+            TEST_CHECK(! c.in_repository_ptr());
+
+            PackageDepSpec d(parse_user_package_dep_spec("cat/pkg::r1->r2",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            TEST_CHECK(d.in_repository_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*d.in_repository_ptr(), "r2");
+            TEST_CHECK(d.from_repository_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*d.from_repository_ptr(), "r1");
+        }
+    } test_user_package_dep_spec_repo;
 
     struct UserPackageDepSpecDisambiguationTest : TestCase
     {

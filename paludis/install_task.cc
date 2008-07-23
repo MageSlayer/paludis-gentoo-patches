@@ -69,7 +69,6 @@ namespace paludis
         DepList dep_list;
         FetchActionOptions fetch_options;
         InstallActionOptions install_options;
-        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
@@ -99,12 +98,10 @@ namespace paludis
                     ),
             install_options(
                     InstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
                     (k::destination(), std::tr1::shared_ptr<Repository>())
                     ),
-            uninstall_options(false),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
@@ -385,7 +382,7 @@ InstallTask::_add_target(const std::string & target)
     try
     {
         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
-                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set,
+                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<InstallAction>())));
 
         if (_imp->had_set_targets)
@@ -394,9 +391,38 @@ InstallTask::_add_target(const std::string & target)
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type = dl_target_package;
 
-        spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-        _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        if (spec->package_ptr())
+        {
+            /* no wildcards */
+            spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        }
+        else
+        {
+            std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
+                        generator::Matches(*spec) | filter::SupportsAction<InstallAction>())]);
+
+            if (names->empty())
+            {
+                /* no match. we'll get an error from this later anyway. */
+                spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            }
+            else
+                for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
+                        i != i_end ; ++i)
+                {
+                    PartiallyMadePackageDepSpec p(*spec);
+                    p.package((*i)->name());
+                    std::tr1::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
+                    specn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                    _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                new TreeLeaf<SetSpecTree, PackageDepSpec>(specn)));
+                }
+        }
+
         _imp->raw_targets.push_back(stringify(*spec));
     }
     catch (const GotASetNotAPackageDepSpec &)
@@ -435,7 +461,7 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
                 .package(target->name())
                 .version_requirement(VersionRequirement(vo_equal, target->version()))
                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
-                .repository(target->repository()->name())));
+                .in_repository(target->repository()->name())));
 
     spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
     _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -720,7 +746,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 generator::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .repository(dep->destination->name())) |
+                    .in_repository(dep->destination->name())) |
                 filter::SupportsAction<UninstallAction>())];
 
     // don't clean the thing we just installed
@@ -756,7 +782,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             try
             {
-                UninstallAction uninstall_action(_imp->uninstall_options);
+                UninstallAction uninstall_action;
                 (*c)->perform_action(uninstall_action);
             }
             catch (const UninstallActionError & e)
@@ -1081,13 +1107,6 @@ const DepList &
 InstallTask::dep_list() const
 {
     return _imp->dep_list;
-}
-
-void
-InstallTask::set_no_config_protect(const bool value)
-{
-    _imp->install_options[k::no_config_protect()] = value;
-    _imp->uninstall_options[k::no_config_protect()] = value;
 }
 
 void

@@ -345,7 +345,7 @@ rather than hard dependency (the named hooks not existing is not an error).
 For example:</p>
 
 <pre>
-#!/bin/bash
+#!/usr/bin/env bash
 
 hook_run_install_all_post()
 {

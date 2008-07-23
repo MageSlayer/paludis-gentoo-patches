@@ -236,6 +236,36 @@ namespace
         }
     };
 
+    struct SlotFilterHandler :
+        AllFilterHandlerBase
+    {
+        const SlotName n;
+
+        SlotFilterHandler(const SlotName & nn) :
+            n(nn)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if ((*i)->slot() == n)
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "slot is '" + stringify(n) + "'";
+        }
+    };
+
     struct AndFilterHandler :
         FilterHandler
     {
@@ -303,6 +333,11 @@ filter::NotMasked::NotMasked() :
 
 filter::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
     Filter(make_shared_ptr(new InstalledAtRootFilterHandler(r)))
+{
+}
+
+filter::Slot::Slot(const SlotName & n) :
+    Filter(make_shared_ptr(new SlotFilterHandler(n)))
 {
 }
 

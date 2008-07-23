@@ -31,7 +31,8 @@ namespace
     static VALUE c_generator_all;
     static VALUE c_generator_matches;
     static VALUE c_generator_package;
-    static VALUE c_generator_repository;
+    static VALUE c_generator_in_repository;
+    static VALUE c_generator_from_repository;
     static VALUE c_generator_category;
     static VALUE c_generator_intersection;
 
@@ -167,13 +168,32 @@ namespace
     }
 
     VALUE
-    generator_repository_new(VALUE self, VALUE name_v)
+    generator_in_repository_new(VALUE self, VALUE name_v)
     {
         Generator * ptr(0);
         try
         {
             RepositoryName name(StringValuePtr(name_v));
-            ptr = new generator::Repository(name);
+            ptr = new generator::InRepository(name);
+            VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
+            rb_obj_call_init(data, 1, &name_v);
+            return data;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    generator_from_repository_new(VALUE self, VALUE name_v)
+    {
+        Generator * ptr(0);
+        try
+        {
+            RepositoryName name(StringValuePtr(name_v));
+            ptr = new generator::FromRepository(name);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
             rb_obj_call_init(data, 1, &name_v);
             return data;
@@ -268,12 +288,20 @@ namespace
         rb_define_singleton_method(c_generator_category, "new", RUBY_FUNC_CAST(&generator_category_new), 1);
 
         /*
-         * Document-class: Paludis::Generator::Repository
+         * Document-class: Paludis::Generator::InRepository
          *
          * Generate all packages in a given repository.
          */
-        c_generator_repository = rb_define_class_under(c_generator_module, "Repository", c_generator);
-        rb_define_singleton_method(c_generator_repository, "new", RUBY_FUNC_CAST(&generator_repository_new), 1);
+        c_generator_in_repository = rb_define_class_under(c_generator_module, "InRepository", c_generator);
+        rb_define_singleton_method(c_generator_in_repository, "new", RUBY_FUNC_CAST(&generator_in_repository_new), 1);
+
+        /*
+         * Document-class: Paludis::Generator::FromRepository
+         *
+         * Generate all packages originally from a given repository.
+         */
+        c_generator_from_repository = rb_define_class_under(c_generator_module, "FromRepository", c_generator);
+        rb_define_singleton_method(c_generator_from_repository, "new", RUBY_FUNC_CAST(&generator_from_repository_new), 1);
     }
 }
 

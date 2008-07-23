@@ -337,13 +337,10 @@ namespace test_cases
             InstallAction install_action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), vdb_repo)
                     );
 
-            UninstallAction uninstall_action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction uninstall_action;
 
             InfoAction info_action;
             ConfigAction config_action;
@@ -454,13 +451,10 @@ namespace test_cases
             InstallAction install_action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), vdb_repo)
                     );
 
-            UninstallAction uninstall_action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction uninstall_action;
 
             InfoAction info_action;
             ConfigAction config_action;
@@ -571,13 +565,10 @@ namespace test_cases
             InstallAction install_action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), vdb_repo)
                     );
 
-            UninstallAction uninstall_action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction uninstall_action;
 
             {
                 std::vector<FSEntry> cache_contents;
@@ -933,13 +924,10 @@ namespace test_cases
             InstallAction install_action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), vdb_repo)
                     );
 
-            UninstallAction uninstall_action(UninstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
-                    );
+            UninstallAction uninstall_action;
 
             TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
 
@@ -1149,7 +1137,6 @@ namespace test_cases
             InstallAction install_action(InstallActionOptions::named_create()
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
-                    (k::no_config_protect(), false)
                     (k::destination(), vdb_repo)
                     );
 

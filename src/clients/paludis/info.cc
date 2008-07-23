@@ -76,9 +76,13 @@ namespace
         {
             cout << endl;
             cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
-            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(k.begin_metadata(), k.end_metadata());
+            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(
+                    k.begin_metadata(), k.end_metadata());
             InfoDisplayer i(indent + "    ");
-            std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
+            for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+                    e(keys.begin()), e_end(keys.end()) ; e != e_end ; ++e)
+                if ((*e)->type() != mkt_internal)
+                    accept_visitor(i)(**e);
         }
 
         void visit(const MetadataValueKey<std::string> & k)
@@ -315,7 +319,10 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
         std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
                 env->begin_metadata(), env->end_metadata());
         InfoDisplayer i("    ");
-        std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
+        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+            if ((*k)->type() != mkt_internal)
+                accept_visitor(i)(**k);
         cout << endl;
     }
 
@@ -326,7 +333,10 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
         std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
         InfoDisplayer i("    ");
-        std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
+        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+            if ((*k)->type() != mkt_internal)
+                accept_visitor(i)(**k);
         cout << endl;
     }
 

@@ -175,7 +175,8 @@ namespace paludis
                 VersionRequirementsMode version_requirements_mode() const;
                 void set_version_requirements_mode(const VersionRequirementsMode m);
                 std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
-                std::tr1::shared_ptr<const RepositoryName> repository_ptr() const;
+                std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const;
+                std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const;
                 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
                 std::tr1::shared_ptr<const DepTag> tag() const;
                 void set_tag(const std::tr1::shared_ptr<const DepTag> & s);

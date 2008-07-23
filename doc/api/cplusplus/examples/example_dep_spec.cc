@@ -103,8 +103,11 @@ int main(int argc, char * argv[])
             if (spec.slot_requirement_ptr())
                 cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
 
-            if (spec.repository_ptr())
-                cout << "    " << left << setw(24) << "Repository:" << " " << *spec.repository_ptr() << endl;
+            if (spec.in_repository_ptr())
+                cout << "    " << left << setw(24) << "In repository:" << " " << *spec.in_repository_ptr() << endl;
+
+            if (spec.from_repository_ptr())
+                cout << "    " << left << setw(24) << "From repository:" << " " << *spec.from_repository_ptr() << endl;
 
             if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
             {

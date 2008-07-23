@@ -94,7 +94,6 @@ namespace paludis
             ///\name DepList and Install behaviour options
             ///\{
 
-            void set_no_config_protect(const bool value);
             void set_fetch_only(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);

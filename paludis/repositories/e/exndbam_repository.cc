@@ -368,8 +368,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        UninstallActionOptions uninstall_options(false);
-        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), uninstall_options, true);
+        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true);
     }
 
     VDBPostMergeCommand post_merge_command(
@@ -380,8 +379,7 @@ ExndbamRepository::merge(const MergeParams & m)
 }
 
 void
-ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const UninstallActionOptions & o, bool replace) const
+ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id, bool replace) const
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
 
@@ -458,7 +456,6 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
 
             EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::named_create()
                     (k::root(), stringify(_imp->params.root))
-                    (k::disable_cfgpro(), o[k::no_config_protect()])
                     (k::unmerge_only(), false)
                     (k::loadsaveenv_dir(), ver_dir)
                     (k::load_environment(), load_env.get()));

@@ -218,7 +218,6 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(InstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
                     (k::destination(), installed_repo)
@@ -273,7 +272,6 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(InstallActionOptions::named_create()
-                    (k::no_config_protect(), false)
                     (k::debug_build(), iado_none)
                     (k::checks(), iaco_default)
                     (k::destination(), installed_repo)

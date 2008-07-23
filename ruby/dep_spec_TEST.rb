@@ -118,9 +118,14 @@ module Paludis
             assert_nil pdb.package
         end
 
-        def test_repository
-            assert_equal "testrepo", pda.repository
-            assert_nil pdb.repository
+        def test_from_repository
+            assert_nil pda.from_repository
+            assert_nil pdb.from_repository
+        end
+
+        def test_in_repository
+            assert_equal "testrepo", pda.in_repository
+            assert_nil pdb.in_repository
         end
 
         def test_package_name_part

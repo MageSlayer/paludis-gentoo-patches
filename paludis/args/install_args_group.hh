@@ -74,9 +74,6 @@ namespace paludis
                 /// --add-to-world-spec
                 paludis::args::StringArg a_add_to_world_spec;
 
-                /// --no-config-protection
-                paludis::args::SwitchArg a_no_config_protection;
-
                 /// --debug-build
                 paludis::args::DebugBuildArg a_debug_build;
 

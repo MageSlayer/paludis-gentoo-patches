@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ebuild.bash doesn't allow USE etc to be set in user settings. But we need
 # to source make.conf to pick up things like CFLAGS.

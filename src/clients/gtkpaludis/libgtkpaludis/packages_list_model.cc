@@ -140,18 +140,22 @@ namespace
         std::string status;
         std::tr1::shared_ptr<const PackageIDSequence> ci(
                 (*environment)[selection::AllVersionsSorted(
-                    generator::Matches(pds) &
-                    generator::Matches(make_package_dep_spec()
-                        .package(id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                    (
+                     generator::Matches(pds) &
+                     generator::Matches(make_package_dep_spec()
+                         .package(id->name())
+                         .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot()))))
+                    ) |
                     filter::InstalledAtRoot(environment->root()))]);
 
         std::tr1::shared_ptr<const PackageIDSequence> av(
                 (*environment)[selection::AllVersionsSorted(
-                    generator::Matches(pds) &
-                    generator::Matches(make_package_dep_spec()
-                        .package(id->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                    (
+                     generator::Matches(pds) &
+                     generator::Matches(make_package_dep_spec()
+                         .package(id->name())
+                         .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot()))))
+                    ) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked())]);
 
@@ -178,10 +182,12 @@ namespace
         {
             std::tr1::shared_ptr<const PackageIDSequence> av(
                     (*environment)[selection::AllVersionsSorted(
-                        generator::Matches(pds) &
-                        generator::Matches(make_package_dep_spec()
-                            .package(id->name())
-                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot())))) |
+                        (
+                            generator::Matches(pds) &
+                            generator::Matches(make_package_dep_spec()
+                                .package(id->name())
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(id->slot()))))
+                        ) |
                         filter::SupportsAction<InstallAction>() |
                         filter::NotMasked())]);
             if (av->empty())

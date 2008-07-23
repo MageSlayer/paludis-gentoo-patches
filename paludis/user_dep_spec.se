@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set sw=4 sts=4 et ft=sh :
 
 make_enum_UserPackageDepSpecOption()

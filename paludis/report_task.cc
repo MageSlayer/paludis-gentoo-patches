@@ -194,28 +194,37 @@ ReportTask::execute()
                         v != v_end ; ++v)
                 {
                     bool is_missing(false);
-                    std::tr1::shared_ptr<const PackageID> origin;
-                    std::tr1::shared_ptr<RepositoryName> repo_name;
+                    std::tr1::shared_ptr<PackageIDSequence> origins;
 
-                    if ((*v)->source_origin_key())
+                    if ((*v)->from_repositories_key())
                     {
-                        repo_name.reset(new RepositoryName((*v)->source_origin_key()->value()));
+                        is_missing = ! ((*v)->transient_key() && (*v)->transient_key()->value());
 
-                        std::tr1::shared_ptr<const PackageIDSequence> installable(
-                            (*e)[selection::BestVersionOnly(
-                                generator::Matches(make_package_dep_spec()
-                                    .package((*v)->name())
-                                    .version_requirement(VersionRequirement(vo_equal, (*v)->version()))
-                                    .repository(*repo_name)) |
-                                filter::SupportsAction<InstallAction>())]);
+                        for (Set<std::string>::ConstIterator o((*v)->from_repositories_key()->value()->begin()),
+                                o_end((*v)->from_repositories_key()->value()->end()) ;
+                                o != o_end ; ++o)
+                        {
+                            std::tr1::shared_ptr<const PackageIDSequence> installable(
+                                (*e)[selection::BestVersionOnly(
+                                    generator::Matches(make_package_dep_spec()
+                                        .package((*v)->name())
+                                        .version_requirement(VersionRequirement(vo_equal, (*v)->version()))
+                                        .in_repository(RepositoryName(*o))) |
+                                    filter::SupportsAction<InstallAction>())]);
 
-                        if (installable->empty())
-                            is_missing = ! ((*v)->transient_key() && (*v)->transient_key()->value());
-                        else
-                            origin = *installable->last();
+                            if (! installable->empty())
+                            {
+                                is_missing = false;
+                                if (! origins)
+                                    origins.reset(new PackageIDSequence);
+                                origins->push_back(*installable->last());
+                            }
+                        }
                     }
 
-                    bool is_masked(origin && origin->masked());
+                    bool is_masked(origins && origins->end() != std::find_if(origins->begin(),
+                                origins->end(), std::tr1::bind(std::tr1::mem_fn(&PackageID::masked),
+                                    std::tr1::placeholders::_1)));
                     bool is_vulnerable(false);
                     bool is_unused(false);
 
@@ -230,7 +239,7 @@ ReportTask::execute()
                     {
                         on_report_package_failure_pre(*v);
                         if (is_masked)
-                            on_report_package_is_masked(*v, origin);
+                            on_report_package_is_masked(*v, origins);
                         if (is_vulnerable)
                         {
                             on_report_package_is_vulnerable_pre(*v);
@@ -239,7 +248,7 @@ ReportTask::execute()
                             on_report_package_is_vulnerable_post(*v);
                         }
                         if (is_missing)
-                            on_report_package_is_missing(*v, *repo_name);
+                            on_report_package_is_missing(*v);
                         if (is_unused)
                             on_report_package_is_unused(*v);
                         on_report_package_failure_post(*v);
@@ -255,3 +264,4 @@ ReportTask::execute()
 
     on_report_all_post();
 }
+

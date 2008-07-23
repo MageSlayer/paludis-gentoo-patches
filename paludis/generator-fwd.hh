@@ -32,7 +32,8 @@ namespace paludis
         class All;
         class Matches;
         class Package;
-        class Repository;
+        class FromRepository;
+        class InRepository;
         class Category;
         class Intersection;
         template <typename> class SomeIDsMightSupportAction;

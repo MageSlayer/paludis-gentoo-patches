@@ -442,14 +442,19 @@ namespace
             else if (parser.consume(+simple_parser::any_of(" \t") >> w))
             {
                 if (k.options()[kvcfo_disallow_space_inside_unquoted_values])
-                    throw ConfigFileError(sr.filename(), "Not allowed space inside unquoted values at line "
-                            + stringify(parser.current_line_number()));
+                {
+                    if (k.options()[kvcfo_allow_multiple_assigns_per_line])
+                        break;
+                    else
+                        throw ConfigFileError(sr.filename(), "Not allowed space inside unquoted values at line "
+                                + stringify(parser.current_line_number()));
+                }
                 else if (k.options()[kvcfo_preserve_whitespace])
                     result.append(w);
                 else
                     need_single_space_unless_eol = true;
             }
-            else if ((! k.options()[kvcfo_allow_inline_comments]) && parser.consume(simple_parser::exact("#")))
+            else if ((k.options()[kvcfo_allow_inline_comments]) && parser.consume(simple_parser::exact("#")))
             {
                 if (! parser.consume(*simple_parser::any_except("\n")))
                     throw InternalError(PALUDIS_HERE, "failed to consume a zero width match");
@@ -586,7 +591,9 @@ KeyValueConfigFile::KeyValueConfigFile(
 
             if (_imp->options[kvcfo_allow_inline_comments] && parser.consume(simple_parser::exact("#") &
                         *simple_parser::any_except("\n")))
-                /* skippity skippity */ ;
+            {
+                /* skippity skippity */
+            }
 
             if (! parser.consume(simple_parser::exact("\n")))
             {

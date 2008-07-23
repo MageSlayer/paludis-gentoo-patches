@@ -22,8 +22,12 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+#include <paludis/util/keys.hh>
+#include <paludis/util/kc-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/version_operator-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 #include <tr1/functional>
 #include <iosfwd>
 
@@ -34,11 +38,55 @@ namespace paludis
 
     typedef Options<ELikePackageDepSpecOption> ELikePackageDepSpecOptions;
 
-    PackageDepSpec parse_elike_package_dep_spec(const std::string &, const ELikePackageDepSpecOptions &,
-            const std::tr1::shared_ptr<const PackageID> &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+    typedef kc::KeyedClass<
+        kc::Field<k::check_sanity, std::tr1::function<void (const std::string &)> >,
+        kc::Field<k::remove_trailing_square_bracket_if_exists, std::tr1::function<bool (std::string &, PartiallyMadePackageDepSpec &)> >,
+        kc::Field<k::remove_trailing_slot_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> >,
+        kc::Field<k::remove_trailing_repo_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> >,
+        kc::Field<k::has_version_operator, std::tr1::function<bool (const std::string &)> >,
+        kc::Field<k::get_remove_version_operator, std::tr1::function<VersionOperator (std::string &)> >,
+        kc::Field<k::get_remove_trailing_version, std::tr1::function<VersionSpec (std::string &)> >,
+        kc::Field<k::add_version_requirement, std::tr1::function<void (const VersionOperator &, const VersionSpec &, PartiallyMadePackageDepSpec &)> >,
+        kc::Field<k::add_package_requirement, std::tr1::function<void (const std::string &, PartiallyMadePackageDepSpec &)> >
+            > GenericELikePackageDepSpecParseFunctions;
 
-    PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string &, const ELikePackageDepSpecOptions &,
-            const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+    PackageDepSpec parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    PartiallyMadePackageDepSpec partial_parse_generic_elike_package_dep_spec(const std::string & ss,
+            const GenericELikePackageDepSpecParseFunctions & fns)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    PackageDepSpec parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
+            const std::tr1::shared_ptr<const PackageID> &)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
+            const std::tr1::shared_ptr<const PackageID> &)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
+
+    bool elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+            const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
+            const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+
+    void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+            const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
+
+    void elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+            const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
+
+    bool elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements) PALUDIS_VISIBLE;
+
+    VersionOperator elike_get_remove_version_operator(std::string & s, const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
+
+    VersionSpec elike_get_remove_trailing_version(std::string & s) PALUDIS_VISIBLE;
+
+    void elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
+        PALUDIS_VISIBLE;
+
+    void elike_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result) PALUDIS_VISIBLE;
 }
 
 #endif

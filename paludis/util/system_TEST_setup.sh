@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir system_TEST_dir || exit 2
 cd system_TEST_dir || exit 3
 
 cat <<'END' > pipe_test.bash
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "$1" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
 response1=
@@ -27,7 +27,7 @@ exit $response1$response2
 END
 
 cat <<'END' > captured_pipe_test.bash
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "$1" | tr "\n" "\0" 1>&$PALUDIS_PIPE_COMMAND_WRITE_FD
 response1=

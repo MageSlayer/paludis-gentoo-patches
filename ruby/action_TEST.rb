@@ -30,13 +30,13 @@ module Paludis
 
         def hash_args
             InstallActionOptions.new(
-                {:no_config_protect => true, :debug_build => InstallActionDebugOption::Internal,
+                {:debug_build => InstallActionDebugOption::Internal,
                     :checks => InstallActionChecksOption::Always, :destination => destination}
             )
         end
 
         def long_args
-                InstallActionOptions.new(false, InstallActionDebugOption::Split,
+                InstallActionOptions.new(InstallActionDebugOption::Split,
                                         InstallActionChecksOption::Default, destination)
         end
 
@@ -105,7 +105,6 @@ module Paludis
 
         def test_methods_hash_args
             opts = hash_args
-            assert opts.no_config_protect?
             assert_equal InstallActionDebugOption::Internal, opts.debug_build
             assert_equal InstallActionChecksOption::Always, opts.checks
             assert_equal destination.name, opts.destination.name
@@ -113,26 +112,9 @@ module Paludis
 
         def test_methods_long_args
             opts = long_args
-            assert !opts.no_config_protect?
             assert_equal InstallActionDebugOption::Split, opts.debug_build
             assert_equal InstallActionChecksOption::Default, opts.checks
             assert_equal destination.name, opts.destination.name
-        end
-    end
-
-    class TestCase_UninstallActionOptions < Test::Unit::TestCase
-        def test_create
-            assert_kind_of UninstallActionOptions, UninstallActionOptions.new(true)
-            assert_kind_of UninstallActionOptions, UninstallActionOptions.new(
-                {:no_config_protect => false})
-        end
-
-        def test_methods
-            uao = UninstallActionOptions.new(true)
-            assert uao.no_config_protect?
-
-            uao = UninstallActionOptions.new({:no_config_protect => false})
-            assert !uao.no_config_protect?
         end
     end
 
@@ -250,7 +232,6 @@ module Paludis
         def test_options_hash_args
             action = InstallAction.new(hash_args)
             assert_kind_of InstallActionOptions, action.options
-            assert action.options.no_config_protect?
             assert_equal InstallActionDebugOption::Internal, action.options.debug_build
             assert_equal InstallActionChecksOption::Always, action.options.checks
             assert_equal destination.name, action.options.destination.name
@@ -259,26 +240,18 @@ module Paludis
 
     class TestCase_UninstallAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of UninstallAction, UninstallAction.new(UninstallActionOptions.new(true))
-            assert_kind_of Action, UninstallAction.new(UninstallActionOptions.new(true))
-
-            assert_kind_of UninstallAction, UninstallAction.new(UninstallActionOptions.new({:no_config_protect => false}))
+            assert_kind_of UninstallAction, UninstallAction.new
+            assert_kind_of Action, UninstallAction.new
         end
 
         def test_bad_create
-            assert_raise TypeError do
+            assert_raise ArgumentError do
                 UninstallAction.new("foo")
             end
 
             assert_raise ArgumentError do
                 InstallAction.new(InstallActionOptions.new({:monkey => false}))
             end
-        end
-
-        def test_options_hash_args
-            action = UninstallAction.new(UninstallActionOptions.new(false))
-            assert_kind_of UninstallActionOptions, action.options
-            assert !action.options.no_config_protect?
         end
     end
 
