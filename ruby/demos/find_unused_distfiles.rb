@@ -120,7 +120,7 @@ end
 
 if mirror_repository then
     env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_dir)
-    relevant_packages = Paludis::Generator::Repository.new(env.main_repository.name)
+    relevant_packages = Paludis::Generator::InRepository.new(env.main_repository.name)
     $check_condition = lambda { true }
     $banned_labels = {
         Paludis::URIListedOnlyLabel       => true,
