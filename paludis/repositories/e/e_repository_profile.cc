@@ -306,7 +306,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         return;
 
     KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
-            kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+            kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;

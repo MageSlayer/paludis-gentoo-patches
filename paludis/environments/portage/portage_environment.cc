@@ -259,12 +259,12 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _load_profile((_imp->conf_dir / "make.profile").realpath());
     if ((_imp->conf_dir / "make.globals").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
-                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental));
     if ((_imp->conf_dir / "make.conf").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
-                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental_excluding_use_expand));
 
@@ -454,7 +454,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
 
     if ((d / "make.defaults").exists())
         _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions()
-                    + kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments,
+                    + kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                     &do_incremental));
 
