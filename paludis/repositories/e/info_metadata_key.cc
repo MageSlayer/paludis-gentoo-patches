@@ -161,8 +161,7 @@ InfoPkgsMetadataKey::need_keys_added() const
         std::tr1::shared_ptr<MetadataKey> key;
         std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
                     generator::Matches(parse_elike_package_dep_spec(*i,
-                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi))
-                             [k::supported()])[k::package_dep_spec_parse_options()],
+                            erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)->supported()->package_dep_spec_parse_options(),
                             std::tr1::shared_ptr<const PackageID>())) |
                     filter::InstalledAtRoot(_imp->env->root()))]);
 

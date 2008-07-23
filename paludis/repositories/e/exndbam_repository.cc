@@ -406,7 +406,7 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_uninstall);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {

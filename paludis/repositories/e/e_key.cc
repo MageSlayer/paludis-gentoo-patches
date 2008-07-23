@@ -309,19 +309,19 @@ EFetchableURIKey::initial_label() const
         for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
                 i != i_end ; ++i)
         {
-            if ((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end() !=
-                    std::find((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->begin(),
-                        (*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end(), (*i)->text()))
+            if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
+                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
+                        _imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
                 _imp->initial_label = *parse_uri_label("default-restrict-fetch:", *_imp->id->eapi())->begin();
 
-            else if ((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end() !=
-                    std::find((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->begin(),
-                        (*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end(), (*i)->text()))
+            else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
+                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
+                        _imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
                 _imp->initial_label = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
 
-            else if ((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_primaryuri->end() !=
-                    std::find((*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_primaryuri->begin(),
-                        (*(*_imp->id->eapi())[k::supported()])[k::ebuild_options()].restrict_primaryuri->end(), (*i)->text()))
+            else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end() !=
+                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->begin(),
+                        _imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end(), (*i)->text()))
                 _imp->initial_label = *parse_uri_label("default-restrict-primaryuri:", *_imp->id->eapi())->begin();
         }
 
@@ -586,7 +586,7 @@ EIUseKey::value() const
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
     {
-        IUseFlag f(*t, (*(*_imp->id->eapi())[k::supported()])[k::iuse_flag_parse_options()], std::string::npos);
+        IUseFlag f(*t, _imp->id->eapi()->supported()->iuse_flag_parse_options(), std::string::npos);
         for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == stringify(f.flag).compare(0, stringify(*p).length(), stringify(*p), 0, stringify(*p).length()))

@@ -34,10 +34,10 @@ paludis::erepository::eapi_supported_check(
 {
     Context context("When performing check '" + name + "' using eapi_supported_check on ID '" + stringify(*id) + "':");
 
-    if (! (*id->eapi())[k::supported()])
+    if (! id->eapi()->supported())
     {
         reporter.message(QAMessage(entry, qaml_severe, name,
-                    "EAPI '" + stringify((*id->eapi())[k::name()]) + "' not supported")
+                    "EAPI '" + stringify(id->eapi()->name()) + "' not supported")
                 .with_associated_id(id));
         return false;
     }

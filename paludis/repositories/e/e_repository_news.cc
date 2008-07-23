@@ -141,8 +141,8 @@ ERepositoryNews::update_news() const
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
-                                            (*(*erepository::EAPIData::get_instance()->eapi_from_string(
-                                                _imp->e_repository->params().profile_eapi))[k::supported()])[k::package_dep_spec_parse_options()],
+                                            erepository::EAPIData::get_instance()->eapi_from_string(
+                                                _imp->e_repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
                                             std::tr1::shared_ptr<const PackageID>()))) |
                                 filter::SupportsAction<InstalledAction>())]->empty())
                         local_show = true;

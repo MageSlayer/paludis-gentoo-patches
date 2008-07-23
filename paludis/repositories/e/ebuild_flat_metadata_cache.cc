@@ -75,9 +75,9 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 id->set_eapi(lines[14]);
                 bool ok(true);
 
-                if ((*id->eapi())[k::supported()])
+                if (id->eapi()->supported())
                 {
-                    const EAPIEbuildMetadataVariables & m((*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()]);
+                    const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
 
                     {
                         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
@@ -92,73 +92,73 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     }
 
                     if (ok)
-                        ok = static_cast<int>(lines.size()) >= m.flat_cache_minimum_size;
+                        ok = static_cast<int>(lines.size()) >= m.minimum_flat_cache_size();
 
                     if (ok)
                     {
-                        if (-1 != m.flat_cache_dependencies)
-                            if (! m.metadata_dependencies.empty())
+                        if (-1 != m.dependencies().flat_cache_index())
+                            if (! m.dependencies().name().empty())
                             {
                                 DependenciesRewriter rewriter;
-                                parse_depend(lines.at(m.flat_cache_dependencies), _env, id, *id->eapi())->accept(rewriter);
-                                id->load_build_depend(m.metadata_dependencies + ".DEPEND", m.description_dependencies + " (build)", rewriter.depend());
-                                id->load_run_depend(m.metadata_dependencies + ".RDEPEND", m.description_dependencies + " (run)", rewriter.rdepend());
-                                id->load_post_depend(m.metadata_dependencies + ".PDEPEND", m.description_dependencies + " (post)", rewriter.pdepend());
+                                parse_depend(lines.at(m.dependencies().flat_cache_index()), _env, id, *id->eapi())->accept(rewriter);
+                                id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
+                                id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
+                                id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());
                             }
 
-                        if (-1 != m.flat_cache_build_depend)
-                            if (! m.metadata_build_depend.empty())
-                                id->load_build_depend(m.metadata_build_depend, m.description_build_depend, lines.at(m.flat_cache_build_depend));
+                        if (-1 != m.build_depend().flat_cache_index())
+                            if (! m.build_depend().name().empty())
+                                id->load_build_depend(m.build_depend().name(), m.build_depend().description(), lines.at(m.build_depend().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_run_depend)
-                            if (! m.metadata_run_depend.empty())
-                                id->load_run_depend(m.metadata_run_depend, m.description_run_depend, lines.at(m.flat_cache_run_depend));
+                        if (-1 != m.run_depend().flat_cache_index())
+                            if (! m.run_depend().name().empty())
+                                id->load_run_depend(m.run_depend().name(), m.run_depend().description(), lines.at(m.run_depend().flat_cache_index()));
 
-                        id->set_slot(SlotName(lines.at(m.flat_cache_slot)));
+                        id->set_slot(SlotName(lines.at(m.slot().flat_cache_index())));
 
-                        if (-1 != m.flat_cache_src_uri)
-                            if (! m.metadata_src_uri.empty())
-                                id->load_src_uri(m.metadata_src_uri, m.description_src_uri, lines.at(m.flat_cache_src_uri));
+                        if (-1 != m.src_uri().flat_cache_index())
+                            if (! m.src_uri().name().empty())
+                                id->load_src_uri(m.src_uri().name(), m.src_uri().description(), lines.at(m.src_uri().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_restrict)
-                            if (! m.metadata_restrict.empty())
-                                id->load_restrict(m.metadata_restrict, m.description_restrict, lines.at(m.flat_cache_restrict));
+                        if (-1 != m.restrictions().flat_cache_index())
+                            if (! m.restrictions().name().empty())
+                                id->load_restrict(m.restrictions().name(), m.restrictions().description(), lines.at(m.restrictions().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_homepage)
-                            if (! m.metadata_homepage.empty())
-                                id->load_homepage(m.metadata_homepage, m.description_homepage, lines.at(m.flat_cache_homepage));
+                        if (-1 != m.homepage().flat_cache_index())
+                            if (! m.homepage().name().empty())
+                                id->load_homepage(m.homepage().name(), m.homepage().description(), lines.at(m.homepage().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_license)
-                            if (! m.metadata_license.empty())
-                                id->load_license(m.metadata_license, m.description_license, lines.at(m.flat_cache_license));
+                        if (-1 != m.license().flat_cache_index())
+                            if (! m.license().name().empty())
+                                id->load_license(m.license().name(), m.license().description(), lines.at(m.license().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_description)
-                            if (! m.metadata_description.empty())
-                                id->load_short_description(m.metadata_description, m.description_description, lines.at(m.flat_cache_description));
+                        if (-1 != m.description().flat_cache_index())
+                            if (! m.description().name().empty())
+                                id->load_short_description(m.description().name(), m.description().description(), lines.at(m.description().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_keywords)
-                            if (! m.metadata_keywords.empty())
-                                id->load_keywords(m.metadata_keywords, m.description_keywords, lines.at(m.flat_cache_keywords));
+                        if (-1 != m.keywords().flat_cache_index())
+                            if (! m.keywords().name().empty())
+                                id->load_keywords(m.keywords().name(), m.keywords().description(), lines.at(m.keywords().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_inherited)
-                            if (! m.metadata_inherited.empty())
-                                id->load_inherited(m.metadata_inherited, m.description_inherited, lines.at(m.flat_cache_inherited));
+                        if (-1 != m.inherited().flat_cache_index())
+                            if (! m.inherited().name().empty())
+                                id->load_inherited(m.inherited().name(), m.inherited().description(), lines.at(m.inherited().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_iuse)
-                            if (! m.metadata_iuse.empty())
-                                id->load_iuse(m.metadata_iuse, m.description_iuse, lines.at(m.flat_cache_iuse));
+                        if (-1 != m.iuse().flat_cache_index())
+                            if (! m.iuse().name().empty())
+                                id->load_iuse(m.iuse().name(), m.iuse().description(), lines.at(m.iuse().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_pdepend)
-                            if (! m.metadata_pdepend.empty())
-                                id->load_post_depend(m.metadata_pdepend, m.description_pdepend, lines.at(m.flat_cache_pdepend));
+                        if (-1 != m.pdepend().flat_cache_index())
+                            if (! m.pdepend().name().empty())
+                                id->load_post_depend(m.pdepend().name(), m.pdepend().description(), lines.at(m.pdepend().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_provide)
-                            if (! m.metadata_provide.empty())
-                                id->load_provide(m.metadata_provide, m.description_provide, lines.at(m.flat_cache_provide));
+                        if (-1 != m.provide().flat_cache_index())
+                            if (! m.provide().name().empty())
+                                id->load_provide(m.provide().name(), m.provide().description(), lines.at(m.provide().flat_cache_index()));
 
-                        if (-1 != m.flat_cache_use)
-                            if (! m.metadata_use.empty())
-                                id->load_use(m.metadata_use, m.description_use, lines.at(m.flat_cache_use));
+                        if (-1 != m.use().flat_cache_index())
+                            if (! m.use().name().empty())
+                                id->load_use(m.use().name(), m.use().description(), lines.at(m.use().flat_cache_index()));
                     }
                 }
                 else
@@ -231,10 +231,10 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         return;
     }
 
-    if (! (*id->eapi())[k::supported()])
+    if (! id->eapi()->supported())
     {
         Log::get_instance()->message("e.cache.save.eapi_unsupoprted", ll_warning, lc_no_context) << "Not writing cache file to '"
-            << _filename << "' because EAPI '" << (*id->eapi())[k::name()] << "' is not supported";
+            << _filename << "' because EAPI '" << id->eapi()->name() << "' is not supported";
         return;
     }
 
@@ -242,10 +242,10 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
     try
     {
-        const EAPIEbuildMetadataVariables & m((*(*id->eapi())[k::supported()])[k::ebuild_metadata_variables()]);
-        for (int x(0), x_end(m.flat_cache_minimum_size) ; x != x_end ; ++x)
+        const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
+        for (int x(0), x_end(m.minimum_flat_cache_size()) ; x != x_end ; ++x)
         {
-            if (x == m.flat_cache_dependencies)
+            if (x == m.dependencies().flat_cache_index())
             {
                 std::string s;
 
@@ -258,104 +258,104 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
                 cache << s << std::endl;
             }
-            else if (x == m.flat_cache_use)
+            else if (x == m.use().flat_cache_index())
             {
                 if (id->use_key())
                     cache << join(id->use_key()->value()->begin(), id->use_key()->value()->end(), " ") << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_build_depend)
+            else if (x == m.build_depend().flat_cache_index())
             {
                 if (id->build_dependencies_key())
                     cache << flatten(id->build_dependencies_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_run_depend)
+            else if (x == m.run_depend().flat_cache_index())
             {
                 if (id->run_dependencies_key())
                     cache << flatten(id->run_dependencies_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_slot)
+            else if (x == m.slot().flat_cache_index())
             {
                 cache << normalise(id->slot()) << std::endl;
             }
-            else if (x == m.flat_cache_src_uri)
+            else if (x == m.src_uri().flat_cache_index())
             {
                 if (id->fetches_key())
                     cache << flatten(id->fetches_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_restrict)
+            else if (x == m.restrictions().flat_cache_index())
             {
                 if (id->restrict_key())
                     cache << flatten(id->restrict_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_homepage)
+            else if (x == m.homepage().flat_cache_index())
             {
                 if (id->homepage_key())
                     cache << flatten(id->homepage_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_license)
+            else if (x == m.license().flat_cache_index())
             {
                 if (id->license_key())
                     cache << flatten(id->license_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_description)
+            else if (x == m.description().flat_cache_index())
             {
                 if (id->short_description_key())
                     cache << normalise(id->short_description_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_keywords)
+            else if (x == m.keywords().flat_cache_index())
             {
                 if (id->keywords_key())
                     cache << join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " ") << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_inherited)
+            else if (x == m.inherited().flat_cache_index())
             {
                 if (id->inherited_key())
                     cache << join(id->inherited_key()->value()->begin(), id->inherited_key()->value()->end(), " ") << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_iuse)
+            else if (x == m.iuse().flat_cache_index())
             {
                 if (id->iuse_key())
                     cache << join(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(), " ") << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_pdepend)
+            else if (x == m.pdepend().flat_cache_index())
             {
                 if (id->post_dependencies_key())
                     cache << flatten(id->post_dependencies_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_provide)
+            else if (x == m.provide().flat_cache_index())
             {
                 if (id->provide_key())
                     cache << flatten(id->provide_key()->value()) << std::endl;
                 else
                     cache << std::endl;
             }
-            else if (x == m.flat_cache_eapi)
+            else if (x == m.eapi().flat_cache_index())
             {
-                cache << normalise((*id->eapi())[k::name()]) << std::endl;
+                cache << normalise(id->eapi()->name()) << std::endl;
             }
             else
                 cache << std::endl;

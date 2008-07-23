@@ -202,16 +202,16 @@ EbuildID::need_keys_added() const
             eapi_str = _imp->repository->params().eapi_when_unknown;
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(eapi_str);
 
-        if ((*_imp->eapi)[k::supported()])
+        if (_imp->eapi->supported())
         {
             Log::get_instance()->message("e.ebuild.metadata.using_eapi", ll_debug, lc_context) << "Generating metadata command for '"
-                << canonical_form(idcf_full) << "' using EAPI '" << (*_imp->eapi)[k::name()] << "'";
+                << canonical_form(idcf_full) << "' using EAPI '" << _imp->eapi->name() << "'";
 
-            EAPIPhases phases((*(*_imp->eapi)[k::supported()])[k::ebuild_phases()].ebuild_metadata);
+            EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_metadata());
 
             int count(std::distance(phases.begin_phases(), phases.end_phases()));
             if (1 != count)
-                throw EAPIConfigurationError("EAPI '" + (*_imp->eapi)[k::name()] + "' defines "
+                throw EAPIConfigurationError("EAPI '" + _imp->eapi->name() + "' defines "
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(EbuildCommandParams::named_create()
@@ -237,9 +237,9 @@ EbuildID::need_keys_added() const
             cmd.load(shared_from_this());
 
             Log::get_instance()->message("e.ebuild.metadata.generated_eapi", ll_debug, lc_context) << "Generated metadata for '"
-                << canonical_form(idcf_full) << "' has EAPI '" << (*_imp->eapi)[k::name()] << "'";
+                << canonical_form(idcf_full) << "' has EAPI '" << _imp->eapi->name() << "'";
 
-            if (_imp->repository->params().write_cache.basename() != "empty" && (*_imp->eapi)[k::supported()])
+            if (_imp->repository->params().write_cache.basename() != "empty" && _imp->eapi->supported())
             {
                 EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->ebuild, _imp->master_mtime,
                         _imp->eclass_mtimes, false);
@@ -249,11 +249,11 @@ EbuildID::need_keys_added() const
         else
         {
             Log::get_instance()->message("e.ebuild.metadata.unknown_eapi", ll_debug, lc_context) << "Can't run metadata command for '"
-                << canonical_form(idcf_full) << "' because EAPI '" << (*_imp->eapi)[k::name()] << "' is unknown";
+                << canonical_form(idcf_full) << "' because EAPI '" << _imp->eapi->name() << "' is unknown";
         }
     }
 
-    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, (*_imp->eapi)[k::name()])));
+    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, _imp->eapi->name())));
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
         std::tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
@@ -335,9 +335,9 @@ EbuildID::need_masks_added() const
 
     Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
 
-    if (! (*eapi())[k::supported()])
+    if (! eapi()->supported())
     {
-        add_mask(make_shared_ptr(new EUnsupportedMask('E', "eapi", (*eapi())[k::name()])));
+        add_mask(make_shared_ptr(new EUnsupportedMask('E', "eapi", eapi()->name())));
         return;
     }
 
@@ -807,7 +807,7 @@ EbuildID::supports_action(const SupportsActionTestBase & b) const
     SupportsActionQuery q;
     b.accept(q);
 
-    return q.result && (*eapi())[k::supported()];
+    return q.result && eapi()->supported();
 }
 
 namespace
@@ -885,7 +885,7 @@ namespace
 void
 EbuildID::perform_action(Action & a) const
 {
-    if (! (*eapi())[k::supported()])
+    if (! eapi()->supported())
         throw UnsupportedActionError(*this, a);
 
     PerformAction b(shared_from_this());

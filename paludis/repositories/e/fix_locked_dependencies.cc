@@ -147,7 +147,7 @@ namespace
                     break;
 
                 PackageDepSpec new_s(partial_parse_elike_package_dep_spec(stringify(s),
-                            (*eapi[k::supported()])[k::package_dep_spec_parse_options()], id).slot_requirement(
+                            eapi.supported()->package_dep_spec_parse_options(), id).slot_requirement(
                             make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot(), true))));
 
                 c.reset(new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(

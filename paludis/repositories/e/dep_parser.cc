@@ -66,7 +66,7 @@ namespace
     void package_dep_spec_string_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s,
             const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
     {
-        PackageDepSpec p(parse_elike_package_dep_spec(s, (*eapi[k::supported()])[k::package_dep_spec_parse_options()], id));
+        PackageDepSpec p(parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(), id));
         (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(p)))));
     }
 
@@ -78,7 +78,7 @@ namespace
         {
             std::tr1::shared_ptr<BlockDepSpec> b(new BlockDepSpec(
                         make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(1),
-                                    (*eapi[k::supported()])[k::package_dep_spec_parse_options()], id)))));
+                                    eapi.supported()->package_dep_spec_parse_options(), id)))));
             (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(b)));
         }
         else
@@ -107,7 +107,7 @@ namespace
     void arrow_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s, const std::string & f, const std::string & t,
             const EAPI & eapi)
     {
-        if (t.empty() || ((*eapi[k::supported()])[k::dependency_spec_tree_parse_options()][dstpo_uri_supports_arrow]))
+        if (t.empty() || eapi.supported()->dependency_spec_tree_parse_options()[dstpo_uri_supports_arrow])
             (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, FetchableURIDepSpec>(make_shared_ptr(
                                 new FetchableURIDepSpec(t.empty() ? f : f + " -> " + t)))));
         else
@@ -203,7 +203,7 @@ namespace
 
     void use_under_any_handler(const std::string & s, const EAPI & eapi)
     {
-        if ((*eapi[k::supported()])[k::dependency_spec_tree_parse_options()][dstpo_disallow_any_use])
+        if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_disallow_any_use])
             throw EDepParseError(s, "use? not allowed under || ( ) in this EAPI");
     }
 
@@ -423,12 +423,12 @@ paludis::erepository::parse_restrict(const std::string & s,
 std::tr1::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
-    Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
+    Context context("When parsing label string '" + s + "' using EAPI '" + e.name() + "':");
 
     if (s.empty())
         throw EDepParseError(s, "Empty label");
 
-    std::string c((*e[k::supported()])[k::uri_labels()].class_for_label(s.substr(0, s.length() - 1)));
+    std::string c(e.supported()->uri_labels()->class_for_label(s.substr(0, s.length() - 1)));
     if (c.empty())
         throw EDepParseError(s, "Unknown label");
 
@@ -455,7 +455,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 std::tr1::shared_ptr<DependencyLabelsDepSpec>
 paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
 {
-    Context context("When parsing label string '" + s + "' using EAPI '" + e[k::name()] + "':");
+    Context context("When parsing label string '" + s + "' using EAPI '" + e.name() + "':");
 
     if (s.empty())
         throw EDepParseError(s, "Empty label");
@@ -468,7 +468,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {
-        std::string c((*e[k::supported()])[k::dependency_labels()].class_for_label(*it));
+        std::string c(e.supported()->dependency_labels()->class_for_label(*it));
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + *it + "'");
 

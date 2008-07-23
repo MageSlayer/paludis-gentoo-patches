@@ -36,6 +36,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <tr1/unordered_map>
 #include <map>
 #include <vector>
@@ -43,8 +44,6 @@
 
 using namespace paludis;
 using namespace paludis::erepository;
-
-#include <paludis/repositories/e/eapi-sr.cc>
 
 template class InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>;
 
@@ -56,6 +55,199 @@ namespace
             return d;
         else
             return "";
+    }
+
+    std::string check_get(const KeyValueConfigFile & k, const std::string & key)
+    {
+        return k.get(key);
+    }
+
+    template <typename T_>
+    T_ destringify_key(const KeyValueConfigFile & k, const std::string & key)
+    {
+        Context context("When getting key '" + key + ":");
+        return destringify<T_>(check_get(k, key));
+    }
+
+    std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> make_ebuild_environment_variables(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIEbuildEnvironmentVariables(make_named_values<EAPIEbuildEnvironmentVariables>(
+                        value_for<n::description_use>(check_get(k, "description_use")),
+                        value_for<n::env_aa>(check_get(k, "env_aa")),
+                        value_for<n::env_accept_keywords>(check_get(k, "env_accept_keywords")),
+                        value_for<n::env_arch>(check_get(k, "env_arch")),
+                        value_for<n::env_distdir>(check_get(k, "env_distdir")),
+                        value_for<n::env_kv>(check_get(k, "env_kv")),
+                        value_for<n::env_portdir>(check_get(k, "env_portdir")),
+                        value_for<n::env_use>(check_get(k, "env_use")),
+                        value_for<n::env_use_expand>(check_get(k, "env_use_expand")),
+                        value_for<n::env_use_expand_hidden>(check_get(k, "env_use_expand_hidden"))
+            )));
+    }
+
+    EAPIMetadataVariable make_metadata_variable(const KeyValueConfigFile & k, const std::string & s)
+    {
+        return make_named_values<EAPIMetadataVariable>(
+                value_for<n::description>(check_get(k, "description_" + s)),
+                value_for<n::flat_cache_index>(destringify_key<int>(k, "flat_cache_" + s)),
+                value_for<n::name>(check_get(k, "metadata_" + s))
+                );
+    }
+
+    std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> make_ebuild_metadata_variables(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIEbuildMetadataVariables(make_named_values<EAPIEbuildMetadataVariables>(
+            value_for<n::build_depend>(make_metadata_variable(k, "build_depend")),
+            value_for<n::dependencies>(make_metadata_variable(k, "dependencies")),
+            value_for<n::description>(make_metadata_variable(k, "description")),
+            value_for<n::eapi>(make_metadata_variable(k, "eapi")),
+            value_for<n::homepage>(make_metadata_variable(k, "homepage")),
+            value_for<n::inherited>(make_metadata_variable(k, "inherited")),
+            value_for<n::iuse>(make_metadata_variable(k, "iuse")),
+            value_for<n::keywords>(make_metadata_variable(k, "keywords")),
+            value_for<n::license>(make_metadata_variable(k, "license")),
+            value_for<n::minimum_flat_cache_size>(destringify_key<int>(k, "flat_cache_minimum_size")),
+            value_for<n::pdepend>(make_metadata_variable(k, "pdepend")),
+            value_for<n::provide>(make_metadata_variable(k, "provide")),
+            value_for<n::restrictions>(make_metadata_variable(k, "restrict")),
+            value_for<n::run_depend>(make_metadata_variable(k, "run_depend")),
+            value_for<n::slot>(make_metadata_variable(k, "slot")),
+            value_for<n::src_uri>(make_metadata_variable(k, "src_uri")),
+            value_for<n::use>(make_metadata_variable(k, "use"))
+            )));
+    }
+
+    std::tr1::shared_ptr<Set<std::string> > make_set(const std::string & s)
+    {
+        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        tokenise_whitespace(s, result->inserter());
+        return result;
+    }
+
+    std::tr1::shared_ptr<const EAPIEbuildOptions> make_ebuild_options(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIEbuildOptions(make_named_values<EAPIEbuildOptions>(
+                        value_for<n::binary_from_env_variables>(check_get(k, "binary_from_env_variables")),
+                        value_for<n::bracket_merged_variables>(check_get(k, "bracket_merged_variables")),
+                        value_for<n::directory_if_exists_variables>(check_get(k, "directory_if_exists_variables")),
+                        value_for<n::directory_variables>(check_get(k, "directory_variables")),
+                        value_for<n::ebuild_module_suffixes>(check_get(k, "ebuild_module_suffixes")),
+                        value_for<n::ebuild_must_not_set_variables>(check_get(k, "ebuild_must_not_set_variables")),
+                        value_for<n::eclass_must_not_set_variables>(check_get(k, "eclass_must_not_set_variables")),
+                        value_for<n::f_function_prefix>(check_get(k, "f_function_prefix")),
+                        value_for<n::ignore_pivot_env_functions>(check_get(k, "ignore_pivot_env_functions")),
+                        value_for<n::ignore_pivot_env_variables>(check_get(k, "ignore_pivot_env_variables")),
+                        value_for<n::must_not_change_variables>(check_get(k, "must_not_change_variables")),
+                        value_for<n::non_empty_variables>(check_get(k, "non_empty_variables")),
+                        value_for<n::rdepend_defaults_to_depend>(destringify_key<bool>(k, "rdepend_defaults_to_depend")),
+                        value_for<n::require_use_expand_in_iuse>(destringify_key<bool>(k, "require_use_expand_in_iuse")),
+                        value_for<n::restrict_fetch>(make_set(check_get(k, "restrict_fetch"))),
+                        value_for<n::restrict_mirror>(make_set(check_get(k, "restrict_mirror"))),
+                        value_for<n::restrict_primaryuri>(make_set(check_get(k, "restrict_primaryuri"))),
+                        value_for<n::save_base_variables>(check_get(k, "save_base_variables")),
+                        value_for<n::save_unmodifiable_variables>(check_get(k, "save_unmodifiable_variables")),
+                        value_for<n::save_variables>(check_get(k, "save_variables")),
+                        value_for<n::source_merged_variables>(check_get(k, "source_merged_variables")),
+                        value_for<n::support_eclasses>(destringify_key<bool>(k, "support_eclasses")),
+                        value_for<n::support_exlibs>(destringify_key<bool>(k, "support_exlibs")),
+                        value_for<n::use_expand_separator>(destringify_key<char>(k, "use_expand_separator")),
+                        value_for<n::utility_path_suffixes>(check_get(k, "utility_path_suffixes")),
+                        value_for<n::vdb_from_env_unless_empty_variables>(check_get(k, "vdb_from_env_unless_empty_variables")),
+                        value_for<n::vdb_from_env_variables>(check_get(k, "vdb_from_env_variables")),
+                        value_for<n::want_portage_emulation_vars>(destringify_key<bool>(k, "want_portage_emulation_vars"))
+                )));
+    }
+
+    std::tr1::shared_ptr<const EAPIEbuildPhases> make_ebuild_phases(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIEbuildPhases(make_named_values<EAPIEbuildPhases>(
+                        value_for<n::ebuild_config>(check_get(k, "ebuild_config")),
+                        value_for<n::ebuild_info>(check_get(k, "ebuild_info")),
+                        value_for<n::ebuild_install>(check_get(k, "ebuild_install")),
+                        value_for<n::ebuild_metadata>(check_get(k, "ebuild_metadata")),
+                        value_for<n::ebuild_nofetch>(check_get(k, "ebuild_nofetch")),
+                        value_for<n::ebuild_pretend>(check_get(k, "ebuild_pretend")),
+                        value_for<n::ebuild_uninstall>(check_get(k, "ebuild_uninstall")),
+                        value_for<n::ebuild_variable>(check_get(k, "ebuild_variable"))
+            )));
+    }
+
+    std::tr1::shared_ptr<const EAPIPipeCommands> make_pipe_commands(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIPipeCommands(make_named_values<EAPIPipeCommands>(
+                        value_for<n::no_slot_or_repo>(destringify_key<bool>(k, "pipe_commands_no_slot_or_repo")),
+                        value_for<n::rewrite_virtuals>(destringify_key<bool>(k, "pipe_commands_rewrite_virtuals"))
+                        )));
+    }
+
+    std::tr1::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIToolsOptions(make_named_values<EAPIToolsOptions>(
+                        value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
+                        value_for<n::failure_is_fatal>(destringify_key<bool>(k, "failure_is_fatal")),
+                        value_for<n::unpack_fix_permissions>(destringify_key<bool>(k, "unpack_fix_permissions")),
+                        value_for<n::unpack_unrecognised_is_fatal>(destringify_key<bool>(k, "unpack_unrecognised_is_fatal"))
+                        )));
+    }
+
+    std::tr1::shared_ptr<const SupportedEAPI> make_supported_eapi(const KeyValueConfigFile & k)
+    {
+        ELikePackageDepSpecOptions package_dep_spec_parse_options;
+        {
+            std::list<std::string> package_dep_spec_parse_options_tokens;
+            tokenise_whitespace(check_get(k, "package_dep_spec_parse_options"), std::back_inserter(package_dep_spec_parse_options_tokens));
+            for (std::list<std::string>::const_iterator t(package_dep_spec_parse_options_tokens.begin()),
+                    t_end(package_dep_spec_parse_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                package_dep_spec_parse_options += destringify<ELikePackageDepSpecOption>(*t);
+        }
+
+        DependencySpecTreeParseOptions dependency_spec_tree_parse_options;
+        {
+            std::list<std::string> dependency_spec_tree_parse_options_tokens;
+            tokenise_whitespace(check_get(k, "dependency_spec_tree_parse_options"), std::back_inserter(dependency_spec_tree_parse_options_tokens));
+            for (std::list<std::string>::const_iterator t(dependency_spec_tree_parse_options_tokens.begin()),
+                    t_end(dependency_spec_tree_parse_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(*t);
+        }
+
+        IUseFlagParseOptions iuse_flag_parse_options;
+        {
+            std::list<std::string> iuse_flag_parse_options_tokens;
+            tokenise_whitespace(check_get(k, "iuse_flag_parse_options"), std::back_inserter(iuse_flag_parse_options_tokens));
+            for (std::list<std::string>::const_iterator t(iuse_flag_parse_options_tokens.begin()),
+                    t_end(iuse_flag_parse_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
+        }
+
+        MergerOptions merger_options;
+        {
+            std::list<std::string> merger_options_tokens;
+            tokenise_whitespace(check_get(k, "merger_options"), std::back_inserter(merger_options_tokens));
+            for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
+                    t_end(merger_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                merger_options += destringify<MergerOption>(*t);
+        }
+
+        return make_shared_ptr(new SupportedEAPI(make_named_values<SupportedEAPI>(
+                        value_for<n::breaks_portage>(destringify_key<bool>(k, "breaks_portage")),
+                        value_for<n::can_be_pbin>(destringify_key<bool>(k, "can_be_pbin")),
+                        value_for<n::dependency_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "dependency_labels")))),
+                        value_for<n::dependency_spec_tree_parse_options>(dependency_spec_tree_parse_options),
+                        value_for<n::ebuild_environment_variables>(make_ebuild_environment_variables(k)),
+                        value_for<n::ebuild_metadata_variables>(make_ebuild_metadata_variables(k)),
+                        value_for<n::ebuild_options>(make_ebuild_options(k)),
+                        value_for<n::ebuild_phases>(make_ebuild_phases(k)),
+                        value_for<n::iuse_flag_parse_options>(iuse_flag_parse_options),
+                        value_for<n::merger_options>(merger_options),
+                        value_for<n::package_dep_spec_parse_options>(package_dep_spec_parse_options),
+                        value_for<n::pipe_commands>(make_pipe_commands(k)),
+                        value_for<n::tools_options>(make_tool_options(k)),
+                        value_for<n::uri_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "uri_labels"))))
+                        )));
     }
 }
 
@@ -81,199 +273,11 @@ namespace paludis
                         std::tr1::bind(&predefined, stringify(d->dirname()), std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                         &KeyValueConfigFile::no_transformation);
 
-                ELikePackageDepSpecOptions package_dep_spec_parse_options;
-                {
-                    std::list<std::string> package_dep_spec_parse_options_tokens;
-                    tokenise_whitespace(k.get("package_dep_spec_parse_options"), std::back_inserter(package_dep_spec_parse_options_tokens));
-                    for (std::list<std::string>::const_iterator t(package_dep_spec_parse_options_tokens.begin()),
-                            t_end(package_dep_spec_parse_options_tokens.end()) ;
-                            t != t_end ; ++t)
-                        package_dep_spec_parse_options += destringify<ELikePackageDepSpecOption>(*t);
-                }
-
-                DependencySpecTreeParseOptions dependency_spec_tree_parse_options;
-                {
-                    std::list<std::string> dependency_spec_tree_parse_options_tokens;
-                    tokenise_whitespace(k.get("dependency_spec_tree_parse_options"), std::back_inserter(dependency_spec_tree_parse_options_tokens));
-                    for (std::list<std::string>::const_iterator t(dependency_spec_tree_parse_options_tokens.begin()),
-                            t_end(dependency_spec_tree_parse_options_tokens.end()) ;
-                            t != t_end ; ++t)
-                        dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(*t);
-                }
-
-                IUseFlagParseOptions iuse_flag_parse_options;
-                {
-                    std::list<std::string> iuse_flag_parse_options_tokens;
-                    tokenise_whitespace(k.get("iuse_flag_parse_options"), std::back_inserter(iuse_flag_parse_options_tokens));
-                    for (std::list<std::string>::const_iterator t(iuse_flag_parse_options_tokens.begin()),
-                            t_end(iuse_flag_parse_options_tokens.end()) ;
-                            t != t_end ; ++t)
-                        iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
-                }
-
-                MergerOptions merger_options;
-                {
-                    std::list<std::string> merger_options_tokens;
-                    tokenise_whitespace(k.get("merger_options"), std::back_inserter(merger_options_tokens));
-                    for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
-                            t_end(merger_options_tokens.end()) ;
-                            t != t_end ; ++t)
-                        merger_options += destringify<MergerOption>(*t);
-                }
-
-                std::tr1::shared_ptr<EAPI> eapi(new EAPI(
-                            strip_trailing_string(d->basename(), ".conf"),
-                            k.get("exported_name"),
-                            make_shared_ptr(new SupportedEAPI(
-                                    SupportedEAPI::named_create()
-                                    (k::package_dep_spec_parse_options(), package_dep_spec_parse_options)
-                                    (k::dependency_spec_tree_parse_options(), dependency_spec_tree_parse_options)
-                                    (k::iuse_flag_parse_options(), iuse_flag_parse_options)
-                                    (k::merger_options(), merger_options)
-                                    (k::breaks_portage(), destringify<bool>(k.get("breaks_portage")))
-                                    (k::can_be_pbin(), destringify<bool>(k.get("can_be_pbin")))
-
-                                    (k::ebuild_options(),
-                                     EAPIEbuildOptions(EAPIEbuildOptions::create()
-                                         .want_portage_emulation_vars(destringify<bool>(k.get("want_portage_emulation_vars")))
-                                         .require_use_expand_in_iuse(destringify<bool>(k.get("require_use_expand_in_iuse")))
-                                         .rdepend_defaults_to_depend(destringify<bool>(k.get("rdepend_defaults_to_depend")))
-                                         .non_empty_variables(k.get("non_empty_variables"))
-                                         .directory_variables(k.get("directory_variables"))
-                                         .directory_if_exists_variables(k.get("directory_if_exists_variables"))
-                                         .ebuild_must_not_set_variables(k.get("ebuild_must_not_set_variables"))
-                                         .eclass_must_not_set_variables(k.get("eclass_must_not_set_variables"))
-                                         .vdb_from_env_variables(k.get("vdb_from_env_variables"))
-                                         .vdb_from_env_unless_empty_variables(k.get("vdb_from_env_unless_empty_variables"))
-                                         .binary_from_env_variables(k.get("binary_from_env_variables"))
-                                         .source_merged_variables(k.get("source_merged_variables"))
-                                         .bracket_merged_variables(k.get("bracket_merged_variables"))
-                                         .must_not_change_variables(k.get("must_not_change_variables"))
-                                         .save_variables(k.get("save_variables"))
-                                         .save_base_variables(k.get("save_base_variables"))
-                                         .save_unmodifiable_variables(k.get("save_unmodifiable_variables"))
-                                         .support_eclasses(destringify<bool>(k.get("support_eclasses")))
-                                         .support_exlibs(destringify<bool>(k.get("support_exlibs")))
-                                         .utility_path_suffixes(k.get("utility_path_suffixes"))
-                                         .ebuild_module_suffixes(k.get("ebuild_module_suffixes"))
-                                         .use_expand_separator(destringify<char>(k.get("use_expand_separator")))
-                                         .restrict_fetch(make_shared_ptr(new Set<std::string>))
-                                         .restrict_mirror(make_shared_ptr(new Set<std::string>))
-                                         .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
-                                         .f_function_prefix(k.get("f_function_prefix"))
-                                         .ignore_pivot_env_variables(k.get("ignore_pivot_env_variables"))
-                                         .ignore_pivot_env_functions(k.get("ignore_pivot_env_functions"))
-                                         ))
-
-                                         (k::pipe_commands(),
-                                          EAPIPipeCommands(EAPIPipeCommands::named_create()
-                                              (k::rewrite_virtuals(), destringify<bool>(k.get("pipe_commands_rewrite_virtuals")))
-                                              (k::no_slot_or_repo(), destringify<bool>(k.get("pipe_commands_no_slot_or_repo")))
-                                         ))
-
-                                         (k::ebuild_phases(),
-                                          EAPIEbuildPhases(EAPIEbuildPhases::create()
-                                              .ebuild_install(k.get("ebuild_install"))
-                                              .ebuild_uninstall(k.get("ebuild_uninstall"))
-                                              .ebuild_pretend(k.get("ebuild_pretend"))
-                                              .ebuild_metadata(k.get("ebuild_metadata"))
-                                              .ebuild_nofetch(k.get("ebuild_nofetch"))
-                                              .ebuild_variable(k.get("ebuild_variable"))
-                                              .ebuild_info(k.get("ebuild_info"))
-                                              .ebuild_config(k.get("ebuild_config"))
-                                              ))
-
-                                         (k::ebuild_metadata_variables(),
-                                          EAPIEbuildMetadataVariables(EAPIEbuildMetadataVariables::create()
-                                              .metadata_build_depend(k.get("metadata_build_depend"))
-                                              .metadata_run_depend(k.get("metadata_run_depend"))
-                                              .metadata_slot(k.get("metadata_slot"))
-                                              .metadata_src_uri(k.get("metadata_src_uri"))
-                                              .metadata_restrict(k.get("metadata_restrict"))
-                                              .metadata_homepage(k.get("metadata_homepage"))
-                                              .metadata_license(k.get("metadata_license"))
-                                              .metadata_description(k.get("metadata_description"))
-                                              .metadata_keywords(k.get("metadata_keywords"))
-                                              .metadata_inherited(k.get("metadata_inherited"))
-                                              .metadata_iuse(k.get("metadata_iuse"))
-                                              .metadata_pdepend(k.get("metadata_pdepend"))
-                                              .metadata_provide(k.get("metadata_provide"))
-                                              .metadata_eapi(k.get("metadata_eapi"))
-                                              .metadata_dependencies(k.get("metadata_dependencies"))
-                                              .metadata_use(k.get("metadata_use"))
-                                              .description_build_depend(k.get("description_build_depend"))
-                                              .description_run_depend(k.get("description_run_depend"))
-                                              .description_slot(k.get("description_slot"))
-                                              .description_src_uri(k.get("description_src_uri"))
-                                              .description_restrict(k.get("description_restrict"))
-                                              .description_homepage(k.get("description_homepage"))
-                                              .description_license(k.get("description_license"))
-                                              .description_description(k.get("description_description"))
-                                              .description_keywords(k.get("description_keywords"))
-                                              .description_inherited(k.get("description_inherited"))
-                                              .description_iuse(k.get("description_iuse"))
-                                              .description_pdepend(k.get("description_pdepend"))
-                                              .description_provide(k.get("description_provide"))
-                                              .description_eapi(k.get("description_eapi"))
-                                              .description_dependencies(k.get("description_dependencies"))
-                                              .description_use(k.get("description_use"))
-                                              .flat_cache_build_depend(destringify<int>(k.get("flat_cache_build_depend")))
-                                              .flat_cache_run_depend(destringify<int>(k.get("flat_cache_run_depend")))
-                                              .flat_cache_slot(destringify<int>(k.get("flat_cache_slot")))
-                                              .flat_cache_src_uri(destringify<int>(k.get("flat_cache_src_uri")))
-                                              .flat_cache_restrict(destringify<int>(k.get("flat_cache_restrict")))
-                                              .flat_cache_homepage(destringify<int>(k.get("flat_cache_homepage")))
-                                              .flat_cache_license(destringify<int>(k.get("flat_cache_license")))
-                                              .flat_cache_description(destringify<int>(k.get("flat_cache_description")))
-                                              .flat_cache_keywords(destringify<int>(k.get("flat_cache_keywords")))
-                                              .flat_cache_inherited(destringify<int>(k.get("flat_cache_inherited")))
-                                              .flat_cache_iuse(destringify<int>(k.get("flat_cache_iuse")))
-                                              .flat_cache_pdepend(destringify<int>(k.get("flat_cache_pdepend")))
-                                              .flat_cache_provide(destringify<int>(k.get("flat_cache_provide")))
-                                              .flat_cache_eapi(destringify<int>(k.get("flat_cache_eapi")))
-                                              .flat_cache_dependencies(destringify<int>(k.get("flat_cache_dependencies")))
-                                              .flat_cache_use(destringify<int>(k.get("flat_cache_use")))
-                                              .flat_cache_minimum_size(destringify<int>(k.get("flat_cache_minimum_size")))
-                                              ))
-
-                                            (k::ebuild_environment_variables(),
-                                             EAPIEbuildEnvironmentVariables(EAPIEbuildEnvironmentVariables::named_create()
-                                                 (k::env_use(), k.get("env_use"))
-                                                 (k::env_use_expand(), k.get("env_use_expand"))
-                                                 (k::env_use_expand_hidden(), k.get("env_use_expand_hidden"))
-                                                 (k::env_aa(), k.get("env_aa"))
-                                                 (k::env_arch(), k.get("env_arch"))
-                                                 (k::env_kv(), k.get("env_kv"))
-                                                 (k::env_portdir(), k.get("env_portdir"))
-                                                 (k::env_distdir(), k.get("env_distdir"))
-                                                 (k::env_accept_keywords(), k.get("env_accept_keywords"))
-                                                 (k::description_use(), k.get("description_use"))
-                                                 ))
-
-                                            (k::uri_labels(), EAPILabels(k.get("uri_labels")))
-
-                                            (k::dependency_labels(), EAPILabels(k.get("dependency_labels")))
-
-                                            (k::tools_options(),
-                                             EAPIToolsOptions(EAPIToolsOptions::create()
-                                                 .unpack_unrecognised_is_fatal(destringify<bool>(
-                                                         k.get("unpack_unrecognised_is_fatal")))
-                                                 .unpack_fix_permissions(destringify<bool>(
-                                                         k.get("unpack_fix_permissions")))
-                                                 .dosym_mkdir(destringify<bool>(
-                                                         k.get("dosym_mkdir")))
-                                                 .failure_is_fatal(destringify<bool>(
-                                                         k.get("failure_is_fatal")))
-                                                 ))
-
-                                            ))));
-
-                tokenise_whitespace(k.get("restrict_fetch"),
-                        (*(*eapi)[k::supported()])[k::ebuild_options()].restrict_fetch->inserter());
-                tokenise_whitespace(k.get("restrict_mirror"),
-                        (*(*eapi)[k::supported()])[k::ebuild_options()].restrict_mirror->inserter());
-                tokenise_whitespace(k.get("restrict_primaryuri"),
-                        (*(*eapi)[k::supported()])[k::ebuild_options()].restrict_primaryuri->inserter());
+                std::tr1::shared_ptr<EAPI> eapi(new EAPI(make_named_values<EAPI>(
+                                value_for<n::exported_name>(check_get(k, "exported_name")),
+                                value_for<n::name>(strip_trailing_string(d->basename(), ".conf")),
+                                value_for<n::supported>(make_supported_eapi(k))
+                                )));
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"), eapi));
             }
@@ -308,13 +312,21 @@ EAPIData::eapi_from_string(const std::string & s) const
     if (i != _imp->values.end())
         return i->second;
 
-    return make_shared_ptr(new EAPI(s, s, std::tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI(make_named_values<EAPI>(
+                    value_for<n::exported_name>(s),
+                    value_for<n::name>(s),
+                    value_for<n::supported>(std::tr1::shared_ptr<const SupportedEAPI>()))
+                ));
 }
 
 std::tr1::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
-    return make_shared_ptr(new EAPI("UNKNOWN", "UNKNOWN", std::tr1::shared_ptr<SupportedEAPI>()));
+    return make_shared_ptr(new EAPI(make_named_values<EAPI>(
+                    value_for<n::exported_name>("UNKNOWN"),
+                    value_for<n::name>("UNKNOWN"),
+                    value_for<n::supported>(std::tr1::shared_ptr<const SupportedEAPI>()))
+                ));
 }
 
 namespace paludis

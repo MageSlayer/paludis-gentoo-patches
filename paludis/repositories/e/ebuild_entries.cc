@@ -228,7 +228,7 @@ namespace
             const ERepositoryID & id,
             std::tr1::shared_ptr<const ERepositoryProfile> profile)
     {
-        if (! (*id.eapi())[k::supported()])
+        if (! id.eapi()->supported())
         {
             Log::get_instance()->message("e.ebuild.unknown_eapi", ll_warning, lc_context)
                 << "Can't make the USE string for '" << id << "' because its EAPI is unsupported";
@@ -243,8 +243,8 @@ namespace
                 if (env->query_use(i->flag, id))
                     use += stringify(i->flag) + " ";
 
-        if (! (*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()].empty())
-            use += profile->environment_variable((*(*id.eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_arch()]) + " ";
+        if (! id.eapi()->supported()->ebuild_environment_variables()->env_arch().empty())
+            use += profile->environment_variable(id.eapi()->supported()->ebuild_environment_variables()->env_arch()) + " ";
 
         return use;
     }
@@ -259,7 +259,7 @@ namespace
         std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
 
-        if (! (*e.eapi())[k::supported()])
+        if (! e.eapi()->supported())
         {
             Log::get_instance()->message("e.ebuild.unknown_eapi", ll_warning, lc_context)
                 << "Can't make the USE_EXPAND strings for '" << e << "' because its EAPI is unsupported";
@@ -289,7 +289,7 @@ namespace
             for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
                     u != u_end ; ++u)
             {
-                if ((*(*e.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
+                if (e.eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
                     if (e.iuse_key() && e.iuse_key()->value()->end() == e.iuse_key()->value()->find(
                                 IUseFlag(*u, use_unspecified, std::string::npos)))
                         continue;
@@ -297,7 +297,7 @@ namespace
                 if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
                     continue;
 
-                if (! (*(*e.eapi())[k::supported()])[k::ebuild_options()].require_use_expand_in_iuse)
+                if (! e.eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
                     use.append(lower_x + expand_sep + stringify(*u) + " ");
 
                 std::string value;
@@ -363,9 +363,9 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
         {
-            if ((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end() !=
-                    std::find((*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->begin(),
-                        (*(*id->eapi())[k::supported()])[k::ebuild_options()].restrict_fetch->end(), (*i)->text()))
+            if (id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
+                    std::find(id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
+                        id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
                 fetch_restrict = true;
             if ("userpriv" == (*i)->text() || "nouserpriv" == (*i)->text())
                 userpriv_restrict = true;
@@ -397,7 +397,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         }
 
         /* make AA */
-        if (! (*(*id->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_aa()].empty())
+        if (! id->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
         {
             AAVisitor g;
             if (id->fetches_key())
@@ -444,13 +444,13 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
             bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
                     check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
             std::string use(make_use(_imp->params.environment, *id, p));
-            std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
+            std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
             std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                         _imp->params.environment, *id, p, use, expand_sep));
 
             std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-            EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_nofetch);
+            EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
@@ -560,7 +560,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         }
 
         /* make AA */
-        if (! (*(*id->eapi())[k::supported()])[k::ebuild_environment_variables()][k::env_aa()].empty())
+        if (! id->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
         {
             AAVisitor g;
             if (id->fetches_key())
@@ -593,7 +593,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
+    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
@@ -603,7 +603,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment) &&
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
 
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_install);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
@@ -621,7 +621,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                                 + stringify(id->version())) / "image")
                         (k::environment_file(), _imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
-                        (k::options(), (*(*id->eapi())[k::supported()])[k::merger_options()])
+                        (k::options(), id->eapi()->supported()->merger_options())
                         );
         }
         else if (phase->option("strip"))
@@ -748,13 +748,13 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
+    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
@@ -800,11 +800,11 @@ std::string
 EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & var, std::tr1::shared_ptr<const ERepositoryProfile>) const
 {
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_variable);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
 
     int c(std::distance(phases.begin_phases(), phases.end_phases()));
     if (1 != c)
-        throw EAPIConfigurationError("EAPI '" + (*id->eapi())[k::name()] + "' defines "
+        throw EAPIConfigurationError("EAPI '" + id->eapi()->name() + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
     bool userpriv_restrict;
@@ -868,7 +868,7 @@ EbuildEntries::merge(const MergeParams & m)
 
     FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
                 m[k::package_id()]->name(), m[k::package_id()]->version(),
-                "pbin-1+" + (*std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::name()]));
+                "pbin-1+" + std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi()->name()));
 
     binary_ebuild_location.dirname().dirname().mkdir();
     binary_ebuild_location.dirname().mkdir();
@@ -883,8 +883,7 @@ EbuildEntries::merge(const MergeParams & m)
             (k::image(), m[k::image_dir()])
             (k::destination_repository(), _imp->e_repository)
             (k::builddir(), _imp->params.builddir)
-            (k::merger_options(), (*(*std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi())[k::supported()])
-             [k::merger_options()])
+            (k::merger_options(), std::tr1::static_pointer_cast<const ERepositoryID>(m[k::package_id()])->eapi()->supported()->merger_options())
             );
 
     write_binary_ebuild_command();
@@ -924,9 +923,9 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When running pretend for '" + stringify(*id) + "':");
 
-    if (! (*id->eapi())[k::supported()])
+    if (! id->eapi()->supported())
         return true;
-    if ((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend.empty())
+    if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
         return true;
 
     bool userpriv_restrict;
@@ -945,13 +944,13 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
 
     std::string use(make_use(_imp->params.environment, *id, p));
-    std::string expand_sep(stringify((*(*id->eapi())[k::supported()])[k::ebuild_options()].use_expand_separator));
+    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use, expand_sep));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_pretend);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_pretend());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {

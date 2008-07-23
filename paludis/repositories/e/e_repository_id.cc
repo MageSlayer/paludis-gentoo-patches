@@ -32,7 +32,7 @@ ERepositoryID::breaks_portage() const
     std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
     if (version().has_try_part() || version().has_scm_part() || version().has_local_revision())
         why->insert("version");
-    if ((! (*eapi())[k::supported()]) || (*((*eapi())[k::supported()]))[k::breaks_portage()])
+    if ((! eapi()->supported()) || eapi()->supported()->breaks_portage())
         why->insert("eapi");
     return why;
 }

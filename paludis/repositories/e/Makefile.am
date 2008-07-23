@@ -6,7 +6,6 @@ DISTCLEANFILES = \
 	e_repository_params-sr.hh e_repository_params-sr.cc \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
-	eapi-sr.hh eapi-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
 	manifest2_entry-sr.hh manifest2_entry-sr.cc
 
@@ -58,7 +57,6 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_sets.hh \
 	e_stripper.hh \
 	eapi.hh \
-	eapi-sr.hh \
 	eapi-fwd.hh \
 	eapi_phase.hh \
 	ebuild.hh \
@@ -308,9 +306,6 @@ EXTRA_DIST = \
 	dep_parser-se.cc \
 	dep_parser_TEST.cc \
 	dep_spec_pretty_printer_TEST.cc \
-	eapi.sr \
-	eapi-sr.hh \
-	eapi-sr.cc \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
@@ -374,8 +369,6 @@ BUILT_SOURCES = \
 	exndbam_repository-sr.cc \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
-	eapi-sr.hh \
-	eapi-sr.cc \
 	manifest2_entry-sr.hh \
 	manifest2_entry-sr.cc
 
@@ -425,12 +418,6 @@ manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 
 manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
-
-eapi-sr.hh : eapi.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/eapi.sr > $@
-
-eapi-sr.cc : eapi.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/eapi.sr > $@
 
 glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/glsa.sr > $@

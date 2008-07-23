@@ -299,7 +299,7 @@ EInstalledRepository::use_expand_separator(const PackageID & id) const
     if (this != id.repository().get())
         return '\0';
     const std::tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
-    return (*eapi)[k::supported()] ? (*(*eapi)[k::supported()])[k::ebuild_options()].use_expand_separator : '\0';
+    return eapi->supported() ? eapi->supported()->ebuild_options()->use_expand_separator() : '\0';
 }
 
 std::string
@@ -355,7 +355,7 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
     eclassdirs->push_back(ver_dir);
 
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_config);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -399,7 +399,7 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
 
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
-    EAPIPhases phases((*(*id->eapi())[k::supported()])[k::ebuild_phases()].ebuild_info);
+    EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
