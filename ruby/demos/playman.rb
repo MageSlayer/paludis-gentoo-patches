@@ -193,7 +193,7 @@ when 'add'
                         if substs.has_key?($1) then
                             substs[$1]
                         else
-                            Log.instance.message(LogLevel::Warning, "Unknown variable #$1 in #{template}")
+                            Log.instance.message("playman.template.unknown_var", LogLevel::Warning, "Unknown variable #$1 in #{template}")
                             ""
                         end
                     end
