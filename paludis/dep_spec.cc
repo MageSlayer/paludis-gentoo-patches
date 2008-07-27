@@ -610,6 +610,13 @@ AdditionalPackageDepSpecRequirement::~AdditionalPackageDepSpecRequirement()
 {
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const AdditionalPackageDepSpecRequirement & a)
+{
+    s << a.as_raw_string();
+    return s;
+}
+
 PartiallyMadePackageDepSpec
 paludis::make_package_dep_spec()
 {
