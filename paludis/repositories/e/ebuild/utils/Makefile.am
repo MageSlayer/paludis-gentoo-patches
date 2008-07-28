@@ -53,11 +53,7 @@ libexecprog_SCRIPTS = \
 	unpack \
 	wrapped_ldconfig \
 	wrapped_getfsize \
-	wrapped_getmtime \
-	make \
-	sed \
-	awk \
-	patch
+	wrapped_getmtime
 
 libexecbindir = $(libexecdir)/paludis/utils
 libexecbin_PROGRAMS = \
@@ -81,11 +77,7 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
 TESTS = \
-	wrapped_getfsize_TEST.bash \
-	sed_TEST.bash \
-	awk_TEST.bash \
-	patch_TEST.bash \
-	make_TEST.bash
+	wrapped_getfsize_TEST.bash
 
 prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 

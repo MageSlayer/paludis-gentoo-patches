@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+master:
+    * Paludis no longer includes wrappers for GNU awk, make, patch, and sed.
+      Users of systems where the default versions are not the GNU versions
+      must use PATH manipulation or aliases in /etc/paludis/bashrc to ensure
+      that the GNU versions are used.  (This is not necessary on typical Linux
+      systems; check <command> --version if in doubt.)
+
 0.28.0:
     * Compilers without tr1 memory, type traits and functional support are no
       longer supported. This means you, gcc-3.
