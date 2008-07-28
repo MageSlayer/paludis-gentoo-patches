@@ -663,18 +663,18 @@ Merger::do_ownership_fixes_recursive(const FSEntry & dir)
         if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
         {
             FSEntry f(*d);
+            mode_t mode(f.permissions());
             f.lchown(new_ids.first, new_ids.second);
 
             if (et_dir == entry_type(*d))
             {
-                mode_t mode(f.permissions());
                 if (uid_t(-1) != new_ids.first)
                     mode &= ~S_ISUID;
                 if (gid_t(-1) != new_ids.second)
                     mode &= ~S_ISGID;
-                f.chmod(mode);
             }
 
+            f.chmod(mode); /* set*id */
             _imp->fixed_entries.insert(f);
         }
 
