@@ -100,7 +100,6 @@ _paludis() {
         --destinations -d \
         --preserve-world -1 \
         --add-to-world-spec \
-        --no-config-protection \
         --debug-build \
         --checks \
         --fetch -f \
@@ -114,7 +113,6 @@ _paludis() {
     uninstall_opts="--pretend -p \
         --destinations -d \
         --preserve-world -1 \
-        --no-config-protection \
         --show-reasons \
         --show-use-descriptions \
         --show-package-descriptions \
