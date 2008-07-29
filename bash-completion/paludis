@@ -311,7 +311,7 @@ _paludis() {
                     COMPREPLY=($(compgen -W "$(_paludis_dolist sets)" -- "${cur}"))
                     return 0
                     ;;
-                --owner|-o)
+                --owner|-o|--resume-command-template)
                     _filedir
                     return 0
                     ;;
