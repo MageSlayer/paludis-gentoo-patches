@@ -24,7 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 #include <sys/stat.h>
@@ -45,6 +45,36 @@ namespace paludis
 {
     class Environment;
     class Hook;
+
+    namespace n
+    {
+        struct environment;
+        struct get_new_ids_or_minus_one;
+        struct image;
+        struct install_under;
+        struct no_chown;
+        struct options;
+        struct root;
+    }
+
+    /**
+     * Parameters for a basic Merger.
+     *
+     * \see Merger
+     * \ingroup g_repository
+     * \nosubgrouping
+     * \since 0.30
+     */
+    struct MergerParams
+    {
+        NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
+        NamedValue<n::image, FSEntry> image;
+        NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::no_chown, bool> no_chown;
+        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * Thrown if an error occurs during a Merger operation.

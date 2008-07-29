@@ -26,9 +26,9 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/util/simple_parser.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -43,6 +43,15 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
 BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::string & msg) throw () :
     NameError(name, "version spec", msg)
 {
+}
+
+namespace paludis
+{
+    namespace n
+    {
+        struct kind;
+        struct value;
+    }
 }
 
 namespace
@@ -61,12 +70,13 @@ namespace
         number,
         scm
     };
-}
 
-typedef kc::KeyedClass<
-    kc::Field<k::kind, PartKind>,
-    kc::Field<k::value, std::string>
-    > Part;
+    struct Part
+    {
+        NamedValue<n::kind, PartKind> kind;
+        NamedValue<n::value, std::string> value;
+    };
+}
 
 namespace paludis
 {
@@ -107,7 +117,7 @@ VersionSpec::VersionSpec(const std::string & text) :
     SimpleParser parser(text);
 
     if (parser.consume(simple_parser::exact("scm")))
-        _imp->parts.push_back(Part(scm, ""));
+        _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(scm), value_for<n::value>("")));
     else
     {
         /* numbers... */
@@ -117,7 +127,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
-            _imp->parts.push_back(Part(number, number_part));
+            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(number), value_for<n::value>(number_part)));
 
             if (! parser.consume(simple_parser::exact(".")))
                 break;
@@ -127,7 +137,7 @@ VersionSpec::VersionSpec(const std::string & text) :
         {
             std::string l;
             if (parser.consume(simple_parser::any_of("abcdefghijklmnopqrstuvwxyz") >> l))
-                _imp->parts.push_back(Part(letter, l));
+                _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(letter), value_for<n::value>(l)));
         }
 
         while (true)
@@ -157,7 +167,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     number_str = "0";
             }
 
-            _imp->parts.push_back(Part(k, number_str));
+            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(k), value_for<n::value>(number_str)));
         }
 
         /* try */
@@ -173,24 +183,24 @@ VersionSpec::VersionSpec(const std::string & text) :
                 if (number_str.empty())
                     number_str = "0";
             }
-            _imp->parts.push_back(Part(trypart, number_str));
+            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(trypart), value_for<n::value>(number_str)));
         }
 
         /* scm */
         if (parser.consume(simple_parser::exact("-scm")))
         {
             /* _suffix-scm? */
-            if (_imp->parts.back()[k::value()].empty())
-                _imp->parts.back()[k::value()] = "MAX";
+            if (_imp->parts.back().value().empty())
+                _imp->parts.back().value() = "MAX";
 
-            _imp->parts.push_back(Part(scm, ""));
+            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(scm), value_for<n::value>("")));
         }
 
         /* Now we can change empty values to "0" */
         for (std::vector<Part>::iterator i(_imp->parts.begin()),
                 i_end(_imp->parts.end()) ; i != i_end ; ++i)
-            if ((*i)[k::value()].empty())
-                (*i)[k::value()] = "0";
+            if ((*i).value().empty())
+                (*i).value() = "0";
     }
 
     /* revision */
@@ -208,7 +218,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             number_str = strip_leading(number_str, "0");
             if (number_str.empty())
                 number_str = "0";
-            _imp->parts.push_back(Part(revision, number_str));
+            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(revision), value_for<n::value>(number_str)));
 
             if (empty)
             {
@@ -264,7 +274,7 @@ VersionSpec::compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, "");
+    Part end_part(make_named_values<Part>(value_for<n::kind>(empty), value_for<n::value>("")));
     bool first(true);
     while (true)
     {
@@ -274,49 +284,49 @@ VersionSpec::compare(const VersionSpec & other) const
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if (p1 == &end_part && (*p2)[k::kind()] == revision && (*p2)[k::value()] == "0")
+        if (p1 == &end_part && (*p2).kind() == revision && (*p2).value() == "0")
             continue;
 
-        if (p2 == &end_part && (*p1)[k::kind()] == revision && (*p1)[k::value()] == "0")
+        if (p2 == &end_part && (*p1).kind() == revision && (*p1).value() == "0")
             continue;
 
-        if ((*p1)[k::kind()] < (*p2)[k::kind()])
+        if ((*p1).kind() < (*p2).kind())
             return -1;
-        if ((*p1)[k::kind()] > (*p2)[k::kind()])
+        if ((*p1).kind() > (*p2).kind())
             return 1;
 
         std::string p1s, p2s;
         bool length_cmp(true);
 
         /* number parts */
-        if ((*p1)[k::kind()] == number)
+        if ((*p1).kind() == number)
         {
             if (first)
             {
                 /* first component - always as integer (leading zeroes removed) */
                 first = false;
-                p1s = strip_leading((*p1)[k::value()], "0");
-                p2s = strip_leading((*p2)[k::value()], "0");
+                p1s = strip_leading((*p1).value(), "0");
+                p2s = strip_leading((*p2).value(), "0");
             }
-            else if ((! (*p1)[k::value()].empty() && (*p1)[k::value()].at(0) == '0') ||
-                    (! (*p2)[k::value()].empty() && (*p2)[k::value()].at(0) == '0'))
+            else if ((! (*p1).value().empty() && (*p1).value().at(0) == '0') ||
+                    (! (*p2).value().empty() && (*p2).value().at(0) == '0'))
             {
                 /* leading zeroes - stringwise compare with trailing zeroes removed */
                 length_cmp = false;
-                p1s = strip_trailing((*p1)[k::value()], "0");
-                p2s = strip_trailing((*p2)[k::value()], "0");
+                p1s = strip_trailing((*p1).value(), "0");
+                p2s = strip_trailing((*p2).value(), "0");
             }
             else
             {
-                p1s = (*p1)[k::value()];
-                p2s = (*p2)[k::value()];
+                p1s = (*p1).value();
+                p2s = (*p2).value();
             }
         }
         /* anything else than number parts */
         else
         {
-            p1s = (*p1)[k::value()];
-            p2s = (*p2)[k::value()];
+            p1s = (*p1).value();
+            p2s = (*p2).value();
 
             /* _suffix-scm? */
             if (p1s == "MAX" && p2s == "MAX")
@@ -352,7 +362,7 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, "");
+    Part end_part(make_named_values<Part>(value_for<n::kind>(empty), value_for<n::value>("")));
     bool first(true);
     while (true)
     {
@@ -361,49 +371,49 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if ((*p1)[k::kind()] != (*p2)[k::kind()])
+        if ((*p1).kind() != (*p2).kind())
         {
-            if (p2 != &end_part || (*p1)[k::kind()] != revision)
+            if (p2 != &end_part || (*p1).kind() != revision)
                 return false;
         }
         else
         {
             std::string p1s, p2s;
             /* number part */
-            if ((*p1)[k::kind()] == number)
+            if ((*p1).kind() == number)
             {
                 if (first)
                 {
                     /* first component - remove leading zeroes and check whether equal */
                     first = false;
-                    if (strip_leading((*p1)[k::value()], "0") != strip_leading((*p2)[k::value()], "0"))
+                    if (strip_leading((*p1).value(), "0") != strip_leading((*p2).value(), "0"))
                         return false;
                 }
-                else if ((! (*p1)[k::value()].empty() && (*p1)[k::value()].at(0) == '0') ||
-                        (! (*p2)[k::value()].empty() && (*p2)[k::value()].at(0) == '0'))
+                else if ((! (*p1).value().empty() && (*p1).value().at(0) == '0') ||
+                        (! (*p2).value().empty() && (*p2).value().at(0) == '0'))
                 {
                     /* leading zeroes - remove trailing zeroes and check whether equal */
-                    if (strip_trailing((*p1)[k::value()], "0") != strip_trailing((*p2)[k::value()], "0"))
+                    if (strip_trailing((*p1).value(), "0") != strip_trailing((*p2).value(), "0"))
                         return false;
                 }
                 else
                 {
                     /* normal(!) case */
-                    if ((*p1)[k::value()] != (*p2)[k::value()])
+                    if ((*p1).value() != (*p2).value())
                         return false;
                 }
             }
             /* revision - compare as integers */
-            else if ((*p1)[k::kind()] == revision)
+            else if ((*p1).kind() == revision)
             {
-                int c = (*p1)[k::value()].size() - (*p2)[k::value()].size();
+                int c = (*p1).value().size() - (*p2).value().size();
                 if (c < 0)
                     return false;
-                else if (c == 0 && (*p1)[k::value()].compare((*p2)[k::value()]) == -1)
+                else if (c == 0 && (*p1).value().compare((*p2).value()) == -1)
                     return false;
             }
             /* not a number part nor revision - must be just equal */
-            else if ((*p1)[k::value()] != (*p2)[k::value()])
+            else if ((*p1).value() != (*p2).value())
                 return false;
         }
     }
@@ -436,7 +446,7 @@ VersionSpec::hash() const
         for (std::vector<Part>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
                 r != r_end ; ++r)
         {
-            if ((*r)[k::value()] == "0" && (*r)[k::kind()] == revision)
+            if ((*r).value() == "0" && (*r).kind() == revision)
                 continue;
 
             std::size_t hh(result & h_mask);
@@ -444,10 +454,10 @@ VersionSpec::hash() const
             result ^= (hh >> h_shift);
 
             std::string r_v;
-            if (! (*r)[k::value()].empty() && (*r)[k::value()].at(0) == '0')
-                r_v = strip_trailing((*r)[k::value()], "0");
+            if (! (*r).value().empty() && (*r).value().at(0) == '0')
+                r_v = strip_trailing((*r).value(), "0");
             else
-                r_v = (*r)[k::value()];
+                r_v = (*r).value();
 
             size_t x(0);
             int zeroes(0);
@@ -462,7 +472,7 @@ VersionSpec::hash() const
             }
             first = false;
 
-            result ^= (static_cast<std::size_t>((*r)[k::kind()]) + (x << 3) + (zeroes << 12));
+            result ^= (static_cast<std::size_t>((*r).kind()) + (x << 3) + (zeroes << 12));
         }
     } while (false);
 
@@ -479,7 +489,7 @@ namespace
     {
         bool operator() (const Part & p) const
         {
-            return p[k::kind()] == p_;
+            return p.kind() == p_;
         }
     };
 }
@@ -517,7 +527,7 @@ VersionSpec::revision_only() const
             else
                 result = "r";
 
-            result.append((*r)[k::value()]);
+            result.append((*r).value());
             r = std::find_if(next(r), _imp->parts.end(), IsPart<revision>());
         } while (r != _imp->parts.end());
 
@@ -561,7 +571,7 @@ VersionSpec::is_scm() const
         /* are we a -r9999? */
         r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
         if (r != _imp->parts.end())
-            if ((*r)[k::value()] == "9999")
+            if ((*r).value() == "9999")
             {
                 result = true;
                 break;
@@ -616,8 +626,8 @@ VersionSpec::bump() const
         number_parts.pop_back();
 
     /* ++string */
-    std::string::reverse_iterator i(number_parts.back()[k::value()].rbegin()),
-        i_end(number_parts.back()[k::value()].rend());
+    std::string::reverse_iterator i(number_parts.back().value().rbegin()),
+        i_end(number_parts.back().value().rend());
     bool add1(true);
     while (i != i_end && add1)
     {
@@ -631,7 +641,7 @@ VersionSpec::bump() const
         ++i;
     }
     if (add1)
-        number_parts.back()[k::value()].insert(0, "1");
+        number_parts.back().value().insert(0, "1");
 
     bool need_dot(false);
     std::string str;
@@ -640,7 +650,7 @@ VersionSpec::bump() const
     {
         if (need_dot)
             str.append(".");
-        str.append((*r)[k::value()]);
+        str.append((*r).value());
         need_dot = true;
     }
     return VersionSpec(str);

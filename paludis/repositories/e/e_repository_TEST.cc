@@ -33,8 +33,8 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -828,16 +828,16 @@ namespace test_cases
             std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                     it_end(seq->end()); it_end != it; ++it, ++count)
-                if ("virtual/one" == stringify((*it)[k::virtual_name()]))
+                if ("virtual/one" == stringify(it->virtual_name()))
                 {
                     has_one = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*(*it)[k::provided_by_spec()], "cat-one/pkg-one");
+                    TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec(), "cat-one/pkg-one");
                 }
                 else
                 {
-                    TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/two");
+                    TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/two");
                     has_two = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*(*it)[k::provided_by_spec()], "cat-two/pkg-two");
+                    TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec(), "cat-two/pkg-two");
                 }
 
             TEST_CHECK(has_one);
@@ -852,21 +852,21 @@ namespace test_cases
             seq = repo->virtual_packages();
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                     it_end(seq->end()); it_end != it; ++it, ++count)
-                if ("virtual/one" == stringify((*it)[k::virtual_name()]))
+                if ("virtual/one" == stringify(it->virtual_name()))
                 {
                     has_one = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*(*it)[k::provided_by_spec()], "cat-two/pkg-two");
+                    TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec(), "cat-two/pkg-two");
                 }
-                else if ("virtual/two" == stringify((*it)[k::virtual_name()]))
+                else if ("virtual/two" == stringify(it->virtual_name()))
                 {
                     has_two = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*(*it)[k::provided_by_spec()], "cat-one/pkg-one");
+                    TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec(), "cat-one/pkg-one");
                 }
                 else
                 {
-                    TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/three");
+                    TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/three");
                     has_three = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*(*it)[k::provided_by_spec()], "cat-three/pkg-three");
+                    TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec(), "cat-three/pkg-three");
                 }
 
             TEST_CHECK(has_one);
@@ -943,10 +943,10 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            FetchAction action(FetchActionOptions::named_create()
-                    (k::fetch_unneeded(), false)
-                    (k::safe_resume(), true)
-                    );
+            FetchAction action(make_named_values<FetchActionOptions>(
+                        value_for<n::fetch_unneeded>(false),
+                        value_for<n::safe_resume>(true)
+                    ));
 
             {
                 TestMessageSuffix suffix("no files", true);
@@ -1045,10 +1045,10 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            FetchAction action(FetchActionOptions::named_create()
-                    (k::fetch_unneeded(), false)
-                    (k::safe_resume(), true)
-                    );
+            FetchAction action(make_named_values<FetchActionOptions>(
+                        value_for<n::fetch_unneeded>(false),
+                        value_for<n::safe_resume>(true)
+                    ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
@@ -1113,11 +1113,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
 #endif
 
-            InstallAction action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), installed_repo)
-                    );
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                    ));
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
             {
@@ -1338,11 +1338,11 @@ namespace test_cases
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
-            InstallAction action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), installed_repo)
-                    );
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                    ));
 
             {
                 TestMessageSuffix suffix("econf source 1", true);
@@ -1402,11 +1402,11 @@ namespace test_cases
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
-            InstallAction action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), installed_repo)
-                    );
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                        ));
 
             {
                 TestMessageSuffix suffix("econf source kdebuild-1", true);
@@ -1571,11 +1571,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
 #endif
 
-            InstallAction action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), installed_repo)
-                    );
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                    ));
 
             {
                 TestMessageSuffix suffix("in-ebuild die", true);
@@ -2028,11 +2028,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, installed_repo);
 
-            InstallAction action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), installed_repo)
-                    );
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                    ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/pkg",

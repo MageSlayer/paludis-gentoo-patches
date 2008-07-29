@@ -21,10 +21,10 @@
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_parser.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -188,12 +188,12 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                         token));
             for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
                     v != v_end ; ++v)
-                _imp->entries.push_back(UnavailableRepositoryFileEntry::named_create()
-                        (k::name(), category + package)
-                        (k::version(), *v)
-                        (k::slot(), slot)
-                        (k::description(), desc)
-                        );
+                _imp->entries.push_back(make_named_values<UnavailableRepositoryFileEntry>(
+                            value_for<n::description>(desc),
+                            value_for<n::name>(category + package),
+                            value_for<n::slot>(slot),
+                            value_for<n::version>(*v)
+                        ));
         }
         else
             throw UnavailableRepositoryConfigurationError(

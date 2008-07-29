@@ -20,12 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_MASK_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_MASK_FWD_HH 1
 
-#include <paludis/util/visitor-fwd.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/util/fs_entry-fwd.hh>
-#include <tr1/memory>
-
 /** \file
  * Forward declarations for paludis/mask.hh .
  *
@@ -43,21 +37,7 @@ namespace paludis
 
     class MaskVisitorTypes;
 
-    /**
-     * Information about a RepositoryMask.
-     *
-     * The mask_file key holds the file whence the mask originates.
-     *
-     * The comment key is a sequence of lines explaining the mask.
-     *
-     * \ingroup g_package_id
-     * \since 0.26
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::mask_file, FSEntry>,
-        kc::Field<k::comment, std::tr1::shared_ptr<const Sequence<std::string> > >
-            > RepositoryMaskInfo;
+    struct RepositoryMaskInfo;
 }
 
 #endif

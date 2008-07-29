@@ -112,7 +112,7 @@ namespace
                 }
 
                 std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
-                if ((*rr)[k::syncable_interface()] && (*rr)[k::syncable_interface()]->sync())
+                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync())
                 {
                     Lock l(mutex);
                     task->on_sync_succeed(r);

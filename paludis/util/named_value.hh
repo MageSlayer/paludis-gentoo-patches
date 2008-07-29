@@ -31,6 +31,12 @@ namespace paludis
             V_ _value;
 
         public:
+            template <typename T_>
+            NamedValue(const NamedValue<K_, T_> & v) :
+                _value(v())
+            {
+            }
+
             explicit NamedValue(const V_ & v) :
                 _value(v)
             {

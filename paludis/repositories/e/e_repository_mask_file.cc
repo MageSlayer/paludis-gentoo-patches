@@ -25,7 +25,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/mask.hh>
 
 #include <list>
@@ -77,7 +77,8 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
             continue;
         }
 
-        _imp->lines.push_back(std::make_pair(*it, std::tr1::shared_ptr<RepositoryMaskInfo>(new RepositoryMaskInfo(f, comment))));
+        _imp->lines.push_back(std::make_pair(*it, std::tr1::shared_ptr<RepositoryMaskInfo>(new RepositoryMaskInfo(
+                            make_named_values<RepositoryMaskInfo>(value_for<n::comment>(comment), value_for<n::mask_file>(f))))));
         comment_used = true;
     }
 }

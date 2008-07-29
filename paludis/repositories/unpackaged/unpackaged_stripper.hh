@@ -21,17 +21,28 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_UNPACKAGED_STRIPPER_HH 1
 
 #include <paludis/stripper.hh>
+#include <paludis/package_id-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct debug_build;
+        struct debug_dir;
+        struct image_dir;
+        struct package_id;
+    }
+
     namespace unpackaged_repositories
     {
-        typedef kc::KeyedClass<
-            kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-            kc::Field<k::image_dir, FSEntry>,
-            kc::Field<k::debug_dir, FSEntry>,
-            kc::Field<k::debug_build, InstallActionDebugOption>
-                > UnpackagedStripperOptions;
+        struct UnpackagedStripperOptions
+        {
+            NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
+            NamedValue<n::debug_dir, FSEntry> debug_dir;
+            NamedValue<n::image_dir, FSEntry> image_dir;
+            NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        };
 
         class UnpackagedStripper :
             public Stripper,

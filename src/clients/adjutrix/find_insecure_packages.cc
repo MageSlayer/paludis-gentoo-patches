@@ -162,12 +162,12 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        if (! (*r)[k::sets_interface()])
+        if (! (*r).sets_interface())
             continue;
 
         write_repository_header(r->name());
 
-        std::tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure((*r)[k::sets_interface()]->package_set(SetName("insecurity")));
+        std::tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure((*r).sets_interface()->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);

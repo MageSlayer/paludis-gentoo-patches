@@ -20,8 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_EAPI_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_EAPI_FWD_HH 1
 
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/merger-fwd.hh>
 #include <paludis/name-fwd.hh>

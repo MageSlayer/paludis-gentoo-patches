@@ -151,8 +151,8 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
 
     for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
-        _imp->package_database->add_repository((*r)[k::importance()],
-                RepositoryMaker::get_instance()->find_maker((*r)[k::format()])(this, (*r)[k::keys()]));
+        _imp->package_database->add_repository((*r).importance(),
+                RepositoryMaker::get_instance()->find_maker((*r).format())(this, (*r).keys()));
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->config_location_key);
@@ -171,11 +171,11 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
             "' in Paludis environment:");
 
     /* first check package database use masks... */
-    if ((*e.repository())[k::use_interface()])
+    if ((*e.repository()).use_interface())
     {
-        if ((*e.repository())[k::use_interface()]->query_use_mask(f, e))
+        if ((*e.repository()).use_interface()->query_use_mask(f, e))
             return false;
-        if ((*e.repository())[k::use_interface()]->query_use_force(f, e))
+        if ((*e.repository()).use_interface()->query_use_force(f, e))
             return true;
     }
 
@@ -200,9 +200,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     } while (false);
 
     /* check use: package database config */
-    if ((*e.repository())[k::use_interface()])
+    if ((*e.repository()).use_interface())
     {
-        switch ((*e.repository())[k::use_interface()]->query_use(f, e))
+        switch ((*e.repository()).use_interface()->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

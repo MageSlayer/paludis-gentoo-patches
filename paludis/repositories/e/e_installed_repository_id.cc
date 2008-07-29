@@ -38,7 +38,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <iterator>
 #include <fstream>
@@ -466,7 +465,7 @@ EInstalledRepositoryID::eapi() const
             << _imp->environment->distribution() << "'";
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(
                 (*DistributionData::get_instance()->distribution_from_string(
-                    _imp->environment->distribution()))[k::default_ebuild_eapi_when_unspecified()]);
+                    _imp->environment->distribution())).default_ebuild_eapi_when_unspecified());
     }
 
     return _imp->eapi;

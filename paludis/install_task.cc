@@ -42,9 +42,9 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/handled_information.hh>
 #include <tr1/functional>
 #include <sstream>
@@ -92,16 +92,16 @@ namespace paludis
             env(e),
             dep_list(e, o),
             fetch_options(
-                    FetchActionOptions::named_create()
-                    (k::safe_resume(), false)
-                    (k::fetch_unneeded(), false)
-                    ),
+                    make_named_values<FetchActionOptions>(
+                        value_for<n::fetch_unneeded>(false),
+                        value_for<n::safe_resume>(false)
+                        )),
             install_options(
-                    InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), std::tr1::shared_ptr<Repository>())
-                    ),
+                    make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(std::tr1::shared_ptr<Repository>())
+                    )),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
@@ -656,7 +656,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     bool live_destination(false);
     if (dep->destination)
-        if ((*dep->destination)[k::destination_interface()] && (*dep->destination)[k::destination_interface()]->want_pre_post_phases())
+        if ((*dep->destination).destination_interface() && (*dep->destination).destination_interface()->want_pre_post_phases())
             live_destination = true;
 
     if (already_done(*dep))
@@ -696,7 +696,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
         if (! _imp->fetch_only)
         {
-            _imp->install_options[k::destination()] = dep->destination;
+            _imp->install_options.destination() = dep->destination;
             InstallAction install_action(_imp->install_options);
             dep->package_id->perform_action(install_action);
         }
@@ -844,7 +844,7 @@ InstallTask::_main_actions()
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
             if (dlk_package == dep->kind && dep->destination)
-                if ((*dep->destination)[k::destination_interface()] && (*dep->destination)[k::destination_interface()]->want_pre_post_phases())
+                if ((*dep->destination).destination_interface() && (*dep->destination).destination_interface()->want_pre_post_phases())
                     any_live_destination = true;
 
         if (0 != perform_hook(Hook("install_all_pre")
@@ -1130,13 +1130,13 @@ InstallTask::set_preserve_world(const bool value)
 void
 InstallTask::set_debug_mode(const InstallActionDebugOption value)
 {
-    _imp->install_options[k::debug_build()] = value;
+    _imp->install_options.debug_build() = value;
 }
 
 void
 InstallTask::set_checks_mode(const InstallActionChecksOption value)
 {
-    _imp->install_options[k::checks()] = value;
+    _imp->install_options.checks() = value;
 }
 
 void
@@ -1177,7 +1177,7 @@ InstallTask::on_installed_paludis()
 void
 InstallTask::set_safe_resume(const bool value)
 {
-    _imp->fetch_options[k::safe_resume()] = value;
+    _imp->fetch_options.safe_resume() = value;
 }
 
 HookResult

@@ -20,19 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STRIPPER_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_STRIPPER_FWD_HH 1
 
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/action-fwd.hh>
-
 namespace paludis
 {
     class Stripper;
-
-    typedef kc::KeyedClass<
-        kc::Field<k::image_dir, FSEntry>,
-        kc::Field<k::debug_dir, FSEntry>,
-        kc::Field<k::debug_build, InstallActionDebugOption>
-            > StripperOptions;
+    class StripperOptions;
 }
 
 #endif

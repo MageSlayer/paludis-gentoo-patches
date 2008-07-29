@@ -23,25 +23,38 @@
 #include <paludis/repository.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct build_dependencies;
+        struct description;
+        struct environment;
+        struct install_under;
+        struct location;
+        struct name;
+        struct rewrite_ids_over_to_root;
+        struct run_dependencies;
+        struct slot;
+        struct version;
+    }
+
     namespace unpackaged_repositories
     {
-        typedef kc::KeyedClass<
-            kc::Field<k::environment, Environment *>,
-            kc::Field<k::location, FSEntry>,
-            kc::Field<k::install_under, FSEntry>,
-            kc::Field<k::name, QualifiedPackageName>,
-            kc::Field<k::version, VersionSpec>,
-            kc::Field<k::slot, SlotName>,
-            kc::Field<k::build_dependencies, std::string>,
-            kc::Field<k::run_dependencies, std::string>,
-            kc::Field<k::description, std::string>,
-            kc::Field<k::rewrite_ids_over_to_root, int>
-                > UnpackagedRepositoryParams;
+        struct UnpackagedRepositoryParams
+        {
+            NamedValue<n::build_dependencies, std::string> build_dependencies;
+            NamedValue<n::description, std::string> description;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::install_under, FSEntry> install_under;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::name, QualifiedPackageName> name;
+            NamedValue<n::rewrite_ids_over_to_root, int> rewrite_ids_over_to_root;
+            NamedValue<n::run_dependencies, std::string> run_dependencies;
+            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::version, VersionSpec> version;
+        };
     }
 
     class PALUDIS_VISIBLE UnpackagedRepository :

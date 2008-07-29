@@ -23,7 +23,6 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/kc.hh>
 
 bool
 paludis::erepository::eapi_supported_check(

@@ -27,8 +27,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -274,7 +274,7 @@ namespace
     {
         bool operator() (const std::tr1::shared_ptr<const NDBAMEntry> & a, const std::tr1::shared_ptr<const NDBAMEntry> & b) const
         {
-            return (*a)[k::version()] < (*b)[k::version()];
+            return (*a).version() < (*b).version();
         }
     };
 }
@@ -325,14 +325,15 @@ NDBAM::entries(const QualifiedPackageName & q)
                 VersionSpec v(tokens[0]);
                 SlotName s(tokens[1]);
                 std::string m(tokens[2]);
-                pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry::named_create()
-                                (k::name(), q)
-                                (k::version(), v)
-                                (k::slot(), s)
-                                (k::fs_location(), d->realpath())
-                                (k::package_id(), std::tr1::shared_ptr<PackageID>())
-                                (k::magic(), m)
-                                (k::mutex(), make_shared_ptr(new Mutex)))));
+                pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
+                                        value_for<n::fs_location>(d->realpath()),
+                                        value_for<n::magic>(m),
+                                        value_for<n::mutex>(make_shared_ptr(new Mutex)),
+                                        value_for<n::name>(q),
+                                        value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
+                                        value_for<n::slot>(s),
+                                        value_for<n::version>(v)
+                                )))));
             }
             catch (const InternalError &)
             {

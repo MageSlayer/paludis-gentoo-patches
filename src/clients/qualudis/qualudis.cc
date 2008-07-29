@@ -28,7 +28,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <tr1/functional>
@@ -173,8 +172,8 @@ namespace
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             if (k.value())
-                stream << k.raw_name() << ": " << (*k.value())[k::mask_file()] << ": "
-                    << join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ") << "\n";
+                stream << k.raw_name() << ": " << (*k.value()).mask_file() << ": "
+                    << join((*k.value()).comment()->begin(), (*k.value()).comment()->end(), " ") << "\n";
             else
                 stream << k.raw_name() << "\n";
         }
@@ -346,13 +345,13 @@ int main(int argc, char *argv[])
                     .extra_accept_keywords("")
                     ));
 
-        if (! (*env->main_repository())[k::qa_interface()])
+        if (! (*env->main_repository()).qa_interface())
             throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");
 
         QualudisReporter r(QualudisCommandLine::get_instance()->a_show_associated_keys.argument());
         if (QualudisCommandLine::get_instance()->empty())
         {
-            (*env->main_repository())[k::qa_interface()]->check_qa(
+            (*env->main_repository()).qa_interface()->check_qa(
                     r,
                     QACheckProperties(),
                     QACheckProperties(),
@@ -364,7 +363,7 @@ int main(int argc, char *argv[])
             for (QualudisCommandLine::ParametersConstIterator c(QualudisCommandLine::get_instance()->begin_parameters()),
                     c_end(QualudisCommandLine::get_instance()->end_parameters()) ;
                     c != c_end ; ++c)
-                (*env->main_repository())[k::qa_interface()]->check_qa(
+                (*env->main_repository()).qa_interface()->check_qa(
                         r,
                         QACheckProperties(),
                         QACheckProperties(),

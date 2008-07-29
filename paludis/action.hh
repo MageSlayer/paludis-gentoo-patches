@@ -28,6 +28,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 /** \file
  * Declarations for action-related classes.
@@ -41,6 +43,61 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct checks;
+        struct debug_build;
+        struct destination;
+        struct failed_automatic_fetching;
+        struct failed_integrity_checks;
+        struct fetch_unneeded;
+        struct requires_manual_fetching;
+        struct safe_resume;
+        struct target_file;
+    }
+
+    /**
+     * Options for a FetchAction.
+     *
+     * \see FetchAction
+     * \ingroup g_actions
+     * \since 0.30
+     */
+    struct FetchActionOptions
+    {
+        NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
+        NamedValue<n::safe_resume, bool> safe_resume;
+    };
+
+    /**
+     * Options for an InstallAction.
+     *
+     * \see InstallAction
+     * \ingroup g_actions
+     * \since 0.30
+     */
+    struct InstallActionOptions
+    {
+        NamedValue<n::checks, InstallActionChecksOption> checks;
+        NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
+        NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
+    };
+
+    /**
+     * A failed fetch action part.
+     *
+     * \see FetchActionError
+     * \ingroup g_actions
+     * \since 0.30
+     */
+    struct FetchActionFailure
+    {
+        NamedValue<n::failed_automatic_fetching, bool> failed_automatic_fetching;
+        NamedValue<n::failed_integrity_checks, std::string> failed_integrity_checks;
+        NamedValue<n::requires_manual_fetching, bool> requires_manual_fetching;
+        NamedValue<n::target_file, std::string> target_file;
+    };
+
     /**
      * Types for visiting an action.
      *

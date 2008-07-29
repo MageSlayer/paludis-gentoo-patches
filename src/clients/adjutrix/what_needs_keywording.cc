@@ -68,7 +68,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     UseFlagName target_arch(strip_leading_string(
                 *CommandLine::get_instance()->begin_parameters(), "~"));
 
-    (*env.main_repository())[k::e_interface()]->set_profile_by_arch(target_arch);
+    (*env.main_repository()).e_interface()->set_profile_by_arch(target_arch);
     env.set_accept_unstable('~' == stringify(target_keyword).at(0));
 
     DepListOptions d_options;

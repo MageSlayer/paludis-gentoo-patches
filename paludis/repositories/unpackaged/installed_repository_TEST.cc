@@ -33,7 +33,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -363,18 +363,18 @@ namespace test_cases
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
-                            (k::environment(), &env)
-                            (k::name(), QualifiedPackageName("cat/pkg4a"))
-                            (k::version(), VersionSpec("1.0"))
-                            (k::slot(), SlotName("foo"))
-                            (k::location(), FSEntry("installed_repository_TEST_dir/src4a"))
-                            (k::install_under(), FSEntry("/"))
-                            (k::build_dependencies(), "")
-                            (k::run_dependencies(), "")
-                            (k::rewrite_ids_over_to_root(), -1)
-                            (k::description(), "")
-                            ));
+                            make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
+                                value_for<n::build_dependencies>(""),
+                                value_for<n::description>(""),
+                                value_for<n::environment>(&env),
+                                value_for<n::install_under>(FSEntry("/")),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/src4a")),
+                                value_for<n::name>(QualifiedPackageName("cat/pkg4a")),
+                                value_for<n::rewrite_ids_over_to_root>(-1),
+                                value_for<n::run_dependencies>(""),
+                                value_for<n::slot>(SlotName("foo")),
+                                value_for<n::version>(VersionSpec("1.0"))
+                            )));
                 env.package_database()->add_repository(1, source_repo);
 
                 {
@@ -385,10 +385,11 @@ namespace test_cases
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").exists());
 
-                InstallAction action(InstallActionOptions::named_create()
-                        (k::destination(), repo)
-                        (k::checks(), iaco_default)
-                        (k::debug_build(), iado_none));
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            value_for<n::checks>(iaco_default),
+                            value_for<n::debug_build>(iado_none),
+                            value_for<n::destination>(repo)
+                        ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
@@ -418,18 +419,18 @@ namespace test_cases
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
-                            (k::environment(), &env)
-                            (k::name(), QualifiedPackageName("cat/pkg4b"))
-                            (k::version(), VersionSpec("1.0"))
-                            (k::slot(), SlotName("foo"))
-                            (k::location(), FSEntry("installed_repository_TEST_dir/src4b1"))
-                            (k::install_under(), FSEntry("/"))
-                            (k::build_dependencies(), "")
-                            (k::run_dependencies(), "")
-                            (k::rewrite_ids_over_to_root(), -1)
-                            (k::description(), "")
-                            ));
+                            make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
+                                value_for<n::build_dependencies>(""),
+                                value_for<n::description>(""),
+                                value_for<n::environment>(&env),
+                                value_for<n::install_under>(FSEntry("/")),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/src4b1")),
+                                value_for<n::name>(QualifiedPackageName("cat/pkg4b")),
+                                value_for<n::rewrite_ids_over_to_root>(-1),
+                                value_for<n::run_dependencies>(""),
+                                value_for<n::slot>(SlotName("foo")),
+                                value_for<n::version>(VersionSpec("1.0"))
+                                )));
                 env.package_database()->add_repository(1, source_repo);
 
                 {
@@ -439,10 +440,11 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged");
                 }
 
-                InstallAction action(InstallActionOptions::named_create()
-                        (k::destination(), repo)
-                        (k::checks(), iaco_default)
-                        (k::debug_build(), iado_none));
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            value_for<n::checks>(iaco_default),
+                            value_for<n::debug_build>(iado_none),
+                            value_for<n::destination>(repo)
+                        ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
@@ -475,18 +477,18 @@ namespace test_cases
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
                             RepositoryName("unpackaged"),
-                            unpackaged_repositories::UnpackagedRepositoryParams::named_create()
-                            (k::environment(), &env)
-                            (k::name(), QualifiedPackageName("cat/pkg4b"))
-                            (k::version(), VersionSpec("1.0"))
-                            (k::slot(), SlotName("foo"))
-                            (k::location(), FSEntry("installed_repository_TEST_dir/src4b2"))
-                            (k::install_under(), FSEntry("/"))
-                            (k::build_dependencies(), "")
-                            (k::rewrite_ids_over_to_root(), -1)
-                            (k::run_dependencies(), "")
-                            (k::description(), "")
-                            ));
+                            make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
+                                value_for<n::build_dependencies>(""),
+                                value_for<n::description>(""),
+                                value_for<n::environment>(&env),
+                                value_for<n::install_under>(FSEntry("/")),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/src4b2")),
+                                value_for<n::name>(QualifiedPackageName("cat/pkg4b")),
+                                value_for<n::rewrite_ids_over_to_root>(-1),
+                                value_for<n::run_dependencies>(""),
+                                value_for<n::slot>(SlotName("foo")),
+                                value_for<n::version>(VersionSpec("1.0"))
+                            )));
                 env.package_database()->add_repository(1, source_repo);
 
                 {
@@ -496,10 +498,11 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                InstallAction action(InstallActionOptions::named_create()
-                        (k::destination(), repo)
-                        (k::checks(), iaco_default)
-                        (k::debug_build(), iado_none));
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            value_for<n::checks>(iaco_default),
+                            value_for<n::debug_build>(iado_none),
+                            value_for<n::destination>(repo)
+                        ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());

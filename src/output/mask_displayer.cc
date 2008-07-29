@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/metadata_key.hh>
 #include <sstream>
 
@@ -116,8 +115,8 @@ namespace
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
-            s << (*k.value())[k::mask_file()] << ": " <<
-                join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " ");
+            s << (*k.value()).mask_file() << ": " <<
+                join((*k.value()).comment()->begin(), (*k.value()).comment()->end(), " ");
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)

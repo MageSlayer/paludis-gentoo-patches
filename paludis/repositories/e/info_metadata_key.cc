@@ -27,7 +27,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>

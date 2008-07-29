@@ -71,11 +71,11 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <tr1/functional>
 #include <tr1/unordered_map>
@@ -337,14 +337,15 @@ namespace paludis
                 profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
                 try
                 {
-                    profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::named_create()
-                            (k::arch(), tokens.at(0))
-                            (k::path(), *profiles.begin())
-                            (k::status(), tokens.at(2))
-                            (k::profile(), std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
+                    profiles_desc.push_back(make_named_values<RepositoryEInterface::ProfilesDescLine>(
+                            value_for<n::arch>(tokens.at(0)),
+                            value_for<n::path>(*profiles.begin()),
+                            value_for<n::profile>(std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                         params.environment, repo, repo->name(), profiles,
                                         erepository::EAPIData::get_instance()->eapi_from_string(
-                                            params.eapi_when_unknown)->supported()->ebuild_environment_variables()->env_arch()))));
+                                            params.eapi_when_unknown)->supported()->ebuild_environment_variables()->env_arch()))),
+                            value_for<n::status>(tokens.at(2))
+                            ));
                 }
                 catch (const InternalError &)
                 {
@@ -415,25 +416,25 @@ namespace
 
 ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
-            RepositoryCapabilities::named_create()
-            (k::sets_interface(), this)
-            (k::syncable_interface(), this)
-            (k::use_interface(), this)
-            (k::environment_variable_interface(), this)
-            (k::mirrors_interface(), this)
-            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    p.environment->distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::destination_interface(), p.binary_destination ? this : 0)
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::e_interface(), this)
+            make_named_values<RepositoryCapabilities>(
+            value_for<n::destination_interface>(p.binary_destination ? this : 0),
+            value_for<n::e_interface>(this),
+            value_for<n::environment_variable_interface>(this),
+            value_for<n::hook_interface>(this),
+            value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+            value_for<n::manifest_interface>(this),
+            value_for<n::mirrors_interface>(this),
+            value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
 #ifdef ENABLE_QA
-            (k::qa_interface(), this)
+            value_for<n::qa_interface>(this),
 #else
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
+            value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
 #endif
-            (k::hook_interface(), this)
-            (k::manifest_interface(), this)),
+            value_for<n::sets_interface>(this),
+            value_for<n::syncable_interface>(this),
+            value_for<n::use_interface>(this),
+            value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment->distribution())).support_old_style_virtuals() ? this : 0)
+            )),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
     _imp(PrivateImplementationPattern<ERepository>::_imp)
 {
@@ -799,16 +800,16 @@ ERepository::sync() const
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
-        DefaultSyncer syncer(SyncerParams::named_create()
-                (k::environment(), _imp->params.environment)
-                (k::local(), stringify(_imp->params.location))
-                (k::remote(), *s)
-                );
-        SyncOptions opts(
-                _imp->params.sync_options,
-                _imp->layout->sync_filter_file(),
-                "sync " + stringify(name()) + "> "
-                );
+        DefaultSyncer syncer(make_named_values<SyncerParams>(
+                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::local>(stringify(_imp->params.location)),
+                    value_for<n::remote>(*s)
+                ));
+        SyncOptions opts(make_named_values<SyncOptions>(
+                    value_for<n::filter_file>(_imp->layout->sync_filter_file()),
+                    value_for<n::options>(_imp->params.sync_options),
+                    value_for<n::output_prefix>("sync " + stringify(name()) + "> ")
+                ));
         try
         {
             syncer.sync(opts);
@@ -841,7 +842,7 @@ ERepository::invalidate_masks()
     _imp->layout->invalidate_masks();
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->distribution()))
-            [k::support_old_style_virtuals()])
+            .support_old_style_virtuals())
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate_masks();
@@ -925,9 +926,10 @@ ERepository::virtual_packages() const
 
     for (ERepositoryProfile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
-        result->push_back(RepositoryVirtualsEntry::named_create()
-                (k::provided_by_spec(), i->second)
-                (k::virtual_name(), i->first));
+        result->push_back(make_named_values<RepositoryVirtualsEntry>(
+                    value_for<n::provided_by_spec>(i->second),
+                    value_for<n::virtual_name>(i->first)
+                ));
 
     return result;
 }
@@ -1039,7 +1041,7 @@ ERepository::find_profile(const FSEntry & location) const
     _imp->need_profiles_desc();
     for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
             i_end(_imp->profiles_desc.end()) ; i != i_end ; ++i)
-        if ((*i)[k::path()] == location)
+        if ((*i).path() == location)
             return ProfilesConstIterator(i);
     return ProfilesConstIterator(_imp->profiles_desc.end());
 }
@@ -1050,11 +1052,11 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
     Context context("When setting profile by iterator:");
 
     Log::get_instance()->message("e.profile.using", ll_debug, lc_context)
-        << "Using profile '" << ((*iter)[k::path()]) << "'";
-    _imp->profile_ptr = (*iter)[k::profile()];
+        << "Using profile '" << ((*iter).path()) << "'";
+    _imp->profile_ptr = (*iter).profile();
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment->distribution()))
-            [k::support_old_style_virtuals()])
+            .support_old_style_virtuals())
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate();
@@ -1068,14 +1070,14 @@ ERepository::set_profile_by_arch(const UseFlagName & arch)
     Context context("When setting profile by arch '" + stringify(arch) + "':");
 
     for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if ((*p)[k::arch()] == stringify(arch) && (*p)[k::status()] == "stable")
+        if ((*p).arch() == stringify(arch) && (*p).status() == "stable")
         {
             set_profile(p);
             return;
         }
 
     for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if ((*p)[k::arch()] == stringify(arch))
+        if ((*p).arch() == stringify(arch))
         {
             set_profile(p);
             return;

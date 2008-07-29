@@ -190,7 +190,7 @@ namespace
                             .with_associated_id(id)
                             .with_associated_key(id, key));
 
-            if ((*id->repository())[k::use_interface()]->arch_flags()->count(elike_conditional_dep_spec_flag(u)))
+            if ((*id->repository()).use_interface()->arch_flags()->count(elike_conditional_dep_spec_flag(u)))
             {
                 if (forbid_arch_flags)
                     reporter.message(QAMessage(entry, qaml_normal, name,
@@ -209,14 +209,14 @@ namespace
                 if (iuse_flags.end() == iuse_flags.find(elike_conditional_dep_spec_flag(u)))
                 {
                     std::tr1::shared_ptr<const UseFlagNameSet> c(
-                        (*id->repository())[k::use_interface()]->use_expand_hidden_prefixes());
+                        (*id->repository()).use_interface()->use_expand_hidden_prefixes());
                     std::string flag(stringify(elike_conditional_dep_spec_flag(u)));
                     bool is_hidden(false);
 
                     for (UseFlagNameSet::ConstIterator i(c->begin()), i_end(c->end()) ;
                             i != i_end ; ++i)
                     {
-                        std::string prefix(stringify(*i) + (*id->repository())[k::use_interface()]->use_expand_separator(*id));
+                        std::string prefix(stringify(*i) + (*id->repository()).use_interface()->use_expand_separator(*id));
                         if (0 == flag.compare(0, prefix.length(), prefix))
                         {
                             is_hidden = true;

@@ -35,7 +35,6 @@ namespace paludis
     template <typename K_>
     NamedValue<K_, std::string>
     value_for(const char * const v);
-
 }
 
 #endif

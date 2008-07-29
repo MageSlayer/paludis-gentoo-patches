@@ -24,6 +24,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
@@ -48,13 +49,13 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
-                        UnavailableRepositoryParams::named_create()
-                        (k::name(), RepositoryName("unavailable"))
-                        (k::sync(), "")
-                        (k::sync_options(), "")
-                        (k::location(), FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1")
-                        (k::environment(), &env)
-                        ));
+                        make_named_values<UnavailableRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1"),
+                            value_for<n::name>(RepositoryName("unavailable")),
+                            value_for<n::sync>(""),
+                            value_for<n::sync_options>("")
+                        )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
         }
@@ -68,13 +69,13 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
-                        UnavailableRepositoryParams::named_create()
-                        (k::name(), RepositoryName("unavailable"))
-                        (k::sync(), "")
-                        (k::sync_options(), "")
-                        (k::location(), FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2")
-                        (k::environment(), &env)
-                        ));
+                        make_named_values<UnavailableRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2"),
+                            value_for<n::name>(RepositoryName("unavailable")),
+                            value_for<n::sync>(""),
+                            value_for<n::sync_options>("")
+                        )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
 

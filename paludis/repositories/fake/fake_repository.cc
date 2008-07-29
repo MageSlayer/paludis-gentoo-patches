@@ -24,7 +24,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -60,21 +60,22 @@ namespace paludis
 
 FakeRepository::FakeRepository(const Environment * const env, const RepositoryName & r) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(env, r, RepositoryCapabilities::named_create()
-            (k::sets_interface(), this)
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::use_interface(), this)
-            (k::mirrors_interface(), this)
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+    FakeRepositoryBase(env, r, make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(this),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(this),
+                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
+                            env->distribution())).support_old_style_virtuals() ? this : 0)
+            )),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -82,21 +83,22 @@ FakeRepository::FakeRepository(const Environment * const env, const RepositoryNa
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(params.environment, params.name, RepositoryCapabilities::named_create()
-            (k::sets_interface(), this)
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::use_interface(), this)
-            (k::mirrors_interface(), this)
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::virtuals_interface(), (*DistributionData::get_instance()->distribution_from_string(
-                    params.environment->distribution()))[k::support_old_style_virtuals()] ? this : 0)
-            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+    FakeRepositoryBase(params.environment, params.name, make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(this),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(this),
+                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
+                            params.environment->distribution())).support_old_style_virtuals() ? this : 0)
+                )),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -115,7 +117,10 @@ FakeRepository::virtual_packages() const
 void
 FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepSpec> p)
 {
-    _imp->virtual_packages->push_back(RepositoryVirtualsEntry(q, p));
+    _imp->virtual_packages->push_back(make_named_values<RepositoryVirtualsEntry>(
+                value_for<n::provided_by_spec>(p),
+                value_for<n::virtual_name>(q)
+                ));
 }
 
 namespace paludis

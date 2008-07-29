@@ -30,7 +30,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -130,10 +130,10 @@ main(int argc, char *argv[])
 
                 try
                 {
-                    FetchAction a(FetchActionOptions::named_create()
-                            (k::safe_resume(), true)
-                            (k::fetch_unneeded(), true)
-                            );
+                    FetchAction a(make_named_values<FetchActionOptions>(
+                                value_for<n::fetch_unneeded>(true),
+                                value_for<n::safe_resume>(true)
+                            ));
                     if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
                     {
                         (*i)->perform_action(a);
@@ -147,24 +147,24 @@ main(int argc, char *argv[])
                     for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
                     {
                         std::string r;
-                        if ((*f)[k::requires_manual_fetching()])
+                        if ((*f).requires_manual_fetching())
                             r = "manual";
 
-                        if ((*f)[k::failed_automatic_fetching()])
+                        if ((*f).failed_automatic_fetching())
                         {
                             if (! r.empty())
                                 r.append(", ");
                             r.append("could not fetch");
                         }
 
-                        if (! (*f)[k::failed_integrity_checks()].empty())
+                        if (! (*f).failed_integrity_checks().empty())
                         {
                             if (! r.empty())
                                 r.append(", ");
-                            r.append((*f)[k::failed_integrity_checks()]);
+                            r.append((*f).failed_integrity_checks());
                         }
 
-                        results.insert(std::make_pair(*i, (*f)[k::target_file()] + ": " + r));
+                        results.insert(std::make_pair(*i, (*f).target_file() + ": " + r));
                     }
                 }
                 catch (const InternalError &)

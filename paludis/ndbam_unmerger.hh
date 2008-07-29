@@ -23,25 +23,35 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct config_protect;
+        struct config_protect_mask;
+        struct contents_file;
+        struct environment;
+        struct ndbam;
+        struct package_id;
+        struct root;
+    }
+
     class NDBAM;
 
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, const Environment *>,
-        kc::Field<k::root, FSEntry>,
-        kc::Field<k::contents_file, FSEntry>,
-        kc::Field<k::config_protect, std::string>,
-        kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-        kc::Field<k::ndbam, const NDBAM *>
-            > NDBAMUnmergerOptions;
+    struct NDBAMUnmergerOptions
+    {
+        NamedValue<n::config_protect, std::string> config_protect;
+        NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+        NamedValue<n::contents_file, FSEntry> contents_file;
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::ndbam, const NDBAM *> ndbam;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     class PALUDIS_VISIBLE NDBAMUnmergerError :
         public UnmergerError

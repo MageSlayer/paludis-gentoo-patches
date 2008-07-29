@@ -44,8 +44,8 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <tr1/functional>
 #include <fstream>
@@ -376,22 +376,22 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         /* add virtuals repositories */
-        if ((*DistributionData::get_instance()->distribution_from_string(distribution()))[k::support_old_style_virtuals()])
+        if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
         {
             std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                     new Map<std::string, std::string>);
             iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-            _imp->repos.push_back(RepositoryConfigEntry::named_create()
-                    (k::format(), "installed_virtuals")
-                    (k::importance(), -1)
-                    (k::keys(), std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1))
-                    );
+            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
+                        value_for<n::format>("installed_virtuals"),
+                        value_for<n::importance>(-1),
+                        value_for<n::keys>(std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1))
+                    ));
 
-            _imp->repos.push_back(RepositoryConfigEntry::named_create()
-                    (k::format(), "virtuals")
-                    (k::importance(), -2)
-                    (k::keys(), std::tr1::bind(&from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1))
-                    );
+            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
+                        value_for<n::format>("virtuals"),
+                        value_for<n::importance>(-2),
+                        value_for<n::keys>(std::tr1::bind(&from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1))
+                    ));
         }
 #endif
 
@@ -500,21 +500,21 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             {
                 Log::get_instance()->message("paludis_environment.repositories.not_delaying", ll_debug, lc_context)
                     << "Not delaying '" << *repo_file << "'";
-                _imp->repos.push_back(RepositoryConfigEntry::named_create()
-                        (k::format(), format)
-                        (k::importance(), importance)
-                        (k::keys(), repo_func)
-                        );
+                _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
+                            value_for<n::format>(format),
+                            value_for<n::importance>(importance),
+                            value_for<n::keys>(repo_func)
+                        ));
             }
         }
 
         for (std::list<std::tr1::function<std::string (const std::string &)> >::const_iterator
                 k(later_repo_files.begin()), k_end(later_repo_files.end()) ; k != k_end ; ++k)
-            _imp->repos.push_back(RepositoryConfigEntry::named_create()
-                    (k::format(), (*k)("format"))
-                    (k::importance(), destringify<int>((*k)("importance")))
-                    (k::keys(), *k)
-                    );
+            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
+                        value_for<n::format>((*k)("format")),
+                        value_for<n::importance>(destringify<int>((*k)("importance"))),
+                        value_for<n::keys>(*k)
+                    ));
 
         if (_imp->repos.empty())
             throw PaludisConfigError("No repositories specified");

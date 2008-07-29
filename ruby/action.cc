@@ -21,8 +21,8 @@
 #include <paludis_ruby.hh>
 #include <paludis/action.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -233,10 +233,10 @@ namespace
                 rb_raise(rb_eArgError, "FetchActionOptions expects one or two arguments, but got %d",argc);
             }
 
-            ptr = new FetchActionOptions(FetchActionOptions::named_create()
-                    (k::fetch_unneeded(), v_fetch_unneeded)
-                    (k::safe_resume(), v_safe_resume)
-                    );
+            ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
+                        value_for<n::fetch_unneeded>(v_fetch_unneeded),
+                        value_for<n::safe_resume>(v_safe_resume)
+                    ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionOptions>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -328,12 +328,12 @@ namespace
                 rb_raise(rb_eArgError, "FetchActionOptions expects one or four arguments, but got %d",argc);
             }
 
-            ptr = new FetchActionFailure(FetchActionFailure::named_create()
-                    (k::target_file(), v_target_file)
-                    (k::requires_manual_fetching(), v_requires_manual_fetching)
-                    (k::failed_automatic_fetching(), v_failed_automatic_fetching)
-                    (k::failed_integrity_checks(), v_failed_integrity_checks)
-                    );
+            ptr = new FetchActionFailure(make_named_values<FetchActionFailure>(
+                        value_for<n::failed_automatic_fetching>(v_failed_automatic_fetching),
+                        value_for<n::failed_integrity_checks>(v_failed_integrity_checks),
+                        value_for<n::requires_manual_fetching>(v_requires_manual_fetching),
+                        value_for<n::target_file>(v_target_file)
+                    ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionFailure>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -388,30 +388,30 @@ namespace
      *
      * Did we fail automatic fetching?
      */
-    template <typename T_, typename K_, typename R_>
-    struct KCFetch;
+    template <typename T_, typename K_, typename R_, NamedValue<K_, R_> (T_::*) >
+    struct NVFetch;
 
-    template <typename T_, typename K_>
-    struct KCFetch<T_, K_, bool>
+    template <typename T_, typename K_, NamedValue<K_, bool> (T_::* f_) >
+    struct NVFetch<T_, K_, bool, f_>
     {
         static VALUE
         fetch(VALUE self)
         {
             T_ * p;
             Data_Get_Struct(self, T_, p);
-            return bool_to_value((*p)[K_()]);
+            return bool_to_value((p->*f_)());
         }
     };
 
-    template <typename T_, typename K_>
-    struct KCFetch<T_, K_, std::string>
+    template <typename T_, typename K_, NamedValue<K_, std::string> (T_::* f_) >
+    struct NVFetch<T_, K_, std::string, f_>
     {
         static VALUE
         fetch(VALUE self)
         {
             T_ * p;
             Data_Get_Struct(self, T_, p);
-            return rb_str_new2((*p)[K_()].c_str());
+            return rb_str_new2((p->*f_)().c_str());
         }
     };
 
@@ -432,15 +432,15 @@ namespace
      * Our InstallActionChecksOption
      *
      */
-    template <typename T_, typename K_>
-    struct KCFetchEnum
+    template <typename T_, typename K_, typename R_, NamedValue<K_, R_> (T_::* f_) >
+    struct NVFetchEnum
     {
         static VALUE
         fetch(VALUE self)
         {
             T_ * p;
             Data_Get_Struct(self, T_, p);
-            return INT2FIX((*p)[K_()]);
+            return INT2FIX((p->*f_)());
         }
     };
 
@@ -529,11 +529,11 @@ namespace
                 rb_raise(rb_eArgError, "InstallActionOptions expects one or three arguments, but got %d",argc);
             }
 
-            ptr = new InstallActionOptions(InstallActionOptions::named_create()
-                    (k::debug_build(), v_debug_build)
-                    (k::checks(), v_checks)
-                    (k::destination(), v_destination)
-                    );
+            ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(v_checks),
+                        value_for<n::debug_build>(v_debug_build),
+                        value_for<n::destination>(v_destination)
+                    ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<InstallActionOptions>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -559,7 +559,7 @@ namespace
     {
         InstallActionOptions * p;
         Data_Get_Struct(self, InstallActionOptions, p);
-        return repository_to_value((*p)[k::destination()]);
+        return repository_to_value((*p).destination());
     }
 
     /*
@@ -673,9 +673,11 @@ namespace
         rb_define_singleton_method(c_fetch_action_options, "new", RUBY_FUNC_CAST(&fetch_action_options_new), -1);
         rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_fetch_action_options, "fetch_unneeded?",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionOptions, k::fetch_unneeded, bool>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::fetch_unneeded, bool,
+                        &FetchActionOptions::fetch_unneeded>::fetch)), 0);
         rb_define_method(c_fetch_action_options, "safe_resume?",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionOptions, k::safe_resume, bool>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::safe_resume, bool,
+                        &FetchActionOptions::safe_resume>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FetchActionFailure
@@ -686,13 +688,17 @@ namespace
         rb_define_singleton_method(c_fetch_action_failure, "new", RUBY_FUNC_CAST(&fetch_action_failure_new), -1);
         rb_define_method(c_fetch_action_failure, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_fetch_action_failure, "target_file",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionFailure, k::target_file, std::string>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionFailure, n::target_file, std::string,
+                        &FetchActionFailure::target_file>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "requires_manual_fetching?",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionFailure, k::requires_manual_fetching, bool>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionFailure, n::requires_manual_fetching, bool,
+                        &FetchActionFailure::requires_manual_fetching>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "failed_automatic_fetching?",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionFailure, k::failed_automatic_fetching, bool>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionFailure, n::failed_automatic_fetching, bool,
+                        &FetchActionFailure::failed_automatic_fetching>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "failed_integrity_checks",
-                RUBY_FUNC_CAST((&KCFetch<FetchActionFailure, k::failed_integrity_checks, std::string>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetch<FetchActionFailure, n::failed_integrity_checks, std::string,
+                        &FetchActionFailure::failed_integrity_checks>::fetch)), 0);
 
         /*
          * Document-class: Paludis::InfoAction
@@ -751,9 +757,11 @@ namespace
         rb_define_singleton_method(c_install_action_options, "new", RUBY_FUNC_CAST(&install_action_options_new), -1);
         rb_define_method(c_install_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_install_action_options, "debug_build",
-                RUBY_FUNC_CAST((&KCFetchEnum<InstallActionOptions, k::debug_build>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetchEnum<InstallActionOptions, n::debug_build, InstallActionDebugOption,
+                        &InstallActionOptions::debug_build>::fetch)), 0);
         rb_define_method(c_install_action_options, "checks",
-                RUBY_FUNC_CAST((&KCFetchEnum<InstallActionOptions, k::checks>::fetch)), 0);
+                RUBY_FUNC_CAST((&NVFetchEnum<InstallActionOptions, n::checks, InstallActionChecksOption,
+                        &InstallActionOptions::checks>::fetch)), 0);
         rb_define_method(c_install_action_options, "destination", RUBY_FUNC_CAST(&install_action_options_destination), 0);
 
         /*

@@ -81,10 +81,10 @@ namespace
         if (packages->empty())
             return;
 
-        if (! repo[k::use_interface()])
+        if (! repo.use_interface())
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        std::tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo[k::use_interface()]->arch_flags());
+        std::tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo.use_interface()->arch_flags());
         if (arch_flags->empty())
             return;
 

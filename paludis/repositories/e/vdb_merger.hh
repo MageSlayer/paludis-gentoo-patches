@@ -23,12 +23,22 @@
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
 
 namespace paludis
 {
     class Hook;
+
+    namespace n
+    {
+        struct config_protect;
+        struct config_protect_mask;
+        struct contents_file;
+        struct environment;
+        struct image;
+        struct options;
+        struct package_id;
+        struct root;
+    }
 
     /**
      * Parameters for a VDBMerger.
@@ -39,16 +49,17 @@ namespace paludis
      * \nosubgrouping
      * \since 0.26
      */
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, Environment *>,
-        kc::Field<k::image, FSEntry>,
-        kc::Field<k::root, FSEntry>,
-        kc::Field<k::contents_file, FSEntry>,
-        kc::Field<k::config_protect, std::string>,
-        kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-        kc::Field<k::options, MergerOptions>
-            > VDBMergerParams;
+    struct VDBMergerParams
+    {
+        NamedValue<n::config_protect, std::string> config_protect;
+        NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+        NamedValue<n::contents_file, FSEntry> contents_file;
+        NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::image, FSEntry> image;
+        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * Merger for VDBRepository.

@@ -28,6 +28,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -54,10 +55,10 @@ namespace paludis
 
         Implementation(const VDBMergerParams & p) :
             params(p),
-            realroot(params[k::root()].realpath())
+            realroot(params.root().realpath())
         {
-            tokenise_whitespace(params[k::config_protect()], std::back_inserter(config_protect));
-            tokenise_whitespace(params[k::config_protect_mask()], std::back_inserter(config_protect_mask));
+            tokenise_whitespace(params.config_protect(), std::back_inserter(config_protect));
+            tokenise_whitespace(params.config_protect_mask(), std::back_inserter(config_protect_mask));
         }
     };
 }
@@ -75,14 +76,15 @@ namespace
 }
 
 VDBMerger::VDBMerger(const VDBMergerParams & p) :
-    Merger(MergerParams::named_create()
-            (k::environment(), p[k::environment()])
-            (k::image(), p[k::image()])
-            (k::install_under(), FSEntry("/"))
-            (k::root(), p[k::root()])
-            (k::no_chown(), ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())
-            (k::get_new_ids_or_minus_one(), std::tr1::bind(&get_new_ids_or_minus_one, p[k::environment()], std::tr1::placeholders::_1))
-            (k::options(), p[k::options()])),
+    Merger(make_named_values<MergerParams>(
+            value_for<n::environment>(p.environment()),
+            value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, p.environment(), std::tr1::placeholders::_1)),
+            value_for<n::image>(p.image()),
+            value_for<n::install_under>(FSEntry("/")),
+            value_for<n::no_chown>(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty()),
+            value_for<n::options>(p.options()),
+            value_for<n::root>(p.root())
+            )),
     PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(p)),
     _imp(PrivateImplementationPattern<VDBMerger>::_imp)
 {
@@ -95,33 +97,33 @@ VDBMerger::~VDBMerger()
 Hook
 VDBMerger::extend_hook(const Hook & h)
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
-    if (_imp->params[k::package_id()])
+    if (_imp->params.package_id())
     {
-        std::string cat(stringify(_imp->params[k::package_id()]->name().category));
-        std::string pn(stringify(_imp->params[k::package_id()]->name().package));
-        std::string pvr(stringify(_imp->params[k::package_id()]->version()));
-        std::string pv(stringify(_imp->params[k::package_id()]->version().remove_revision()));
-        std::string slot(stringify(_imp->params[k::package_id()]->slot()));
+        std::string cat(stringify(_imp->params.package_id()->name().category));
+        std::string pn(stringify(_imp->params.package_id()->name().package));
+        std::string pvr(stringify(_imp->params.package_id()->version()));
+        std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
+        std::string slot(stringify(_imp->params.package_id()->slot()));
 
         return Merger::extend_hook(h)
             ("P", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
-            ("PR", _imp->params[k::package_id()]->version().revision_only())
+            ("PR", _imp->params.package_id()->version().revision_only())
             ("PV", pv)
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
             ("SLOT", slot)
-            ("CONFIG_PROTECT", _imp->params[k::config_protect()])
-            ("CONFIG_PROTECT_MASK", _imp->params[k::config_protect_mask()])
+            ("CONFIG_PROTECT", _imp->params.config_protect())
+            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask())
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
     }
     else
         return Merger::extend_hook(h)
-            ("CONFIG_PROTECT", _imp->params[k::config_protect()])
-            ("CONFIG_PROTECT_MASK", _imp->params[k::config_protect_mask()])
+            ("CONFIG_PROTECT", _imp->params.config_protect())
+            ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask())
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
@@ -257,15 +259,15 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 void
 VDBMerger::merge()
 {
-    display_override(">>> Merging to " + stringify(_imp->params[k::root()]));
-    _imp->contents_file.reset(new std::ofstream(stringify(_imp->params[k::contents_file()]).c_str()));
+    display_override(">>> Merging to " + stringify(_imp->params.root()));
+    _imp->contents_file.reset(new std::ofstream(stringify(_imp->params.contents_file()).c_str()));
     Merger::merge();
 }
 
 bool
 VDBMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->params[k::root()] << " ";
+    std::cout << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
     bool result(Merger::check());
     std::cout << std::endl;
     return result;

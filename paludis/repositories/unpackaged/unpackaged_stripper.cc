@@ -18,9 +18,9 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -41,11 +41,11 @@ namespace paludis
 }
 
 UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options) :
-    Stripper(StripperOptions::named_create()
-            (k::image_dir(), options[k::image_dir()])
-            (k::debug_build(), options[k::debug_build()])
-            (k::debug_dir(), options[k::debug_dir()])
-            ),
+    Stripper(make_named_values<StripperOptions>(
+                value_for<n::debug_build>(options.debug_build()),
+                value_for<n::debug_dir>(options.debug_dir()),
+                value_for<n::image_dir>(options.image_dir())
+            )),
     PrivateImplementationPattern<UnpackagedStripper>(new Implementation<UnpackagedStripper>(options)),
     _imp(PrivateImplementationPattern<UnpackagedStripper>::_imp)
 {
@@ -58,20 +58,20 @@ UnpackagedStripper::~UnpackagedStripper()
 void
 UnpackagedStripper::on_strip(const FSEntry & f)
 {
-    std::cout << "str " << f.strip_leading(_imp->options[k::image_dir()]) << std::endl;
+    std::cout << "str " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
 UnpackagedStripper::on_split(const FSEntry & f, const FSEntry & g)
 {
-    std::cout << "spl " << f.strip_leading(_imp->options[k::image_dir()]) <<
-        " -> " << g.strip_leading(_imp->options[k::image_dir()]) << std::endl;
+    std::cout << "spl " << f.strip_leading(_imp->options.image_dir()) <<
+        " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
 UnpackagedStripper::on_unknown(const FSEntry & f)
 {
-    std::cout << "--- " << f.strip_leading(_imp->options[k::image_dir()]) << std::endl;
+    std::cout << "--- " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
@@ -87,7 +87,7 @@ UnpackagedStripper::on_leave_dir(const FSEntry &)
 void
 UnpackagedStripper::strip()
 {
-    std::cout << ">>> Stripping inside " << _imp->options[k::image_dir()] << std::endl;
+    std::cout << ">>> Stripping inside " << _imp->options.image_dir() << std::endl;
     Stripper::strip();
 }
 

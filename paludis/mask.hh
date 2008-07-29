@@ -27,6 +27,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <string>
 
 /** \file
@@ -41,6 +42,29 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct comment;
+        struct mask_file;
+    }
+
+    /**
+     * Information about a RepositoryMask.
+     *
+     * The mask_file key holds the file whence the mask originates.
+     *
+     * The comment key is a sequence of lines explaining the mask.
+     *
+     * \ingroup g_package_id
+     * \since 0.30
+     * \nosubgrouping
+     */
+    struct RepositoryMaskInfo
+    {
+        NamedValue<n::comment, std::tr1::shared_ptr<const Sequence<std::string> > > comment;
+        NamedValue<n::mask_file, FSEntry> mask_file;
+    };
+
     /**
      * Types for a visitor that can visit a Mask subclass.
      *

@@ -28,9 +28,9 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -290,14 +290,14 @@ UnpackagedID::perform_action(Action & action) const
     if (! install_action)
         throw UnsupportedActionError(*this, action);
 
-    if (! (*install_action->options[k::destination()])[k::destination_interface()])
+    if (! (*install_action->options.destination()).destination_interface())
         throw InstallActionError("Can't install '" + stringify(*this)
-                + "' to destination '" + stringify(install_action->options[k::destination()]->name())
+                + "' to destination '" + stringify(install_action->options.destination()->name())
                 + "' because destination does not provide destination_interface");
 
     std::string libdir("lib");
-    FSEntry root(install_action->options[k::destination()]->installed_root_key() ?
-            stringify(install_action->options[k::destination()]->installed_root_key()->value()) : "/");
+    FSEntry root(install_action->options.destination()->installed_root_key() ?
+            stringify(install_action->options.destination()->installed_root_key()->value()) : "/");
     if ((root / "usr" / "lib").is_symbolic_link())
     {
         libdir = (root / "usr" / "lib").readlink();
@@ -307,22 +307,22 @@ UnpackagedID::perform_action(Action & action) const
 
     Log::get_instance()->message("unpackaged.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
-    UnpackagedStripper stripper(UnpackagedStripperOptions::named_create()
-            (k::image_dir(), fs_location_key()->value())
-            (k::debug_dir(), fs_location_key()->value() / "usr" / libdir / "debug")
-            (k::debug_build(), install_action->options[k::debug_build()])
-            (k::package_id(), shared_from_this())
-            );
+    UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
+                value_for<n::debug_build>(install_action->options.debug_build()),
+                value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
+                value_for<n::image_dir>(fs_location_key()->value()),
+                value_for<n::package_id>(shared_from_this())
+            ));
 
     stripper.strip();
 
-    (*install_action->options[k::destination()])[k::destination_interface()]->merge(
-            MergeParams::named_create()
-            (k::package_id(), shared_from_this())
-            (k::image_dir(), fs_location_key()->value())
-            (k::environment_file(), FSEntry("/dev/null"))
-            (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
-            );
+    (*install_action->options.destination()).destination_interface()->merge(
+            make_named_values<MergeParams>(
+                value_for<n::environment_file>(FSEntry("/dev/null")),
+                value_for<n::image_dir>(fs_location_key()->value()),
+                value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                value_for<n::package_id>(shared_from_this())
+            ));
 }
 
 void

@@ -22,8 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/util/kc-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
@@ -38,17 +36,7 @@ namespace paludis
 
     typedef Options<ELikePackageDepSpecOption> ELikePackageDepSpecOptions;
 
-    typedef kc::KeyedClass<
-        kc::Field<k::check_sanity, std::tr1::function<void (const std::string &)> >,
-        kc::Field<k::remove_trailing_square_bracket_if_exists, std::tr1::function<bool (std::string &, PartiallyMadePackageDepSpec &)> >,
-        kc::Field<k::remove_trailing_slot_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> >,
-        kc::Field<k::remove_trailing_repo_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> >,
-        kc::Field<k::has_version_operator, std::tr1::function<bool (const std::string &)> >,
-        kc::Field<k::get_remove_version_operator, std::tr1::function<VersionOperator (std::string &)> >,
-        kc::Field<k::get_remove_trailing_version, std::tr1::function<VersionSpec (std::string &)> >,
-        kc::Field<k::add_version_requirement, std::tr1::function<void (const VersionOperator &, const VersionSpec &, PartiallyMadePackageDepSpec &)> >,
-        kc::Field<k::add_package_requirement, std::tr1::function<void (const std::string &, PartiallyMadePackageDepSpec &)> >
-            > GenericELikePackageDepSpecParseFunctions;
+    struct GenericELikePackageDepSpecParseFunctions;
 
     PackageDepSpec parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;

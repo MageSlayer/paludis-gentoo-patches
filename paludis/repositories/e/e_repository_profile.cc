@@ -37,7 +37,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -246,7 +245,7 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
     load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
-    if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
+    if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
         virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
 }
@@ -489,7 +488,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
     }
 
     if ((*DistributionData::get_instance()->distribution_from_string(
-                env->distribution()))[k::support_old_style_virtuals()])
+                env->distribution())).support_old_style_virtuals())
         try
         {
             for (erepository::ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;

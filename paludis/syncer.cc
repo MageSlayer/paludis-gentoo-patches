@@ -28,7 +28,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/kc.hh>
 #include <list>
 
 using namespace paludis;
@@ -49,9 +48,9 @@ SyncFailedError::SyncFailedError(const std::string & msg) throw () :
 }
 
 DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
-    _local(params[k::local()]),
-    _remote(params[k::remote()]),
-    _environment(params[k::environment()])
+    _local(params.local()),
+    _remote(params.remote()),
+    _environment(params.environment())
 {
     std::string::size_type p(_remote.find("://")), q(_remote.find(":"));
     if (std::string::npos == p)
@@ -91,18 +90,18 @@ DefaultSyncer::sync(const SyncOptions & opts) const
     std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
     std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
 
-    Command cmd(Command(stringify(_syncer) + " " + opts[k::options()] + " '" + _local + "' '" + _remote + "'")
+    Command cmd(Command(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'")
             .with_setenv("PALUDIS_ACTION", "sync")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
             .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-            .with_setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts[k::filter_file()])));
+            .with_setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file())));
 
-    if (! opts[k::output_prefix()].empty())
+    if (! opts.output_prefix().empty())
         cmd
-            .with_stdout_prefix(opts[k::output_prefix()])
-            .with_stderr_prefix(opts[k::output_prefix()])
+            .with_stdout_prefix(opts.output_prefix())
+            .with_stderr_prefix(opts.output_prefix())
             .with_prefix_blank_lines();
 
     if (run_command(cmd))

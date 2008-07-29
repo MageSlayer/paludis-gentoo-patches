@@ -27,6 +27,15 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct environment;
+        struct location;
+        struct name;
+        struct sync;
+        struct sync_options;
+    }
+
     namespace unavailable_repository
     {
         class PALUDIS_VISIBLE UnavailableRepositoryConfigurationError :
@@ -36,13 +45,14 @@ namespace paludis
                 UnavailableRepositoryConfigurationError(const std::string &) throw ();
         };
 
-        typedef kc::KeyedClass<
-            kc::Field<k::environment, Environment *>,
-            kc::Field<k::name, RepositoryName>,
-            kc::Field<k::location, FSEntry>,
-            kc::Field<k::sync, std::string>,
-            kc::Field<k::sync_options, std::string>
-                > UnavailableRepositoryParams;
+        struct UnavailableRepositoryParams
+        {
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::name, RepositoryName> name;
+            NamedValue<n::sync, std::string> sync;
+            NamedValue<n::sync_options, std::string> sync_options;
+        };
 
         class PALUDIS_VISIBLE UnavailableRepository :
             private PrivateImplementationPattern<UnavailableRepository>,

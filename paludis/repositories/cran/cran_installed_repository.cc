@@ -44,6 +44,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -157,20 +158,21 @@ Implementation<CRANInstalledRepository>::need_ids() const
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("installed-cran"),
-            RepositoryCapabilities::named_create()
-            (k::sets_interface(), this)
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
-            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::destination_interface(), this)
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+            make_named_values<RepositoryCapabilities>(
+            value_for<n::destination_interface>(this),
+            value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+            value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+            value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+            value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+            value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+            value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+            value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+            value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+            value_for<n::sets_interface>(this),
+            value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+            value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+            value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+            )),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
 {
@@ -498,11 +500,11 @@ CRANInstalledRepository::want_pre_post_phases() const
 void
 CRANInstalledRepository::merge(const MergeParams & m)
 {
-    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
+    Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m[k::package_id()]))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
+    if (! is_suitable_destination_for(*m.package_id()))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
 }
 

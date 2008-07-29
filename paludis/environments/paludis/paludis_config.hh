@@ -28,6 +28,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/environment_maker.hh>
 
 #include <string>
@@ -42,6 +43,13 @@ namespace paludis
 {
     struct PaludisEnvironment;
 
+    namespace n
+    {
+        struct format;
+        struct importance;
+        struct keys;
+    }
+
     namespace paludis_environment
     {
         struct KeywordsConf;
@@ -51,11 +59,12 @@ namespace paludis
         struct MirrorsConf;
         struct World;
 
-        typedef kc::KeyedClass<
-            kc::Field<k::format, std::string>,
-            kc::Field<k::importance, int>,
-            kc::Field<k::keys, std::tr1::function<std::string (const std::string &)> >
-                > RepositoryConfigEntry;
+        struct RepositoryConfigEntry
+        {
+            NamedValue<n::format, std::string> format;
+            NamedValue<n::importance, int> importance;
+            NamedValue<n::keys, std::tr1::function<std::string (const std::string &)> > keys;
+        };
 
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered

@@ -26,43 +26,12 @@
  * \ingroup g_dep_spec
  */
 
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 #include <string>
 
 namespace paludis
 {
     class DistributionData;
     class DistributionConfigurationError;
-
-    /**
-     * Information about a distribution.
-     *
-     * \see DistributionData
-     * \ingroup g_distribution
-     * \since 0.26
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::default_environment, std::string>,
-        kc::Field<k::fallback_environment, std::string>,
-        kc::Field<k::support_old_style_virtuals, bool>,
-        kc::Field<k::default_ebuild_distdir, std::string>,
-        kc::Field<k::default_ebuild_write_cache, std::string>,
-        kc::Field<k::default_ebuild_names_cache, std::string>,
-        kc::Field<k::default_ebuild_builddir, std::string>,
-        kc::Field<k::default_ebuild_layout, std::string>,
-        kc::Field<k::default_ebuild_eapi_when_unknown, std::string>,
-        kc::Field<k::default_ebuild_eapi_when_unspecified, std::string>,
-        kc::Field<k::default_ebuild_profile_eapi, std::string>,
-        kc::Field<k::default_vdb_provides_cache, std::string>,
-        kc::Field<k::default_vdb_names_cache, std::string>,
-        kc::Field<k::paludis_environment_use_conf_filename, std::string>,
-        kc::Field<k::paludis_environment_keywords_conf_filename, std::string>,
-        kc::Field<k::concept_use, std::string>,
-        kc::Field<k::concept_keyword, std::string>,
-        kc::Field<k::paludis_package, std::string>
-            > Distribution;
 }
 
 #endif

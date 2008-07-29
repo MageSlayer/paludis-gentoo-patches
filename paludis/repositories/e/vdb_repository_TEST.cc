@@ -28,6 +28,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -130,9 +131,9 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag1"), *e1) == use_enabled);
-            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag2"), *e1) == use_enabled);
-            TEST_CHECK((*repo)[k::use_interface()]->query_use(UseFlagName("flag3"), *e1) == use_disabled);
+            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag1"), *e1) == use_enabled);
+            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag2"), *e1) == use_enabled);
+            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag3"), *e1) == use_disabled);
         }
     } test_vdb_repository_query_use;
 
@@ -334,11 +335,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            InstallAction install_action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), vdb_repo)
-                    );
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
 
             UninstallAction uninstall_action;
 
@@ -448,11 +449,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            InstallAction install_action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), vdb_repo)
-                    );
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
 
             UninstallAction uninstall_action;
 
@@ -562,11 +563,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            InstallAction install_action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), vdb_repo)
-                    );
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
 
             UninstallAction uninstall_action;
 
@@ -806,20 +807,20 @@ namespace test_cases
             TEST_CHECK(! provides_cache.exists());
 
             {
-                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq((*vdb_repo)[k::provides_interface()]->provided_packages());
+                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
                 TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-2::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2::installed");
             }
 
             vdb_repo->regenerate_cache();
@@ -827,20 +828,20 @@ namespace test_cases
             vdb_repo->invalidate();
 
             {
-                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq((*vdb_repo)[k::provides_interface()]->provided_packages());
+                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
                 TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg1-2::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-1::installed");
-                TEST_CHECK_STRINGIFY_EQUAL((*it)[k::virtual_name()], "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++)[k::provided_by()], "cat1/pkg2-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2::installed");
             }
         }
 
@@ -921,11 +922,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            InstallAction install_action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), vdb_repo)
-                    );
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
 
             UninstallAction uninstall_action;
 
@@ -1134,11 +1135,11 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            InstallAction install_action(InstallActionOptions::named_create()
-                    (k::debug_build(), iado_none)
-                    (k::checks(), iaco_default)
-                    (k::destination(), vdb_repo)
-                    );
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
 

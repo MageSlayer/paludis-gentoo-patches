@@ -34,7 +34,6 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <tr1/unordered_map>

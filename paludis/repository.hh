@@ -34,7 +34,7 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
@@ -53,6 +53,116 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct arch;
+        struct destination_interface;
+        struct e_interface;
+        struct environment_file;
+        struct environment_variable_interface;
+        struct hook_interface;
+        struct image_dir;
+        struct make_virtuals_interface;
+        struct manifest_interface;
+        struct mirrors_interface;
+        struct options;
+        struct package_id;
+        struct path;
+        struct profile;
+        struct provided_by;
+        struct provided_by_spec;
+        struct provides_interface;
+        struct qa_interface;
+        struct sets_interface;
+        struct status;
+        struct syncable_interface;
+        struct use_interface;
+        struct virtual_name;
+        struct virtuals_interface;
+    }
+
+    /**
+     * Optional interfaces that may be provided by a Repository.
+     *
+     * \see Repository
+     * \ingroup g_repository
+     * \since 0.30
+     */
+    struct RepositoryCapabilities
+    {
+        NamedValue<n::destination_interface, RepositoryDestinationInterface *> destination_interface;
+        NamedValue<n::e_interface, RepositoryEInterface *> e_interface;
+        NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
+        NamedValue<n::hook_interface, RepositoryHookInterface *> hook_interface;
+        NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
+        NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
+        NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
+        NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
+        NamedValue<n::qa_interface, RepositoryQAInterface *> qa_interface;
+        NamedValue<n::sets_interface, RepositorySetsInterface *> sets_interface;
+        NamedValue<n::syncable_interface, RepositorySyncableInterface *> syncable_interface;
+        NamedValue<n::use_interface, RepositoryUseInterface *> use_interface;
+        NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
+    };
+
+    /**
+     * A profiles.desc line in a Repository implementing RepositoryEInterface.
+     *
+     * \see Repository
+     * \see RepositoryEInterface
+     * \ingroup g_repository
+     * \since 0.30
+     */
+    struct RepositoryEInterfaceProfilesDescLine
+    {
+        NamedValue<n::arch, std::string> arch;
+        NamedValue<n::path, FSEntry> path;
+        NamedValue<n::profile, std::tr1::shared_ptr<ERepositoryProfile> > profile;
+        NamedValue<n::status, std::string> status;
+    };
+
+    /**
+     * A provides entry in a Repository implementing RepositoryProvidesInterface.
+     *
+     * \see Repository
+     * \see RepositoryProvidesInterface
+     * \ingroup g_repository
+     * \since 0.30
+     */
+    struct RepositoryProvidesEntry
+    {
+        NamedValue<n::provided_by, std::tr1::shared_ptr<const PackageID> > provided_by;
+        NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
+    };
+
+    /**
+     * A virtuals entry in a Repository implementing RepositoryVirtualsInterface.
+     *
+     * \see Repository
+     * \see RepositoryVirtualsInterface
+     * \ingroup g_repository
+     * \since 0.30
+     */
+    struct RepositoryVirtualsEntry
+    {
+        NamedValue<n::provided_by_spec, std::tr1::shared_ptr<const PackageDepSpec> > provided_by_spec;
+        NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
+    };
+
+    /**
+     * Parameters for RepositoryDestinationInterface::merge.
+     *
+     * \see RepositoryDestinationInterface
+     * \ingroup g_repository
+     * \since 0.30
+     */
+    struct MergeParams
+    {
+        NamedValue<n::environment_file, FSEntry> environment_file;
+        NamedValue<n::image_dir, FSEntry> image_dir;
+        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+    };
 
     /**
      * Thrown if a Set does not exist

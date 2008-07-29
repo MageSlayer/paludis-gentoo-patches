@@ -158,9 +158,9 @@ SourceURIFinder::add_mirrors()
 
     {
         Context local_context("When adding repository mirrors '" + _imp->mirrors_name + "':");
-        if ((*_imp->repo)[k::mirrors_interface()])
-            for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo)[k::mirrors_interface()]->begin_mirrors(_imp->mirrors_name)),
-                    m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(_imp->mirrors_name)) ;
+        if ((*_imp->repo).mirrors_interface())
+            for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo).mirrors_interface()->begin_mirrors(_imp->mirrors_name)),
+                    m_end((*_imp->repo).mirrors_interface()->end_mirrors(_imp->mirrors_name)) ;
                     m != m_end ; ++m)
             {
                 Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
@@ -199,9 +199,9 @@ SourceURIFinder::add_listed()
 
         {
             Context local_context("When adding from repository for listed mirror '" + mirror + "':");
-            if ((*_imp->repo)[k::mirrors_interface()])
-                for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo)[k::mirrors_interface()]->begin_mirrors(mirror)),
-                        m_end((*_imp->repo)[k::mirrors_interface()]->end_mirrors(mirror)) ;
+            if ((*_imp->repo).mirrors_interface())
+                for (RepositoryMirrorsInterface::MirrorsConstIterator m((*_imp->repo).mirrors_interface()->begin_mirrors(mirror)),
+                        m_end((*_imp->repo).mirrors_interface()->end_mirrors(mirror)) ;
                         m != m_end ; ++m)
                 {
                     Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)

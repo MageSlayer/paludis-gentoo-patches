@@ -21,6 +21,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -52,13 +53,13 @@ namespace
         std::string sync_options(f("sync_options"));
 
         return std::tr1::shared_ptr<UnavailableRepository>(new UnavailableRepository(
-                    UnavailableRepositoryParams::named_create()
-                    (k::name(), RepositoryName(name_str))
-                    (k::location(), location)
-                    (k::sync(), sync)
-                    (k::sync_options(), sync_options)
-                    (k::environment(), env)
-                    ));
+                    make_named_values<UnavailableRepositoryParams>(
+                        value_for<n::environment>(env),
+                        value_for<n::location>(location),
+                        value_for<n::name>(RepositoryName(name_str)),
+                        value_for<n::sync>(sync),
+                        value_for<n::sync_options>(sync_options)
+                    )));
     }
 }
 

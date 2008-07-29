@@ -113,13 +113,13 @@ namespace
                  * can return a zero pointer. Other keys can't. */
                 if (key.value())
                 {
-                    cout << indent << left << setw(30) << "    Mask file:" << " " << (*key.value())[k::mask_file()] << endl;
+                    cout << indent << left << setw(30) << "    Mask file:" << " " << key.value()->mask_file() << endl;
                     /* Comment looks best if it's outputted over multiple lines,
                      * as that's how it tends to be stored in package.mask. */
                     cout << indent << left << setw(30) << "    Comment:" << " ";
                     bool first(true);
-                    for (Sequence<std::string>::ConstIterator i((*key.value())[k::comment()]->begin()),
-                            i_end((*key.value())[k::comment()]->end()) ;
+                    for (Sequence<std::string>::ConstIterator i(key.value()->comment()->begin()),
+                            i_end(key.value()->comment()->end()) ;
                             i != i_end ; ++i)
                     {
                         if (! first)

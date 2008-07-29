@@ -21,11 +21,28 @@
 #define PALUDIS_GUARD_PALUDIS_STRIPPER_HH 1
 
 #include <paludis/stripper-fwd.hh>
+#include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/named_value.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct debug_build;
+        struct debug_dir;
+        struct image_dir;
+    }
+
+    struct StripperOptions
+    {
+        NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
+        NamedValue<n::debug_dir, FSEntry> debug_dir;
+        NamedValue<n::image_dir, FSEntry> image_dir;
+    };
+
     class PALUDIS_VISIBLE Stripper :
         private PrivateImplementationPattern<Stripper>
     {

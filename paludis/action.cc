@@ -23,7 +23,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/kc.hh>
 
 using namespace paludis;
 
@@ -172,8 +171,8 @@ namespace
         void visit(const InstallAction & a)
         {
             s << "install to ";
-            if (a.options[k::destination()])
-                s << a.options[k::destination()]->name();
+            if (a.options.destination())
+                s << a.options.destination()->name();
             else
                 s << "nowhere";
         }

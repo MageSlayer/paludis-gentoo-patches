@@ -23,6 +23,7 @@
 #include <python/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/named_value-fwd.hh>
 #include <boost/python.hpp>
 #include <tr1/memory>
 
@@ -154,18 +155,18 @@ namespace paludis
             }
         };
 
-        // helper for kc getters
-        template <typename C_, typename T_, typename K_>
-        T_ kc_getter(const C_ & c)
+        // helper for named values
+        template <typename C_, typename K_, typename T_, NamedValue<K_, T_> (C_::* c_)>
+        T_ named_values_getter(const C_ & c)
         {
-            return c[K_()];
+            return (c.*c_)();
         }
 
-        // helper for kc setters
-        template <typename C_, typename T_, typename K_>
-        void kc_setter(C_ & c, const T_ & t)
+        // helper for named values
+        template <typename C_, typename K_, typename T_, NamedValue<K_, T_> (C_::* c_)>
+        void named_values_setter(C_ & c, const T_ & t)
         {
-            c[K_()] = t;
+            (c.*c_)() = t;
         }
     } // namespace paludis::python
 } // namespace paludis

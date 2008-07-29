@@ -20,12 +20,11 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -47,6 +46,15 @@ EDepParseError::EDepParseError(const std::string & s, const std::string & t) thr
 {
 }
 
+namespace paludis
+{
+    namespace n
+    {
+        struct add_handler;
+        struct item;
+    }
+}
+
 namespace
 {
     template <typename T_>
@@ -54,10 +62,11 @@ namespace
     {
         typedef std::tr1::function<void (const std::tr1::shared_ptr<const typename T_::ConstItem> &)> AddHandler;
 
-        typedef kc::KeyedClass<
-            kc::Field<k::add_handler, AddHandler>,
-            kc::Field<k::item, const std::tr1::shared_ptr<const typename T_::ConstItem> >
-                > Item;
+        struct Item
+        {
+            NamedValue<n::add_handler, AddHandler> add_handler;
+            NamedValue<n::item, const std::tr1::shared_ptr<const typename T_::ConstItem> > item;
+        };
 
         typedef std::list<Item> Stack;
     };
@@ -67,7 +76,7 @@ namespace
             const EAPI & eapi, const std::tr1::shared_ptr<const PackageID> & id)
     {
         PackageDepSpec p(parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(), id));
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(p)))));
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(p)))));
     }
 
     template <typename T_>
@@ -79,7 +88,7 @@ namespace
             std::tr1::shared_ptr<BlockDepSpec> b(new BlockDepSpec(
                         make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(1),
                                     eapi.supported()->package_dep_spec_parse_options(), id)))));
-            (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(b)));
+            (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(b)));
         }
         else
             package_dep_spec_string_handler<T_>(h, s, eapi, id);
@@ -88,19 +97,19 @@ namespace
     template <typename T_>
     void license_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, LicenseDepSpec>(make_shared_ptr(new LicenseDepSpec(s)))));
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, LicenseDepSpec>(make_shared_ptr(new LicenseDepSpec(s)))));
     }
 
     template <typename T_>
     void restrict_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, PlainTextDepSpec>(make_shared_ptr(new PlainTextDepSpec(s)))));
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PlainTextDepSpec>(make_shared_ptr(new PlainTextDepSpec(s)))));
     }
 
     template <typename T_>
     void simple_uri_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(s)))));
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(s)))));
     }
 
     template <typename T_>
@@ -108,7 +117,7 @@ namespace
             const EAPI & eapi)
     {
         if (t.empty() || eapi.supported()->dependency_spec_tree_parse_options()[dstpo_uri_supports_arrow])
-            (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, FetchableURIDepSpec>(make_shared_ptr(
+            (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, FetchableURIDepSpec>(make_shared_ptr(
                                 new FetchableURIDepSpec(t.empty() ? f : f + " -> " + t)))));
         else
             throw EDepParseError(s, "arrows in this EAPI");
@@ -146,7 +155,7 @@ namespace
     void dependency_label_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s,
             const EAPI & eapi)
     {
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, DependencyLabelsDepSpec>(
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, DependencyLabelsDepSpec>(
                         parse_dependency_label(s, eapi))));
     }
 
@@ -154,7 +163,7 @@ namespace
     void fetchable_label_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s,
             const EAPI & eapi)
     {
-        (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, URILabelsDepSpec>(
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, URILabelsDepSpec>(
                         parse_uri_label(s, eapi))));
     }
 
@@ -164,11 +173,11 @@ namespace
         using namespace std::tr1::placeholders;
         std::tr1::shared_ptr<ConstTreeSequence<T_, A_> > item(
                 new ConstTreeSequence<T_, A_>(make_shared_ptr(new A_)));
-        (*stack.begin())[k::add_handler()](item);
-        stack.push_front(ParseStackTypes<T_>::Item::named_create()
-                (k::add_handler(), std::tr1::bind(&ConstTreeSequence<T_, A_>::add, item.get(), _1))
-                (k::item(), item)
-                );
+        (*stack.begin()).add_handler()(item);
+        stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<T_, A_>::add, item.get(), _1)),
+                value_for<n::item>(item)
+                ));
     }
 
     template <typename T_>
@@ -179,11 +188,11 @@ namespace
         std::tr1::shared_ptr<ConstTreeSequence<T_, ConditionalDepSpec> > item(
                 new ConstTreeSequence<T_, ConditionalDepSpec>(make_shared_ptr(new ConditionalDepSpec(
                             parse_elike_conditional_dep_spec(u, env, id)))));
-        (*stack.begin())[k::add_handler()](item);
-        stack.push_front(ParseStackTypes<T_>::Item::named_create()
-                (k::add_handler(), std::tr1::bind(&ConstTreeSequence<T_, ConditionalDepSpec>::add, item.get(), _1))
-                (k::item(), item)
-                );
+        (*stack.begin()).add_handler()(item);
+        stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<T_, ConditionalDepSpec>::add, item.get(), _1)),
+                value_for<n::item>(item)
+                ));
     }
 
     template <typename T_>
@@ -225,29 +234,29 @@ paludis::erepository::parse_depend(const std::string & s,
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > top(
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<DependencySpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+            ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack), _1, eapi, id))
-            (k::on_arrow(), std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2))
-            (k::on_any(), std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack)))
-            (k::on_all(), std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&dependency_label_handler<DependencySpecTree>, std::tr1::ref(stack), _1, eapi))
-            (k::on_pop(), std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&dependency_label_handler<DependencySpecTree>, std::tr1::ref(stack), _1, eapi)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack), _1, eapi, id)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<ProvideSpecTree::ConstItem>
@@ -259,29 +268,29 @@ paludis::erepository::parse_provide(const std::string & s,
     ParseStackTypes<ProvideSpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<ProvideSpecTree, AllDepSpec> > top(
             new ConstTreeSequence<ProvideSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<ProvideSpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<ProvideSpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<ProvideSpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+            ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, eapi, id))
-            (k::on_arrow(), std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2))
-            (k::on_any(), std::tr1::bind(&any_not_allowed_handler, s))
-            (k::on_all(), std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&labels_not_allowed_handler, s, _1))
-            (k::on_pop(), std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, eapi, id)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<FetchableURISpecTree::ConstItem>
@@ -293,29 +302,29 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<FetchableURISpecTree, AllDepSpec> > top(
             new ConstTreeSequence<FetchableURISpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<FetchableURISpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<FetchableURISpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<FetchableURISpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+                ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), s, _1, "", eapi))
-            (k::on_arrow(), std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), s, _1, _2, eapi))
-            (k::on_any(), std::tr1::bind(&any_not_allowed_handler, s))
-            (k::on_all(), std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&fetchable_label_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, eapi))
-            (k::on_pop(), std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
+                value_for<n::on_arrow>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), s, _1, _2, eapi)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&fetchable_label_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, eapi)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), s, _1, "", eapi)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<SimpleURISpecTree::ConstItem>
@@ -327,29 +336,29 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<SimpleURISpecTree, AllDepSpec> > top(
             new ConstTreeSequence<SimpleURISpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<SimpleURISpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<SimpleURISpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<SimpleURISpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+            ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1))
-            (k::on_arrow(), std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2))
-            (k::on_any(), std::tr1::bind(&any_not_allowed_handler, s))
-            (k::on_all(), std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&labels_not_allowed_handler, s, _1))
-            (k::on_pop(), std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), &do_nothing)
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(&do_nothing)
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<LicenseSpecTree::ConstItem>
@@ -361,29 +370,29 @@ paludis::erepository::parse_license(const std::string & s,
     ParseStackTypes<LicenseSpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<LicenseSpecTree, AllDepSpec> > top(
             new ConstTreeSequence<LicenseSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<LicenseSpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<LicenseSpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<LicenseSpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+            ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack), _1))
-            (k::on_arrow(), std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2))
-            (k::on_any(), std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack)))
-            (k::on_all(), std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&labels_not_allowed_handler, s, _1))
-            (k::on_pop(), std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), std::tr1::bind(&use_under_any_handler, s, eapi))
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack), _1)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<RestrictSpecTree::ConstItem>
@@ -395,29 +404,29 @@ paludis::erepository::parse_restrict(const std::string & s,
     ParseStackTypes<RestrictSpecTree>::Stack stack;
     std::tr1::shared_ptr<ConstTreeSequence<RestrictSpecTree, AllDepSpec> > top(
             new ConstTreeSequence<RestrictSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(ParseStackTypes<RestrictSpecTree>::Item::named_create()
-            (k::add_handler(), std::tr1::bind(&ConstTreeSequence<RestrictSpecTree, AllDepSpec>::add, top.get(), _1))
-            (k::item(), top)
-            );
+    stack.push_front(make_named_values<ParseStackTypes<RestrictSpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<RestrictSpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top)
+            ));
 
     ELikeDepParserCallbacks callbacks(
-            ELikeDepParserCallbacks::named_create()
-            (k::on_string(), std::tr1::bind(&restrict_handler<RestrictSpecTree>, std::tr1::ref(stack), _1))
-            (k::on_arrow(), std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2))
-            (k::on_any(), std::tr1::bind(&any_not_allowed_handler, s))
-            (k::on_all(), std::tr1::bind(&any_all_handler<RestrictSpecTree, AllDepSpec>, std::tr1::ref(stack)))
-            (k::on_use(), std::tr1::bind(&use_handler<RestrictSpecTree>, std::tr1::ref(stack), _1, env, id))
-            (k::on_label(), std::tr1::bind(&labels_not_allowed_handler, s, _1))
-            (k::on_pop(), std::tr1::bind(&pop_handler<RestrictSpecTree>, std::tr1::ref(stack), s))
-            (k::on_error(), std::tr1::bind(&error_handler, s, _1))
-            (k::on_should_be_empty(), std::tr1::bind(&should_be_empty_handler<RestrictSpecTree>, std::tr1::ref(stack), s))
-            (k::on_use_under_any(), &do_nothing)
-            (k::on_annotations(), &discard_annotations)
-            );
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<RestrictSpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(&discard_annotations),
+                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<RestrictSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<RestrictSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&restrict_handler<RestrictSpecTree>, std::tr1::ref(stack), _1)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<RestrictSpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(&do_nothing)
+            ));
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin())[k::item()];
+    return (*stack.begin()).item();
 }
 
 std::tr1::shared_ptr<URILabelsDepSpec>

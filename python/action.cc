@@ -22,7 +22,7 @@
 
 #include <paludis/action.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/repository.hh>
 #include <tr1/memory>
 
@@ -47,6 +47,31 @@ class class_supports_action_test :
         {
         }
 };
+
+namespace
+{
+    InstallActionOptions make_install_action_options(
+            const InstallActionDebugOption & d, const InstallActionChecksOption & c,
+            const std::tr1::shared_ptr<paludis::Repository> & r)
+    {
+        return make_named_values<InstallActionOptions>(
+                value_for<n::checks>(c),
+                value_for<n::debug_build>(d),
+                value_for<n::destination>(r)
+                );
+    }
+
+    FetchActionOptions make_fetch_action_options(
+            const bool fetch_unneeded, const bool safe_resume
+            )
+    {
+        return make_named_values<FetchActionOptions>(
+                value_for<n::fetch_unneeded>(fetch_unneeded),
+                value_for<n::safe_resume>(safe_resume)
+                );
+    }
+
+}
 
 void expose_action()
 {
@@ -91,27 +116,29 @@ void expose_action()
         (
          "InstallActionOptions",
          "Options for InstallAction.",
-         bp::init<const InstallActionDebugOption &, const InstallActionChecksOption &,
-                const std::tr1::shared_ptr<paludis::Repository> &>(
-                    "__init__(InstallActionDebugOption, InstallActionChecksOption, Repository)"
-                    )
+         bp::no_init
         )
 
+        .def("__init__",
+                make_install_action_options,
+                "__init__(InstallActionDebugOption, InstallActionChecksOption, Repository)"
+            )
+
         .add_property("debug_build",
-                &kc_getter<InstallActionOptions, InstallActionDebugOption, k::debug_build>,
-                &kc_setter<InstallActionOptions, InstallActionDebugOption, k::debug_build>,
+                &named_values_getter<InstallActionOptions, n::debug_build, InstallActionDebugOption, &InstallActionOptions::debug_build>,
+                &named_values_setter<InstallActionOptions, n::debug_build, InstallActionDebugOption, &InstallActionOptions::debug_build>,
                 "[rw] InstallActionDebugOption"
                 )
 
         .add_property("checks",
-                &kc_getter<InstallActionOptions, InstallActionChecksOption, k::checks>,
-                &kc_setter<InstallActionOptions, InstallActionChecksOption, k::checks>,
+                &named_values_getter<InstallActionOptions, n::checks, InstallActionChecksOption, &InstallActionOptions::checks>,
+                &named_values_setter<InstallActionOptions, n::checks, InstallActionChecksOption, &InstallActionOptions::checks>,
                 "[rw] InstallActionChecksOption"
                 )
 
         .add_property("destination",
-                &kc_getter<InstallActionOptions, std::tr1::shared_ptr<Repository>, k::destination>,
-                &kc_setter<InstallActionOptions, std::tr1::shared_ptr<Repository>, k::destination>,
+                &named_values_getter<InstallActionOptions, n::destination, std::tr1::shared_ptr<Repository>, &InstallActionOptions::destination>,
+                &named_values_setter<InstallActionOptions, n::destination, std::tr1::shared_ptr<Repository>, &InstallActionOptions::destination>,
                 "[rw] Repository"
                 )
         ;
@@ -123,17 +150,23 @@ void expose_action()
         (
          "FetchActionOptions",
          "Options for FetchAction.",
-         bp::init<const bool &, const bool &>("__init__(fetch_unneeded_bool, safe_resume_bool)")
+         bp::no_init
         )
+
+        .def("__init__",
+                bp::make_constructor(make_fetch_action_options),
+                "__init__(fetch_uneeded, safe_resume)"
+            )
+
         .add_property("fetch_unneeded",
-                &kc_getter<FetchActionOptions, bool, k::fetch_unneeded>,
-                &kc_setter<FetchActionOptions, bool, k::fetch_unneeded>,
+                &named_values_getter<FetchActionOptions, n::fetch_unneeded, bool, &FetchActionOptions::fetch_unneeded>,
+                &named_values_setter<FetchActionOptions, n::fetch_unneeded, bool, &FetchActionOptions::fetch_unneeded>,
                 "[rw] bool"
                 )
 
         .add_property("safe_resume",
-                &kc_getter<FetchActionOptions, bool, k::safe_resume>,
-                &kc_setter<FetchActionOptions, bool, k::safe_resume>,
+                &named_values_getter<FetchActionOptions, n::safe_resume, bool, &FetchActionOptions::safe_resume>,
+                &named_values_setter<FetchActionOptions, n::safe_resume, bool, &FetchActionOptions::safe_resume>,
                 "[rw] bool"
                 )
         ;

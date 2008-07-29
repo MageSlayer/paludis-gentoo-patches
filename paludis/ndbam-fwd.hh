@@ -21,27 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_FWD_HH 1
 
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/mutex-fwd.hh>
-#include <paludis/name-fwd.hh>
-#include <paludis/version_spec-fwd.hh>
-#include <paludis/package_id-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     class NDBAM;
-
-    typedef kc::KeyedClass<
-        kc::Field<k::name, QualifiedPackageName>,
-        kc::Field<k::version, VersionSpec>,
-        kc::Field<k::slot, SlotName>,
-        kc::Field<k::fs_location, FSEntry>,
-        kc::Field<k::magic, std::string>,
-        kc::Field<k::package_id, std::tr1::shared_ptr<PackageID> >,
-        kc::Field<k::mutex, std::tr1::shared_ptr<Mutex> >
-            > NDBAMEntry;
+    struct NDBAMEntry;
 
     typedef Sequence<std::tr1::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
 }

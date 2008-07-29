@@ -94,7 +94,7 @@ paludis::erepository::iuse_key_check(
                                     .with_associated_id(id)
                                     .with_associated_key(id, id->iuse_key()));
 
-                if ("" == (*repo)[k::use_interface()]->describe_use_flag(it->flag, *id))
+                if ("" == (*repo).use_interface()->describe_use_flag(it->flag, *id))
                     reporter.message(QAMessage(entry, qaml_minor, name,
                                 "Flag '" + stringify(it->flag) + "' in '" + id->iuse_key()->raw_name() + "' has no description")
                                     .with_associated_id(id)

@@ -52,7 +52,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
 
 #include <algorithm>
@@ -1100,7 +1099,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, std::tr1::
         p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
-                    _imp->env->distribution()))[k::support_old_style_virtuals()])
+                    _imp->env->distribution())).support_old_style_virtuals())
             throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 
@@ -1125,7 +1124,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, std::tr1::
             our_merge_entry_post_position = _imp->merge_list.insert(next(our_merge_entry_post_position),
                     DepListEntry(DepListEntry::create()
                         .package_id((*_imp->env->package_database()->fetch_repository(
-                                    RepositoryName("virtuals")))[k::make_virtuals_interface()]->make_virtual_package_id(
+                                    RepositoryName("virtuals"))).make_virtuals_interface()->make_virtual_package_id(
                                 QualifiedPackageName((*i)->text()), p))
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
@@ -1581,8 +1580,8 @@ DepList::find_destination(const PackageID & p,
 {
     for (DestinationsSet::ConstIterator d(dd->begin()), d_end(dd->end()) ;
              d != d_end ; ++d)
-        if ((**d)[k::destination_interface()])
-            if ((**d)[k::destination_interface()]->is_suitable_destination_for(p))
+        if ((**d).destination_interface())
+            if ((**d).destination_interface()->is_suitable_destination_for(p))
                 return *d;
 
     throw NoDestinationError(p, dd);

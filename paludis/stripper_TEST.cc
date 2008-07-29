@@ -20,7 +20,7 @@
 #include <paludis/stripper.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 
@@ -68,11 +68,11 @@ namespace test_cases
 
         void run()
         {
-            TestStripper s(StripperOptions::named_create()
-                    (k::image_dir(), FSEntry("stripper_TEST_dir/image").realpath())
-                    (k::debug_dir(), FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug")
-                    (k::debug_build(), iado_split)
-                    );
+            TestStripper s(make_named_values<StripperOptions>(
+                        value_for<n::debug_build>(iado_split),
+                        value_for<n::debug_dir>(FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug"),
+                        value_for<n::image_dir>(FSEntry("stripper_TEST_dir/image").realpath())
+                    ));
             s.strip();
 
             TEST_CHECK(FSEntry("stripper_TEST_dir/image/usr/lib/debug/usr/bin/stripper_TEST_binary.debug").is_regular_file());

@@ -26,6 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_id-fwd.hh>
@@ -34,6 +35,28 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct fs_location;
+        struct magic;
+        struct mutex;
+        struct name;
+        struct package_id;
+        struct slot;
+        struct version;
+    }
+
+    struct NDBAMEntry
+    {
+        NamedValue<n::fs_location, FSEntry> fs_location;
+        NamedValue<n::magic, std::string> magic;
+        NamedValue<n::mutex, std::tr1::shared_ptr<Mutex> > mutex;
+        NamedValue<n::name, QualifiedPackageName> name;
+        NamedValue<n::package_id, std::tr1::shared_ptr<PackageID> > package_id;
+        NamedValue<n::slot, SlotName> slot;
+        NamedValue<n::version, VersionSpec> version;
+    };
+
     /**
      * NDBAM provides a partial implementation of a Repository for installed packages using
      * a Paludis-defined on-disk format. It is used by unpackaged repositories and exndbam,

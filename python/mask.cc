@@ -22,7 +22,6 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -289,15 +288,15 @@ void expose_mask()
              )
         )
         .add_property("mask_file",
-                &kc_getter<RepositoryMaskInfo, FSEntry, k::mask_file>,
-                &kc_setter<RepositoryMaskInfo, FSEntry, k::mask_file>,
+                &named_values_getter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
+                &named_values_setter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
                 "[ro] str\n"
                 "Holds the file whence the mask originates."
                 )
 
         .add_property("comment",
-                &kc_getter<RepositoryMaskInfo, std::tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
-                &kc_setter<RepositoryMaskInfo, std::tr1::shared_ptr<const Sequence<std::string> >, k::comment>,
+                &named_values_getter<RepositoryMaskInfo, n::comment, std::tr1::shared_ptr<const Sequence<std::string> >, &RepositoryMaskInfo::comment>,
+                &named_values_setter<RepositoryMaskInfo, n::comment, std::tr1::shared_ptr<const Sequence<std::string> >, &RepositoryMaskInfo::comment>,
                 "[ro] Iterable of str\n"
                 "Sequence of lines explaining the mask."
                 )

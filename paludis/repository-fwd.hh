@@ -21,13 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_FWD_HH 1
 
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/name-fwd.hh>
-#include <paludis/merger-fwd.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <tr1/memory>
 
 /** \file
@@ -70,84 +64,7 @@ namespace paludis
      */
     typedef Set<std::tr1::shared_ptr<Repository> > DestinationsSet;
 
-
-    /**
-     * Optional interfaces that may be provided by a Repository.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::sets_interface, RepositorySetsInterface *>,
-        kc::Field<k::syncable_interface, RepositorySyncableInterface *>,
-        kc::Field<k::use_interface, RepositoryUseInterface *>,
-        kc::Field<k::mirrors_interface, RepositoryMirrorsInterface *>,
-        kc::Field<k::environment_variable_interface, RepositoryEnvironmentVariableInterface *>,
-        kc::Field<k::provides_interface, RepositoryProvidesInterface *>,
-        kc::Field<k::virtuals_interface, RepositoryVirtualsInterface *>,
-        kc::Field<k::make_virtuals_interface, RepositoryMakeVirtualsInterface *>,
-        kc::Field<k::destination_interface, RepositoryDestinationInterface *>,
-        kc::Field<k::e_interface, RepositoryEInterface *>,
-        kc::Field<k::hook_interface, RepositoryHookInterface *>,
-        kc::Field<k::qa_interface, RepositoryQAInterface *>,
-        kc::Field<k::manifest_interface, RepositoryManifestInterface *>
-            > RepositoryCapabilities;
-
-    /**
-     * A profiles.desc line in a Repository implementing RepositoryEInterface.
-     *
-     * \see Repository
-     * \see RepositoryEInterface
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::path, FSEntry>,
-        kc::Field<k::arch, std::string>,
-        kc::Field<k::status, std::string>,
-        kc::Field<k::profile, std::tr1::shared_ptr<ERepositoryProfile> >
-            >RepositoryEInterfaceProfilesDescLine;
-
-    /**
-     * A provides entry in a Repository implementing RepositoryProvidesInterface.
-     *
-     * \see Repository
-     * \see RepositoryProvidesInterface
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-            kc::Field<k::virtual_name, QualifiedPackageName>,
-            kc::Field<k::provided_by, std::tr1::shared_ptr<const PackageID> >
-        > RepositoryProvidesEntry;
-
-    /**
-     * A virtuals entry in a Repository implementing RepositoryVirtualsInterface.
-     *
-     * \see Repository
-     * \see RepositoryVirtualsInterface
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-            kc::Field<k::virtual_name, QualifiedPackageName>,
-            kc::Field<k::provided_by_spec, std::tr1::shared_ptr<const PackageDepSpec> >
-        > RepositoryVirtualsEntry;
-
-    /**
-     * Parameters for RepositoryDestinationInterface::merge.
-     *
-     * \see RepositoryDestinationInterface
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-        kc::Field<k::image_dir, FSEntry>,
-        kc::Field<k::environment_file, FSEntry>,
-        kc::Field<k::options, MergerOptions>
-            > MergeParams;
+    struct MergeParams;
 }
 
 #endif

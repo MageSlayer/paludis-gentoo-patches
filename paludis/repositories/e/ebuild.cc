@@ -42,7 +42,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/kc.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -96,122 +95,122 @@ EbuildCommand::operator() ()
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/ebuild.bash '" + ebuild_file() + "' " + commands());
 
-    if (params[k::sandbox()])
+    if (params.sandbox())
         cmd.with_sandbox();
 
-    if (params[k::userpriv()])
-        cmd.with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid());
+    if (params.userpriv())
+        cmd.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 
     using namespace std::tr1::placeholders;
-    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1));
+    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1));
 
-    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
 
     cmd = extend_command(cmd
-            .with_setenv("P", stringify(params[k::package_id()]->name().package) + "-" +
-                stringify(params[k::package_id()]->version().remove_revision()))
-            .with_setenv("PV", stringify(params[k::package_id()]->version().remove_revision()))
-            .with_setenv("PR", stringify(params[k::package_id()]->version().revision_only()))
-            .with_setenv("PN", stringify(params[k::package_id()]->name().package))
-            .with_setenv("PVR", stringify(params[k::package_id()]->version()))
-            .with_setenv("PF", stringify(params[k::package_id()]->name().package) + "-" +
-                stringify(params[k::package_id()]->version()))
-            .with_setenv("CATEGORY", stringify(params[k::package_id()]->name().category))
-            .with_setenv("REPOSITORY", stringify(params[k::package_id()]->repository()->name()))
-            .with_setenv("FILESDIR", stringify(params[k::files_dir()]))
-            .with_setenv("EAPI", stringify(params[k::package_id()]->eapi()->exported_name()))
+            .with_setenv("P", stringify(params.package_id()->name().package) + "-" +
+                stringify(params.package_id()->version().remove_revision()))
+            .with_setenv("PV", stringify(params.package_id()->version().remove_revision()))
+            .with_setenv("PR", stringify(params.package_id()->version().revision_only()))
+            .with_setenv("PN", stringify(params.package_id()->name().package))
+            .with_setenv("PVR", stringify(params.package_id()->version()))
+            .with_setenv("PF", stringify(params.package_id()->name().package) + "-" +
+                stringify(params.package_id()->version()))
+            .with_setenv("CATEGORY", stringify(params.package_id()->name().category))
+            .with_setenv("REPOSITORY", stringify(params.package_id()->repository()->name()))
+            .with_setenv("FILESDIR", stringify(params.files_dir()))
+            .with_setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) + stringify(PALUDIS_VERSION_SUFFIX) +
                 (std::string(PALUDIS_GIT_HEAD).empty() ?
                  std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
-            .with_setenv("PALUDIS_TMPDIR", stringify(params[k::builddir()]))
+            .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir()))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
             .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
             .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-            .with_setenv("PALUDIS_COMMAND", params[k::environment()]->paludis_command())
-            .with_setenv("PALUDIS_REDUCED_GID", stringify(params[k::environment()]->reduced_gid()))
-            .with_setenv("PALUDIS_REDUCED_UID", stringify(params[k::environment()]->reduced_uid()))
+            .with_setenv("PALUDIS_COMMAND", params.environment()->paludis_command())
+            .with_setenv("PALUDIS_REDUCED_GID", stringify(params.environment()->reduced_gid()))
+            .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment()->reduced_uid()))
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_UTILITY_PATH_SUFFIXES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->utility_path_suffixes())
+                    params.package_id()->eapi()->supported()->ebuild_options()->utility_path_suffixes())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
+                    params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_setenv("PALUDIS_NON_EMPTY_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->non_empty_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->non_empty_variables())
             .with_setenv("PALUDIS_DIRECTORY_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->directory_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->directory_variables())
             .with_setenv("PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ebuild_must_not_set_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->ebuild_must_not_set_variables())
             .with_setenv("PALUDIS_ECLASS_MUST_NOT_SET_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->eclass_must_not_set_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->eclass_must_not_set_variables())
             .with_setenv("PALUDIS_SAVE_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->save_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->save_variables())
             .with_setenv("PALUDIS_SAVE_BASE_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->save_base_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->save_base_variables())
             .with_setenv("PALUDIS_SAVE_UNMODIFIABLE_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->save_unmodifiable_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->save_unmodifiable_variables())
             .with_setenv("PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->directory_if_exists_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->directory_if_exists_variables())
             .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->source_merged_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->source_merged_variables())
             .with_setenv("PALUDIS_BRACKET_MERGED_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->bracket_merged_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->must_not_change_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_variables())
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend() ? "yes" : "")
+                    params.package_id()->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend() ? "yes" : "")
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->f_function_prefix())
+                    params.package_id()->eapi()->supported()->ebuild_options()->f_function_prefix())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
+                    params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
+                    params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
-                    params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_distdir())
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",
-                    params[k::package_id()]->eapi()->supported()->tools_options()->unpack_unrecognised_is_fatal() ? "yes" : "")
+                    params.package_id()->eapi()->supported()->tools_options()->unpack_unrecognised_is_fatal() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",
-                    params[k::package_id()]->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
+                    params.package_id()->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
             .with_setenv("PALUDIS_DOSYM_NO_MKDIR",
-                    params[k::package_id()]->eapi()->supported()->tools_options()->dosym_mkdir() ? "" : "yes")
+                    params.package_id()->eapi()->supported()->tools_options()->dosym_mkdir() ? "" : "yes")
             .with_setenv("PALUDIS_FAILURE_IS_FATAL",
-                    params[k::package_id()]->eapi()->supported()->tools_options()->failure_is_fatal() ? "yes" : "")
+                    params.package_id()->eapi()->supported()->tools_options()->failure_is_fatal() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FROM_VAR",
-                    params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_distdir())
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")
         .with_setenv("PALUDIS_PROFILE_DIR", "")
         .with_setenv("PALUDIS_PROFILE_DIRS", "");
 
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_kv().empty())
-        cmd.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_kv(), kernel_version());
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_portdir().empty())
-        cmd.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_portdir(),
-                stringify(params[k::portdir()]));
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_distdir().empty())
-        cmd.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_distdir(),
-                        stringify(params[k::distdir()]));
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_kv().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_kv(), kernel_version());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_portdir().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_portdir(),
+                stringify(params.portdir()));
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir(),
+                        stringify(params.distdir()));
 
-    if (params[k::package_id()]->eapi()->supported()->ebuild_options()->support_eclasses())
+    if (params.package_id()->eapi()->supported()->ebuild_options()->support_eclasses())
         cmd
-            .with_setenv("ECLASSDIR", stringify(*params[k::eclassdirs()]->begin()))
-            .with_setenv("ECLASSDIRS", join(params[k::eclassdirs()]->begin(),
-                        params[k::eclassdirs()]->end(), " "));
+            .with_setenv("ECLASSDIR", stringify(*params.eclassdirs()->begin()))
+            .with_setenv("ECLASSDIRS", join(params.eclassdirs()->begin(),
+                        params.eclassdirs()->end(), " "));
 
-    if (params[k::package_id()]->eapi()->supported()->ebuild_options()->support_exlibs())
+    if (params.package_id()->eapi()->supported()->ebuild_options()->support_exlibs())
         cmd
-            .with_setenv("EXLIBSDIRS", join(params[k::exlibsdirs()]->begin(),
-                        params[k::exlibsdirs()]->end(), " "));
+            .with_setenv("EXLIBSDIRS", join(params.exlibsdirs()->begin(),
+                        params.exlibsdirs()->end(), " "));
 
-    if (params[k::package_id()]->eapi()->supported()->ebuild_options()->want_portage_emulation_vars())
+    if (params.package_id()->eapi()->supported()->ebuild_options()->want_portage_emulation_vars())
         cmd = add_portage_vars(cmd);
 
     if (do_run_command(cmd))
@@ -223,26 +222,26 @@ EbuildCommand::operator() ()
 std::string
 EbuildCommand::ebuild_file() const
 {
-    return stringify(params[k::ebuild_file()]);
+    return stringify(params.ebuild_file());
 }
 
 Command
 EbuildCommand::add_portage_vars(const Command & cmd) const
 {
     return Command(cmd)
-        .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params[k::distdir()]))
+        .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params.distdir()))
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
-        .with_setenv("PORTAGE_BUILDDIR", stringify(params[k::builddir()]) + "/" +
-             stringify(params[k::package_id()]->name().category) + "-" +
-             stringify(params[k::package_id()]->name().package) + "-" +
-             stringify(params[k::package_id()]->version()))
-        .with_setenv("PORTAGE_CALLER", params[k::environment()]->paludis_command())
+        .with_setenv("PORTAGE_BUILDDIR", stringify(params.builddir()) + "/" +
+             stringify(params.package_id()->name().category) + "-" +
+             stringify(params.package_id()->name().package) + "-" +
+             stringify(params.package_id()->version()))
+        .with_setenv("PORTAGE_CALLER", params.environment()->paludis_command())
         .with_setenv("PORTAGE_GID", "0")
         .with_setenv("PORTAGE_INST_GID", "0")
         .with_setenv("PORTAGE_INST_UID", "0")
         .with_setenv("PORTAGE_MASTER_PID", stringify(::getpid()))
         .with_setenv("PORTAGE_NICENCESS", stringify(::getpriority(PRIO_PROCESS, 0)))
-        .with_setenv("PORTAGE_TMPDIR", stringify(params[k::builddir()]))
+        .with_setenv("PORTAGE_TMPDIR", stringify(params.builddir()))
         .with_setenv("PORTAGE_TMPFS", "/dev/shm")
         .with_setenv("PORTAGE_WORKDIR_MODE", "0700");
 }
@@ -265,7 +264,7 @@ EbuildMetadataCommand::~EbuildMetadataCommand()
 std::string
 EbuildMetadataCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
@@ -278,9 +277,9 @@ Command
 EbuildMetadataCommand::extend_command(const Command & cmd)
 {
     return Command(cmd)
-        .with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid())
-        .with_stderr_prefix(stringify(params[k::package_id()]->name().package) + "-" +
-                stringify(params[k::package_id()]->version()) + "> ");
+        .with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid())
+        .with_stderr_prefix(stringify(params.package_id()->name().package) + "-" +
+                stringify(params.package_id()->version()) + "> ");
 }
 
 namespace
@@ -302,7 +301,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     std::string input;
     try
     {
-        Context context("When running ebuild command to generate metadata for '" + stringify(*params[k::package_id()]) + "':");
+        Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id()) + "':");
 
         std::stringstream prog;
         Command real_cmd(cmd);
@@ -326,7 +325,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Caught exception '"
                 << e.message() << "' (" << e.what() << ") when generating cache for '"
-                << *params[k::package_id()] << "', input is '" << purdy(input) << "'";
+                << *params.package_id() << "', input is '" << purdy(input) << "'";
     }
 
     if (ok)
@@ -334,7 +333,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     else
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Could not generate cache for '"
-            << *params[k::package_id()] << "'";
+            << *params.package_id() << "'";
         keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name());
 
@@ -356,7 +355,7 @@ namespace
 void
 EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
 {
-    Context context("When loading generated metadata for '" + stringify(*params[k::package_id()]) + "':");
+    Context context("When loading generated metadata for '" + stringify(*params.package_id()) + "':");
 
     if (! keys)
         throw InternalError(PALUDIS_HERE, "keys is 0");
@@ -398,7 +397,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! m.dependencies().name().empty())
     {
         DependenciesRewriter rewriter;
-        parse_depend(get(keys, m.dependencies().name()), params[k::environment()], id, *id->eapi())->accept(rewriter);
+        parse_depend(get(keys, m.dependencies().name()), params.environment(), id, *id->eapi())->accept(rewriter);
         id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
         id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
         id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());
@@ -480,7 +479,7 @@ EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,
 std::string
 EbuildVariableCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
@@ -494,7 +493,7 @@ EbuildVariableCommand::extend_command(const Command & cmd)
 {
     return Command(cmd)
         .with_setenv("PALUDIS_VARIABLE", _var)
-        .with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid());
+        .with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 }
 
 bool
@@ -513,38 +512,38 @@ EbuildVariableCommand::do_run_command(const Command & cmd)
 std::string
 EbuildNoFetchCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
 EbuildNoFetchCommand::failure()
 {
-    throw FetchActionError("Fetch failed for '" + stringify(*params[k::package_id()]) + "'");
+    throw FetchActionError("Fetch failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
 EbuildNoFetchCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("A", fetch_params[k::a()])
-            .with_setenv("ROOT", fetch_params[k::root()])
-            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params[k::profiles()]->begin()))
-            .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params[k::profiles()]->begin(),
-                    fetch_params[k::profiles()]->end(), " ")));
+            .with_setenv("A", fetch_params.a())
+            .with_setenv("ROOT", fetch_params.root())
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles()->begin(),
+                    fetch_params.profiles()->end(), " ")));
 
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_aa(),
-                fetch_params[k::aa()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                fetch_params[k::use()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
-                fetch_params[k::use_expand()]);
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
+                fetch_params.aa());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                fetch_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                fetch_params.use_expand());
 
     for (Map<std::string, std::string>::ConstIterator
-            i(fetch_params[k::expand_vars()]->begin()),
-            j(fetch_params[k::expand_vars()]->end()) ; i != j ; ++i)
+            i(fetch_params.expand_vars()->begin()),
+            j(fetch_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
     return result;
@@ -560,42 +559,42 @@ EbuildNoFetchCommand::EbuildNoFetchCommand(const EbuildCommandParams & p,
 std::string
 EbuildInstallCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
 EbuildInstallCommand::failure()
 {
-    throw InstallActionError("Install failed for '" + stringify(*params[k::package_id()]) + "'");
+    throw InstallActionError("Install failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
 EbuildInstallCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("A", install_params[k::a()])
-            .with_setenv("ROOT", install_params[k::root()])
-            .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(install_params[k::loadsaveenv_dir()]))
-            .with_setenv("PALUDIS_CONFIG_PROTECT", install_params[k::config_protect()])
-            .with_setenv("PALUDIS_CONFIG_PROTECT_MASK", install_params[k::config_protect_mask()])
-            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params[k::profiles()]->begin()))
-            .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params[k::profiles()]->begin(),
-                                          install_params[k::profiles()]->end(), " "))
-            .with_setenv("SLOT", stringify(install_params[k::slot()])));
+            .with_setenv("A", install_params.a())
+            .with_setenv("ROOT", install_params.root())
+            .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(install_params.loadsaveenv_dir()))
+            .with_setenv("PALUDIS_CONFIG_PROTECT", install_params.config_protect())
+            .with_setenv("PALUDIS_CONFIG_PROTECT_MASK", install_params.config_protect_mask())
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params.profiles()->begin(),
+                                          install_params.profiles()->end(), " "))
+            .with_setenv("SLOT", stringify(install_params.slot())));
 
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_aa(),
-                install_params[k::aa()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                install_params[k::use()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
-                install_params[k::use_expand()]);
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
+                install_params.aa());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                install_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                install_params.use_expand());
 
     for (Map<std::string, std::string>::ConstIterator
-            i(install_params[k::expand_vars()]->begin()),
-            j(install_params[k::expand_vars()]->end()) ; i != j ; ++i)
+            i(install_params.expand_vars()->begin()),
+            j(install_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
     return result;
@@ -611,7 +610,7 @@ EbuildInstallCommand::EbuildInstallCommand(const EbuildCommandParams & p,
 std::string
 EbuildUninstallCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 std::string
@@ -623,20 +622,20 @@ EbuildUninstallCommand::ebuild_file() const
 bool
 EbuildUninstallCommand::failure()
 {
-    throw UninstallActionError("Uninstall failed for '" + stringify(*params[k::package_id()]) + "'");
+    throw UninstallActionError("Uninstall failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
 EbuildUninstallCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("ROOT", uninstall_params[k::root()])
-            .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(uninstall_params[k::loadsaveenv_dir()]))
+            .with_setenv("ROOT", uninstall_params.root())
+            .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(uninstall_params.loadsaveenv_dir()))
             );
 
-    if (uninstall_params[k::load_environment()])
+    if (uninstall_params.load_environment())
         result
-            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*uninstall_params[k::load_environment()]))
+            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*uninstall_params.load_environment()))
             .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
 
     return result;
@@ -658,24 +657,24 @@ EbuildConfigCommand::ebuild_file() const
 std::string
 EbuildConfigCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
 EbuildConfigCommand::failure()
 {
-    throw ConfigActionError("Configure failed for '" + stringify(*params[k::package_id()]) + "'");
+    throw ConfigActionError("Configure failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
 EbuildConfigCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("ROOT", config_params[k::root()]));
+            .with_setenv("ROOT", config_params.root()));
 
-    if (config_params[k::load_environment()])
+    if (config_params.load_environment())
         result
-            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*config_params[k::load_environment()]))
+            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*config_params.load_environment()))
             .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
 
     return result;
@@ -700,13 +699,13 @@ WriteVDBEntryCommand::operator() ()
 
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/write_vdb_entry.bash '" +
-            stringify(params[k::output_directory()]) + "' '" +
-            stringify(params[k::environment_file()]) + "'");
+            stringify(params.output_directory()) + "' '" +
+            stringify(params.environment_file()) + "'");
 
-    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
 
     Command cmd(Command(ebuild_cmd)
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -714,26 +713,26 @@ WriteVDBEntryCommand::operator() ()
                 stringify(PALUDIS_VERSION_MICRO) +
                 (std::string(PALUDIS_GIT_HEAD).empty() ?
                  std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
-            .with_setenv("EAPI", stringify(params[k::package_id()]->eapi()->exported_name()))
+            .with_setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
             .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
             .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-            .with_setenv("PALUDIS_COMMAND", params[k::environment()]->paludis_command())
+            .with_setenv("PALUDIS_COMMAND", params.environment()->paludis_command())
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_VDB_FROM_ENV_VARIABLES",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->vdb_from_env_variables())
+                params.package_id()->eapi()->supported()->ebuild_options()->vdb_from_env_variables())
             .with_setenv("PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->vdb_from_env_unless_empty_variables())
+                params.package_id()->eapi()->supported()->ebuild_options()->vdb_from_env_unless_empty_variables())
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->f_function_prefix())
+                params.package_id()->eapi()->supported()->ebuild_options()->f_function_prefix())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
+                    params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
+                    params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
 
     if (0 != (run_command(cmd)))
@@ -752,7 +751,7 @@ VDBPostMergeCommand::operator() ()
         return;
 
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-            "/utils/wrapped_ldconfig '" + stringify(params[k::root()]) + "'");
+            "/utils/wrapped_ldconfig '" + stringify(params.root()) + "'");
 
     if (0 != (run_command(cmd)))
         throw InstallActionError("VDB Entry post merge commands failed");
@@ -761,7 +760,7 @@ VDBPostMergeCommand::operator() ()
 std::string
 EbuildPretendCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
@@ -774,30 +773,30 @@ Command
 EbuildPretendCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_stdout_prefix(stringify(params[k::package_id()]->name().package) + "-" +
-                stringify(params[k::package_id()]->version()) + "> ")
-            .with_stderr_prefix(stringify(params[k::package_id()]->name().package) + "-" +
-                stringify(params[k::package_id()]->version()) + "> ")
+            .with_stdout_prefix(stringify(params.package_id()->name().package) + "-" +
+                stringify(params.package_id()->version()) + "> ")
+            .with_stderr_prefix(stringify(params.package_id()->name().package) + "-" +
+                stringify(params.package_id()->version()) + "> ")
             .with_prefix_discard_blank_output()
             .with_prefix_blank_lines()
-            .with_setenv("ROOT", pretend_params[k::root()])
-            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*pretend_params[k::profiles()]->begin()))
-            .with_setenv("PALUDIS_PROFILE_DIRS", join(pretend_params[k::profiles()]->begin(),
-                    pretend_params[k::profiles()]->end(), " ")));
+            .with_setenv("ROOT", pretend_params.root())
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*pretend_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(pretend_params.profiles()->begin(),
+                    pretend_params.profiles()->end(), " ")));
 
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                pretend_params[k::use()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
-                pretend_params[k::use_expand()]);
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                pretend_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                pretend_params.use_expand());
 
     for (Map<std::string, std::string>::ConstIterator
-            i(pretend_params[k::expand_vars()]->begin()),
-            j(pretend_params[k::expand_vars()]->end()) ; i != j ; ++i)
+            i(pretend_params.expand_vars()->begin()),
+            j(pretend_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    result.with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid());
+    result.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 
     return result;
 }
@@ -812,8 +811,8 @@ EbuildPretendCommand::EbuildPretendCommand(const EbuildCommandParams & p,
 std::string
 EbuildInfoCommand::ebuild_file() const
 {
-    if (info_params[k::use_ebuild_file()])
-        return stringify(params[k::ebuild_file()]);
+    if (info_params.use_ebuild_file())
+        return stringify(params.ebuild_file());
     else
         return "-";
 }
@@ -821,7 +820,7 @@ EbuildInfoCommand::ebuild_file() const
 std::string
 EbuildInfoCommand::commands() const
 {
-    return params[k::commands()];
+    return params.commands();
 }
 
 bool
@@ -833,37 +832,37 @@ EbuildInfoCommand::failure()
 Command
 EbuildInfoCommand::extend_command(const Command & cmd)
 {
-    std::string info_vars(join(info_params[k::info_vars()]->begin(), info_params[k::info_vars()]->end(), " "));
+    std::string info_vars(join(info_params.info_vars()->begin(), info_params.info_vars()->end(), " "));
 
     Command result(Command(cmd)
             .with_stdout_prefix("        ")
             .with_stderr_prefix("        ")
             .with_prefix_discard_blank_output()
             .with_prefix_blank_lines()
-            .with_setenv("ROOT", info_params[k::root()])
+            .with_setenv("ROOT", info_params.root())
             .with_setenv("PALUDIS_INFO_VARS", info_vars)
             .with_setenv("PALUDIS_PROFILE_DIR",
-                info_params[k::profiles()]->empty() ? std::string("") : stringify(*info_params[k::profiles()]->begin()))
-            .with_setenv("PALUDIS_PROFILE_DIRS", join(info_params[k::profiles()]->begin(),
-                    info_params[k::profiles()]->end(), " ")));
+                info_params.profiles()->empty() ? std::string("") : stringify(*info_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(info_params.profiles()->begin(),
+                    info_params.profiles()->end(), " ")));
 
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                info_params[k::use()]);
-    if (! params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
-        result.with_setenv(params[k::package_id()]->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
-                info_params[k::use_expand()]);
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                info_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                info_params.use_expand());
 
     for (Map<std::string, std::string>::ConstIterator
-            i(info_params[k::expand_vars()]->begin()),
-            j(info_params[k::expand_vars()]->end()) ; i != j ; ++i)
+            i(info_params.expand_vars()->begin()),
+            j(info_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    result.with_uid_gid(params[k::environment()]->reduced_uid(), params[k::environment()]->reduced_gid());
+    result.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 
-    if (info_params[k::load_environment()])
+    if (info_params.load_environment())
         result
-            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*info_params[k::load_environment()]))
+            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*info_params.load_environment()))
             .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
 
     return result;
@@ -886,25 +885,25 @@ WriteBinaryEbuildCommand::operator() ()
 {
     using namespace std::tr1::placeholders;
 
-    if (! EAPIData::get_instance()->eapi_from_string("pbin-1+" + params[k::package_id()]->eapi()->exported_name())->supported())
+    if (! EAPIData::get_instance()->eapi_from_string("pbin-1+" + params.package_id()->eapi()->exported_name())->supported())
         throw InstallActionError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
-                params[k::package_id()]->eapi()->exported_name());
+                params.package_id()->eapi()->exported_name());
 
-    std::string bindistfile(stringify(params[k::destination_repository()]->name()) + "--" + stringify(params[k::package_id()]->name().category)
-            + "--" + stringify(params[k::package_id()]->name().package) + "-" + stringify(params[k::package_id()]->version())
+    std::string bindistfile(stringify(params.destination_repository()->name()) + "--" + stringify(params.package_id()->name().category)
+            + "--" + stringify(params.package_id()->name().package) + "-" + stringify(params.package_id()->version())
             + "--" + cookie());
 
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/write_binary_ebuild.bash '" +
-            stringify(params[k::binary_ebuild_location()]) + "' '" +
-            stringify(params[k::binary_distdir()] / bindistfile) + "' '" +
-            stringify(params[k::environment_file()]) + "' '" +
-            stringify(params[k::image()]) + "'");
+            stringify(params.binary_ebuild_location()) + "' '" +
+            stringify(params.binary_distdir() / bindistfile) + "' '" +
+            stringify(params.environment_file()) + "' '" +
+            stringify(params.image()) + "'");
 
-    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params[k::environment()]->syncers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params[k::environment()]->bashrc_files());
-    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params[k::environment()]->fetchers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params[k::environment()]->hook_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
 
     Command cmd(Command(ebuild_cmd)
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -912,31 +911,31 @@ WriteBinaryEbuildCommand::operator() ()
                 stringify(PALUDIS_VERSION_MICRO) +
                 (std::string(PALUDIS_GIT_HEAD).empty() ?
                  std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
-            .with_setenv("EAPI", stringify(params[k::package_id()]->eapi()->exported_name()))
+            .with_setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-            .with_setenv("PALUDIS_TMPDIR", stringify(params[k::builddir()]))
+            .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir()))
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
             .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
             .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-            .with_setenv("PALUDIS_COMMAND", params[k::environment()]->paludis_command())
+            .with_setenv("PALUDIS_COMMAND", params.environment()->paludis_command())
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_BINARY_FROM_ENV_VARIABLES",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->binary_from_env_variables())
+                params.package_id()->eapi()->supported()->ebuild_options()->binary_from_env_variables())
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->f_function_prefix())
+                params.package_id()->eapi()->supported()->ebuild_options()->f_function_prefix())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS",
-                params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
+                params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
-                    params[k::package_id()]->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
-            .with_setenv("PALUDIS_BINARY_URI_PREFIX", params[k::destination_repository()]->params().binary_uri_prefix)
-            .with_setenv("PALUDIS_BINARY_KEYWORDS", params[k::destination_repository()]->params().binary_keywords)
+                    params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
+            .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository()->params().binary_uri_prefix)
+            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository()->params().binary_keywords)
             .with_setenv("PALUDIS_BINARY_KEYWORDS_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
-                        + params[k::package_id()]->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords().name())
+                        + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords().name())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
-                        + params[k::package_id()]->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params[k::environment()], params[k::package_id()], _1))
+                        + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
 
     if (0 != (run_command(cmd)))

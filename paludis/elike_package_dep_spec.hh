@@ -21,10 +21,35 @@
 #define PALUDIS_GUARD_PALUDIS_ELIKE_PACKAGE_DEP_SPEC_HH 1
 
 #include <paludis/elike_package_dep_spec-fwd.hh>
+#include <paludis/util/named_value.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct add_package_requirement;
+        struct add_version_requirement;
+        struct check_sanity;
+        struct get_remove_trailing_version;
+        struct get_remove_version_operator;
+        struct has_version_operator;
+        struct remove_trailing_repo_if_exists;
+        struct remove_trailing_slot_if_exists;
+        struct remove_trailing_square_bracket_if_exists;
+    }
 
+    struct GenericELikePackageDepSpecParseFunctions
+    {
+        NamedValue<n::add_package_requirement, std::tr1::function<void (const std::string &, PartiallyMadePackageDepSpec &)> > add_package_requirement;
+        NamedValue<n::add_version_requirement, std::tr1::function<void (const VersionOperator &, const VersionSpec &, PartiallyMadePackageDepSpec &)> > add_version_requirement;
+        NamedValue<n::check_sanity, std::tr1::function<void (const std::string &)> > check_sanity;
+        NamedValue<n::get_remove_trailing_version, std::tr1::function<VersionSpec (std::string &)> > get_remove_trailing_version;
+        NamedValue<n::get_remove_version_operator, std::tr1::function<VersionOperator (std::string &)> > get_remove_version_operator;
+        NamedValue<n::has_version_operator, std::tr1::function<bool (const std::string &)> > has_version_operator;
+        NamedValue<n::remove_trailing_repo_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_repo_if_exists;
+        NamedValue<n::remove_trailing_slot_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_slot_if_exists;
+        NamedValue<n::remove_trailing_square_bracket_if_exists, std::tr1::function<bool (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_square_bracket_if_exists;
+    };
 }
 
 #endif

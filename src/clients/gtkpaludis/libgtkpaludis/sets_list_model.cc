@@ -62,7 +62,7 @@ SetsListModel::populate_in_paludis_thread()
         for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
-            RepositorySetsInterface * const i((*_imp->main_window->environment()->package_database()->fetch_repository(*r))[k::sets_interface()]);
+            RepositorySetsInterface * const i((*_imp->main_window->environment()->package_database()->fetch_repository(*r)).sets_interface());
             if (i)
             {
                 std::tr1::shared_ptr<const SetNameSet> sets(i->sets_list());
@@ -77,7 +77,7 @@ SetsListModel::populate_in_paludis_thread()
                 r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
                 r != r_end ; ++r)
         {
-            RepositorySetsInterface * const i((*r)[k::sets_interface()]);
+            RepositorySetsInterface * const i((*r).sets_interface());
             if (i)
             {
                 std::tr1::shared_ptr<const SetNameSet> sets(i->sets_list());

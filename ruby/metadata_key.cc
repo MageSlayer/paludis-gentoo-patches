@@ -21,7 +21,6 @@
 #include <paludis_ruby.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
@@ -515,7 +514,7 @@ namespace
     {
         std::tr1::shared_ptr<const RepositoryMaskInfo> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const RepositoryMaskInfo>, ptr);
-        return rb_str_new2(stringify((**ptr)[k::mask_file()]).c_str());
+        return rb_str_new2(stringify((**ptr).mask_file()).c_str());
     }
 
     /*
@@ -530,8 +529,8 @@ namespace
         std::tr1::shared_ptr<const RepositoryMaskInfo> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const RepositoryMaskInfo>, ptr);
         VALUE result(rb_ary_new());
-        for (Sequence<std::string>::ConstIterator it((**ptr)[k::comment()]->begin()),
-                 it_end((**ptr)[k::comment()]->end()); it_end != it; ++it)
+        for (Sequence<std::string>::ConstIterator it((**ptr).comment()->begin()),
+                 it_end((**ptr).comment()->end()); it_end != it; ++it)
             rb_ary_push(result, rb_str_new2(it->c_str()));
         return result;
     }

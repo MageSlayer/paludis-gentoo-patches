@@ -24,8 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 
 /** \file
@@ -44,17 +43,24 @@ namespace paludis
     class Hook;
     class Environment;
 
+    namespace n
+    {
+        struct environment;
+        struct root;
+    }
+
     /**
      * Options for a basic Unmerger.
      *
      * \see Unmerger
      * \ingroup g_repository
-     * \nosubgrouping
+     * \since 0.30
      */
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, const Environment *>,
-        kc::Field<k::root, FSEntry>
-            > UnmergerOptions;
+    struct UnmergerOptions
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * Thrown if an error occurs during an unmerge.

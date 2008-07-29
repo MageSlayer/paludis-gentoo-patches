@@ -20,6 +20,7 @@
 #include "vdb_unmerger.hh"
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -66,13 +67,14 @@ namespace
                 TestCase("unmerge '" + what + "' test"),
                 root_dir("vdb_unmerger_TEST_dir/root"),
                 target(what),
-                unmerger(VDBUnmergerOptions::named_create()
-                        (k::environment(), &env)
-                        (k::root(), root_dir)
-                        (k::contents_file(), "vdb_unmerger_TEST_dir/CONTENTS/" + what)
-                        (k::config_protect(), "/protected_file /protected_dir")
-                        (k::config_protect_mask(), "/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        (k::package_id(), std::tr1::shared_ptr<PackageID>()))
+                unmerger(make_named_values<VDBUnmergerOptions>(
+                            value_for<n::config_protect>("/protected_file /protected_dir"),
+                            value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
+                            value_for<n::contents_file>("vdb_unmerger_TEST_dir/CONTENTS/" + what),
+                            value_for<n::environment>(&env),
+                            value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
+                            value_for<n::root>(root_dir)
+                        ))
             {
             }
     };

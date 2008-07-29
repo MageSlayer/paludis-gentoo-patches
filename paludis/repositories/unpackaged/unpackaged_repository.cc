@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -56,29 +57,29 @@ namespace paludis
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
-            id(new UnpackagedID(params[k::environment()], params[k::name()], params[k::version()], params[k::slot()], n, params[k::location()],
-                        params[k::build_dependencies()], params[k::run_dependencies()], params[k::description()])),
+            id(new UnpackagedID(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
+                        params.build_dependencies(), params.run_dependencies(), params.description())),
             ids(new PackageIDSequence),
             package_names(new QualifiedPackageNameSet),
             category_names(new CategoryNamePartSet),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params[k::location()])),
+                        mkt_significant, params.location())),
             install_under_key(new LiteralMetadataValueKey<FSEntry> ("install_under", "install_under",
-                        mkt_significant, params[k::install_under()])),
+                        mkt_significant, params.install_under())),
             rewrite_ids_over_to_root_key(new LiteralMetadataValueKey<long> ("rewrite_ids_over_to_root", "rewrite_ids_over_to_root",
-                        mkt_normal, params[k::rewrite_ids_over_to_root()])),
+                        mkt_normal, params.rewrite_ids_over_to_root())),
             name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
-                        mkt_normal, stringify(params[k::name()]))),
+                        mkt_normal, stringify(params.name()))),
             slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
-                        mkt_normal, stringify(params[k::slot()]))),
+                        mkt_normal, stringify(params.slot()))),
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "unpackaged")),
             build_dependencies_key(new LiteralMetadataValueKey<std::string> (
-                        "build_dependencies", "build_dependencies", mkt_normal, params[k::build_dependencies()])),
+                        "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies())),
             run_dependencies_key(new LiteralMetadataValueKey<std::string> (
-                        "run_dependencies", "run_dependencies", mkt_normal, params[k::run_dependencies()])),
+                        "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies())),
             description_key(new LiteralMetadataValueKey<std::string> (
-                        "description", "description", mkt_normal, params[k::description()]))
+                        "description", "description", mkt_normal, params.description()))
         {
             ids->push_back(id);
             package_names->insert(id->name());
@@ -90,20 +91,21 @@ namespace paludis
 UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
         const UnpackagedRepositoryParams & params) :
     PrivateImplementationPattern<UnpackagedRepository>(new Implementation<UnpackagedRepository>(n, params)),
-    Repository(n, RepositoryCapabilities::named_create()
-            (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+    Repository(n, make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+            )),
     _imp(PrivateImplementationPattern<UnpackagedRepository>::_imp)
 {
     _add_metadata_keys();

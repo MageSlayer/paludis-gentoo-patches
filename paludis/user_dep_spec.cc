@@ -30,6 +30,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 
@@ -233,19 +234,19 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     Context context("When parsing user package dep spec '" + ss + "':");
 
     bool had_bracket_version_requirements(false);
-    return partial_parse_generic_elike_package_dep_spec(ss, GenericELikePackageDepSpecParseFunctions::named_create()
-            (k::check_sanity(), std::tr1::bind(&user_check_sanity, _1, options, env))
-            (k::remove_trailing_square_bracket_if_exists(), std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
+    return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
+            value_for<n::add_package_requirement>(std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter)),
+            value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
+            value_for<n::check_sanity>(std::tr1::bind(&user_check_sanity, _1, options, env)),
+            value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1)),
+            value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1,
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps)),
+            value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements))),
+            value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2)),
+            value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2)),
+            value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
                     _1, _2, std::tr1::ref(had_bracket_version_requirements)))
-            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2))
-            (k::remove_trailing_slot_if_exists(), std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2))
-            (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
-            (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps))
-            (k::get_remove_trailing_version(), std::tr1::bind(&elike_get_remove_trailing_version, _1))
-            (k::add_version_requirement(), std::tr1::bind(&elike_add_version_requirement, _1, _2, _3))
-            (k::add_package_requirement(), std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter))
-            );
+            ));
 }
 
 UserSlotExactRequirement::UserSlotExactRequirement(const SlotName & s) :

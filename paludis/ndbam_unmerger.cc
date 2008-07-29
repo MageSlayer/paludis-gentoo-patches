@@ -36,6 +36,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 #include <tr1/functional>
 #include <list>
 #include <map>
@@ -58,8 +59,8 @@ namespace paludis
         Implementation(const NDBAMUnmergerOptions & o) :
             options(o)
         {
-            tokenise_whitespace(o[k::config_protect()], std::back_inserter(config_protect));
-            tokenise_whitespace(o[k::config_protect_mask()], std::back_inserter(config_protect_mask));
+            tokenise_whitespace(o.config_protect(), std::back_inserter(config_protect));
+            tokenise_whitespace(o.config_protect_mask(), std::back_inserter(config_protect_mask));
         }
     };
 }
@@ -101,9 +102,10 @@ class NDBAMUnmerger::SymlinkExtraInfo :
 };
 
 NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
-    Unmerger(UnmergerOptions::named_create()
-            (k::environment(), o[k::environment()])
-            (k::root(), o[k::root()])),
+    Unmerger(make_named_values<UnmergerOptions>(
+            value_for<n::environment>(o.environment()),
+            value_for<n::root>(o.root())
+            )),
     PrivateImplementationPattern<NDBAMUnmerger>(new Implementation<NDBAMUnmerger>(o)),
     _imp(PrivateImplementationPattern<NDBAMUnmerger>::_imp.get())
 {
@@ -116,29 +118,29 @@ NDBAMUnmerger::~NDBAMUnmerger()
 Hook
 NDBAMUnmerger::extend_hook(const Hook & h) const
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options[k::environment()]->bashrc_files());
+    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
-        ("CONFIG_PROTECT", _imp->options[k::config_protect()])
-        ("CONFIG_PROTECT_MASK", _imp->options[k::config_protect_mask()])
+        ("CONFIG_PROTECT", _imp->options.config_protect())
+        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask())
         ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
-    if (_imp->options[k::package_id()])
+    if (_imp->options.package_id())
     {
-        std::string cat(stringify(_imp->options[k::package_id()]->name().category));
-        std::string pn(stringify(_imp->options[k::package_id()]->name().package));
-        std::string pvr(stringify(_imp->options[k::package_id()]->version()));
-        std::string pv(stringify(_imp->options[k::package_id()]->version().remove_revision()));
+        std::string cat(stringify(_imp->options.package_id()->name().category));
+        std::string pn(stringify(_imp->options.package_id()->name().package));
+        std::string pvr(stringify(_imp->options.package_id()->version()));
+        std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
 
         return result
             ("P", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
-            ("PR", _imp->options[k::package_id()]->version().revision_only())
+            ("PR", _imp->options.package_id()->version().revision_only())
             ("PV", pv)
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
-            ("SLOT", stringify(_imp->options[k::package_id()]->slot()));
+            ("SLOT", stringify(_imp->options.package_id()->slot()));
     }
 
     return result;
@@ -172,7 +174,7 @@ NDBAMUnmerger::config_protected(const FSEntry & f) const
 std::string
 NDBAMUnmerger::make_tidy(const FSEntry & f) const
 {
-    std::string root_str(stringify(_imp->options[k::root()])), f_str(stringify(f));
+    std::string root_str(stringify(_imp->options.root())), f_str(stringify(f));
     if (root_str == "/")
         root_str.clear();
     if (0 != f_str.compare(0, root_str.length(), root_str))
@@ -202,7 +204,7 @@ void
 NDBAMUnmerger::populate_unmerge_set()
 {
     using namespace std::tr1::placeholders;
-    _imp->options[k::ndbam()]->parse_contents(*_imp->options[k::package_id()],
+    _imp->options.ndbam()->parse_contents(*_imp->options.package_id(),
             std::tr1::bind(&NDBAMUnmerger::_add_file, this, _1, _2, _3),
             std::tr1::bind(&NDBAMUnmerger::_add_dir, this, _1),
             std::tr1::bind(&NDBAMUnmerger::_add_sym, this, _1, _2, _3)
@@ -214,22 +216,22 @@ NDBAMUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei)
 {
     std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
-    if (! (_imp->options[k::root()] / f).is_regular_file())
+    if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options[k::root()] / f).mtime() != fie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != fie->_mtime)
         display("--- [!time] " + stringify(f));
     else
     {
-        std::ifstream md5_file(stringify(_imp->options[k::root()] / f).c_str());
+        std::ifstream md5_file(stringify(_imp->options.root() / f).c_str());
         if (! md5_file)
         {
             Log::get_instance()->message("ndbam.unmerger.md5_failed", ll_warning, lc_no_context) << "Cannot get md5 for '" <<
-                (_imp->options[k::root()] / f) << "'";
+                (_imp->options.root() / f) << "'";
             display("--- [!md5?] " + stringify(f));
         }
         else if (MD5(md5_file).hexsum() != fie->_md5sum)
             display("--- [!md5 ] " + stringify(f));
-        else if (config_protected(_imp->options[k::root()] / f))
+        else if (config_protected(_imp->options.root() / f))
             display("--- [cfgpr] " + stringify(f));
         else
             return true;
@@ -243,11 +245,11 @@ NDBAMUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) 
 {
     std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
-    if (! (_imp->options[k::root()] / f).is_symbolic_link())
+    if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options[k::root()] / f).mtime() != sie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != sie->_mtime)
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options[k::root()] / f).readlink() != sie->_dest)
+    else if ((_imp->options.root() / f).readlink() != sie->_dest)
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -264,9 +266,9 @@ NDBAMUnmerger::check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) cons
 bool
 NDBAMUnmerger::check_dir(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
 {
-    if (! (_imp->options[k::root()] / f).is_directory())
+    if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));
-    else if (DirIterator(_imp->options[k::root()] / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
+    else if (DirIterator(_imp->options.root() / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
         display("--- [!empt] " + stringify(f));
     else
         return true;

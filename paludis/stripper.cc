@@ -19,7 +19,6 @@
 
 #include <paludis/stripper.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
@@ -64,12 +63,12 @@ Stripper::~Stripper()
 void
 Stripper::strip()
 {
-    Context context("When stripping image '" + stringify(_imp->options[k::image_dir()]) + "':");
+    Context context("When stripping image '" + stringify(_imp->options.image_dir()) + "':");
 
-    if (_imp->options[k::debug_build()] == iado_internal)
+    if (_imp->options.debug_build() == iado_internal)
         return;
 
-    do_dir_recursive(_imp->options[k::image_dir()]);
+    do_dir_recursive(_imp->options.image_dir());
 }
 
 void
@@ -77,7 +76,7 @@ Stripper::do_dir_recursive(const FSEntry & f)
 {
     Context context("When stripping inside '" + stringify(f) + "':");
 
-    if (f == _imp->options[k::debug_dir()])
+    if (f == _imp->options.debug_dir())
         return;
 
     on_enter_dir(f);
@@ -104,7 +103,7 @@ Stripper::do_dir_recursive(const FSEntry & f)
                 std::string t(file_type(*d));
                 if (std::string::npos != t.find("SB executable") || std::string::npos != t.find("SB shared object"))
                 {
-                    FSEntry target(_imp->options[k::debug_dir()] / d->strip_leading(_imp->options[k::image_dir()]));
+                    FSEntry target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
                     target = target.dirname() / (target.basename() + ".debug");
                     do_split(*d, target);
                 }
@@ -149,7 +148,7 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
 {
     Context context("When splitting '" + stringify(f) + "' to '" + stringify(g) + "':");
 
-    switch (_imp->options[k::debug_build()])
+    switch (_imp->options.debug_build())
     {
         case iado_internal:
         case last_iado:
@@ -167,7 +166,7 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
 
     {
         std::list<FSEntry> to_make;
-        for (FSEntry d(g.dirname()) ; (! d.exists()) && (d != _imp->options[k::image_dir()]) ; d = d.dirname())
+        for (FSEntry d(g.dirname()) ; (! d.exists()) && (d != _imp->options.image_dir()) ; d = d.dirname())
             to_make.push_front(d);
 
         using namespace std::tr1::placeholders;

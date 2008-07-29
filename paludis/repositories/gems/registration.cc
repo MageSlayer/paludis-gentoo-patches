@@ -25,7 +25,6 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 
@@ -52,7 +51,7 @@ namespace
 
         std::string builddir(f("builddir"));
         if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
 
         return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
                     .location(location)
@@ -74,7 +73,7 @@ namespace
 
         std::string builddir(f("builddir"));
         if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::default_ebuild_builddir()];
+            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
 
         std::string root(f("root"));
         if (root.empty())

@@ -35,7 +35,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>

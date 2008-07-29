@@ -25,6 +25,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -38,7 +39,7 @@ namespace
     std::tr1::shared_ptr<UnavailableRepositoryStore>
     make_store(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p)
     {
-        return make_shared_ptr(new UnavailableRepositoryStore(p[k::environment()], repo, p[k::location()]));
+        return make_shared_ptr(new UnavailableRepositoryStore(p.environment(), repo, p.location()));
     }
 }
 
@@ -62,11 +63,11 @@ namespace paludis
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "unavailable")),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params[k::location()])),
+                        mkt_significant, params.location())),
             sync_key(new LiteralMetadataValueKey<std::string> (
-                        "sync", "sync", mkt_normal, params[k::sync()])),
+                        "sync", "sync", mkt_normal, params.sync())),
             sync_options_key(new LiteralMetadataValueKey<std::string> (
-                        "sync_options", "sync_options", mkt_normal, params[k::sync_options()])),
+                        "sync_options", "sync_options", mkt_normal, params.sync_options())),
             store(DeferredConstructionPtr<std::tr1::shared_ptr<UnavailableRepositoryStore> > (
                         std::tr1::bind(&make_store, repo, std::tr1::cref(params))))
         {
@@ -82,22 +83,22 @@ UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError
 UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams & p) :
     PrivateImplementationPattern<UnavailableRepository>(new Implementation<UnavailableRepository>(this, p)),
     Repository(
-            p[k::name()],
-            RepositoryCapabilities::named_create()
-            (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
-            (k::syncable_interface(), this)
-            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
-            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))
-            ),
+            p.name(),
+            make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
+                value_for<n::syncable_interface>(this),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                )),
     _imp(PrivateImplementationPattern<UnavailableRepository>::_imp)
 {
     _add_metadata_keys();
@@ -254,26 +255,26 @@ UnavailableRepository::sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params[k::sync()].empty())
+    if (_imp->params.sync().empty())
         return false;
 
     std::list<std::string> sync_list;
-    tokenise_whitespace(_imp->params[k::sync()], std::back_inserter(sync_list));
+    tokenise_whitespace(_imp->params.sync(), std::back_inserter(sync_list));
 
     bool ok(false);
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
-        DefaultSyncer syncer(SyncerParams::named_create()
-                (k::environment(), _imp->params[k::environment()])
-                (k::local(), stringify(_imp->params[k::location()]))
-                (k::remote(), *s)
-                );
-        SyncOptions opts(
-                _imp->params[k::sync_options()],
-                FSEntry("/dev/null"),
-                "sync " + stringify(name()) + "> "
-                );
+        DefaultSyncer syncer(make_named_values<SyncerParams>(
+                    value_for<n::environment>(_imp->params.environment()),
+                    value_for<n::local>(stringify(_imp->params.location())),
+                    value_for<n::remote>(*s)
+                    ));
+        SyncOptions opts(make_named_values<SyncOptions>(
+                    value_for<n::filter_file>(FSEntry("/dev/null")),
+                    value_for<n::options>(_imp->params.sync_options()),
+                    value_for<n::output_prefix>("sync " + stringify(name()) + "> ")
+                    ));
         try
         {
             syncer.sync(opts);
@@ -288,7 +289,7 @@ UnavailableRepository::sync() const
     }
 
     if (! ok)
-        throw SyncFailedError(stringify(_imp->params[k::location()]), _imp->params[k::sync()]);
+        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
     return true;
 }

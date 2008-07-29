@@ -20,7 +20,6 @@
 #include <paludis/version_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/set.hh>
 
 using namespace paludis;

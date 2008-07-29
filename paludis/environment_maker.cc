@@ -25,7 +25,6 @@
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
 #include <list>
@@ -153,7 +152,7 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
 
     if (key.empty())
         key = (*DistributionData::get_instance()->distribution_from_string(
-                getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION)))[k::default_environment()];
+                getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))).default_environment();
 
     try
     {
@@ -162,7 +161,7 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     catch (const FallBackToAnotherMakerError &)
     {
         std::string f((*DistributionData::get_instance()->distribution_from_string(
-                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION)))[k::fallback_environment()]);
+                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))).fallback_environment());
         if (s.empty() && ! f.empty())
         {
             std::set<std::string> keys;

@@ -19,7 +19,6 @@
 
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/util/simple_parser.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/map.hh>
@@ -34,7 +33,7 @@ namespace
 
     void error(const SimpleParser & parser, const ELikeDepParserCallbacks & callbacks, const std::string & msg)
     {
-        callbacks[k::on_error()](parser.text(), parser.offset(), msg);
+        callbacks.on_error()(parser.text(), parser.offset(), msg);
         throw InternalError(PALUDIS_HERE, "Got error '" + msg + "' parsing '" + parser.text() +
                 "', but the error function returned");
     }
@@ -126,7 +125,7 @@ namespace
             if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
                 error(parser, callbacks, "Expected space or eof after ']]'");
 
-        callbacks[k::on_annotations()](annotations);
+        callbacks.on_annotations()(annotations);
     }
 
     void
@@ -150,7 +149,7 @@ namespace
                 if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
                     error(parser, callbacks, "Expected space after '('");
 
-                callbacks[k::on_all()]();
+                callbacks.on_all()();
                 parse(parser, callbacks, true, false);
             }
             else if (parser.consume(+simple_parser::any_of(" \t\r\n")))
@@ -164,7 +163,7 @@ namespace
                     if (! parser.eof())
                         if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
                             error(parser, callbacks, "Expected space or end of text after ')'");
-                    callbacks[k::on_pop()]();
+                    callbacks.on_pop()();
                     parse_annotations(parser, callbacks);
                     return;
                 }
@@ -186,7 +185,7 @@ namespace
                 if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
                     error(parser, callbacks, "Expected space after '|| ('");
 
-                callbacks[k::on_any()]();
+                callbacks.on_any()();
                 parse(parser, callbacks, true, true);
             }
             else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> word))
@@ -203,14 +202,14 @@ namespace
                         error(parser, callbacks, "Expected space after 'use? ('");
 
                     if (child_of_any)
-                        callbacks[k::on_use_under_any()]();
+                        callbacks.on_use_under_any()();
 
-                    callbacks[k::on_use()](word);
+                    callbacks.on_use()(word);
                     parse(parser, callbacks, true, false);
                 }
                 else if (':' == word.at(word.length() - 1))
                 {
-                    callbacks[k::on_label()](word);
+                    callbacks.on_label()(word);
                     parse_annotations(parser, callbacks);
                 }
                 else if (parser.consume(+simple_parser::any_of(" \t\r\n") & simple_parser::exact("->")))
@@ -225,12 +224,12 @@ namespace
                     if ("->" == second || "||" == second || "(" == second || ")" == second)
                         error(parser, callbacks, "Expected word after '->' then space");
 
-                    callbacks[k::on_arrow()](word, second);
+                    callbacks.on_arrow()(word, second);
                     parse_annotations(parser, callbacks);
                 }
                 else
                 {
-                    callbacks[k::on_string()](word);
+                    callbacks.on_string()(word);
                     parse_annotations(parser, callbacks);
                 }
             }
@@ -247,6 +246,6 @@ paludis::parse_elike_dependencies(const std::string & s, const ELikeDepParserCal
 
     SimpleParser parser(s);
     parse(parser, callbacks, false, false);
-    callbacks[k::on_should_be_empty()]();
+    callbacks.on_should_be_empty()();
 }
 

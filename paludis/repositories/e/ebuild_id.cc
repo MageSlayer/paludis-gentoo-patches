@@ -44,6 +44,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <iterator>
 #include <fstream>
@@ -214,21 +215,22 @@ EbuildID::need_keys_added() const
                 throw EAPIConfigurationError("EAPI '" + _imp->eapi->name() + "' defines "
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
-            EbuildMetadataCommand cmd(EbuildCommandParams::named_create()
-                    (k::environment(), _imp->environment)
-                    (k::package_id(), shared_from_this())
-                    (k::ebuild_dir(), _imp->repository->layout()->package_directory(name()))
-                    (k::ebuild_file(), _imp->ebuild)
-                    (k::files_dir(), _imp->repository->layout()->package_directory(name()) / "files")
-                    (k::eclassdirs(), _imp->repository->params().eclassdirs)
-                    (k::exlibsdirs(), _imp->repository->layout()->exlibsdirs(name()))
-                    (k::portdir(), _imp->repository->params().master_repository ? _imp->repository->params().master_repository->params().location :
-                     _imp->repository->params().location)
-                    (k::distdir(), _imp->repository->params().distdir)
-                    (k::builddir(), _imp->repository->params().builddir)
-                    (k::commands(), join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
-                    (k::sandbox(), phases.begin_phases()->option("sandbox"))
-                    (k::userpriv(), phases.begin_phases()->option("userpriv")));
+            EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
+                    value_for<n::builddir>(_imp->repository->params().builddir),
+                    value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
+                    value_for<n::distdir>(_imp->repository->params().distdir),
+                    value_for<n::ebuild_dir>(_imp->repository->layout()->package_directory(name())),
+                    value_for<n::ebuild_file>(_imp->ebuild),
+                    value_for<n::eclassdirs>(_imp->repository->params().eclassdirs),
+                    value_for<n::environment>(_imp->environment),
+                    value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
+                    value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
+                    value_for<n::package_id>(shared_from_this()),
+                    value_for<n::portdir>(_imp->repository->params().master_repository ?
+                        _imp->repository->params().master_repository->params().location : _imp->repository->params().location),
+                    value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
+                    value_for<n::userpriv>(phases.begin_phases()->option("userpriv"))
+                    ));
 
             if (! cmd())
                 Log::get_instance()->message("e.ebuild.metadata.unusable", ll_warning, lc_no_context) << "No usable metadata for '" +

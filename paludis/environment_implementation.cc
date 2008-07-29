@@ -27,7 +27,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
@@ -79,8 +78,8 @@ EnvironmentImplementation::default_destinations() const
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((**r)[k::destination_interface()])
-            if ((**r)[k::destination_interface()]->is_default_destination())
+        if ((**r).destination_interface())
+            if ((**r).destination_interface()->is_default_destination())
                 result->insert(*r);
 
     return result;
@@ -111,10 +110,10 @@ EnvironmentImplementation::set(const SetName & s) const
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-        if (! (**r)[k::sets_interface()])
+        if (! (**r).sets_interface())
             continue;
 
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> add((**r)[k::sets_interface()]->package_set(s));
+        std::tr1::shared_ptr<SetSpecTree::ConstItem> add((**r).sets_interface()->package_set(s));
         if (add)
         {
             Log::get_instance()->message("environment_implementation.set_found_in_repository", ll_debug, lc_context)
@@ -144,14 +143,14 @@ EnvironmentImplementation::set(const SetName & s) const
 bool
 EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e) const
 {
-    if ((*e.repository())[k::use_interface()])
+    if ((*e.repository()).use_interface())
     {
-        if ((*e.repository())[k::use_interface()]->query_use_mask(f, e))
+        if ((*e.repository()).use_interface()->query_use_mask(f, e))
             return false;
-        if ((*e.repository())[k::use_interface()]->query_use_force(f, e))
+        if ((*e.repository()).use_interface()->query_use_force(f, e))
             return true;
 
-        switch ((*e.repository())[k::use_interface()]->query_use(f, e))
+        switch ((*e.repository()).use_interface()->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:
@@ -186,7 +185,7 @@ EnvironmentImplementation::set_names() const
 bool
 EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) const
 {
-    return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(distribution()))[k::paludis_package()];
+    return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(distribution())).paludis_package();
 }
 
 std::tr1::shared_ptr<PackageIDSequence>

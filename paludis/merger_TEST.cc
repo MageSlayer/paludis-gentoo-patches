@@ -22,6 +22,7 @@
 #include <paludis/hooker.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -161,14 +162,15 @@ namespace
                 root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerParams::named_create()
-                        (k::image(), image_dir)
-                        (k::root(), root_dir)
-                        (k::install_under(), FSEntry("/"))
-                        (k::environment(), &env)
-                        (k::no_chown(), true)
-                        (k::get_new_ids_or_minus_one(), &get_new_ids_or_minus_one)
-                        (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
+                merger(make_named_values<MergerParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
+                            value_for<n::image>(image_dir),
+                            value_for<n::install_under>(FSEntry("/")),
+                            value_for<n::no_chown>(true),
+                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::root>(root_dir)
+                        ))
             {
             }
 
@@ -177,14 +179,15 @@ namespace
                 image_dir("merger_TEST_dir/" + custom_test + "/image"),
                 root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
-                merger(MergerParams::named_create()
-                        (k::image(), image_dir)
-                        (k::root(), root_dir)
-                        (k::install_under(), FSEntry("/"))
-                        (k::environment(), &env)
-                        (k::no_chown(), true)
-                        (k::get_new_ids_or_minus_one(), &get_new_ids_or_minus_one)
-                        (k::options(), o))
+                merger(make_named_values<MergerParams>(
+                        value_for<n::environment>(&env),
+                        value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
+                        value_for<n::image>(image_dir),
+                        value_for<n::install_under>(FSEntry("/")),
+                        value_for<n::no_chown>(true),
+                        value_for<n::options>(o),
+                        value_for<n::root>(root_dir)
+                        ))
             {
             }
     };

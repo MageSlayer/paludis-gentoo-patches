@@ -64,7 +64,7 @@ namespace test_cases
             std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
-            std::tr1::shared_ptr<const SetNameSet> sets_list((*repo)[k::sets_interface()]->sets_list());
+            std::tr1::shared_ptr<const SetNameSet> sets_list(repo->sets_interface()->sets_list());
             TEST_CHECK_EQUAL(sets_list->size(), 4U);
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("system")));
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("security")));
@@ -92,7 +92,7 @@ namespace test_cases
             installed->add_version("cat-two", "bar", "1.5");
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> set1((*repo)[k::sets_interface()]->package_set(SetName("set1")));
+            std::tr1::shared_ptr<SetSpecTree::ConstItem> set1(repo->sets_interface()->package_set(SetName("set1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             set1->accept(pretty);
@@ -122,7 +122,7 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> insecurity((*repo)[k::sets_interface()]->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<SetSpecTree::ConstItem> insecurity(repo->sets_interface()->package_set(SetName("insecurity")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             insecurity->accept(pretty);
@@ -160,7 +160,7 @@ namespace test_cases
             installed->add_version("cat-three", "baz", "1.0");
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> security((*repo)[k::sets_interface()]->package_set(SetName("security")));
+            std::tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface()->package_set(SetName("security")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
             security->accept(pretty);

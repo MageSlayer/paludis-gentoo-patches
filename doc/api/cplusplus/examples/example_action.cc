@@ -60,10 +60,10 @@ int main(int argc, char * argv[])
                  * creating a FetchAction, controlling whether safe resume is used
                  * and whether unneeded (e.g. due to disabled USE flags) source
                  * files should still be fetched. */
-                FetchAction fetch_action(FetchActionOptions::named_create()
-                        (k::fetch_unneeded(), false)
-                        (k::safe_resume(), true)
-                        );
+                FetchAction fetch_action(make_named_values<FetchActionOptions>(
+                            value_for<n::fetch_unneeded>(false),
+                            value_for<n::safe_resume>(true)
+                            ));
                 try
                 {
                     (*i)->perform_action(fetch_action);
@@ -79,16 +79,16 @@ int main(int argc, char * argv[])
                     for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
                             f != f_end ; ++f)
                     {
-                        cout << "  * File '" << (*f)[k::target_file()] << "': ";
+                        cout << "  * File '" << f->target_file() << "': ";
 
                         bool need_comma(false);
-                        if ((*f)[k::requires_manual_fetching()])
+                        if (f->requires_manual_fetching())
                         {
                             cout << "requires manual fetching";
                             need_comma = true;
                         }
 
-                        if ((*f)[k::failed_automatic_fetching()])
+                        if (f->failed_automatic_fetching())
                         {
                             if (need_comma)
                                 cout << ", ";
@@ -96,11 +96,11 @@ int main(int argc, char * argv[])
                             need_comma = true;
                         }
 
-                        if (! (*f)[k::failed_integrity_checks()].empty())
+                        if (! f->failed_integrity_checks().empty())
                         {
                             if (need_comma)
                                 cout << ", ";
-                            cout << "failed integrity checks: " << (*f)[k::failed_integrity_checks()];
+                            cout << "failed integrity checks: " << f->failed_integrity_checks();
                             need_comma = true;
                         }
                     }

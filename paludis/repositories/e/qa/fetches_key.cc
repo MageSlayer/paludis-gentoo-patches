@@ -145,7 +145,7 @@ namespace
                     else
                     {
                         mirror_host.erase(pos);
-                        RepositoryMirrorsInterface * m((*id->repository())[k::mirrors_interface()]);
+                        RepositoryMirrorsInterface * m((*id->repository()).mirrors_interface());
                         if (! m->is_mirror(mirror_host))
                             reporter.message(QAMessage(entry, qaml_normal, name,
                                         "Unknown mirror '" + mirror_host + "' for '" +

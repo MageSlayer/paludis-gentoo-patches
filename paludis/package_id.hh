@@ -26,6 +26,7 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>

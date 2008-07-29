@@ -95,7 +95,7 @@ InstallArgsGroup::destinations(Environment * env) const
         {
             std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
                         RepositoryName(*i)));
-            if ((*repo)[k::destination_interface()])
+            if ((*repo).destination_interface())
                 d->insert(repo);
             else
                 throw args::DoHelp("--destinations argument '" + *i + "' does not provide a destinations interface");

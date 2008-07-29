@@ -21,7 +21,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -93,7 +92,7 @@ namespace
             if (! id)
                 throw InternalError(PALUDIS_HERE, "! id");
 
-            RepositoryUseInterface * const u((*id->repository())[k::use_interface()]);
+            RepositoryUseInterface * const u((*id->repository()).use_interface());
             if (! u)
                 return true;
 

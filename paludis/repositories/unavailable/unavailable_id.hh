@@ -20,25 +20,40 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_ID_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_ID_HH 1
 
+#include <paludis/util/named_value.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_file-fwd.hh>
 #include <paludis/repositories/unavailable/unavailable_repository-fwd.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct description;
+        struct from_repositories;
+        struct mask;
+        struct name;
+        struct repository;
+        struct repository_description;
+        struct repository_homepage;
+        struct slot;
+        struct version;
+    }
+
     namespace unavailable_repository
     {
-        typedef kc::KeyedClass<
-            kc::Field<k::name, QualifiedPackageName>,
-            kc::Field<k::version, VersionSpec>,
-            kc::Field<k::slot, SlotName>,
-            kc::Field<k::repository, const UnavailableRepository *>,
-            kc::Field<k::from_repositories, std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > >,
-            kc::Field<k::repository_homepage, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
-            kc::Field<k::repository_description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
-            kc::Field<k::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >,
-            kc::Field<k::mask, std::tr1::shared_ptr<const Mask> >
-                > UnavailableIDParams;
+        struct UnavailableIDParams
+        {
+            NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::from_repositories, std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > from_repositories;
+            NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
+            NamedValue<n::name, QualifiedPackageName> name;
+            NamedValue<n::repository, const UnavailableRepository *> repository;
+            NamedValue<n::repository_description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > repository_description;
+            NamedValue<n::repository_homepage, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > repository_homepage;
+            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::version, VersionSpec> version;
+        };
 
         class PALUDIS_VISIBLE UnavailableID :
             public PackageID,

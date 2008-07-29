@@ -24,8 +24,6 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/merger-fwd.hh>
@@ -43,6 +41,45 @@ namespace paludis
     class Command;
     class ERepository;
 
+    namespace n
+    {
+        struct a;
+        struct aa;
+        struct binary_distdir;
+        struct binary_ebuild_location;
+        struct builddir;
+        struct commands;
+        struct config_protect;
+        struct config_protect_mask;
+        struct destination_repository;
+        struct distdir;
+        struct ebuild_dir;
+        struct ebuild_file;
+        struct eclassdirs;
+        struct environment;
+        struct environment_file;
+        struct exlibsdirs;
+        struct expand_vars;
+        struct files_dir;
+        struct image;
+        struct info_vars;
+        struct load_environment;
+        struct loadsaveenv_dir;
+        struct merger_options;
+        struct output_directory;
+        struct package_id;
+        struct portdir;
+        struct profiles;
+        struct root;
+        struct sandbox;
+        struct slot;
+        struct unmerge_only;
+        struct use;
+        struct use_ebuild_file;
+        struct use_expand;
+        struct userpriv;
+    }
+
     namespace erepository
     {
         class EbuildID;
@@ -55,21 +92,22 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::environment, const Environment *>,
-            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
-            kc::Field<k::ebuild_dir, FSEntry>,
-            kc::Field<k::ebuild_file, FSEntry>,
-            kc::Field<k::files_dir, FSEntry>,
-            kc::Field<k::eclassdirs, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::portdir, FSEntry>,
-            kc::Field<k::distdir, FSEntry>,
-            kc::Field<k::builddir, FSEntry>,
-            kc::Field<k::userpriv, bool>,
-            kc::Field<k::sandbox, bool>,
-            kc::Field<k::commands, std::string>
-                > EbuildCommandParams;
+        struct EbuildCommandParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::commands, std::string> commands;
+            NamedValue<n::distdir, FSEntry> distdir;
+            NamedValue<n::ebuild_dir, FSEntry> ebuild_dir;
+            NamedValue<n::ebuild_file, FSEntry> ebuild_file;
+            NamedValue<n::eclassdirs, std::tr1::shared_ptr<const FSEntrySequence> > eclassdirs;
+            NamedValue<n::environment, const Environment *> environment;
+            NamedValue<n::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> > exlibsdirs;
+            NamedValue<n::files_dir, FSEntry> files_dir;
+            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+            NamedValue<n::portdir, FSEntry> portdir;
+            NamedValue<n::sandbox, bool> sandbox;
+            NamedValue<n::userpriv, bool> userpriv;
+        };
 
         /**
          * Parameters for an EbuildNoFetchCommand.
@@ -78,15 +116,16 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::a, std::string>,
-            kc::Field<k::aa, std::string>,
-            kc::Field<k::use, std::string>,
-            kc::Field<k::use_expand, std::string>,
-            kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >
-                > EbuildNoFetchCommandParams;
+        struct EbuildNoFetchCommandParams
+        {
+            NamedValue<n::a, std::string> a;
+            NamedValue<n::aa, std::string> aa;
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_expand, std::string> use_expand;
+        };
 
         /**
          * Parameters for an EbuildInstallCommand.
@@ -95,19 +134,20 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::a, std::string>,
-            kc::Field<k::aa, std::string>,
-            kc::Field<k::use, std::string>,
-            kc::Field<k::use_expand, std::string>,
-            kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
-            kc::Field<k::slot, SlotName>,
-            kc::Field<k::config_protect, std::string>,
-            kc::Field<k::config_protect_mask, std::string>,
-            kc::Field<k::loadsaveenv_dir, FSEntry>
-                > EbuildInstallCommandParams;
+        struct EbuildInstallCommandParams
+        {
+            NamedValue<n::a, std::string> a;
+            NamedValue<n::aa, std::string> aa;
+            NamedValue<n::config_protect, std::string> config_protect;
+            NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_expand, std::string> use_expand;
+        };
 
         /**
          * Parameters for an EbuildPretendCommand.
@@ -116,13 +156,14 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::use, std::string>,
-            kc::Field<k::use_expand, std::string>,
-            kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >
-                > EbuildPretendCommandParams;
+        struct EbuildPretendCommandParams
+        {
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_expand, std::string> use_expand;
+        };
 
         /**
          * Parameters for an EbuildUninstallCommand.
@@ -131,12 +172,13 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::root, std::string>,
-            kc::Field<k::unmerge_only, bool>,
-            kc::Field<k::load_environment, const FSEntry *>,
-            kc::Field<k::loadsaveenv_dir, FSEntry>
-                > EbuildUninstallCommandParams;
+        struct EbuildUninstallCommandParams
+        {
+            NamedValue<n::load_environment, const FSEntry *> load_environment;
+            NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::unmerge_only, bool> unmerge_only;
+        };
 
         /**
          * Parameters for an EbuildConfigCommand.
@@ -145,10 +187,11 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::root, std::string>,
-            kc::Field<k::load_environment, const FSEntry *>
-                > EbuildConfigCommandParams;
+        struct EbuildConfigCommandParams
+        {
+            NamedValue<n::load_environment, const FSEntry *> load_environment;
+            NamedValue<n::root, std::string> root;
+        };
 
         /**
          * Parameters for an EbuildInfoCommand.
@@ -157,16 +200,17 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::use, std::string>,
-            kc::Field<k::use_expand, std::string>,
-            kc::Field<k::root, std::string>,
-            kc::Field<k::profiles, std::tr1::shared_ptr<const FSEntrySequence> >,
-            kc::Field<k::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > >,
-            kc::Field<k::load_environment, const FSEntry *>,
-            kc::Field<k::info_vars, std::tr1::shared_ptr<const Set<std::string> > >,
-            kc::Field<k::use_ebuild_file, bool>
-                > EbuildInfoCommandParams;
+        struct EbuildInfoCommandParams
+        {
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::info_vars, std::tr1::shared_ptr<const Set<std::string> > > info_vars;
+            NamedValue<n::load_environment, const FSEntry *> load_environment;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_ebuild_file, bool> use_ebuild_file;
+            NamedValue<n::use_expand, std::string> use_expand;
+        };
 
         /**
          * Parameters for writing a VDB entry.
@@ -175,12 +219,13 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::environment, const Environment *>,
-            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
-            kc::Field<k::output_directory, FSEntry>,
-            kc::Field<k::environment_file, FSEntry>
-                > WriteVDBEntryParams;
+        struct WriteVDBEntryParams
+        {
+            NamedValue<n::environment, const Environment *> environment;
+            NamedValue<n::environment_file, FSEntry> environment_file;
+            NamedValue<n::output_directory, FSEntry> output_directory;
+            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+        };
 
         /**
          * Parameters for writing a binary ebuild.
@@ -189,17 +234,18 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::environment, const Environment *>,
-            kc::Field<k::destination_repository, const ERepository *>,
-            kc::Field<k::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> >,
-            kc::Field<k::binary_ebuild_location, FSEntry>,
-            kc::Field<k::binary_distdir, FSEntry>,
-            kc::Field<k::environment_file, FSEntry>,
-            kc::Field<k::image, FSEntry>,
-            kc::Field<k::merger_options, MergerOptions>,
-            kc::Field<k::builddir, FSEntry>
-                > WriteBinaryEbuildCommandParams;
+        struct WriteBinaryEbuildCommandParams
+        {
+            NamedValue<n::binary_distdir, FSEntry> binary_distdir;
+            NamedValue<n::binary_ebuild_location, FSEntry> binary_ebuild_location;
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::destination_repository, const ERepository *> destination_repository;
+            NamedValue<n::environment, const Environment *> environment;
+            NamedValue<n::environment_file, FSEntry> environment_file;
+            NamedValue<n::image, FSEntry> image;
+            NamedValue<n::merger_options, MergerOptions> merger_options;
+            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+        };
 
         /**
          * Parameters for a VDBPostMergeCommand.
@@ -208,9 +254,10 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        typedef kc::KeyedClass<
-            kc::Field<k::root, FSEntry>
-                > VDBPostMergeCommandParams;
+        struct VDBPostMergeCommandParams
+        {
+            NamedValue<n::root, FSEntry> root;
+        };
 
         /**
          * An EbuildCommand is the base class from which specific ebuild

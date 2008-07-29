@@ -23,7 +23,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -39,32 +39,32 @@ paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, co
     Context context("When parsing generic package dep spec '" + ss + "':");
 
     /* Check that it's not, e.g. a set with updso_throw_if_set, or empty. */
-    fns[k::check_sanity()](ss);
+    fns.check_sanity()(ss);
 
     std::string s(ss);
     PartiallyMadePackageDepSpec result;
 
     /* Remove trailing [use], [version] etc parts. */
-    while (fns[k::remove_trailing_square_bracket_if_exists()](s, result))
+    while (fns.remove_trailing_square_bracket_if_exists()(s, result))
     {
     }
 
     /* Remove trailing ::repo and :slot parts. */
-    fns[k::remove_trailing_repo_if_exists()](s, result);
-    fns[k::remove_trailing_slot_if_exists()](s, result);
+    fns.remove_trailing_repo_if_exists()(s, result);
+    fns.remove_trailing_slot_if_exists()(s, result);
 
-    if (fns[k::has_version_operator()](s))
+    if (fns.has_version_operator()(s))
     {
         /* Leading (or maybe =*) operator, so trailing version. */
-        VersionOperator op(fns[k::get_remove_version_operator()](s));
-        VersionSpec spec(fns[k::get_remove_trailing_version()](s));
-        fns[k::add_version_requirement()](op, spec, result);
-        fns[k::add_package_requirement()](s, result);
+        VersionOperator op(fns.get_remove_version_operator()(s));
+        VersionSpec spec(fns.get_remove_trailing_version()(s));
+        fns.add_version_requirement()(op, spec, result);
+        fns.add_package_requirement()(s, result);
     }
     else
     {
         /* No leading operator, so no version. */
-        fns[k::add_package_requirement()](s, result);
+        fns.add_package_requirement()(s, result);
     }
 
     return result;
@@ -430,20 +430,19 @@ paludis::partial_parse_elike_package_dep_spec(
 
     bool had_bracket_version_requirements(false);
 
-    return partial_parse_generic_elike_package_dep_spec(ss, GenericELikePackageDepSpecParseFunctions::named_create()
-            (k::check_sanity(), &elike_check_sanity)
-            (k::remove_trailing_square_bracket_if_exists(), std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
-                    _1, _2, options, std::tr1::ref(had_bracket_version_requirements), id))
-            (k::remove_trailing_repo_if_exists(), std::tr1::bind(&elike_remove_trailing_repo_if_exists,
-                    _1, _2, options))
-            (k::remove_trailing_slot_if_exists(), std::tr1::bind(&elike_remove_trailing_slot_if_exists,
-                    _1, _2, options))
-            (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
-            (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1, options))
-            (k::get_remove_trailing_version(), std::tr1::bind(&elike_get_remove_trailing_version, _1))
-            (k::add_version_requirement(), std::tr1::bind(&elike_add_version_requirement, _1, _2, _3))
-            (k::add_package_requirement(), std::tr1::bind(&elike_add_package_requirement, _1, _2))
-            );
+    return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
+                value_for<n::add_package_requirement>(std::tr1::bind(&elike_add_package_requirement, _1, _2)),
+                value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
+                value_for<n::check_sanity>(&elike_check_sanity),
+                value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1)),
+                value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1, options)),
+                value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
+                        std::tr1::cref(had_bracket_version_requirements))),
+                value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options)),
+                value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options)),
+                value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
+                        _1, _2, options, std::tr1::ref(had_bracket_version_requirements), id))
+                ));
 }
 
 PackageDepSpec

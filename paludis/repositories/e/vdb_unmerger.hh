@@ -22,8 +22,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/util/kc.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/unmerger.hh>
@@ -32,6 +30,16 @@ namespace paludis
 {
     class Environment;
 
+    namespace n
+    {
+        struct config_protect;
+        struct config_protect_mask;
+        struct contents_file;
+        struct environment;
+        struct package_id;
+        struct root;
+    }
+
     /**
      * Options for a VDBUnmerger.
      *
@@ -39,14 +47,15 @@ namespace paludis
      * \ingroup grpvdbrepository
      * \nosubgrouping
      */
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, Environment *>,
-        kc::Field<k::root, FSEntry>,
-        kc::Field<k::contents_file, FSEntry>,
-        kc::Field<k::config_protect, std::string>,
-        kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >
-            > VDBUnmergerOptions;
+    struct VDBUnmergerOptions
+    {
+        NamedValue<n::config_protect, std::string> config_protect;
+        NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+        NamedValue<n::contents_file, FSEntry> contents_file;
+        NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * Thrown if an unmerge from a VDBRepository using VDBUnmerger fails.

@@ -22,6 +22,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
 #include <paludis/repositories/unpackaged/exceptions.hh>
@@ -69,17 +70,18 @@ namespace
         }
 
         return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
-                    unpackaged_repositories::UnpackagedRepositoryParams::named_create()
-                    (k::environment(), env)
-                    (k::location(), location)
-                    (k::install_under(), install_under)
-                    (k::name(), QualifiedPackageName(name))
-                    (k::version(), VersionSpec(version))
-                    (k::slot(), SlotName(slot))
-                    (k::build_dependencies(), build_dependencies)
-                    (k::run_dependencies(), run_dependencies)
-                    (k::rewrite_ids_over_to_root(), rewrite_ids_over_to_root)
-                    (k::description(), description)));
+                    make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
+                        value_for<n::build_dependencies>(build_dependencies),
+                        value_for<n::description>(description),
+                        value_for<n::environment>(env),
+                        value_for<n::install_under>(install_under),
+                        value_for<n::location>(location),
+                        value_for<n::name>(QualifiedPackageName(name)),
+                        value_for<n::rewrite_ids_over_to_root>(rewrite_ids_over_to_root),
+                        value_for<n::run_dependencies>(run_dependencies),
+                        value_for<n::slot>(SlotName(slot)),
+                        value_for<n::version>(VersionSpec(version))
+                    )));
     }
 
     std::tr1::shared_ptr<Repository>

@@ -51,7 +51,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        if (! (*r)[k::use_interface()])
+        if (! (*r).use_interface())
             continue;
 
         Context repo_context("When searching for unused packages in repository '" + stringify(r->name()) + "':");

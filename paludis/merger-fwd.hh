@@ -23,8 +23,6 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <tr1/functional>
@@ -55,24 +53,7 @@ namespace paludis
      */
     typedef Options<MergeStatusFlag> MergeStatusFlags;
 
-    /**
-     * Parameters for a basic Merger.
-     *
-     * \see Merger
-     * \ingroup g_repository
-     * \nosubgrouping
-     * \since 0.26
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, Environment *>,
-        kc::Field<k::image, FSEntry>,
-        kc::Field<k::root, FSEntry>,
-        kc::Field<k::no_chown, bool>,
-        kc::Field<k::options, MergerOptions>,
-        kc::Field<k::install_under, FSEntry>,
-        kc::Field<k::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> >
-            > MergerParams;
-
+    class MergerParams;
     class MergerError;
     class Merger;
 }

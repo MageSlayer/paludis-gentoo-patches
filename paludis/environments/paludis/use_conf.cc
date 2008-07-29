@@ -206,9 +206,9 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     UseFlagState result(use_unspecified);
 
     bool ignore_empty_minus_star(false);
-    if ((*e.repository())[k::use_interface()])
+    if ((*e.repository()).use_interface())
     {
-        std::tr1::shared_ptr<const UseFlagNameSet> prefixes((*e.repository())[k::use_interface()]->use_expand_prefixes());
+        std::tr1::shared_ptr<const UseFlagNameSet> prefixes((*e.repository()).use_interface()->use_expand_prefixes());
         for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))

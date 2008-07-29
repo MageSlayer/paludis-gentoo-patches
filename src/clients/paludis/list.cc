@@ -201,7 +201,7 @@ do_list_sets(std::tr1::shared_ptr<Environment> env)
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-        if ((*r)[k::sets_interface()] == 0)
+        if ((*r).sets_interface() == 0)
             continue;
 
         if (CommandLine::get_instance()->a_repository.specified())
@@ -217,7 +217,7 @@ do_list_sets(std::tr1::shared_ptr<Environment> env)
                         r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
-        std::tr1::shared_ptr<const SetNameSet> set_names((*r)[k::sets_interface()]->sets_list());
+        std::tr1::shared_ptr<const SetNameSet> set_names((*r).sets_interface()->sets_list());
         for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back(stringify(r->name()));

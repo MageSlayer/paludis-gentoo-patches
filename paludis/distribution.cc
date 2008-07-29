@@ -28,8 +28,8 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <tr1/unordered_map>
 
 using namespace paludis;
@@ -65,26 +65,26 @@ namespace paludis
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
-                            make_shared_ptr(new Distribution(Distribution::named_create()
-                                    (k::default_environment(), k.get("default_environment"))
-                                    (k::fallback_environment(), k.get("fallback_environment"))
-                                    (k::support_old_style_virtuals(), destringify<bool>(k.get("support_old_style_virtuals")))
-                                    (k::default_ebuild_distdir(), k.get("default_ebuild_distdir"))
-                                    (k::default_ebuild_write_cache(), k.get("default_ebuild_write_cache"))
-                                    (k::default_ebuild_names_cache(), k.get("default_ebuild_names_cache"))
-                                    (k::default_ebuild_builddir(), k.get("default_ebuild_builddir"))
-                                    (k::default_ebuild_layout(), k.get("default_ebuild_layout"))
-                                    (k::default_ebuild_eapi_when_unknown(), k.get("default_ebuild_eapi_when_unknown"))
-                                    (k::default_ebuild_eapi_when_unspecified(), k.get("default_ebuild_eapi_when_unspecified"))
-                                    (k::default_ebuild_profile_eapi(), k.get("default_ebuild_profile_eapi"))
-                                    (k::default_vdb_provides_cache(), k.get("default_vdb_provides_cache"))
-                                    (k::default_vdb_names_cache(), k.get("default_vdb_names_cache"))
-                                    (k::paludis_environment_use_conf_filename(), k.get("paludis_environment_use_conf_filename"))
-                                    (k::paludis_environment_keywords_conf_filename(), k.get("paludis_environment_keywords_conf_filename"))
-                                    (k::concept_use(), k.get("concept_use"))
-                                    (k::concept_keyword(), k.get("concept_keyword"))
-                                    (k::paludis_package(), k.get("paludis_package"))
-                                    ))));
+                            make_shared_ptr(new Distribution(make_named_values<Distribution>(
+                                        value_for<n::concept_keyword>(k.get("concept_keyword")),
+                                        value_for<n::concept_use>(k.get("concept_use")),
+                                        value_for<n::default_ebuild_builddir>(k.get("default_ebuild_builddir")),
+                                        value_for<n::default_ebuild_distdir>(k.get("default_ebuild_distdir")),
+                                        value_for<n::default_ebuild_eapi_when_unknown>(k.get("default_ebuild_eapi_when_unknown")),
+                                        value_for<n::default_ebuild_eapi_when_unspecified>(k.get("default_ebuild_eapi_when_unspecified")),
+                                        value_for<n::default_ebuild_layout>(k.get("default_ebuild_layout")),
+                                        value_for<n::default_ebuild_names_cache>(k.get("default_ebuild_names_cache")),
+                                        value_for<n::default_ebuild_profile_eapi>(k.get("default_ebuild_profile_eapi")),
+                                        value_for<n::default_ebuild_write_cache>(k.get("default_ebuild_write_cache")),
+                                        value_for<n::default_environment>(k.get("default_environment")),
+                                        value_for<n::default_vdb_names_cache>(k.get("default_vdb_names_cache")),
+                                        value_for<n::default_vdb_provides_cache>(k.get("default_vdb_provides_cache")),
+                                        value_for<n::fallback_environment>(k.get("fallback_environment")),
+                                        value_for<n::paludis_environment_keywords_conf_filename>(k.get("paludis_environment_keywords_conf_filename")),
+                                        value_for<n::paludis_environment_use_conf_filename>(k.get("paludis_environment_use_conf_filename")),
+                                        value_for<n::paludis_package>(k.get("paludis_package")),
+                                        value_for<n::support_old_style_virtuals>(destringify<bool>(k.get("support_old_style_virtuals")))
+                                        )))));
             }
         }
     };

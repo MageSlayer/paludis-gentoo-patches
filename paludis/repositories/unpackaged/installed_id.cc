@@ -33,6 +33,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -748,14 +749,15 @@ InstalledUnpackagedID::uninstall(const bool replace) const
     FSEntry ver_dir(fs_location_key()->value());
 
     NDBAMUnmerger unmerger(
-            NDBAMUnmergerOptions::named_create()
-            (k::environment(), _imp->env)
-            (k::root(), _imp->root)
-            (k::contents_file(), ver_dir / "contents")
-            (k::config_protect(), getenv_with_default("CONFIG_PROTECT", ""))
-            (k::config_protect_mask(), getenv_with_default("CONFIG_PROTECT_MASK", ""))
-            (k::ndbam(), _imp->ndbam)
-            (k::package_id(), shared_from_this()));
+            make_named_values<NDBAMUnmergerOptions>(
+                value_for<n::config_protect>(getenv_with_default("CONFIG_PROTECT", "")),
+                value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
+                value_for<n::contents_file>(ver_dir / "contents"),
+                value_for<n::environment>(_imp->env),
+                value_for<n::ndbam>(_imp->ndbam),
+                value_for<n::package_id>(shared_from_this()),
+                value_for<n::root>(_imp->root)
+            ));
 
     unmerger.unmerge();
 

@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/named_value.hh>
 #include <tr1/memory>
 
 /** \file
@@ -40,6 +41,58 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct concept_keyword;
+        struct concept_use;
+        struct default_ebuild_builddir;
+        struct default_ebuild_distdir;
+        struct default_ebuild_eapi_when_unknown;
+        struct default_ebuild_eapi_when_unspecified;
+        struct default_ebuild_layout;
+        struct default_ebuild_names_cache;
+        struct default_ebuild_profile_eapi;
+        struct default_ebuild_write_cache;
+        struct default_environment;
+        struct default_vdb_names_cache;
+        struct default_vdb_provides_cache;
+        struct fallback_environment;
+        struct paludis_environment_keywords_conf_filename;
+        struct paludis_environment_use_conf_filename;
+        struct paludis_package;
+        struct support_old_style_virtuals;
+    }
+
+    /**
+     * Information about a distribution.
+     *
+     * \see DistributionData
+     * \ingroup g_distribution
+     * \since 0.30
+     * \nosubgrouping
+     */
+    struct Distribution
+    {
+        NamedValue<n::concept_keyword, std::string> concept_keyword;
+        NamedValue<n::concept_use, std::string> concept_use;
+        NamedValue<n::default_ebuild_builddir, std::string> default_ebuild_builddir;
+        NamedValue<n::default_ebuild_distdir, std::string> default_ebuild_distdir;
+        NamedValue<n::default_ebuild_eapi_when_unknown, std::string> default_ebuild_eapi_when_unknown;
+        NamedValue<n::default_ebuild_eapi_when_unspecified, std::string> default_ebuild_eapi_when_unspecified;
+        NamedValue<n::default_ebuild_layout, std::string> default_ebuild_layout;
+        NamedValue<n::default_ebuild_names_cache, std::string> default_ebuild_names_cache;
+        NamedValue<n::default_ebuild_profile_eapi, std::string> default_ebuild_profile_eapi;
+        NamedValue<n::default_ebuild_write_cache, std::string> default_ebuild_write_cache;
+        NamedValue<n::default_environment, std::string> default_environment;
+        NamedValue<n::default_vdb_names_cache, std::string> default_vdb_names_cache;
+        NamedValue<n::default_vdb_provides_cache, std::string> default_vdb_provides_cache;
+        NamedValue<n::fallback_environment, std::string> fallback_environment;
+        NamedValue<n::paludis_environment_keywords_conf_filename, std::string> paludis_environment_keywords_conf_filename;
+        NamedValue<n::paludis_environment_use_conf_filename, std::string> paludis_environment_use_conf_filename;
+        NamedValue<n::paludis_package, std::string> paludis_package;
+        NamedValue<n::support_old_style_virtuals, bool> support_old_style_virtuals;
+    };
+
     /**
      * Thrown if an invalid distribution file is encountered.
      *

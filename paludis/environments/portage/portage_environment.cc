@@ -557,19 +557,19 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
             "' in Portage environment:");
 
     /* first check package database use masks... */
-    if ((*e.repository())[k::use_interface()])
+    if ((*e.repository()).use_interface())
     {
-        if ((*e.repository())[k::use_interface()]->query_use_mask(f, e))
+        if ((*e.repository()).use_interface()->query_use_mask(f, e))
             return false;
-        if ((*e.repository())[k::use_interface()]->query_use_force(f, e))
+        if ((*e.repository()).use_interface()->query_use_force(f, e))
             return true;
     }
 
     UseFlagState state(use_unspecified);
 
     /* check use: repo */
-    if ((*e.repository())[k::use_interface()])
-        state = (*e.repository())[k::use_interface()]->query_use(f, e);
+    if ((*e.repository()).use_interface())
+        state = (*e.repository()).use_interface()->query_use(f, e);
 
     /* check use: general user config */
     for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()), i_end(_imp->use_with_expands.end()) ;

@@ -20,7 +20,6 @@
 #include <paludis/repositories/unavailable/unavailable_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -52,15 +51,15 @@ namespace paludis
 
         Implementation(
                 const UnavailableIDParams & e) :
-            name(e[k::name()]),
-            version(e[k::version()]),
-            slot(e[k::slot()]),
-            repo(e[k::repository()]),
-            description_key(e[k::description()]),
-            repository_homepage_key(e[k::repository_homepage()]),
-            repository_description_key(e[k::repository_description()]),
-            from_repositories_key(e[k::from_repositories()]),
-            mask(e[k::mask()])
+            name(e.name()),
+            version(e.version()),
+            slot(e.slot()),
+            repo(e.repository()),
+            description_key(e.description()),
+            repository_homepage_key(e.repository_homepage()),
+            repository_description_key(e.repository_description()),
+            from_repositories_key(e.from_repositories()),
+            mask(e.mask())
         {
         }
     };

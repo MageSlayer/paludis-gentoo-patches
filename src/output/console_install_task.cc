@@ -35,7 +35,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/action.hh>
@@ -1171,7 +1170,7 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet>
             f != f_end ; ++f)
     {
         std::string d;
-        const RepositoryUseInterface * const i((*p->repository())[k::use_interface()]);
+        const RepositoryUseInterface * const i((*p->repository()).use_interface());
 
         if (i)
             d = i->describe_use_flag(*f, *p);
@@ -1560,16 +1559,16 @@ ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
         for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
                 f != f_end ; ++f)
         {
-            output_stream() << "  * File '" << (*f)[k::target_file()] << "': ";
+            output_stream() << "  * File '" << (*f).target_file() << "': ";
 
             bool need_comma(false);
-            if ((*f)[k::requires_manual_fetching()])
+            if ((*f).requires_manual_fetching())
             {
                 output_stream() << "requires manual fetching";
                 need_comma = true;
             }
 
-            if ((*f)[k::failed_automatic_fetching()])
+            if ((*f).failed_automatic_fetching())
             {
                 if (need_comma)
                     output_stream() << ", ";
@@ -1577,11 +1576,11 @@ ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
                 need_comma = true;
             }
 
-            if (! (*f)[k::failed_integrity_checks()].empty())
+            if (! (*f).failed_integrity_checks().empty())
             {
                 if (need_comma)
                     output_stream() << ", ";
-                output_stream() << "failed integrity checks: " << (*f)[k::failed_integrity_checks()];
+                output_stream() << "failed integrity checks: " << (*f).failed_integrity_checks();
                 need_comma = true;
             }
 

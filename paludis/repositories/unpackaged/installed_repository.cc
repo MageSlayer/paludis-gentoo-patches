@@ -30,8 +30,8 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -84,20 +84,21 @@ namespace paludis
 InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
     PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
-    Repository(n, RepositoryCapabilities::named_create()
-            (k::sets_interface(), this)
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::destination_interface(), this)
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::hook_interface(), static_cast<RepositoryHookInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+    Repository(n, make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(this),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+            )),
     _imp(PrivateImplementationPattern<InstalledUnpackagedRepository>::_imp)
 {
     _add_metadata_keys();
@@ -125,11 +126,11 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
     {
-        Lock l(*(*e)[k::mutex()]);
-        if (! (*e)[k::package_id()])
-            (*e)[k::package_id()].reset(new InstalledUnpackagedID(_imp->params.environment, (*e)[k::name()], (*e)[k::version()],
-                        (*e)[k::slot()], name(), (*e)[k::fs_location()], (*e)[k::magic()], installed_root_key()->value(), &_imp->ndbam));
-        result->push_back((*e)[k::package_id()]);
+        Lock l(*(*e).mutex());
+        if (! (*e).package_id())
+            (*e).package_id().reset(new InstalledUnpackagedID(_imp->params.environment, (*e).name(), (*e).version(),
+                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->value(), &_imp->ndbam));
+        result->push_back((*e).package_id());
     }
 
     return result;
@@ -243,16 +244,16 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 {
     using namespace std::tr1::placeholders;
 
-    Context context("When merging '" + stringify(*m[k::package_id()]) + "' at '" + stringify(m[k::image_dir()])
+    Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m[k::package_id()]))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m[k::package_id()]) + "'");
+    if (! is_suitable_destination_for(*m.package_id()))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     FSEntry install_under("/");
     {
-        Repository::MetadataConstIterator k(m[k::package_id()]->repository()->find_metadata("install_under"));
-        if (k == m[k::package_id()]->repository()->end_metadata())
+        Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("install_under"));
+        if (k == m.package_id()->repository()->end_metadata())
             throw InstallActionError("Could not fetch install_under key from owning repository");
         const MetadataValueKey<FSEntry> * kk(visitor_cast<const MetadataValueKey<FSEntry> >(**k));
         if (! kk)
@@ -262,8 +263,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     int rewrite_ids_over_to_root(-1);
     {
-        Repository::MetadataConstIterator k(m[k::package_id()]->repository()->find_metadata("rewrite_ids_over_to_root"));
-        if (k == m[k::package_id()]->repository()->end_metadata())
+        Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("rewrite_ids_over_to_root"));
+        if (k == m.package_id()->repository()->end_metadata())
             throw InstallActionError("Could not fetch rewrite_ids_over_to_root key from owning repository");
         const MetadataValueKey<long> * kk(visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
@@ -273,12 +274,12 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m[k::package_id()]->name()));
+        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
             if_same_name_id = *v;
-            if ((*v)->version() == m[k::package_id()]->version() && (*v)->slot() == m[k::package_id()]->slot())
+            if ((*v)->version() == m.package_id()->version() && (*v)->slot() == m.package_id()->slot())
             {
                 if_overwritten_id = *v;
                 break;
@@ -291,7 +292,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
-        std::string uid(stringify(m[k::package_id()]->name().category) + "---" + stringify(m[k::package_id()]->name().package));
+        std::string uid(stringify(m.package_id()->name().category) + "---" + stringify(m.package_id()->name().package));
         uid_dir /= "data";
         uid_dir.mkdir();
         uid_dir /= uid;
@@ -299,7 +300,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     }
 
     FSEntry target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m[k::package_id()]->version()) + ":" + stringify(m[k::package_id()]->slot()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot()) + ":" + cookie());
 
     if (target_ver_dir.exists())
         throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -308,50 +309,51 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     {
         std::ofstream source_repository_file(stringify(target_ver_dir / "source_repository").c_str());
-        source_repository_file << m[k::package_id()]->repository()->name() << std::endl;
+        source_repository_file << m.package_id()->repository()->name() << std::endl;
         if (! source_repository_file)
             throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "source_repository") + "'");
     }
 
-    if (m[k::package_id()]->short_description_key())
+    if (m.package_id()->short_description_key())
     {
         std::ofstream description_file(stringify(target_ver_dir / "description").c_str());
-        description_file << m[k::package_id()]->short_description_key()->value() << std::endl;
+        description_file << m.package_id()->short_description_key()->value() << std::endl;
         if (! description_file)
             throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "description") + "'");
     }
 
-    if (m[k::package_id()]->build_dependencies_key())
+    if (m.package_id()->build_dependencies_key())
     {
         std::ofstream build_dependencies_file(stringify(target_ver_dir / "build_dependencies").c_str());
         StringifyFormatter f;
-        build_dependencies_file << m[k::package_id()]->build_dependencies_key()->pretty_print_flat(f) << std::endl;
+        build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_flat(f) << std::endl;
         if (! build_dependencies_file)
             throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "build_dependencies") + "'");
     }
 
-    if (m[k::package_id()]->run_dependencies_key())
+    if (m.package_id()->run_dependencies_key())
     {
         std::ofstream run_dependencies_file(stringify(target_ver_dir / "run_dependencies").c_str());
         StringifyFormatter f;
-        run_dependencies_file << m[k::package_id()]->run_dependencies_key()->pretty_print_flat(f) << std::endl;
+        run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_flat(f) << std::endl;
         if (! run_dependencies_file)
             throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "run_dependencies") + "'");
     }
 
     NDBAMMerger merger(
-            NDBAMMergerParams::named_create()
-            (k::environment(), _imp->params.environment)
-            (k::image(), m[k::image_dir()])
-            (k::install_under(), install_under)
-            (k::root(), installed_root_key()->value())
-            (k::contents_file(), target_ver_dir / "contents")
-            (k::config_protect(), getenv_with_default("CONFIG_PROTECT", ""))
-            (k::config_protect_mask(), getenv_with_default("CONFIG_PROTECT_MASK", ""))
-            (k::package_id(), m[k::package_id()])
-            (k::get_new_ids_or_minus_one(), std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment,
-                                                           rewrite_ids_over_to_root, _1))
-            (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs));
+            make_named_values<NDBAMMergerParams>(
+                value_for<n::config_protect>(getenv_with_default("CONFIG_PROTECT", "")),
+                value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
+                value_for<n::contents_file>(target_ver_dir / "contents"),
+                value_for<n::environment>(_imp->params.environment),
+                value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one,
+                        _imp->params.environment, rewrite_ids_over_to_root, _1)),
+                value_for<n::image>(m.image_dir()),
+                value_for<n::install_under>(install_under),
+                value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                value_for<n::package_id>(m.package_id()),
+                value_for<n::root>(installed_root_key()->value())
+            ));
 
     if (! merger.check())
     {
@@ -363,7 +365,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     merger.merge();
 
-    _imp->ndbam.index(m[k::package_id()]->name(), uid_dir.basename());
+    _imp->ndbam.index(m.package_id()->name(), uid_dir.basename());
 
     if (if_overwritten_id)
     {

@@ -21,8 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_SYNCER_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
 #include <paludis/repository.hh>
 #include <string>
 
@@ -39,6 +37,16 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct environment;
+        struct filter_file;
+        struct local;
+        struct options;
+        struct output_prefix;
+        struct remote;
+    }
+
     /**
      * Options used by Syncer.
      *
@@ -46,11 +54,12 @@ namespace paludis
      * \ingroup g_repository
      * \nosubgrouping
      */
-    typedef kc::KeyedClass<
-        kc::Field<k::options, std::string>,
-        kc::Field<k::filter_file, FSEntry>,
-        kc::Field<k::output_prefix, std::string>
-        > SyncOptions;
+    struct SyncOptions
+    {
+        NamedValue<n::filter_file, FSEntry> filter_file;
+        NamedValue<n::options, std::string> options;
+        NamedValue<n::output_prefix, std::string> output_prefix;
+    };
 
     /**
      * Parameters for a Syncer.
@@ -59,11 +68,12 @@ namespace paludis
      * \ingroup g_repository
      * \nosubgrouping
      */
-    typedef kc::KeyedClass<
-        kc::Field<k::local, std::string>,
-        kc::Field<k::remote, std::string>,
-        kc::Field<k::environment, const Environment *>
-            > SyncerParams;
+    struct SyncerParams
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::local, std::string> local;
+        NamedValue<n::remote, std::string> remote;
+    };
 
     /**
      * A Syncer subclass handles syncing Repository instances.

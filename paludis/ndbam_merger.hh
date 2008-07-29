@@ -22,24 +22,38 @@
 
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
+#include <paludis/util/named_value.hh>
 #include <tr1/functional>
 
 namespace paludis
 {
-    typedef kc::KeyedClass<
-        kc::Field<k::environment, Environment *>,
-        kc::Field<k::image, FSEntry>,
-        kc::Field<k::root, FSEntry>,
-        kc::Field<k::install_under, FSEntry>,
-        kc::Field<k::contents_file, FSEntry>,
-        kc::Field<k::config_protect, std::string>,
-        kc::Field<k::config_protect_mask, std::string>,
-        kc::Field<k::package_id, std::tr1::shared_ptr<const PackageID> >,
-        kc::Field<k::options, MergerOptions>,
-        kc::Field<k::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> >
-            > NDBAMMergerParams;
+    namespace n
+    {
+        struct config_protect;
+        struct config_protect_mask;
+        struct contents_file;
+        struct environment;
+        struct get_new_ids_or_minus_one;
+        struct image;
+        struct install_under;
+        struct options;
+        struct package_id;
+        struct root;
+    }
+
+    struct NDBAMMergerParams
+    {
+        NamedValue<n::config_protect, std::string> config_protect;
+        NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+        NamedValue<n::contents_file, FSEntry> contents_file;
+        NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
+        NamedValue<n::image, FSEntry> image;
+        NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * Merger subclass for NDBAM.

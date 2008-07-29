@@ -35,6 +35,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -360,24 +361,26 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        EbuildConfigCommand config_cmd(EbuildCommandParams::named_create()
-                (k::environment(), _imp->params.environment)
-                (k::package_id(), id)
-                (k::ebuild_dir(), ver_dir)
-                (k::ebuild_file(), ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                (k::files_dir(), ver_dir)
-                (k::eclassdirs(), eclassdirs)
-                (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
-                (k::portdir(), ver_dir)
-                (k::distdir(), ver_dir)
-                (k::sandbox(), phase->option("sandbox"))
-                (k::userpriv(), phase->option("userpriv"))
-                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
-                (k::builddir(), _imp->params.builddir),
+        EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
+                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
+                    value_for<n::distdir>(ver_dir),
+                    value_for<n::ebuild_dir>(ver_dir),
+                    value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
+                    value_for<n::eclassdirs>(eclassdirs),
+                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
+                    value_for<n::files_dir>(ver_dir),
+                    value_for<n::package_id>(id),
+                    value_for<n::portdir>(ver_dir),
+                    value_for<n::sandbox>(phase->option("sandbox")),
+                    value_for<n::userpriv>(phase->option("userpriv"))
+                ),
 
-                EbuildConfigCommandParams::named_create()
-                (k::root(), stringify(_imp->params.root))
-                (k::load_environment(), load_env.get()));
+                make_named_values<EbuildConfigCommandParams>(
+                    value_for<n::load_environment>(load_env.get()),
+                    value_for<n::root>(stringify(_imp->params.root))
+                ));
 
         config_cmd();
     }
@@ -457,30 +460,32 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
             }
         }
 
-        EbuildInfoCommand info_cmd(EbuildCommandParams::named_create()
-                (k::environment(), _imp->params.environment)
-                (k::package_id(), id)
-                (k::ebuild_dir(), ver_dir)
-                (k::ebuild_file(), ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
-                (k::files_dir(), ver_dir)
-                (k::eclassdirs(), eclassdirs)
-                (k::exlibsdirs(), make_shared_ptr(new FSEntrySequence))
-                (k::portdir(), ver_dir)
-                (k::distdir(), ver_dir)
-                (k::sandbox(), phase->option("sandbox"))
-                (k::userpriv(), phase->option("userpriv"))
-                (k::commands(), join(phase->begin_commands(), phase->end_commands(), " "))
-                (k::builddir(), _imp->params.builddir),
+        EbuildInfoCommand info_cmd(make_named_values<EbuildCommandParams>(
+                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
+                    value_for<n::distdir>(ver_dir),
+                    value_for<n::ebuild_dir>(ver_dir),
+                    value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
+                    value_for<n::eclassdirs>(eclassdirs),
+                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
+                    value_for<n::files_dir>(ver_dir),
+                    value_for<n::package_id>(id),
+                    value_for<n::portdir>(ver_dir),
+                    value_for<n::sandbox>(phase->option("sandbox")),
+                    value_for<n::userpriv>(phase->option("userpriv"))
+                ),
 
-                EbuildInfoCommandParams::named_create()
-                (k::root(), stringify(_imp->params.root))
-                (k::use(), "")
-                (k::use_expand(), "")
-                (k::expand_vars(), make_shared_ptr(new Map<std::string, std::string>))
-                (k::profiles(), make_shared_ptr(new FSEntrySequence))
-                (k::info_vars(), i ? i : make_shared_ptr(new const Set<std::string>))
-                (k::use_ebuild_file(), false)
-                (k::load_environment(), load_env.get()));
+                make_named_values<EbuildInfoCommandParams>(
+                    value_for<n::expand_vars>(make_shared_ptr(new Map<std::string, std::string>)),
+                    value_for<n::info_vars>(i ? i : make_shared_ptr(new const Set<std::string>)),
+                    value_for<n::load_environment>(load_env.get()),
+                    value_for<n::profiles>(make_shared_ptr(new FSEntrySequence)),
+                    value_for<n::root>(stringify(_imp->params.root)),
+                    value_for<n::use>(""),
+                    value_for<n::use_ebuild_file>(false),
+                    value_for<n::use_expand>("")
+                    ));
 
         info_cmd();
     }

@@ -21,25 +21,33 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_REPOSITORY_FILE_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/name-fwd.hh>
-#include <paludis/version_spec-fwd.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct description;
+        struct name;
+        struct slot;
+        struct version;
+    }
+
     namespace unavailable_repository
     {
         class UnavailableRepositoryFile;
 
-        typedef kc::KeyedClass<
-            kc::Field<k::name, QualifiedPackageName>,
-            kc::Field<k::version, VersionSpec>,
-            kc::Field<k::slot, SlotName>,
-            kc::Field<k::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > >
-                > UnavailableRepositoryFileEntry;
+        struct UnavailableRepositoryFileEntry
+        {
+            NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::name, QualifiedPackageName> name;
+            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::version, VersionSpec> version;
+        };
     }
 }
 

@@ -34,6 +34,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <tr1/functional>
 #include <tr1/unordered_map>
@@ -107,20 +108,21 @@ namespace
 
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
-    Repository(RepositoryName(make_name(r)), RepositoryCapabilities::named_create()
-            (k::use_interface(), static_cast<RepositoryUseInterface *>(0))
-            (k::sets_interface(), static_cast<RepositorySetsInterface *>(0))
-            (k::syncable_interface(), static_cast<RepositorySyncableInterface *>(0))
-            (k::mirrors_interface(), static_cast<RepositoryMirrorsInterface *>(0))
-            (k::environment_variable_interface(), static_cast<RepositoryEnvironmentVariableInterface *>(0))
-            (k::provides_interface(), static_cast<RepositoryProvidesInterface *>(0))
-            (k::virtuals_interface(), static_cast<RepositoryVirtualsInterface *>(0))
-            (k::destination_interface(), static_cast<RepositoryDestinationInterface *>(0))
-            (k::e_interface(), static_cast<RepositoryEInterface *>(0))
-            (k::make_virtuals_interface(), static_cast<RepositoryMakeVirtualsInterface *>(0))
-            (k::qa_interface(), static_cast<RepositoryQAInterface *>(0))
-            (k::hook_interface(), this)
-            (k::manifest_interface(), static_cast<RepositoryManifestInterface *>(0))),
+    Repository(RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(this),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+            )),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r)),
     _imp(PrivateImplementationPattern<InstalledVirtualsRepository>::_imp)
@@ -147,21 +149,21 @@ InstalledVirtualsRepository::need_ids() const
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (! (**r)[k::provides_interface()])
+        if (! (**r).provides_interface())
             continue;
 
         std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
-                (**r)[k::provides_interface()]->provided_packages());
+                (**r).provides_interface()->provided_packages());
 
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
                     pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
         {
-            IDMap::iterator i(_imp->ids.find((*p)[k::virtual_name()]));
+            IDMap::iterator i(_imp->ids.find((*p).virtual_name()));
             if (i == _imp->ids.end())
-                i = _imp->ids.insert(std::make_pair((*p)[k::virtual_name()], make_shared_ptr(new PackageIDSequence))).first;
+                i = _imp->ids.insert(std::make_pair((*p).virtual_name(), make_shared_ptr(new PackageIDSequence))).first;
 
             std::tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
-                        _imp->env, shared_from_this(), (*p)[k::virtual_name()], (*p)[k::provided_by()], false));
+                        _imp->env, shared_from_this(), (*p).virtual_name(), (*p).provided_by(), false));
             i->second->push_back(id);
         }
     }

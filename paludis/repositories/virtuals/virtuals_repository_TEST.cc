@@ -53,7 +53,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
-            TEST_CHECK((*repo)[k::virtuals_interface()]);
+            TEST_CHECK(repo->virtuals_interface());
 
             env.package_database()->add_repository(2, virtuals);
             env.package_database()->add_repository(3, repo);

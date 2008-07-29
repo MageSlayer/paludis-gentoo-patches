@@ -29,7 +29,6 @@
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
@@ -633,15 +632,15 @@ namespace
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(stringify((*k.value())[k::mask_file()]) + ": " +
-                                join((*k.value())[k::comment()]->begin(), (*k.value())[k::comment()]->end(), " "));
+                        task->output_right_column(stringify((*k.value()).mask_file()) + ": " +
+                                join((*k.value()).comment()->begin(), (*k.value()).comment()->end(), " "));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(stringify((*k.value())[k::mask_file()]) + ":");
-                        for (Sequence<std::string>::ConstIterator it((*k.value())[k::comment()]->begin()),
-                                it_end((*k.value())[k::comment()]->end()); it_end != it; ++it)
+                        task->output_right_column(stringify((*k.value()).mask_file()) + ":");
+                        for (Sequence<std::string>::ConstIterator it((*k.value()).comment()->begin()),
+                                it_end((*k.value()).comment()->end()); it_end != it; ++it)
                         {
                             task->output_left_column("", in);
                             task->output_right_column(*it);

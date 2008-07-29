@@ -22,9 +22,6 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/kc-fwd.hh>
-#include <paludis/util/keys.hh>
-#include <paludis/repository-fwd.hh>
 #include <tr1/memory>
 
 /** \file
@@ -59,46 +56,12 @@ namespace paludis
     class ConfigActionError;
     class InfoActionError;
 
+    struct FetchActionOptions;
+    struct InstallActionOptions;
+
+    struct FetchActionFailure;
+
 #include <paludis/action-se.hh>
-
-    /**
-     * Options for a FetchAction.
-     *
-     * \see FetchAction
-     * \ingroup g_actions
-     * \since 0.26
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::fetch_unneeded, bool>,
-        kc::Field<k::safe_resume, bool>
-            > FetchActionOptions;
-
-    /**
-     * Options for an InstallAction.
-     *
-     * \see InstallAction
-     * \ingroup g_actions
-     * \since 0.26
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::debug_build, InstallActionDebugOption>,
-        kc::Field<k::checks, InstallActionChecksOption>,
-        kc::Field<k::destination, std::tr1::shared_ptr<Repository> >
-            > InstallActionOptions;
-
-    /**
-     * A failed fetch action part.
-     *
-     * \see FetchActionError
-     * \ingroup g_actions
-     * \since 0.26
-     */
-    typedef kc::KeyedClass<
-        kc::Field<k::target_file, std::string>,
-        kc::Field<k::requires_manual_fetching, bool>,
-        kc::Field<k::failed_automatic_fetching, bool>,
-        kc::Field<k::failed_integrity_checks, std::string>
-            > FetchActionFailure;
 
 }
 

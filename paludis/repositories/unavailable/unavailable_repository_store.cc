@@ -28,10 +28,10 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -141,40 +141,40 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
     for (UnavailableRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
             i != i_end ; ++i)
     {
-        if (old_name.category != (*i)[k::name()].category)
+        if (old_name.category != (*i).name().category)
         {
-            _imp->categories->insert((*i)[k::name()].category);
-            PackageNames::iterator p(_imp->package_names.find((*i)[k::name()].category));
+            _imp->categories->insert((*i).name().category);
+            PackageNames::iterator p(_imp->package_names.find((*i).name().category));
             if (_imp->package_names.end() == p)
-                p = _imp->package_names.insert(std::make_pair((*i)[k::name()].category,
+                p = _imp->package_names.insert(std::make_pair((*i).name().category,
                             make_shared_ptr(new QualifiedPackageNameSet))).first;
             pkgs = p->second;
         }
 
-        if (old_name != (*i)[k::name()])
+        if (old_name != (*i).name())
         {
-            pkgs->insert((*i)[k::name()]);
-            IDs::iterator p(_imp->ids.find((*i)[k::name()]));
+            pkgs->insert((*i).name());
+            IDs::iterator p(_imp->ids.find((*i).name()));
             if (_imp->ids.end() == p)
-                p = _imp->ids.insert(std::make_pair((*i)[k::name()],
+                p = _imp->ids.insert(std::make_pair((*i).name(),
                             make_shared_ptr(new PackageIDSequence))).first;
 
             ids = p->second;
         }
 
-        ids->push_back(make_shared_ptr(new UnavailableID(UnavailableIDParams::named_create()
-                        (k::repository(), _imp->repo)
-                        (k::name(), (*i)[k::name()])
-                        (k::version(), (*i)[k::version()])
-                        (k::slot(), (*i)[k::slot()])
-                        (k::description(), (*i)[k::description()])
-                        (k::from_repositories(), from_repositories)
-                        (k::repository_homepage(), repository_homepage)
-                        (k::repository_description(), repository_description)
-                        (k::mask(), mask)
-                        )));
+        ids->push_back(make_shared_ptr(new UnavailableID(make_named_values<UnavailableIDParams>(
+                            value_for<n::description>((*i).description()),
+                            value_for<n::from_repositories>(from_repositories),
+                            value_for<n::mask>(mask),
+                            value_for<n::name>((*i).name()),
+                            value_for<n::repository>(_imp->repo),
+                            value_for<n::repository_description>(repository_description),
+                            value_for<n::repository_homepage>(repository_homepage),
+                            value_for<n::slot>((*i).slot()),
+                            value_for<n::version>((*i).version())
+                        ))));
 
-        old_name = (*i)[k::name()];
+        old_name = (*i).name();
     }
 }
 

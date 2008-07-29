@@ -21,6 +21,7 @@
 #include "vdb_merger.hh"
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
@@ -75,15 +76,16 @@ namespace
                 TestCase("merge '" + what + "' test"),
                 root_dir(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "root"),
                 target(what),
-                merger(VDBMergerParams::named_create()
-                        (k::environment(), &env)
-                        (k::image(), FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image")
-                        (k::root(), root_dir)
-                        (k::contents_file(), FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what)
-                        (k::config_protect(), "/protected_file /protected_dir")
-                        (k::config_protect_mask(), "/protected_dir/unprotected_file /protected_dir/unprotected_dir")
-                        (k::package_id(), std::tr1::shared_ptr<PackageID>())
-                        (k::options(), MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs))
+                merger(make_named_values<VDBMergerParams>(
+                            value_for<n::config_protect>("/protected_file /protected_dir"),
+                            value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
+                            value_for<n::contents_file>(FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what),
+                            value_for<n::environment>(&env),
+                            value_for<n::image>(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image"),
+                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
+                            value_for<n::root>(root_dir)
+                        ))
             {
             }
     };

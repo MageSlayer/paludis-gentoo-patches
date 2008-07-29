@@ -705,17 +705,17 @@ Hooker::perform_hook(const Hook & hook) const
             case hod_stdout:
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((**r)[k::hook_interface()])
+                    if ((**r).hook_interface())
                         result.max_exit_status = std::max(result.max_exit_status,
-                                ((**r)[k::hook_interface()]->perform_hook(hook)).max_exit_status);
+                                ((**r).hook_interface()->perform_hook(hook)).max_exit_status);
                 continue;
 
             case hod_grab:
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((**r)[k::hook_interface()])
+                    if ((**r).hook_interface())
                     {
-                        HookResult tmp((**r)[k::hook_interface()]->perform_hook(hook));
+                        HookResult tmp((**r).hook_interface()->perform_hook(hook));
                         if (tmp > result)
                             result = tmp;
                         else if (! tmp.output.empty())

@@ -27,7 +27,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/kc.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
@@ -223,7 +222,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
+        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                         std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
 #endif
@@ -249,7 +248,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         iv_keys->insert("root", "/");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution()))[k::support_old_style_virtuals()])
+        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                         std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
 #endif
@@ -264,14 +263,14 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
     _imp->initialise(this);
 
     if (_imp->main_repo)
-        if ((*_imp->main_repo)[k::e_interface()]->end_profiles() != (*_imp->main_repo)[k::e_interface()]->begin_profiles())
-            (*_imp->main_repo)[k::e_interface()]->set_profile((*_imp->main_repo)[k::e_interface()]->begin_profiles());
+        if ((*_imp->main_repo).e_interface()->end_profiles() != (*_imp->main_repo).e_interface()->begin_profiles())
+            (*_imp->main_repo).e_interface()->set_profile((*_imp->main_repo).e_interface()->begin_profiles());
 
     if (_imp->master_repo)
-        if ((*_imp->master_repo)[k::e_interface()]->end_profiles() !=
-                (*_imp->master_repo)[k::e_interface()]->begin_profiles())
-            (*_imp->master_repo)[k::e_interface()]->set_profile(
-                    (*_imp->master_repo)[k::e_interface()]->begin_profiles());
+        if ((*_imp->master_repo).e_interface()->end_profiles() !=
+                (*_imp->master_repo).e_interface()->begin_profiles())
+            (*_imp->master_repo).e_interface()->set_profile(
+                    (*_imp->master_repo).e_interface()->begin_profiles());
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->repository_dir_key);
@@ -352,14 +351,14 @@ NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> 
     if (_imp->is_vdb)
         return true;
 
-    std::string accept_keywords_var((*_imp->main_repo)[k::e_interface()]->accept_keywords_variable());
+    std::string accept_keywords_var((*_imp->main_repo).e_interface()->accept_keywords_variable());
     std::string ak;
     if (! accept_keywords_var.empty())
-        ak = (*_imp->main_repo)[k::e_interface()]->profile_variable(accept_keywords_var);
+        ak = (*_imp->main_repo).e_interface()->profile_variable(accept_keywords_var);
 
     if (ak.empty())
     {
-        std::string arch_var((*_imp->main_repo)[k::e_interface()]->arch_variable());
+        std::string arch_var((*_imp->main_repo).e_interface()->arch_variable());
 
         if (arch_var.empty())
         {
@@ -368,7 +367,7 @@ NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> 
         }
         else
         {
-            std::string arch((*_imp->main_repo)[k::e_interface()]->profile_variable(arch_var));
+            std::string arch((*_imp->main_repo).e_interface()->profile_variable(arch_var));
 
             if (keywords->end() != keywords->find(KeywordName(arch)))
                 return true;
