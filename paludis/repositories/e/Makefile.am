@@ -19,16 +19,16 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludiserepository.la
+paludis_repositories_lib_LTLIBRARIES = libpaludiserepository_@PALUDIS_PC_SLOT@.la
 
 if ENABLE_GLSA
 
-lib_LTLIBRARIES = libpaludiserepositoryxmlthings.la
+lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
 
 endif
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
-libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludiserepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_e_include_HEADERS = \
 	aa_visitor.hh \
@@ -89,7 +89,7 @@ paludis_repositories_e_include_HEADERS = \
 	vdb_repository.hh \
 	vdb_unmerger.hh
 
-libpaludiserepository_la_SOURCES = \
+libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	aa_visitor.cc \
 	check_fetched_files_visitor.cc \
 	dep_parser.cc \
@@ -139,20 +139,20 @@ libpaludiserepository_la_SOURCES = \
 	vdb_unmerger.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
-libpaludiserepository_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludiserepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 e_repository_TEST_SOURCES = e_repository_TEST.cc
 
 e_repository_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -161,12 +161,12 @@ e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 
 vdb_repository_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -175,12 +175,12 @@ vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 exndbam_repository_TEST_SOURCES = exndbam_repository_TEST.cc
 
 exndbam_repository_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -189,11 +189,11 @@ exndbam_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 vdb_merger_TEST_SOURCES = vdb_merger_TEST.cc
 
 vdb_merger_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -202,11 +202,11 @@ vdb_merger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 vdb_unmerger_TEST_SOURCES = vdb_unmerger_TEST.cc
 
 vdb_unmerger_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -215,13 +215,13 @@ vdb_unmerger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 e_repository_sets_TEST_SOURCES = e_repository_sets_TEST.cc
 
 e_repository_sets_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -230,72 +230,72 @@ e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 dep_spec_pretty_printer_TEST_SOURCES = dep_spec_pretty_printer_TEST.cc
 
 dep_spec_pretty_printer_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 aa_visitor_TEST_SOURCES = aa_visitor_TEST.cc
 
 aa_visitor_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 fetch_visitor_TEST_SOURCES = fetch_visitor_TEST.cc
 
 fetch_visitor_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 source_uri_finder_TEST_SOURCES = source_uri_finder_TEST.cc
 
 source_uri_finder_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 fix_locked_dependencies_TEST_SOURCES = fix_locked_dependencies_TEST.cc
 
 fix_locked_dependencies_TEST_LDADD = \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -450,15 +450,15 @@ e_repository_params-se.cc : e_repository_params.se $(top_srcdir)/misc/make_se.ba
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/e_repository_params.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 
-libpaludiserepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh
-libpaludiserepositoryxmlthings_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@
+libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_SOURCES = xml_things.cc xml_things.hh
+libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@
 
-libpaludiserepositoryxmlthings_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la \
+libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	@LIBXML2DEPS_LIBS@
 
-libpaludiserepositoryxmlthings_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 if ENABLE_GLSA
 
@@ -468,10 +468,10 @@ xml_things_TEST_SOURCES = xml_things_TEST.cc
 xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiserepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 

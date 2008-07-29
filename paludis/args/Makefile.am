@@ -25,7 +25,7 @@ paludis_args_include_HEADERS = \
 	install_args_group.hh  \
 	do_help.hh
 
-libpaludisargs_la_SOURCES = \
+libpaludisargs_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	args.cc \
 	args_error.cc \
 	args_group.cc \
@@ -41,14 +41,14 @@ libpaludisargs_la_SOURCES = \
 	dep_list_args_group.cc \
 	install_args_group.cc
 
-libpaludisman_a_SOURCES = \
+libpaludisman_@PALUDIS_PC_SLOT@_a_SOURCES = \
 	man.cc
 
-libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisargs_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludisargs_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la
-	$(top_builddir)/paludis/util/libpaludisutil.la
+libpaludisargs_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -56,16 +56,16 @@ TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	bash $(top_srcdir)/test/run_test.sh
 
-lib_LTLIBRARIES = libpaludisargs.la
-noinst_LIBRARIES = libpaludisman.a
+lib_LTLIBRARIES = libpaludisargs_@PALUDIS_PC_SLOT@.la
+noinst_LIBRARIES = libpaludisman_@PALUDIS_PC_SLOT@.a
 
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
 	$(top_builddir)/paludis/util/test_extras.o \
-	libpaludisargs.la \
+	libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 args_TEST_SOURCES = args_TEST.cc
 args_TEST_LDADD = $(test_ldadd)
@@ -73,7 +73,7 @@ args_TEST_LDADD = $(test_ldadd)
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludisargs.la libpaludisman.a
+DISTCHECK_DEPS = libpaludisargs_@PALUDIS_PC_SLOT@.la libpaludisman_@PALUDIS_PC_SLOT@.a
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 

@@ -10,7 +10,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludispaludisenvironment_la_SOURCES = \
+libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	bashable_conf.cc       bashable_conf.hh \
 	keywords_conf.cc       keywords_conf.hh \
 	licenses_conf.cc       licenses_conf.hh \
@@ -22,13 +22,13 @@ libpaludispaludisenvironment_la_SOURCES = \
 	paludis_environment.cc paludis_environment.hh \
 	registration.cc
 
-libpaludispaludisenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 if ! MONOLITHIC
 
-libpaludispaludisenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
 endif
 
@@ -36,11 +36,11 @@ libenvdir = $(libdir)/paludis/environments/
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludispaludisenvironment.la
+noinst_LTLIBRARIES = libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la
 
 else
 
-libenv_LTLIBRARIES = libpaludispaludisenvironment.la
+libenv_LTLIBRARIES = libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la
 
 endif
 
@@ -97,19 +97,19 @@ if MONOLITHIC
 paludis_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludispaludisenvironment.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 else
 
 paludis_environment_TEST_LDADD = \
-	libpaludispaludisenvironment.la \
+	libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 endif

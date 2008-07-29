@@ -51,7 +51,8 @@ HookFile::~HookFile()
 
 namespace
 {
-    static const std::string so_suffix(".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
+    static const std::string so_suffix("_" + stringify(PALUDIS_VERSION_MAJOR) + "." + stringify(PALUDIS_VERSION_MINOR)
+            + ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
 
     class BashHookFile :
         public HookFile
@@ -594,8 +595,10 @@ Hooker::_find_hooks(const Hook & hook) const
                     if (! load_try)
                     {
                         load_try = true;
+                        std::string soname("libpaludispythonhooks_" + stringify(PALUDIS_VERSION_MAJOR) + "."
+                                + stringify(PALUDIS_VERSION_MINOR) + ".so");
 
-                        pyhookfilehandle.handle = dlopen("libpaludispythonhooks.so", RTLD_NOW | RTLD_GLOBAL);
+                        pyhookfilehandle.handle = dlopen(soname.c_str(), RTLD_NOW | RTLD_GLOBAL);
                         if (pyhookfilehandle.handle)
                         {
                             pyhookfilehandle.create_py_hook_file_handle =
@@ -610,14 +613,14 @@ Hooker::_find_hooks(const Hook & hook) const
                             else
                             {
                                 Log::get_instance()->message("hook.python.dlerror", ll_warning, lc_context) <<
-                                    "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
+                                    "dlsym(" + soname + ", create_py_hook_file) "
                                     "failed due to error '" << dlerror() << "'";
                             }
                         }
                         else
                         {
                             Log::get_instance()->message("hook.python.dlerror", ll_warning, lc_context) <<
-                                "dlopen(libpaludispythonhooks.so) failed due to error '" << dlerror() << "'";
+                                "dlopen(" + soname + ") failed due to error '" << dlerror() << "'";
                         }
                     }
                 }

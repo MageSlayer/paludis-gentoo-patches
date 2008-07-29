@@ -7,27 +7,27 @@ paludis_selinux_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/se
 paludis_selinux_include_HEADERS = \
 	security_context.hh
 
-libpaludisselinux_la_SOURCES = \
+libpaludisselinux_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	$(paludis_selinux_include_HEADERS) \
 	security_context.cc
 
 if ! MONOLITHIC
 
-libpaludisselinux_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludisselinux_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@
 
 endif
 
-libpaludisselinux_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisselinux_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludisselinux.la
+noinst_LTLIBRARIES = libpaludisselinux_@PALUDIS_PC_SLOT@.la
 
 else
 
-lib_LTLIBRARIES = libpaludisselinux.la
+lib_LTLIBRARIES = libpaludisselinux_@PALUDIS_PC_SLOT@.la
 
 endif
 
@@ -41,7 +41,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludisselinux.la
+DISTCHECK_DEPS = libpaludisselinux_@PALUDIS_PC_SLOT@.la
 
 distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
 

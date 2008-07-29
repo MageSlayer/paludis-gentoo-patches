@@ -18,11 +18,11 @@ qualudis_SOURCES = \
 	qualudis.cc
 
 qualudis_LDADD = \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS) \
@@ -53,10 +53,10 @@ man_qualudis_SOURCES = \
 	qualudis_command_line.cc
 
 man_qualudis_LDADD = \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/args/libpaludisman.a \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludismanpagethings.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisman_@PALUDIS_PC_SLOT@.a \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 

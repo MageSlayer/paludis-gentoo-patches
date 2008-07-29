@@ -9,18 +9,18 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludisnoconfigenvironment_la_SOURCES = \
+libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	no_config_environment.cc no_config_environment.hh \
 	registration.cc
 
-libpaludisnoconfigenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludisnoconfigenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
 libenvdir = $(libdir)/paludis/environments/
-libenv_LTLIBRARIES = libpaludisnoconfigenvironment.la
+libenv_LTLIBRARIES = libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la
 
 paludis_environment_no_config_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/no_config
 paludis_environment_no_config_include_HEADERS = \
@@ -57,11 +57,11 @@ check_SCRIPTS = no_config_environment_TEST_setup.sh no_config_environment_TEST_c
 no_config_environment_TEST_SOURCES = no_config_environment_TEST.cc
 
 no_config_environment_TEST_LDADD = \
-	libpaludisnoconfigenvironment.la \
+	libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 BUILT_SOURCES = \

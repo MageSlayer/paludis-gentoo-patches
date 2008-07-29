@@ -13,10 +13,10 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludisunpackagedrepository.la
+paludis_repositories_lib_LTLIBRARIES = libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la
 
 paludis_repositories_unpackaged_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/unpackaged/
-libpaludisunpackagedrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_unpackaged_include_HEADERS = \
 	dep_parser.hh \
@@ -30,7 +30,7 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	installed_repository-sr.hh \
 	installed_id.hh
 
-libpaludisunpackagedrepository_la_SOURCES = \
+libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	dep_parser.cc \
 	dep_printer.cc \
 	exceptions.cc \
@@ -43,41 +43,41 @@ libpaludisunpackagedrepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_unpackaged_include_HEADERS)
 
-libpaludisunpackagedrepository_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 unpackaged_repository_TEST_SOURCES = unpackaged_repository_TEST.cc
 
 unpackaged_repository_TEST_LDADD = \
-	libpaludisunpackagedrepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 installed_repository_TEST_SOURCES = installed_repository_TEST.cc
 
 installed_repository_TEST_LDADD = \
-	libpaludisunpackagedrepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
-	libpaludisunpackagedrepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 

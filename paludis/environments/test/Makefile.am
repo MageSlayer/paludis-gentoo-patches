@@ -7,27 +7,27 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludistestenvironment_la_SOURCES = \
+libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	test_environment.cc test_environment.hh \
 	registration.cc
 
-libpaludistestenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 if ! MONOLITHIC
 
-libpaludistestenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
 endif
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludistestenvironment.la
+noinst_LTLIBRARIES = libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
 
 else
 
-lib_LTLIBRARIES = libpaludistestenvironment.la
+lib_LTLIBRARIES = libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
 
 endif
 

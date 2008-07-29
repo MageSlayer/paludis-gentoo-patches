@@ -14,16 +14,16 @@ paludis_repositories_libdir = $(libdir)/paludis/repositories
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludiscranrepository.la
+noinst_LTLIBRARIES = libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
 
 else
 
-paludis_repositories_lib_LTLIBRARIES = libpaludiscranrepository.la
+paludis_repositories_lib_LTLIBRARIES = libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
 
 endif
 
 paludis_repositories_cran_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/cran/
-libpaludiscranrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_cran_include_HEADERS = \
 	cran_package_id.hh \
@@ -39,7 +39,7 @@ paludis_repositories_cran_include_HEADERS = \
 	dep_spec_pretty_printer.hh \
 	package_dep_spec.hh
 
-libpaludiscranrepository_la_SOURCES = \
+libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	cran_package_id.cc \
 	cran_dep_parser.cc \
 	cran_repository.cc \
@@ -53,9 +53,9 @@ libpaludiscranrepository_la_SOURCES = \
 	package_dep_spec.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
-libpaludiscranrepository_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS = \
@@ -69,17 +69,17 @@ cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
 cran_dep_parser_TEST_LDADD= \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository.la
+	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
 
 cran_installed_repository_TEST_SOURCES = cran_installed_repository_TEST.cc
 
 cran_installed_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 cran_repository_TEST_SOURCES = cran_repository_TEST.cc
@@ -87,10 +87,10 @@ cran_repository_TEST_SOURCES = cran_repository_TEST.cc
 cran_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 description_file_TEST_SOURCES = description_file_TEST.cc
@@ -98,10 +98,10 @@ description_file_TEST_SOURCES = description_file_TEST.cc
 description_file_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 EXTRA_DIST = \
@@ -160,3 +160,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

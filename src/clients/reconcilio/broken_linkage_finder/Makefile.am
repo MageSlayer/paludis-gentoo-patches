@@ -27,8 +27,8 @@ configuration_TEST_LDADD = \
 	libbrokenlinkagefinder.a \
 	../util/libreconcilioutil.a \
 	$(top_builddir)/src/clients/reconcilio/littlelf/liblittlelf.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 

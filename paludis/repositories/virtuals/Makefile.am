@@ -13,23 +13,23 @@ paludis_repositories_libdir = $(libdir)/paludis/repositories
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludisvirtualsrepository.la
+noinst_LTLIBRARIES = libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la
 
 else
 
-paludis_repositories_lib_LTLIBRARIES = libpaludisvirtualsrepository.la
+paludis_repositories_lib_LTLIBRARIES = libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la
 
 endif
 
 paludis_repositories_virtuals_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/virtuals/
-libpaludisvirtualsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_virtuals_include_HEADERS = \
 	virtuals_repository.hh \
 	installed_virtuals_repository.hh \
 	package_id.hh
 
-libpaludisvirtualsrepository_la_SOURCES = \
+libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	virtuals_repository.cc \
 	installed_virtuals_repository.cc \
 	package_id.cc \
@@ -38,9 +38,9 @@ libpaludisvirtualsrepository_la_SOURCES = \
 
 if ! MONOLITHIC
 
-libpaludisvirtualsrepository_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 endif
@@ -66,21 +66,21 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/test/run_test.sh
 
 virtuals_repository_TEST_LDADD = \
-	libpaludisvirtualsrepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 installed_virtuals_repository_TEST_LDADD = \
-	libpaludisvirtualsrepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 virtuals_repository_TEST_SOURCES = \
@@ -99,3 +99,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

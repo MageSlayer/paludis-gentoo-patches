@@ -8,17 +8,17 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludisadaptedenvironment_la_SOURCES = \
+libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	adapted_environment.cc adapted_environment.hh \
 	registration.cc
 
-libpaludisadaptedenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludisadaptedenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
-lib_LTLIBRARIES = libpaludisadaptedenvironment.la
+lib_LTLIBRARIES = libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@.la
 
 paludis_environment_adapted_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/adapted
 paludis_environment_adapted_include_HEADERS = \
@@ -43,12 +43,12 @@ check_SCRIPTS =
 adapted_environment_TEST_SOURCES = adapted_environment_TEST.cc
 
 adapted_environment_TEST_LDADD = \
-	libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 BUILT_SOURCES =
@@ -63,3 +63,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

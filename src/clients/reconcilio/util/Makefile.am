@@ -23,14 +23,14 @@ EXTRA_DIST = \
 realpath_TEST_SOURCES = realpath_TEST.cc
 realpath_TEST_LDADD = \
 	libreconcilioutil.a \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 
 wildcard_expander_TEST_SOURCES = wildcard_expander_TEST.cc
 wildcard_expander_TEST_LDADD = \
 	libreconcilioutil.a \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 

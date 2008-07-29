@@ -19,11 +19,11 @@ $1_TEST_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 ')dnl
@@ -86,34 +86,34 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 SUBDIRS = distributions fetchers syncers util selinux . repositories environments args
 BUILT_SOURCES = srcleanlist secleanlist
 
-libpaludis_la_SOURCES = filelist
-libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
+libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
+libpaludis_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
 
-libpaludispythonhooks_la_SOURCES = python_hooks.cc
-libpaludispythonhooks_la_CXXFLAGS = $(AM_CXXFLAGS) \
+libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_SOURCES = python_hooks.cc
+libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) \
 	@PALUDIS_CXXFLAGS_NO_STRICT_ALIASING@ \
 	@PALUDIS_CXXFLAGS_NO_WSHADOW@ \
 	-I@PYTHON_INCLUDE_DIR@
-libpaludispythonhooks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
-libpaludispythonhooks_la_LIBADD = libpaludis.la
+libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
+libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
 
-libpaludismanpagethings_la_SOURCES = name.cc
+libpaludismanpagethings_@PALUDIS_PC_SLOT@_la_SOURCES = name.cc
 
-libpaludissohooks_TEST_la_SOURCES = sohooks_TEST.cc
+libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_SOURCES = sohooks_TEST.cc
 
 # -rpath to force shared library
-libpaludissohooks_TEST_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludissohooks_TEST_la_LIBADD = libpaludis.la
+libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
 
-libpaludis_la_LIBADD = \
-	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
 
-libpaludismanpagethings_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+libpaludismanpagethings_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 dep_list_TEST_SOURCES += dep_list_TEST.hh
 define(`testlist', testlist `dep_list_TEST_blockers')dnl
@@ -122,10 +122,10 @@ dep_list_TEST_blockers_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 dep_list_TEST_blockers_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 
@@ -133,7 +133,7 @@ TESTS = testlist
 
 check_PROGRAMS = $(TESTS) stripper_TEST_binary
 check_SCRIPTS = testscriptlist
-check_LTLIBRARIES = libpaludissohooks_TEST.la
+check_LTLIBRARIES = libpaludissohooks_TEST_@PALUDIS_PC_SLOT@.la
 
 stripper_TEST_binary_SOURCES = stripper_TEST_binary.cc
 
@@ -145,15 +145,15 @@ paludis_libexec_SCRIPTS = hooker.bash
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludis.la libpaludismanpagethings.la
+noinst_LTLIBRARIES = libpaludis_@PALUDIS_PC_SLOT@.la libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
 
 else
 
-lib_LTLIBRARIES = libpaludis.la
-noinst_LTLIBRARIES = libpaludismanpagethings.la
+lib_LTLIBRARIES = libpaludis_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
 
 if ENABLE_PYTHON_HOOKS
-lib_LTLIBRARIES += libpaludispythonhooks.la
+lib_LTLIBRARIES += libpaludispythonhooks_@PALUDIS_PC_SLOT@.la
 endif
 
 endif
@@ -178,7 +178,7 @@ changequote(`<', `>')
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludis.la libpaludismanpagethings.la
+DISTCHECK_DEPS = libpaludis_@PALUDIS_PC_SLOT@.la libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
@@ -199,6 +199,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	SO_SUFFIX=@VERSION_LIB_CURRENT@ \
+	PALUDIS_PC_SLOT=@PALUDIS_PC_SLOT@ \
 	PYTHONPATH="$(top_builddir)/python/" \
 	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \

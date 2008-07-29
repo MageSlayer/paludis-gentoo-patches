@@ -9,22 +9,22 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludisportageenvironment_la_SOURCES = \
+libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	registration.cc \
 	portage_environment.cc portage_environment.hh
 
-libpaludisportageenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludisportageenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
 libenvdir = $(libdir)/paludis/environments/
 
 libexecenvdir = $(libexecdir)/paludis/environments/portage/
 libexecenv_SCRIPTS = bashrc
 
-libenv_LTLIBRARIES = libpaludisportageenvironment.la
+libenv_LTLIBRARIES = libpaludisportageenvironment_@PALUDIS_PC_SLOT@.la
 
 paludis_environment_portage_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/portage
 paludis_environment_portage_include_HEADERS = \
@@ -53,11 +53,11 @@ TESTS_ENVIRONMENT = env \
 
 portage_environment_TEST_SOURCES = portage_environment_TEST.cc
 portage_environment_TEST_LDADD = \
-	libpaludisportageenvironment.la \
+	libpaludisportageenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 check_PROGRAMS = $(TESTS)
@@ -73,3 +73,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

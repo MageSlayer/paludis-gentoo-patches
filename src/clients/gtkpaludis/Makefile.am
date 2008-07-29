@@ -17,8 +17,8 @@ gtkpaludis_SOURCES = \
 gtkpaludis_LDADD = \
 	libgtkpaludis/libgtkpaludis.a \
 	vtemm/libvtemm.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(gtkmm_LIBS) $(gthread_LIBS) $(vte_LIBS)
 
 built-sources : $(BUILT_SOURCES)
@@ -31,3 +31,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

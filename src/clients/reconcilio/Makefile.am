@@ -16,10 +16,10 @@ man_reconcilio_SOURCES = \
 	command_line.cc
 
 man_reconcilio_LDADD = \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/args/libpaludisman.a \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludismanpagethings.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisman_@PALUDIS_PC_SLOT@.a \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -35,9 +35,9 @@ reconcilio_LDADD = \
 	broken_linkage_finder/libbrokenlinkagefinder.a \
 	littlelf/liblittlelf.a \
 	util/libreconcilioutil.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -47,9 +47,9 @@ reconcilio_LDADD = \
 	broken_linkage_finder/libbrokenlinkagefinder.a \
 	littlelf/liblittlelf.a \
 	util/libreconcilioutil.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -96,3 +96,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

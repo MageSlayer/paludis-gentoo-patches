@@ -122,10 +122,10 @@ TESTS_ENVIRONMENT = env \
 
 if ENABLE_RUBY
 
-lib_LTLIBRARIES = libpaludisruby.la
+lib_LTLIBRARIES = libpaludisruby_@PALUDIS_PC_SLOT@.la
 
-libpaludisruby_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_SITEARCHDIR@ -I@RUBY_ARCHDIR@
-libpaludisruby_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisruby_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_SITEARCHDIR@ -I@RUBY_ARCHDIR@
+libpaludisruby_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_ruby_so.o : paludis_ruby_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -134,29 +134,29 @@ paludis_ruby_so.o : paludis_ruby_so.cc
 
 if ENABLE_QA
 
-libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
+libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
 TESTS = $(IF_RUBY_TESTS) $(IF_RUBY_QA_TESTS)
 
 else
 
-libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES)
+libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES)
 TESTS = $(IF_RUBY_TESTS)
 
 endif
 
-libpaludisruby_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
+libpaludisruby_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@.la \
 	$(PTHREAD_LIBS)
 
 check_DATA = .libs/Paludis.so
 rubylibdir = @RUBY_INSTALL_DIR@
 rubylib_DATA = Paludis.so
 
-.libs/Paludis.so : libpaludisruby.la paludis_ruby_so.o
+.libs/Paludis.so : libpaludisruby_@PALUDIS_PC_SLOT@.la paludis_ruby_so.o
 	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -164,16 +164,16 @@ rubylib_DATA = Paludis.so
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
-	    -L$(top_builddir)/ruby/.libs -lpaludisruby
+	    -L$(top_builddir)/ruby/.libs -lpaludisruby_@PALUDIS_PC_SLOT@
 
-Paludis.so : libpaludisruby.la paludis_ruby_so.o
+Paludis.so : libpaludisruby_@PALUDIS_PC_SLOT@.la paludis_ruby_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) $(PTHREAD_LIBS) \
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
-	    -L$(top_builddir)/ruby/.libs -lpaludisruby
+	    -L$(top_builddir)/ruby/.libs -lpaludisruby_@PALUDIS_PC_SLOT@
 
 endif
 
@@ -193,3 +193,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

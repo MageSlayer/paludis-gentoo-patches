@@ -64,9 +64,9 @@ paludis_repositories_e_include_HEADERS = \
 	repo_name.hh \
 	categories.hh
 
-lib_LTLIBRARIES = libpaludiserepositoryqa.la
+lib_LTLIBRARIES = libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la
 
-libpaludiserepositoryqa_la_SOURCES = \
+libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	qa.cc \
 	eapi_supported.cc \
 	metadata_keys.cc \
@@ -103,14 +103,14 @@ libpaludiserepositoryqa_la_SOURCES = \
 	categories.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
-libpaludiserepositoryqa_la_LDFLAGS = \
+libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LDFLAGS = \
 	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
 	$(PCREPLUSPLUS_LIBS)
 
-libpaludiserepositoryqa_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 dist_check_SCRIPTS = \
 	visibility_TEST_setup.sh \
@@ -163,123 +163,123 @@ check_PROGRAMS = $(TESTS)
 
 spec_keys_TEST_SOURCES = spec_keys_TEST.cc
 spec_keys_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 stray_files_TEST_SOURCES = stray_files_TEST.cc
 stray_files_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 extractors_TEST_SOURCES = extractors_TEST.cc
 extractors_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 homepage_key_TEST_SOURCES = homepage_key_TEST.cc
 homepage_key_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 visibility_TEST_SOURCES = visibility_TEST.cc
 visibility_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 default_functions_TEST_SOURCES = default_functions_TEST.cc
 default_functions_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 kv_variables_TEST_SOURCES = kv_variables_TEST.cc
 kv_variables_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 misc_files_TEST_SOURCES = misc_files_TEST.cc
 misc_files_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 manifest_TEST_SOURCES = manifest_TEST.cc
 manifest_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 subshell_die_TEST_SOURCES = subshell_die_TEST.cc
 subshell_die_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 function_keyword_TEST_SOURCES = function_keyword_TEST.cc
 function_keyword_TEST_LDADD = \
-	libpaludiserepositoryqa.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 endif

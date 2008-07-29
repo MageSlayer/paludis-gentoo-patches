@@ -34,27 +34,27 @@ EXTRA_DIST = \
 	dep_parser_TEST.cc
 
 fake_repository_TEST_LDADD = \
-	libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 fake_installed_repository_TEST_LDADD = \
-	libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 dep_parser_TEST_LDADD = \
-	libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a
 
 fake_repository_TEST_SOURCES = \
@@ -66,20 +66,20 @@ fake_installed_repository_TEST_SOURCES = \
 dep_parser_TEST_SOURCES = \
 	dep_parser_TEST.cc
 
-paludis_repositories_lib_LTLIBRARIES = libpaludisfakerepository.la
+paludis_repositories_lib_LTLIBRARIES = libpaludisfakerepository_@PALUDIS_PC_SLOT@.la
 
-libpaludisfakerepository_la_SOURCES = \
+libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	dep_parser.cc dep_parser.hh \
 	fake_repository_base.cc fake_repository_base.hh \
 	fake_repository.cc fake_repository.hh \
 	fake_installed_repository.cc fake_installed_repository.hh \
 	fake_package_id.cc fake_package_id.hh
 
-libpaludisfakerepository_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
-libpaludisfakerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_fake_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/fake/
 paludis_repositories_fake_include_HEADERS = \

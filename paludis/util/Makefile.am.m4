@@ -18,7 +18,7 @@ $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
 	test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludisutil.la
+	libpaludisutil_@PALUDIS_PC_SLOT@.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -78,9 +78,9 @@ EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist seclea
 	echo_functions.bash.in
 SUBDIRS = .
 
-libpaludisutil_la_SOURCES = filelist
-libpaludisutil_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
-libpaludisutil_la_LIBADD = $(PTHREAD_LIBS)
+libpaludisutil_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
+libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
+libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS)
 
 TESTS = testlist
 
@@ -92,7 +92,7 @@ TESTS_ENVIRONMENT = env \
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 
-lib_LTLIBRARIES = libpaludisutil.la
+lib_LTLIBRARIES = libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 paludis_util_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/util/
 paludis_util_include_HEADERS = headerlist srheaderlist seheaderlist
@@ -115,7 +115,7 @@ changequote(`<', `>')
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludisutil.la
+DISTCHECK_DEPS = libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
@@ -124,3 +124,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

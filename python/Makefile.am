@@ -139,18 +139,18 @@ TESTS_ENVIRONMENT = env \
 
 if ENABLE_PYTHON
 
-lib_LTLIBRARIES = libpaludispython.la
+lib_LTLIBRARIES = libpaludispython_@PALUDIS_PC_SLOT@.la
 
-libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libpaludispython_la_LDFLAGS = \
+libpaludispython_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
+libpaludispython_@PALUDIS_PC_SLOT@_la_LDFLAGS = \
 	@BOOST_PYTHON_LIB@ \
 	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
 	$(PTHREAD_LIBS)
 
-check_LTLIBRARIES = libadditionaltests.la
+check_LTLIBRARIES = libadditionaltests_@PALUDIS_PC_SLOT@.la
 
-libadditionaltests_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libadditionaltests_la_LDFLAGS = @BOOST_PYTHON_LIB@ -rpath /nowhere
+libadditionaltests_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
+libadditionaltests_@PALUDIS_PC_SLOT@_la_LDFLAGS = @BOOST_PYTHON_LIB@ -rpath /nowhere
 
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -164,34 +164,34 @@ additional_tests_so.o : additional_tests_so.cc
 
 if ENABLE_QA
 
-libpaludispython_la_SOURCES = $(IF_PYTHON_SOURCES) $(IF_PYTHON_QA_SOURCES)
+libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES) $(IF_PYTHON_QA_SOURCES)
 TESTS = $(IF_PYTHON_TESTS) $(IF_PYTHON_QA_TESTS)
 
 else
 
-libpaludispython_la_SOURCES = $(IF_PYTHON_SOURCES)
+libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES)
 TESTS = $(IF_PYTHON_TESTS)
 
 endif
 
-libpaludispython_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la
+libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
 
-libadditionaltests_la_SOURCES = additional_tests.hh additional_tests.cc
-libadditionaltests_la_LIBADD = $(libpaludispython_la_LIBADD)
+libadditionaltests_@PALUDIS_PC_SLOT@_la_SOURCES = additional_tests.hh additional_tests.cc
+libadditionaltests_@PALUDIS_PC_SLOT@_la_LIBADD = $(libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD)
 
 check_DATA = .libs/paludis.so .libs/additional_tests.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
 pythonlib_DATA = paludis.so paludis_output_wrapper.py
 
-.libs/paludis.so : libpaludispython.la paludis_python_so.o
+.libs/paludis.so : libpaludispython_@PALUDIS_PC_SLOT@.la paludis_python_so.o
 	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -199,25 +199,25 @@ pythonlib_DATA = paludis.so paludis_output_wrapper.py
 	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
-	    -L$(top_builddir)/python/.libs -lpaludispython
+	    -L$(top_builddir)/python/.libs -lpaludispython_@PALUDIS_PC_SLOT@
 
-paludis.so : libpaludispython.la paludis_python_so.o
+paludis.so : libpaludispython_@PALUDIS_PC_SLOT@.la paludis_python_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
 	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
-	    -L$(top_builddir)/python/.libs -lpaludispython
+	    -L$(top_builddir)/python/.libs -lpaludispython_@PALUDIS_PC_SLOT@
 
-.libs/additional_tests.so : libadditionaltests.la additional_tests_so.o
+.libs/additional_tests.so : libadditionaltests_@PALUDIS_PC_SLOT@.la additional_tests_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
 	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
 	    .libs/additional_tests_so.o \
-	    -L$(top_builddir)/python/.libs -ladditionaltests
+	    -L$(top_builddir)/python/.libs -ladditionaltests_@PALUDIS_PC_SLOT@
 
 endif
 
@@ -237,3 +237,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
