@@ -71,7 +71,6 @@ namespace
 
 namespace test_cases
 {
-#if 0
     struct ERepositoryRepoNameTest : TestCase
     {
         ERepositoryRepoNameTest() : TestCase("repo name") { }
@@ -460,7 +459,6 @@ namespace test_cases
             }
         }
     } test_e_repository_metadata_cached;
-#endif
 
     struct ERepositoryMetadataUncachedTest : TestCase
     {
@@ -533,7 +531,6 @@ namespace test_cases
         }
     } test_e_repository_metadata_uncached;
 
-#if 0
     struct ERepositoryMetadataStaleTest : TestCase
     {
         ERepositoryMetadataStaleTest() : TestCase("metadata stale") { }
@@ -2046,6 +2043,5 @@ namespace test_cases
             TEST_CHECK_EQUAL(FSEntry("e_repository_TEST_dir/root/bar").readlink(), "/foo");
         }
     } test_e_repository_symlink_rewriting;
-#endif
 }
 
