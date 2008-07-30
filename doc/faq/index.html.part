@@ -74,6 +74,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
     <li><a href="different.html#playman">No Layman (and how Playman is different)</a></li>
+    <li><a href="different.html#pkg_pretend">No <code>package.pretend</code> file</a></li>
 </ul>
 
 <h2>Repository Questions</h2>
