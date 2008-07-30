@@ -25,6 +25,8 @@
 #include <test/test_runner.hh>
 #include <tr1/functional>
 
+#include <cctype>
+
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <sched.h>
 #endif
@@ -116,7 +118,7 @@ namespace test_cases
             TEST_CHECK('2' == kernel_version().at(0));
             TEST_CHECK('.' == kernel_version().at(1));
 #elif defined(__FreeBSD__)
-            TEST_CHECK('6' == kernel_version().at(0));
+            TEST_CHECK(isdigit(kernel_version().at(0)));
             TEST_CHECK('.' == kernel_version().at(1));
 #else
 #  error You need to write a sanity test for kernel_version() for your platform.
