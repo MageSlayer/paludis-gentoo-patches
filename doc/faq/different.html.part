@@ -11,7 +11,7 @@
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
     <li><a href="different.html#playman">No Layman (and how Playman is different)</a></li>
-    <li><a href="different.html#pkg_pretend">No <code>package.pretend</code> file</a></li>
+    <li><a href="different.html#package_provided">No <code>package.provided</code> file</a></li>
 </ul>
 
 <h2 id="tree">No <code>--tree</code> Equivalent</h2>
@@ -102,12 +102,13 @@ main repository as well as your overlays.</p>
 USE flag enabled. The script will be installed as /usr/bin/playman.
 <code>playman --help</code> describes the available options.</p>
 
-<h2 id="pkg_pretend">No <code>package.pretend</code> file</h2>
+<h2 id="package_provided">No <code>package.provided</code> file</h2>
 
 <p>Portage supports pretending that a package is installed for the purposes of dependency resolution via a file called
-<code>package.pretend</code>. However, this causes some problems (in particular related to the built_with_use
-functions). Paludis provides a better approach, in the form of <a
-href="../clients/importare.html"><code>importare</code></a>.</p>
+<code>package.provided</code>. Paludis provides a cleaner approach, in the form of <a
+    href="../clients/importare.html"><code>importare</code></a>. <code>Importare</code> allows you to more cleanly
+reinstall, uninstall, and upgrade unpackaged packages, using the same sort of merge/unmerge process that paludis uses
+for ebuilds.</p>
 
 <p>To use importare, you will first have to configure an
 <a href="../configuration/installedunpackaged.html"><code>installed_unpackaged</code></a> format repository.</p>
