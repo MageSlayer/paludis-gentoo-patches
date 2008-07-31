@@ -63,7 +63,7 @@ namespace
 #endif
 
         for (int i(0) ; i < 100 ; ++i)
-            if (0 != run_command("/usr/bin/true"))
+            if (0 != run_command("/usr/bin/env true"))
                 throw InternalError(PALUDIS_HERE, "true isn't");
     }
 
