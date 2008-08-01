@@ -2,7 +2,8 @@
 # vim: set sw=4 sts=4 et tw=80 ft=ruby :
 # $Id$
 
-# Copyright (c) 2007 Mike Kelly <pioto@pioto.org>
+# Copyright (c) 2007 Mike Kelly
+# Copyright (c) 2007, 2008 David Leverton
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +31,7 @@ include Paludis
 Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
-version = "0.1.5"
+version = "0.1.6"
 laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/layman-global.txt')
 
 opts = GetoptLong.new(
