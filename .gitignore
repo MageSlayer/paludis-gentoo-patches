@@ -301,6 +301,11 @@ man-*
 /paludis/syncers/dogit+https
 /paludis/syncers/dogit+rsync
 /paludis/syncers/dogit+ssh
+/paludis/syncers/dohg+file
+/paludis/syncers/dohg+http
+/paludis/syncers/dohg+https
+/paludis/syncers/dohg+ssh
+/paludis/syncers/dohg+static-http
 /paludis/syncers/dorsync
 /paludis/syncers/dorsync+ssh
 /paludis/syncers/dosvn

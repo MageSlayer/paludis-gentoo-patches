@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+
+old_set=$-
+set -a
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+[[ "${old_set}" == *a* ]] || set +a
+
+LOCAL=
+REMOTE=
+
+HG_OPTIONS=( )
+HG_CLONE_OPTIONS=( )
+HG_PULL_OPTIONS=( )
+HG_UPDATE_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --hg-option=*)
+            HG_OPTIONS[${#HG_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --hg-clone-option=*)
+            HG_CLONE_OPTIONS[${#HG_CLONE_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --hg-pull-option=*)
+            HG_PULL_OPTIONS[${#HG_PULL_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --hg-update-option=*)
+            HG_UPDATE_OPTIONS[${#HG_UPDATE_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == hg+file ]]; then
+                echo "    URL syntax: hg+file:///PATH[#BRANCH]"
+            elif [[ "${PROTO}" == hg+http || "${PROTO}" == hg+https ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME@]SERVER/PATH[#BRANCH]"
+            elif [[ "${PROTO}" == hg+ssh ]]; then
+                echo "    URL syntax: hg+ssh://[USERNAME@]SERVER[:PORT]/PATH[#BRANCH]"
+            elif [[ "${PROTO}" == hg+static-http ]]; then
+                echo "    URL syntax: hg+static-http://SERVER[:PORT]/PATH[#BRANCH]"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+
+            echo "    Options:"
+            echo "        --hg-option=OPTION              Pass OPTION to hg as a global option"
+            echo "        --hg-clone-option=OPTION        Pass OPTION to hg clone"
+            echo "        --hg-pull-option=OPTION         Pass OPTION to hg pull"
+            echo "        --hg-update-option=OPTION       Pass OPTION to hg update"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+REMOTE="${REMOTE#hg+}"
+
+if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.hg" ]]; then
+    eerror "'${LOCAL}' exists but it is not a Mercurial repository"
+    exit 1
+fi
+
+if [[ -d "${LOCAL}" ]]; then
+    cd "${LOCAL}"
+    OLD_REMOTE="$(${HG_WRAPPER} hg "${HG_OPTIONS[@]}" paths default)"
+    if [[ "${OLD_REMOTE}" != "${REMOTE}" ]]; then
+        if ! sed -i -e '/^\[paths\]$/,/^\[/s,^default = .*,default = '"${REMOTE//,/\\,}," .hg/hgrc; then
+            eerror "${0}: could not switch from '${OLD_REMOTE}' to '${REMOTE}'"
+            exit 1
+        fi
+    fi
+    cd - >/dev/null
+fi
+
+if [[ -d "${LOCAL}/.hg" ]]; then
+    cd "${LOCAL}" && ${HG_WRAPPER} hg "${HG_OPTIONS[@]}" pull "${HG_PULL_OPTIONS[@]}" && \
+        ${HG_WRAPPER} hg "${HG_OPTIONS[@]}" update "${HG_UPDATE_OPTIONS[@]}"
+else
+    ${HG_WRAPPER} hg "${HG_OPTIONS[@]}" clone "${HG_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
+fi
+

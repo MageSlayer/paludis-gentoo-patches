@@ -11,6 +11,8 @@ master:
       that the GNU versions are used.  (This is not necessary on typical Linux
       systems; check <command> --version if in doubt.)
 
+    * Paludis now supports syncing from Mercurial repositories.
+
 0.28.0:
     * Compilers without tr1 memory, type traits and functional support are no
       longer supported. This means you, gcc-3.
