@@ -147,22 +147,76 @@ end
 
 layman_srcs = Hash.new
 laymanxml.elements.each("layman/overlay") do | element |
-    name = element.attribute("name").to_s
-    src = element.attribute("src").to_s
-    type = element.attribute("type").to_s
+    name    = element.attribute("name").to_s
+    src     = element.attribute("src").to_s
+    type    = element.attribute("type").to_s
+    subpath = element.attribute("subpath").to_s
     case type
-    when 'svn'
-        if src.include? "http://" or src.include? "https://"
-            src = "svn+" + src
+
+    when 'bzr'
+        case src
+        when %r{^bzr(?:\+ssh)?://}
+            #src = src
+        when %r{^[a-z+]+://}
+            src = "bzr+#{src}"
+        else
+            src = "bzr+file://#{src}"
         end
+
+    when 'cvs'
+        case src
+        when /^:ext:(.*)$/
+            src = "cvs+ext://#$1:#{subpath}"
+        when /^:pserver:(.*)$/
+            src = "cvs+pserver://#$1:#{subpath}"
+        end
+
     when 'darcs'
-        src = "darcs+" + src
-    when 'git'
-        if src.include? "http://"
-            src = "git+" + src
+        case src
+        when %r{^[a-z+]+://}
+            src = "darcs+#{src}"
+        when /..:/
+            src = "darcs+ssh://#{src}"
+        else
+            src = "darcs+file://#{src}"
         end
+
+    when 'git'
+        case src
+        when %r{^git(?:\+ssh)?://}
+            #src = src
+        when %r{^[a-z+]+://}
+            src = "git+#{src}"
+        else
+            src = "git+file://#{src}"
+        end
+
+    when 'mercurial'
+        src = "hg+#{src}"
+
+    when 'rsync'
+        case src
+        when %r{^rsync://}
+            #src = src
+        when /..:/
+            src = "rsync+ssh://#{src}"
+        else
+            src = "file://#{src}"
+        end
+
+    when 'svn'
+        case src
+        when %r{^svn(?:\+ssh)?://}
+            #src = src
+        when %r{^[a-z+]+://}
+            src = "svn+#{src}"
+        else
+            src = "svn+file://#{src}"
+        end
+
     when 'tar'
-        src = "tar+" + src
+        src = "tar+#{src}" if subpath == ""
+
     end
     layman_srcs[name]=src
 end
