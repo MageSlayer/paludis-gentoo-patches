@@ -29,6 +29,11 @@ nonfatal()
     PALUDIS_FAILURE_IS_FATAL= PALUDIS_FAILURE_IS_NONFATAL=yes "${@}"
 }
 
+is_nonfatal()
+{
+    [[ -n ${PALUDIS_FAILURE_IS_NONFATAL} ]]
+}
+
 expatch()
 {
     if [[ "${EBUILD_PHASE}" != "prepare" ]] ; then
