@@ -241,7 +241,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             (k::remove_trailing_slot_if_exists(), std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2))
             (k::has_version_operator(), std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements)))
             (k::get_remove_version_operator(), std::tr1::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_strict_star_operator))
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps))
             (k::get_remove_trailing_version(), std::tr1::bind(&elike_get_remove_trailing_version, _1))
             (k::add_version_requirement(), std::tr1::bind(&elike_add_version_requirement, _1, _2, _3))
             (k::add_package_requirement(), std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter))

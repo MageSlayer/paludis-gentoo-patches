@@ -303,14 +303,11 @@ paludis::elike_get_remove_version_operator(std::string & s, const ELikePackageDe
     {
         if (op != vo_equal)
         {
-            if (! options[epdso_strict_star_operator])
-            {
-                if (options[epdso_strict_parsing])
-                    throw PackageDepSpecError("Package dep spec uses * with operator '" + stringify(op) + "'");
-                else
-                    Log::get_instance()->message("e.package_dep_spec.bad_operator", ll_qa, lc_context)
-                        << "Package dep spec uses * with operator '" << op << "', pretending it uses the equals operator instead";
-            }
+            if (options[epdso_strict_parsing])
+                throw PackageDepSpecError("Package dep spec uses * with operator '" + stringify(op) + "'");
+            else
+                Log::get_instance()->message("e.package_dep_spec.bad_operator", ll_qa, lc_context)
+                    << "Package dep spec uses * with operator '" << op << "', pretending it uses the equals operator instead";
         }
         op = vo_equal_star;
         s.erase(s.length() - 1);

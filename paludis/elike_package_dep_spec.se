@@ -12,7 +12,6 @@ make_enum_ELikePackageDepSpecOption()
     key epdso_allow_repository_deps      "Allow ::repo deps"
     key epdso_allow_square_bracket_deps  "Allow [use] and [opver] deps"
     key epdso_allow_tilde_greater_deps   "Allow ~> deps"
-    key epdso_strict_star_operator       "* with an operator other than = is an error"
     key epdso_strict_parsing             "Error rather than warn for violations"
 }
 

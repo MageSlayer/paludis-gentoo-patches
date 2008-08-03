@@ -62,7 +62,7 @@ namespace
     {
         PackageDepSpec p(parse_elike_package_dep_spec(s, ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
-                    + epdso_allow_square_bracket_deps + epdso_allow_tilde_greater_deps + epdso_strict_star_operator
+                    + epdso_allow_square_bracket_deps + epdso_allow_tilde_greater_deps
                     + epdso_strict_parsing, id));
         (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(p)))));
     }
@@ -77,7 +77,7 @@ namespace
                         make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(1),
                                     ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
-                                    + epdso_allow_square_bracket_deps + epdso_allow_tilde_greater_deps + epdso_strict_star_operator
+                                    + epdso_allow_square_bracket_deps + epdso_allow_tilde_greater_deps
                                     + epdso_strict_parsing, id)))));
             (*h.begin())[k::add_handler()](make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(b)));
         }
