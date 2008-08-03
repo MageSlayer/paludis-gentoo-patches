@@ -1256,6 +1256,16 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("doman 0", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                id->perform_action(action);
+            }
+
+            {
                 TestMessageSuffix suffix("best version", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
@@ -1363,6 +1373,16 @@ namespace test_cases
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("doman 1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_1;
 
@@ -1455,6 +1475,16 @@ namespace test_cases
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("doman kdebuild-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-kdebuild-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                id->perform_action(action);
             }
         }
     } test_e_repository_install_eapi_kdebuild_1;
@@ -1937,6 +1967,24 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(id);
                 id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("doman success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-success-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("doman failure", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-failure-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
         }
     } test_e_repository_install_exheres_0;

@@ -22,6 +22,7 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+source "${PALUDIS_EBUILD_DIR}"/0/list_functions.bash
 
 if [[ ! -d ${D} ]]; then
     paludis_die_or_error "\${D} not valid; aborting"
@@ -40,20 +41,26 @@ for x in "$@"; do
         i18n="${x:6}/"
         continue
     fi
-    if [[ ${x} == .keep ]]; then
+    if [[ ${x} == .keep_* ]]; then
         continue
     fi
 
     suffix=${x##*.}
 
-    if [[ ${suffix} == "gz" ]]; then
+    if hasq ${suffix} Z gz bz2; then
         realname=${x%.*}
         suffix=${realname##*.}
-    else
-        realname=${x}
     fi
 
-    mandir="${i18n}man${suffix:0:1}"
+    if [[ -n ${PALUDIS_DOMAN_LANG_FILENAMES} && \
+            $x =~ (.*)\.([a-z][a-z](_[A-Z][A-Z])?)\.(.*) ]] ; then
+        name=${BASH_REMATCH[1]##*/}.${BASH_REMATCH[4]}
+        mandir=${BASH_REMATCH[2]}/man${suffix:0:1}
+    else
+        name=${x##*/}
+        mandir=${i18n}man${suffix:0:1}
+    fi
+
     match='man[0-9n](|f|p|pm)$'
 
     if [[ ${mandir} =~ ${match} ]]; then
@@ -62,8 +69,8 @@ for x in "$@"; do
                 install -d "${D}${BASE}/man/${mandir}"
             fi
 
-            install -m0644 "${x}" "${D}${BASE}/man/${mandir}" || ret=2
-        else
+            install -m0644 "${x}" "${D}${BASE}/man/${mandir}/${name}" || ret=2
+        elif [[ ! -e ${x} ]]; then
             echo "${0}: ${x} does not exist" >&2
             ret=2
         fi

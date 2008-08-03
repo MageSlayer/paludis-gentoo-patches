@@ -182,6 +182,7 @@ namespace
     std::tr1::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIToolsOptions(make_named_values<EAPIToolsOptions>(
+                        value_for<n::doman_lang_filenames>(destringify_key<bool>(k, "doman_lang_filenames")),
                         value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
                         value_for<n::failure_is_fatal>(destringify_key<bool>(k, "failure_is_fatal")),
                         value_for<n::unpack_fix_permissions>(destringify_key<bool>(k, "unpack_fix_permissions")),

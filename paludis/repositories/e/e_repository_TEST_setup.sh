@@ -745,6 +745,111 @@ src_install() {
 }
 END
 cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
+mkdir -p "cat/doman"
+cat <<END > cat/doman/doman-0.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    echo \${PF} >foo.1
+    mkdir dir
+    echo \${PF} >dir/foo.2
+    echo \${PF} >foo.2
+    echo \${PF} >foo.3x
+    echo \${PF} >foo.4.gz
+    echo \${PF} >foo.5f.bz2
+    echo \${PF} >foo.6.Z
+    echo \${PF} >foo.en.7
+    echo \${PF} >foo.en_GB.8
+    echo \${PF} >foo.e.9
+    echo \${PF} >foo.enn.n
+    echo \${PF} >foo.EN.1
+    echo \${PF} >foo.en-GB.2
+    echo \${PF} >foo.en_gb.3
+    echo \${PF} >foo.en_G.4
+    echo \${PF} >foo.en_GBB.5
+    echo \${PF} >foo.nonkey
+    touch foo.1x
+    echo \${PF} >bar.m
+    echo \${PF} >bar.monkey
+    echo \${PF} >baz.6
+    echo \${PF} >baz.en_US.7
+}
+
+src_install() {
+    doman foo.* dir/foo.* || die
+    doman bar.m && die
+    doman bar.monkey && die
+    doman bar.1 && die
+    doman -i18n=en_GB baz.* || die
+    keepdir /meh || die
+    cd "\${D}"/meh || die
+    doman .keep* || die
+    rm "\${D}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
+    rm "\${D}"/usr/share/man/{man6/foo.6.Z,man7/foo.en.7,man8/foo.en_GB.8,man9/foo.e.9,mann/foo.enn.n} || die
+    rm "\${D}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
+    rm "\${D}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_GB/man7/baz.en_US.7} || die
+    rmdir "\${D}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man7,man8,man9,mann,en_GB/man6,en_GB/man7,en_GB,} || die
+}
+END
+cp cat/doman/doman-{0,1}.ebuild || exit 1
+cat <<END > cat/doman/doman-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    echo \${PF} >foo.1
+    mkdir dir
+    echo \${PF} >dir/foo.2
+    echo \${PF} >foo.3x
+    echo \${PF} >foo.4.gz
+    echo \${PF} >foo.5f.bz2
+    echo \${PF} >foo.6.Z
+    echo \${PF} >foo.en.7
+    echo \${PF} >foo.en_GB.8
+    echo \${PF} >foo.e.9
+    echo \${PF} >foo.enn.n
+    echo \${PF} >foo.EN.1
+    echo \${PF} >foo.en-GB.2
+    echo \${PF} >foo.en_gb.3
+    echo \${PF} >foo.en_G.4
+    echo \${PF} >foo.en_GBB.5
+    echo \${PF} >foo.nonkey
+    touch foo.1x
+    echo \${PF} >bar.m
+    echo \${PF} >bar.monkey
+    echo \${PF} >baz.6
+    echo \${PF} >baz.en_US.7
+}
+
+src_install() {
+    doman foo.* dir/foo.* || die
+    doman bar.m && die
+    doman bar.monkey && die
+    doman bar.1 && die
+    doman -i18n=en_GB baz.* || die
+    keepdir /meh || die
+    cd "\${D}"/meh || die
+    doman .keep* || die
+    rm "\${D}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
+    rm "\${D}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
+    rm "\${D}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
+    rm "\${D}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
+    rmdir "\${D}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
+}
+END
 mkdir -p "cat/dosym-success"
 cat <<'END' > cat/dosym-success/dosym-success-1.ebuild || exit 1
 EAPI="${PV}"
@@ -985,6 +1090,8 @@ src_install() {
     dosym foo /usr/bin/bar
 }
 END
+mkdir -p "cat/doman-kdebuild"
+sed -e /EAPI=/d cat/doman/doman-0.ebuild >cat/doman-kdebuild/doman-kdebuild-1.kdebuild-1 || exit 1
 mkdir -p "cat/expand-vars"
 cat <<"END" > cat/expand-vars/expand-vars-0.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -1677,6 +1784,71 @@ PLATFORMS="test"
 
 pkg_setup() {
     [[ ${OPTIONS%%+( )} == "enabled-weasel linguas:enabled-en_GB" ]] || die "OPTIONS=$OPTIONS is wrong"
+}
+END
+mkdir -p "packages/cat/doman-success"
+cat <<END > packages/cat/doman-success/doman-success-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    echo \${PF} >foo.1
+    mkdir dir
+    echo \${PF} >dir/foo.2
+    echo \${PF} >foo.3x
+    echo \${PF} >foo.4.gz
+    echo \${PF} >foo.5f.bz2
+    echo \${PF} >foo.6.Z
+    echo \${PF} >foo.en.7
+    echo \${PF} >foo.en_GB.8
+    echo \${PF} >foo.e.9
+    echo \${PF} >foo.enn.n
+    echo \${PF} >foo.EN.1
+    echo \${PF} >foo.en-GB.2
+    echo \${PF} >foo.en_gb.3
+    echo \${PF} >foo.en_G.4
+    echo \${PF} >foo.en_GBB.5
+    echo \${PF} >foo.nonkey
+    touch foo.1x
+    echo \${PF} >baz.6
+    echo \${PF} >baz.en_US.7
+}
+
+src_install() {
+    doman foo.* dir/foo.* || die
+    nonfatal doman bar.1 && die
+    doman -i18n=en_GB baz.* || die
+    keepdir /meh || die
+    cd "\${D}"/meh || die
+    doman .keep* || die
+    rm "\${D}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
+    rm "\${D}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
+    rm "\${D}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
+    rm "\${D}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
+    rmdir "\${D}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
+}
+END
+mkdir -p "packages/cat/doman-failure"
+cat <<END > packages/cat/doman-failure/doman-failure-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    echo \${PF} >bar.m
+}
+
+src_install() {
+    doman bar.m
 }
 END
 cd ..
