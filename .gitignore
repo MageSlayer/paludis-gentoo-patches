@@ -169,6 +169,7 @@ man-*
 /paludis/dep_list_TEST_blockers
 /paludis/dep_spec_TEST
 /paludis/elike_dep_parser_TEST
+/paludis/elike_use_requirement_TEST
 /paludis/environments/adapted/adapted_environment_TEST
 /paludis/environments/no_config/no_config_environment_TEST
 /paludis/environments/paludis/paludis_environment_TEST
