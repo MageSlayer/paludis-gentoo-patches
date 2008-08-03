@@ -33,13 +33,16 @@ using namespace paludis;
 
 namespace
 {
-    class PALUDIS_VISIBLE UseRequirement
+    class UseRequirement
     {
         private:
             const UseFlagName _name;
 
         public:
-            UseRequirement(const UseFlagName &);
+            UseRequirement(const UseFlagName & n) :
+                _name(n)
+            {
+            }
             virtual ~UseRequirement() { }
 
             const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -55,22 +58,38 @@ namespace
         public UseRequirement
     {
         public:
-            EnabledUseRequirement(const UseFlagName &);
-            ~EnabledUseRequirement();
+            EnabledUseRequirement(const UseFlagName & n) :
+                UseRequirement(n)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' enabled";
+            }
     };
 
     class PALUDIS_VISIBLE DisabledUseRequirement :
         public UseRequirement
     {
         public:
-            DisabledUseRequirement(const UseFlagName &);
-            ~DisabledUseRequirement();
+            DisabledUseRequirement(const UseFlagName & n) :
+                UseRequirement(n)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return ! env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' disabled";
+            }
     };
 
     class PALUDIS_VISIBLE ConditionalUseRequirement :
@@ -80,8 +99,11 @@ namespace
             const std::tr1::shared_ptr<const PackageID> _id;
 
         public:
-            ConditionalUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~ConditionalUseRequirement();
+            ConditionalUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                UseRequirement(n),
+                _id(i)
+            {
+            }
 
             const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
@@ -93,66 +115,114 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            IfMineThenUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~IfMineThenUseRequirement();
+            IfMineThenUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return ! env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' enabled if it is enabled for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class PALUDIS_VISIBLE IfNotMineThenUseRequirement :
         public ConditionalUseRequirement
     {
         public:
-            IfNotMineThenUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~IfNotMineThenUseRequirement();
+            IfNotMineThenUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' enabled if it is disabled for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class PALUDIS_VISIBLE IfMineThenNotUseRequirement :
         public ConditionalUseRequirement
     {
         public:
-            IfMineThenNotUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~IfMineThenNotUseRequirement();
+            IfMineThenNotUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return ! env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' disabled if it is enabled for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class PALUDIS_VISIBLE IfNotMineThenNotUseRequirement :
         public ConditionalUseRequirement
     {
         public:
-            IfNotMineThenNotUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~IfNotMineThenNotUseRequirement();
+            IfNotMineThenNotUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' disabled if it is disabled for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class PALUDIS_VISIBLE EqualUseRequirement :
         public ConditionalUseRequirement
     {
         public:
-            EqualUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~EqualUseRequirement();
+            EqualUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return env->query_use(flag(), pkg) == env->query_use(flag(), *package_id());
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' enabled or disabled like it is for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class PALUDIS_VISIBLE NotEqualUseRequirement :
         public ConditionalUseRequirement
     {
         public:
-            NotEqualUseRequirement(const UseFlagName &, const std::tr1::shared_ptr<const PackageID> &);
-            ~NotEqualUseRequirement();
+            NotEqualUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+                ConditionalUseRequirement(n, i)
+            {
+            }
 
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            {
+                return env->query_use(flag(), pkg) != env->query_use(flag(), *package_id());
+            }
+            virtual const std::string as_human_string() const
+            {
+                return "Flag '" + stringify(flag()) + "' enabled or disabled opposite to how it is for '" + stringify(*package_id()) + "'";
+            }
     };
 
     class UseRequirements :
@@ -269,195 +339,6 @@ namespace
         else
             return make_shared_ptr(new EnabledUseRequirement(UseFlagName(flag)));
     }
-}
-
-UseRequirement::UseRequirement(const UseFlagName & f) :
-    _name(f)
-{
-}
-
-EnabledUseRequirement::EnabledUseRequirement(const UseFlagName & n) :
-    UseRequirement(n)
-{
-}
-
-EnabledUseRequirement::~EnabledUseRequirement()
-{
-}
-
-bool
-EnabledUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return env->query_use(flag(), pkg);
-}
-
-const std::string
-EnabledUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' enabled";
-}
-
-DisabledUseRequirement::DisabledUseRequirement(const UseFlagName & n) :
-    UseRequirement(n)
-{
-}
-
-DisabledUseRequirement::~DisabledUseRequirement()
-{
-}
-
-bool
-DisabledUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return ! env->query_use(flag(), pkg);
-}
-
-const std::string
-DisabledUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' disabled";
-}
-
-ConditionalUseRequirement::ConditionalUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    UseRequirement(n),
-    _id(i)
-{
-}
-
-ConditionalUseRequirement::~ConditionalUseRequirement()
-{
-}
-
-IfMineThenUseRequirement::IfMineThenUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-IfMineThenUseRequirement::~IfMineThenUseRequirement()
-{
-}
-
-bool
-IfMineThenUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return ! env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
-}
-
-const std::string
-IfMineThenUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' enabled if it is enabled for '" + stringify(*package_id()) + "'";
-}
-
-IfNotMineThenUseRequirement::IfNotMineThenUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-IfNotMineThenUseRequirement::~IfNotMineThenUseRequirement()
-{
-}
-
-bool
-IfNotMineThenUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
-}
-
-const std::string
-IfNotMineThenUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' enabled if it is disabled for '" + stringify(*package_id()) + "'";
-}
-
-IfMineThenNotUseRequirement::IfMineThenNotUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-IfMineThenNotUseRequirement::~IfMineThenNotUseRequirement()
-{
-}
-
-const std::string
-IfMineThenNotUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' disabled if it is enabled for '" + stringify(*package_id()) + "'";
-}
-
-bool
-IfMineThenNotUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return ! env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
-}
-
-IfNotMineThenNotUseRequirement::IfNotMineThenNotUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-IfNotMineThenNotUseRequirement::~IfNotMineThenNotUseRequirement()
-{
-}
-
-bool
-IfNotMineThenNotUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
-}
-
-const std::string
-IfNotMineThenNotUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' disabled if it is disabled for '" + stringify(*package_id()) + "'";
-}
-
-EqualUseRequirement::EqualUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-EqualUseRequirement::~EqualUseRequirement()
-{
-}
-
-bool
-EqualUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return env->query_use(flag(), pkg) == env->query_use(flag(), *package_id());
-}
-
-const std::string
-EqualUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' enabled or disabled like it is for '" + stringify(*package_id()) + "'";
-}
-
-NotEqualUseRequirement::NotEqualUseRequirement(
-        const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
-    ConditionalUseRequirement(n, i)
-{
-}
-
-NotEqualUseRequirement::~NotEqualUseRequirement()
-{
-}
-
-bool
-NotEqualUseRequirement::requirement_met(const Environment * const env, const PackageID & pkg) const
-{
-    return env->query_use(flag(), pkg) != env->query_use(flag(), *package_id());
-}
-
-const std::string
-NotEqualUseRequirement::as_human_string() const
-{
-    return "Flag '" + stringify(flag()) + "' enabled or disabled opposite to how it is for '" + stringify(*package_id()) + "'";
 }
 
 ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const std::string & m) throw () :
