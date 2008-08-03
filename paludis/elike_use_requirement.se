@@ -7,5 +7,6 @@ make_enum_ELikeUseRequirementOption()
     want_destringify
 
     key euro_allow_self_deps          "Allow self-dependent use deps"
+    key euro_portage_syntax           "Parse using Portage syntax"
 }
 

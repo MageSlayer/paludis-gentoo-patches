@@ -92,15 +92,6 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
     if (std::string::npos == ((use_group_p = s.rfind('['))))
         return false;
 
-    if (! options[epdso_allow_square_bracket_deps])
-    {
-        if (options[epdso_strict_parsing])
-            throw PackageDepSpecError("[] dependencies not safe for use here");
-        else
-            Log::get_instance()->message("e.package_dep_spec.brackets_not_allowed", ll_warning, lc_context)
-                << "[] dependencies not safe for use here";
-    }
-
     if (s.at(s.length() - 1) != ']')
         throw PackageDepSpecError("Mismatched []");
 
@@ -116,6 +107,15 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
         case '>':
         case '=':
         case '~':
+            if (! options[epdso_allow_ranged_deps])
+            {
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Version range dependencies not safe for use here");
+                else
+                    Log::get_instance()->message("e.package_dep_spec.range_not_allowed", ll_warning, lc_context)
+                        << "Version range dependencies not safe for use here";
+            }
+
             {
                 char needed_mode(0);
 
@@ -178,11 +178,32 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             break;
 
         default:
+            if (options[epdso_allow_use_deps_portage] || ! options[epdso_allow_use_deps])
+            {
+                if (! options[epdso_allow_use_deps_portage])
+                {
+                    if (options[epdso_strict_parsing])
+                        throw PackageDepSpecError("USE dependencies not safe for use here");
+                    else
+                    {
+                        // Use Portage syntax for this case, as it
+                        // should only happen in Gentoo EAPIs
+                        Log::get_instance()->message("e.package_dep_spec.use_not_allowed", ll_warning, lc_context)
+                            << "USE dependencies not safe for use here";
+                    }
+                }
+
+                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
+                            id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+                result.additional_requirement(req);
+            }
+            else
             {
                 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
                             id, ELikeUseRequirementOptions() + euro_allow_self_deps));
                 result.additional_requirement(req);
             }
+
             break;
     };
 
