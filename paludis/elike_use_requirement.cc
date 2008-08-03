@@ -28,6 +28,7 @@
 #include <paludis/environment.hh>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 using namespace paludis;
 
