@@ -45,6 +45,7 @@ opts = GetoptLong.new(
     [ '--no-names-cache',      GetoptLong::NO_ARGUMENT ],
     [ '--no-write-cache',      GetoptLong::NO_ARGUMENT ])
 
+$envspec = ""
 $mode = ""
 $names_cache = true
 $write_cache = true
@@ -113,7 +114,7 @@ HELP
     end
 end
 
-$env = EnvironmentMaker.instance.make_from_spec($envspec || "")
+$env = EnvironmentMaker.instance.make_from_spec($envspec)
 if $env.format_key.value != "paludis" then
     $stderr.puts "#$0: --environment must specify class 'paludis'"
     exit 1
