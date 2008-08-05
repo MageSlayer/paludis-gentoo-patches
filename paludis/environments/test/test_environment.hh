@@ -60,6 +60,7 @@ namespace paludis
             ///\{
 
             TestEnvironment();
+            TestEnvironment(const FSEntry &);
 
             ~TestEnvironment();
 

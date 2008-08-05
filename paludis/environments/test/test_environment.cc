@@ -46,18 +46,26 @@ namespace paludis
     {
         std::tr1::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
+        FSEntry root;
         Sets sets;
 
-        Implementation(Environment * const e) :
+        Implementation(Environment * const e, const FSEntry & r) :
             package_database(new PackageDatabase(e)),
-            paludis_command("")
+            paludis_command(""),
+            root(r)
         {
         }
     };
 }
 
 TestEnvironment::TestEnvironment() :
-    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this)),
+    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this, FSEntry("/"))),
+    _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
+{
+}
+
+TestEnvironment::TestEnvironment(const FSEntry & r) :
+    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this, r)),
     _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
 {
 }
@@ -150,7 +158,7 @@ TestEnvironment::reduced_gid() const
 const FSEntry
 TestEnvironment::root() const
 {
-    return FSEntry("/");
+    return _imp->root;
 }
 
 std::tr1::shared_ptr<const MirrorsSequence>
