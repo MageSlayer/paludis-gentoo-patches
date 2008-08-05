@@ -50,25 +50,26 @@ class class_supports_action_test :
 
 namespace
 {
-    InstallActionOptions make_install_action_options(
-            const InstallActionDebugOption & d, const InstallActionChecksOption & c,
+    InstallActionOptions * make_install_action_options(
+            const InstallActionChecksOption & c, const InstallActionDebugOption & d,
             const std::tr1::shared_ptr<paludis::Repository> & r)
     {
-        return make_named_values<InstallActionOptions>(
-                value_for<n::checks>(c),
-                value_for<n::debug_build>(d),
-                value_for<n::destination>(r)
-                );
+        return new InstallActionOptions(make_named_values<InstallActionOptions>(
+                    value_for<n::checks>(c),
+                    value_for<n::debug_build>(d),
+                    value_for<n::destination>(r)
+                    ));
     }
 
-    FetchActionOptions make_fetch_action_options(
-            const bool fetch_unneeded, const bool safe_resume
+    FetchActionOptions * make_fetch_action_options(
+            const bool fetch_unneeded,
+            const bool safe_resume
             )
     {
-        return make_named_values<FetchActionOptions>(
-                value_for<n::fetch_unneeded>(fetch_unneeded),
-                value_for<n::safe_resume>(safe_resume)
-                );
+        return new FetchActionOptions(make_named_values<FetchActionOptions>(
+                    value_for<n::fetch_unneeded>(fetch_unneeded),
+                    value_for<n::safe_resume>(safe_resume)
+                    ));
     }
 
 }
@@ -120,8 +121,8 @@ void expose_action()
         )
 
         .def("__init__",
-                make_install_action_options,
-                "__init__(InstallActionDebugOption, InstallActionChecksOption, Repository)"
+                bp::make_constructor(&make_install_action_options),
+                "__init__(InstallActionChecksOption, InstallActionDebugOption, Repository)"
             )
 
         .add_property("debug_build",
@@ -154,7 +155,7 @@ void expose_action()
         )
 
         .def("__init__",
-                bp::make_constructor(make_fetch_action_options),
+                bp::make_constructor(&make_fetch_action_options),
                 "__init__(fetch_uneeded, safe_resume)"
             )
 
@@ -285,5 +286,5 @@ void expose_action()
     class_supports_action_test<PretendAction>("Pretend");
     class_supports_action_test<ConfigAction>("Config");
     class_supports_action_test<InfoAction>("Info");
-
 }
+

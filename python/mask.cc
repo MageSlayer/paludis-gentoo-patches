@@ -22,10 +22,24 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    std::tr1::shared_ptr<RepositoryMaskInfo>  make_repository_mask_info(
+            const std::tr1::shared_ptr<const Sequence<std::string> > & s, const FSEntry & f)
+    {
+        return make_shared_ptr(new RepositoryMaskInfo(make_named_values<RepositoryMaskInfo>(
+                        value_for<n::comment>(s),
+                        value_for<n::mask_file>(f)
+                        )));
+    };
+}
 
 class MaskSptrToPythonVisitor :
     public ConstVisitor<MaskVisitorTypes>
@@ -283,10 +297,14 @@ void expose_mask()
         (
          "RepositoryMaskInfo",
          "Information about a RepositoryMask.",
-         bp::init<const FSEntry &, const std::tr1::shared_ptr<const Sequence<std::string> > &>(
-             "__init__(path_str, list of string)"
-             )
+         bp::no_init
         )
+
+        .def("__init__",
+                bp::make_constructor(&make_repository_mask_info),
+                "__init__(list of string, path_str)"
+            )
+
         .add_property("mask_file",
                 &named_values_getter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
                 &named_values_setter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
