@@ -190,7 +190,7 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);

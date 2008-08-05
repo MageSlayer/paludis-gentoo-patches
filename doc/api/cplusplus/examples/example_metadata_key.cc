@@ -130,9 +130,9 @@ namespace
                 }
             }
 
-            void visit(const MetadataSpecTreeKey<RestrictSpecTree> & key)
+            void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<RestrictSpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PlainTextSpecTree>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 

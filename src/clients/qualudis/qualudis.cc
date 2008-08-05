@@ -128,7 +128,7 @@ namespace
             stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }

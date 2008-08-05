@@ -302,7 +302,7 @@ namespace
                             std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<PackageID>, _1)));
             }
 
-            void visit(const MetadataSpecTreeKey<RestrictSpecTree> & s)
+            void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & s)
             {
                 if (_flatten)
                 {

@@ -129,9 +129,9 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(_m_ptr));
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
@@ -1058,7 +1058,7 @@ void expose_metadata_key()
     class_spec_tree_key<LicenseSpecTree>("LicenseSpecTree");
     class_spec_tree_key<ProvideSpecTree>("ProvideSpecTree");
     class_spec_tree_key<DependencySpecTree>("DependencySpecTree");
-    class_spec_tree_key<RestrictSpecTree>("RestrictSpecTree");
+    class_spec_tree_key<PlainTextSpecTree>("PlainTextSpecTree");
     class_spec_tree_key<SimpleURISpecTree>("SimpleURISpecTree");
     class_spec_tree_key<FetchableURISpecTree>("FetchableURISpecTree");
 }

@@ -73,7 +73,7 @@ namespace paludis
             MetadataSpecTreeKey<FetchableURISpecTree>,
             MetadataSpecTreeKey<SimpleURISpecTree>,
             MetadataSpecTreeKey<ProvideSpecTree>,
-            MetadataSpecTreeKey<RestrictSpecTree>,
+            MetadataSpecTreeKey<PlainTextSpecTree>,
             MetadataValueKey<std::string>,
             MetadataValueKey<long>,
             MetadataValueKey<bool>,

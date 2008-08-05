@@ -406,7 +406,7 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<RestrictSpecTree> > restrictions;
+        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
 
@@ -1098,7 +1098,7 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
-template class FakeMetadataSpecTreeKey<RestrictSpecTree>;
+template class FakeMetadataSpecTreeKey<PlainTextSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
 template class FakeMetadataSpecTreeKey<DependencySpecTree>;

@@ -149,7 +149,7 @@ template class MetadataCollectionKey<FSEntrySequence>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;
-template class MetadataSpecTreeKey<RestrictSpecTree>;
+template class MetadataSpecTreeKey<PlainTextSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class MetadataSpecTreeKey<FetchableURISpecTree>;
 template class MetadataSpecTreeKey<DependencySpecTree>;

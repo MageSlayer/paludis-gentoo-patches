@@ -59,11 +59,11 @@ template class TreeLeaf<ProvideSpecTree, PackageDepSpec>;
 template class ConstTreeSequence<ProvideSpecTree, AllDepSpec>;
 template class ConstTreeSequence<ProvideSpecTree, ConditionalDepSpec>;
 
-template class ConstVisitor<RestrictSpecTree>;
-template class ConstAcceptInterface<RestrictSpecTree>;
-template class TreeLeaf<RestrictSpecTree, PlainTextDepSpec>;
-template class ConstTreeSequence<RestrictSpecTree, AllDepSpec>;
-template class ConstTreeSequence<RestrictSpecTree, ConditionalDepSpec>;
+template class ConstVisitor<PlainTextSpecTree>;
+template class ConstAcceptInterface<PlainTextSpecTree>;
+template class TreeLeaf<PlainTextSpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<PlainTextSpecTree, AllDepSpec>;
+template class ConstTreeSequence<PlainTextSpecTree, ConditionalDepSpec>;
 
 template class ConstVisitor<DependencySpecTree>;
 template class TreeLeaf<DependencySpecTree, PackageDepSpec>;

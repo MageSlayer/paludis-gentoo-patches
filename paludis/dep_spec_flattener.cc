@@ -145,6 +145,6 @@ DepSpecFlattener<Heirarchy_, Item_>::visit_leaf(const Item_ & p)
 
 template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
-template class DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>;
+template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
 template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 

@@ -85,13 +85,13 @@ int main(int argc, char * argv[])
              * Instead, we use PackageID::find_metadata to see if the key we
              * want exists, and then visitor_cast<> to see whether it's of a
              * suitable type (the key could be something other than a
-             * MetadataSpecTreeKey<RestrictSpecTree>). */
+             * MetadataSpecTreeKey<PlainTextSpecTree>). */
             if ((*i)->end_metadata() != (*i)->find_metadata("RESTRICT") &&
-                    visitor_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(**(*i)->find_metadata("RESTRICT")))
+                    visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**(*i)->find_metadata("RESTRICT")))
             {
-                DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(env.get());
+                DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env.get());
 
-                visitor_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(
+                visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(
                         **(*i)->find_metadata("RESTRICT"))->value()->accept(restricts);
 
                 cout << "    " << left << setw(24) << "Restricts:" << " "

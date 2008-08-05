@@ -101,7 +101,7 @@ namespace
     }
 
     template <typename T_>
-    void restrict_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
+    void plain_text_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
         (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PlainTextDepSpec>(make_shared_ptr(new PlainTextDepSpec(s)))));
     }
@@ -395,32 +395,32 @@ paludis::erepository::parse_license(const std::string & s,
     return (*stack.begin()).item();
 }
 
-std::tr1::shared_ptr<RestrictSpecTree::ConstItem>
-paludis::erepository::parse_restrict(const std::string & s,
+std::tr1::shared_ptr<PlainTextSpecTree::ConstItem>
+paludis::erepository::parse_plain_text(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
 {
     using namespace std::tr1::placeholders;
 
-    ParseStackTypes<RestrictSpecTree>::Stack stack;
-    std::tr1::shared_ptr<ConstTreeSequence<RestrictSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<RestrictSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    stack.push_front(make_named_values<ParseStackTypes<RestrictSpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<RestrictSpecTree, AllDepSpec>::add, top.get(), _1)),
+    ParseStackTypes<PlainTextSpecTree>::Stack stack;
+    std::tr1::shared_ptr<ConstTreeSequence<PlainTextSpecTree, AllDepSpec> > top(
+            new ConstTreeSequence<PlainTextSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
+    stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<PlainTextSpecTree, AllDepSpec>::add, top.get(), _1)),
                 value_for<n::item>(top)
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<RestrictSpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack))),
                 value_for<n::on_annotations>(&discard_annotations),
                 value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
                 value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
                 value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
                 value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<RestrictSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<RestrictSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&restrict_handler<RestrictSpecTree>, std::tr1::ref(stack), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<RestrictSpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id)),
                 value_for<n::on_use_under_any>(&do_nothing)
             ));
 

@@ -94,9 +94,9 @@ namespace
             const std::tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            const std::tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<PlainTextSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)

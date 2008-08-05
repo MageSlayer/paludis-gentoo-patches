@@ -263,7 +263,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->restrictions().name().empty())
         if ((_imp->dir / vars->restrictions().name()).exists())
         {
-            _imp->restrictions.reset(new ERestrictKey(_imp->environment, shared_from_this(), vars->restrictions().name(),
+            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions().name(),
                         vars->restrictions().description(),
                         file_contents(_imp->dir / vars->restrictions().name()), mkt_internal));
             add_metadata_key(_imp->restrictions);
@@ -551,7 +551,7 @@ EInstalledRepositoryID::suggested_dependencies_key() const
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::restrict_key() const
 {
     need_keys_added();

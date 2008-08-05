@@ -125,26 +125,26 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class ERestrictKey :
-            public MetadataSpecTreeKey<RestrictSpecTree>,
-            private PrivateImplementationPattern<ERestrictKey>
+        class EPlainTextSpecKey :
+            public MetadataSpecTreeKey<PlainTextSpecTree>,
+            private PrivateImplementationPattern<EPlainTextSpecKey>
         {
             private:
-                PrivateImplementationPattern<ERestrictKey>::ImpPtr & _imp;
+                PrivateImplementationPattern<EPlainTextSpecKey>::ImpPtr & _imp;
 
             public:
-                ERestrictKey(const Environment * const,
+                EPlainTextSpecKey(const Environment * const,
                         const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~ERestrictKey();
+                ~EPlainTextSpecKey();
 
-                virtual const std::tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const RestrictSpecTree::ItemFormatter &) const
+                virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const RestrictSpecTree::ItemFormatter &) const
+                virtual std::string pretty_print_flat(const PlainTextSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

@@ -38,7 +38,7 @@ make_nn_NiceNames() {
     name "SimpleURISpecTree"
     name "FlattenableSpecTree"
     name "ProvideSpecTree"
-    name "RestrictSpecTree"
+    name "PlainTextSpecTree"
     name "DependencySpecTree"
     name "SetSpecTree"
 }

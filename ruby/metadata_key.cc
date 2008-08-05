@@ -54,7 +54,7 @@ namespace
     static VALUE c_metadata_fetchable_uri_spec_tree_key;
     static VALUE c_metadata_simple_uri_spec_tree_key;
     static VALUE c_metadata_dependency_spec_tree_key;
-    static VALUE c_metadata_restrict_spec_tree_key;
+    static VALUE c_metadata_plain_text_spec_tree_key;
     static VALUE c_repository_mask_info;
     static VALUE c_metadata_section_key;
 
@@ -212,9 +212,9 @@ namespace
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> &)
         {
-            value = Data_Wrap_Struct(c_metadata_restrict_spec_tree_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
+            value = Data_Wrap_Struct(c_metadata_plain_text_spec_tree_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -709,12 +709,12 @@ namespace
         rb_define_method(c_metadata_provide_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataRestrictSpecTreeKey
+         * Document-class: Paludis::MetadataPlainTextSpecTreeKey
          *
          * Metadata class for restrict specs.
          */
-        c_metadata_restrict_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataRestrictSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_restrict_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<RestrictSpecTree>::fetch)), 0);
+        c_metadata_plain_text_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataPlainTextSpecTreeKey", c_metadata_key);
+        rb_define_method(c_metadata_plain_text_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<PlainTextSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataDependencySpecTreeKey

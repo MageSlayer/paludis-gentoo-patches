@@ -356,11 +356,11 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool fetch_restrict(false), userpriv_restrict(false);
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
-        for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
+        for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
         {
             if (id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
@@ -518,7 +518,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict, test_restrict, strip_restrict;
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -730,7 +730,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -810,7 +810,7 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
     {
         using namespace std::tr1::placeholders;
 
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -929,7 +929,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 

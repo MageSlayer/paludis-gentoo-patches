@@ -487,7 +487,7 @@ namespace
             }
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             try
             {

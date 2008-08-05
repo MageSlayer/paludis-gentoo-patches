@@ -474,7 +474,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+            void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
             {
                 if (k.type() == type)
                 {

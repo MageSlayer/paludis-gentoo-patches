@@ -130,7 +130,7 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << stringify(buf) << endl;
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             ColourFormatter f;
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;

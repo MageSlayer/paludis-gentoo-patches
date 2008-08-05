@@ -153,7 +153,7 @@ namespace gtkpaludis
              got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }

@@ -68,9 +68,9 @@ namespace paludis
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
-         * Parse a restrict.
+         * Parse a restrict or plain text heirarchy.
          */
-        std::tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
+        std::tr1::shared_ptr<PlainTextSpecTree::ConstItem> parse_plain_text(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**

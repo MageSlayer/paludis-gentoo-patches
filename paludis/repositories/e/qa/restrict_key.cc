@@ -54,12 +54,12 @@ namespace
     };
 
     struct RestrictChecker :
-        ConstVisitor<RestrictSpecTree>,
-        ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>,
-        ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>
+        ConstVisitor<PlainTextSpecTree>,
+        ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>,
+        ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>
     {
-        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>::visit_sequence;
-        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>::visit_sequence;
+        using ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>::visit_sequence;
 
         const std::set<std::string> & allowed_restricts;
 

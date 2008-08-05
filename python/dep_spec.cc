@@ -695,7 +695,7 @@ struct AllowedTypes<ProvideSpecTree>
 };
 
 template<>
-struct AllowedTypes<RestrictSpecTree>
+struct AllowedTypes<PlainTextSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const ConditionalDepSpec &) {};
@@ -1088,7 +1088,7 @@ void expose_dep_spec()
 
     RegisterSpecTreeToPython<DependencySpecTree>();
     RegisterSpecTreeToPython<ProvideSpecTree>();
-    RegisterSpecTreeToPython<RestrictSpecTree>();
+    RegisterSpecTreeToPython<PlainTextSpecTree>();
     RegisterSpecTreeToPython<FetchableURISpecTree>();
     RegisterSpecTreeToPython<SimpleURISpecTree>();
     RegisterSpecTreeToPython<LicenseSpecTree>();
@@ -1096,7 +1096,7 @@ void expose_dep_spec()
 
     RegisterSpecTreeSharedPtrFromPython<DependencySpecTree>();
     RegisterSpecTreeSharedPtrFromPython<ProvideSpecTree>();
-    RegisterSpecTreeSharedPtrFromPython<RestrictSpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<PlainTextSpecTree>();
     RegisterSpecTreeSharedPtrFromPython<FetchableURISpecTree>();
     RegisterSpecTreeSharedPtrFromPython<SimpleURISpecTree>();
     RegisterSpecTreeSharedPtrFromPython<LicenseSpecTree>();

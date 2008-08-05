@@ -303,10 +303,10 @@ EFetchableURIKey::initial_label() const
 
     if (! _imp->initial_label)
     {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> f(_imp->env);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env);
         if (_imp->id->restrict_key())
             _imp->id->restrict_key()->value()->accept(f);
-        for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
+        for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
                 i != i_end ; ++i)
         {
             if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
@@ -399,13 +399,13 @@ ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) con
 namespace paludis
 {
     template <>
-    struct Implementation<ERestrictKey>
+    struct Implementation<EPlainTextSpecKey>
     {
         const Environment * const env;
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const RestrictSpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -416,21 +416,21 @@ namespace paludis
     };
 }
 
-ERestrictKey::ERestrictKey(const Environment * const e,
+EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSpecTreeKey<RestrictSpecTree>(r, h, t),
-    PrivateImplementationPattern<ERestrictKey>(new Implementation<ERestrictKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<ERestrictKey>::_imp)
+    MetadataSpecTreeKey<PlainTextSpecTree>(r, h, t),
+    PrivateImplementationPattern<EPlainTextSpecKey>(new Implementation<EPlainTextSpecKey>(e, id, v)),
+    _imp(PrivateImplementationPattern<EPlainTextSpecKey>::_imp)
 {
 }
 
-ERestrictKey::~ERestrictKey()
+EPlainTextSpecKey::~EPlainTextSpecKey()
 {
 }
 
-const std::tr1::shared_ptr<const RestrictSpecTree::ConstItem>
-ERestrictKey::value() const
+const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem>
+EPlainTextSpecKey::value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -438,12 +438,12 @@ ERestrictKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_restrict(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_plain_text(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
 }
 
 std::string
-ERestrictKey::pretty_print(const RestrictSpecTree::ItemFormatter & f) const
+EPlainTextSpecKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -452,7 +452,7 @@ ERestrictKey::pretty_print(const RestrictSpecTree::ItemFormatter & f) const
 }
 
 std::string
-ERestrictKey::pretty_print_flat(const RestrictSpecTree::ItemFormatter & f) const
+EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);

@@ -666,17 +666,17 @@ void expose_formatter()
         );
 
     /**
-     * RestrictSpecTreeFormatter
+     * PlainTextSpecTreeFormatter
      */
-    bp::class_<RestrictSpecTree::ItemFormatter,
+    bp::class_<PlainTextSpecTree::ItemFormatter,
             bp::bases<
                 CanFormat<ConditionalDepSpec>,
                 CanFormat<PlainTextDepSpec> >,
             boost::noncopyable>
         (
-         "RestrictSpecTreeFormatter",
+         "PlainTextSpecTreeFormatter",
          "A formatter that can handle any formattable type found in a\n"
-         "RestrictSpecTree.",
+         "PlainTextSpecTree.",
          bp::no_init
         );
 
@@ -721,7 +721,7 @@ void expose_formatter()
     bp::implicitly_convertible<StringifyFormatter, LicenseSpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, ProvideSpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, DependencySpecTree::ItemFormatter>();
-    bp::implicitly_convertible<StringifyFormatter, RestrictSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, PlainTextSpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, SimpleURISpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, FetchableURISpecTree::ItemFormatter>();
     bp::class_<StringifyFormatter,
@@ -765,7 +765,7 @@ void expose_formatter()
     bp::implicitly_convertible<PythonFormatterWrapper, LicenseSpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, ProvideSpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, DependencySpecTree::ItemFormatter>();
-    bp::implicitly_convertible<PythonFormatterWrapper, RestrictSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, PlainTextSpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, SimpleURISpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, FetchableURISpecTree::ItemFormatter>();
     bp::class_<PythonFormatterWrapper,

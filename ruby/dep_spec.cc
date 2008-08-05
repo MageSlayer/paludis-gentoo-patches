@@ -1289,7 +1289,7 @@ template VALUE paludis::ruby::dep_tree_to_value<SetSpecTree> (const std::tr1::sh
 template VALUE paludis::ruby::dep_tree_to_value<DependencySpecTree> (const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
 template VALUE paludis::ruby::dep_tree_to_value<FetchableURISpecTree> (const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> &);
 template VALUE paludis::ruby::dep_tree_to_value<SimpleURISpecTree> (const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<RestrictSpecTree> (const std::tr1::shared_ptr<const RestrictSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<PlainTextSpecTree> (const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> &);
 template VALUE paludis::ruby::dep_tree_to_value<ProvideSpecTree> (const std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
 template VALUE paludis::ruby::dep_tree_to_value<LicenseSpecTree> (const std::tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
 

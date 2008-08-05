@@ -78,7 +78,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> post_dependencies;
         mutable std::tr1::shared_ptr<const EProvideKey> provide;
-        mutable std::tr1::shared_ptr<const ERestrictKey> restrictions;
+        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> restrictions;
         mutable std::tr1::shared_ptr<const EFetchableURIKey> src_uri;
         mutable std::tr1::shared_ptr<const ESimpleURIKey> homepage;
         mutable std::tr1::shared_ptr<const ELicenseKey> license;
@@ -540,7 +540,7 @@ EbuildID::suggested_dependencies_key() const
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::restrict_key() const
 {
     need_keys_added();
@@ -708,7 +708,7 @@ void
 EbuildID::load_restrict(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->restrictions.reset(new ERestrictKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->restrictions);
 }
 

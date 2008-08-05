@@ -214,19 +214,19 @@ namespace paludis
     };
 
     /**
-     * A heirarchy of restrict keywords.
+     * A heirarchy of plain text values.
      *
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \since 0.30
      * \nosubgrouping
      */
-    struct RestrictSpecTree :
+    struct PlainTextSpecTree :
         VisitorTypes<
-            RestrictSpecTree,
+            PlainTextSpecTree,
             DepSpec,
-            TreeLeaf<RestrictSpecTree, PlainTextDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, AllDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, ConditionalDepSpec>
+            TreeLeaf<PlainTextSpecTree, PlainTextDepSpec>,
+            ConstTreeSequence<PlainTextSpecTree, AllDepSpec>,
+            ConstTreeSequence<PlainTextSpecTree, ConditionalDepSpec>
         >
     {
         /**

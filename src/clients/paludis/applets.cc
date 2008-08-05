@@ -90,7 +90,7 @@ namespace
             return_code |= 1;
         }
 
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
