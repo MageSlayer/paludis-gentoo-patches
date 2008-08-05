@@ -392,9 +392,15 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
     const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
 
-    if (! m.description().name().empty())
-        id->load_short_description(m.description().name(), m.description().description(), get(keys, m.description().name()));
+    if (! m.short_description().name().empty())
+        id->load_short_description(m.short_description().name(), m.short_description().description(), get(keys, m.short_description().name()));
 
+    if (! m.long_description().name().empty())
+    {
+        std::string value(get(keys, m.long_description().name()));
+        if (! value.empty())
+            id->load_long_description(m.long_description().name(), m.long_description().description(), value);
+    }
 
     if (! m.dependencies().name().empty())
     {
@@ -469,6 +475,41 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
     if (! m.use().name().empty())
         id->load_use(m.use().name(), m.use().description(), get(keys, m.use().name()));
+
+    if (! m.upstream_changelog().name().empty())
+    {
+        std::string value(get(keys, m.upstream_changelog().name()));
+        if (! value.empty())
+            id->load_upstream_changelog(m.upstream_changelog().name(), m.upstream_changelog().description(), value);
+    }
+
+    if (! m.upstream_documentation().name().empty())
+    {
+        std::string value(get(keys, m.upstream_documentation().name()));
+        if (! value.empty())
+            id->load_upstream_documentation(m.upstream_documentation().name(), m.upstream_documentation().description(), value);
+    }
+
+    if (! m.upstream_release_notes().name().empty())
+    {
+        std::string value(get(keys, m.upstream_release_notes().name()));
+        if (! value.empty())
+            id->load_upstream_release_notes(m.upstream_release_notes().name(), m.upstream_release_notes().description(), value);
+    }
+
+    if (! m.bugs_to().name().empty())
+    {
+        std::string value(get(keys, m.bugs_to().name()));
+        if (! value.empty())
+            id->load_bugs_to(m.bugs_to().name(), m.bugs_to().description(), value);
+    }
+
+    if (! m.remote_ids().name().empty())
+    {
+        std::string value(get(keys, m.remote_ids().name()));
+        if (! value.empty())
+            id->load_remote_ids(m.remote_ids().name(), m.remote_ids().description(), value);
+    }
 }
 
 EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,

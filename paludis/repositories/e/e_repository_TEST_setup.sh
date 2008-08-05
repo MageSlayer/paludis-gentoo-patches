@@ -169,6 +169,22 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 DEPEND="foo/bar"
 END
+cat <<"END" > cat-one/pkg-one/pkg-one-3.ebuild || exit 1
+EAPI="exheres-0"
+SUMMARY="This is the short description"
+DESCRIPTION="This is the long description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+BUGS_TO="fred@example.com joe@example.com"
+UPSTREAM_CHANGELOG="http://example.com/foo"
+UPSTREAM_RELEASE_NOTES="http://example.com/bar"
+UPSTREAM_DOCUMENTATION="http://example.com/baz"
+REMOTE_IDS="freshmeat:fnord"
+END
 cat <<END > eclass/mine.eclass
 DEPEND="bar/baz"
 END
@@ -415,7 +431,8 @@ cat <<END > profiles/profile/make.defaults
 END
 mkdir -p packages/cat/no-files
 cat <<END > packages/cat/no-files/no-files-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -426,7 +443,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetched-files
 cat <<END > packages/cat/fetched-files/fetched-files-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file:///var/empty/already-fetched.txt"
 SLOT="0"
@@ -437,7 +455,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetchable-files
 cat <<END > packages/cat/fetchable-files/fetchable-files-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt"
 SLOT="0"
@@ -448,7 +467,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/arrow-files
 cat <<END > packages/cat/arrow-files/arrow-files-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt -> arrowed.txt"
 SLOT="0"
@@ -459,7 +479,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/unfetchable-files
 cat <<END > packages/cat/unfetchable-files/unfetchable-files-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file:///var/empty/unfetchable-file.txt"
 SLOT="0"
@@ -470,7 +491,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/no-files-restricted
 cat <<END > packages/cat/no-files-restricted/no-files-restricted-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -481,7 +503,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetched-files-restricted
 cat <<END > packages/cat/fetched-files-restricted/fetched-files-restricted-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="manual: file:///var/empty/already-fetched.txt"
 SLOT="0"
@@ -492,7 +515,8 @@ DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetchable-files-restricted
 cat <<END > packages/cat/fetchable-files-restricted/fetchable-files-restricted-1.exheres-0 || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="manual: file:///$(dirname $(pwd ) )/fetchable/fetchable-2.txt"
 SLOT="0"
@@ -1128,7 +1152,8 @@ OPTIONS="weasel spinach"
 END
 mkdir -p "packages/cat/in-ebuild-die"
 cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1142,7 +1167,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/in-subshell-die"
 cat <<END > packages/cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1156,7 +1182,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/success"
 cat <<END > packages/cat/success/success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1170,7 +1197,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/expatch-success"
 cat <<"END" > packages/cat/expatch-success/expatch-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1188,7 +1216,8 @@ src_prepare() {
 END
 mkdir -p "packages/cat/expatch-die"
 cat <<END > packages/cat/expatch-die/expatch-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1202,7 +1231,8 @@ src_prepare() {
 END
 mkdir -p "packages/cat/nonfatal-expatch-fail"
 cat <<END > packages/cat/nonfatal-expatch-fail/nonfatal-expatch-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1216,7 +1246,8 @@ src_prepare() {
 END
 mkdir -p "packages/cat/nonfatal-expatch-die"
 cat <<END > packages/cat/nonfatal-expatch-die/nonfatal-expatch-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1230,7 +1261,8 @@ src_prepare() {
 END
 mkdir -p "packages/cat/unpack-die"
 cat <<END > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1245,7 +1277,8 @@ src_unpack() {
 END
 mkdir -p "packages/cat/nonfatal-unpack-fail"
 cat <<END > packages/cat/nonfatal-unpack-fail/nonfatal-unpack-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1260,7 +1293,8 @@ src_unpack() {
 END
 mkdir -p "packages/cat/nonfatal-unpack-die"
 cat <<END > packages/cat/nonfatal-unpack-die/nonfatal-unpack-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1275,7 +1309,8 @@ src_unpack() {
 END
 mkdir -p "packages/cat/econf-fail"
 cat <<END > packages/cat/econf-fail/econf-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1289,7 +1324,8 @@ src_configure() {
 END
 mkdir -p "packages/cat/nonfatal-econf"
 cat <<END > packages/cat/nonfatal-econf/nonfatal-econf-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1303,7 +1339,8 @@ src_configure() {
 END
 mkdir -p "packages/cat/nonfatal-econf-die"
 cat <<END > packages/cat/nonfatal-econf-die/nonfatal-econf-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1317,7 +1354,8 @@ src_configure() {
 END
 mkdir -p "packages/cat/emake-fail"
 cat <<END > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1331,7 +1369,8 @@ src_compile() {
 END
 mkdir -p "packages/cat/nonfatal-emake"
 cat <<END > packages/cat/nonfatal-emake/nonfatal-emake-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1345,7 +1384,8 @@ src_compile() {
 END
 mkdir -p "packages/cat/nonfatal-emake-die"
 cat <<END > packages/cat/nonfatal-emake-die/nonfatal-emake-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1359,7 +1399,8 @@ src_compile() {
 END
 mkdir -p "packages/cat/keepdir-success"
 cat <<END > packages/cat/keepdir-success/keepdir-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1373,7 +1414,8 @@ src_install() {
 END
 mkdir -p "packages/cat/keepdir-fail"
 cat <<"END" > packages/cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1389,7 +1431,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-keepdir"
 cat <<"END" > packages/cat/nonfatal-keepdir/nonfatal-keepdir-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1405,7 +1448,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-keepdir-die"
 cat <<"END" > packages/cat/nonfatal-keepdir-die/nonfatal-keepdir-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1421,7 +1465,8 @@ src_install() {
 END
 mkdir -p "packages/cat/einstall-fail"
 cat <<END > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1435,7 +1480,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-einstall"
 cat <<END > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1449,7 +1495,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-einstall-die"
 cat <<END > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1463,7 +1510,8 @@ src_install() {
 END
 mkdir -p "packages/cat/dobin-success"
 cat <<END > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1481,7 +1529,8 @@ src_install() {
 END
 mkdir -p "packages/cat/dobin-fail"
 cat <<END > packages/cat/dobin-fail/dobin-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1495,7 +1544,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-dobin-success"
 cat <<END > packages/cat/nonfatal-dobin-success/nonfatal-dobin-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Lnog Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1513,7 +1563,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-dobin-fail"
 cat <<END > packages/cat/nonfatal-dobin-fail/nonfatal-dobin-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1527,7 +1578,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-dobin-die"
 cat <<END > packages/cat/nonfatal-dobin-die/nonfatal-dobin-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1541,7 +1593,8 @@ src_install() {
 END
 mkdir -p "packages/cat/fperms-success"
 cat <<END > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1559,7 +1612,8 @@ src_install() {
 END
 mkdir -p "packages/cat/fperms-fail"
 cat <<END > packages/cat/fperms-fail/fperms-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1573,7 +1627,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-fperms-success"
 cat <<END > packages/cat/nonfatal-fperms-success/nonfatal-fperms-success-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1591,7 +1646,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-fperms-fail"
 cat <<END > packages/cat/nonfatal-fperms-fail/nonfatal-fperms-fail-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1605,7 +1661,8 @@ src_install() {
 END
 mkdir -p "packages/cat/nonfatal-fperms-die"
 cat <<END > packages/cat/nonfatal-fperms-die/nonfatal-fperms-die-1.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1619,7 +1676,8 @@ src_install() {
 END
 mkdir -p "packages/cat/best-version"
 cat <<'END' > packages/cat/best-version/best-version-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1662,7 +1720,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/has-version"
 cat <<'END' > packages/cat/has-version/has-version-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1682,7 +1741,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/match"
 cat <<'END' > packages/cat/match/match-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -1699,11 +1759,14 @@ END
 mkdir -p "packages/cat/ever"
 cat <<'END' > packages/cat/ever/ever-1.3.ebuild || exit 1
 if ever at_least 2 ; then
-    DESCRIPTION="Really Not The Description"
+    DESCRIPTION="Really Not The Long Description"
+    SUMMARY="Really Not The Short Description"
 elif ever at_least 1.2.3 ; then
-    DESCRIPTION="The Description"
+    DESCRIPTION="The Long Description"
+    SUMMARY="The Short Description"
 else
-    DESCRIPTION="Not The Description"
+    DESCRIPTION="Not The Long Description"
+    SUMMARY="Not The Short Description"
 fi
 
 HOMEPAGE="http://example.com/"
@@ -1725,7 +1788,8 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/econf-phase"
 cat <<'END' > packages/cat/econf-phase/econf-phase-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -1746,7 +1810,8 @@ src_compile() {
 END
 mkdir -p "packages/cat/econf-vars"
 cat <<'END' > packages/cat/econf-vars/econf-vars-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+DESCRIPTION="The Short Description"
 
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -1774,7 +1839,8 @@ END2
 END
 mkdir -p "packages/cat/expand-vars"
 cat <<"END" > packages/cat/expand-vars/expand-vars-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"

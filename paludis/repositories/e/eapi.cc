@@ -96,22 +96,28 @@ namespace
     std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> make_ebuild_metadata_variables(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildMetadataVariables(make_named_values<EAPIEbuildMetadataVariables>(
+            value_for<n::bugs_to>(make_metadata_variable(k, "bugs_to")),
             value_for<n::build_depend>(make_metadata_variable(k, "build_depend")),
             value_for<n::dependencies>(make_metadata_variable(k, "dependencies")),
-            value_for<n::description>(make_metadata_variable(k, "description")),
             value_for<n::eapi>(make_metadata_variable(k, "eapi")),
             value_for<n::homepage>(make_metadata_variable(k, "homepage")),
             value_for<n::inherited>(make_metadata_variable(k, "inherited")),
             value_for<n::iuse>(make_metadata_variable(k, "iuse")),
             value_for<n::keywords>(make_metadata_variable(k, "keywords")),
             value_for<n::license>(make_metadata_variable(k, "license")),
+            value_for<n::long_description>(make_metadata_variable(k, "long_description")),
             value_for<n::minimum_flat_cache_size>(destringify_key<int>(k, "flat_cache_minimum_size")),
             value_for<n::pdepend>(make_metadata_variable(k, "pdepend")),
             value_for<n::provide>(make_metadata_variable(k, "provide")),
+            value_for<n::remote_ids>(make_metadata_variable(k, "remote_ids")),
             value_for<n::restrictions>(make_metadata_variable(k, "restrict")),
             value_for<n::run_depend>(make_metadata_variable(k, "run_depend")),
+            value_for<n::short_description>(make_metadata_variable(k, "short_description")),
             value_for<n::slot>(make_metadata_variable(k, "slot")),
             value_for<n::src_uri>(make_metadata_variable(k, "src_uri")),
+            value_for<n::upstream_changelog>(make_metadata_variable(k, "upstream_changelog")),
+            value_for<n::upstream_documentation>(make_metadata_variable(k, "upstream_documentation")),
+            value_for<n::upstream_release_notes>(make_metadata_variable(k, "upstream_release_notes")),
             value_for<n::use>(make_metadata_variable(k, "use"))
             )));
     }

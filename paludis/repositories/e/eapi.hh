@@ -40,6 +40,7 @@ namespace paludis
         struct binary_from_env_variables;
         struct bracket_merged_variables;
         struct breaks_portage;
+        struct bugs_to;
         struct build_depend;
         struct can_be_pbin;
         struct dependencies;
@@ -88,6 +89,7 @@ namespace paludis
         struct iuse_flag_parse_options;
         struct keywords;
         struct license;
+        struct long_description;
         struct merger_options;
         struct metadata_key;
         struct minimum_flat_cache_size;
@@ -100,6 +102,7 @@ namespace paludis
         struct pipe_commands;
         struct provide;
         struct rdepend_defaults_to_depend;
+        struct remote_ids;
         struct require_use_expand_in_iuse;
         struct restrict_fetch;
         struct restrict_mirror;
@@ -110,6 +113,7 @@ namespace paludis
         struct save_base_variables;
         struct save_unmodifiable_variables;
         struct save_variables;
+        struct short_description;
         struct slot;
         struct source_merged_variables;
         struct src_uri;
@@ -119,6 +123,9 @@ namespace paludis
         struct tools_options;
         struct unpack_fix_permissions;
         struct unpack_unrecognised_is_fatal;
+        struct upstream_changelog;
+        struct upstream_documentation;
+        struct upstream_release_notes;
         struct uri_labels;
         struct use;
         struct use_expand_separator;
@@ -233,22 +240,28 @@ namespace paludis
 
         struct EAPIEbuildMetadataVariables
         {
+            NamedValue<n::bugs_to, EAPIMetadataVariable> bugs_to;
             NamedValue<n::build_depend, EAPIMetadataVariable> build_depend;
             NamedValue<n::dependencies, EAPIMetadataVariable> dependencies;
-            NamedValue<n::description, EAPIMetadataVariable> description;
             NamedValue<n::eapi, EAPIMetadataVariable> eapi;
             NamedValue<n::homepage, EAPIMetadataVariable> homepage;
             NamedValue<n::inherited, EAPIMetadataVariable> inherited;
             NamedValue<n::iuse, EAPIMetadataVariable> iuse;
             NamedValue<n::keywords, EAPIMetadataVariable> keywords;
             NamedValue<n::license, EAPIMetadataVariable> license;
+            NamedValue<n::long_description, EAPIMetadataVariable> long_description;
             NamedValue<n::minimum_flat_cache_size, int> minimum_flat_cache_size;
             NamedValue<n::pdepend, EAPIMetadataVariable> pdepend;
             NamedValue<n::provide, EAPIMetadataVariable> provide;
+            NamedValue<n::remote_ids, EAPIMetadataVariable> remote_ids;
             NamedValue<n::restrictions, EAPIMetadataVariable> restrictions;
             NamedValue<n::run_depend, EAPIMetadataVariable> run_depend;
+            NamedValue<n::short_description, EAPIMetadataVariable> short_description;
             NamedValue<n::slot, EAPIMetadataVariable> slot;
             NamedValue<n::src_uri, EAPIMetadataVariable> src_uri;
+            NamedValue<n::upstream_changelog, EAPIMetadataVariable> upstream_changelog;
+            NamedValue<n::upstream_documentation, EAPIMetadataVariable> upstream_documentation;
+            NamedValue<n::upstream_release_notes, EAPIMetadataVariable> upstream_release_notes;
             NamedValue<n::use, EAPIMetadataVariable> use;
         };
 

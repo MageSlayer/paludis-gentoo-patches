@@ -526,6 +526,16 @@ namespace test_cases
                     TEST_CHECK(id2->run_dependencies_key());
                     id2->run_dependencies_key()->value()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
+
+                    const std::tr1::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(
+                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-3",
+                                            &env, UserPackageDepSpecOptions()))))]->begin());
+
+                    TEST_CHECK(id3->end_metadata() != id3->find_metadata("EAPI"));
+                    TEST_CHECK(id3->short_description_key());
+                    TEST_CHECK_EQUAL(id3->short_description_key()->value(), "This is the short description");
+                    TEST_CHECK(id3->long_description_key());
+                    TEST_CHECK_EQUAL(id3->long_description_key()->value(), "This is the long description");
                 }
             }
         }
@@ -955,7 +965,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(no_files_id);
                 TEST_CHECK(no_files_id->short_description_key());
-                TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Description");
+                TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Short Description");
                 no_files_id->perform_action(action);
             }
 
@@ -1938,7 +1948,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK(id->short_description_key());
-                TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Description");
+                TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Short Description");
                 id->perform_action(action);
             }
 

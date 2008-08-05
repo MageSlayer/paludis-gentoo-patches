@@ -84,13 +84,19 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrictions;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description;
         std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents;
         std::tr1::shared_ptr<const MetadataTimeKey> installed_time;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_documentation;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to;
 
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > asflags;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > cbuild;
@@ -278,12 +284,89 @@ EInstalledRepositoryID::need_keys_added() const
             add_metadata_key(_imp->src_uri);
         }
 
-    if (! vars->description().name().empty())
-        if ((_imp->dir / vars->description().name()).exists())
+    if (! vars->short_description().name().empty())
+        if ((_imp->dir / vars->short_description().name()).exists())
         {
-            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->description().name(),
-                        vars->description().description(), mkt_significant, file_contents(_imp->dir / vars->description().name())));
+            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description().name(),
+                        vars->short_description().description(), mkt_significant, file_contents(_imp->dir / vars->short_description().name())));
             add_metadata_key(_imp->short_description);
+        }
+
+    if (! vars->long_description().name().empty())
+        if ((_imp->dir / vars->long_description().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->long_description().name()));
+            if (! value.empty())
+            {
+                _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description().name(),
+                            vars->long_description().description(), mkt_significant, value));
+                add_metadata_key(_imp->long_description);
+            }
+        }
+
+    if (! vars->upstream_changelog().name().empty())
+        if ((_imp->dir / vars->upstream_changelog().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->upstream_changelog().name()));
+            if (! value.empty())
+            {
+                _imp->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                            vars->upstream_changelog().name(),
+                            vars->upstream_changelog().description(), value, mkt_normal));
+                add_metadata_key(_imp->upstream_changelog);
+            }
+        }
+
+    if (! vars->upstream_release_notes().name().empty())
+        if ((_imp->dir / vars->upstream_release_notes().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->upstream_release_notes().name()));
+            if (! value.empty())
+            {
+                _imp->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                            vars->upstream_release_notes().name(),
+                            vars->upstream_release_notes().description(), value, mkt_normal));
+                add_metadata_key(_imp->upstream_release_notes);
+            }
+        }
+
+    if (! vars->upstream_documentation().name().empty())
+        if ((_imp->dir / vars->upstream_documentation().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->upstream_documentation().name()));
+            if (! value.empty())
+            {
+                _imp->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                            vars->upstream_documentation().name(),
+                            vars->upstream_documentation().description(), value, mkt_normal));
+                add_metadata_key(_imp->upstream_documentation);
+            }
+        }
+
+    if (! vars->bugs_to().name().empty())
+        if ((_imp->dir / vars->bugs_to().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->bugs_to().name()));
+            if (! value.empty())
+            {
+                _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
+                            vars->bugs_to().name(),
+                            vars->bugs_to().description(), value, mkt_normal));
+                add_metadata_key(_imp->bugs_to);
+            }
+        }
+
+    if (! vars->remote_ids().name().empty())
+        if ((_imp->dir / vars->remote_ids().name()).exists())
+        {
+            std::string value(file_contents(_imp->dir / vars->remote_ids().name()));
+            if (! value.empty())
+            {
+                _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
+                            vars->remote_ids().name(),
+                            vars->remote_ids().description(), value, mkt_internal));
+                add_metadata_key(_imp->remote_ids);
+            }
         }
 
     if (! vars->homepage().name().empty())
@@ -582,7 +665,8 @@ EInstalledRepositoryID::short_description_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::long_description_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    need_keys_added();
+    return _imp->long_description;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >

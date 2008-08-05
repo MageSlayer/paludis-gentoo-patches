@@ -132,9 +132,20 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                             if (! m.license().name().empty())
                                 id->load_license(m.license().name(), m.license().description(), lines.at(m.license().flat_cache_index()));
 
-                        if (-1 != m.description().flat_cache_index())
-                            if (! m.description().name().empty())
-                                id->load_short_description(m.description().name(), m.description().description(), lines.at(m.description().flat_cache_index()));
+                        if (-1 != m.short_description().flat_cache_index())
+                            if (! m.short_description().name().empty())
+                                id->load_short_description(m.short_description().name(),
+                                        m.short_description().description(),
+                                        lines.at(m.short_description().flat_cache_index()));
+
+                        if (-1 != m.long_description().flat_cache_index())
+                            if (! m.long_description().name().empty())
+                            {
+                                std::string value(lines.at(m.long_description().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_long_description(m.long_description().name(),
+                                            m.long_description().description(), value);
+                            }
 
                         if (-1 != m.keywords().flat_cache_index())
                             if (! m.keywords().name().empty())
@@ -159,6 +170,51 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                         if (-1 != m.use().flat_cache_index())
                             if (! m.use().name().empty())
                                 id->load_use(m.use().name(), m.use().description(), lines.at(m.use().flat_cache_index()));
+
+                        if (-1 != m.upstream_changelog().flat_cache_index())
+                            if (! m.upstream_changelog().name().empty())
+                            {
+                                std::string value(lines.at(m.upstream_changelog().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_upstream_changelog(m.upstream_changelog().name(),
+                                            m.upstream_changelog().description(), value);
+                            }
+
+                        if (-1 != m.upstream_documentation().flat_cache_index())
+                            if (! m.upstream_documentation().name().empty())
+                            {
+                                std::string value(lines.at(m.upstream_documentation().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_upstream_documentation(m.upstream_documentation().name(),
+                                            m.upstream_documentation().description(), value);
+                            }
+
+                        if (-1 != m.upstream_release_notes().flat_cache_index())
+                            if (! m.upstream_release_notes().name().empty())
+                            {
+                                std::string value(lines.at(m.upstream_release_notes().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_upstream_release_notes(m.upstream_release_notes().name(),
+                                            m.upstream_release_notes().description(), value);
+                            }
+
+                        if (-1 != m.bugs_to().flat_cache_index())
+                            if (! m.bugs_to().name().empty())
+                            {
+                                std::string value(lines.at(m.bugs_to().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_bugs_to(m.bugs_to().name(),
+                                            m.bugs_to().description(), value);
+                            }
+
+                        if (-1 != m.remote_ids().flat_cache_index())
+                            if (! m.remote_ids().name().empty())
+                            {
+                                std::string value(lines.at(m.remote_ids().flat_cache_index()));
+                                if (! value.empty())
+                                    id->load_remote_ids(m.remote_ids().name(),
+                                            m.remote_ids().description(), value);
+                            }
                     }
                 }
                 else
@@ -311,7 +367,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
                 else
                     cache << std::endl;
             }
-            else if (x == m.description().flat_cache_index())
+            else if (x == m.short_description().flat_cache_index())
             {
                 if (id->short_description_key())
                     cache << normalise(id->short_description_key()->value()) << std::endl;
@@ -356,6 +412,48 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
             else if (x == m.eapi().flat_cache_index())
             {
                 cache << normalise(id->eapi()->name()) << std::endl;
+            }
+            else if (x == m.long_description().flat_cache_index())
+            {
+                if (id->long_description_key())
+                    cache << normalise(id->long_description_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.bugs_to().flat_cache_index())
+            {
+                if (id->bugs_to_key())
+                    cache << flatten(id->bugs_to_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.remote_ids().flat_cache_index())
+            {
+                if (id->remote_ids_key())
+                    cache << flatten(id->remote_ids_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.upstream_changelog().flat_cache_index())
+            {
+                if (id->upstream_changelog_key())
+                    cache << flatten(id->upstream_changelog_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.upstream_documentation().flat_cache_index())
+            {
+                if (id->upstream_documentation_key())
+                    cache << flatten(id->upstream_documentation_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
+            }
+            else if (x == m.upstream_release_notes().flat_cache_index())
+            {
+                if (id->upstream_release_notes_key())
+                    cache << flatten(id->upstream_release_notes_key()->value()) << std::endl;
+                else
+                    cache << std::endl;
             }
             else
                 cache << std::endl;

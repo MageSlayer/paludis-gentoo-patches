@@ -74,6 +74,7 @@ namespace paludis
 
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> post_dependencies;
@@ -88,6 +89,11 @@ namespace paludis
         mutable std::tr1::shared_ptr<const EUseKey> use;
         mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
         mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
+        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> remote_ids;
+        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> bugs_to;
+        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_changelog;
+        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_documentation;
+        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_release_notes;
 
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
@@ -571,7 +577,8 @@ EbuildID::short_description_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::long_description_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    need_keys_added();
+    return _imp->long_description;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
@@ -651,6 +658,14 @@ EbuildID::load_short_description(const std::string & r, const std::string & h, c
     Lock l(_imp->mutex);
     _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (r, h, mkt_significant, v));
     add_metadata_key(_imp->short_description);
+}
+
+void
+EbuildID::load_long_description(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (r, h, mkt_normal, v));
+    add_metadata_key(_imp->long_description);
 }
 
 void
@@ -750,6 +765,46 @@ EbuildID::load_inherited(const std::string & r, const std::string & h, const std
     Lock l(_imp->mutex);
     _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->inherited);
+}
+
+void
+EbuildID::load_upstream_changelog(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    add_metadata_key(_imp->upstream_changelog);
+}
+
+void
+EbuildID::load_upstream_documentation(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    add_metadata_key(_imp->upstream_documentation);
+}
+
+void
+EbuildID::load_upstream_release_notes(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    add_metadata_key(_imp->upstream_release_notes);
+}
+
+void
+EbuildID::load_bugs_to(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    add_metadata_key(_imp->bugs_to);
+}
+
+void
+EbuildID::load_remote_ids(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->remote_ids);
 }
 
 namespace
@@ -904,5 +959,40 @@ const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Pac
 EbuildID::contained_in_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+EbuildID::remote_ids_key() const
+{
+    need_keys_added();
+    return _imp->remote_ids;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+EbuildID::bugs_to_key() const
+{
+    need_keys_added();
+    return _imp->bugs_to;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+EbuildID::upstream_changelog_key() const
+{
+    need_keys_added();
+    return _imp->upstream_changelog;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+EbuildID::upstream_documentation_key() const
+{
+    need_keys_added();
+    return _imp->upstream_documentation;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+EbuildID::upstream_release_notes_key() const
+{
+    need_keys_added();
+    return _imp->upstream_release_notes;
 }
 

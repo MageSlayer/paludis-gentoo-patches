@@ -89,6 +89,12 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids_key() const;
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to_key() const;
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog_key() const;
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_documentation_key() const;
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes_key() const;
+
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -113,6 +119,12 @@ namespace paludis
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
                 void load_restrict(const std::string &, const std::string &, const std::string &) const;
+                void load_long_description(const std::string &, const std::string &, const std::string &) const;
+                void load_upstream_changelog(const std::string &, const std::string &, const std::string &) const;
+                void load_upstream_documentation(const std::string &, const std::string &, const std::string &) const;
+                void load_upstream_release_notes(const std::string &, const std::string &, const std::string &) const;
+                void load_bugs_to(const std::string &, const std::string &, const std::string &) const;
+                void load_remote_ids(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
