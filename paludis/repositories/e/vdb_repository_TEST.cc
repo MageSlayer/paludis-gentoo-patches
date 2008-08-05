@@ -751,6 +751,36 @@ namespace test_cases
                 read_cache(cache_contents);
                 TEST_CHECK_EQUAL(cache_contents.size(), 0U);
             }
+
+            {
+                TestMessageSuffix suffix("install paludis-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat3/pkg1-1::namesincrtest_src",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat3\n");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade paludis-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat3/pkg1-2::namesincrtest_src",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::vector<FSEntry> cache_contents;
+                read_cache(cache_contents);
+                TEST_CHECK_EQUAL(cache_contents.size(), 1U);
+                TEST_CHECK_EQUAL(cache_contents.front().basename(), "pkg1");
+                TEST_CHECK_EQUAL(read_file(names_cache / "pkg1"), "cat3\n");
+            }
         }
 
         void read_cache(std::vector<FSEntry> & vec)
@@ -1062,6 +1092,28 @@ namespace test_cases
 
                 TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
             }
+
+            {
+                TestMessageSuffix suffix("install paludis-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::providesincrtest_src1",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat2/pkg1 1 virtual/moo\n");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade paludis-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-2::providesincrtest_src1",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\ncat2/pkg1 2 virtual/moo\n");
+            }
         }
 
         std::string read_file(const FSEntry & f)
@@ -1180,5 +1232,189 @@ namespace test_cases
             }
         }
     } reinstall_test;
+
+    struct PkgPostinstPhaseOrderingTest : TestCase
+    {
+        PkgPostinstPhaseOrderingTest() : TestCase("pkg_postinst phase ordering") { }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        void run()
+        {
+            TestEnvironment env(FSEntry("vdb_repository_TEST_dir/root").realpath());
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/postinsttest_src1");
+            keys->insert("profiles", "vdb_repository_TEST_dir/postinsttest_src1/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo1);
+
+            keys.reset(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/postinsttest");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
+            keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
+            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::make_vdb_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(0, vdb_repo);
+
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(vdb_repo)
+                    ));
+
+            UninstallAction uninstall_action;
+
+            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
+
+            {
+                TestMessageSuffix suffix("install eapi 1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall eapi 1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade eapi 1 -> 1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0.1::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed cat/pkg-0.1::installed");
+
+                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::installed",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids2(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0.1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade eapi 1 -> paludis-1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("reinstall eapi paludis-1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("upgrade eapi paludis-1 -> paludis-1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("new slot", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-2::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed cat/pkg-2::installed");
+            }
+
+            {
+                TestMessageSuffix suffix("downgrade eapi paludis-1 -> 1", true);
+
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                id->perform_action(install_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed cat/pkg-1.1::installed cat/pkg-2::installed");
+
+                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::installed",
+                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                inst_id->perform_action(uninstall_action);
+                vdb_repo->invalidate();
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
+                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
+                TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0::installed cat/pkg-2::installed");
+            }
+        }
+    } pkg_postinst_phase_ordering_test;
 }
 

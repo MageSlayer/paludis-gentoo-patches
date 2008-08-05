@@ -355,7 +355,7 @@ pkg_config() {
 }
 END
 
-mkdir -p namesincrtest/.cache/names/installed namesincrtest_src/{eclass,profiles/profile,cat1/{pkg1,pkg2},cat2/pkg1} || exit 1
+mkdir -p namesincrtest/.cache/names/installed namesincrtest_src/{eclass,profiles/profile,cat1/{pkg1,pkg2},{cat2,cat3}/pkg1} || exit 1
 echo paludis-2 >namesincrtest/.cache/names/installed/_VERSION_
 echo installed >>namesincrtest/.cache/names/installed/_VERSION_
 
@@ -368,6 +368,7 @@ END
 echo namesincrtest_src >namesincrtest_src/profiles/repo_name
 echo cat1 >namesincrtest_src/profiles/categories
 echo cat2 >>namesincrtest_src/profiles/categories
+echo cat3 >>namesincrtest_src/profiles/categories
 
 cat <<END >namesincrtest_src/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
@@ -377,6 +378,13 @@ cp namesincrtest_src/cat1/pkg1/pkg1-{1,1.1}.ebuild
 cp namesincrtest_src/cat1/pkg1/pkg1-{1,2}.ebuild
 cp namesincrtest_src/cat1/{pkg1/pkg1,pkg2/pkg2}-1.ebuild
 cp namesincrtest_src/{cat1,cat2}/pkg1/pkg1-1.ebuild
+
+cat <<END >namesincrtest_src/cat3/pkg1/pkg1-1.ebuild
+EAPI=paludis-1
+KEYWORDS="test"
+SLOT="0"
+END
+cp namesincrtest_src/cat3/pkg1/pkg1-{1,2}.ebuild
 
 mkdir -p providestest/{.cache,cat1/{pkg1,pkg2,pkg3}-{1,2}} || exit 1
 for f in providestest/cat1/{pkg1,pkg2,pkg3}-{1,2}/EAPI; do
@@ -399,7 +407,7 @@ echo 'disabled? ( virtual/foo ) virtual/bar'  >providestest/cat1/pkg2-2/PROVIDE
 echo 'disabled? ( virtual/foo )'              >providestest/cat1/pkg3-1/PROVIDE
 echo ''                                       >providestest/cat1/pkg3-2/PROVIDE
 
-mkdir -p providesincrtest/.cache providesincrtest_src{1,2}/{eclass,profiles/profile,cat1/{pkg1,pkg2}} || exit 1
+mkdir -p providesincrtest/.cache providesincrtest_src{1,2}/{eclass,profiles/profile,{cat1,cat2}/{pkg1,pkg2}} || exit 1
 echo paludis-3 >providesincrtest/.cache/provides
 echo installed >>providesincrtest/.cache/provides
 
@@ -412,6 +420,7 @@ END
 echo providesincrtest_src1 >providesincrtest_src1/profiles/repo_name
 echo providesincrtest_src2 >providesincrtest_src2/profiles/repo_name
 echo cat1 >providesincrtest_src1/profiles/categories
+echo cat2 >>providesincrtest_src1/profiles/categories
 echo cat1 >providesincrtest_src2/profiles/categories
 
 cat <<END >providesincrtest_src1/cat1/pkg1/pkg1-1.ebuild
@@ -429,6 +438,14 @@ KEYWORDS="test"
 SLOT="\${PV:0:1}"
 PROVIDE="enabled? ( virtual/bar ) disabled? ( virtual/foo )"
 END
+
+cat <<END >providesincrtest_src1/cat2/pkg1/pkg1-1.ebuild
+EAPI=paludis-1
+KEYWORDS="test"
+SLOT="0"
+PROVIDE="virtual/moo"
+END
+cp providesincrtest_src1/cat2/pkg1/pkg1-{1,2}.ebuild
 
 mkdir -p reinstalltest reinstalltest_src{1,2}/{eclass,profiles/profile,cat/pkg} || exit 1
 
@@ -448,4 +465,56 @@ KEYWORDS="test"
 SLOT="0"
 END
 cp reinstalltest_src1/cat/pkg/pkg-1.ebuild reinstalltest_src2/cat/pkg/pkg-1-r0.ebuild
+
+mkdir -p postinsttest postinsttest_src1/{eclass,profiles/profile,cat/pkg} || exit 1
+
+cat <<END > postinsttest_src1/profiles/profile/make.defaults
+ARCH=test
+USERLAND="GNU"
+KERNEL="linux"
+CHOST="i286-badger-linux-gnu"
+END
+echo postinsttest >postinsttest_src1/profiles/repo_name
+echo cat >postinsttest_src1/profiles/categories
+
+cat <<END >postinsttest_src1/cat/pkg/pkg-0.ebuild
+if [[ \${PV} == 0* ]]; then
+    EAPI=1
+else
+    EAPI=paludis-1
+fi
+KEYWORDS="test"
+if [[ \${PV} == 2* ]]; then
+    SLOT="2"
+else
+    SLOT="1"
+fi
+pkg_preinst() {
+    OTHER=\$(best_version "\${CATEGORY}/\${PN}:\${SLOT}")
+    if [[ -n \${OTHER} ]]; then
+        if [[ \${EAPI} == paludis-1 ]] || has_version "=\${CATEGORY}/\${PF}:\${SLOT}"; then
+            COMMAND=rmdir
+        else
+            COMMAND=mkdir
+        fi
+    else
+        COMMAND=:
+    fi
+}
+pkg_postinst() {
+    \${COMMAND} "\${ROOT}"/\${OTHER##*/} || die
+}
+pkg_postrm() {
+    if has_version "=\${CATEGORY}/\${PN}-0*:\${SLOT}" &&
+            ( has_version "<\${CATEGORY}/\${PF}:\${SLOT}" || has_version ">\${CATEGORY}/\${PF}:\${SLOT}" ); then
+        rmdir "\${ROOT}"/\${PF} || die
+    else
+        mkdir "\${ROOT}"/\${PF} || die
+    fi
+}
+END
+cp postinsttest_src1/cat/pkg/pkg-{0,0.1}.ebuild
+cp postinsttest_src1/cat/pkg/pkg-{0,1}.ebuild
+cp postinsttest_src1/cat/pkg/pkg-{0,1.1}.ebuild
+cp postinsttest_src1/cat/pkg/pkg-{0,2}.ebuild
 

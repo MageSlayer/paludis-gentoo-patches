@@ -373,6 +373,18 @@ ExndbamRepository::merge(const MergeParams & m)
     {
         perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true);
     }
+    if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+            ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
+                 it_end(replace_candidates->end()); it_end != it; ++it)
+        {
+            std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
+            if (candidate != if_overwritten_id && candidate->slot() == m.package_id()->slot())
+                perform_uninstall(candidate, false);
+        }
+    }
 
     VDBPostMergeCommand post_merge_command(
             make_named_values<VDBPostMergeCommandParams>(
@@ -386,19 +398,6 @@ void
 ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id, bool replace) const
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
-
-    bool last(! replace);
-    if (last)
-    {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
-            if (**v != *id)
-            {
-                last = false;
-                break;
-            }
-    }
 
     if (! _imp->params.root.is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
@@ -478,9 +477,9 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
         FSEntry(*d).unlink();
     ver_dir.rmdir();
 
-    if (last)
+    FSEntry pkg_dir(ver_dir.dirname());
+    if (DirIterator() == DirIterator(pkg_dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort + dio_first_only))
     {
-        FSEntry pkg_dir(ver_dir.dirname());
         pkg_dir.rmdir();
 
         _imp->ndbam.deindex(id->name());

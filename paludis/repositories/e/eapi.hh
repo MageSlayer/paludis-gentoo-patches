@@ -67,6 +67,7 @@ namespace paludis
         struct ebuild_pretend;
         struct ebuild_uninstall;
         struct ebuild_variable;
+        struct ebuild_new_upgrade_phase_order;
         struct eclass_must_not_set_variables;
         struct env_aa;
         struct env_accept_keywords;
@@ -303,6 +304,7 @@ namespace paludis
             NamedValue<n::ebuild_info, std::string> ebuild_info;
             NamedValue<n::ebuild_install, std::string> ebuild_install;
             NamedValue<n::ebuild_metadata, std::string> ebuild_metadata;
+            NamedValue<n::ebuild_new_upgrade_phase_order, bool> ebuild_new_upgrade_phase_order;
             NamedValue<n::ebuild_nofetch, std::string> ebuild_nofetch;
             NamedValue<n::ebuild_pretend, std::string> ebuild_pretend;
             NamedValue<n::ebuild_uninstall, std::string> ebuild_uninstall;

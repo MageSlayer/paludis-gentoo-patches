@@ -170,6 +170,7 @@ namespace
                         value_for<n::ebuild_info>(check_get(k, "ebuild_info")),
                         value_for<n::ebuild_install>(check_get(k, "ebuild_install")),
                         value_for<n::ebuild_metadata>(check_get(k, "ebuild_metadata")),
+                        value_for<n::ebuild_new_upgrade_phase_order>(destringify_key<bool>(k, "ebuild_new_upgrade_phase_order")),
                         value_for<n::ebuild_nofetch>(check_get(k, "ebuild_nofetch")),
                         value_for<n::ebuild_pretend>(check_get(k, "ebuild_pretend")),
                         value_for<n::ebuild_uninstall>(check_get(k, "ebuild_uninstall")),

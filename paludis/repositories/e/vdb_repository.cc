@@ -413,6 +413,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                         value_for<n::config_protect>(config_protect),
                         value_for<n::config_protect_mask>(config_protect_mask),
                         value_for<n::contents_file>(pkg_dir / "CONTENTS"),
+
                         value_for<n::environment>(_imp->params.environment),
                         value_for<n::package_id>(id),
                         value_for<n::root>(installed_root_key()->value())
@@ -850,6 +851,18 @@ VDBRepository::merge(const MergeParams & m)
 
     if (is_replace)
         perform_uninstall(is_replace, true);
+    if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+            ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
+                 it_end(replace_candidates->end()); it_end != it; ++it)
+        {
+            std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
+            if (candidate != is_replace && candidate->slot() == m.package_id()->slot())
+                perform_uninstall(candidate, false);
+        }
+    }
 
     VDBPostMergeCommand post_merge_command(
             make_named_values<VDBPostMergeCommandParams>(
