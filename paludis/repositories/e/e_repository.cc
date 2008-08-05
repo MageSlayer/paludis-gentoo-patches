@@ -53,6 +53,7 @@
 #include <paludis/mask.hh>
 #include <paludis/qa.hh>
 #include <paludis/elike_package_dep_spec.hh>
+#include <paludis/about.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -1216,7 +1217,8 @@ ERepository::check_qa(
 
         if (0 == libqahandle.handle)
             libqahandle.handle = dlopen(getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
-                        "libpaludiserepositoryqa.so").c_str(), RTLD_NOW | RTLD_GLOBAL);
+                        "libpaludiserepositoryqa_" + stringify(PALUDIS_VERSION_MAJOR) + "."
+                    + stringify(PALUDIS_VERSION_MINOR) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (0 == libqahandle.handle)
         {
             reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror()) +
