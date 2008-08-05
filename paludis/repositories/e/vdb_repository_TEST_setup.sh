@@ -371,7 +371,7 @@ echo cat2 >>namesincrtest_src/profiles/categories
 
 cat <<END >namesincrtest_src/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
-SLOT="${PV:0:1}"
+SLOT="\${PV:0:1}"
 END
 cp namesincrtest_src/cat1/pkg1/pkg1-{1,1.1}.ebuild
 cp namesincrtest_src/cat1/pkg1/pkg1-{1,2}.ebuild
@@ -416,7 +416,7 @@ echo cat1 >providesincrtest_src2/profiles/categories
 
 cat <<END >providesincrtest_src1/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
-SLOT="${PV:0:1}"
+SLOT="\${PV:0:1}"
 PROVIDE="enabled? ( virtual/foo ) disabled? ( virtual/bar )"
 END
 cp providesincrtest_src1/cat1/pkg1/pkg1-{1,1.1}.ebuild
@@ -426,7 +426,7 @@ cp providesincrtest_src1/cat1/pkg1/pkg1-1.1.ebuild providesincrtest_src2/cat1/pk
 
 cat <<END >providesincrtest_src2/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
-SLOT="${PV:0:1}"
+SLOT="\${PV:0:1}"
 PROVIDE="enabled? ( virtual/bar ) disabled? ( virtual/foo )"
 END
 
