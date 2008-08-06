@@ -322,7 +322,7 @@ namespace formatter
     {
     }
 
-    void test_formatter_restrict_spec_tree(const RestrictSpecTree::ItemFormatter &)
+    void test_formatter_restrict_spec_tree(const PlainTextSpecTree::ItemFormatter &)
     {
     }
 
