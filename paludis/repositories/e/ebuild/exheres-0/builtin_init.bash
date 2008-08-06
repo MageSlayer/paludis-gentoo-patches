@@ -46,7 +46,6 @@ builtin_init()
 !!!     mkdir ${!a}
 !!!     chgrp ${PALUDIS_REDUCED_GID} ${!a}
 !!!     chmod g+rwx ${!a}
-!!!     chmod +s ${!a}
 !!! although other values may be more appropriate for your system.
 "
             die "\$${a} (\"${!a}\") not a directory"
