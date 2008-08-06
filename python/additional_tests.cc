@@ -322,7 +322,7 @@ namespace formatter
     {
     }
 
-    void test_formatter_restrict_spec_tree(const PlainTextSpecTree::ItemFormatter &)
+    void test_formatter_plain_text_spec_tree(const PlainTextSpecTree::ItemFormatter &)
     {
     }
 
@@ -366,7 +366,7 @@ void expose_additional_tests()
     bp::def("test_metadata_license_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<LicenseSpecTree>);
     bp::def("test_metadata_provide_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<ProvideSpecTree>);
     bp::def("test_metadata_dependency_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<DependencySpecTree>);
-    bp::def("test_metadata_restrict_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<RestrictSpecTree>);
+    bp::def("test_metadata_plain_text_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<PlainTextSpecTree>);
     bp::def("test_metadata_fetchable_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<FetchableURISpecTree>);
     bp::def("test_metadata_simple_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<SimpleURISpecTree>);
     bp::def("test_metadata_section_key", &metadata_key::test_metadata_section_key);
@@ -388,7 +388,7 @@ void expose_additional_tests()
     bp::def("test_formatter_license_spec_tree", &formatter::test_formatter_license_spec_tree);
     bp::def("test_formatter_provide_spec_tree", &formatter::test_formatter_provide_spec_tree);
     bp::def("test_formatter_dependency_spec_tree", &formatter::test_formatter_dependency_spec_tree);
-    bp::def("test_formatter_restrict_spec_tree", &formatter::test_formatter_restrict_spec_tree);
+    bp::def("test_formatter_plain_text_spec_tree", &formatter::test_formatter_plain_text_spec_tree);
     bp::def("test_formatter_simple_uri_spec_tree", &formatter::test_formatter_simple_uri_spec_tree);
     bp::def("test_formatter_fetchable_uri_spec_tree", &formatter::test_formatter_fetchable_uri_spec_tree);
 }

@@ -39,7 +39,7 @@ class TestCase_01_StringifyFormatter(unittest.TestCase):
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)
-        test_formatter_restrict_spec_tree(f)
+        test_formatter_plain_text_spec_tree(f)
         test_formatter_simple_uri_spec_tree(f)
         test_formatter_fetchable_uri_spec_tree(f)
 
@@ -57,7 +57,7 @@ class TestCase_02_PythonFormatter(unittest.TestCase):
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)
-        test_formatter_restrict_spec_tree(f)
+        test_formatter_plain_text_spec_tree(f)
         test_formatter_simple_uri_spec_tree(f)
         test_formatter_fetchable_uri_spec_tree(f)
 
@@ -225,7 +225,7 @@ class TestCase_03_Formatters_suclassing(unittest.TestCase):
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)
-        test_formatter_restrict_spec_tree(f)
+        test_formatter_plain_text_spec_tree(f)
         test_formatter_simple_uri_spec_tree(f)
         test_formatter_fetchable_uri_spec_tree(f)
 

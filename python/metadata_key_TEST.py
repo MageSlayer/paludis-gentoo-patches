@@ -237,10 +237,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
         test_metadata_dependency_spec_tree_key(TestKey())
 
 
-    def test_13_restrict_spec_tree(self):
-        class TestKey(MetadataRestrictSpecTreeKey):
+    def test_13_plain_text_spec_tree(self):
+        class TestKey(MetadataPlainTextSpecTreeKey):
             def __init__(self):
-                MetadataRestrictSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataPlainTextSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
                 return AllDepSpec()
@@ -255,7 +255,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
-        test_metadata_restrict_spec_tree_key(TestKey())
+        test_metadata_plain_text_spec_tree_key(TestKey())
 
     def test_14_fetchable_uri_spec_tree(self):
         class TestKey(MetadataFetchableURISpecTreeKey):
