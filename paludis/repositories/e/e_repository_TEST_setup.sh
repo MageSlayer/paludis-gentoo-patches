@@ -1820,9 +1820,9 @@ MYOPTIONS="enabled-hamster gerbil dormouse"
 LICENSE="GPL-2"
 PLATFORMS="test"
 
-DEFAULT_SRC_CONFIGURE_PARAMS="--nice-juicy-steak"
-DEFAULT_SRC_CONFIGURE_OPTION_ENABLES="enabled-hamster gerbil"
-DEFAULT_SRC_CONFIGURE_OPTION_WITHS="dormouse"
+DEFAULT_SRC_CONFIGURE_PARAMS=( --nice-juicy-steak )
+DEFAULT_SRC_CONFIGURE_OPTION_ENABLES=( enabled-hamster gerbil )
+DEFAULT_SRC_CONFIGURE_OPTION_WITHS=( dormouse )
 
 src_unpack() {
     mkdir ${S}
