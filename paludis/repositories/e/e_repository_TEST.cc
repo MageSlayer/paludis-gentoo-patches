@@ -1276,6 +1276,16 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("no src_configure 0", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                id->perform_action(action);
+            }
+
+            {
                 TestMessageSuffix suffix("best version", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
@@ -1393,8 +1403,174 @@ namespace test_cases
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("no src_configure 1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_1;
+
+#if 0
+    struct ERepositoryInstallEAPI2Test : TestCase
+    {
+        ERepositoryInstallEAPI2Test() : TestCase("install_eapi_2") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo13");
+            keys->insert("profiles", "e_repository_TEST_dir/repo13/profiles/profile");
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            env.package_database()->add_repository(2, installed_repo);
+
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::checks>(iaco_default),
+                        value_for<n::debug_build>(iado_none),
+                        value_for<n::destination>(installed_repo)
+                    ));
+
+            {
+                TestMessageSuffix suffix("econf source 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("doman 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("src_configure 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("default src_configure 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_configure-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("default src_compile 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_compile-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("default_src_compile 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_compile-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("src_compile via default function 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/src_compile-via-default-func-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("eapi0_src_compile 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/eapi0_src_compile-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("eapi0_src_compile with ECONF_SOURCE 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/eapi0_src_compile-with-econf_source-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("eapi1_src_compile 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/eapi1_src_compile-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("eapi2_src_compile 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/eapi2_src_compile-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+        }
+    } test_e_repository_install_eapi_2;
+#endif
 
     struct ERepositoryInstallEAPIKdebuild1Test : TestCase
     {
@@ -1491,6 +1667,16 @@ namespace test_cases
                 TestMessageSuffix suffix("doman kdebuild-1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-kdebuild-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("no src_configure kdebuild-1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-kdebuild-1",
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");

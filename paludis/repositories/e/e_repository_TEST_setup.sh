@@ -769,6 +769,7 @@ src_install() {
 }
 END
 cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
+cp cat/econf-source/econf-source-{0,2}.ebuild || exit 1
 mkdir -p "cat/doman"
 cat <<END > cat/doman/doman-0.ebuild || exit 1
 EAPI="\${PV}"
@@ -1007,6 +1008,251 @@ pkg_preinst() {
     [[ -d "${T}" ]] || die "T not a dir"
 }
 END
+mkdir -p "cat/src_configure"
+cat <<END > cat/src_configure/src_configure-0.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_configure() {
+    die src_configure
+}
+END
+cp cat/src_configure/src_configure-{0,1}.ebuild || exit 1
+cp cat/src_configure/src_configure-{0,2}.ebuild || exit 1
+mkdir -p "cat/default-src_configure" || exit 1
+cat << END > cat/default-src_configure/default-src_configure-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+touch foo
+EOF
+    chmod +x configure
+    echo 'all: ; rm foo' >Makefile
+}
+
+src_compile() {
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/default-src_compile" || exit 1
+cat << END > cat/default-src_compile/default-src_compile-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+rm Makefile
+EOF
+    chmod +x configure
+    echo 'all: ; touch foo' >Makefile
+}
+
+src_configure() {
+    :
+}
+
+src_install() {
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/default_src_compile" || exit 1
+cat << END > cat/default_src_compile/default_src_compile-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+rm Makefile
+EOF
+    chmod +x configure
+    echo 'all: ; touch foo' >Makefile
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    default_src_compile
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/src_compile-via-default-func" || exit 1
+cat << END > cat/src_compile-via-default-func/src_compile-via-default-func-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+rm Makefile
+EOF
+    chmod +x configure
+    echo 'all: ; touch foo' >Makefile
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    default
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/eapi0_src_compile" || exit 1
+cat << END > cat/eapi0_src_compile/eapi0_src_compile-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+echo 'all: ; touch foo' >Makefile
+EOF
+    chmod +x configure
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    eapi0_src_compile
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/eapi0_src_compile-with-econf_source" || exit 1
+cat << END > cat/eapi0_src_compile-with-econf_source/eapi0_src_compile-with-econf_source-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    mkdir subdir
+    cat <<EOF >subdir/configure
+#! /bin/sh
+rm Makefile
+EOF
+    chmod +x subdir/configure
+    echo 'all: ; touch foo' >Makefile
+    ECONF_SOURCE=subdir
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    eapi0_src_compile
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/eapi1_src_compile" || exit 1
+cat << END > cat/eapi1_src_compile/eapi1_src_compile-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    mkdir subdir
+    cat <<EOF >subdir/configure
+#! /bin/sh
+echo 'all: ; touch foo' >Makefile
+EOF
+    chmod +x subdir/configure
+    ECONF_SOURCE=subdir
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    eapi1_src_compile
+    [[ -e foo ]] || die
+}
+END
+mkdir -p "cat/eapi2_src_compile" || exit 1
+cat << END > cat/eapi2_src_compile/eapi2_src_compile-2.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    cat <<EOF >configure
+#! /bin/sh
+rm Makefile
+EOF
+    chmod +x configure
+    echo 'all: ; touch foo' >Makefile
+}
+
+src_configure() {
+    :
+}
+
+src_compile() {
+    eapi2_src_compile
+    [[ -e foo ]] || die
+}
+END
 mkdir -p "cat/econf-source-kdebuild"
 cat <<END > cat/econf-source-kdebuild/econf-source-kdebuild-1.kdebuild-1 || exit 1
 DESCRIPTION="The Description"
@@ -1116,6 +1362,8 @@ src_install() {
 END
 mkdir -p "cat/doman-kdebuild"
 sed -e /EAPI=/d cat/doman/doman-0.ebuild >cat/doman-kdebuild/doman-kdebuild-1.kdebuild-1 || exit 1
+mkdir -p "cat/src_configure-kdebuild"
+sed -e /EAPI=/d cat/src_configure/src_configure-0.ebuild >cat/src_configure-kdebuild/src_configure-kdebuild-1.kdebuild-1 || exit 1
 mkdir -p "cat/expand-vars"
 cat <<"END" > cat/expand-vars/expand-vars-0.ebuild || exit 1
 DESCRIPTION="The Description"
