@@ -1989,6 +1989,15 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("doman nofatal", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-nonfatal-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
                 TestMessageSuffix suffix("doman failure", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-failure-0",

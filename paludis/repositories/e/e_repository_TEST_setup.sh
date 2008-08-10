@@ -1887,7 +1887,6 @@ src_compile() {
 
 src_install() {
     doman foo.* dir/foo.* || die
-    nonfatal doman bar.1 && die
     doman -i18n=en_GB baz.* || die
     keepdir /meh || die
     cd "\${D}"/meh || die
@@ -1915,6 +1914,20 @@ src_compile() {
 
 src_install() {
     doman bar.m
+}
+END
+mkdir -p "packages/cat/doman-nonfatal"
+cat <<END > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    nonfatal doman bar.1 && die
 }
 END
 cd ..
