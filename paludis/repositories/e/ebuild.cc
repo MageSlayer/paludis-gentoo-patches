@@ -174,6 +174,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
             .with_setenv("PALUDIS_LOAD_MODULES",
                     params.package_id()->eapi()->supported()->ebuild_options()->load_modules())
+            .with_setenv("PALUDIS_EBUILD_FUNCTIONS",
+                    params.package_id()->eapi()->supported()->ebuild_options()->ebuild_functions())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",

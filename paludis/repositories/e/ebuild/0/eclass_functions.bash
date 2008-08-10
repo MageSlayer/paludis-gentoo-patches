@@ -26,20 +26,10 @@ EXPORT_FUNCTIONS()
 
     local e
     for e in "$@" ; do
-        case "$e" in
-            pkg_nofetch|pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst|pkg_config)
-                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
-                ;;
-
-            src_unpack|src_compile|src_install|src_test)
-                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
-                ;;
-
-            *)
-                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
-                ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
-                ;;
-        esac
+        if [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; then
+            ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
+        fi
+        eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
     done
 }
 

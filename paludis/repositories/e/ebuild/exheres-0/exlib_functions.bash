@@ -22,19 +22,10 @@ export_exlib_phases()
 
     local e
     for e in "$@" ; do
-        case "$e" in
-            pkg_nofetch|pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst|pkg_config|pkg_pretend|pkg_info)
-                eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
-                ;;
-
-            src_unpack|src_prepare|src_configure|src_compile|src_install|src_test)
-                eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
-                ;;
-
-            *)
-                die "$e should not be in export_exlib_phases for ${CURRENT_EXLIB}"
-                ;;
-        esac
+        if [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; then
+            die "$e should not be in export_exlib_phases for ${CURRENT_EXLIB}"
+        fi
+        eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
     done
 }
 

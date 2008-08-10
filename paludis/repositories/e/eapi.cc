@@ -136,6 +136,7 @@ namespace
                         value_for<n::bracket_merged_variables>(check_get(k, "bracket_merged_variables")),
                         value_for<n::directory_if_exists_variables>(check_get(k, "directory_if_exists_variables")),
                         value_for<n::directory_variables>(check_get(k, "directory_variables")),
+                        value_for<n::ebuild_functions>(check_get(k, "ebuild_functions")),
                         value_for<n::ebuild_module_suffixes>(check_get(k, "ebuild_module_suffixes")),
                         value_for<n::ebuild_must_not_set_variables>(check_get(k, "ebuild_must_not_set_variables")),
                         value_for<n::eclass_must_not_set_variables>(check_get(k, "eclass_must_not_set_variables")),

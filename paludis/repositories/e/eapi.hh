@@ -55,6 +55,7 @@ namespace paludis
         struct eapi;
         struct ebuild_config;
         struct ebuild_environment_variables;
+        struct ebuild_functions;
         struct ebuild_info;
         struct ebuild_install;
         struct ebuild_metadata;
@@ -273,6 +274,7 @@ namespace paludis
             NamedValue<n::bracket_merged_variables, std::string> bracket_merged_variables;
             NamedValue<n::directory_if_exists_variables, std::string> directory_if_exists_variables;
             NamedValue<n::directory_variables, std::string> directory_variables;
+            NamedValue<n::ebuild_functions, std::string> ebuild_functions;
             NamedValue<n::ebuild_module_suffixes, std::string> ebuild_module_suffixes;
             NamedValue<n::ebuild_must_not_set_variables, std::string> ebuild_must_not_set_variables;
             NamedValue<n::eclass_must_not_set_variables, std::string> eclass_must_not_set_variables;

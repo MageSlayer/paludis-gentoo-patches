@@ -135,6 +135,15 @@ for m in ${PALUDIS_LOAD_MODULES}; do
     ebuild_load_module ${m}
 done
 
+[[ -z ${PALUDIS_EBUILD_FUNCTIONS} ]] && PALUDIS_EBUILD_FUNCTIONS="
+    builtin_infovars builtin_init builtin_initrm builtin_initmisc
+    builtin_loadenv builtin_metadata builtin_killold builtin_killoldrm
+    builtin_killoldmisc builtin_saveenv builtin_tidyup builtin_tidyuprm
+    builtin_tidyupmisc builtin_variable
+    pkg_config pkg_info pkg_nofetch pkg_postinst pkg_postrm
+    pkg_preinst pkg_prerm pkg_pretend pkg_setup
+    src_compile src_configure src_install src_prepare src_test src_unpack"
+
 check_paludis_pipe_command()
 {
     [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
@@ -402,26 +411,14 @@ perform_hook()
 }
 
 paludis_phase_to_function_name() {
-    case "${1}" in
-        metadata|variable|init|initmisc|initrm|killold|killoldmisc|killoldrm|merge|\
-                unmerge|tidyup|tidyupmisc|tidyuprm|loadenv|saveenv|initbin|\
-                unpackbin|infovars|pivotbin|installbin)
-            echo builtin_${1}
-        ;;
-
-        unpack|prepare|configure|compile|install|test)
-            echo src_${1}
-        ;;
-
-        setup|config|nofetch|preinst|postinst|prerm|postrm|pretend|info)
-            echo pkg_${1}
-        ;;
-
-        *)
-            die "Usage error: Unknown phase '${1}'"
-            exit 1
-        ;;
-    esac
+    local p
+    for p in builtin src pkg; do
+        if has ${p}_${1} ${PALUDIS_EBUILD_FUNCTIONS}; then
+            echo ${p}_${1}
+            return
+        fi
+    done
+    die "Usage error: Unknown phase '${1}'"
 }
 
 ebuild_main()
