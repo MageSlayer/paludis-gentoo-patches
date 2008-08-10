@@ -90,6 +90,7 @@ namespace paludis
         struct iuse_flag_parse_options;
         struct keywords;
         struct license;
+        struct load_modules;
         struct long_description;
         struct merger_options;
         struct metadata_key;
@@ -278,6 +279,7 @@ namespace paludis
             NamedValue<n::f_function_prefix, std::string> f_function_prefix;
             NamedValue<n::ignore_pivot_env_functions, std::string> ignore_pivot_env_functions;
             NamedValue<n::ignore_pivot_env_variables, std::string> ignore_pivot_env_variables;
+            NamedValue<n::load_modules, std::string> load_modules;
             NamedValue<n::must_not_change_variables, std::string> must_not_change_variables;
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;

@@ -22,8 +22,6 @@ libexecprog0_SCRIPTS = \
 	builtin_variable.bash \
 	conditional_functions.bash \
 	eclass_functions.bash \
-	ever_functions.bash \
-	exlib_functions.bash \
 	list_functions.bash \
 	output_functions.bash \
 	pkg_config.bash \

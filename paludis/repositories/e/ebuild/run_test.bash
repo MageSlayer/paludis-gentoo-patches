@@ -40,6 +40,7 @@ test_equality()
 export PALUDIS_PIPE_COMMAND_WRITE_FD=
 export PALUDIS_PIPE_COMMAND_READ_FD=
 export PALUDIS_SKIP_PIPE_COMMAND_CHECK=yes
+export PALUDIS_LOAD_MODULES=
 
 echo "Test program ${1}:"
 source "${PALUDIS_EBUILD_DIR}/ebuild.bash" || exit 200

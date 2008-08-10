@@ -21,7 +21,6 @@ libexecprogexheres_SCRIPTS = \
 	builtin_tidyupmisc.bash \
 	builtin_variable.bash \
 	conditional_functions.bash \
-	eclass_functions.bash \
 	ever_functions.bash \
 	exlib_functions.bash \
 	list_functions.bash \

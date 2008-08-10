@@ -114,18 +114,26 @@ ebuild_load_module pipe_functions
 ebuild_load_module die_functions
 ebuild_load_module output_functions
 ebuild_load_module echo_functions
-ebuild_load_module conditional_functions
-ebuild_load_module kernel_functions
-ebuild_load_module sandbox
-ebuild_load_module portage_stubs
-ebuild_load_module ever_functions
 ebuild_load_module list_functions
-ebuild_load_module multilib_functions
-ebuild_load_module install_functions
-ebuild_load_module build_functions
-ebuild_load_module eclass_functions
-ebuild_load_module exlib_functions
 ebuild_load_module source_functions
+
+if [[ -z ${PALUDIS_LOAD_MODULES} ]]; then
+    PALUDIS_LOAD_MODULES="
+        conditional_functions kernel_functions sandbox portage_stubs
+        multilib_functions install_functions build_functions"
+    for m in eclass_functions exlib_functions ever_functions; do
+        for d in ${EBUILD_MODULES_DIRS}; do
+            if [[ -f "${d}/${1}.bash" ]]; then
+                PALUDIS_LOAD_MODULES="${PALUDIS_LOAD_MODULES} ${m}"
+                break
+            fi
+        done
+    done
+fi
+
+for m in ${PALUDIS_LOAD_MODULES}; do
+    ebuild_load_module ${m}
+done
 
 check_paludis_pipe_command()
 {
