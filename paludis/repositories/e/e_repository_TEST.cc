@@ -1357,7 +1357,6 @@ namespace test_cases
         }
     } test_e_repository_install_eapi_1;
 
-#if 0
     struct ERepositoryInstallEAPI2Test : TestCase
     {
         ERepositoryInstallEAPI2Test() : TestCase("install_eapi_2") { }
@@ -1482,7 +1481,6 @@ namespace test_cases
             }
         }
     } test_e_repository_install_eapi_2;
-#endif
 
     struct ERepositoryInstallEAPIKdebuild1Test : TestCase
     {
