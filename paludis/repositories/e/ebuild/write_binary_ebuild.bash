@@ -74,7 +74,7 @@ ebuild_load_module()
 }
 
 ebuild_load_module die_functions
-ebuild_load_module 0/output_functions
+ebuild_load_module output_functions
 ebuild_load_module echo_functions
 ebuild_load_module source_functions
 ebuild_load_module binary_functions

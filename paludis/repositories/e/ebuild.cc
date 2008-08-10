@@ -775,6 +775,8 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
+            .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
+                    params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
 
@@ -978,6 +980,8 @@ WriteBinaryEbuildCommand::operator() ()
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords().name())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
+            .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
+                    params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
 
