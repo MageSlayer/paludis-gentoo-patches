@@ -23,7 +23,7 @@
 default_src_compile()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        emake ${DEFAULT_SRC_COMPILE_PARAMS[@]}
+        emake "${DEFAULT_SRC_COMPILE_PARAMS[@]}"
     fi
 }
 
