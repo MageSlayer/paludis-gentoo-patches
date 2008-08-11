@@ -55,13 +55,6 @@ namespace paludis
             ExndbamRepository(const RepositoryName & n, const ExndbamRepositoryParams &);
 
             /**
-             * Virtual constructor.
-             */
-            static std::tr1::shared_ptr<Repository> make_exndbam_repository(
-                    Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
-
-            /**
              * Destructor.
              */
             ~ExndbamRepository();
@@ -112,6 +105,22 @@ namespace paludis
 
             ///\}
 
+            ///\name RepositoryFactory functions
+            ///\{
+
+            static RepositoryName repository_factory_name(
+                    const Environment * const env,
+                    const std::tr1::function<std::string (const std::string &)> &);
+
+            static std::tr1::shared_ptr<Repository> repository_factory_create(
+                    Environment * const env,
+                    const std::tr1::function<std::string (const std::string &)> &);
+
+            static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+                    const Environment * const env,
+                    const std::tr1::function<std::string (const std::string &)> &);
+
+            ///\}
     };
 
     class PALUDIS_VISIBLE ExndbamRepositoryConfigurationError : public ConfigurationError

@@ -25,8 +25,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/package_database.hh>
-#include <paludis/repository_maker.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/repository_factory.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
@@ -51,9 +51,12 @@ namespace paludis
 #ifdef ENABLE_VIRTUALS_REPOSITORY
 namespace
 {
-    std::string virtuals_repo_keys(const std::string &)
+    std::string virtuals_repo_keys(const std::string & key)
     {
-        return "";
+        if (key == "format")
+            return "virtuals";
+        else
+            return "";
     }
 }
 #endif
@@ -86,7 +89,7 @@ namespace test_cases
                 env(),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-                virtuals_repo((*(*RepositoryMaker::get_instance())["virtuals"])(&env, virtuals_repo_keys)),
+                virtuals_repo(RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys)),
 #endif
                 targets(new PackageIDSequence),
                 done_populate(false),

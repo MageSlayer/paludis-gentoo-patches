@@ -132,7 +132,7 @@ ExndbamRepository::_add_metadata_keys() const
 }
 
 std::tr1::shared_ptr<Repository>
-ExndbamRepository::make_exndbam_repository(
+ExndbamRepository::repository_factory_create(
         Environment * const env,
         const std::tr1::function<std::string (const std::string &)> & f)
 {
@@ -179,6 +179,26 @@ ExndbamRepository::make_exndbam_repository(
                 .root(root)
                 .deprecated_world(deprecated_world)
                 .builddir(builddir)));
+}
+
+RepositoryName
+ExndbamRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    std::string name(f("name"));
+    if (name.empty())
+        return RepositoryName("installed");
+    else
+        return RepositoryName(name);
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+ExndbamRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 
 void

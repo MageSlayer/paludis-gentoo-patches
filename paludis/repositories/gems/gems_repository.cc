@@ -22,6 +22,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/gem_specifications.hh>
+#include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -35,6 +36,8 @@
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/distribution.hh>
+#include <paludis/environment.hh>
 #include <tr1/unordered_map>
 #include <fstream>
 
@@ -352,5 +355,51 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemsRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+std::tr1::shared_ptr<Repository>
+GemsRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    std::string location(f("location"));
+    if (location.empty())
+        throw gems::RepositoryConfigurationError("Key 'location' not specified or empty");
+
+    std::string install_dir(f("install_dir"));
+    if (install_dir.empty())
+        throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
+
+    std::string sync(f("sync"));
+
+    std::string sync_options(f("sync_options"));
+
+    std::string builddir(f("builddir"));
+    if (builddir.empty())
+        builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
+
+    return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
+                .location(location)
+                .sync(sync)
+                .sync_options(sync_options)
+                .environment(env)
+                .install_dir(install_dir)
+                .builddir(builddir)));
+}
+
+RepositoryName
+GemsRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return RepositoryName("gems");
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+GemsRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 

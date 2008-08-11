@@ -378,19 +378,21 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         /* add virtuals repositories */
         if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
         {
-            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
-                    new Map<std::string, std::string>);
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
             iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+            iv_keys->insert("format", "installed_virtuals");
             _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
                         value_for<n::format>("installed_virtuals"),
                         value_for<n::importance>(-1),
                         value_for<n::keys>(std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1))
                     ));
 
+            std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            v_keys->insert("format", "virtuals");
             _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
                         value_for<n::format>("virtuals"),
                         value_for<n::importance>(-2),
-                        value_for<n::keys>(std::tr1::bind(&from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1))
+                        value_for<n::keys>(std::tr1::bind(&from_keys, v_keys, std::tr1::placeholders::_1))
                     ));
         }
 #endif

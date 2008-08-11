@@ -17,24 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repository_factory.hh>
-#include <paludis/repositories/unavailable/unavailable_repository.hh>
-#include <paludis/util/set.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_FACTORY_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORY_FACTORY_FWD_HH 1
 
-using namespace paludis;
-using namespace paludis::unavailable_repository;
-
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
-    unavailable_formats->insert("unavailable");
-
-    factory->add_repository_format(unavailable_formats,
-            &UnavailableRepository::repository_factory_name,
-            &UnavailableRepository::repository_factory_create,
-            &UnavailableRepository::repository_factory_dependencies
-            );
+    class RepositoryFactory;
 }
 
+#endif

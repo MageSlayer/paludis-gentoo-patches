@@ -279,7 +279,7 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
 }
 
 std::tr1::shared_ptr<Repository>
-VDBRepository::make_vdb_repository(
+VDBRepository::repository_factory_create(
         Environment * const env,
         const std::tr1::function<std::string (const std::string &)> & f)
 {
@@ -355,6 +355,26 @@ VDBRepository::make_vdb_repository(
                 .provides_cache(provides_cache)
                 .name(RepositoryName(name))
                 .names_cache(names_cache)));
+}
+
+RepositoryName
+VDBRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    std::string name(f("name"));
+    if (name.empty())
+        return RepositoryName("installed");
+    else
+        return RepositoryName(name);
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+VDBRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(

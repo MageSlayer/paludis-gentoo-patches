@@ -27,13 +27,14 @@ using namespace paludis;
 
 namespace paludis
 {
-    class RepositoryMaker;
+    class RepositoryFactory;
     class ERepository;
 }
 
 extern "C"
 {
-    void PALUDIS_VISIBLE register_repositories(paludis::RepositoryMaker * maker);
+    void PALUDIS_VISIBLE paludis_initialise_repository_so(paludis::RepositoryFactory * const);
+
     void PALUDIS_VISIBLE check_qa(
             const Environment * const,
             const std::tr1::shared_ptr<const ERepository> &,
@@ -44,7 +45,7 @@ extern "C"
             const FSEntry &);
 }
 
-void register_repositories(paludis::RepositoryMaker *)
+void paludis_initialise_repository_so(paludis::RepositoryFactory * const)
 {
 }
 

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "no_config_environment.hh"
+#include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -27,15 +27,14 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
-#include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/repository_factory.hh>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -191,8 +190,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                     keys->insert("cache", "/var/empty");
 
                 package_database->add_repository(1, ((master_repo =
-                                RepositoryMaker::get_instance()->find_maker("ebuild")(env,
-                                    std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
+                                RepositoryFactory::get_instance()->create(env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
             }
         }
 
@@ -218,13 +216,15 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             keys->insert("layout", "exheres");
 
         package_database->add_repository(2, ((main_repo =
-                        RepositoryMaker::get_instance()->find_maker("ebuild")(env,
+                        RepositoryFactory::get_instance()->create(env,
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
+        std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+        v_keys->insert("format", "virtuals");
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                        std::tr1::bind(from_keys, make_shared_ptr(new Map<std::string, std::string>), std::tr1::placeholders::_1)));
+            package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
+                        std::tr1::bind(from_keys, v_keys, std::tr1::placeholders::_1)));
 #endif
     }
     else
@@ -240,16 +240,17 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env,
+        package_database->add_repository(1, RepositoryFactory::get_instance()->create(env,
                     std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
         std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
                 new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
+        iv_keys->insert("format", "installed_virtuals");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
+            package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
                         std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
 #endif
     }

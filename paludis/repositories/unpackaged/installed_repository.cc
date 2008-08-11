@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/installed_id.hh>
+#include <paludis/repositories/unpackaged/exceptions.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -478,5 +479,43 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedRepository::installed_root_key() const
 {
     return _imp->root_key;
+}
+
+std::tr1::shared_ptr<Repository>
+InstalledUnpackagedRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    Context context("When creating InstalledUnpackagedRepository:");
+
+    std::string location(f("location"));
+    if (location.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'location' not specified or empty");
+
+    std::string root(f("root"));
+    if (root.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'root' not specified or empty");
+
+    return make_shared_ptr(new InstalledUnpackagedRepository(RepositoryName("installed-unpackaged"),
+                unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
+                .environment(env)
+                .location(location)
+                .root(root)));
+}
+
+RepositoryName
+InstalledUnpackagedRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return RepositoryName("installed-unpackaged");
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+InstalledUnpackagedRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 

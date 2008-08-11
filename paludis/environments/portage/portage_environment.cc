@@ -35,7 +35,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/repository_maker.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
@@ -48,6 +47,7 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/repository_factory.hh>
 #include <tr1/functional>
 #include <functional>
 #include <algorithm>
@@ -464,11 +464,10 @@ void
 PortageEnvironment::_add_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-            new Map<std::string, std::string>);
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    keys->insert("format", "virtuals");
     package_database()->add_repository(-2,
-            RepositoryMaker::get_instance()->find_maker("virtuals")(this,
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            RepositoryFactory::get_instance()->create(this, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 #endif
 }
 
@@ -476,12 +475,11 @@ void
 PortageEnvironment::_add_installed_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-            new Map<std::string, std::string>);
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
+    keys->insert("format", "installed_virtuals");
     package_database()->add_repository(-1,
-            RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this,
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            RepositoryFactory::get_instance()->create(this, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 #endif
 }
 
@@ -496,8 +494,7 @@ void
 PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
         const std::string & sync, int importance)
 {
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-            new Map<std::string, std::string>);
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
@@ -514,8 +511,7 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
     keys->insert("builddir", builddir);
 
     package_database()->add_repository(importance,
-            RepositoryMaker::get_instance()->find_maker("ebuild")(this,
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            RepositoryFactory::get_instance()->create(this, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 void
@@ -530,8 +526,7 @@ PortageEnvironment::_add_vdb_repository()
 {
     Context context("When creating vdb repository:");
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-            new Map<std::string, std::string>);
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(root() / "/var/db/pkg"));
     keys->insert("format", "vdb");
@@ -542,8 +537,7 @@ PortageEnvironment::_add_vdb_repository()
         builddir.append("/portage");
     keys->insert("builddir", builddir);
     package_database()->add_repository(1,
-            RepositoryMaker::get_instance()->find_maker("vdb")(this,
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            RepositoryFactory::get_instance()->create(this, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 }
 
 PortageEnvironment::~PortageEnvironment()

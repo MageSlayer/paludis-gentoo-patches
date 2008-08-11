@@ -26,7 +26,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/repository_maker.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -399,7 +398,7 @@ CRANRepository::sync() const
 }
 
 std::tr1::shared_ptr<Repository>
-CRANRepository::make_cran_repository(
+CRANRepository::repository_factory_create(
         Environment * const env,
         const std::tr1::function<std::string (const std::string &)> & f)
 {
@@ -444,6 +443,24 @@ CRANRepository::make_cran_repository(
                 .builddir(builddir)
                 .library(library)
                 .mirror(mirror)));
+}
+
+RepositoryName
+CRANRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    if (f("location").empty())
+        throw CRANRepositoryConfigurationError("Key 'location' not specified or empty");
+    return fetch_repo_name(f("location"));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+CRANRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 
 CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(

@@ -28,7 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/repository_maker.hh>
+#include <paludis/repository_factory.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
@@ -78,9 +78,22 @@ namespace paludis
 #ifdef ENABLE_VIRTUALS_REPOSITORY
     std::string virtuals_repo_keys(const std::string & k)
     {
-        if (k == "root")
+        if (k == "format")
+            return "virtuals";
+        else if (k == "root")
             return "/";
-        return "";
+        else
+            return "";
+    }
+
+    std::string installed_virtuals_repo_keys(const std::string & k)
+    {
+        if (k == "format")
+            return "installed_virtuals";
+        else if (k == "root")
+            return "/";
+        else
+            return "";
     }
 #endif
 }
@@ -115,8 +128,8 @@ namespace test_cases
                 repo(new FakeRepository(&env, RepositoryName("repo"))),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-                virtuals_repo((*(*RepositoryMaker::get_instance())["virtuals"])(&env, virtuals_repo_keys)),
-                installed_virtuals_repo((*(*RepositoryMaker::get_instance())["installed_virtuals"])(&env, virtuals_repo_keys)),
+                virtuals_repo(RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys)),
+                installed_virtuals_repo(RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys)),
 #endif
                 done_populate(false)
             {

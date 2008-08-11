@@ -294,5 +294,53 @@ UnavailableRepository::sync() const
     return true;
 }
 
+std::tr1::shared_ptr<Repository>
+UnavailableRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    Context context("When making unavailable repository from repo_file '" + f("repo_file") + "':");
+
+    std::string name_str(f("name"));
+    if (name_str.empty())
+        name_str = "unavailable";
+
+    std::string location(f("location"));
+    if (location.empty())
+        throw UnavailableRepositoryConfigurationError("Key 'location' not specified or empty");
+
+    std::string sync(f("sync"));
+
+    std::string sync_options(f("sync_options"));
+
+    return std::tr1::shared_ptr<UnavailableRepository>(new UnavailableRepository(
+                make_named_values<UnavailableRepositoryParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::location>(location),
+                    value_for<n::name>(RepositoryName(name_str)),
+                    value_for<n::sync>(sync),
+                    value_for<n::sync_options>(sync_options)
+                )));
+}
+
+RepositoryName
+UnavailableRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    if (f("name").empty())
+        return RepositoryName("unavailable");
+    else
+        return RepositoryName(f("name"));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+UnavailableRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
+}
+
 template class PrivateImplementationPattern<unavailable_repository::UnavailableRepository>;
 

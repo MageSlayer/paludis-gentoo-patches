@@ -60,7 +60,7 @@ namespace test_cases
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo1");
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1")));
@@ -80,7 +80,7 @@ namespace test_cases
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo2");
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1")));

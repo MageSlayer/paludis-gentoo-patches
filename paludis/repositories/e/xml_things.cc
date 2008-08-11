@@ -202,15 +202,10 @@ create_glsa_from_xml_file(const std::string & filename)
 
 namespace paludis
 {
-    class RepositoryMaker;
+    class RepositoryFactory;
 }
 
-extern "C"
-{
-    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
-}
-
-void register_repositories(RepositoryMaker *)
+extern "C" void PALUDIS_VISIBLE paludis_initialise_repository_so(paludis::RepositoryFactory * const)
 {
 }
 

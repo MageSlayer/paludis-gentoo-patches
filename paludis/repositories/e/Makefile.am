@@ -75,7 +75,6 @@ paludis_repositories_e_include_HEADERS = \
 	glsa-sr.hh \
 	glsa.hh \
 	layout.hh \
-	make_ebuild_repository.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
 	pipe_command_handler.hh \
@@ -126,7 +125,6 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	fix_locked_dependencies.cc \
 	glsa.cc \
 	layout.cc \
-	make_ebuild_repository.cc \
 	manifest2_reader.cc \
 	pipe_command_handler.cc \
 	registration.cc \

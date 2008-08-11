@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,26 +17,36 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repository_maker.hh>
+#include <paludis/repository_factory.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
-#include "config.h"
+#include <paludis/util/set.hh>
 
 using namespace paludis;
 
-#ifndef MONOLITHIC
+extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
-extern "C"
+void paludis_initialise_repository_so(RepositoryFactory * const factory)
 {
-    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
+    std::tr1::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
+    cran_formats->insert("cran");
+
+    factory->add_repository_format(
+            cran_formats,
+            &CRANRepository::repository_factory_name,
+            &CRANRepository::repository_factory_create,
+            &CRANRepository::repository_factory_dependencies
+            );
+
+    std::tr1::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
+    installed_cran_formats->insert("installed_cran");
+    installed_cran_formats->insert("installed-cran");
+
+    factory->add_repository_format(
+            installed_cran_formats,
+            &CRANInstalledRepository::repository_factory_name,
+            &CRANInstalledRepository::repository_factory_create,
+            &CRANInstalledRepository::repository_factory_dependencies
+            );
 }
-
-void register_repositories(RepositoryMaker * maker)
-{
-    maker->register_maker("cran", &CRANRepository::make_cran_repository);
-    maker->register_maker("installed_cran", &CRANInstalledRepository::make_cran_installed_repository);
-}
-
-#endif
-
 

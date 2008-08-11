@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/exndbam_repository.hh>
-#include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -62,7 +61,7 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exndbam");
             keys->insert("location", "exndbam_repository_TEST_dir/repo1");
-            std::tr1::shared_ptr<Repository> repo(ExndbamRepository::make_exndbam_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
@@ -98,7 +97,7 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("exndbam_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<ERepository> repo1(make_ebuild_repository(&env,
+            std::tr1::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
@@ -107,7 +106,7 @@ namespace test_cases
             keys->insert("location", "exndbam_repository_TEST_dir/postinsttest");
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("exndbam_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> exndbam_repo(ExndbamRepository::make_exndbam_repository(&env,
+            std::tr1::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, exndbam_repo);
 

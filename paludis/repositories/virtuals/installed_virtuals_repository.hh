@@ -57,12 +57,22 @@ namespace paludis
 
             ///\}
 
-            /**
-             * Create an InstalledVirtualsRepository instance.
-             */
-            static std::tr1::shared_ptr<Repository> make_installed_virtuals_repository(
-                    Environment * const env,
+            ///\name RepositoryFactory functions
+            ///\{
+
+            static RepositoryName repository_factory_name(
+                    const Environment * const env,
                     const std::tr1::function<std::string (const std::string &)> &);
+
+            static std::tr1::shared_ptr<Repository> repository_factory_create(
+                    const Environment * const env,
+                    const std::tr1::function<std::string (const std::string &)> &);
+
+            static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+                    const Environment * const env,
+                    const std::tr1::function<std::string (const std::string &)> &);
+
+            ///\}
 
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 

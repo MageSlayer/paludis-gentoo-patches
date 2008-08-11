@@ -28,7 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
-#include <paludis/repository_maker.hh>
+#include <paludis/repository_factory.hh>
 #include <string>
 #include <set>
 #include <map>
@@ -333,8 +333,7 @@ int do_list_repository_formats()
 {
     int return_code(1);
 
-    std::set<std::string> keys;
-    RepositoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+    std::set<std::string> keys(RepositoryFactory::get_instance()->begin_keys(), RepositoryFactory::get_instance()->end_keys());
 
     if (! keys.empty())
     {

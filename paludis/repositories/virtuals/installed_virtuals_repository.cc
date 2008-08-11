@@ -171,18 +171,6 @@ InstalledVirtualsRepository::need_ids() const
     _imp->has_ids = true;
 }
 
-std::tr1::shared_ptr<Repository>
-InstalledVirtualsRepository::make_installed_virtuals_repository(
-        Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
-{
-    std::string root_str(f("root"));
-    if (root_str.empty())
-        throw ConfigurationError("No root specified for InstalledVirtualsRepository");
-
-    return std::tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env, FSEntry(root_str)));
-}
-
 std::tr1::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
@@ -343,4 +331,32 @@ void
 InstalledVirtualsRepository::need_keys_added() const
 {
 }
+
+RepositoryName
+InstalledVirtualsRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    return make_name(FSEntry(f("root")));
+}
+
+std::tr1::shared_ptr<Repository>
+InstalledVirtualsRepository::repository_factory_create(
+        const Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    if (f("root").empty())
+        throw ConfigurationError("Key 'root' unspecified or empty");
+
+    return make_shared_ptr(new InstalledVirtualsRepository(env, f("root")));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+InstalledVirtualsRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
+}
+
 

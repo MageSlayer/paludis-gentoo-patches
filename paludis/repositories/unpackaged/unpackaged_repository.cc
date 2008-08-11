@@ -19,12 +19,14 @@
 
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
+#include <paludis/repositories/unpackaged/exceptions.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -199,5 +201,74 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 UnpackagedRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+std::tr1::shared_ptr<Repository>
+UnpackagedRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    Context context("When creating UnpackagedRepository:");
+
+    std::string location(f("location"));
+    if (location.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'location' not specified or empty");
+
+    std::string install_under(f("install_under"));
+    if (install_under.empty())
+        install_under = "/";
+
+    std::string name(f("name"));
+    if (name.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'name' not specified or empty");
+
+    std::string version(f("version"));
+    if (version.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'version' not specified or empty");
+
+    std::string slot(f("slot"));
+    if (slot.empty())
+        throw unpackaged_repositories::RepositoryConfigurationError("Key 'slot' not specified or empty");
+
+    std::string build_dependencies(f("build_dependencies"));
+    std::string run_dependencies(f("run_dependencies"));
+    std::string description(f("description"));
+
+    int rewrite_ids_over_to_root(-1);
+    if (! f("rewrite_ids_over_to_root").empty())
+    {
+        Context item_context("When handling rewrite_ids_over_to_root key:");
+        rewrite_ids_over_to_root = destringify<int>(f("rewrite_ids_over_to_root"));
+    }
+
+    return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
+                make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
+                    value_for<n::build_dependencies>(build_dependencies),
+                    value_for<n::description>(description),
+                    value_for<n::environment>(env),
+                    value_for<n::install_under>(install_under),
+                    value_for<n::location>(location),
+                    value_for<n::name>(QualifiedPackageName(name)),
+                    value_for<n::rewrite_ids_over_to_root>(rewrite_ids_over_to_root),
+                    value_for<n::run_dependencies>(run_dependencies),
+                    value_for<n::slot>(SlotName(slot)),
+                    value_for<n::version>(VersionSpec(version))
+                )));
+}
+
+RepositoryName
+UnpackagedRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    return RepositoryName(f("name"));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+UnpackagedRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 

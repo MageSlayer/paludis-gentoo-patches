@@ -17,84 +17,42 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repository_maker.hh>
+#include <paludis/repository_factory.hh>
 #include <paludis/repositories/gems/gems_repository.hh>
 #include <paludis/repositories/gems/installed_gems_repository.hh>
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 
 using namespace paludis;
 
-namespace
+extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
+
+void paludis_initialise_repository_so(RepositoryFactory * const factory)
 {
-    std::tr1::shared_ptr<Repository>
-    make_gems_repository(
-            Environment * const env,
-            const std::tr1::function<std::string (const std::string &)> & f)
-    {
-        std::string location(f("location"));
-        if (location.empty())
-            throw gems::RepositoryConfigurationError("Key 'location' not specified or empty");
+    std::tr1::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
+    gems_formats->insert("gems");
 
-        std::string install_dir(f("install_dir"));
-        if (install_dir.empty())
-            throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
+    factory->add_repository_format(
+            gems_formats,
+            GemsRepository::repository_factory_name,
+            GemsRepository::repository_factory_create,
+            GemsRepository::repository_factory_dependencies
+            );
 
-        std::string sync(f("sync"));
+    std::tr1::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
+    installed_gems_formats->insert("installed_gems");
+    installed_gems_formats->insert("installed-gems");
 
-        std::string sync_options(f("sync_options"));
-
-        std::string builddir(f("builddir"));
-        if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
-
-        return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
-                    .location(location)
-                    .sync(sync)
-                    .sync_options(sync_options)
-                    .environment(env)
-                    .install_dir(install_dir)
-                    .builddir(builddir)));
-    }
-
-    std::tr1::shared_ptr<Repository>
-    make_installed_gems_repository(
-            Environment * const env,
-            const std::tr1::function<std::string (const std::string &)> & f)
-    {
-        std::string install_dir(f("install_dir"));
-        if (install_dir.empty())
-            throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
-
-        std::string builddir(f("builddir"));
-        if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
-
-        std::string root(f("root"));
-        if (root.empty())
-            root = "/";
-
-        return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
-                    .environment(env)
-                    .install_dir(install_dir)
-                    .root(root)
-                    .builddir(builddir)));
-    }
-}
-
-extern "C"
-{
-    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
-}
-
-void register_repositories(RepositoryMaker * maker)
-{
-    maker->register_maker("gems", &make_gems_repository);
-    maker->register_maker("installed_gems", &make_installed_gems_repository);
+    factory->add_repository_format(
+            installed_gems_formats,
+            InstalledGemsRepository::repository_factory_name,
+            InstalledGemsRepository::repository_factory_create,
+            InstalledGemsRepository::repository_factory_dependencies
+            );
 }
 

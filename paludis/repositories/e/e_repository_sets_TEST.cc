@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -61,7 +60,7 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
 
             std::tr1::shared_ptr<const SetNameSet> sets_list(repo->sets_interface()->sets_list());
@@ -85,7 +84,7 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(
                 new FakeInstalledRepository(&env, RepositoryName("installed")));
@@ -118,7 +117,7 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
@@ -150,7 +149,7 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env,
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> installed(

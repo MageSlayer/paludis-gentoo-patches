@@ -373,7 +373,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
 #endif
 
 std::tr1::shared_ptr<Repository>
-CRANInstalledRepository::make_cran_installed_repository(
+CRANInstalledRepository::repository_factory_create(
         Environment * const env,
         const std::tr1::function<std::string (const std::string &)> & f)
 {
@@ -394,6 +394,22 @@ CRANInstalledRepository::make_cran_installed_repository(
                 .environment(env)
                 .location(location)
                 .root(root)));
+}
+
+RepositoryName
+CRANInstalledRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return RepositoryName("installed-cran");
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+CRANInstalledRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 
 CRANInstalledRepositoryConfigurationError::CRANInstalledRepositoryConfigurationError(

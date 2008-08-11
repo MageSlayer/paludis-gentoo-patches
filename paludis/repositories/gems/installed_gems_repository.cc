@@ -21,6 +21,7 @@
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
+#include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/stringify.hh>
@@ -38,6 +39,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/distribution.hh>
 #include <paludis/action.hh>
 #include <tr1/unordered_map>
 
@@ -369,5 +371,45 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;
+}
+
+RepositoryName
+InstalledGemsRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return RepositoryName("installed-gems");
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+InstalledGemsRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
+}
+
+std::tr1::shared_ptr<Repository>
+InstalledGemsRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    std::string install_dir(f("install_dir"));
+    if (install_dir.empty())
+        throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
+
+    std::string builddir(f("builddir"));
+    if (builddir.empty())
+        builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
+
+    std::string root(f("root"));
+    if (root.empty())
+        root = "/";
+
+    return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
+                .environment(env)
+                .install_dir(install_dir)
+                .root(root)
+                .builddir(builddir)));
 }
 

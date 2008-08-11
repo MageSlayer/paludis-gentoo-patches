@@ -26,8 +26,6 @@
 #include <paludis/environments/paludis/mirrors_conf.hh>
 #include <paludis/environments/paludis/world.hh>
 
-#include <paludis/repository_maker.hh>
-
 #include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
@@ -38,6 +36,7 @@
 #include <paludis/mask.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/repository_factory.hh>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
@@ -152,7 +151,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
         _imp->package_database->add_repository((*r).importance(),
-                RepositoryMaker::get_instance()->find_maker((*r).format())(this, (*r).keys()));
+                RepositoryFactory::get_instance()->create(this, (*r).keys()));
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->config_location_key);

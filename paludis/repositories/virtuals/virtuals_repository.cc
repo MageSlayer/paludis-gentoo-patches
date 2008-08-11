@@ -253,14 +253,6 @@ VirtualsRepository::need_ids() const
     swap(my_ids, _imp->ids);
 }
 
-std::tr1::shared_ptr<Repository>
-VirtualsRepository::make_virtuals_repository(
-        Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> &)
-{
-    return std::tr1::shared_ptr<Repository>(new VirtualsRepository(env));
-}
-
 std::tr1::shared_ptr<const PackageIDSequence>
 VirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
@@ -436,5 +428,29 @@ VirtualsRepository::installed_root_key() const
 void
 VirtualsRepository::need_keys_added() const
 {
+}
+
+RepositoryName
+VirtualsRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return RepositoryName("virtuals");
+}
+
+std::tr1::shared_ptr<Repository>
+VirtualsRepository::repository_factory_create(
+        const Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new VirtualsRepository(env));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+VirtualsRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
 }
 

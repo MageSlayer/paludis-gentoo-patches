@@ -30,7 +30,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/about.hh>
-#include <paludis/repository_maker.hh>
+#include <paludis/repository_factory.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
@@ -201,7 +201,7 @@ main(int argc, char *argv[])
         keys->insert("description", description);
         keys->insert("build_dependencies", build_dependencies);
         keys->insert("run_dependencies", run_dependencies);
-        std::tr1::shared_ptr<Repository> repo((*RepositoryMaker::get_instance()->find_maker("unpackaged"))(env.get(),
+        std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
                     std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
         env->package_database()->add_repository(10, repo);
         std::tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
