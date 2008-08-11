@@ -32,7 +32,8 @@ _qualudis() {
         --message-level -M \
         --write-cache-dir \
         --master-repository-dir \
-        --use-repository-cache"
+        --use-repository-cache
+        --show-associated-keys"
 
     case "${cur}" in
         -*)
