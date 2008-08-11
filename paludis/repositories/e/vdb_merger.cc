@@ -68,10 +68,10 @@ namespace
     std::pair<uid_t, gid_t>
     get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
     {
-        if (f.owner() == env->reduced_uid() || f.group() == env->reduced_gid())
-            return std::make_pair(0, 0);
-        else
-            return std::make_pair(-1, -1);
+        uid_t uid = (f.owner() == env->reduced_uid()) ? 0 : -1;
+        gid_t gid = (f.group() == env->reduced_gid()) ? 0 : -1;
+
+        return std::make_pair(uid, gid);
     }
 }
 

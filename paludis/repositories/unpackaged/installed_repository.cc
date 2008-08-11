@@ -229,13 +229,22 @@ namespace
     std::pair<uid_t, gid_t>
     get_new_ids_or_minus_one(const Environment * const env, const int rewrite_ids_over_to_root, const FSEntry & f)
     {
-        if (f.owner() == env->reduced_uid() || f.group() == env->reduced_gid())
-            return std::make_pair(0, 0);
-        else if ((-1 != rewrite_ids_over_to_root) && (f.owner() > static_cast<unsigned int>(rewrite_ids_over_to_root)
-                    || f.group() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
-            return std::make_pair(0, 0);
+        uid_t uid;
+        gid_t gid;
+
+        if (f.owner() == env->reduced_uid() || (rewrite_ids_over_to_root != -1
+                    && f.owner() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
+            uid = 0;
         else
-            return std::make_pair(-1, -1);
+            uid = -1;
+
+        if (f.group() == env->reduced_gid() || (rewrite_ids_over_to_root != -1
+                    && f.group() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
+            gid = 0;
+        else
+            gid = -1;
+
+        return std::make_pair(uid, gid);
     }
 }
 
