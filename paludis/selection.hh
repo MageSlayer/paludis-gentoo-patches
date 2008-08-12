@@ -110,7 +110,7 @@ namespace paludis
             public:
                 RequireExactlyOne(const FilteredGenerator &);
         };
-    };
+    }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Selection>;

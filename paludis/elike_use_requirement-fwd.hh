@@ -38,7 +38,7 @@ namespace paludis
 
     std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
             const std::string &, const std::tr1::shared_ptr<const PackageID> &, const ELikeUseRequirementOptions &)
-        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;;
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 
 #endif

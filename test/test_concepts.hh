@@ -40,7 +40,7 @@ namespace test
             Type * free_store = new Type(initial_instance); \
             delete free_store; \
         } \
-    } Type ## _is_semi_regular_test;
+    } Type ## _is_semi_regular_test
 
 #define TESTCASE_STRINGIFYABLE(Type, initial_instance, str) \
     struct Type ## IsStringifiableTest : TestCase \
@@ -51,6 +51,6 @@ namespace test
         { \
             TEST_CHECK_STRINGIFY_EQUAL(stringify(initial_instance), str); \
         } \
-    } Type ## _is_stringifiable_test;
+    } Type ## _is_stringifiable_test
 
 #endif
