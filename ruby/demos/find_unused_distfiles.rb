@@ -128,7 +128,7 @@ if mirror_repository then
         Paludis::URIManualOnlyLabel       => true,
     }
 else
-    env = Paludis::EnvironmentMaker.instance.make_from_spec(env_spec || "")
+    env = Paludis::EnvironmentFactory.instance.create(env_spec || "")
     relevant_packages = Paludis::Generator::All.new | Paludis::Filter::SupportsAction.new(Paludis::InstalledAction)
     $check_condition = lambda { | spec | spec.condition_met? }
     $banned_labels = { }

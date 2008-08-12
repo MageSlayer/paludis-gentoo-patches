@@ -114,7 +114,7 @@ HELP
     end
 end
 
-$env = EnvironmentMaker.instance.make_from_spec($envspec)
+$env = EnvironmentFactory.instance.create($envspec)
 if $env.format_key.value != "paludis" then
     $stderr.puts "#$0: --environment must specify class 'paludis'"
     exit 1

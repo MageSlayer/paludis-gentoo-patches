@@ -76,7 +76,7 @@ opts.each do | opt, arg |
     end
 end
 
-env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
+env = Paludis::EnvironmentFactory.instance.create env_spec
 db = env.package_database
 root = env.root[-1] == ?/ ? env.root.chop : env.root
 
