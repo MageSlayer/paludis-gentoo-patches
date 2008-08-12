@@ -68,7 +68,7 @@ namespace
         Keys::const_iterator i(keys.find(key));
         if (i == keys.end())
             throw ConfigurationError("Format '" + key + "' not supported when creating a repository (known formats are { "
-                    + join(first_iterator(keys.begin()), first_iterator(keys.end()), ", ") + "}");
+                    + join(first_iterator(keys.begin()), first_iterator(keys.end()), ", ") + "})");
 
         return i->second;
     }
