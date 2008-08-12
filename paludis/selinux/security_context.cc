@@ -24,7 +24,7 @@
 #include <paludis/selinux/security_context.hh>
 
 #include "config.h"
-
+#include <stdint.h>
 #include <dlfcn.h>
 
 // I think the name explains it. C++ is picky about casting to function pointers.

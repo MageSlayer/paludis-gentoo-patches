@@ -40,6 +40,7 @@
 #include <list>
 #include <iterator>
 #include <dlfcn.h>
+#include <stdint.h>
 
 using namespace paludis;
 
