@@ -82,7 +82,7 @@ namespace paludis
         struct exported_name;
         struct f_function_prefix;
         struct failure_is_fatal;
-        struct flat_cache_index;
+        struct flat_list_index;
         struct homepage;
         struct ignore_pivot_env_functions;
         struct ignore_pivot_env_variables;
@@ -95,7 +95,7 @@ namespace paludis
         struct long_description;
         struct merger_options;
         struct metadata_key;
-        struct minimum_flat_cache_size;
+        struct minimum_flat_list_size;
         struct must_not_change_variables;
         struct name;
         struct no_slot_or_repo;
@@ -237,7 +237,7 @@ namespace paludis
         struct EAPIMetadataVariable
         {
             NamedValue<n::description, std::string> description;
-            NamedValue<n::flat_cache_index, int> flat_cache_index;
+            NamedValue<n::flat_list_index, int> flat_list_index;
             NamedValue<n::name, std::string> name;
         };
 
@@ -253,7 +253,7 @@ namespace paludis
             NamedValue<n::keywords, EAPIMetadataVariable> keywords;
             NamedValue<n::license, EAPIMetadataVariable> license;
             NamedValue<n::long_description, EAPIMetadataVariable> long_description;
-            NamedValue<n::minimum_flat_cache_size, int> minimum_flat_cache_size;
+            NamedValue<n::minimum_flat_list_size, int> minimum_flat_list_size;
             NamedValue<n::pdepend, EAPIMetadataVariable> pdepend;
             NamedValue<n::provide, EAPIMetadataVariable> provide;
             NamedValue<n::remote_ids, EAPIMetadataVariable> remote_ids;

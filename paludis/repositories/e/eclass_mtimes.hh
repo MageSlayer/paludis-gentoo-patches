@@ -20,14 +20,17 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH 1
 
+#include <paludis/name-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    class ERepository;
+
     /**
-     * Holds an eclass mtimes cache for a ERepository.
+     * Holds an eclass mtimes cache for an ERepository.
      *
      * \see ERepository
      * \ingroup grperepository
@@ -40,15 +43,20 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            EclassMtimes(std::tr1::shared_ptr<const FSEntrySequence>);
+            EclassMtimes(const ERepository *, const std::tr1::shared_ptr<const FSEntrySequence> &);
             ~EclassMtimes();
 
             ///\}
 
             /**
-             * Fetch the mtime for a given eclass.
+             * Fetch the full path of a given eclass.
              */
-            time_t mtime(const std::string &) const;
+            const FSEntry * eclass(const std::string &) const;
+
+            /**
+             * Fetch the full path of a given exlib, on the path of a given package.
+             */
+            const FSEntry * exlib(const std::string &, const QualifiedPackageName &) const;
     };
 }
 

@@ -24,36 +24,31 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/repositories/e/eclass_mtimes.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         /**
-         * Implements flat file metadata cache handling for a ERepository
-         * using EbuildEntries.
+         * Implements metadata cache handling for a ERepository using
+         * EbuildEntries.
          *
          * \see EbuildEntries
          * \see ERepository
          * \ingroup grperepository
          * \nosubgrouping
          */
-        class EbuildFlatMetadataCache
+        class EbuildFlatMetadataCache :
+            private PrivateImplementationPattern<EbuildFlatMetadataCache>
         {
-            private:
-                const Environment * const _env;
-                const FSEntry & _filename;
-                const FSEntry & _ebuild;
-                time_t _master_mtime;
-                std::tr1::shared_ptr<const EclassMtimes> _eclass_mtimes;
-                bool _silent;
-
             public:
                 ///\name Basic operations
                 ///\{
 
                 EbuildFlatMetadataCache(const Environment * const, const FSEntry & filename, const FSEntry & ebuild,
                         time_t master_mtime, std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
+                ~EbuildFlatMetadataCache();
 
                 ///\}
 
@@ -66,6 +61,10 @@ namespace paludis
                 ///\}
         };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<erepository::EbuildFlatMetadataCache>;
+#endif
 }
 
 #endif

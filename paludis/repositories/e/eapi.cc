@@ -88,7 +88,7 @@ namespace
     {
         return make_named_values<EAPIMetadataVariable>(
                 value_for<n::description>(check_get(k, "description_" + s)),
-                value_for<n::flat_cache_index>(destringify_key<int>(k, "flat_cache_" + s)),
+                value_for<n::flat_list_index>(destringify_key<int>(k, "flat_list_" + s)),
                 value_for<n::name>(check_get(k, "metadata_" + s))
                 );
     }
@@ -106,7 +106,7 @@ namespace
             value_for<n::keywords>(make_metadata_variable(k, "keywords")),
             value_for<n::license>(make_metadata_variable(k, "license")),
             value_for<n::long_description>(make_metadata_variable(k, "long_description")),
-            value_for<n::minimum_flat_cache_size>(destringify_key<int>(k, "flat_cache_minimum_size")),
+            value_for<n::minimum_flat_list_size>(destringify_key<int>(k, "flat_list_minimum_size")),
             value_for<n::pdepend>(make_metadata_variable(k, "pdepend")),
             value_for<n::provide>(make_metadata_variable(k, "provide")),
             value_for<n::remote_ids>(make_metadata_variable(k, "remote_ids")),

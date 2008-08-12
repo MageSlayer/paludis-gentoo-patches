@@ -124,7 +124,7 @@ namespace paludis
             environment(e),
             e_repository(p),
             params(k),
-            eclass_mtimes(new EclassMtimes(k.eclassdirs)),
+            eclass_mtimes(new EclassMtimes(p, k.eclassdirs)),
             master_mtime(0)
         {
             FSEntry m(k.location / "metadata" / "timestamp");
