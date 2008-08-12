@@ -35,7 +35,7 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_Repository(unittest.TestCase):
     def setUp(self):
         global e, nce, db, repo, irepo
-        e = EnvironmentMaker.instance.make_from_spec("")
+        e = EnvironmentFactory.instance.create("")
         nce = NoConfigEnvironment(repo_path)
         db = e.package_database
         repo = db.fetch_repository("testrepo")
@@ -96,7 +96,7 @@ class TestCase_01_Repository(unittest.TestCase):
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):
         global e, nce, db, repo, irepo
-        e = EnvironmentMaker.instance.make_from_spec("")
+        e = EnvironmentFactory.instance.create("")
         nce = NoConfigEnvironment(repo_path)
         db = e.package_database
         repo = db.fetch_repository("testrepo")
@@ -208,7 +208,7 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
 class TestCase_03_FakeRepository(unittest.TestCase):
     def setUp(self):
         global e, f
-        e = EnvironmentMaker.instance.make_from_spec("")
+        e = EnvironmentFactory.instance.create("")
         f = FakeRepository(e, "fake")
 
     def test_01_init(self):

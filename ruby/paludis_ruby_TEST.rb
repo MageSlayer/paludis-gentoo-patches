@@ -38,7 +38,7 @@ module Paludis
     class TestCase_Match < Test::Unit::TestCase
 
         def test_match_package
-            env = EnvironmentMaker.instance.make_from_spec("")
+            env = EnvironmentFactory.instance.create("")
             spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
@@ -50,7 +50,7 @@ module Paludis
         end
 
         def test_match_package_in_set
-            env = EnvironmentMaker.instance.make_from_spec("")
+            env = EnvironmentFactory.instance.create("")
             world = env.set('world')
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
                 Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
@@ -59,7 +59,7 @@ module Paludis
         end
 
         def test_type_errors
-            env = EnvironmentMaker.instance.make_from_spec("")
+            env = EnvironmentFactory.instance.create("")
             spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
                 Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first

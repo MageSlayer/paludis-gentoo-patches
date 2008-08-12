@@ -33,7 +33,7 @@ module Paludis
 
     class TestCase_DependencyDepTag < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def get_dt

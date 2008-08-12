@@ -16,7 +16,7 @@ include Paludis
 exit_status = 0
 
 # We start with an Environment, respecting the user's '--environment' choice.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # Fetch package IDs for installed 'sys-apps/paludis'
 ids = env[Selection::AllVersionsSorted.new(

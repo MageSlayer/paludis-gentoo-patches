@@ -14,7 +14,7 @@ include Paludis
 exit_status = 0
 
 # We start with an Environment, respecting the user's '--environment' choice.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # Mostly PackageDatabase is used by Environment. But other methods are useful:
 if env.package_database.has_repository_named?('gentoo')

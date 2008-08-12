@@ -17,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/environments/portage/portage_environment.hh>
+#include <paludis/util/set.hh>
 
 using namespace paludis;
 
@@ -31,13 +32,12 @@ namespace
     }
 }
 
-extern "C"
-{
-    void PALUDIS_VISIBLE register_environments(EnvironmentMaker * maker);
-}
+extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
 
-void register_environments(EnvironmentMaker * maker)
+void paludis_initialise_environment_so(EnvironmentFactory * const factory)
 {
-    maker->register_maker("portage", &make_portage_environment);
+    std::tr1::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
+    portage_formats->insert("portage");
+    factory->add_environment_format(portage_formats, &make_portage_environment);
 }
 

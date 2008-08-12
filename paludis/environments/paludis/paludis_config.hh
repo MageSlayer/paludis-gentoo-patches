@@ -22,6 +22,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
@@ -29,7 +30,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/environment_maker.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 #include <string>
 
@@ -92,7 +93,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE PaludisConfigNoDirectoryError :
             public PaludisConfigError,
-            public FallBackToAnotherMakerError
+            public FallBackToAnotherFormatError
         {
             public:
                 ///\name Basic operations

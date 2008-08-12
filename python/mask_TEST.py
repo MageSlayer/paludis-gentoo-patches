@@ -31,7 +31,7 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_Masks(unittest.TestCase):
     def setUp(self):
-        self.e = EnvironmentMaker.instance.make_from_spec("")
+        self.e = EnvironmentFactory.instance.create("")
 
     def test_01_user_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
@@ -163,7 +163,7 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
                 return "test"
 
             def associated_package(self):
-                e = EnvironmentMaker.instance.make_from_spec("")
+                e = EnvironmentFactory.instance.create("")
                 q = Selection.RequireExactlyOne(Generator.Matches(
                     parse_user_package_dep_spec("=masked/user-1.0", e, [])))
                 pid = iter(e[q]).next()

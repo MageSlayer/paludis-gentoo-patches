@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,16 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 
 using namespace paludis;
 
-extern "C"
-{
-    void PALUDIS_VISIBLE register_environments(EnvironmentMaker * maker);
-}
+extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
 
-void register_environments(EnvironmentMaker *)
+void paludis_initialise_environment_so(EnvironmentFactory * const)
 {
 }
 

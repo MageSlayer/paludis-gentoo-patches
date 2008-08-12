@@ -119,7 +119,7 @@ class TestCase_01_DepListOptions(unittest.TestCase):
 class TestCase_02_DepList(unittest.TestCase):
     def setUp(self):
         global env, dl, dd, pds, cds
-        env = EnvironmentMaker.instance.make_from_spec("")
+        env = EnvironmentFactory.instance.create("")
         dl = DepList(env, DepListOptions())
         dd = env.default_destinations
         pds = parse_user_package_dep_spec("foo/bar", env, [])
@@ -166,7 +166,7 @@ class TestCase_02_DepList(unittest.TestCase):
 class TestCase_03_DepListEntry(unittest.TestCase):
     def setUp(self):
         global env, dl, dd, pds, cds
-        env = EnvironmentMaker.instance.make_from_spec("")
+        env = EnvironmentFactory.instance.create("")
         dl = DepList(env, DepListOptions())
         dd = env.default_destinations
 

@@ -43,7 +43,7 @@ module Paludis
 
     class TestCase_PackageDepSpec < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def pda
@@ -198,7 +198,7 @@ module Paludis
 
     class TestCase_BlockDepSpec < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_create
@@ -223,7 +223,7 @@ module Paludis
 
     class TestCase_Composites < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_composites
@@ -265,7 +265,7 @@ module Paludis
 
     class TestCase_URILabels < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def spec_key

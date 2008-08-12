@@ -46,7 +46,7 @@ module Paludis
 
     class TestCase_GeneratorMatches < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_create

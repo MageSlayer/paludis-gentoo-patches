@@ -34,7 +34,7 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_Environments(unittest.TestCase):
     def setUp(self):
-        self.e = EnvironmentMaker.instance.make_from_spec("")
+        self.e = EnvironmentFactory.instance.create("")
         self.nce = NoConfigEnvironment(repo)
 
     def test_01_create(self):
@@ -97,10 +97,10 @@ class TestCase_01_Environments(unittest.TestCase):
 
 class TestCase_02_AdaptedEnvironment(unittest.TestCase):
     def test_01_create(self):
-        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
 
     def test_02_adapt_use(self):
-        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
         pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=foo/bar-1.0", env, UserPackageDepSpecOptions())))]).next()
         pds = parse_user_package_dep_spec("foo/bar", env, [])
@@ -119,7 +119,7 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
         self.assert_(env.query_use("sometimes_enabled", pid))
 
     def test_03_clear_adaptions(self):
-        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
         pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=foo/bar-1.0", env, [])))]).next()
         pds = parse_user_package_dep_spec("foo/bar", env, [])
@@ -199,7 +199,7 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
             return AllDepSpec()
 
         def default_destinations(self):
-            e = EnvironmentMaker.instance.make_from_spec("")
+            e = EnvironmentFactory.instance.create("")
             return [x for x in e.package_database.repositories]
 
         def distribution(self):

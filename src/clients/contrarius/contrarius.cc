@@ -19,8 +19,8 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
-#include <paludis/environment_maker.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/system.hh>
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
             stage = "cxx";
 
         std::tr1::shared_ptr<AdaptedEnvironment> env(
-                new AdaptedEnvironment(EnvironmentMaker::get_instance()->make_from_spec(
+                new AdaptedEnvironment(EnvironmentFactory::get_instance()->create(
                         CommandLine::get_instance()->a_environment.argument())));
 
         StageOptions stage_opts(CommandLine::get_instance()->a_pretend.specified(),

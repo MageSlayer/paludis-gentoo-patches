@@ -29,7 +29,7 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_PackageDatabase(unittest.TestCase):
     def get_db(self):
-        self.env = EnvironmentMaker.instance.make_from_spec("")
+        self.env = EnvironmentFactory.instance.create("")
         self.db = self.env.package_database
 
     def test_01_create_error(self):

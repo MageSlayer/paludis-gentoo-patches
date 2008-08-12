@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/log.hh>
 #include <libgtkpaludis/main_window.hh>
 #include <gtkmm.h>
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name(argv[0]);
     std::tr1::shared_ptr<paludis::Environment> env(
-            paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
+            paludis::EnvironmentFactory::get_instance()->create(""));
 
     MainWindow main_window(env.get());
     Gtk::Main::run(main_window);

@@ -9,7 +9,7 @@
 
 /** \example example_environment.cc
  *
- * This example demonstrates how to use EnvironmentMaker and the resultant
+ * This example demonstrates how to use EnvironmentFactory and the resultant
  * Environment.
  */
 
@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
         CommandLine::get_instance()->run(argc, argv,
                 "example_environment", "EXAMPLE_ENVIRONMENT_OPTIONS", "EXAMPLE_ENVIRONMENT_CMDLINE");
 
-        /* We use EnvironmentMaker to construct an environment from the user's
+        /* We use EnvironmentFactory to construct an environment from the user's
          * --environment commandline choice. With an empty string, this uses the
          * distribution-defined default environment. With a non-empty string, it
          * is split into two parts upon the first colon (if there is no colon,
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
          * the environment class to use (e.g. 'paludis', 'portage') and the
          * second part is passed as parameters to be handled by that
          * environment's constructor. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* A lot of the Environment members aren't very useful to clients. The

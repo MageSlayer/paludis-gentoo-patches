@@ -13,7 +13,7 @@ include Paludis
 exit_status = 0
 
 # We start with an Environment, respecting the user's '--environment' choice.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # For each repository
 env.package_database.repositories do |repo|

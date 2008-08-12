@@ -22,7 +22,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -39,7 +39,7 @@ namespace
     static VALUE c_paludis_environment;
     static VALUE c_no_config_environment;
     static VALUE c_adapted_environment;
-    static VALUE c_environment_maker;
+    static VALUE c_environment_factory;
 
     std::tr1::shared_ptr<AdaptedEnvironment>
     value_to_adapted_environment(VALUE v)
@@ -524,7 +524,7 @@ namespace
 
     /*
      * call-seq:
-     *     make_from_spec(spec) -> Environment
+     *     create(spec) -> Environment
      *
      * Create an environment from the given spec.
      * A spec consisits of <b>class:suffix</b> both of which may be omitted. <b>class</b> is the environment class,
@@ -532,11 +532,11 @@ namespace
      *
      */
     VALUE
-    environment_maker_make_from_spec(VALUE, VALUE spec)
+    environment_factory_create(VALUE, VALUE spec)
     {
         try
         {
-            std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(EnvironmentMaker::get_instance()->make_from_spec(
+            std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(EnvironmentFactory::get_instance()->create(
                         StringValuePtr(spec)));
 
             VALUE tdata(Data_Wrap_Struct(c_environment, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
@@ -611,15 +611,15 @@ namespace
         rb_define_method(c_adapted_environment, "clear_adaptions", RUBY_FUNC_CAST(&adapted_environment_clear_adaptions), 0);
 
         /*
-         * Document-class: Paludis::EnvironmentMaker
+         * Document-class: Paludis::EnvironmentFactory
          *
          * A class that holds methods to create environments.
          *
-         * To access the default environment use make_from_spec()
+         * To access the default environment use create("")
          */
-        c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
-        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);
-        rb_define_method(c_environment_maker, "make_from_spec", RUBY_FUNC_CAST(&environment_maker_make_from_spec), 1);
+        c_environment_factory = rb_define_class_under(paludis_module(), "EnvironmentFactory", rb_cObject);
+        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_factory);
+        rb_define_method(c_environment_factory, "create", RUBY_FUNC_CAST(&environment_factory_create), 1);
     }
 }
 

@@ -75,7 +75,7 @@ module Paludis
 
     class TestCase_EnvironmentUse < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_query_use
@@ -99,7 +99,7 @@ module Paludis
 
     class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def pid
@@ -126,7 +126,7 @@ module Paludis
 
     class TestCase_EnvironmentAcceptKeywords < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def pid
@@ -176,7 +176,7 @@ module Paludis
 
     class TestCase_AdaptedEnvironment < Test::Unit::TestCase
         def env
-            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+            @env or @env = AdaptedEnvironment.new(EnvironmentFactory.instance.create(""))
         end
 
         def test_create
@@ -194,7 +194,7 @@ module Paludis
 
     class TestCase_AdaptedEnvironmentAdaptUse < Test::Unit::TestCase
         def env
-            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+            @env or @env = AdaptedEnvironment.new(EnvironmentFactory.instance.create(""))
         end
 
         def test_adapt_use
@@ -225,7 +225,7 @@ module Paludis
 
     class TestCase_AdaptedEnvironmentClearAdaptions < Test::Unit::TestCase
         def env
-            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+            @env or @env = AdaptedEnvironment.new(EnvironmentFactory.instance.create(""))
         end
 
         def test_clear_adaptions
@@ -244,7 +244,7 @@ module Paludis
 
     class TestCase_EnvironmentPackageDatabase < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def db
@@ -274,7 +274,7 @@ module Paludis
 
     class TestCase_EnvironmentPackageSet < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_package_set
@@ -390,7 +390,7 @@ module Paludis
 
     class TestCase_EnvironmentMirrors < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_respond_and_return
@@ -417,7 +417,7 @@ module Paludis
 
     class TestCase_EnvironmentQuery < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def db
@@ -506,7 +506,7 @@ module Paludis
 
     class TestCase_EnvironmentMetadataKeys < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def ncenv

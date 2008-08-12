@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
                 "example_selection", "EXAMPLE_SELECTION_OPTIONS", "EXAMPLE_SELECTION_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Make some selections, and display what they give. The selection

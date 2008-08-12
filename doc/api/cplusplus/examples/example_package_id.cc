@@ -42,7 +42,7 @@ int main(int argc, char * argv[])
                 "example_package_id", "EXAMPLE_PACKAGE_ID_OPTIONS", "EXAMPLE_PACKAGE_ID_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */

@@ -37,7 +37,7 @@ module Paludis
 
     class TestCase_PackageDatabaseFavouriteRepository < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_package_database_favourite_repository
@@ -47,7 +47,7 @@ module Paludis
 
     class TestCase_PackageDatabaseFetchUniqueQualifiedPackageName < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def db
@@ -89,7 +89,7 @@ module Paludis
 
     class TestCase_PackageDatabaseRepositories < Test::Unit::TestCase
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def db

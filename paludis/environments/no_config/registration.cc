@@ -17,20 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment_maker.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <list>
 
 using namespace paludis;
-
-extern "C"
-{
-    void PALUDIS_VISIBLE register_environments(EnvironmentMaker * maker);
-}
 
 namespace
 {
@@ -94,8 +90,13 @@ namespace
     }
 }
 
-void register_environments(EnvironmentMaker * maker)
+extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
+
+void paludis_initialise_environment_so(EnvironmentFactory * const factory)
 {
-    maker->register_maker("no-config", &make_no_config_environment);
+    std::tr1::shared_ptr<Set<std::string> > no_config_formats(new Set<std::string>);
+    no_config_formats->insert("no_config");
+    no_config_formats->insert("no-config");
+    factory->add_environment_format(no_config_formats, &make_no_config_environment);
 }
 

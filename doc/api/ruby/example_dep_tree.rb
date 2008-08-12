@@ -112,7 +112,7 @@ def collect_extensions env, id, spec, results, recursing_sets = {}
 end
 
 # We start with an Environment, respecting the user's '--environment' choice.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # Fetch package IDs for all installed packages.
 ids = env[Selection::AllVersionsSorted.new(

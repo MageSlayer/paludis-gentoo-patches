@@ -22,7 +22,7 @@
 #include <python/iterable.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
@@ -455,15 +455,6 @@ void expose_environment()
     /**
      * Exceptions
      */
-    ExceptionRegister::get_instance()->add_exception<NoSuchEnvironmentTypeError>
-        ("NoSuchEnvironmentTypeError", "ConfigurationError",
-         "Thrown if an environment of the specified type does not exist.");
-    ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirNotADirectoryError>
-        ("PaludisEnvironmentSoDirNotADirectoryError", "BaseException",
-         "Thrown if PALUDIS_ENVIRONMENT_SO_DIR is not a directory.");
-    ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirCannotDlopenError>
-        ("PaludisEnvironmentSoDirCannotDlopenError", "BaseException",
-         "Thrown if a repository .so cannot be used.");
     ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigError>
         ("PaludisConfigError", "ConfigurationError",
          "Thrown if a configuration error is encountered by PaludisConfig.");
@@ -482,21 +473,21 @@ void expose_environment()
         );
 
     /**
-     * EnvironmentMaker
+     * EnvironmentFactory
      */
-    bp::class_<EnvironmentMaker, boost::noncopyable> 
+    bp::class_<EnvironmentFactory, boost::noncopyable>
         (
-         "EnvironmentMaker",
+         "EnvironmentFactory",
          "Virtual constructor for environments.",
          bp::no_init
         )
-        .add_static_property("instance", bp::make_function(&EnvironmentMaker::get_instance,
+        .add_static_property("instance", bp::make_function(&EnvironmentFactory::get_instance,
                     bp::return_value_policy<bp::reference_existing_object>()),
                 "Singleton instance."
                 )
 
-        .def("make_from_spec", &EnvironmentMaker::make_from_spec,
-                "make_from_spec(spec_string) -> Environment\n"
+        .def("create", &EnvironmentFactory::create,
+                "create(spec_string) -> Environment\n"
                 "Make Environment from specification."
             )
         ;

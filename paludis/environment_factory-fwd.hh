@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,14 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment_factory.hh>
-#include <paludis/environments/test/test_environment.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_FACTORY_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_FACTORY_FWD_HH 1
 
-using namespace paludis;
-
-extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
-
-void paludis_initialise_environment_so(EnvironmentFactory * const)
+namespace paludis
 {
+    class EnvironmentFactory;
+    class FallBackToAnotherFormatError;
 }
 
+#endif

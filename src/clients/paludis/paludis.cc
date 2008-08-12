@@ -36,7 +36,7 @@
 #include <src/output/colour.hh>
 
 #include <paludis/paludis.hh>
-#include <paludis/environment_maker.hh>
+#include <paludis/environment_factory.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
@@ -252,7 +252,7 @@ main(int argc, char *argv[])
         paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
         paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
         env->set_paludis_command(paludis_command);
 
         try

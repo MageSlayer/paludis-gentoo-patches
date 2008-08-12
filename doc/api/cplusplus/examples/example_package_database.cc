@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
                 "example_package_database", "EXAMPLE_PACKAGE_DATABASE_OPTIONS", "EXAMPLE_PACKAGE_DATABASE_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Mostly PackageDatabase is used by Environment. But some methods are useful: */

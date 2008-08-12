@@ -25,7 +25,7 @@ require 'Paludis'
 module Paludis
     module InstallActionModule
         def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def hash_args

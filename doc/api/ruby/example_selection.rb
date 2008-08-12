@@ -28,7 +28,7 @@ end
 exit_status = 0
 
 # We start with an Environment, respecting the user's '--environment' choice.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # Make some selections, and display what they give. The selection
 # object used determines the number and ordering of results. In the

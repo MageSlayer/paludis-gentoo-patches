@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 =begin description
-This example demonstrates how to use EnvironmentMaker and the resultant
+This example demonstrates how to use EnvironmentFactory and the resultant
 Environment.
 =end
 
@@ -13,7 +13,7 @@ include Paludis
 
 exit_status = 0
 
-# We use EnvironmentMaker to construct an environment from the user's
+# We use EnvironmentFactory to construct an environment from the user's
 # --environment commandline choice. With an empty string, this uses the
 # distribution-defined default environment. With a non-empty string, it
 # is split into two parts upon the first colon (if there is no colon,
@@ -21,7 +21,7 @@ exit_status = 0
 # the environment class to use (e.g. 'paludis', 'portage') and the
 # second part is passed as parameters to be handled by that
 # environment's constructor.
-env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
+env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # A lot of the Environment members aren't very useful to clients. The mask
 # related methods are used by PackageID, and shouldn't usually be called
