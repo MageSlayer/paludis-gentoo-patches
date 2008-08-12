@@ -26,6 +26,14 @@
 using namespace test;
 using namespace paludis;
 
+namespace
+{
+    void push_back_to_list(std::list<int> * const l, int x)
+    {
+        l->push_back(x);
+    }
+}
+
 namespace test_cases
 {
     struct ActionQueueTest : TestCase
@@ -38,7 +46,7 @@ namespace test_cases
             {
                 ActionQueue q;
                 for (int x(0) ; x < 100 ; ++x)
-                    q.enqueue(std::tr1::bind(std::tr1::mem_fn(&std::list<int>::push_back), &l, x));
+                    q.enqueue(std::tr1::bind(&push_back_to_list, &l, x));
             }
 
             std::list<int>::const_iterator i(l.begin());
