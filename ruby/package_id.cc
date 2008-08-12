@@ -141,9 +141,9 @@ namespace
 
     /*
      * call-seq:
-     *     repository -> Repository
+     *     repository_name -> String
      *
-     * Our Repository.
+     * Our Repository Name.
      */
     VALUE
     package_id_repository_name(VALUE self)
