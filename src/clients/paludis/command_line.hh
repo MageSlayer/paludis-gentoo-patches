@@ -137,9 +137,6 @@ class CommandLine :
         /// --list-repository-formats
         paludis::args::SwitchArg a_list_repository_formats;
 
-        /// --list-dep-tag-categories
-        paludis::args::SwitchArg a_list_dep_tag_categories;
-
         /// --regenerate-installed-cache
         paludis::args::SwitchArg a_regenerate_installed_cache;
 

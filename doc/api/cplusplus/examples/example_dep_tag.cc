@@ -150,11 +150,8 @@ int main(int argc, char * argv[])
         {
             cout << "    " << *s << ":" << endl;
 
-            /* Fetch the category. DepTagCategoryMaker::find_maker returns a
-             * function that creates the category, rather than directly
-             * returning the category. */
-            std::tr1::shared_ptr<const DepTagCategory> category(
-                    DepTagCategoryMaker::get_instance()->find_maker(*s)());
+            /* Fetch the category. */
+            std::tr1::shared_ptr<const DepTagCategory> category(DepTagCategoryFactory::get_instance()->create(*s));
 
             cout << left << setw(20) << "        Visible:" << " " << boolalpha << category->visible() << endl;
             cout << left << setw(20) << "        ID:" << " " << category->id() << endl;

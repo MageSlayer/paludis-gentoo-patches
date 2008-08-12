@@ -672,8 +672,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
     for (std::set<std::string>::iterator cat(tag_categories.begin()),
             cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
     {
-        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
-                find_maker(*cat)());
+        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryFactory::get_instance()->create(*cat));
 
         if (! c->visible())
             continue;

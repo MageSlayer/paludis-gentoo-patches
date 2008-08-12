@@ -392,24 +392,6 @@ int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_list_dep_tag_categories()
-{
-    int return_code(1);
-
-    std::set<std::string> keys;
-    DepTagCategoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
-
-    if (! keys.empty())
-    {
-        return_code = 0;
-        for (std::set<std::string>::const_iterator k(keys.begin()), k_end(keys.end()) ;
-                k != k_end ; ++k)
-            std::cout << "* " << colour(cl_key_name, *k) << std::endl;
-    }
-
-    return return_code;
-}
-
 int do_regenerate_cache(std::tr1::shared_ptr<Environment> env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");

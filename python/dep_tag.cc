@@ -29,25 +29,18 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-struct DepTagCategoryMakerWrapper
+struct DepTagCategoryFactoryWrapper
 {
     // More convenient way of creating DepTagCategories
     static std::tr1::shared_ptr<const DepTagCategory>
-    make_from_id(const DepTagCategoryMaker & self, const std::string & id)
+    create(const DepTagCategoryFactory & self, const std::string & id)
     {
-        return self[id]();
+        return self.create(id);
     }
 };
 
 void expose_dep_tag()
 {
-    /**
-     * Exceptions
-     */
-    ExceptionRegister::get_instance()->add_exception<NoSuchDepTagCategory>
-        ("NoSuchDepTagCategory", "BaseException",
-         "Thrown if DepTagCategoryMaker cannot find the named DepTagCategory.");
-
     /**
      * DepTagCategory
      */
@@ -87,21 +80,21 @@ void expose_dep_tag()
         ;
 
     /**
-     * DepTagCategoryMaker
+     * DepTagCategoryFactory
      */
-    bp::class_<DepTagCategoryMaker, boost::noncopyable>
+    bp::class_<DepTagCategoryFactory, boost::noncopyable>
         (
-         "DepTagCategoryMaker",
+         "DepTagCategoryFactory",
          "Virtual constructor for accessing DepTagCategory instances.",
          bp::no_init
         )
-        .add_static_property("instance", bp::make_function(&DepTagCategoryMaker::get_instance,
+        .add_static_property("instance", bp::make_function(&DepTagCategoryFactory::get_instance,
                     bp::return_value_policy<bp::reference_existing_object>()),
                 "Singleton instance."
                 )
 
-        .def("make_from_id", &DepTagCategoryMakerWrapper::make_from_id,
-                "make_from_id(id_string) -> DepTagCategory\n"
+        .def("create", &DepTagCategoryFactory::create,
+                "create(id_string) -> DepTagCategory\n"
                 "Make DepTagCategory from id."
             )
         ;

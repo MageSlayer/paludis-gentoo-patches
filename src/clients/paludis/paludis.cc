@@ -183,7 +183,6 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_sets.specified() +
                     CommandLine::get_instance()->a_list_sync_protocols.specified() +
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
-                    CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
                     CommandLine::get_instance()->a_contents.specified() +
                     CommandLine::get_instance()->a_executables.specified() +
                     CommandLine::get_instance()->a_owner.specified() +
@@ -208,14 +207,6 @@ main(int argc, char *argv[])
                 throw args::DoHelp("list-repository-formats action takes no parameters");
 
             return do_list_repository_formats();
-        }
-
-        if (CommandLine::get_instance()->a_list_dep_tag_categories.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-dep-tag-categories action takes no parameters");
-
-            return do_list_dep_tag_categories();
         }
 
         /* these actions do need Environment or paludis_command */

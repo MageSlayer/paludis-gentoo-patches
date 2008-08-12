@@ -40,7 +40,6 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
@@ -134,39 +133,22 @@ namespace paludis
     };
 
     /**
-     * Thrown if DepTagCategoryMaker cannot find the named DepTagCategory.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE NoSuchDepTagCategory :
-        public Exception
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            NoSuchDepTagCategory(const std::string &) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Virtual constructor for accessing DepTagCategory instances.
+     * Factory for accessing DepTagCategory instances.
      *
      * \ingroup g_dep_spec
-     * \nosubgrouping
+     * \since 0.30
      */
-    class PALUDIS_VISIBLE DepTagCategoryMaker :
-        public VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
-        public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>
+    class PALUDIS_VISIBLE DepTagCategoryFactory :
+        public InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
+        friend class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
 
         private:
-            DepTagCategoryMaker();
+            DepTagCategoryFactory();
+
+        public:
+            const std::tr1::shared_ptr<DepTagCategory> create(const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -362,9 +344,6 @@ namespace paludis
 #include <paludis/dep_tag-sr.hh>
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
-           virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
-
     extern template class ConstAcceptInterface<DepTagVisitorTypes>;
 
     extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
@@ -377,7 +356,7 @@ namespace paludis
     extern template class Visits<const DependencyDepTag>;
     extern template class Visits<const TargetDepTag>;
 
-    extern template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
+    extern template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
     extern template class PrivateImplementationPattern<DependencyDepTag>;
     extern template class PrivateImplementationPattern<GeneralSetDepTag>;
 #endif

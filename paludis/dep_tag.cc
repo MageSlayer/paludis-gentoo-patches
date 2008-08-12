@@ -20,7 +20,6 @@
 #include "dep_tag.hh"
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
-#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -29,9 +28,6 @@
 #include <sstream>
 
 using namespace paludis;
-
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
-         virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
 
 template class ConstVisitor<DepTagVisitorTypes>;
 template class ConstAcceptInterface<DepTagVisitorTypes>;
@@ -46,7 +42,7 @@ template class Visits<const GLSADepTag>;
 template class Visits<const DependencyDepTag>;
 template class Visits<const TargetDepTag>;
 
-template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
+template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
 
 template class Set<DepTagEntry>;
 template class WrappedForwardIterator<Set<DepTagEntry>::ConstIteratorTag, const DepTagEntry>;
@@ -59,10 +55,10 @@ template class PrivateImplementationPattern<DependencyDepTag>;
 
 namespace
 {
-    std::tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<DepTagCategory>
     make_glsa_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
                     true,
                     "glsa",
                     "Security advisories",
@@ -70,10 +66,10 @@ namespace
                     "Please read the advisories carefully and take appropriate action."));
     }
 
-    std::tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<DepTagCategory>
     make_general_set_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
                     true,
                     "general",
                     "General sets",
@@ -81,10 +77,10 @@ namespace
                     ""));
     }
 
-    std::tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
                     false,
                     "dependency",
                     "Dependencies",
@@ -92,10 +88,10 @@ namespace
                     ""));
     }
 
-    std::tr1::shared_ptr<const DepTagCategory>
+    std::tr1::shared_ptr<DepTagCategory>
     make_target_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
                     false,
                     "target",
                     "Targets",
@@ -145,11 +141,6 @@ std::string
 DepTagCategory::post_text() const
 {
     return _post_text;
-}
-
-NoSuchDepTagCategory::NoSuchDepTagCategory(const std::string & s) throw () :
-    Exception("No such dep tag category '" + s + "'")
-{
 }
 
 DepTag::DepTag()
@@ -433,11 +424,21 @@ TargetDepTag::category() const
     return "target";
 }
 
-DepTagCategoryMaker::DepTagCategoryMaker()
+DepTagCategoryFactory::DepTagCategoryFactory()
 {
-    register_maker("glsa", &make_glsa_dep_tag);
-    register_maker("general", &make_general_set_dep_tag);
-    register_maker("dependency", &make_dependency_set_dep_tag);
-    register_maker("target", &make_target_dep_tag);
+}
+
+const std::tr1::shared_ptr<DepTagCategory>
+DepTagCategoryFactory::create(const std::string & s) const
+{
+    if (s == "glsa")
+        return make_glsa_dep_tag();
+    if (s == "general")
+        return make_general_set_dep_tag();
+    if (s == "dependency")
+        return make_dependency_set_dep_tag();
+    if (s == "target")
+        return make_target_dep_tag();
+    throw ConfigurationError("No dep tag category named '" + s + "'");
 }
 

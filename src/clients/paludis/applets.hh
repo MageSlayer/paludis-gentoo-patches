@@ -52,9 +52,6 @@ int do_list_repository_formats();
 /// Handle --list-sync-protocols
 int do_list_sync_protocols(std::tr1::shared_ptr<paludis::Environment>);
 
-/// Handle --list-dep-tag-categories
-int do_list_dep_tag_categories();
-
 /// Handle cache regeneration
 int do_regenerate_cache(std::tr1::shared_ptr<paludis::Environment>, bool installed);
 

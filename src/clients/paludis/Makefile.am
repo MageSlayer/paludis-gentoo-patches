@@ -75,7 +75,7 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/test/run_test.sh bash
 
 TESTS = version_TEST help_TEST \
-	list_repository_formats_TEST list_dep_tag_categories_TEST \
+	list_repository_formats_TEST \
 	exception_TEST install_TEST pretend_TEST upgrade_TEST args_from_environment_TEST \
 	continue_on_failure_TEST
 

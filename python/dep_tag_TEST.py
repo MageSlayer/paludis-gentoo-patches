@@ -84,23 +84,23 @@ class TestCase_05_TargetDepTag(unittest.TestCase):
         self.assertEquals(dt.category, "target")
         self.assertEquals(dt.short_text, "target")
 
-class TestCase_06_DepTagCategoryMaker(unittest.TestCase):
+class TestCase_06_DepTagCategoryFactory(unittest.TestCase):
     def test_01_no_create(self):
-        self.assertRaises(Exception, DepTagCategoryMaker)
+        self.assertRaises(Exception, DepTagCategoryFactory)
 
     def test_02_instance(self):
-        self.assert_(isinstance(DepTagCategoryMaker.instance, DepTagCategoryMaker))
+        self.assert_(isinstance(DepTagCategoryFactory.instance, DepTagCategoryFactory))
 
-    def test_03_make_from_id(self):
-        cdt = DepTagCategoryMaker.instance.make_from_id("glsa")
+    def test_03_create(self):
+        cdt = DepTagCategoryFactory.instance.create("glsa")
         self.assert_(isinstance(cdt, DepTagCategory))
 
-        self.assertRaises(NoSuchDepTagCategory, DepTagCategoryMaker.instance.make_from_id, "foo")
+        self.assertRaises(ConfigurationError, DepTagCategoryFactory.instance.create, "foo")
 
 class TestCase_07_DepTagCategory(unittest.TestCase):
     def setUp(self):
         global cdt
-        cdt = DepTagCategoryMaker.instance.make_from_id("glsa")
+        cdt = DepTagCategoryFactory.instance.create("glsa")
 
     def test_01_no_create(self):
         self.assertRaises(Exception, DepTagCategory)

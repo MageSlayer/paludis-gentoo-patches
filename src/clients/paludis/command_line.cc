@@ -60,7 +60,6 @@ CommandLine::CommandLine() :
     a_list_sync_protocols(&action_args_internal, "list-sync-protocols", '\0', "List available sync protocols", false),
     a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0',
             "List available repository formats", false),
-    a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories", false),
     a_regenerate_installed_cache(&action_args_internal, "regenerate-installed-cache", '\0',
             "Regenerate (non-metadata) cache for installed repositories", false),
     a_regenerate_installable_cache(&action_args_internal, "regenerate-installable-cache", '\0',
