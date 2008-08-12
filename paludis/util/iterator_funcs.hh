@@ -29,6 +29,9 @@
 
 namespace paludis
 {
+#ifdef PALUDIS_HAVE_STD_NEXT
+    using std::next;
+#else
     /**
      * Return a new iterator pointing to the item after i.
      *
@@ -59,6 +62,7 @@ namespace paludis
         std::advance(result, n);
         return result;
     }
+#endif
 
     /**
      * Return a new iterator pointing to the item before i.

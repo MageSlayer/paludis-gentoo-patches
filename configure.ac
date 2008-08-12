@@ -329,6 +329,26 @@ int main(int, char **)
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
 dnl }}}
 
+dnl {{{ std::next
+AC_MSG_CHECKING([for std::next])
+AC_COMPILE_IFELSE([
+#include <algorithm>
+#include <iterator>
+#include <list>
+int main(int, char **)
+{
+	std::list<int> x;
+	next(x.begin());
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
 need_xml_check=
 need_pcrepp_check=
 need_syck_check=
