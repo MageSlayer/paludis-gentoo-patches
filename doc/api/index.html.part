@@ -184,6 +184,13 @@ how concepts map on to different language bindings.</p>
         <td>How to use Repository</td>
     </tr>
     <tr>
+        <td>example_selection</td>
+        <td><a href="cplusplus/example__selection_8cc-example.html">C++</a></td>
+        <td><a href="ruby/example_selection.html">Ruby</a></td>
+        <td></td>
+        <td>How to use the standard Selection, Generator and Filter classes</td>
+    </tr>
+    <tr>
         <td>example_stringify_formatter</td>
         <td><a href="cplusplus/example__stringify__formatter_8cc-example.html">C++</a></td>
         <td></td>
