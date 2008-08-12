@@ -41,7 +41,7 @@ end
 
 # And use flags, for which we need package IDs:
 ids = env[Selection::AllVersionsSorted.new(
-    Generator::Matches.new(Paludis::parse_user_package_dep_spec('sys-apps/paludis', [])) |
+    Generator::Matches.new(Paludis::parse_user_package_dep_spec('sys-apps/paludis', env, [])) |
     Filter::SupportsAction.new(InstalledAction))]
 
 if (ids.length > 0)
