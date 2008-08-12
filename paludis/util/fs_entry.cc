@@ -41,6 +41,7 @@
 #include <limits.h>
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 
 #include "config.h"
 
@@ -691,7 +692,7 @@ FSEntry::group() const
 void
 FSEntry::rename(const FSEntry & new_name)
 {
-    if (0 != ::rename(_imp->path.c_str(), new_name._imp->path.c_str()))
+    if (0 != std::rename(_imp->path.c_str(), new_name._imp->path.c_str()))
         throw FSError("rename('" + stringify(_imp->path) + "', '" + stringify(new_name._imp->path) + "') failed: " +
                 ::strerror(errno));
 }

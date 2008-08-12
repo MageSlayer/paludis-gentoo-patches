@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <cstring>
+#include <cstdio>
 #include <list>
 #include <set>
 #include <tr1/unordered_map>
@@ -741,7 +742,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 
     bool do_copy(false);
 
-    if (0 == ::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
+    if (0 == std::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
     {
         result += msi_rename;
 
@@ -803,7 +804,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (-1 == count)
             throw MergerError("read failed: " + stringify(::strerror(errno)));
 
-        if (0 != ::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
+        if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
             throw MergerError(
                     "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
 
@@ -942,7 +943,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     if (is_selinux_enabled())
         relabel_dir_recursive(src, dst);
 
-    if (0 == ::rename(stringify(src).c_str(), stringify(dst).c_str()))
+    if (0 == std::rename(stringify(src).c_str(), stringify(dst).c_str()))
     {
         result += msi_rename;
         record_renamed_dir_recursive(dst);
