@@ -111,7 +111,7 @@ how concepts map on to different language bindings.</p>
         <td><a href="cplusplus/example__environment_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_environment.html">Ruby</a></td>
         <td></td>
-        <td>How to use EnvironmentMaker and the resultant Environment</td>
+        <td>How to use EnvironmentFactory and the resultant Environment</td>
     </tr>
     <tr>
         <td>example_formatter</td>

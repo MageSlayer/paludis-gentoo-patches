@@ -18,7 +18,7 @@ namespace examples
      * This class provides basic command line handling for most examples.
      *
      * Most Paludis clients should support at least '--help', '--version'
-     * and '--log-level'. If paludis::EnvironmentMaker is used to create
+     * and '--log-level'. If paludis::EnvironmentFactory is used to create
      * the environment (as opposed to, say, paludis::NoConfigEnvironment),
      * then '--environment' must also be an option.
      *

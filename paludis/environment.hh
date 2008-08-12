@@ -57,13 +57,13 @@ namespace paludis
      *
      * Environment itself is purely an interface class. Actual Environment
      * implementations usually descend from EnvironmentImplementation, which
-     * provides much of the common implementation details. EnvironmentMaker is
+     * provides much of the common implementation details. EnvironmentFactory is
      * often used to create the appropriate Environment subclass for an
      * application.
      *
      * \ingroup g_environment
      * \see PackageDatabase
-     * \see EnvironmentMaker
+     * \see EnvironmentFactory
      * \see EnvironmentImplementation
      * \nosubgrouping
      */
