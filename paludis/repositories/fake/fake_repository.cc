@@ -206,6 +206,12 @@ FakeRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+FakeRepository::location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();

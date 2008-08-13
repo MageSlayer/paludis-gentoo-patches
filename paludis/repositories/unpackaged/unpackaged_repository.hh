@@ -104,6 +104,7 @@ namespace paludis
             /* Keys */
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
 
             ///\name RepositoryFactory functions

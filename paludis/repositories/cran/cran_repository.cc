@@ -551,6 +551,12 @@ CRANRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+CRANRepository::location_key() const
+{
+    return _imp->location_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();

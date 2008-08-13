@@ -420,6 +420,12 @@ VirtualsRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+VirtualsRepository::location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();

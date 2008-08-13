@@ -368,6 +368,12 @@ InstalledGemsRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+InstalledGemsRepository::location_key() const
+{
+    return _imp->install_dir_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;

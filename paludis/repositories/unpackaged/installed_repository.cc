@@ -476,6 +476,12 @@ InstalledUnpackagedRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+InstalledUnpackagedRepository::location_key() const
+{
+    return _imp->location_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedRepository::installed_root_key() const
 {
     return _imp->root_key;

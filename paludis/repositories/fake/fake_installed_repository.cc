@@ -200,6 +200,12 @@ FakeInstalledRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+FakeInstalledRepository::location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

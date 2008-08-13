@@ -322,6 +322,12 @@ InstalledVirtualsRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+InstalledVirtualsRepository::location_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledVirtualsRepository::installed_root_key() const
 {
     return _imp->root_key;

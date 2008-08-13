@@ -352,6 +352,12 @@ GemsRepository::format_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+GemsRepository::location_key() const
+{
+    return _imp->location_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 GemsRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();

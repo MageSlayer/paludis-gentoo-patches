@@ -290,6 +290,13 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
 
             /**
+             * The location_key, if non-zero, holds the file or directory containing
+             * our repository's data, the format of which depends on the value of
+             * format_key.
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const = 0;
+
+            /**
              * The installed_root_key, if non-zero, specifies that we contain installed
              * packages at the specified root.
              *
