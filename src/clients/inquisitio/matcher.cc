@@ -21,18 +21,13 @@
 #include "exact_matcher.hh"
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
-#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
 
-template class paludis::VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Matcher> (*) (const std::string &),
-         paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >;
-
-template class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;
+template class paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>;
 
 Matcher::Matcher()
 {
@@ -57,10 +52,19 @@ namespace
     }
 }
 
-MatcherMaker::MatcherMaker()
+MatcherFactory::MatcherFactory()
 {
-    register_maker("exact", &make<ExactMatcher>);
-    register_maker("pcre", &make<PCREMatcher>);
-    register_maker("text", &make<TextMatcher>);
+}
+
+const std::tr1::shared_ptr<Matcher>
+MatcherFactory::create(const std::string & s, const std::string & t) const
+{
+    if (s == "exact")
+        return make<ExactMatcher>(t);
+    if (s == "pcre")
+        return make<PCREMatcher>(t);
+    if (s == "text")
+        return make<TextMatcher>(t);
+    throw NoSuchMatcherError(t);
 }
 

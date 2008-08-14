@@ -197,8 +197,8 @@ do_search(const Environment & env)
     std::list<std::tr1::shared_ptr<Matcher> > matchers;
     for (CommandLine::ParametersConstIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
-        matchers.push_back(MatcherMaker::get_instance()->find_maker(
-                CommandLine::get_instance()->a_matcher.argument())(*p));
+        matchers.push_back(MatcherFactory::get_instance()->create(
+                    CommandLine::get_instance()->a_matcher.argument(), *p));
 
     std::list<std::tr1::shared_ptr<Extractor> > extractors;
     if (CommandLine::get_instance()->a_keys.begin_args() == CommandLine::get_instance()->a_keys.end_args())

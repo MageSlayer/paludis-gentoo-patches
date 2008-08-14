@@ -22,7 +22,7 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/util/virtual_constructor.hh>
+#include <paludis/util/exception.hh>
 #include <string>
 #include <tr1/memory>
 
@@ -49,17 +49,17 @@ namespace inquisitio
             NoSuchMatcherError(const std::string &) throw ();
     };
 
-    class MatcherMaker :
-        public paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>,
-        public paludis::VirtualConstructor<
-            std::string,
-            std::tr1::shared_ptr<Matcher> (*) (const std::string &),
-            paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >
+    class MatcherFactory :
+        public paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>
     {
-        friend class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;
+        friend class paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>;
 
         private:
-            MatcherMaker();
+            MatcherFactory();
+
+        public:
+            const std::tr1::shared_ptr<Matcher> create(const std::string &, const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 
