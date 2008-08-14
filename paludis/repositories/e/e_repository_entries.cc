@@ -19,30 +19,30 @@
 
 #include "e_repository_entries.hh"
 #include "ebuild_entries.hh"
-#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
-
-template class VirtualConstructor<std::string,
-         std::tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
-                 const ERepositoryParams &),
-         virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >;
-
-template class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
+template class InstantiationPolicy<ERepositoryEntriesFactory, instantiation_method::SingletonTag>;
 
 ERepositoryEntries::~ERepositoryEntries()
 {
 }
 
-NoSuchERepositoryEntriesType::NoSuchERepositoryEntriesType(const std::string & format) throw ():
-    ConfigurationError("No available maker for E Repository entries type '" + format + "'")
+ERepositoryEntriesFactory::ERepositoryEntriesFactory()
 {
 }
 
-ERepositoryEntriesMaker::ERepositoryEntriesMaker()
+const std::tr1::shared_ptr<ERepositoryEntries>
+ERepositoryEntriesFactory::create(
+        const std::string & s,
+        const Environment * const env,
+        ERepository * const r,
+        const ERepositoryParams & p) const
 {
-    register_maker("ebuild", &EbuildEntries::make_ebuild_entries);
+    if (s == "ebuild" || s == "exheres")
+        return make_shared_ptr(new EbuildEntries(env, r, p));
+    throw ConfigurationError("Unrecognised entries type '" + s + "'");
 }
 

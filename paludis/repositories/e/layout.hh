@@ -27,7 +27,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <tr1/memory>
@@ -157,39 +156,26 @@ namespace paludis
         };
 
         /**
-         * Thrown if a layout of the specified type does not exist.
-         *
-         * \ingroup grpexceptions
-         * \ingroup grperepository
-         * \nosubgrouping
-         */
-        class PALUDIS_VISIBLE NoSuchLayoutType :
-            public ConfigurationError
-        {
-            public:
-                /**
-                 * Constructor.
-                 */
-                NoSuchLayoutType(const std::string & format) throw ();
-        };
-
-        /**
          * Virtual constructor for Layout.
          *
          * \ingroup grperepository
          */
-        class PALUDIS_VISIBLE LayoutMaker :
-            public VirtualConstructor<std::string,
-                std::tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
-                        std::tr1::shared_ptr<const ERepositoryEntries>,
-                        std::tr1::shared_ptr<const FSEntry>),
-                virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
-            public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
+        class PALUDIS_VISIBLE LayoutFactory :
+            public InstantiationPolicy<LayoutFactory, instantiation_method::SingletonTag>
         {
-            friend class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+            friend class InstantiationPolicy<LayoutFactory, instantiation_method::SingletonTag>;
 
             private:
-                LayoutMaker();
+                LayoutFactory();
+
+            public:
+                const std::tr1::shared_ptr<Layout> create(
+                        const std::string &,
+                        const ERepository * const,
+                        const FSEntry &,
+                        const std::tr1::shared_ptr<const ERepositoryEntries> &,
+                        const std::tr1::shared_ptr<const FSEntry> &)
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

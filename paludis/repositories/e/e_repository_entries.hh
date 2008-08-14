@@ -27,7 +27,6 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -129,37 +128,25 @@ namespace paludis
         };
 
         /**
-         * Thrown if a repository of the specified type does not exist.
-         *
-         * \ingroup grpexceptions
-         * \ingroup grprepository
-         * \nosubgrouping
-         */
-        class PALUDIS_VISIBLE NoSuchERepositoryEntriesType : public ConfigurationError
-        {
-            public:
-                /**
-                 * Constructor.
-                 */
-                NoSuchERepositoryEntriesType(const std::string & format) throw ();
-        };
-
-        /**
          * Virtual constructor for ERepositoryEntries.
          *
          * \ingroup grprepository
          */
-        class PALUDIS_VISIBLE ERepositoryEntriesMaker :
-            public VirtualConstructor<std::string,
-                std::tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
-                        const ERepositoryParams &),
-                virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >,
-            public InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>
+        class PALUDIS_VISIBLE ERepositoryEntriesFactory :
+            public InstantiationPolicy<ERepositoryEntriesFactory, instantiation_method::SingletonTag>
         {
-            friend class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
+            friend class InstantiationPolicy<ERepositoryEntriesFactory, instantiation_method::SingletonTag>;
 
             private:
-                ERepositoryEntriesMaker();
+                ERepositoryEntriesFactory();
+
+            public:
+                const std::tr1::shared_ptr<ERepositoryEntries> create(
+                        const std::string &,
+                        const Environment * const,
+                        ERepository * const,
+                        const ERepositoryParams &)
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

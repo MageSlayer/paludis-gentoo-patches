@@ -22,20 +22,13 @@
 #include <paludis/repositories/e/traditional_layout.hh>
 #include <paludis/repositories/e/exheres_layout.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/map-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
-                 std::tr1::shared_ptr<const ERepositoryEntries>,
-                 std::tr1::shared_ptr<const FSEntry>),
-         virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
-
-template class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+template class InstantiationPolicy<LayoutFactory, instantiation_method::SingletonTag>;
 
 template class Map<FSEntry, std::string>;
 
@@ -72,14 +65,22 @@ namespace
     }
 }
 
-LayoutMaker::LayoutMaker()
+LayoutFactory::LayoutFactory()
 {
-    register_maker("traditional", &make_layout<TraditionalLayout>);
-    register_maker("exheres", &make_layout<ExheresLayout>);
 }
 
-NoSuchLayoutType::NoSuchLayoutType(const std::string & format) throw () :
-    ConfigurationError("No available maker for E repository layout type '" + format + "'")
+const std::tr1::shared_ptr<Layout>
+LayoutFactory::create(
+        const std::string & s,
+        const ERepository * const r,
+        const FSEntry & f,
+        const std::tr1::shared_ptr<const ERepositoryEntries> & e,
+        const std::tr1::shared_ptr<const FSEntry> & ff) const
 {
+    if (s == "traditional")
+        return make_layout<TraditionalLayout>(r, f, e, ff);
+    if (s == "exheres")
+        return make_layout<ExheresLayout>(r, f, e, ff);
+    throw ConfigurationError("Unrecognised layout '" + s + "'");
 }
 

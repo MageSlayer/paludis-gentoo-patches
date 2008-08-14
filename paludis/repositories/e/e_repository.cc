@@ -208,10 +208,8 @@ namespace paludis
         has_mirrors(false),
         has_profiles_desc(false),
         sets_ptr(new ERepositorySets(params.environment, r, p)),
-        entries_ptr(erepository::ERepositoryEntriesMaker::get_instance()->find_maker(
-                    params.entry_format)(params.environment, r, p)),
-        layout(erepository::LayoutMaker::get_instance()->find_maker(
-                    params.layout)(r, params.location, entries_ptr, params.master_repository ?
+        entries_ptr(erepository::ERepositoryEntriesFactory::get_instance()->create(params.entry_format, params.environment, r, p)),
+        layout(erepository::LayoutFactory::get_instance()->create(params.layout, r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
                         std::tr1::shared_ptr<FSEntry>())),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",

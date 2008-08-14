@@ -31,7 +31,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
