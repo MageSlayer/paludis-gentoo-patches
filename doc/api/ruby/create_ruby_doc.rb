@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 
+require 'rubygems'
 require 'rdoc/rdoc'
 
 gps = Gem::GemPathSearcher.new;
 allison_spec = gps.find('allison.rb');
-allison = "#{Gem::dir}/gems/#{allison_spec.name}-#{allison_spec.version}/lib/allison.rb"
+
+allison = "#{allison_spec.loaded_from.gsub('specifications','gems').gsub('.gemspec','')}/lib/allison.rb"
 
 module RDoc
 
