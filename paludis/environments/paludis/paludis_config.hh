@@ -44,13 +44,6 @@ namespace paludis
 {
     struct PaludisEnvironment;
 
-    namespace n
-    {
-        struct format;
-        struct importance;
-        struct keys;
-    }
-
     namespace paludis_environment
     {
         struct KeywordsConf;
@@ -59,13 +52,6 @@ namespace paludis
         struct PackageMaskConf;
         struct MirrorsConf;
         struct World;
-
-        struct RepositoryConfigEntry
-        {
-            NamedValue<n::format, std::string> format;
-            NamedValue<n::importance, int> importance;
-            NamedValue<n::keys, std::tr1::function<std::string (const std::string &)> > keys;
-        };
 
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered
@@ -143,7 +129,8 @@ namespace paludis
                 ///\{
 
                 struct RepositoryConstIteratorTag;
-                typedef WrappedForwardIterator<RepositoryConstIteratorTag, const RepositoryConfigEntry> RepositoryConstIterator;
+                typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >
+                    RepositoryConstIterator;
 
                 RepositoryConstIterator begin_repositories() const;
 

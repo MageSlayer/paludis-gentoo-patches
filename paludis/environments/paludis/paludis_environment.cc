@@ -150,8 +150,9 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
 
     for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
-        _imp->package_database->add_repository((*r).importance(),
-                RepositoryFactory::get_instance()->create(this, (*r).keys()));
+        _imp->package_database->add_repository(
+                RepositoryFactory::get_instance()->importance(this, *r),
+                RepositoryFactory::get_instance()->create(this, *r));
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->config_location_key);

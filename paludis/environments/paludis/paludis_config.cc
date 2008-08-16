@@ -27,7 +27,6 @@
 #include <paludis/environments/paludis/world.hh>
 
 #include <paludis/util/config_file.hh>
-#include <paludis/distribution.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -46,8 +45,15 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/graph-impl.hh>
+#include <paludis/util/member_iterator-impl.hh>
+
+#include <paludis/distribution.hh>
+#include <paludis/repository_factory.hh>
 
 #include <tr1/functional>
+#include <tr1/unordered_map>
 #include <fstream>
 #include <algorithm>
 #include <sstream>
@@ -70,7 +76,7 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const RepositoryConfigEntry>;
+template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >;
 
 #include <paludis/environments/paludis/use_config_entry-sr.cc>
 
@@ -146,7 +152,7 @@ namespace paludis
         mutable std::string distribution;
         std::tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
-        std::list<RepositoryConfigEntry> repos;
+        std::list<std::tr1::function<std::string (const std::string &)> > repos;
 
         std::tr1::shared_ptr<KeywordsConf> keywords_conf;
         std::tr1::shared_ptr<UseConf> use_conf;
@@ -373,31 +379,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     /* repositories */
     {
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-        /* add virtuals repositories */
-        if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
-        {
-            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
-            iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-            iv_keys->insert("format", "installed_virtuals");
-            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
-                        value_for<n::format>("installed_virtuals"),
-                        value_for<n::importance>(-1),
-                        value_for<n::keys>(std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1))
-                    ));
-
-            std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
-            v_keys->insert("format", "virtuals");
-            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
-                        value_for<n::format>("virtuals"),
-                        value_for<n::importance>(-2),
-                        value_for<n::keys>(std::tr1::bind(&from_keys, v_keys, std::tr1::placeholders::_1))
-                    ));
-        }
-#endif
-
-        /* add normal repositories */
+        /* add normal repositories. start by getting defaults for config files... */
 
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
@@ -427,9 +409,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     << "' returned non-zero exit status '" << exit_status << "'";
         }
 
+        /* find candidate config directories */
         std::list<FSEntry> dirs;
         dirs.push_back(local_config_dir / "repositories");
 
+        /* find repo config files */
         std::list<FSEntry> repo_files;
         for (std::list<FSEntry>::const_iterator dir(dirs.begin()), dir_end(dirs.end()) ;
                 dir != dir_end ; ++dir)
@@ -443,7 +427,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        std::list<std::tr1::function<std::string (const std::string &)> > later_repo_files;
+        /* get a mapping from repository name to key function, so we can work out the order */
+        std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> > repo_configs;
         for (std::list<FSEntry>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
                 repo_file != repo_file_end ; ++repo_file)
         {
@@ -478,48 +463,85 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! kv)
                 continue;
 
-            std::string format(kv->get("format"));
-            if (format.empty())
-                throw PaludisConfigError("Key 'format' not specified or empty");
-
-            int importance(kv->get("master_repository").empty() ? 0 : 10);
-            if (! kv->get("importance").empty())
-                importance = destringify<int>(kv->get("importance"));
-
             std::tr1::function<std::string (const std::string &)> repo_func(std::tr1::bind(&from_kv, kv, std::tr1::placeholders::_1));
 
-            repo_func = std::tr1::bind(&override, "importance", stringify(importance), repo_func, std::tr1::placeholders::_1);
             repo_func = std::tr1::bind(&override, "repo_file", stringify(*repo_file), repo_func, std::tr1::placeholders::_1);
             repo_func = std::tr1::bind(&override, "root", root_prefix.empty() ? "/" : root_prefix, repo_func, std::tr1::placeholders::_1);
 
-            if (! repo_func("master_repository").empty())
+            RepositoryName name(RepositoryFactory::get_instance()->name(_imp->env, repo_func));
+            if (! repo_configs.insert(std::make_pair(name, repo_func)).second)
             {
-                Log::get_instance()->message("paludis_environment.repositories.delaying", ll_debug, lc_context)
-                    << "Delaying '" << *repo_file << "' because it uses master_repository";
-                later_repo_files.push_back(repo_func);
-            }
-            else
-            {
-                Log::get_instance()->message("paludis_environment.repositories.not_delaying", ll_debug, lc_context)
-                    << "Not delaying '" << *repo_file << "'";
-                _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
-                            value_for<n::format>(format),
-                            value_for<n::importance>(importance),
-                            value_for<n::keys>(repo_func)
-                        ));
+                Log::get_instance()->message("paludis_environment.repositories.duplicate", ll_warning, lc_context)
+                    << "Duplicate repository name '" << name << "' from config file '" << *repo_file << "', skipping";
+                continue;
             }
         }
 
-        for (std::list<std::tr1::function<std::string (const std::string &)> >::const_iterator
-                k(later_repo_files.begin()), k_end(later_repo_files.end()) ; k != k_end ; ++k)
-            _imp->repos.push_back(make_named_values<RepositoryConfigEntry>(
-                        value_for<n::format>((*k)("format")),
-                        value_for<n::importance>(destringify<int>((*k)("importance"))),
-                        value_for<n::keys>(*k)
-                    ));
+        /* work out order for repository creation */
+        DirectedGraph<RepositoryName, bool, RepositoryNameComparator> repository_deps;
+        std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()),
+                std::tr1::bind(std::tr1::mem_fn(&DirectedGraph<RepositoryName, bool, RepositoryNameComparator>::add_node), &repository_deps, _1));
+
+        for (std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+                r(repo_configs.begin()), r_end(repo_configs.end()) ; r != r_end ; ++r)
+        {
+            std::tr1::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(_imp->env, r->second));
+            for (RepositoryNameSet::ConstIterator d(deps->begin()), d_end(deps->end()) ;
+                    d != d_end ; ++d)
+            {
+                if (*d == r->first)
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon itself");
+                try
+                {
+                    repository_deps.add_edge(r->first, *d, true);
+                }
+                catch (const NoSuchGraphNodeError &)
+                {
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon '" +
+                            stringify(*d) + "', which is not configured");
+                }
+            }
+        }
+
+        try
+        {
+            std::list<RepositoryName> ordered_repos;
+            repository_deps.topological_sort(std::back_inserter(ordered_repos));
+
+            for (std::list<RepositoryName>::const_iterator o(ordered_repos.begin()), o_end(ordered_repos.end()) ;
+                    o != o_end ; ++o)
+            {
+                std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+                    c(repo_configs.find(*o));
+                if (c == repo_configs.end())
+                    throw InternalError(PALUDIS_HERE, "*o not in repo_configs");
+
+                _imp->repos.push_back(c->second);
+            }
+        }
+        catch (const NoGraphTopologicalOrderExistsError & x)
+        {
+            throw ConfigurationError("Repositories have circular dependencies. Unresolvable repositories are '"
+                    + join(x.remaining_nodes()->begin(), x.remaining_nodes()->end(), "', '") + "'");
+        }
 
         if (_imp->repos.empty())
             throw PaludisConfigError("No repositories specified");
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+        /* add virtuals repositories */
+        if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
+        {
+            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+            iv_keys->insert("format", "installed_virtuals");
+            _imp->repos.push_back(std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1));
+
+            std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            v_keys->insert("format", "virtuals");
+            _imp->repos.push_back(std::tr1::bind(&from_keys, v_keys, std::tr1::placeholders::_1));
+        }
+#endif
     }
 
     /* keywords */
