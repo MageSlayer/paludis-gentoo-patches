@@ -21,8 +21,20 @@
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/destringify.hh>
 
 using namespace paludis;
+
+namespace
+{
+    int virtual_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else
+            return -1;
+    }
+}
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
@@ -34,6 +46,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             virtuals_formats,
             &VirtualsRepository::repository_factory_name,
+            &virtual_importance,
             &VirtualsRepository::repository_factory_create,
             &VirtualsRepository::repository_factory_dependencies
             );
@@ -45,6 +58,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             installed_virtuals_formats,
             &InstalledVirtualsRepository::repository_factory_name,
+            &virtual_importance,
             &InstalledVirtualsRepository::repository_factory_create,
             &InstalledVirtualsRepository::repository_factory_dependencies
             );

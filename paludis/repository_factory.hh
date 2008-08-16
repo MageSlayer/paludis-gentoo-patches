@@ -64,6 +64,11 @@ namespace paludis
                     const KeyFunction &
                     )> NameFunction;
 
+            typedef std::tr1::function<int (
+                    const Environment * const,
+                    const KeyFunction &
+                    )> ImportanceFunction;
+
             /**
              * Construct a given repository, or throw ConfigurationError.
              *
@@ -87,7 +92,6 @@ namespace paludis
                     const KeyFunction & key_function
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-
             /**
              * Find the name of the repository that would be constructed if the
              * supplied parameters were passed to RepositoryFactory::create.
@@ -95,6 +99,17 @@ namespace paludis
              * \see RepositoryFactory::create for parameter documentation.
              */
             const RepositoryName name(
+                    const Environment * const env,
+                    const KeyFunction & key_function
+                    ) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Find the importance of the repository that would be constructed if the
+             * supplied parameters were passed to RepositoryFactory::create.
+             *
+             * \see RepositoryFactory::create for parameter documentation.
+             */
+            int importance(
                     const Environment * const env,
                     const KeyFunction & key_function
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -118,6 +133,8 @@ namespace paludis
              *
              * \param name_function is used to implement RepositoryMaker::name.
              *
+             * \param importance_function is used to implement RepositoryMaker::importance.
+             *
              * \param create_function is used to implement RepositoryMaker::create.
              *
              * \param dependencies_function is used to implement
@@ -126,6 +143,7 @@ namespace paludis
             void add_repository_format(
                     const std::tr1::shared_ptr<const Set<std::string> > & formats,
                     const NameFunction & name_function,
+                    const ImportanceFunction & importance_function,
                     const CreateFunction & create_function,
                     const DependenciesFunction & dependencies_function
                     );

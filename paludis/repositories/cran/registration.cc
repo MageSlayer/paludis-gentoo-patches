@@ -21,10 +21,22 @@
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/destringify.hh>
 
 using namespace paludis;
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
+
+namespace
+{
+    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else
+            return 1;
+    }
+}
 
 void paludis_initialise_repository_so(RepositoryFactory * const factory)
 {
@@ -34,6 +46,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             cran_formats,
             &CRANRepository::repository_factory_name,
+            &generic_importance,
             &CRANRepository::repository_factory_create,
             &CRANRepository::repository_factory_dependencies
             );
@@ -45,6 +58,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             installed_cran_formats,
             &CRANInstalledRepository::repository_factory_name,
+            &generic_importance,
             &CRANInstalledRepository::repository_factory_create,
             &CRANInstalledRepository::repository_factory_dependencies
             );

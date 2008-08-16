@@ -45,6 +45,7 @@ namespace paludis
     {
         struct create_function;
         struct dependencies_function;
+        struct importance_function;
         struct name_function;
     }
 }
@@ -55,6 +56,7 @@ namespace
     {
         NamedValue<n::create_function, RepositoryFactory::CreateFunction> create_function;
         NamedValue<n::dependencies_function, RepositoryFactory::DependenciesFunction> dependencies_function;
+        NamedValue<n::importance_function, RepositoryFactory::ImportanceFunction> importance_function;
         NamedValue<n::name_function, RepositoryFactory::NameFunction> name_function;
     };
 
@@ -166,6 +168,17 @@ RepositoryFactory::name(
     return fetch(_imp->keys, key_function("format")).name_function()(env, key_function);
 }
 
+int
+RepositoryFactory::importance(
+        const Environment * const env,
+        const KeyFunction & key_function
+        ) const
+{
+    Context context("When working out importance for repository" + (key_function("repo_file").empty() ? ":" :
+                " from file '" + key_function("repo_file") + ":"));
+    return fetch(_imp->keys, key_function("format")).importance_function()(env, key_function);
+}
+
 RepositoryFactory::ConstIterator
 RepositoryFactory::begin_keys() const
 {
@@ -182,6 +195,7 @@ void
 RepositoryFactory::add_repository_format(
         const std::tr1::shared_ptr<const Set<std::string> > & formats,
         const NameFunction & name_function,
+        const ImportanceFunction & importance_function,
         const CreateFunction & create_function,
         const DependenciesFunction & dependencies_function
         )
@@ -192,6 +206,7 @@ RepositoryFactory::add_repository_format(
         if (! _imp->keys.insert(std::make_pair(*f, make_named_values<Funcs>(
                             value_for<n::create_function>(create_function),
                             value_for<n::dependencies_function>(dependencies_function),
+                            value_for<n::importance_function>(importance_function),
                             value_for<n::name_function>(name_function)
                             ))).second)
             throw ConfigurationError("Handler for repository format '" + stringify(*f) + "' already exists");

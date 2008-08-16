@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/destringify.hh>
 
 using namespace paludis;
 
@@ -41,6 +42,16 @@ namespace
 
         return ERepository::repository_factory_create(env, f);
     }
+
+    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else if (! f("master_repository").empty())
+            return 10;
+        else
+            return 1;
+    }
 }
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
@@ -54,6 +65,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             ebuild_formats,
             &ERepository::repository_factory_name,
+            &generic_importance,
             &ERepository::repository_factory_create,
             &ERepository::repository_factory_dependencies
             );
@@ -64,6 +76,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             deprecated_ebuild_formats,
             &ERepository::repository_factory_name,
+            &generic_importance,
             make_portage_repository,
             &ERepository::repository_factory_dependencies
             );
@@ -74,6 +87,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             vdb_formats,
             &VDBRepository::repository_factory_name,
+            &generic_importance,
             &VDBRepository::repository_factory_create,
             &VDBRepository::repository_factory_dependencies
             );
@@ -84,6 +98,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             exndbam_formats,
             &ExndbamRepository::repository_factory_name,
+            &generic_importance,
             &ExndbamRepository::repository_factory_create,
             &ExndbamRepository::repository_factory_dependencies
             );

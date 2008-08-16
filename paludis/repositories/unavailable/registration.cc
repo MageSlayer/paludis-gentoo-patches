@@ -20,9 +20,21 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/destringify.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
+
+namespace
+{
+    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else
+            return 1;
+    }
+}
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
@@ -33,6 +45,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
 
     factory->add_repository_format(unavailable_formats,
             &UnavailableRepository::repository_factory_name,
+            &generic_importance,
             &UnavailableRepository::repository_factory_create,
             &UnavailableRepository::repository_factory_dependencies
             );

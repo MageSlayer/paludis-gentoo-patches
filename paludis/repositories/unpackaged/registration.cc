@@ -19,11 +19,23 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
 
 using namespace paludis;
+
+namespace
+{
+    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else
+            return 1;
+    }
+}
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
@@ -35,6 +47,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             unpackaged_formats,
             &UnpackagedRepository::repository_factory_name,
+            &generic_importance,
             &UnpackagedRepository::repository_factory_create,
             &UnpackagedRepository::repository_factory_dependencies
             );
@@ -46,6 +59,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             installed_unpackaged_formats,
             &InstalledUnpackagedRepository::repository_factory_name,
+            &generic_importance,
             &InstalledUnpackagedRepository::repository_factory_create,
             &InstalledUnpackagedRepository::repository_factory_dependencies
             );

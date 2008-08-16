@@ -25,10 +25,22 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 
 using namespace paludis;
+
+namespace
+{
+    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    {
+        if (! f("importance").empty())
+            return destringify<int>(f("importance"));
+        else
+            return 1;
+    }
+}
 
 extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
@@ -40,6 +52,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             gems_formats,
             GemsRepository::repository_factory_name,
+            &generic_importance,
             GemsRepository::repository_factory_create,
             GemsRepository::repository_factory_dependencies
             );
@@ -51,6 +64,7 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
     factory->add_repository_format(
             installed_gems_formats,
             InstalledGemsRepository::repository_factory_name,
+            &generic_importance,
             InstalledGemsRepository::repository_factory_create,
             InstalledGemsRepository::repository_factory_dependencies
             );
