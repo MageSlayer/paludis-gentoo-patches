@@ -32,8 +32,9 @@ export_exlib_phases()
 require()
 {
     ebuild_notice "debug" "Command 'require ${@}', using EXLIBSDIRS '${EXLIBSDIRS}'"
-    local e ee location= v v_qa
+    local e ee location v v_qa
     for e in "$@" ; do
+        location=
         for ee in ${EXLIBSDIRS} ; do
             [[ -f "${ee}/${e}.exlib" ]] && location="${ee}/${e}.exlib"
         done

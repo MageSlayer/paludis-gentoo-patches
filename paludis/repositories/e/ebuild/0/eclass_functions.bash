@@ -37,8 +37,9 @@ inherit()
 {
     [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
 
-    local e ee location= v v_qa
+    local e ee location v v_qa
     for e in "$@" ; do
+        location=
         for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
             [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
         done
