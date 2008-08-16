@@ -1033,7 +1033,7 @@ END
 cat <<END > cache/expected/cat/write-exlibs-1
 _mtime_=60
 _exlibs_=bar	ebuild_flat_metadata_cache_TEST_dir/repo/cat/exlibs	180	foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180
-DEPENDENCIES=build: cat/foo bar? ( cat/bar ) cat/baz build: bar? ( ) cat/baz build: bar? ( ) 
+DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) cat/baz ( build: bar? ( ) ) cat/baz ( build: bar? ( ) ) 
 SLOT=0
 HOMEPAGE=http://example.com/
 LICENSE=GPL-2

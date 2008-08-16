@@ -57,6 +57,7 @@ namespace paludis
         bool extra_label_indent;
         bool use_newlines;
         bool outer_block;
+        bool all_needs_parens;
         bool need_space;
 
         Implementation(
@@ -72,6 +73,7 @@ namespace paludis
             extra_label_indent(false),
             use_newlines(b),
             outer_block(true),
+            all_needs_parens(false),
             need_space(false)
         {
         }
@@ -99,12 +101,88 @@ paludis::erepository::operator<< (std::ostream & s, const DepSpecPrettyPrinter &
     return s;
 }
 
+namespace
+{
+    struct IsLabelVisitor :
+        ConstVisitor<GenericSpecTree>
+    {
+        bool result;
+
+        IsLabelVisitor() :
+            result(false)
+        {
+        }
+
+        void visit_leaf(const PlainTextDepSpec &)
+        {
+        }
+
+        void visit_leaf(const SimpleURIDepSpec &)
+        {
+        }
+
+        void visit_leaf(const FetchableURIDepSpec &)
+        {
+        }
+
+        void visit_leaf(const LicenseDepSpec &)
+        {
+        }
+
+        void visit_leaf(const PackageDepSpec &)
+        {
+        }
+
+        void visit_leaf(const BlockDepSpec &)
+        {
+        }
+
+        void visit_leaf(const URILabelsDepSpec &)
+        {
+            result = true;
+        }
+
+        void visit_leaf(const DependencyLabelsDepSpec &)
+        {
+            result = true;
+        }
+
+        void visit_leaf(const NamedSetDepSpec &)
+        {
+        }
+
+        void visit_sequence(const AllDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        {
+        }
+
+        void visit_sequence(const AnyDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        {
+        }
+
+        void visit_sequence(const ConditionalDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        {
+        }
+    };
+
+    bool is_label(const ConstAcceptInterface<GenericSpecTree> & i)
+    {
+        IsLabelVisitor v;
+        i.accept(v);
+        return v.result;
+    }
+}
+
 void
 DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
-    if (! _imp->outer_block)
+    bool need_parens(_imp->all_needs_parens ||
+            (! _imp->outer_block && end != std::find_if(cur, end, is_label)));
+    Save<bool> old_outer(&_imp->outer_block, false);
+    Save<bool> old_needs_parens(&_imp->all_needs_parens, false);
+
+    if (need_parens)
     {
         if (_imp->use_newlines)
             _imp->s << _imp->formatter.indent(_imp->indent);
@@ -118,12 +196,12 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
     }
 
     {
-        Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 1);
-        Save<bool> extra_label_indent(&_imp->extra_label_indent, _imp->outer_block ? _imp->extra_label_indent : false);
+        Save<unsigned> old_indent(&_imp->indent, need_parens ? _imp->indent +1 : _imp->indent);
+        Save<bool> extra_label_indent(&_imp->extra_label_indent, need_parens ? false : _imp->extra_label_indent);
         std::for_each(cur, end, accept_visitor(*this));
     }
 
-    if (! _imp->outer_block)
+    if (need_parens)
     {
         if (_imp->use_newlines)
             _imp->s << _imp->formatter.indent(_imp->indent);
@@ -143,6 +221,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
         GenericSpecTree::ConstSequenceIterator end)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
+    Save<bool> old_needs_parens(&_imp->all_needs_parens, true);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -177,6 +256,7 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
         GenericSpecTree::ConstSequenceIterator end)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
+    Save<bool> old_needs_parens(&_imp->all_needs_parens, false);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
