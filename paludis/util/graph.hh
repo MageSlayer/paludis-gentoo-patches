@@ -138,12 +138,12 @@ namespace paludis
      * \ingroup g_data_structures
      * \nosubgrouping
      */
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     class PALUDIS_VISIBLE DirectedGraph :
-        private PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >
+        private PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >
     {
         private:
-            using PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >::_imp;
+            using PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >::_imp;
 
             void operator= (const DirectedGraph &);
 

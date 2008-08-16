@@ -23,6 +23,7 @@
 #include <paludis/util/graph.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <map>
 #include <set>
 #include <list>
@@ -86,11 +87,11 @@ namespace paludis
 #ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template<>
 #endif
-    template <typename Node_, typename Edge_>
-    struct Implementation<DirectedGraph<Node_, Edge_> >
+    template <typename Node_, typename Edge_, typename Comparator_>
+    struct Implementation<DirectedGraph<Node_, Edge_, Comparator_> >
     {
         /// Our data.
-        std::map<Node_, std::map<Node_, Edge_> > store;
+        std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> store;
 
         ///\name Basic operations
         ///\{
@@ -99,7 +100,7 @@ namespace paludis
         {
         }
 
-        Implementation(const std::map<Node_, std::map<Node_, Edge_> > s) :
+        Implementation(const std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> s) :
             store(s)
         {
         }
@@ -107,41 +108,41 @@ namespace paludis
         ///\}
     };
 
-    template <typename Node_, typename Edge_>
-    DirectedGraph<Node_, Edge_>::DirectedGraph() :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >(new Implementation<DirectedGraph<Node_, Edge_> >)
+    template <typename Node_, typename Edge_, typename Comparator_>
+    DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph() :
+        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(new Implementation<DirectedGraph<Node_, Edge_, Comparator_> >)
     {
     }
 
-    template <typename Node_, typename Edge_>
-    DirectedGraph<Node_, Edge_>::DirectedGraph(const DirectedGraph & g) :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >(new Implementation<DirectedGraph<Node_, Edge_> >(g._imp->store))
+    template <typename Node_, typename Edge_, typename Comparator_>
+    DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph(const DirectedGraph & g) :
+        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(new Implementation<DirectedGraph<Node_, Edge_, Comparator_> >(g._imp->store))
     {
     }
 
-    template <typename Node_, typename Edge_>
-    DirectedGraph<Node_, Edge_>::~DirectedGraph()
+    template <typename Node_, typename Edge_, typename Comparator_>
+    DirectedGraph<Node_, Edge_, Comparator_>::~DirectedGraph()
     {
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::add_node(const Node_ & n)
+    DirectedGraph<Node_, Edge_, Comparator_>::add_node(const Node_ & n)
     {
-        _imp->store.insert(std::make_pair(n, std::map<Node_, Edge_>()));
+        _imp->store.insert(std::make_pair(n, std::map<Node_, Edge_, Comparator_>()));
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::delete_node(const Node_ & n)
+    DirectedGraph<Node_, Edge_, Comparator_>::delete_node(const Node_ & n)
     {
         delete_incoming_edges(n);
         _imp->store.erase(n);
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     bool
-    DirectedGraph<Node_, Edge_>::has_node(const Node_ & n) const
+    DirectedGraph<Node_, Edge_, Comparator_>::has_node(const Node_ & n) const
     {
         return _imp->store.end() != _imp->store.find(n);
     }
@@ -153,15 +154,15 @@ namespace paludis
      * \ingroup g_data_structures
      * \nosubgrouping
      */
-    template <typename Node_, typename Edge_>
-    class DirectedGraph<Node_, Edge_>::NodeConstIterator
+    template <typename Node_, typename Edge_, typename Comparator_>
+    class DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator
     {
-        friend class DirectedGraph<Node_, Edge_>;
+        friend class DirectedGraph<Node_, Edge_, Comparator_>;
 
         private:
-            typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator _i;
+            typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::const_iterator _i;
 
-            NodeConstIterator(const typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator & i) :
+            NodeConstIterator(const typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::const_iterator & i) :
                 _i(i)
             {
             }
@@ -230,25 +231,25 @@ namespace paludis
             ///\}
     };
 
-    template <typename Node_, typename Edge_>
-    typename DirectedGraph<Node_, Edge_>::NodeConstIterator
-    DirectedGraph<Node_, Edge_>::begin_nodes() const
+    template <typename Node_, typename Edge_, typename Comparator_>
+    typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator
+    DirectedGraph<Node_, Edge_, Comparator_>::begin_nodes() const
     {
         return NodeConstIterator(_imp->store.begin());
     }
 
-    template <typename Node_, typename Edge_>
-    typename DirectedGraph<Node_, Edge_>::NodeConstIterator
-    DirectedGraph<Node_, Edge_>::end_nodes() const
+    template <typename Node_, typename Edge_, typename Comparator_>
+    typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator
+    DirectedGraph<Node_, Edge_, Comparator_>::end_nodes() const
     {
         return NodeConstIterator(_imp->store.end());
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::add_edge(const Node_ & n1, const Node_ & n2, const Edge_ & e)
+    DirectedGraph<Node_, Edge_, Comparator_>::add_edge(const Node_ & n1, const Node_ & n2, const Edge_ & e)
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::iterator i(_imp->store.find(n1));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::iterator i(_imp->store.find(n1));
         if (i == _imp->store.end())
             throw NoSuchGraphNodeError(n1);
 
@@ -258,51 +259,51 @@ namespace paludis
         i->second.insert(std::make_pair(n2, e));
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::delete_edge(const Node_ & n1, const Node_ & n2)
+    DirectedGraph<Node_, Edge_, Comparator_>::delete_edge(const Node_ & n1, const Node_ & n2)
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::iterator i(_imp->store.find(n1));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::iterator i(_imp->store.find(n1));
         if (i != _imp->store.end())
             i->second.erase(n2);
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::delete_outgoing_edges(const Node_ & n)
+    DirectedGraph<Node_, Edge_, Comparator_>::delete_outgoing_edges(const Node_ & n)
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::iterator i(_imp->store.find(n.first));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::iterator i(_imp->store.find(n.first));
         if (i != _imp->store.end())
             i->second.clear();
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     void
-    DirectedGraph<Node_, Edge_>::delete_incoming_edges(const Node_ & n)
+    DirectedGraph<Node_, Edge_, Comparator_>::delete_incoming_edges(const Node_ & n)
     {
-        for (typename std::map<Node_, std::map<Node_, Edge_> >::iterator i(_imp->store.begin()),
+        for (typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::iterator i(_imp->store.begin()),
                 i_end(_imp->store.end()) ; i != i_end ; ++i)
             i->second.erase(n);
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     bool
-    DirectedGraph<Node_, Edge_>::has_edge(const Node_ & n1, const Node_ & n2) const
+    DirectedGraph<Node_, Edge_, Comparator_>::has_edge(const Node_ & n1, const Node_ & n2) const
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator i(_imp->store.find(n1));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::const_iterator i(_imp->store.find(n1));
         if (i != _imp->store.end())
             return i->second.end() != i->second.find(n2);
         return false;
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     const Edge_
-    DirectedGraph<Node_, Edge_>::fetch_edge(const Node_ & n1, const Node_ & n2) const
+    DirectedGraph<Node_, Edge_, Comparator_>::fetch_edge(const Node_ & n1, const Node_ & n2) const
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator i(_imp->store.find(n1));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::const_iterator i(_imp->store.find(n1));
         if (i != _imp->store.end())
         {
-            typename std::map<Node_, Edge_>::const_iterator j(i->second.find(n2));
+            typename std::map<Node_, Edge_, Comparator_>::const_iterator j(i->second.find(n2));
             if (j != i->second.end())
                 return j->second;
         }
@@ -310,24 +311,24 @@ namespace paludis
         throw NoSuchGraphEdgeError(n1, n2);
     }
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     bool
-    DirectedGraph<Node_, Edge_>::has_outgoing_edges(const Node_ & n) const
+    DirectedGraph<Node_, Edge_, Comparator_>::has_outgoing_edges(const Node_ & n) const
     {
-        typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator i(_imp->store.find(n));
+        typename std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_ >::const_iterator i(_imp->store.find(n));
         if (i == _imp->store.end())
             throw NoSuchGraphNodeError(n);
 
         return ! i->second.empty();
     }
 
-    template <typename Node_, typename Edge_, typename OutputConstIterator_>
+    template <typename Node_, typename Edge_, typename Comparator_, typename OutputConstIterator_>
     struct DirectedGraphTopologicalSorter
     {
-        DirectedGraph<Node_, Edge_> g;
-        std::set<Node_> done;
+        DirectedGraph<Node_, Edge_, Comparator_> g;
+        std::set<Node_, Comparator_> done;
 
-        DirectedGraphTopologicalSorter(const DirectedGraph<Node_, Edge_> & gg) :
+        DirectedGraphTopologicalSorter(const DirectedGraph<Node_, Edge_, Comparator_> & gg) :
             g(gg)
         {
         }
@@ -343,7 +344,7 @@ namespace paludis
             *i++ = n;
             done.insert(n);
 
-            for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
+            for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
                 if (g.has_edge(*m, n))
                 {
                     g.delete_edge(*m, n);
@@ -356,7 +357,7 @@ namespace paludis
         void sort(OutputConstIterator_ & i)
         {
             unsigned c(0);
-            for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
+            for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
             {
                 ++c;
                 do_one(i, *n++);
@@ -366,7 +367,7 @@ namespace paludis
             {
                 std::tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
                         new NoGraphTopologicalOrderExistsError::RemainingNodes);
-                for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
+                for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                     if (done.end() == done.find(*n))
                         r->add(stringify(*n));
 
@@ -375,12 +376,12 @@ namespace paludis
         }
     };
 
-    template <typename Node_, typename Edge_>
+    template <typename Node_, typename Edge_, typename Comparator_>
     template <typename OutputConstIterator_>
     void
-    DirectedGraph<Node_, Edge_>::topological_sort(OutputConstIterator_ x) const
+    DirectedGraph<Node_, Edge_, Comparator_>::topological_sort(OutputConstIterator_ x) const
     {
-        DirectedGraphTopologicalSorter<Node_, Edge_, OutputConstIterator_> s(*this);
+        DirectedGraphTopologicalSorter<Node_, Edge_, Comparator_, OutputConstIterator_> s(*this);
         s.sort(x);
     }
 }

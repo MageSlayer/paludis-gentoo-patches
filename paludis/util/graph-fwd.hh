@@ -26,13 +26,15 @@
  * \ingroup g_data_structures
  */
 
+#include <paludis/util/set-fwd.hh>
+
 namespace paludis
 {
     class GraphError;
     class NoSuchGraphNodeError;
     class NoSuchGraphEdgeError;
     class NoGraphTopologicalOrderExistsError;
-    template <typename Node_, typename Edge_> class DirectedGraph;
+    template <typename Node_, typename Edge_, typename Comparator_ = DefaultSetComparator<Node_> > class DirectedGraph;
 }
 
 #endif
