@@ -285,7 +285,28 @@ END
 
 mkdir cat/flat_hash-no-mtime
 cat <<END > cat/flat_hash-no-mtime/flat_hash-no-mtime-1.ebuild || exit 1
-DESCRIPTION="The Generated Description flat_hash-no-mtime"
+END
+cat <<END > metadata/cache/cat/flat_hash-no-mtime-1 || exit 1
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=the-description-flat_hash-no-mtime
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+PROVIDE=the/provide
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-no-mtime/flat_hash-no-mtime-1.ebuild || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-no-mtime-1 || exit 2
+
+mkdir cat/flat_hash-no-mtime-stale
+cat <<END > cat/flat_hash-no-mtime-stale/flat_hash-no-mtime-stale-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-no-mtime-stale"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -294,7 +315,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 DEPEND=""
 END
-cat <<END > metadata/cache/cat/flat_hash-no-mtime-1 || exit 1
+cat <<END > metadata/cache/cat/flat_hash-no-mtime-stale-1 || exit 1
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -309,6 +330,37 @@ PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
 END
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-no-mtime-stale-1 || exit 2
+
+mkdir cat/flat_hash-bad-mtime
+cat <<END > cat/flat_hash-bad-mtime/flat_hash-bad-mtime-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-bad-mtime"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > metadata/cache/cat/flat_hash-bad-mtime-1 || exit 1
+_mtime_=monkey
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Stale Description
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+PROVIDE=the/provide
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-bad-mtime/flat_hash-bad-mtime-1 || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-bad-mtime-1 || exit 2
 
 mkdir cat/flat_hash-no-eapi
 cat <<END > cat/flat_hash-no-eapi/flat_hash-no-eapi-1.ebuild || exit 1

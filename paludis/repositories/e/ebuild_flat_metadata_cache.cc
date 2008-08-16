@@ -41,6 +41,7 @@
 #include <cstring>
 #include <ctime>
 #include <errno.h>
+#include <utime.h>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -51,13 +52,13 @@ namespace paludis
     struct Implementation<EbuildFlatMetadataCache>
     {
         const Environment * const env;
-        const FSEntry & filename;
+        FSEntry & filename;
         const FSEntry & ebuild;
         std::time_t master_mtime;
         std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes;
         bool silent;
 
-        Implementation(const Environment * const e, const FSEntry & f, const FSEntry & eb,
+        Implementation(const Environment * const e, FSEntry & f, const FSEntry & eb,
                 std::time_t m, const std::tr1::shared_ptr<const EclassMtimes> em, bool s) :
             env(e),
             filename(f),
@@ -262,7 +263,7 @@ namespace
     }
 }
 
-EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSEntry & f,
+EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, FSEntry & f,
         const FSEntry & e, std::time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
     PrivateImplementationPattern<EbuildFlatMetadataCache>(new Implementation<EbuildFlatMetadataCache>(v, f, e, t, m, s))
 {
@@ -330,10 +331,12 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
 
                 {
-                    bool ok(_imp->ebuild.mtime() == destringify<std::time_t>(keys["_mtime_"]));
+                    std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
+                    std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtime() : destringify<std::time_t>(mtime_it->second));
+                    bool ok(_imp->ebuild.mtime() == cache_time);
                     if (! ok)
                         Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
-                            << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << keys["_mtime_"];
+                            << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << cache_time;
 
                     if (ok && id->eapi()->supported()->ebuild_options()->support_eclasses())
                     {
@@ -762,7 +765,12 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
     std::ofstream cache_file(stringify(_imp->filename).c_str());
 
     if (cache_file)
+    {
         cache_file << cache.str();
+        cache_file.close();
+        struct ::utimbuf times = { _imp->ebuild.mtime(), _imp->ebuild.mtime() };
+        _imp->filename.utime(&times);
+    }
     else
     {
         Log::get_instance()->message("e.cache.save.failure", ll_warning, lc_no_context) << "Couldn't write cache file to '"

@@ -351,9 +351,63 @@ namespace test_cases
                                     &env, UserPackageDepSpecOptions()))))]->begin());
 
             TEST_CHECK(id1->short_description_key());
-            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-no-mtime");
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "the-description-flat_hash-no-mtime");
         }
     } test_metadata_flat_hash_no_mtime;
+
+    struct MetadataFlatHashNoMtimeStaleTest : TestCase
+    {
+        MetadataFlatHashNoMtimeStaleTest() : TestCase("metadata flat_hash no mtime stale") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-stale-1",
+                                    &env, UserPackageDepSpecOptions()))))]->begin());
+
+            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-no-mtime-stale");
+        }
+    } test_metadata_flat_hash_no_mtime_stale;
+
+    struct MetadataFlatHashBadMtimeTest : TestCase
+    {
+        MetadataFlatHashBadMtimeTest() : TestCase("metadata flat_hash bad mtime") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-mtime-1",
+                                    &env, UserPackageDepSpecOptions()))))]->begin());
+
+            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-bad-mtime");
+        }
+    } test_metadata_flat_hash_bad_mtime;
 
     struct MetadataFlatHashNoEAPITest : TestCase
     {
@@ -1017,6 +1071,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-1"));
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1").mtime(), 60);
         }
     } test_metadata_write;
 
@@ -1051,6 +1106,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eclasses-1"));
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1").mtime(), 60);
         }
     } test_metadata_write_eclasses;
 
@@ -1086,6 +1142,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-exlibs-1"));
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1").mtime(), 60);
         }
     } test_metadata_write_exlibs;
 }
