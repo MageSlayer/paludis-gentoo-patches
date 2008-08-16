@@ -297,6 +297,20 @@ fix_locked_dependencies_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+ebuild_flat_metadata_cache_TEST_SOURCES = ebuild_flat_metadata_cache_TEST.cc
+
+ebuild_flat_metadata_cache_TEST_LDADD = \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+ebuild_flat_metadata_cache_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
 EXTRA_DIST = \
 	aa_visitor_TEST.cc \
 	dep_parser.se \
@@ -322,6 +336,9 @@ EXTRA_DIST = \
 	e_repository_sets_TEST.cc \
 	e_repository_sets_TEST_setup.sh \
 	e_repository_sets_TEST_cleanup.sh \
+	ebuild_flat_metadata_cache_TEST.cc \
+	ebuild_flat_metadata_cache_TEST_setup.sh \
+	ebuild_flat_metadata_cache_TEST_cleanup.sh \
 	exndbam_repository_TEST.cc \
 	exndbam_repository_TEST_setup.sh \
 	exndbam_repository_TEST_cleanup.sh \
@@ -492,7 +509,8 @@ TESTS = \
 	source_uri_finder_TEST \
 	exndbam_repository_TEST \
 	vdb_repository_TEST \
-	fix_locked_dependencies_TEST
+	fix_locked_dependencies_TEST \
+	ebuild_flat_metadata_cache_TEST
 
 check_PROGRAMS = $(TESTS)
 

@@ -429,36 +429,6 @@ namespace test_cases
         }
     } test_e_repository_duff_versions;
 
-    struct ERepositoryMetadataCachedTest : TestCase
-    {
-        ERepositoryMetadataCachedTest() : TestCase("metadata cached") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_TEST_dir/repo6");
-            keys->insert("profiles", "e_repository_TEST_dir/repo6/profiles/profile");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
-
-            for (int pass = 1 ; pass <= 2 ; ++pass)
-            {
-                TestMessageSuffix pass_suffix(stringify(pass), true);
-                std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
-
-                TEST_CHECK(id->short_description_key());
-                TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description");
-            }
-        }
-    } test_e_repository_metadata_cached;
-
     struct ERepositoryMetadataUncachedTest : TestCase
     {
         ERepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
@@ -539,63 +509,6 @@ namespace test_cases
             }
         }
     } test_e_repository_metadata_uncached;
-
-    struct ERepositoryMetadataStaleTest : TestCase
-    {
-        ERepositoryMetadataStaleTest() : TestCase("metadata stale") { }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        void run()
-        {
-            for (int opass = 1 ; opass <= 3 ; ++opass)
-            {
-                TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
-
-                TestEnvironment env;
-                env.set_paludis_command("/bin/false");
-                std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-                        new Map<std::string, std::string>);
-                keys->insert("format", "ebuild");
-                keys->insert("names_cache", "/var/empty");
-                keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
-                keys->insert("location", "e_repository_TEST_dir/repo7");
-                keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
-                std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                            std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-                env.package_database()->add_repository(1, repo);
-
-                for (int pass = 1 ; pass <= 3 ; ++pass)
-                {
-                    TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
-
-                    const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
-                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-1",
-                                            &env, UserPackageDepSpecOptions()))))]->begin());
-
-                    TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                    TEST_CHECK(id1->short_description_key());
-                    TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description");
-                }
-
-                for (int pass = 1 ; pass <= 3 ; ++pass)
-                {
-                    TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
-
-                    const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
-                                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/stale-pkg-1",
-                                            &env, UserPackageDepSpecOptions()))))]->begin());
-
-                    TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                    TEST_CHECK(id1->short_description_key());
-                    TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description");
-                }
-            }
-        }
-    } test_e_repository_metadata_stale;
 
     struct ERepositoryMetadataUnparsableTest : TestCase
     {

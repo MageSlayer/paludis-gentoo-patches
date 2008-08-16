@@ -104,41 +104,8 @@ END
 cd ..
 
 
-mkdir -p repo6/{eclass,distfiles,profiles/profile} || exit 1
-mkdir -p repo6/cat-one/pkg-one || exit 1
-mkdir -p repo6/metadata/cache/cat-one
-cd repo6 || exit 1
-echo "test-repo-6" > profiles/repo_name || exit 1
-cat <<END > profiles/categories || exit 1
-cat-one
-END
-cat <<END > profiles/profile/make.defaults
-ARCH=test
-END
-cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
-END
-cat <<END > metadata/cache/cat-one/pkg-one-1
-the/depend
-the/rdepend
-the-slot
-the-src-uri
-the-restrict
-the-homepage
-the-license
-the-description
-the-keywords
-
-the-iuse
-unused
-the/pdepend
-the/provide
-0
-END
-cd ..
-
-
 mkdir -p repo7/{eclass,distfiles,profiles/profile} || exit 1
-mkdir -p repo7/cat-one/{stale-pkg,pkg-{one,two}} || exit 1
+mkdir -p repo7/cat-one/pkg-{one,two} || exit 1
 mkdir -p repo7/metadata/cache/cat-{one,two}
 cd repo7 || exit 1
 echo "test-repo-7" > profiles/repo_name || exit 1
@@ -188,71 +155,9 @@ END
 cat <<END > eclass/mine.eclass
 DEPEND="bar/baz"
 END
-cat <<END > eclass/stale.eclass
-END
 cat <<END > cat-one/pkg-two/pkg-two-1.ebuild || exit 1
 i am a fish
 END
-
-cat <<END > cat-one/stale-pkg/stale-pkg-1.ebuild || exit 1
-DESCRIPTION="The Generated Description"
-HOMEPAGE="http://example.com/"
-SRC_URI=""
-SLOT="0"
-IUSE=""
-LICENSE="GPL-2"
-KEYWORDS="test"
-DEPEND=""
-END
-cat <<END > metadata/cache/cat-one/stale-pkg-1
-the/depend
-the/rdepend
-the-slot
-the-src-uri
-the-restrict
-the-homepage
-the-license
-The Stale Description
-the-keywords
-
-the-iuse
-unused
-the/pdepend
-the/provide
-0
-END
-touch -t 199901010101 metadata/cache/cat-one/stale-pkg-1 || exit 2
-
-cat <<END > cat-one/stale-pkg/stale-pkg-2.ebuild || exit 1
-inherit stale
-
-DESCRIPTION="The Generated Description"
-HOMEPAGE="http://example.com/"
-SRC_URI=""
-SLOT="0"
-IUSE=""
-LICENSE="GPL-2"
-KEYWORDS="test"
-DEPEND=""
-END
-cat <<END > metadata/cache/cat-one/stale-pkg-2
-the/depend
-the/rdepend
-the-slot
-the-src-uri
-the-restrict
-the-homepage
-the-license
-The Stale Description
-the-keywords
-stale
-the-iuse
-unused
-the/pdepend
-the/provide
-0
-END
-touch -t 199901010101 metadata/cache/cat-one/stale-pkg-2 || exit 2
 cd ..
 
 mkdir -p repo8/{eclass,distfiles,profiles/profile} || exit 1
