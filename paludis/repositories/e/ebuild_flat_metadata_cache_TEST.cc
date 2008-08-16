@@ -30,6 +30,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
