@@ -741,10 +741,10 @@ _mtime_=60
 _exlibs_=foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=the-description-flat_hash-exlib
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -760,10 +760,10 @@ _mtime_=60
 _exlibs_=foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180	bar	ebuild_flat_metadata_cache_TEST_dir/repo/cat/exlibs	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=the-description-flat_hash-exlib-percat
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -775,10 +775,10 @@ mkdir cat/flat_hash-exlib-stale
 cat <<END > cat/flat_hash-exlib-stale/flat_hash-exlib-stale-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlib-stale"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -787,10 +787,10 @@ _mtime_=60
 _exlibs_=foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	120
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -802,10 +802,10 @@ mkdir cat/flat_hash-exlib-wrong
 cat <<END > cat/flat_hash-exlib-wrong/flat_hash-exlib-wrong-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlib-wrong"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -814,10 +814,10 @@ _mtime_=60
 _exlibs_=foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180	bar	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -829,10 +829,10 @@ mkdir cat/flat_hash-exlib-gone
 cat <<END > cat/flat_hash-exlib-gone/flat_hash-exlib-gone-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlib-gone"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -841,10 +841,10 @@ _mtime_=60
 _exlibs_=baz	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -856,10 +856,10 @@ mkdir cat/flat_hash-exlibs-truncated
 cat <<END > cat/flat_hash-exlibs-truncated/flat_hash-exlibs-truncated-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlibs-truncated"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -868,10 +868,10 @@ _mtime_=60
 _exlibs_=foo	ebuild_flat_metadata_cache_TEST_dir/repo/exlibs
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -881,10 +881,10 @@ TZ=UTC touch -t 197001010001 cat/flat_hash-exlibs-truncated/flat_hash-exlibs-tru
 cat <<END > cat/flat_hash-exlibs-truncated/flat_hash-exlibs-truncated-2.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlibs-truncated-2"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -893,10 +893,10 @@ _mtime_=60
 _exlibs_=foo
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -908,10 +908,10 @@ mkdir cat/flat_hash-exlibs-bad-mtime
 cat <<END > cat/flat_hash-exlibs-bad-mtime/flat_hash-exlibs-bad-mtime-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlibs-bad-mtime"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -920,10 +920,10 @@ _mtime_=60
 _exlibs_=foo	bar
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -935,10 +935,10 @@ mkdir cat/flat_hash-exlibs-spaces
 cat <<END > cat/flat_hash-exlibs-spaces/flat_hash-exlibs-spaces-1.ebuild || exit 1
 SUMMARY="The Generated Description flat_hash-exlibs-spaces"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -947,10 +947,10 @@ _mtime_=60
 _exlibs_=foo 180
 DEPENDENCIES=the/depend
 SLOT=the-slot
-SRC_URI=the-src-uri
+SOURCES=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
-LICENSE=the-license
+LICENCES=the-license
 SUMMARY=The Stale Description
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
@@ -990,8 +990,8 @@ cat <<END > cat/write-exlibs/write-exlibs-1.ebuild || exit 1
 require foo bar
 SUMMARY="A nice package"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
-LICENSE="GPL-2"
+SOURCES=""
+LICENCES="GPL-2"
 SLOT="0"
 PLATFORMS="test"
 MYOPTIONS="bar"
@@ -1036,7 +1036,7 @@ _exlibs_=bar	ebuild_flat_metadata_cache_TEST_dir/repo/cat/exlibs	180	foo	ebuild_
 DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) cat/baz ( build: bar? ( ) ) cat/baz ( build: bar? ( ) ) 
 SLOT=0
 HOMEPAGE=http://example.com/
-LICENSE=GPL-2
+LICENCES=GPL-2
 SUMMARY=A nice package
 PLATFORMS=test
 MYOPTIONS=bar quux

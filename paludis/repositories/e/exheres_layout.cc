@@ -543,7 +543,7 @@ ExheresLayout::licenses_dirs() const
         std::tr1::shared_ptr<const FSEntrySequence> master(_imp->repository->params().master_repository->layout()->licenses_dirs());
         std::copy(master->begin(), master->end(), result->back_inserter());
     }
-    result->push_back(_imp->tree_root / "licenses");
+    result->push_back(_imp->tree_root / "licences");
 
     return result;
 }

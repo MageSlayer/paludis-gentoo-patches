@@ -49,10 +49,10 @@ cat <<"END" > bar/foo/foo-1.0.ebuild || exit 1
 EAPI="exheres-0"
 DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.pioto.org/"
-SRC_URI="mirrors-first: mirrors-only: listed-only: listed-first: local-only: manual: "
+SOURCES="mirrors-first: mirrors-only: listed-only: listed-first: local-only: manual: "
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END

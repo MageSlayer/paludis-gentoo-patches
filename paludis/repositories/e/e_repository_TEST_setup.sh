@@ -141,10 +141,10 @@ EAPI="exheres-0"
 SUMMARY="This is the short description"
 DESCRIPTION="This is the long description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 BUGS_TO="fred@example.com joe@example.com"
 UPSTREAM_CHANGELOG="http://example.com/foo"
@@ -339,10 +339,10 @@ cat <<END > packages/cat/no-files/no-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -351,10 +351,10 @@ cat <<END > packages/cat/fetched-files/fetched-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="file:///var/empty/already-fetched.txt"
+SOURCES="file:///var/empty/already-fetched.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -363,10 +363,10 @@ cat <<END > packages/cat/fetchable-files/fetchable-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt"
+SOURCES="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -375,10 +375,10 @@ cat <<END > packages/cat/arrow-files/arrow-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt -> arrowed.txt"
+SOURCES="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt -> arrowed.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -387,10 +387,10 @@ cat <<END > packages/cat/unfetchable-files/unfetchable-files-1.exheres-0 || exit
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="file:///var/empty/unfetchable-file.txt"
+SOURCES="file:///var/empty/unfetchable-file.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -399,10 +399,10 @@ cat <<END > packages/cat/no-files-restricted/no-files-restricted-1.exheres-0 || 
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -411,10 +411,10 @@ cat <<END > packages/cat/fetched-files-restricted/fetched-files-restricted-1.exh
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="manual: file:///var/empty/already-fetched.txt"
+SOURCES="manual: file:///var/empty/already-fetched.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -423,10 +423,10 @@ cat <<END > packages/cat/fetchable-files-restricted/fetchable-files-restricted-1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="manual: file:///$(dirname $(pwd ) )/fetchable/fetchable-2.txt"
+SOURCES="manual: file:///$(dirname $(pwd ) )/fetchable/fetchable-2.txt"
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 DEPENDENCIES=""
 END
@@ -1308,10 +1308,10 @@ cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1323,10 +1323,10 @@ cat <<END > packages/cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1338,10 +1338,10 @@ cat <<END > packages/cat/success/success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1353,10 +1353,10 @@ cat <<"END" > packages/cat/expatch-success/expatch-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
@@ -1372,10 +1372,10 @@ cat <<END > packages/cat/expatch-die/expatch-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_prepare() {
@@ -1387,10 +1387,10 @@ cat <<END > packages/cat/nonfatal-expatch-fail/nonfatal-expatch-fail-1.ebuild ||
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_prepare() {
@@ -1402,10 +1402,10 @@ cat <<END > packages/cat/nonfatal-expatch-die/nonfatal-expatch-die-1.ebuild || e
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_prepare() {
@@ -1417,10 +1417,10 @@ cat <<END > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
@@ -1433,10 +1433,10 @@ cat <<END > packages/cat/nonfatal-unpack-fail/nonfatal-unpack-fail-1.ebuild || e
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
@@ -1449,10 +1449,10 @@ cat <<END > packages/cat/nonfatal-unpack-die/nonfatal-unpack-die-1.ebuild || exi
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
@@ -1465,10 +1465,10 @@ cat <<END > packages/cat/econf-fail/econf-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_configure() {
@@ -1480,10 +1480,10 @@ cat <<END > packages/cat/nonfatal-econf/nonfatal-econf-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_configure() {
@@ -1495,10 +1495,10 @@ cat <<END > packages/cat/nonfatal-econf-die/nonfatal-econf-die-1.ebuild || exit 
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_configure() {
@@ -1510,10 +1510,10 @@ cat <<END > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1525,10 +1525,10 @@ cat <<END > packages/cat/nonfatal-emake/nonfatal-emake-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1540,10 +1540,10 @@ cat <<END > packages/cat/nonfatal-emake-die/nonfatal-emake-die-1.ebuild || exit 
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1555,10 +1555,10 @@ cat <<END > packages/cat/keepdir-success/keepdir-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1570,10 +1570,10 @@ cat <<"END" > packages/cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1587,10 +1587,10 @@ cat <<"END" > packages/cat/nonfatal-keepdir/nonfatal-keepdir-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1604,10 +1604,10 @@ cat <<"END" > packages/cat/nonfatal-keepdir-die/nonfatal-keepdir-die-1.ebuild ||
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1621,10 +1621,10 @@ cat <<END > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1636,10 +1636,10 @@ cat <<END > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1651,10 +1651,10 @@ cat <<END > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild ||
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1666,10 +1666,10 @@ cat <<END > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1685,10 +1685,10 @@ cat <<END > packages/cat/dobin-fail/dobin-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1700,10 +1700,10 @@ cat <<END > packages/cat/nonfatal-dobin-success/nonfatal-dobin-success-1.ebuild 
 DESCRIPTION="The Lnog Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1719,10 +1719,10 @@ cat <<END > packages/cat/nonfatal-dobin-fail/nonfatal-dobin-fail-1.ebuild || exi
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1734,10 +1734,10 @@ cat <<END > packages/cat/nonfatal-dobin-die/nonfatal-dobin-die-1.ebuild || exit 
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1749,10 +1749,10 @@ cat <<END > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1768,10 +1768,10 @@ cat <<END > packages/cat/fperms-fail/fperms-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1783,10 +1783,10 @@ cat <<END > packages/cat/nonfatal-fperms-success/nonfatal-fperms-success-1.ebuil
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -1802,10 +1802,10 @@ cat <<END > packages/cat/nonfatal-fperms-fail/nonfatal-fperms-fail-1.ebuild || e
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1817,10 +1817,10 @@ cat <<END > packages/cat/nonfatal-fperms-die/nonfatal-fperms-die-1.ebuild || exi
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {
@@ -1832,10 +1832,10 @@ cat <<'END' > packages/cat/best-version/best-version-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1876,10 +1876,10 @@ cat <<'END' > packages/cat/has-version/has-version-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1897,10 +1897,10 @@ cat <<'END' > packages/cat/match/match-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1923,10 +1923,10 @@ else
 fi
 
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -1945,10 +1945,10 @@ DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
@@ -1967,10 +1967,10 @@ DESCRIPTION="The Long Description"
 DESCRIPTION="The Short Description"
 
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="enabled-hamster gerbil dormouse"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 DEFAULT_SRC_CONFIGURE_PARAMS=( --nice-juicy-steak )
@@ -1995,10 +1995,10 @@ cat <<"END" > packages/cat/expand-vars/expand-vars-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="enabled-weasel broccoli linguas:enabled-en_GB"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -2007,12 +2007,13 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/doman-success"
 cat <<END > packages/cat/doman-success/doman-success-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -2053,12 +2054,13 @@ src_install() {
 END
 mkdir -p "packages/cat/doman-failure"
 cat <<END > packages/cat/doman-failure/doman-failure-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
@@ -2071,12 +2073,13 @@ src_install() {
 END
 mkdir -p "packages/cat/doman-nonfatal"
 cat <<END > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
-DESCRIPTION="The Description"
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS="spork"
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_install() {

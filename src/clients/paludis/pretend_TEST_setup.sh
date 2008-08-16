@@ -70,10 +70,10 @@ END
 cat <<"END" > test-category/target/target-1.exheres-0 || exit 1
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.pioto.org/"
-SRC_URI=""
+SOURCES=""
 SLOT="0"
 MYOPTIONS=""
-LICENSE="GPL-2"
+LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_pretend() {
