@@ -39,6 +39,7 @@
 #include <functional>
 #include <algorithm>
 #include <cstring>
+#include <ctime>
 #include <errno.h>
 
 using namespace paludis;
@@ -52,12 +53,12 @@ namespace paludis
         const Environment * const env;
         const FSEntry & filename;
         const FSEntry & ebuild;
-        time_t master_mtime;
+        std::time_t master_mtime;
         std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes;
         bool silent;
 
         Implementation(const Environment * const e, const FSEntry & f, const FSEntry & eb,
-                time_t m, const std::tr1::shared_ptr<const EclassMtimes> em, bool s) :
+                std::time_t m, const std::tr1::shared_ptr<const EclassMtimes> em, bool s) :
             env(e),
             filename(f),
             ebuild(eb),
@@ -103,7 +104,7 @@ namespace
             }
 
             {
-                time_t cache_time(std::max(_imp->master_mtime, _imp->filename.mtime()));
+                std::time_t cache_time(std::max(_imp->master_mtime, _imp->filename.mtime()));
                 bool ok(_imp->ebuild.mtime() <= cache_time);
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_list.mtime", ll_debug, lc_context)
@@ -262,7 +263,7 @@ namespace
 }
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSEntry & f,
-        const FSEntry & e, time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
+        const FSEntry & e, std::time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
     PrivateImplementationPattern<EbuildFlatMetadataCache>(new Implementation<EbuildFlatMetadataCache>(v, f, e, t, m, s))
 {
 }
