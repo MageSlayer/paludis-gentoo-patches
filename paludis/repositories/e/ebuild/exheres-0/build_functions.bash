@@ -40,7 +40,7 @@ expatch()
         die "expatch called in EBUILD_PHASE ${EBUILD_PHASE}"
     fi
 
-    local recognise= patchlevel= options=() cmd= appliedpatches=0
+    local recognise= patchlevel= options=() cmd= appliedpatches=0 dirpatches=()
 
     if [[ ${1} == "--recognised-suffixes" ]]; then
         recognise=true
@@ -53,6 +53,8 @@ expatch()
         elif [[ ${1} == -+([^[:space:]]) ]]; then
             options+=("${1}")
         elif [[ -d ${1} ]]; then
+            dirpatches=("${1}"/*)
+            [[ -f ${dirpatches[0]} ]] || die "expatch called with empty directory $1"
             expatch --recognised-suffixes ${patchlevel} "${options[@]}" "${1}"/* || return 247
             ((appliedpatches++))
         else
