@@ -1508,6 +1508,13 @@ ERepository::repository_factory_create(
     std::tr1::shared_ptr<ERepositorySequence> master_repositories;
     if (! f("master_repository").empty())
     {
+        if (layout_conf)
+        {
+            Log::get_instance()->message("e.ebuild.configuration.master_repository", ll_warning, lc_context) << "Key 'master_repository' in '"
+                << f("repo_file") << "' will override '" << (FSEntry(location) / "metadata/layout.conf")
+                << "'.";
+        }
+
         Context context_local("When finding configuration information for master_repository '"
                 + stringify(f("master_repository")) + "':");
 
@@ -1526,6 +1533,42 @@ ERepository::repository_factory_create(
         std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
         master_repositories.reset(new ERepositorySequence);
         master_repositories->push_back(master_repository);
+    }
+    else if (layout_conf)
+    {
+        std::list<std::string> tokens;
+        tokenise_whitespace(layout_conf->get("masters"), std::back_inserter(tokens));
+        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
+        {
+            Context context_local("When finding configuration information for master '" + *t + "':");
+
+            RepositoryName master_repository_name(*t);
+            try
+            {
+                std::tr1::shared_ptr<Repository> master_repository_uncasted(
+                        env->package_database()->fetch_repository(master_repository_name));
+
+                std::string format("unknown");
+                if (master_repository_uncasted->format_key())
+                    format = master_repository_uncasted->format_key()->value();
+
+                if (format != "ebuild")
+                    throw ERepositoryConfigurationError("Master repository format is '" +
+                            stringify(format) + "', not 'ebuild'");
+
+                std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
+                if (! master_repositories)
+                    master_repositories.reset(new ERepositorySequence);
+                master_repositories->push_back(master_repository);
+            }
+            catch (const NoSuchRepositoryError &)
+            {
+                throw ERepositoryConfigurationError("According to '" + stringify(FSEntry(location) / "metadata/layout.conf")
+                        + "', the repository specified by '" + f("repo_file") + "' requires repository '" + *t +
+                        "', which you do not have available");
+            }
+        }
     }
 
     std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
@@ -1752,6 +1795,27 @@ ERepository::repository_factory_dependencies(
     std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
     if (! f("master_repository").empty())
         result->insert(RepositoryName(f("master_repository")));
+    else
+    {
+        std::string location(f("location"));
+        if (location.empty())
+            throw ERepositoryConfigurationError("Key 'location' not specified or empty");
+
+        std::tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
+                new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", KeyValueConfigFileOptions(),
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
+                : 0);
+
+        if (layout_conf)
+        {
+            std::list<std::string> tokens;
+            tokenise_whitespace(layout_conf->get("masters"), std::back_inserter(tokens));
+            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+                result->insert(RepositoryName(*t));
+        }
+    }
+
     return result;
 }
 
