@@ -349,6 +349,23 @@ int main(int, char **)
 	])
 dnl }}}
 
+dnl {{{ c++0x default and deleted functions
+AC_MSG_CHECKING([for c++0x default and deleted functions])
+AC_COMPILE_IFELSE([
+struct S
+{
+	S() = default;
+	S & operator= (const S &) = delete;
+};
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
 need_xml_check=
 need_pcrepp_check=
 need_syck_check=
