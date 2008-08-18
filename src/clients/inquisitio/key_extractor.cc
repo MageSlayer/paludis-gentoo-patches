@@ -279,6 +279,17 @@ namespace
                             std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), _1));
             }
 
+            void visit(const MetadataCollectionKey<Sequence<std::string> > & s)
+            {
+                using namespace std::tr1::placeholders;
+
+                if (_flatten)
+                    result = _m(join(s.value()->begin(), s.value()->end(), " "));
+                else
+                    result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), _1));
+            }
+
             void visit(const MetadataCollectionKey<FSEntrySequence> & s)
             {
                 using namespace std::tr1::placeholders;

@@ -161,6 +161,12 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
+        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
             std::cout << *k.value() << std::endl;

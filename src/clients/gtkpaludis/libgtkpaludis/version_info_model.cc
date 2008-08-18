@@ -113,6 +113,11 @@ namespace gtkpaludis
             got_key(k, k.pretty_print_flat(formatter));
         }
 
+        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
+        {
+            got_key(k, k.pretty_print_flat(formatter));
+        }
+
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));

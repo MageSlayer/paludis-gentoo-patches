@@ -143,6 +143,7 @@ template class MetadataCollectionKey<KeywordNameSet>;
 template class MetadataCollectionKey<IUseFlagSet>;
 #endif
 template class MetadataCollectionKey<Set<std::string> >;
+template class MetadataCollectionKey<Sequence<std::string> >;
 template class MetadataCollectionKey<UseFlagNameSet>;
 template class MetadataCollectionKey<PackageIDSequence>;
 template class MetadataCollectionKey<FSEntrySequence>;

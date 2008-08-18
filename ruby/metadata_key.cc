@@ -45,6 +45,7 @@ namespace
     static VALUE c_metadata_use_flag_name_set_key;
     static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_string_set_key;
+    static VALUE c_metadata_string_sequence_key;
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_fsentry_key;
     static VALUE c_metadata_fsentry_sequence_key;
@@ -179,6 +180,12 @@ namespace
         void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
             value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
+                    new std::tr1::shared_ptr<const MetadataKey>(mm));
+        }
+
+        void visit(const MetadataCollectionKey<Sequence<std::string> > &)
+        {
+            value = Data_Wrap_Struct(c_metadata_string_sequence_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -691,6 +698,14 @@ namespace
          */
         c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
         rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataStringSequenceKey
+         *
+         * Metadata class for String sequences.
+         */
+        c_metadata_string_sequence_key = rb_define_class_under(paludis_module(), "MetadataStringSequenceKey", c_metadata_key);
+        rb_define_method(c_metadata_string_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<Sequence<std::string> >::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataLicenseSpecTreeKey

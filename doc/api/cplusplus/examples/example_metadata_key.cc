@@ -191,6 +191,12 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
+            void visit(const MetadataCollectionKey<Sequence<std::string> > & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Sequence<std::string> >" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+            }
+
             void visit(const MetadataCollectionKey<FSEntrySequence> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<FSEntrySequence>" << endl;

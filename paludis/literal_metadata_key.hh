@@ -172,6 +172,36 @@ namespace paludis
             virtual std::string pretty_print_flat(const Formatter<std::string> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    /**
+     * A LiteralMetadataStringSequenceKey is a MetadataCollectionKey<Sequence<std::string> >
+     * whose value is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.30
+     */
+    class PALUDIS_VISIBLE LiteralMetadataStringSequenceKey :
+        public MetadataCollectionKey<Sequence<std::string> >,
+        private PrivateImplementationPattern<LiteralMetadataStringSequenceKey>
+    {
+        private:
+            PrivateImplementationPattern<LiteralMetadataStringSequenceKey>::ImpPtr & _imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            LiteralMetadataStringSequenceKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const std::tr1::shared_ptr<const Sequence<std::string> > &);
+            ~LiteralMetadataStringSequenceKey();
+
+            ///\}
+
+            virtual const std::tr1::shared_ptr<const Sequence<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat(const Formatter<std::string> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif

@@ -66,6 +66,7 @@ namespace paludis
             MetadataCollectionKey<IUseFlagSet>,
             MetadataCollectionKey<KeywordNameSet>,
             MetadataCollectionKey<Set<std::string> >,
+            MetadataCollectionKey<Sequence<std::string> >,
             MetadataCollectionKey<PackageIDSequence>,
             MetadataCollectionKey<FSEntrySequence>,
             MetadataSpecTreeKey<DependencySpecTree>,

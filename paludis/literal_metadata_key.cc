@@ -55,6 +55,17 @@ namespace paludis
         }
     };
 
+    template <>
+    struct Implementation<LiteralMetadataStringSequenceKey>
+    {
+        const std::tr1::shared_ptr<const Sequence<std::string> > value;
+
+        Implementation(const std::tr1::shared_ptr<const Sequence<std::string> > & v) :
+            value(v)
+        {
+        }
+    };
+
 #ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
 #endif
@@ -121,6 +132,24 @@ LiteralMetadataStringSetKey::value() const
     return _imp->value;
 }
 
+LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::string & h, const std::string & r,
+        const MetadataKeyType t, const std::tr1::shared_ptr<const Sequence<std::string> > & v) :
+    MetadataCollectionKey<Sequence<std::string> >(h, r, t),
+    PrivateImplementationPattern<LiteralMetadataStringSequenceKey>(new Implementation<LiteralMetadataStringSequenceKey>(v)),
+    _imp(PrivateImplementationPattern<LiteralMetadataStringSequenceKey>::_imp)
+{
+}
+
+LiteralMetadataStringSequenceKey::~LiteralMetadataStringSequenceKey()
+{
+}
+
+const std::tr1::shared_ptr<const Sequence<std::string> >
+LiteralMetadataStringSequenceKey::value() const
+{
+    return _imp->value;
+}
+
 namespace
 {
     std::string format_string(const std::string & i, const Formatter<std::string> & f)
@@ -131,6 +160,13 @@ namespace
 
 std::string
 LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
+{
+    using namespace std::tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
+}
+
+std::string
+LiteralMetadataStringSequenceKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
     using namespace std::tr1::placeholders;
     return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));

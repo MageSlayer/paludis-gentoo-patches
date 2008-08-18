@@ -87,6 +87,11 @@ namespace
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
+        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";

@@ -360,6 +360,10 @@ namespace
         {
         }
 
+        void visit(const MetadataCollectionKey<Sequence<std::string> > &)
+        {
+        }
+
         void visit(const MetadataCollectionKey<FSEntrySequence> &)
         {
         }
