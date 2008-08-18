@@ -198,6 +198,7 @@ man-*
 /paludis/repositories/e/dep_spec_pretty_printer_TEST
 /paludis/repositories/e/e_repository_TEST
 /paludis/repositories/e/e_repository_sets_TEST
+/paludis/repositories/e/ebuild_flat_metadata_cache_TEST
 /paludis/repositories/e/ebuild/utils/exheres-0/dohard
 /paludis/repositories/e/ebuild/utils/exheres-0/dohtml
 /paludis/repositories/e/ebuild/utils/exheres-0/donewins
