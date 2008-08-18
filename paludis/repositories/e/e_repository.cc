@@ -112,6 +112,41 @@ typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string>
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
 
+namespace
+{
+    std::tr1::shared_ptr<FSEntrySequence> get_master_locations(
+            const std::tr1::shared_ptr<const ERepositorySequence> & r)
+    {
+        std::tr1::shared_ptr<FSEntrySequence> result;
+
+        if (r)
+        {
+            result.reset(new FSEntrySequence);
+            for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
+                    e != e_end ; ++e)
+                result->push_back((*e)->params().location);
+        }
+
+        return result;
+    }
+
+    std::tr1::shared_ptr<Sequence<std::string> > get_master_names(
+            const std::tr1::shared_ptr<const ERepositorySequence> & r)
+    {
+        std::tr1::shared_ptr<Sequence<std::string> > result;
+
+        if (r)
+        {
+            result.reset(new Sequence<std::string>);
+            for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
+                    e != e_end ; ++e)
+                result->push_back(stringify((*e)->name()));
+        }
+
+        return result;
+    }
+}
+
 namespace paludis
 {
     /**
@@ -186,7 +221,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > master_repository_key;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > master_repositories_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
@@ -209,9 +244,8 @@ namespace paludis
         has_profiles_desc(false),
         sets_ptr(new ERepositorySets(params.environment, r, p)),
         entries_ptr(erepository::ERepositoryEntriesFactory::get_instance()->create(params.entry_format, params.environment, r, p)),
-        layout(erepository::LayoutFactory::get_instance()->create(params.layout, r, params.location, entries_ptr, params.master_repository ?
-                        make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
-                        std::tr1::shared_ptr<FSEntry>())),
+        layout(erepository::LayoutFactory::get_instance()->create(params.layout, r, params.location, entries_ptr, get_master_locations(
+                        params.master_repositories))),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, params.entry_format)),
         layout_key(new LiteralMetadataValueKey<std::string> ("layout", "layout",
@@ -248,10 +282,10 @@ namespace paludis
                     "sync_options", "sync_options", mkt_normal, params.sync_options)),
         builddir_key(new LiteralMetadataValueKey<FSEntry> (
                     "builddir", "builddir", mkt_normal, params.builddir)),
-        master_repository_key(params.master_repository ?
-                std::tr1::shared_ptr<MetadataValueKey<std::string> >(new LiteralMetadataValueKey<std::string> (
-                        "master_repository", "master_repository", mkt_normal, stringify(params.master_repository->name()))) :
-                std::tr1::shared_ptr<MetadataValueKey<std::string> >()),
+        master_repositories_key(params.master_repositories ?
+                std::tr1::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(new LiteralMetadataStringSequenceKey(
+                        "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories))) :
+                std::tr1::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >()),
         eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown)),
         eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
@@ -469,8 +503,8 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->eapi_when_unknown_key);
     add_metadata_key(_imp->eapi_when_unspecified_key);
     add_metadata_key(_imp->profile_eapi_key);
-    if (_imp->master_repository_key)
-        add_metadata_key(_imp->master_repository_key);
+    if (_imp->master_repositories_key)
+        add_metadata_key(_imp->master_repositories_key);
     add_metadata_key(_imp->use_manifest_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
@@ -1471,16 +1505,15 @@ ERepository::repository_factory_create(
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
             : 0);
 
-    std::tr1::shared_ptr<const RepositoryName> master_repository_name;
-    std::tr1::shared_ptr<const ERepository> master_repository;
+    std::tr1::shared_ptr<ERepositorySequence> master_repositories;
     if (! f("master_repository").empty())
     {
         Context context_local("When finding configuration information for master_repository '"
                 + stringify(f("master_repository")) + "':");
 
-        master_repository_name.reset(new RepositoryName(f("master_repository")));
-        std::tr1::shared_ptr<const Repository> master_repository_uncasted(
-                env->package_database()->fetch_repository(*master_repository_name));
+        RepositoryName master_repository_name(f("master_repository"));
+        std::tr1::shared_ptr<Repository> master_repository_uncasted(
+                env->package_database()->fetch_repository(master_repository_name));
 
         std::string format("unknown");
         if (master_repository_uncasted->format_key())
@@ -1490,20 +1523,22 @@ ERepository::repository_factory_create(
             throw ERepositoryConfigurationError("Master repository format is '" +
                     stringify(format) + "', not 'ebuild'");
 
-        master_repository = std::tr1::static_pointer_cast<const ERepository>(master_repository_uncasted);
-        if (master_repository->params().master_repository)
-            throw ERepositoryConfigurationError("Requested master repository has a master_repository of '" +
-                    stringify(master_repository->params().master_repository->name()) + "', so it cannot "
+        std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
+        if (master_repository->params().master_repositories && ! master_repository->params().master_repositories->empty())
+            throw ERepositoryConfigurationError("Requested master repository has master repositories itself, so it cannot "
                     "be used as a master repository");
+
+        master_repositories.reset(new ERepositorySequence);
+        master_repositories->push_back(master_repository);
     }
 
     std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
     tokenise_whitespace(f("profiles"), create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {
-        if (master_repository)
-            std::copy(master_repository->params().profiles->begin(),
-                    master_repository->params().profiles->end(), profiles->back_inserter());
+        if (master_repositories)
+            std::copy((*master_repositories->begin())->params().profiles->begin(),
+                    (*master_repositories->begin())->params().profiles->end(), profiles->back_inserter());
         else
             throw ERepositoryConfigurationError("No profiles have been specified");
     }
@@ -1512,17 +1547,20 @@ ERepository::repository_factory_create(
     tokenise_whitespace(f("eclassdirs"), create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
     if (eclassdirs->empty())
     {
-        if (master_repository)
-            std::copy(master_repository->params().eclassdirs->begin(),
-                    master_repository->params().eclassdirs->end(), eclassdirs->back_inserter());
+        if (master_repositories)
+        {
+            for (ERepositorySequence::ConstIterator e(master_repositories->begin()),
+                    e_end(master_repositories->end()) ; e != e_end ; ++e)
+                std::copy((*e)->params().eclassdirs->begin(), (*e)->params().eclassdirs->end(), eclassdirs->back_inserter());
+        }
         eclassdirs->push_back(location + "/eclass");
     }
 
     std::string distdir(f("distdir"));
     if (distdir.empty())
     {
-        if (master_repository)
-            distdir = stringify(master_repository->params().distdir);
+        if (master_repositories)
+            distdir = stringify((*master_repositories->begin())->params().distdir);
         else
         {
             distdir = (*DistributionData::get_instance()->distribution_from_string(
@@ -1633,8 +1671,8 @@ ERepository::repository_factory_create(
         builddir = f("buildroot");
         if (builddir.empty())
         {
-            if (master_repository)
-                builddir = stringify(master_repository->params().builddir);
+            if (master_repositories)
+                builddir = stringify((*master_repositories->begin())->params().builddir);
             else
                 builddir = (*DistributionData::get_instance()->distribution_from_string(
                          env->distribution())).default_ebuild_builddir();
@@ -1695,7 +1733,7 @@ ERepository::repository_factory_create(
                 .newsdir(newsdir)
                 .sync(sync)
                 .sync_options(sync_options)
-                .master_repository(master_repository)
+                .master_repositories(master_repositories)
                 .write_bin_uri_prefix("")
                 .eapi_when_unknown(eapi_when_unknown)
                 .eapi_when_unspecified(eapi_when_unspecified)

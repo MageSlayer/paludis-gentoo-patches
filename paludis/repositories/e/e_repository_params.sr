@@ -22,7 +22,7 @@ make_class_ERepositoryParams()
     key sync std::string
     key sync_options std::string
     key builddir FSEntry
-    key master_repository "std::tr1::shared_ptr<const ERepository>"
+    key master_repositories "std::tr1::shared_ptr<const ERepositorySequence>"
     key write_bin_uri_prefix std::string
     key eapi_when_unknown std::string
     key eapi_when_unspecified std::string

@@ -50,8 +50,8 @@ namespace paludis
                 ///\{
 
                 TraditionalLayout(const ERepository * const, const FSEntry &,
-                        std::tr1::shared_ptr<const ERepositoryEntries>,
-                        std::tr1::shared_ptr<const FSEntry>);
+                        const std::tr1::shared_ptr<const ERepositoryEntries> &,
+                        const std::tr1::shared_ptr<const FSEntrySequence> &);
 
                 virtual ~TraditionalLayout();
 

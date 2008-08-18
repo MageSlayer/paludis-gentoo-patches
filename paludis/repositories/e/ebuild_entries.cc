@@ -427,8 +427,11 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     if (id->fetches_key())
     {
-        std::string mirrors_name(_imp->e_repository->params().master_repository ?
-                stringify(_imp->e_repository->params().master_repository->name()) :
+        /* always use mirror://gentoo/, where gentoo is the name of our first master repository,
+         * or our name if there's no master. */
+        std::string mirrors_name(
+                (_imp->e_repository->params().master_repositories && ! _imp->e_repository->params().master_repositories->empty()) ?
+                stringify((*_imp->e_repository->params().master_repositories->begin())->name()) :
                 stringify(_imp->e_repository->name()));
         FetchVisitor f(_imp->params.environment, id, *id->eapi(),
                 _imp->e_repository->params().distdir, o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
@@ -465,7 +468,9 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::exlibsdirs>(exlibsdirs),
                         value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                         value_for<n::package_id>(id),
-                        value_for<n::portdir>(_imp->params.master_repository ? _imp->params.master_repository->params().location : _imp->params.location),
+                        value_for<n::portdir>(
+                            (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                            (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
                         value_for<n::sandbox>(phase->option("sandbox")),
                         value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                         ));
@@ -694,7 +699,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     value_for<n::exlibsdirs>(exlibsdirs),
                     value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                     value_for<n::package_id>(id),
-                    value_for<n::portdir>(_imp->params.master_repository ? _imp->params.master_repository->params().location : _imp->params.location),
+                    value_for<n::portdir>(
+                        (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                        (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                     ));
@@ -772,7 +779,9 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::package_id>(id),
-                value_for<n::portdir>(_imp->params.master_repository ? _imp->params.master_repository->params().location : _imp->params.location),
+                value_for<n::portdir>(
+                    (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                    (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));
@@ -836,7 +845,9 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
             value_for<n::exlibsdirs>(exlibsdirs),
             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
             value_for<n::package_id>(id),
-            value_for<n::portdir>(_imp->params.master_repository ? _imp->params.master_repository->params().location : _imp->params.location),
+            value_for<n::portdir>(
+                (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
             value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
             value_for<n::userpriv>(phases.begin_phases()->option("userpriv") && userpriv_ok)
             ),
@@ -964,7 +975,9 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::package_id>(id),
-                value_for<n::portdir>(_imp->params.master_repository ? _imp->params.master_repository->params().location : _imp->params.location),
+                value_for<n::portdir>(
+                    (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                    (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));

@@ -32,8 +32,8 @@ template class InstantiationPolicy<LayoutFactory, instantiation_method::Singleto
 
 template class Map<FSEntry, std::string>;
 
-Layout::Layout(std::tr1::shared_ptr<const FSEntry> l) :
-    _master_repository_location(l)
+Layout::Layout(const std::tr1::shared_ptr<const FSEntrySequence> & l) :
+    _master_repositories_locations(l)
 {
 }
 
@@ -41,10 +41,10 @@ Layout::~Layout()
 {
 }
 
-std::tr1::shared_ptr<const FSEntry>
-Layout::master_repository_location() const
+const std::tr1::shared_ptr<const FSEntrySequence>
+Layout::master_repositories_locations() const
 {
-    return _master_repository_location;
+    return _master_repositories_locations;
 }
 
 FSEntry
@@ -59,7 +59,7 @@ namespace
     std::tr1::shared_ptr<Layout>
     make_layout(const ERepository * const n, const FSEntry & b,
             std::tr1::shared_ptr<const ERepositoryEntries> e,
-            std::tr1::shared_ptr<const FSEntry> f)
+            std::tr1::shared_ptr<const FSEntrySequence> f)
     {
         return std::tr1::shared_ptr<Layout>(new T_(n, b, e, f));
     }
@@ -75,7 +75,7 @@ LayoutFactory::create(
         const ERepository * const r,
         const FSEntry & f,
         const std::tr1::shared_ptr<const ERepositoryEntries> & e,
-        const std::tr1::shared_ptr<const FSEntry> & ff) const
+        const std::tr1::shared_ptr<const FSEntrySequence> & ff) const
 {
     if (s == "traditional")
         return make_layout<TraditionalLayout>(r, f, e, ff);

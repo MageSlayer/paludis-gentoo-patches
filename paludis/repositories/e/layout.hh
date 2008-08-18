@@ -48,13 +48,13 @@ namespace paludis
         class PALUDIS_VISIBLE Layout
         {
             private:
-                std::tr1::shared_ptr<const FSEntry> _master_repository_location;
+                const std::tr1::shared_ptr<const FSEntrySequence> _master_repositories_locations;
 
             protected:
                 ///\name Basic operations
                 ///\{
 
-                Layout(std::tr1::shared_ptr<const FSEntry> master_repository_location);
+                Layout(const std::tr1::shared_ptr<const FSEntrySequence> & master_repositories_locations);
 
                 ///\}
 
@@ -69,7 +69,7 @@ namespace paludis
                 ///\name Configuration information
                 ///\{
 
-                std::tr1::shared_ptr<const FSEntry> master_repository_location() const;
+                const std::tr1::shared_ptr<const FSEntrySequence> master_repositories_locations() const;
 
                 ///\}
 
@@ -174,7 +174,7 @@ namespace paludis
                         const ERepository * const,
                         const FSEntry &,
                         const std::tr1::shared_ptr<const ERepositoryEntries> &,
-                        const std::tr1::shared_ptr<const FSEntry> &)
+                        const std::tr1::shared_ptr<const FSEntrySequence> &)
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

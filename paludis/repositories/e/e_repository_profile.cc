@@ -459,7 +459,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
-        if (! repository->params().master_repository)
+        if (! repository->params().master_repositories)
             for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
                     i_end(packages_file.end()) ; i != i_end ; ++i)
             {

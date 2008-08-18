@@ -232,8 +232,9 @@ EbuildID::need_keys_added() const
                     value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
                     value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
                     value_for<n::package_id>(shared_from_this()),
-                    value_for<n::portdir>(_imp->repository->params().master_repository ?
-                        _imp->repository->params().master_repository->params().location : _imp->repository->params().location),
+                    value_for<n::portdir>(
+                        (_imp->repository->params().master_repositories && ! _imp->repository->params().master_repositories->empty()) ?
+                        (*_imp->repository->params().master_repositories->begin())->params().location : _imp->repository->params().location),
                     value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
                     value_for<n::userpriv>(phases.begin_phases()->option("userpriv"))
                     ));

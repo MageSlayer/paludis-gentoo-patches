@@ -26,6 +26,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
 
 #include <set>
 
@@ -46,7 +47,8 @@ paludis::erepository::categories_check(
     {
         if (! cats.is_regular_file_or_symlink_to_regular_file())
         {
-            if (cats.exists() || ! repo->params().master_repository)
+            /* if the categories file exists but is not regular, or if we don't have a master */
+            if (cats.exists() || ! (repo->params().master_repositories && ! repo->params().master_repositories->empty()))
                 reporter.message(QAMessage(cats, qaml_severe, name, "Categories file is not a regular file"));
         }
         else

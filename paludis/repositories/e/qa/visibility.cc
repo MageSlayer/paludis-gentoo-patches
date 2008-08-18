@@ -165,18 +165,33 @@ namespace
                         if (repo->repository_masked(**i) || (*profile).profile()->profile_masked(**i) || ! (*i)->keywords_key())
                             continue;
                     }
-                    else if ((*i)->repository() == repo->params().master_repository)
-                    {
-                        if (repo->params().master_repository->repository_masked(**i) ||
-                                (*profile).profile()->profile_masked(**i) || ! (*i)->keywords_key())
-                            continue;
-                    }
                     else
                     {
-                        Log::get_instance()->message("e.qa.visibility_check.no_masks", ll_warning, lc_context)
-                            << "Probably a bug: don't know how to get masks for '"
-                            << **i << "' from '" << orig_p << "' -> '" << *p << "'";
-                        continue;
+                        bool found_repo(false), repo_masked(false);
+                        if (repo->params().master_repositories)
+                        {
+                            for (ERepositorySequence::ConstIterator e(repo->params().master_repositories->begin()),
+                                    e_end(repo->params().master_repositories->end()) ; e != e_end ; ++e)
+                            {
+                                if ((*i)->repository()->name() == (*e)->name())
+                                    if ((*e)->repository_masked(**i))
+                                    {
+                                        repo_masked = true;
+                                        break;
+                                    }
+                            }
+                        }
+
+                        if (repo_masked)
+                            continue;
+
+                        if (! found_repo)
+                        {
+                            Log::get_instance()->message("e.qa.visibility_check.no_masks", ll_warning, lc_context)
+                                << "Probably a bug: don't know how to get masks for '"
+                                << **i << "' from '" << orig_p << "' -> '" << *p << "'";
+                            continue;
+                        }
                     }
 
                     std::set<KeywordName> overlap;
