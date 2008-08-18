@@ -1524,10 +1524,6 @@ ERepository::repository_factory_create(
                     stringify(format) + "', not 'ebuild'");
 
         std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
-        if (master_repository->params().master_repositories && ! master_repository->params().master_repositories->empty())
-            throw ERepositoryConfigurationError("Requested master repository has master repositories itself, so it cannot "
-                    "be used as a master repository");
-
         master_repositories.reset(new ERepositorySequence);
         master_repositories->push_back(master_repository);
     }
