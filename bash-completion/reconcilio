@@ -22,7 +22,6 @@ _reconcilio() {
         --no-color \
         --environment -E \
         --exact \
-        --verbose -v \
         --resume-command-template \
         --compact"
     deplist_opts="--dl-reinstall \
