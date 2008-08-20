@@ -31,6 +31,7 @@ _inquisitio() {
         --all-versions -a \
         --kind -K \
         --compact \
+        --no-compact \
         --show-dependencies -D \
         --show-metadata -M"
 

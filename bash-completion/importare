@@ -21,7 +21,8 @@ _importare() {
         --no-colour \
         --no-color \
         --environment -E \
-        --compact"
+        --compact \
+        --no-compact"
     source_opts="--location -l"
     metadata_opts="--description -D \
         --build-dependency -B \

@@ -23,7 +23,8 @@ _reconcilio() {
         --environment -E \
         --exact \
         --resume-command-template \
-        --compact"
+        --compact \
+        --no-compact"
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \

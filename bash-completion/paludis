@@ -95,7 +95,8 @@ _paludis() {
 
     query_opts="--show-deps -D \
         --show-metadata -M \
-        --compact"
+        --compact \
+        --no-compact"
     install_opts="--pretend -p \
         --destinations -d \
         --preserve-world -1 \
