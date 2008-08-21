@@ -1069,7 +1069,7 @@ dnl }}}
 dnl {{{ python documentation
 AC_MSG_CHECKING([whether to build the Python documentation])
 AC_ARG_ENABLE([python-doc],
-   AS_HELP_STRING([--enable-python-doc], [Enable Ruby documentation, requires --enable-python (default: disable)]),
+   AS_HELP_STRING([--enable-python-doc], [Enable Python documentation, requires --enable-python (default: disable)]),
    enable_python_doc=$enableval,
    enable_python_doc=no)
 
