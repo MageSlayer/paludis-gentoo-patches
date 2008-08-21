@@ -14,7 +14,7 @@ EXTRA_DIST = epydoc.css \
 
 dist_noinst_SCRIPTS = create_python_examples.py
 
-if ENABLE_PYTHON
+if ENABLE_PYTHON_DOC
 
 all-local : epydoc
 
@@ -48,7 +48,7 @@ install-data-local :
 else
 
 epydoc :
-	@echo "You don't have python turned on!"
+	@echo "You don't have python-doc turned on!"
 	exit 1
 
 endif

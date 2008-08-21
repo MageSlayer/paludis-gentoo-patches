@@ -1066,6 +1066,37 @@ AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")
 AM_CONDITIONAL([ENABLE_PYTHON_HOOKS], test "x$enable_python_hooks" = "xyes")
 dnl }}}
 
+dnl {{{ python documentation
+AC_MSG_CHECKING([whether to build the Python documentation])
+AC_ARG_ENABLE([python-doc],
+   AS_HELP_STRING([--enable-python-doc], [Enable Ruby documentation, requires --enable-python (default: disable)]),
+   enable_python_doc=$enableval,
+   enable_python_doc=no)
+
+if test "x$enable_python_doc" = "xyes" && test "x$enable_python" = "xno"; then
+	AC_MSG_ERROR([--enable-python-doc requires --enable-python])
+fi
+
+AC_MSG_RESULT($enable_python_doc)
+
+if test "x$enable_python_doc" = "xyes" ; then
+	AC_MSG_CHECKING([for epydoc])
+	if epydoc --version >/dev/null 2>/dev/null ; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([epydoc (http://epydoc.sourceforge.net/) is needed to build Python documentation])
+	fi
+
+	AC_MSG_CHECKING([for pygments])
+	if pygmentize -V >/dev/null 2>/dev/null ; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([pygments (http://pygments.org/) is needed to build Python documentation])
+	fi
+fi
+AM_CONDITIONAL([ENABLE_PYTHON_DOC], test "x$enable_python_doc" = "xyes")
+dnl }}}
+
 dnl {{{ vim
 AC_MSG_CHECKING([whether to install Vim scripts])
 AC_ARG_ENABLE([vim],
