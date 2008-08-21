@@ -74,7 +74,7 @@ builtin_init()
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
     declare -r D="${D}"
 
-    export IMAGE="${D}"
+    IMAGE="${D}"
     declare -r IMAGE="${IMAGE}"
 
     export S="${WORKDIR}/${P}"
