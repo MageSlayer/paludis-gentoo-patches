@@ -24,8 +24,8 @@
 export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ! -d ${T} ]]; then
@@ -47,15 +47,15 @@ if [[ -z "${INSDEPTH}" ]]; then
     declare -i INSDEPTH=0
 fi
 
-if [[ ${INSDESTTREE} == ${D}* ]]; then
+if [[ ${INSDESTTREE} == ${!PALUDIS_IMAGE_DIR_VAR}* ]]; then
     echo "-------------------------------------------------------" >&2
-    echo "You should not use \${D} with helpers." >&2
+    echo "You should not use \${${PALUDIS_IMAGE_DIR_VAR}} with helpers." >&2
     echo "  --> ${INSDESTTREE}" >&2
     echo "-------------------------------------------------------" >&2
     paludis_die_or_error
 fi
 
-if [[ ! -d "${D}${INSDESTTREE}" ]]; then
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}" ]]; then
     dodir "${INSDESTTREE}"
 fi
 
@@ -81,7 +81,7 @@ for x in "$@"; do
         mysrc="${x}"
     fi
 
-    install ${INSOPTIONS} "${mysrc}" "${D}${INSDESTTREE}" || ret=2
+    install ${INSOPTIONS} "${mysrc}" "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}" || ret=2
 done
 
 [[ 0 != "${ret}" ]] && paludis_die_or_error "doins returned error ${ret}"

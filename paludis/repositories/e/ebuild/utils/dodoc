@@ -24,15 +24,15 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ $# -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}"
+dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}"
 if [[ ! -d "${dir}" ]]; then
     install -d "${dir}" || paludis_die_or_error "could not create ${dir}"
 fi

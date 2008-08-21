@@ -36,18 +36,18 @@ keepdir()
     if [[ ${#} -lt 1 ]]; then
         paludis_die_unless_nonfatal "at least one argument needed"
     fi
-    if [[ ${@} != ${@#${D}} ]]; then
-        paludis_die_unless_nonfatal "You should not use \${D} with helpers."
+    if [[ ${@} != ${@#${!PALUDIS_IMAGE_DIR_VAR}} ]]; then
+        paludis_die_unless_nonfatal "You should not use \${${PALUDIS_IMAGE_DIR_VAR}} with helpers."
     fi
     dodir "$@"
     if [[ "${1}" == "-R" ]] || [[ "${1}" == "-r" ]] ; then
         shift
-        find "$@" -type d -printf "${D}/%p/.keep_${CATEGORY}_${PN}-${SLOT}\0" | xargs -0 touch
+        find "$@" -type d -printf "${!PALUDIS_IMAGE_DIR_VAR}/%p/.keep_${CATEGORY}_${PN}-${SLOT}\0" | xargs -0 touch
         paludis_assert_unless_nonfatal "Failed to create .keep_${CATEGORY}_${PN}-${SLOT} files" || return 247
     else
         local f
         for f in "$@" ; do
-            touch "${D}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || paludis_die_unless_nonfatal "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}" || return 247
+            touch "${!PALUDIS_IMAGE_DIR_VAR}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || paludis_die_unless_nonfatal "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}" || return 247
         done
     fi
 }
@@ -58,7 +58,7 @@ into()
         export DESTTREE=
     else
         export DESTTREE="${1}"
-        [[ -d "${D}${DESTTREE}" ]] || install -d "${D}${DESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}"
     fi
 }
 
@@ -68,7 +68,7 @@ insinto()
         export INSDESTTREE=
     else
         export INSDESTTREE="${1}"
-        [[ -d "${D}${INSDESTTREE}" ]] || install -d "${D}${INSDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}"
     fi
 }
 
@@ -78,7 +78,7 @@ exeinto()
         export EXEDESTTREE=
     else
         export EXEDESTTREE="${1}"
-        [[ -d "${D}${EXEDESTTREE}" ]] || install -d "${D}${EXEDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}"
     fi
 }
 
@@ -88,8 +88,8 @@ docinto()
         export DOCDESTTREE=
     else
         export DOCDESTTREE="${1}"
-        [[ -d "${D}usr/share/doc/${PF}/${DOCDESTTREE}" ]] || \
-            install -d "${D}usr/share/doc/${PF}/${DOCDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}" ]] || \
+            install -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}"
     fi
 }
 

@@ -26,7 +26,7 @@ default_src_install()
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
         if make -j1 -n "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install ; then
             echo "Found a makefile, using the install target" 
-            emake -j1 DESTDIR="${D}" "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install
+            emake -j1 DESTDIR="${IMAGE}" "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install
         else
             die "default emake install located a makefile but no install target"
         fi

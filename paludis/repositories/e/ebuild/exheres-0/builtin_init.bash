@@ -69,12 +69,9 @@ builtin_init()
     export HOME="${T}"
     export TMPDIR="${T}"
 
-    export D="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/image/"
-    export D="${D//+(\/)//}"
-    mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
-    declare -r D="${D}"
-
-    export IMAGE="${D}"
+    export IMAGE="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/image/"
+    export IMAGE="${IMAGE//+(\/)//}"
+    mkdir -p "${IMAGE}" || die "Couldn't create \$IMAGE (\"${IMAGE}\")"
     declare -r IMAGE="${IMAGE}"
 
     export WORK="${WORKBASE}/${P}"

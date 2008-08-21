@@ -75,6 +75,7 @@ namespace
                         value_for<n::env_aa>(check_get(k, "env_aa")),
                         value_for<n::env_accept_keywords>(check_get(k, "env_accept_keywords")),
                         value_for<n::env_arch>(check_get(k, "env_arch")),
+                        value_for<n::env_d>(check_get(k, "env_d")),
                         value_for<n::env_distdir>(check_get(k, "env_distdir")),
                         value_for<n::env_kv>(check_get(k, "env_kv")),
                         value_for<n::env_portdir>(check_get(k, "env_portdir")),

@@ -151,7 +151,7 @@ PLATFORMS="test"
 DEPENDENCIES=""
 
 src_install() {
-    echo MONKEY > ${D}/monkey
+    echo MONKEY > ${IMAGE}/monkey
 }
 
 pkg_info() {
@@ -175,7 +175,7 @@ PLATFORMS="test"
 DEPENDENCIES=""
 
 src_install() {
-    echo MONKEY > ${D}/monkey
+    echo MONKEY > ${IMAGE}/monkey
 }
 
 pkg_info() {

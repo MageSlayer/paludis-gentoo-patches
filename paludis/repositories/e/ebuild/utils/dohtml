@@ -23,8 +23,8 @@
 
 source ${PALUDIS_EBUILD_DIR}/0/list_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    echo "${0}: \${D} not valid; aborting" >&2
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    echo "${0}: \${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting" >&2
     exit 247
 fi
 
@@ -93,7 +93,7 @@ install_file() {
 
     [[ -z ${DOCDESTTREE} ]] && DOCDESTTREE="html"
 
-    dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}/${doc_prefix}/${prefix}"
+    dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}/${doc_prefix}/${prefix}"
 
     if [[ -f ${path} ]]; then
         ext="$(basename ${path})"

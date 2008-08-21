@@ -23,23 +23,23 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ ! -d "${D}usr/share/info" ]]; then
-    install -d "${D}usr/share/info" || paludis_die_or_error "could not create ${D}usr/share/info"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/info" ]]; then
+    install -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/info" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR}usr/share/info"
 fi
 
 ret=0
 
 for x in "$@"; do
     if [[ -e "${x}" ]]; then
-        install -m0644 "${x}" "${D}usr/share/info" || ret=2
+        install -m0644 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}usr/share/info" || ret=2
     else
         echo "${0}: ${x} does not exist"
         ret=2

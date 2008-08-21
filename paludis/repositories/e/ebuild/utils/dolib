@@ -23,8 +23,8 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ! -d ${PALUDIS_EBUILD_MODULES_DIR} ]]; then
@@ -33,7 +33,7 @@ fi
 
 source "${PALUDIS_EBUILD_MODULES_DIR}/multilib_functions.bash"
 
-libdir="${D}${DESTTREE}/$(ebuild_get_libdir)"
+libdir="${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/$(ebuild_get_libdir)"
 
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"

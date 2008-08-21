@@ -190,6 +190,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->tools_options()->failure_is_fatal() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FROM_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
+            .with_setenv("PALUDIS_IMAGE_DIR_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_d())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")

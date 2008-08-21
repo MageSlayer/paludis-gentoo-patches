@@ -26,21 +26,21 @@ source ${PALUDIS_EBUILD_DIR}/die_functions.bash
 source ${PALUDIS_EBUILD_DIR}/pipe_functions.bash
 source ${PALUDIS_EBUILD_DIR}/output_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ${#} -ne 2 ]]; then
     paludis_die_or_error "exactly two arguments needed."
 fi
 
-if [[ ! -d $(dirname "${D}$2") ]]; then
+if [[ ! -d $(dirname "${!PALUDIS_IMAGE_DIR_VAR}$2") ]]; then
     if [[ -n "${PALUDIS_DOSYM_NO_MKDIR}" ]] ; then
-        die "error: target directory $(dirname "${D}$2" ) does not exist"
+        die "error: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR}$2" ) does not exist"
     else
-        ebuild_notice "qa" "$0: target directory $(dirname "${D}$2") does not exist; creating. Please fix the ebuild to create it explicitly."
+        ebuild_notice "qa" "$0: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR}$2") does not exist; creating. Please fix the ebuild to create it explicitly."
         dodir $(dirname $2)
     fi
 fi
 
-ln -snf "${1}" "${D}${2}" || paludis_die_or_error "creation of symlink ${D}${2} failed"
+ln -snf "${1}" "${!PALUDIS_IMAGE_DIR_VAR}${2}" || paludis_die_or_error "creation of symlink ${!PALUDIS_IMAGE_DIR_VAR}${2} failed"

@@ -73,6 +73,7 @@ namespace paludis
         struct env_aa;
         struct env_accept_keywords;
         struct env_arch;
+        struct env_d;
         struct env_distdir;
         struct env_kv;
         struct env_portdir;
@@ -226,6 +227,7 @@ namespace paludis
             NamedValue<n::env_aa, std::string> env_aa;
             NamedValue<n::env_accept_keywords, std::string> env_accept_keywords;
             NamedValue<n::env_arch, std::string> env_arch;
+            NamedValue<n::env_d, std::string> env_d;
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_kv, std::string> env_kv;
             NamedValue<n::env_portdir, std::string> env_portdir;

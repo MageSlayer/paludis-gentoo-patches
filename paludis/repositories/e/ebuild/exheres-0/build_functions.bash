@@ -169,13 +169,13 @@ einstall()
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
         local makecmd=""
         type -p gmake &>/dev/null && makecmd="gmake" || makecmd="make"
-        local cmd="${EINSTALL_WRAPPER} ${makecmd} prefix=${D}/usr"
-        cmd="${cmd} mandir=${D}/usr/share/man"
-        cmd="${cmd} infodir=${D}/usr/share/info"
-        cmd="${cmd} datadir=${D}/usr/share"
-        cmd="${cmd} sysconfdir=${D}/etc"
-        cmd="${cmd} localstatedir=${D}/var/lib"
-        cmd="${cmd} libdir=${D}/usr/$(ebuild_get_libdir)"
+        local cmd="${EINSTALL_WRAPPER} ${makecmd} prefix=${IMAGE}/usr"
+        cmd="${cmd} mandir=${IMAGE}/usr/share/man"
+        cmd="${cmd} infodir=${IMAGE}/usr/share/info"
+        cmd="${cmd} datadir=${IMAGE}/usr/share"
+        cmd="${cmd} sysconfdir=${IMAGE}/etc"
+        cmd="${cmd} localstatedir=${IMAGE}/var/lib"
+        cmd="${cmd} libdir=${IMAGE}/usr/$(ebuild_get_libdir)"
         cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
         echo "${cmd}" 1>&2
         ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247

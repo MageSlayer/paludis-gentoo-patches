@@ -1578,7 +1578,7 @@ PLATFORMS="test"
 
 src_install() {
     dodir /usr/share
-    touch "${D}"/usr/share/monkey
+    touch "${IMAGE}"/usr/share/monkey
     keepdir /usr/share/monkey
 }
 END
@@ -1595,7 +1595,7 @@ PLATFORMS="test"
 
 src_install() {
     dodir /usr/share
-    touch "${D}"/usr/share/monkey
+    touch "${IMAGE}"/usr/share/monkey
     nonfatal keepdir /usr/share/monkey
 }
 END
@@ -1612,7 +1612,7 @@ PLATFORMS="test"
 
 src_install() {
     dodir /usr/share
-    touch "${D}"/usr/share/monkey
+    touch "${IMAGE}"/usr/share/monkey
     nonfatal keepdir /usr/share/monkey || die
 }
 END
@@ -2043,13 +2043,13 @@ src_install() {
     doman foo.* dir/foo.* || die
     doman -i18n=en_GB baz.* || die
     keepdir /meh || die
-    cd "\${D}"/meh || die
+    cd "\${IMAGE}"/meh || die
     doman .keep* || die
-    rm "\${D}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
-    rm "\${D}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
-    rm "\${D}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
-    rm "\${D}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
-    rmdir "\${D}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
+    rm "\${IMAGE}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
+    rm "\${IMAGE}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
+    rm "\${IMAGE}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
+    rm "\${IMAGE}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
+    rmdir "\${IMAGE}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
 }
 END
 mkdir -p "packages/cat/doman-failure"
@@ -2250,7 +2250,7 @@ cat <<END > cat/pkg/pkg-1.ebuild || exit 1
 SLOT="0"
 PLATFORMS="test"
 src_install() {
-	ln -s "\${D}/foo" "\${D}/bar" || die
+	ln -s "\${IMAGE}/foo" "\${IMAGE}/bar" || die
 }
 END
 cd ..

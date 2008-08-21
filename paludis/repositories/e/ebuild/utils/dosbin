@@ -23,24 +23,24 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${D} ]]; then
-    paludis_die_or_error "\${D} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ ! -d "${D}${DESTTREE}/sbin" ]]; then
-    install -d "${D}${DESTTREE}/sbin" || paludis_die_or_error "could not create ${D}${DESTTREE}/sbin"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" ]]; then
+    install -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin"
 fi
 
 ret=0
 for x in "$@"; do
     if [[ -n ${PALUDIS_NO_CHOWN} ]]; then
-        install -m0755 "${x}" "${D}${DESTTREE}/sbin" || ret=2
+        install -m0755 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || ret=2
     else
-        install -m0755 -o root -g 0 "${x}" "${D}${DESTTREE}/sbin" || ret=2
+        install -m0755 -o root -g 0 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || ret=2
     fi
 done
 
