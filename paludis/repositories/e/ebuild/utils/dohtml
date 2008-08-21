@@ -93,7 +93,7 @@ install_file() {
 
     [[ -z ${DOCDESTTREE} ]] && DOCDESTTREE="html"
 
-    dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}/${doc_prefix}/${prefix}"
+    dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}/${doc_prefix}/${prefix}"
 
     if [[ -f ${path} ]]; then
         ext="$(basename ${path})"

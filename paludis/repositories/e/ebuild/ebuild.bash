@@ -277,7 +277,7 @@ ebuild_scrub_environment()
         unset -v PALUDIS_CLIENT
 
         unset -v PALUDIS_HOME PALUDIS_PID PALUDIS_PIPE_COMMAND_WRITE_FD PALUDIS_PIPE_COMMAND_READ_FD ROOT
-        unset -v CATEGORY PN PV P PVR PF ${!LD_*}
+        unset -v CATEGORY PN PV P PNV PVR PF PNVR ${!LD_*}
 
         unset -v ebuild EBUILD
         unset -v $(
@@ -320,27 +320,27 @@ ebuild_load_environment()
 "
 
         if [[ "${PALUDIS_LOAD_ENVIRONMENT%.bz2}" != "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
-            echo bunzip2 \< "${PALUDIS_LOAD_ENVIRONMENT}" \> ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$ 1>&2
-            bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$ \
+            echo bunzip2 \< "${PALUDIS_LOAD_ENVIRONMENT}" \> ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$ 1>&2
+            bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$ \
                 || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
         else
-            echo cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
-            cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
+            echo cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" 1>&2
+            cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" \
                 || die "Can't copy ${PALUDIS_LOAD_ENVIRONMENT}"
         fi
 
-        echo ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" "$@" 1>&2
-        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" "$@" \
+        echo ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" "$@" 1>&2
+        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" "$@" \
             || die "Can't load saved environment for cleaning"
 
-        echo ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
-        ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
+        echo ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" 1>&2
+        ebuild_safe_source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" \
             || die "Can't load saved environment"
 
         export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
 
-        echo rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
-        rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$"
+        echo rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$" 1>&2
+        rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${!PALUDIS_NAME_VERSION_REVISION_VAR}-$$"
     fi
 }
 

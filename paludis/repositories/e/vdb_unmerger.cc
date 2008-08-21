@@ -149,12 +149,14 @@ VDBUnmerger::extend_hook(const Hook & h) const
 
         return result
             ("P", pn + "-" + pv)
+            ("PNV", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
             ("PR", _imp->options.package_id()->version().revision_only())
             ("PV", pv)
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
+            ("PNVR", pn + "-" + pvr)
             ("SLOT", stringify(_imp->options.package_id()->slot()));
     }
 

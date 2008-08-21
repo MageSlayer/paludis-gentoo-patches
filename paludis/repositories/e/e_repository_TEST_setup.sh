@@ -1364,7 +1364,7 @@ src_unpack() {
 }
 
 src_prepare() {
-    expatch "${FETCHEDDIR}"/${P}.patch
+    expatch "${FETCHEDDIR}"/${PNV}.patch
 }
 END
 mkdir -p "packages/cat/expatch-die"
@@ -2017,26 +2017,26 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
-    echo \${PF} >foo.1
+    echo \${PNVR} >foo.1
     mkdir dir
-    echo \${PF} >dir/foo.2
-    echo \${PF} >foo.3x
-    echo \${PF} >foo.4.gz
-    echo \${PF} >foo.5f.bz2
-    echo \${PF} >foo.6.Z
-    echo \${PF} >foo.en.7
-    echo \${PF} >foo.en_GB.8
-    echo \${PF} >foo.e.9
-    echo \${PF} >foo.enn.n
-    echo \${PF} >foo.EN.1
-    echo \${PF} >foo.en-GB.2
-    echo \${PF} >foo.en_gb.3
-    echo \${PF} >foo.en_G.4
-    echo \${PF} >foo.en_GBB.5
-    echo \${PF} >foo.nonkey
+    echo \${PNVR} >dir/foo.2
+    echo \${PNVR} >foo.3x
+    echo \${PNVR} >foo.4.gz
+    echo \${PNVR} >foo.5f.bz2
+    echo \${PNVR} >foo.6.Z
+    echo \${PNVR} >foo.en.7
+    echo \${PNVR} >foo.en_GB.8
+    echo \${PNVR} >foo.e.9
+    echo \${PNVR} >foo.enn.n
+    echo \${PNVR} >foo.EN.1
+    echo \${PNVR} >foo.en-GB.2
+    echo \${PNVR} >foo.en_gb.3
+    echo \${PNVR} >foo.en_G.4
+    echo \${PNVR} >foo.en_GBB.5
+    echo \${PNVR} >foo.nonkey
     touch foo.1x
-    echo \${PF} >baz.6
-    echo \${PF} >baz.en_US.7
+    echo \${PNVR} >baz.6
+    echo \${PNVR} >baz.en_US.7
 }
 
 src_install() {
@@ -2064,7 +2064,7 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_compile() {
-    echo \${PF} >bar.m
+    echo \${PNVR} >bar.m
 }
 
 src_install() {

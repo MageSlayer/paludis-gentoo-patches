@@ -88,8 +88,8 @@ docinto()
         export DOCDESTTREE=
     else
         export DOCDESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}" ]] || \
-            install -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}" ]] || \
+            install -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}"
     fi
 }
 

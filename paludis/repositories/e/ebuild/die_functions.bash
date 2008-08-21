@@ -37,7 +37,7 @@ diefunc()
     local func="$1" line="$2"
     shift 2
     echo 1>&2
-    echo "!!! ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
+    echo "!!! ERROR in ${CATEGORY:-?}/${!PALUDIS_NAME_VERSION_REVISION_VAR:-?}:" 1>&2
     echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
     echo "!!! ${*:-(no message provided)}" 1>&2
     echo 1>&2

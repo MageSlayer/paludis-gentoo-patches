@@ -32,7 +32,7 @@ if [[ $# -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${PF}/${DOCDESTTREE}"
+dir="${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}"
 if [[ ! -d "${dir}" ]]; then
     install -d "${dir}" || paludis_die_or_error "could not create ${dir}"
 fi

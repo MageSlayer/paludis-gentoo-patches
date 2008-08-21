@@ -19,15 +19,15 @@
 builtin_killold()
 {
     local a
-    for a in PF CATEGORY PALUDIS_TMPDIR  ; do
+    for a in PNVR CATEGORY PALUDIS_TMPDIR  ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
     done
 
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}" ]] ; then
+    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" ]] ; then
         if type -p chflags &>/dev/null; then
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}" || die "Couldn't remove flags from workdir"
+            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" || die "Couldn't remove flags from workdir"
         fi
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}" || die "Couldn't remove previous work"
+        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" || die "Couldn't remove previous work"
     fi
 }
 

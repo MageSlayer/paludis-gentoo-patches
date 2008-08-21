@@ -19,15 +19,16 @@
 builtin_killoldrm()
 {
     local a
-    for a in PF CATEGORY PALUDIS_TMPDIR  ; do
+    for a in CATEGORY PALUDIS_TMPDIR  ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
     done
+    [[ -z "${PF}" && -z "${PNVR}" ]] && die "PF and PNVR both unset or empty"
 
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" ]] ; then
+    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR:-${PF}}-uninstall" ]] ; then
         if type -p chflags &>/dev/null; then
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" || die "Couldn't remove flags from workdir"
+            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR:-${PF}}-uninstall" || die "Couldn't remove flags from workdir"
         fi
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" || die "Couldn't remove previous work"
+        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR:-${PF}}-uninstall" || die "Couldn't remove previous work"
     fi
 }
 

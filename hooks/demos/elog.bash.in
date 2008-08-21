@@ -30,19 +30,19 @@ logfile="${PALUDIS_HOOKS_TMPDIR:-${ROOT}/var/tmp/paludis}/elog.${PALUDIS_PID}"
 
 case "${HOOK}" in
     elog)
-    echo "L ${CATEGORY}/${PF} ${MESSAGE}" >> "${logfile}"
+    echo "L ${CATEGORY}/${!PALUDIS_NAME_VERSION_REVISION_VAR} ${MESSAGE}" >> "${logfile}"
     ;;
 
     einfo)
-    echo "I ${CATEGORY}/${PF} ${MESSAGE}" >> "${logfile}"
+    echo "I ${CATEGORY}/${!PALUDIS_NAME_VERSION_REVISION_VAR} ${MESSAGE}" >> "${logfile}"
     ;;
 
     ewarn)
-    echo "W ${CATEGORY}/${PF} ${MESSAGE}" >> "${logfile}"
+    echo "W ${CATEGORY}/${!PALUDIS_NAME_VERSION_REVISION_VAR} ${MESSAGE}" >> "${logfile}"
     ;;
 
     eerror)
-    echo "E ${CATEGORY}/${PF} ${MESSAGE}" >> "${logfile}"
+    echo "E ${CATEGORY}/${!PALUDIS_NAME_VERSION_REVISION_VAR} ${MESSAGE}" >> "${logfile}"
     ;;
 
     install_task_execute_pre|install_all_pre|uninstall_all_pre)

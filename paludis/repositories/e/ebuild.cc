@@ -110,14 +110,10 @@ EbuildCommand::operator() ()
     std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
 
     cmd = extend_command(cmd
-            .with_setenv("P", stringify(params.package_id()->name().package) + "-" +
-                stringify(params.package_id()->version().remove_revision()))
             .with_setenv("PV", stringify(params.package_id()->version().remove_revision()))
             .with_setenv("PR", stringify(params.package_id()->version().revision_only()))
             .with_setenv("PN", stringify(params.package_id()->name().package))
             .with_setenv("PVR", stringify(params.package_id()->version()))
-            .with_setenv("PF", stringify(params.package_id()->name().package) + "-" +
-                stringify(params.package_id()->version()))
             .with_setenv("CATEGORY", stringify(params.package_id()->name().category))
             .with_setenv("REPOSITORY", stringify(params.package_id()->repository()->name()))
             .with_setenv("FILESDIR", stringify(params.files_dir()))
@@ -194,6 +190,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_d())
             .with_setenv("PALUDIS_TEMP_DIR_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_t())
+            .with_setenv("PALUDIS_NAME_VERSION_REVISION_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")
@@ -208,6 +206,14 @@ EbuildCommand::operator() ()
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir().empty())
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir(),
                         stringify(params.distdir()));
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_p().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_p(),
+                        stringify(params.package_id()->name().package) + "-" +
+                                stringify(params.package_id()->version().remove_revision()));
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf(),
+                        stringify(params.package_id()->name().package) + "-" +
+                                stringify(params.package_id()->version()));
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->support_eclasses())
         cmd
