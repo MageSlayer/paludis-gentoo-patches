@@ -25,8 +25,8 @@ export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
 source ${PALUDIS_EBUILD_DIR}/pipe_functions.bash
 source ${PALUDIS_EBUILD_DIR}/output_functions.bash
 
-if [[ ! -d ${T} ]]; then
-    echo "${0}: \${T} not valid; aborting" >&2
+if [[ ! -d ${!PALUDIS_TEMP_DIR_VAR} ]]; then
+    echo "${0}: \${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting" >&2
     exit 247
 fi
 
@@ -37,6 +37,6 @@ fi
 
 ebuild_notice "qa" "${0} is retarded. Don't use it; use newins instead."
 
-rm -rf "${T}/${2}"
-cp "${1}" "${T}/${2}"
-doins "${T}/${2}"
+rm -rf "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+cp "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+doins "${!PALUDIS_TEMP_DIR_VAR}/${2}"

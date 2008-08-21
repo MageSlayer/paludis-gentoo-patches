@@ -59,11 +59,11 @@ builtin_initrm()
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall" || die "Couldn't remove previous work"
     fi
 
-    export T="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall/temp/"
-    mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
-    declare -r T="${T}"
-    export HOME="${T}"
-    export TMPDIR="${T}"
+    export TEMP="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}-uninstall/temp/"
+    mkdir -p "${TEMP}" || die "Couldn't create \$TEMP (\"${TEMP}\")"
+    declare -r TEMP="${TEMP}"
+    export HOME="${TEMP}"
+    export TMPDIR="${TEMP}"
 
     if [[ "${EBUILD}" != "-" ]] ; then
         ebuild_load_ebuild "${EBUILD}"

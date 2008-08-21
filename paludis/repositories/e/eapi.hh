@@ -77,6 +77,7 @@ namespace paludis
         struct env_distdir;
         struct env_kv;
         struct env_portdir;
+        struct env_t;
         struct env_use;
         struct env_use_expand;
         struct env_use_expand_hidden;
@@ -231,6 +232,7 @@ namespace paludis
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_kv, std::string> env_kv;
             NamedValue<n::env_portdir, std::string> env_portdir;
+            NamedValue<n::env_t, std::string> env_t;
             NamedValue<n::env_use, std::string> env_use;
             NamedValue<n::env_use_expand, std::string> env_use_expand;
             NamedValue<n::env_use_expand_hidden, std::string> env_use_expand_hidden;

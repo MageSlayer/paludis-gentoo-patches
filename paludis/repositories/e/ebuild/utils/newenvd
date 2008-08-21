@@ -24,14 +24,14 @@
 export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${T} ]]; then
-    paludis_die_or_error "\${T} not valid; aborting"
+if [[ ! -d ${!PALUDIS_TEMP_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ${#} -ne 2 ]]; then
     paludis_die_or_error "exactly two arguments needed"
 fi
 
-rm -rf "${T}/${2}"
-cp "${1}" "${T}/${2}"
-doenvd "${T}/${2}"
+rm -rf "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+cp "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+doenvd "${!PALUDIS_TEMP_DIR_VAR}/${2}"

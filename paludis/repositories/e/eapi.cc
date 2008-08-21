@@ -79,6 +79,7 @@ namespace
                         value_for<n::env_distdir>(check_get(k, "env_distdir")),
                         value_for<n::env_kv>(check_get(k, "env_kv")),
                         value_for<n::env_portdir>(check_get(k, "env_portdir")),
+                        value_for<n::env_t>(check_get(k, "env_t")),
                         value_for<n::env_use>(check_get(k, "env_use")),
                         value_for<n::env_use_expand>(check_get(k, "env_use_expand")),
                         value_for<n::env_use_expand_hidden>(check_get(k, "env_use_expand_hidden"))

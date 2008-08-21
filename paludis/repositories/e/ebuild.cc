@@ -192,6 +192,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_IMAGE_DIR_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_d())
+            .with_setenv("PALUDIS_TEMP_DIR_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_t())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             )
         .with_setenv("SLOT", "")

@@ -27,8 +27,8 @@ if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
-if [[ ! -d ${T} ]]; then
-    paludis_die_or_error "\${T} not valid; aborting"
+if [[ ! -d ${!PALUDIS_TEMP_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting"
 fi
 
 if [[ ${#} -lt 1 ]]; then
@@ -45,8 +45,8 @@ ret=0
 
 for x in "$@"; do
     if [[ -L ${x} ]]; then
-        cp "${x}" "${T}"
-        mysrc="${T}/$(/usr/bin/basename "${x}")"
+        cp "${x}" "${!PALUDIS_TEMP_DIR_VAR}"
+        mysrc="${!PALUDIS_TEMP_DIR_VAR}/$(/usr/bin/basename "${x}")"
     elif [[ -d ${x} ]]; then
         echo "${0}: skipping directory ${x}" >&2
         continue

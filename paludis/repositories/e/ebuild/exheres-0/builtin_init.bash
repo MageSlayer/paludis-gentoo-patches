@@ -63,11 +63,11 @@ builtin_init()
     mkdir -p "${WORKBASE}" || die "Couldn't create \$WORKBASE (\"${WORKBASE}\")"
     declare -r WORKBASE="${WORKBASE}"
 
-    export T="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/temp/"
-    mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
-    declare -r T="${T}"
-    export HOME="${T}"
-    export TMPDIR="${T}"
+    export TEMP="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/temp/"
+    mkdir -p "${TEMP}" || die "Couldn't create \$TEMP (\"${TEMP}\")"
+    declare -r TEMP="${TEMP}"
+    export HOME="${TEMP}"
+    export TMPDIR="${TEMP}"
 
     export IMAGE="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/image/"
     export IMAGE="${IMAGE//+(\/)//}"

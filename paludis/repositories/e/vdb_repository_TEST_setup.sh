@@ -283,33 +283,33 @@ PLATFORMS="test"
 DEPENDENCIES="foo/bar"
 
 pkg_setup() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 src_compile() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_preinst() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_prerm() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_info() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_config() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 END
 
@@ -325,33 +325,33 @@ PLATFORMS="test"
 DEPENDENCIES="foo/bar"
 
 pkg_setup() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 src_compile() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_preinst() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_prerm() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_info() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 
 pkg_config() {
-    einfo "${EBUILD_PHASE}: T=${T}"
-    [[ -d "${T}" ]] || die "T not a dir"
+    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
+    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
 }
 END
 

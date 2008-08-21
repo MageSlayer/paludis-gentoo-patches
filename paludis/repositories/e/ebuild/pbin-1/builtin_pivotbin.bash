@@ -18,14 +18,14 @@
 
 builtin_pivotbin()
 {
-    [[ -z "${T}" ]] || [[ ! -d "${T}" ]] && die "Can't use \$T=$T"
+    [[ ! -d "${!PALUDIS_TEMP_DIR_VAR}" ]] && die "Can't use \${${PALUDIS_TEMP_DIR_VAR}}=${!PALUDIS_TEMP_DIR_VAR}"
 
     ebuild_section "Extracting package environment"
-    echo tar jxvf "${DISTDIR}"/"${A}" -C "${T}" --strip-components 1 PBIN/environment.bz2 1>&2
-    tar jxvf "${DISTDIR}"/"${A}" -C "${T}" --strip-components 1 PBIN/environment.bz2 || die "Couldn't extract env"
+    echo tar jxvf "${DISTDIR}"/"${A}" -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment.bz2 1>&2
+    tar jxvf "${DISTDIR}"/"${A}" -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment.bz2 || die "Couldn't extract env"
 
     ebuild_section "Switching to package environment"
-    export PALUDIS_LOAD_ENVIRONMENT="${T}/environment.bz2"
+    export PALUDIS_LOAD_ENVIRONMENT="${!PALUDIS_TEMP_DIR_VAR}/environment.bz2"
     ebuild_load_environment --pivot
     export EAPI="${EAPI#pbin-1+}"
 
