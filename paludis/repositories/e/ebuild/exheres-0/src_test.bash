@@ -50,8 +50,8 @@ exheres_internal_test()
 
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
 
-    if [[ -d "${S}" ]] ; then
-        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    if [[ -d "${WORK}" ]] ; then
+        cd "${WORK}" || die "cd to \${WORK} (\"${WORK}\") failed"
     elif [[ -d "${WORKBASE}" ]] ; then
         cd "${WORKBASE}" || die "cd to \${WORKBASE} (\"${WORKBASE}\") failed"
     fi

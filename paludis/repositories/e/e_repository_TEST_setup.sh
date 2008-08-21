@@ -1952,9 +1952,9 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 src_unpack() {
-    mkdir ${S}
-    echo "#!/bin/bash" > ${S}/configure
-    chmod +x ${S}/configure
+    mkdir ${WORK}
+    echo "#!/bin/bash" > ${WORK}/configure
+    chmod +x ${WORK}/configure
 }
 
 src_compile() {
@@ -1978,8 +1978,8 @@ DEFAULT_SRC_CONFIGURE_OPTION_ENABLES=( enabled-hamster gerbil )
 DEFAULT_SRC_CONFIGURE_OPTION_WITHS=( dormouse )
 
 src_unpack() {
-    mkdir ${S}
-    cat <<'END2' > ${S}/configure
+    mkdir ${WORK}
+    cat <<'END2' > ${WORK}/configure
 #!/usr/bin/env bash
 echo "${@}" | grep -q -- '--enable-enabled-hamster' || exit 1
 echo "${@}" | grep -q -- '--disable-gerbil' || exit 2
@@ -1987,7 +1987,7 @@ echo "${@}" | grep -q -- '--nice-juicy-steak' || exit 3
 echo "${@}" | grep -q -- '--without-dormouse' || exit 4
 true
 END2
-    chmod +x ${S}/configure
+    chmod +x ${WORK}/configure
 }
 END
 mkdir -p "packages/cat/expand-vars"

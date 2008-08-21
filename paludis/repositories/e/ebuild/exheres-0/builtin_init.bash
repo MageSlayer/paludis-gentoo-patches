@@ -77,7 +77,7 @@ builtin_init()
     export IMAGE="${D}"
     declare -r IMAGE="${IMAGE}"
 
-    export S="${WORKBASE}/${P}"
+    export WORK="${WORKBASE}/${P}"
 
     if [[ "${EBUILD}" != "-" ]] ; then
         ebuild_load_ebuild "${EBUILD}"

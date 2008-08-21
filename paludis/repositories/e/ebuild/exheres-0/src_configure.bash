@@ -41,8 +41,8 @@ src_configure()
 
 exheres_internal_configure()
 {
-    if [[ -d "${S}" ]] ; then
-        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    if [[ -d "${WORK}" ]] ; then
+        cd "${WORK}" || die "cd to \${WORK} (\"${WORK}\") failed"
     elif [[ -d "${WORKBASE}" ]] ; then
         cd "${WORKBASE}" || die "cd to \${WORKBASE} (\"${WORKBASE}\") failed"
     fi
