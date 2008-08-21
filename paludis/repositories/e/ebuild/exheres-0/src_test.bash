@@ -52,8 +52,8 @@ exheres_internal_test()
 
     if [[ -d "${S}" ]] ; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
-    elif [[ -d "${WORKDIR}" ]] ; then
-        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    elif [[ -d "${WORKBASE}" ]] ; then
+        cd "${WORKBASE}" || die "cd to \${WORKBASE} (\"${WORKBASE}\") failed"
     fi
 
     if hasq "test" ${SKIP_FUNCTIONS} ; then

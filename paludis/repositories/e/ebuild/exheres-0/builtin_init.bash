@@ -59,9 +59,9 @@ builtin_init()
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PF}" || die "Couldn't remove previous work"
     fi
 
-    export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/work"
-    mkdir -p "${WORKDIR}" || die "Couldn't create \$WORKDIR (\"${WORKDIR}\")"
-    declare -r WORKDIR="${WORKDIR}"
+    export WORKBASE="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/work"
+    mkdir -p "${WORKBASE}" || die "Couldn't create \$WORKBASE (\"${WORKBASE}\")"
+    declare -r WORKBASE="${WORKBASE}"
 
     export T="${PALUDIS_TMPDIR}/${CATEGORY}-${PF}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
@@ -77,7 +77,7 @@ builtin_init()
     export IMAGE="${D}"
     declare -r IMAGE="${IMAGE}"
 
-    export S="${WORKDIR}/${P}"
+    export S="${WORKBASE}/${P}"
 
     if [[ "${EBUILD}" != "-" ]] ; then
         ebuild_load_ebuild "${EBUILD}"

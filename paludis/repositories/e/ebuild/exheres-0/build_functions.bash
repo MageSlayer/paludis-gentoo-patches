@@ -107,7 +107,7 @@ econf()
     if [[ -x "${ECONF_SOURCE}/configure" ]] ; then
         if [[ -d /usr/share/gnuconfig ]] ; then
             local f
-            find "${WORKDIR}" -type f -name config.guess -or -name config.sub | while read f; do
+            find "${WORKBASE}" -type f -name config.guess -or -name config.sub | while read f; do
                 echo "econf: updating ${f} with /usr/share/gnuconfig/${f##*/}"
                 cp -f "/usr/share/gnuconfig/${f##*/}" "${f}"
             done
