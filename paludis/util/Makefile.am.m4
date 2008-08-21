@@ -86,6 +86,7 @@ TESTS = testlist
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 

@@ -51,6 +51,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
 	CONTRARIUS_OPTIONS="" \
 	bash $(top_srcdir)/test/run_test.sh bash
 

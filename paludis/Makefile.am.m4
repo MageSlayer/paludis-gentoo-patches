@@ -194,6 +194,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \

@@ -110,6 +110,7 @@ endif
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
 	PALUDIS_NO_XTERM_TITLES="yes" \

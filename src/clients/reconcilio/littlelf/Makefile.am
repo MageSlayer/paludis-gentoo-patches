@@ -13,6 +13,7 @@ liblittlelf_a_SOURCES = \
 	elf_types.hh
 
 TESTS_ENVIRONMENT = env \
+	PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
 	bash $(top_srcdir)/test/run_test.sh bash

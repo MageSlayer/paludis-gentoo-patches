@@ -134,6 +134,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh

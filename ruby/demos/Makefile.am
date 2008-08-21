@@ -31,6 +31,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	SYSCONFDIR="$(sysconfdir)" \
 	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`" \

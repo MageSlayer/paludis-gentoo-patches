@@ -76,6 +76,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

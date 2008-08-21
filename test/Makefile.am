@@ -18,7 +18,8 @@ libtestnomain_a_SOURCES = \
 XFAIL_TESTS = test_fail_TEST
 TESTS = test_pass_TEST $(XFAIL_TESTS)
 
-TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" bash $(top_srcdir)/test/run_test.sh
+TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
+		    TEST_SCRIPT_DIR="$(srcdir)/" bash $(top_srcdir)/test/run_test.sh
 check_LIBRARIES = libtest.a libtestnomain.a
 check_PROGRAMS = $(TESTS) $(XFAIL_TESTS)
 check_SCRIPTS = run_test.sh

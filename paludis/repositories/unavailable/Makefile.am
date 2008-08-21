@@ -67,6 +67,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \

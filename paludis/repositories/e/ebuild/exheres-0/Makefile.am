@@ -49,6 +49,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
 	PALUDIS_EBUILD_LOG_LEVEL="warning" \
 	PALUDIS_EBUILD_MODULE_SUFFIXES="exheres-0" \
 	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/`" \
