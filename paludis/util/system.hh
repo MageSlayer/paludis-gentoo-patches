@@ -181,6 +181,13 @@ namespace paludis
              */
             Command & with_captured_stdout_stream(std::ostream * const);
 
+            /**
+             * Specify a stream to which stderr is captured and written.
+             *
+             * \since 0.30
+             */
+            Command & with_captured_stderr_stream(std::ostream * const);
+
             ///\}
 
             ///\name Fetch command execution options
@@ -241,6 +248,13 @@ namespace paludis
              * The captured stdout stream, or null.
              */
             std::ostream * captured_stdout_stream() const;
+
+            /**
+             * The captured stderr stream, or null.
+             *
+             * \since 0.30
+             */
+            std::ostream * captured_stderr_stream() const;
 
             ///\}
 
