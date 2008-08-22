@@ -284,8 +284,7 @@ EbuildMetadataCommand::extend_command(const Command & cmd)
 {
     return Command(cmd)
         .with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid())
-        .with_stderr_prefix(stringify(params.package_id()->name().package) + "-" +
-                stringify(params.package_id()->version()) + "> ");
+        ;
 }
 
 namespace
@@ -309,9 +308,9 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id()) + "':");
 
-        std::stringstream prog;
+        std::stringstream prog, prog_err;
         Command real_cmd(cmd);
-        int exit_status(run_command(real_cmd.with_captured_stdout_stream(&prog)));
+        int exit_status(run_command(real_cmd.with_captured_stdout_stream(&prog).with_captured_stderr_stream(&prog_err)));
         input.assign((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>());
         std::stringstream input_stream(input);
         KeyValueConfigFile f(input_stream, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
@@ -322,6 +321,8 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         std::copy(f.begin(), f.end(), keys->inserter());
         if (0 == exit_status)
             ok = true;
+
+        captured_stderr = prog_err.str();
     }
     catch (const InternalError &)
     {
@@ -371,6 +372,10 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         Log::get_instance()->message("e.ebuild.preload_eapi.unsupported", ll_debug, lc_context)
             << "ID pre-load EAPI '" << id->eapi()->name() << "' not supported";
         id->set_slot(SlotName("UNKNOWN"));
+
+        if (! captured_stderr.empty())
+            id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
+
         return;
     }
     else
@@ -388,11 +393,16 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         Log::get_instance()->message("e.ebuild.postload_eapi.unsupported", ll_debug, lc_context)
             << "ID post-load EAPI '" << id->eapi()->name() << "' not supported";
         id->set_slot(SlotName("UNKNOWN"));
+        if (! captured_stderr.empty())
+            id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
         return;
     }
     else
         Log::get_instance()->message("e.ebuild.postload_eapi.supported", ll_debug, lc_context)
             << "ID post-load EAPI '" << id->eapi()->name() << "' is supported";
+
+    if (! captured_stderr.empty())
+        id->load_captured_stderr("STDERR", "Captured stderr", mkt_internal, captured_stderr);
 
     const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
 

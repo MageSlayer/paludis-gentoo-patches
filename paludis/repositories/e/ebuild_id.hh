@@ -107,6 +107,7 @@ namespace paludis
                 void set_slot(const SlotName &) const;
 
                 void load_short_description(const std::string &, const std::string &, const std::string &) const;
+                void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
                 void load_build_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_run_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_post_depend(const std::string &, const std::string &, const std::string &) const;

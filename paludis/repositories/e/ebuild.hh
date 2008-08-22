@@ -614,6 +614,7 @@ namespace paludis
         {
             private:
                 std::tr1::shared_ptr<Map<std::string, std::string> > keys;
+                std::string captured_stderr;
 
             public:
                 EbuildMetadataCommand(const EbuildCommandParams &);
