@@ -20,6 +20,7 @@
 
 #include <ctime>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/log.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sys/stat.h>
@@ -61,8 +62,16 @@ namespace test_cases
             FSEntry c("fs_entry_TEST_dir/no_such_file");
             FSEntry d("fs_entry_TEST_dir/dir_a/dir_in_a");
 
+            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
+                << "a.ctime() : " << a.ctime() << " :: a.mtime() : " << a.mtime() << " :: std::time(0) : " << std::time(0);
+            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
+                << "b.ctime() : " << b.ctime() << " :: b.mtime() : " << b.mtime() << " :: std::time(0) : " << std::time(0);
+            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
+                << "d.ctime() : " << d.ctime() << " :: d.mtime() : " << d.mtime() << " :: std::time(0) : " << std::time(0);
+#if !defined(__FreeBSD__)
             TEST_CHECK(a.ctime() < std::time(0));
             TEST_CHECK(a.mtime() < std::time(0));
+#endif
             TEST_CHECK(b.ctime() < std::time(0));
             TEST_CHECK(b.mtime() < std::time(0));
             TEST_CHECK(d.ctime() < std::time(0));
