@@ -272,8 +272,6 @@ namespace paludis
     /**
      * Run a command, wait for it to terminate and return its exit status.
      *
-     * Use PStream instead if you need to capture stdout.
-     *
      * \ingroup g_system
      */
     int run_command(const Command & cmd) PALUDIS_VISIBLE
