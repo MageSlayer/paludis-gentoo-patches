@@ -120,6 +120,10 @@ namespace
                              it_end(tokens.end()); it_end != it; ++it)
                     {
                         const FSEntry * eclass(_imp->eclass_mtimes->eclass(*it));
+                        if (eclass)
+                            Log::get_instance()->message("e.cache_flat_list.eclass.path", ll_debug, lc_context)
+                                << "Cache-requested eclass '" << *it << "' maps to '" << *eclass << "'";
+
                         if (! eclass)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.missing", ll_debug, lc_context)
@@ -363,6 +367,10 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                             std::time_t eclass_mtime(destringify<std::time_t>(*it));
 
                             const FSEntry * eclass(_imp->eclass_mtimes->eclass(eclass_name));
+                            if (eclass)
+                                Log::get_instance()->message("e.cache_flat_hash.eclass.path", ll_debug, lc_context)
+                                    << "Cache-requested eclass '" << eclass_name << "' maps to '" << *eclass << "'";
+
                             if (! eclass)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.eclass.missing", ll_debug, lc_context)
@@ -415,6 +423,10 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                             std::time_t exlib_mtime(destringify<std::time_t>(*it));
 
                             const FSEntry * exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
+                            if (exlib)
+                                Log::get_instance()->message("e.cache_flat_hash.exlib.path", ll_debug, lc_context)
+                                    << "Cache-requested exlib '" << exlib_name << "' maps to '" << *exlib << "'";
+
                             if (! exlib)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.exlib.missing", ll_debug, lc_context)
