@@ -20,6 +20,7 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	world.cc               world.hh \
 	paludis_config.cc      paludis_config.hh \
 	paludis_environment.cc paludis_environment.hh \
+	extra_distribution_data.cc extra_distribution_data.hh \
 	registration.cc
 
 libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
@@ -55,7 +56,8 @@ paludis_environment_paludis_include_HEADERS = \
 	bashable_conf.hh \
 	package_mask_conf.hh \
 	world.hh \
-	mirrors_conf.hh
+	mirrors_conf.hh \
+	extra_distribution_data.hh
 
 EXTRA_DIST = \
 	paludis_environment_TEST_setup.sh \
