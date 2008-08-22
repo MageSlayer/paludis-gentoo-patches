@@ -80,7 +80,7 @@ the/pdepend
 the/provide
 0
 END
-touch -t 199901010101 metadata/cache/cat/flat_list-stale-1 || exit 2
+TZ=UTC touch -t 199901010101 metadata/cache/cat/flat_list-stale-1 || exit 2
 
 mkdir cat/flat_list-eclass
 cat <<END > cat/flat_list-eclass/flat_list-eclass-1.ebuild || exit 1
@@ -131,8 +131,8 @@ the/pdepend
 the/provide
 0
 END
-touch -t 197001010001 cat/flat_list-eclass-stale/flat_list-eclass-stale-1.ebuild || exit 2
-touch -t 197001010002 metadata/cache/cat/flat_list-eclass-stale-1 || exit 2
+TZ=UTC touch -t 197001010001 cat/flat_list-eclass-stale/flat_list-eclass-stale-1.ebuild || exit 2
+TZ=UTC touch -t 197001010002 metadata/cache/cat/flat_list-eclass-stale-1 || exit 2
 
 mkdir cat/flat_list-eclass-wrong
 cat <<END > cat/flat_list-eclass-wrong/flat_list-eclass-wrong-1.ebuild || exit 1
