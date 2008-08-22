@@ -27,6 +27,7 @@
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
@@ -305,8 +306,8 @@ VDBRepository::repository_factory_create(
     std::string provides_cache(f("provides_cache"));
     if (provides_cache.empty())
     {
-        provides_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->distribution())).default_vdb_provides_cache();
+        provides_cache = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_provides_cache();
         if (provides_cache.empty())
         {
             Log::get_instance()->message("e.vdb.configuration.no_provides_cache", ll_warning, lc_no_context)
@@ -319,8 +320,8 @@ VDBRepository::repository_factory_create(
     std::string names_cache(f("names_cache"));
     if (names_cache.empty())
     {
-        names_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->distribution())).default_vdb_names_cache();
+        names_cache = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_names_cache();
         if (names_cache.empty())
         {
             Log::get_instance()->message("e.vdb.configuration.no_names_cache", ll_warning, lc_no_context)
@@ -335,8 +336,8 @@ VDBRepository::repository_factory_create(
     {
         builddir = f("buildroot");
         if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_builddir();
+            builddir = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_buildroot();
         else
             Log::get_instance()->message("e.vdb.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";

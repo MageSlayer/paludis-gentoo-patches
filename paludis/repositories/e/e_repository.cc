@@ -31,9 +31,11 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repositories/e/info_metadata_key.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 
 #ifdef ENABLE_QA
 #  include <paludis/repositories/e/qa/qa_controller.hh>
@@ -104,6 +106,7 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 typedef std::tr1::unordered_map<QualifiedPackageName,
         std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
@@ -195,8 +198,8 @@ namespace paludis
         mutable std::tr1::shared_ptr<ERepositoryNews> news_ptr;
 
         mutable std::tr1::shared_ptr<ERepositorySets> sets_ptr;
-        mutable std::tr1::shared_ptr<erepository::ERepositoryEntries> entries_ptr;
-        mutable std::tr1::shared_ptr<erepository::Layout> layout;
+        mutable std::tr1::shared_ptr<ERepositoryEntries> entries_ptr;
+        mutable std::tr1::shared_ptr<Layout> layout;
 
         Implementation(ERepository * const, const ERepositoryParams &, std::tr1::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
         ~Implementation();
@@ -243,8 +246,8 @@ namespace paludis
         has_mirrors(false),
         has_profiles_desc(false),
         sets_ptr(new ERepositorySets(params.environment, r, p)),
-        entries_ptr(erepository::ERepositoryEntriesFactory::get_instance()->create(params.entry_format, params.environment, r, p)),
-        layout(erepository::LayoutFactory::get_instance()->create(params.layout, r, params.location, entries_ptr, get_master_locations(
+        entries_ptr(ERepositoryEntriesFactory::get_instance()->create(params.entry_format, params.environment, r, p)),
+        layout(LayoutFactory::get_instance()->create(params.layout, r, params.location, entries_ptr, get_master_locations(
                         params.master_repositories))),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, params.entry_format)),
@@ -298,16 +301,16 @@ namespace paludis
                     layout->info_packages_files()->end(),
                     std::tr1::bind(std::tr1::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
                         std::tr1::placeholders::_1)) ?
-                make_shared_ptr(new erepository::InfoPkgsMetadataKey(params.environment, layout->info_packages_files(),
+                make_shared_ptr(new InfoPkgsMetadataKey(params.environment, layout->info_packages_files(),
                         params.profile_eapi)) :
-                std::tr1::shared_ptr<erepository::InfoPkgsMetadataKey>()
+                std::tr1::shared_ptr<InfoPkgsMetadataKey>()
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
                     layout->info_variables_files()->end(),
                     std::tr1::bind(std::tr1::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
                         std::tr1::placeholders::_1)) ?
-                make_shared_ptr(new erepository::InfoVarsMetadataKey(layout->info_variables_files())) :
-                std::tr1::shared_ptr<erepository::InfoVarsMetadataKey>()
+                make_shared_ptr(new InfoVarsMetadataKey(layout->info_variables_files())) :
+                std::tr1::shared_ptr<InfoVarsMetadataKey>()
                 ),
         binary_destination_key(new LiteralMetadataValueKey<std::string> (
                     "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination))),
@@ -332,7 +335,7 @@ namespace paludis
 
         profile_ptr.reset(new ERepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
-                    erepository::EAPIData::get_instance()->eapi_from_string(
+                    EAPIData::get_instance()->eapi_from_string(
                         params.eapi_when_unknown)->supported()->ebuild_environment_variables()->env_arch()));
     }
 
@@ -376,7 +379,7 @@ namespace paludis
                             value_for<n::path>(*profiles.begin()),
                             value_for<n::profile>(std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                         params.environment, repo, repo->name(), profiles,
-                                        erepository::EAPIData::get_instance()->eapi_from_string(
+                                        EAPIData::get_instance()->eapi_from_string(
                                             params.eapi_when_unknown)->supported()->ebuild_environment_variables()->env_arch()))),
                             value_for<n::status>(tokens.at(2))
                             ));
@@ -557,11 +560,11 @@ ERepository::repository_masked(const PackageID & id) const
         using namespace std::tr1::placeholders;
 
         std::tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
-        erepository::ProfileFile<erepository::MaskFile> repository_mask_file;
+        ProfileFile<MaskFile> repository_mask_file;
         std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
-                      std::tr1::bind(&erepository::ProfileFile<erepository::MaskFile>::add_file, std::tr1::ref(repository_mask_file), _1));
+                      std::tr1::bind(&ProfileFile<MaskFile>::add_file, std::tr1::ref(repository_mask_file), _1));
 
-        for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator
+        for (ProfileFile<MaskFile>::ConstIterator
                  line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
                 line != line_end ; ++line)
         {
@@ -569,7 +572,7 @@ ERepository::repository_masked(const PackageID & id) const
             {
                 std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(parse_elike_package_dep_spec(
                                 line->first,
-                                erepository::EAPIData::get_instance()->eapi_from_string(
+                                EAPIData::get_instance()->eapi_from_string(
                                     _imp->params.profile_eapi)->supported()->package_dep_spec_parse_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
                 if (a->package_ptr())
@@ -612,7 +615,7 @@ ERepository::query_use(const UseFlagName & f, const PackageID & e) const
     if (this != e.repository().get())
         return use_unspecified;
 
-    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
 
     if (! id.eapi()->supported())
     {
@@ -692,7 +695,7 @@ ERepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
     if (this != e.repository().get())
         return use_unspecified;
 
-    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
     if (id.use_key())
     {
         return (id.use_key()->value()->end() == id.use_key()->value()->find(u));
@@ -710,7 +713,7 @@ ERepository::query_use_force(const UseFlagName & u, const PackageID & e) const
     if (this != e.repository().get())
         return use_unspecified;
 
-    const erepository::ERepositoryID & id(static_cast<const erepository::ERepositoryID &>(e));
+    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
     if (id.use_key())
     {
         return (id.use_key()->value()->end() != id.use_key()->value()->find(u));
@@ -893,7 +896,7 @@ ERepository::update_news() const
     _imp->news_ptr->update_news();
 }
 
-const std::tr1::shared_ptr<const erepository::Layout>
+const std::tr1::shared_ptr<const Layout>
 ERepository::layout() const
 {
     return _imp->layout;
@@ -906,7 +909,7 @@ ERepository::profile() const
     return _imp->profile_ptr;
 }
 
-const std::tr1::shared_ptr<const erepository::ERepositoryEntries>
+const std::tr1::shared_ptr<const ERepositoryEntries>
 ERepository::entries() const
 {
     return _imp->entries_ptr;
@@ -922,7 +925,7 @@ ERepository::get_environment_variable(
 
     _imp->need_profiles();
 
-    return _imp->entries_ptr->get_environment_variable(std::tr1::static_pointer_cast<const erepository::ERepositoryID>(for_package),
+    return _imp->entries_ptr->get_environment_variable(std::tr1::static_pointer_cast<const ERepositoryID>(for_package),
             var, _imp->profile_ptr);
 }
 
@@ -973,7 +976,7 @@ ERepository::use_expand_flags() const
 {
     _imp->need_profiles();
 
-    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
+    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
                     _imp->params.profile_eapi)->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
@@ -1033,7 +1036,7 @@ ERepository::use_expand_separator(const PackageID & id) const
 {
     if (this != id.repository().get())
         return '\0';
-    const std::tr1::shared_ptr<const erepository::EAPI> & eapi(static_cast<const erepository::ERepositoryID &>(id).eapi());
+    const std::tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
     return eapi->supported() ? eapi->supported()->ebuild_options()->use_expand_separator() : '\0';
 }
 
@@ -1128,7 +1131,7 @@ ERepository::describe_use_flag(const UseFlagName & f,
 
     if (_imp->use_desc.empty())
     {
-        std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
+        std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
                         _imp->params.profile_eapi)->supported()->ebuild_options()->use_expand_separator()));
         std::tr1::shared_ptr<const UseDescFileInfoSequence> use_desc_info(_imp->layout->use_desc_files());
         _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(use_desc_info, expand_sep)));
@@ -1156,7 +1159,7 @@ ERepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     if (f == "ebuild")
-        return static_cast<const erepository::ERepositoryID &>(e).eapi()->supported()->can_be_pbin();
+        return static_cast<const ERepositoryID &>(e).eapi()->supported()->can_be_pbin();
     else
         return false;
 }
@@ -1398,10 +1401,10 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         std::tr1::shared_ptr<const PackageID> id = (*v);
         if (! id->fetches_key())
             continue;
-        paludis::erepository::AAVisitor aa;
+        AAVisitor aa;
         id->fetches_key()->value()->accept(aa);
 
-        for (paludis::erepository::AAVisitor::ConstIterator d(aa.begin()) ;
+        for (AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)
         {
             if (done_files.count(*d))
@@ -1437,14 +1440,14 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 std::string
 ERepository::accept_keywords_variable() const
 {
-    return erepository::EAPIData::get_instance()->eapi_from_string(params().profile_eapi)->supported()
+    return EAPIData::get_instance()->eapi_from_string(params().profile_eapi)->supported()
         ->ebuild_environment_variables()->env_accept_keywords();
 }
 
 std::string
 ERepository::arch_variable() const
 {
-    return erepository::EAPIData::get_instance()->eapi_from_string(params().profile_eapi)->supported()
+    return EAPIData::get_instance()->eapi_from_string(params().profile_eapi)->supported()
         ->ebuild_environment_variables()->env_arch();
 }
 
@@ -1602,8 +1605,9 @@ ERepository::repository_factory_create(
             distdir = stringify((*master_repositories->begin())->params().distdir);
         else
         {
-            distdir = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_distdir();
+            distdir = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_distdir();
             if (distdir.empty())
                 distdir = location + "/distfiles";
             else if ('/' != distdir.at(0))
@@ -1633,8 +1637,8 @@ ERepository::repository_factory_create(
 
     std::string write_cache(f("write_cache"));
     if (write_cache.empty())
-        write_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->distribution())).default_ebuild_write_cache();
+        write_cache = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                env->distribution()))->default_write_cache();
 
     bool append_repository_name_to_write_cache(true);
     if (! f("append_repository_name_to_write_cache").empty())
@@ -1655,8 +1659,9 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (eapi_when_unknown = layout_conf->get("eapi_when_unknown")).empty())
-            eapi_when_unknown = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_eapi_when_unknown();
+            eapi_when_unknown = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_eapi_when_unknown();
     }
 
     std::string eapi_when_unspecified(f("eapi_when_unspecified"));
@@ -1664,8 +1669,9 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (eapi_when_unspecified = layout_conf->get("eapi_when_unspecified")).empty())
-            eapi_when_unspecified = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_eapi_when_unspecified();
+            eapi_when_unspecified = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_eapi_when_unspecified();
     }
 
     std::string profile_eapi(f("profile_eapi"));
@@ -1673,15 +1679,17 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (profile_eapi = layout_conf->get("eapi_when_unspecified")).empty())
-            profile_eapi = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_profile_eapi();
+            profile_eapi = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_profile_eapi();
     }
 
     std::string names_cache(f("names_cache"));
     if (names_cache.empty())
     {
-        names_cache = (*DistributionData::get_instance()->distribution_from_string(
-                env->distribution())).default_ebuild_names_cache();
+        names_cache = EExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_names_cache();
         if (names_cache.empty())
         {
             Log::get_instance()->message("e.ebuild.configuration.no_names_cache", ll_warning, lc_no_context)
@@ -1713,8 +1721,9 @@ ERepository::repository_factory_create(
             if (master_repositories)
                 builddir = stringify((*master_repositories->begin())->params().builddir);
             else
-                builddir = (*DistributionData::get_instance()->distribution_from_string(
-                         env->distribution())).default_ebuild_builddir();
+                builddir = EExtraDistributionData::get_instance()->data_from_distribution(
+                        *DistributionData::get_instance()->distribution_from_string(
+                            env->distribution()))->default_buildroot();
         }
         else
             Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_context)
@@ -1726,15 +1735,16 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (layout = layout_conf->get("layout")).empty())
-            layout = (*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution())).default_ebuild_layout();
+            layout = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_layout();
     }
 
-    erepository::UseManifest use_manifest(erepository::manifest_use);
+    UseManifest use_manifest(manifest_use);
     if (! f("use_manifest").empty())
     {
         Context item_context("When handling use_manifest key:");
-        use_manifest = destringify<erepository::UseManifest>(f("use_manifest"));
+        use_manifest = destringify<UseManifest>(f("use_manifest"));
     }
 
     bool binary_destination(false);

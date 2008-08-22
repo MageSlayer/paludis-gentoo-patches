@@ -26,6 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/fs_entry.hh>
 #include <tr1/memory>
 
 /** \file
@@ -45,26 +46,19 @@ namespace paludis
     {
         struct concept_keyword;
         struct concept_use;
-        struct default_ebuild_builddir;
-        struct default_ebuild_distdir;
-        struct default_ebuild_eapi_when_unknown;
-        struct default_ebuild_eapi_when_unspecified;
-        struct default_ebuild_layout;
-        struct default_ebuild_names_cache;
-        struct default_ebuild_profile_eapi;
-        struct default_ebuild_write_cache;
         struct default_environment;
-        struct default_vdb_names_cache;
-        struct default_vdb_provides_cache;
+        struct extra_data_dir;
         struct fallback_environment;
-        struct paludis_environment_keywords_conf_filename;
-        struct paludis_environment_use_conf_filename;
+        struct name;
         struct paludis_package;
         struct support_old_style_virtuals;
     }
 
     /**
      * Information about a distribution.
+     *
+     * The Distribution::config_dir key points to a directory that can be used
+     * by submodules to store their own configuration.
      *
      * \see DistributionData
      * \ingroup g_distribution
@@ -75,20 +69,10 @@ namespace paludis
     {
         NamedValue<n::concept_keyword, std::string> concept_keyword;
         NamedValue<n::concept_use, std::string> concept_use;
-        NamedValue<n::default_ebuild_builddir, std::string> default_ebuild_builddir;
-        NamedValue<n::default_ebuild_distdir, std::string> default_ebuild_distdir;
-        NamedValue<n::default_ebuild_eapi_when_unknown, std::string> default_ebuild_eapi_when_unknown;
-        NamedValue<n::default_ebuild_eapi_when_unspecified, std::string> default_ebuild_eapi_when_unspecified;
-        NamedValue<n::default_ebuild_layout, std::string> default_ebuild_layout;
-        NamedValue<n::default_ebuild_names_cache, std::string> default_ebuild_names_cache;
-        NamedValue<n::default_ebuild_profile_eapi, std::string> default_ebuild_profile_eapi;
-        NamedValue<n::default_ebuild_write_cache, std::string> default_ebuild_write_cache;
         NamedValue<n::default_environment, std::string> default_environment;
-        NamedValue<n::default_vdb_names_cache, std::string> default_vdb_names_cache;
-        NamedValue<n::default_vdb_provides_cache, std::string> default_vdb_provides_cache;
+        NamedValue<n::extra_data_dir, FSEntry> extra_data_dir;
         NamedValue<n::fallback_environment, std::string> fallback_environment;
-        NamedValue<n::paludis_environment_keywords_conf_filename, std::string> paludis_environment_keywords_conf_filename;
-        NamedValue<n::paludis_environment_use_conf_filename, std::string> paludis_environment_use_conf_filename;
+        NamedValue<n::name, std::string> name;
         NamedValue<n::paludis_package, std::string> paludis_package;
         NamedValue<n::support_old_style_virtuals, bool> support_old_style_virtuals;
     };
@@ -141,6 +125,35 @@ namespace paludis
              * Fetch a distribution from a named string.
              */
             std::tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
+    };
+
+    /**
+     * Fetch module-specific information about a distribution.
+     *
+     * Various modules provide typedefs for instantiations of this template,
+     * allowing access to additional information abotu a distribution.
+     *
+     * \ingroup g_distribution
+     * \since 0.30
+     */
+    template <typename Data_>
+    class PALUDIS_VISIBLE ExtraDistributionData :
+        private PrivateImplementationPattern<ExtraDistributionData<Data_> >,
+        public InstantiationPolicy<ExtraDistributionData<Data_>, instantiation_method::SingletonTag>
+    {
+        friend class InstantiationPolicy<ExtraDistributionData<Data_>, instantiation_method::SingletonTag>;
+
+        private:
+            ExtraDistributionData();
+            ~ExtraDistributionData();
+
+        public:
+            /**
+             * Fetch our data from a given distribution.
+             */
+            const std::tr1::shared_ptr<const Data_> data_from_distribution(
+                    const Distribution &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

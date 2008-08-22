@@ -25,7 +25,8 @@ paludis_repositories_gems_include_HEADERS = \
 	yaml.hh yaml-fwd.hh \
 	gem_specification.hh gem_specification-fwd.hh \
 	gem_specifications.hh \
-	params-fwd.hh params.hh params-sr.hh
+	params-fwd.hh params.hh params-sr.hh \
+	extra_distribution_data.hh
 
 libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	gems_repository.cc \
@@ -35,6 +36,7 @@ libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	yaml.cc \
 	gem_specification.cc \
 	gem_specifications.cc \
+	extra_distribution_data.cc \
 	registration.cc \
 	$(paludis_repositories_gems_include_HEADERS)
 

@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/e_installed_repository_id.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
@@ -547,8 +548,8 @@ EInstalledRepositoryID::eapi() const
         Log::get_instance()->message("e.no_eapi", ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
             << _imp->environment->distribution() << "'";
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(
-                (*DistributionData::get_instance()->distribution_from_string(
-                    _imp->environment->distribution())).default_ebuild_eapi_when_unspecified());
+                EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                        _imp->environment->distribution()))->default_eapi_when_unspecified());
     }
 
     return _imp->eapi;

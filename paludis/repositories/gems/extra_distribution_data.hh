@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,23 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_DISTRIBUTION_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_DISTRIBUTION_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_EXTRA_DISTRIBUTION_DATA_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_EXTRA_DISTRIBUTION_DATA_HH 1
 
-/** \file
- * Forward declarations for paludis/distribution.hh .
- *
- * \ingroup g_dep_spec
- */
-
+#include <paludis/distribution-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <string>
 
 namespace paludis
 {
-    class DistributionData;
-    class DistributionConfigurationError;
+    namespace n
+    {
+        struct default_buildroot;
+    }
 
-    template <typename T_> class ExtraDistributionData;
+    namespace gems
+    {
+        struct GemsDistribution
+        {
+            NamedValue<n::default_buildroot, std::string> default_buildroot;
+        };
+
+        typedef ExtraDistributionData<GemsDistribution> GemsExtraDistributionData;
+    }
 }
 
 #endif

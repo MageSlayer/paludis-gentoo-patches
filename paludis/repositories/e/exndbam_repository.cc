@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
@@ -151,8 +152,8 @@ ExndbamRepository::repository_factory_create(
     {
         builddir = f("buildroot");
         if (builddir.empty())
-            builddir = (*DistributionData::get_instance()->distribution_from_string(
-                        env->distribution())).default_ebuild_builddir();
+            builddir = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_buildroot();
         else
             Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context)
                 << "Key 'buildroot' is deprecated, use 'builddir' instead";

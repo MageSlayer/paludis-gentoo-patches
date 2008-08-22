@@ -1400,6 +1400,8 @@ AC_OUTPUT(
 	paludis/about.hh
 	paludis/args/Makefile
 	paludis/distributions/Makefile
+	paludis/distributions/exherbo/Makefile
+	paludis/distributions/gentoo/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile
 	paludis/environments/no_config/Makefile

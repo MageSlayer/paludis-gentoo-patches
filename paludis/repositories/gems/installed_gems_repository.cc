@@ -22,6 +22,7 @@
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/repositories/gems/exceptions.hh>
+#include <paludis/repositories/gems/extra_distribution_data.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/stringify.hh>
@@ -406,7 +407,8 @@ InstalledGemsRepository::repository_factory_create(
 
     std::string builddir(f("builddir"));
     if (builddir.empty())
-        builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
+        builddir = gems::GemsExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(env->distribution()))->default_buildroot();
 
     std::string root(f("root"));
     if (root.empty())

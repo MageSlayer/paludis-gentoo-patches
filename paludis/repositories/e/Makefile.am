@@ -68,6 +68,7 @@ paludis_repositories_e_include_HEADERS = \
 	exndbam_id.hh \
 	exndbam_repository.hh \
 	exndbam_repository-sr.hh \
+	extra_distribution_data.hh \
 	fetch_visitor.hh \
 	info_metadata_key.hh \
 	pretend_fetch_visitor.hh \
@@ -119,6 +120,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	exndbam_id.cc \
 	exndbam_repository.cc \
 	exheres_layout.cc \
+	extra_distribution_data.cc \
 	fetch_visitor.cc \
 	info_metadata_key.cc \
 	pretend_fetch_visitor.cc \

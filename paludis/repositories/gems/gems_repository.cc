@@ -23,6 +23,7 @@
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/gem_specifications.hh>
 #include <paludis/repositories/gems/exceptions.hh>
+#include <paludis/repositories/gems/extra_distribution_data.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -382,7 +383,8 @@ GemsRepository::repository_factory_create(
 
     std::string builddir(f("builddir"));
     if (builddir.empty())
-        builddir = (*DistributionData::get_instance()->distribution_from_string(env->distribution())).default_ebuild_builddir();
+        builddir = gems::GemsExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(env->distribution()))->default_buildroot();
 
     return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
                 .location(location)
