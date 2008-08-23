@@ -70,7 +70,7 @@ END
 cat <<"END" > test-category/target/target-1.exheres-0 || exit 1
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.pioto.org/"
-SOURCES=""
+DOWNLOADS=""
 SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
