@@ -55,7 +55,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m, UnacceptedMask))
 
         self.assertEquals(m.key(), "K")
-        self.assertEquals(m.description(), "keywords")
+        self.assertEquals(m.description(), "keyword")
         self.assert_(isinstance(m.unaccepted_key(), MetadataKeywordNameIterableKey))
 
     def test_03_repository_mask(self):
