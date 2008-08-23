@@ -22,11 +22,11 @@
 
 default_pkg_nofetch()
 {
-    [[ -z "${A}" ]] && return
+    [[ -z "${ARCHIVES}" ]] && return
 
     local f g=
-    for f in ${A} ; do
-        [[ -f "${FETCHEDDIR}/${A}" ]] && continue
+    for f in ${ARCHIVES} ; do
+        [[ -f "${FETCHEDDIR}/${ARCHIVES}" ]] && continue
         if [[ -z "${g}" ]] ; then
             echo "The following files could not be fetched automatically for ${PN}:"
             g=no

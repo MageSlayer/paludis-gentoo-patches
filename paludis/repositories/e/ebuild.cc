@@ -594,12 +594,16 @@ Command
 EbuildNoFetchCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("A", fetch_params.a())
             .with_setenv("ROOT", fetch_params.root())
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles()->begin(),
-                    fetch_params.profiles()->end(), " ")));
+                    fetch_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_ARCHIVES_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a()));
 
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a(),
+                fetch_params.a());
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
                 fetch_params.aa());
@@ -641,7 +645,6 @@ Command
 EbuildInstallCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_setenv("A", install_params.a())
             .with_setenv("ROOT", install_params.root())
             .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(install_params.loadsaveenv_dir()))
             .with_setenv("PALUDIS_CONFIG_PROTECT", install_params.config_protect())
@@ -649,8 +652,13 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params.profiles()->begin(),
                                           install_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_ARCHIVES_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a())
             .with_setenv("SLOT", stringify(install_params.slot())));
 
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a(),
+                install_params.a());
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
                 install_params.aa());

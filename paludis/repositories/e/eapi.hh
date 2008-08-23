@@ -70,6 +70,7 @@ namespace paludis
         struct ebuild_variable;
         struct ebuild_new_upgrade_phase_order;
         struct eclass_must_not_set_variables;
+        struct env_a;
         struct env_aa;
         struct env_accept_keywords;
         struct env_arch;
@@ -228,6 +229,7 @@ namespace paludis
         struct EAPIEbuildEnvironmentVariables
         {
             NamedValue<n::description_use, std::string> description_use;
+            NamedValue<n::env_a, std::string> env_a;
             NamedValue<n::env_aa, std::string> env_aa;
             NamedValue<n::env_accept_keywords, std::string> env_accept_keywords;
             NamedValue<n::env_arch, std::string> env_arch;

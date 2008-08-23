@@ -22,7 +22,7 @@
 
 default_src_unpack()
 {
-    [[ -n "${A}" ]] && unpack --if-compressed ${A}
+    [[ -n "${ARCHIVES}" ]] && unpack --if-compressed ${ARCHIVES}
 }
 
 src_unpack()

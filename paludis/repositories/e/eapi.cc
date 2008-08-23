@@ -72,6 +72,7 @@ namespace
     {
         return make_shared_ptr(new EAPIEbuildEnvironmentVariables(make_named_values<EAPIEbuildEnvironmentVariables>(
                         value_for<n::description_use>(check_get(k, "description_use")),
+                        value_for<n::env_a>(check_get(k, "env_a")),
                         value_for<n::env_aa>(check_get(k, "env_aa")),
                         value_for<n::env_accept_keywords>(check_get(k, "env_accept_keywords")),
                         value_for<n::env_arch>(check_get(k, "env_arch")),
