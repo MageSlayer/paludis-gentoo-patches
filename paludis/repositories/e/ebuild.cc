@@ -116,7 +116,6 @@ EbuildCommand::operator() ()
             .with_setenv("PVR", stringify(params.package_id()->version()))
             .with_setenv("CATEGORY", stringify(params.package_id()->name().category))
             .with_setenv("REPOSITORY", stringify(params.package_id()->repository()->name()))
-            .with_setenv("FILESDIR", stringify(params.files_dir()))
             .with_setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
@@ -214,6 +213,9 @@ EbuildCommand::operator() ()
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf(),
                         stringify(params.package_id()->name().package) + "-" +
                                 stringify(params.package_id()->version()));
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_filesdir().empty())
+        cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_filesdir(),
+                        stringify(params.files_dir()));
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->support_eclasses())
         cmd
