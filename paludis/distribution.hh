@@ -45,6 +45,7 @@ namespace paludis
     namespace n
     {
         struct concept_keyword;
+        struct concept_license;
         struct concept_use;
         struct default_environment;
         struct extra_data_dir;
@@ -68,6 +69,7 @@ namespace paludis
     struct Distribution
     {
         NamedValue<n::concept_keyword, std::string> concept_keyword;
+        NamedValue<n::concept_license, std::string> concept_license;
         NamedValue<n::concept_use, std::string> concept_use;
         NamedValue<n::default_environment, std::string> default_environment;
         NamedValue<n::extra_data_dir, FSEntry> extra_data_dir;

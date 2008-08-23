@@ -67,6 +67,7 @@ namespace paludis
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
                             make_shared_ptr(new Distribution(make_named_values<Distribution>(
                                         value_for<n::concept_keyword>(k.get("concept_keyword")),
+                                        value_for<n::concept_license>(k.get("concept_license")),
                                         value_for<n::concept_use>(k.get("concept_use")),
                                         value_for<n::default_environment>(k.get("default_environment")),
                                         value_for<n::extra_data_dir>(FSEntry(strip_trailing_string(stringify(d->realpath()), ".conf"))),

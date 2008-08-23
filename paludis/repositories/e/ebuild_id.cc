@@ -353,14 +353,18 @@ EbuildID::need_masks_added() const
 
     if (keywords_key())
         if (! _imp->environment->accept_keywords(keywords_key()->value(), *this))
-            add_mask(make_shared_ptr(new EUnacceptedMask('K', "keywords", keywords_key())));
+            add_mask(make_shared_ptr(new EUnacceptedMask('K',
+                            DistributionData::get_instance()->distribution_from_string(
+                                _imp->environment->distribution())->concept_keyword(), keywords_key())));
 
     if (license_key())
     {
         LicenceChecker c(_imp->environment, &Environment::accept_license, this);
         license_key()->value()->accept(c);
         if (! c.ok)
-            add_mask(make_shared_ptr(new EUnacceptedMask('L', "license", license_key())));
+            add_mask(make_shared_ptr(new EUnacceptedMask('L',
+                            DistributionData::get_instance()->distribution_from_string(
+                                _imp->environment->distribution())->concept_license(), license_key())));
     }
 
     if (! _imp->environment->unmasked_by_user(*this))
