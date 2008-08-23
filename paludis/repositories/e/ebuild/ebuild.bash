@@ -260,12 +260,9 @@ ebuild_scrub_environment()
             unset -v ${PALUDIS_IGNORE_PIVOT_ENV_VARIABLES}
         fi
 
-        unset -v ROOTPATH T TEMP HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
-        unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR
-        unset -v PALUDIS_EXTRA_DIE_MESSAGE PALUDIS_COMMAND SKIP_FUNCTIONS
-        unset -v FETCHEDDIR REPODIR EAPI FILES
+        unset -v ROOTPATH T TEMP HOME TMPDIR PORTDIR FILESDIR ECLASSDIR DISTDIR
+        unset -v SKIP_FUNCTIONS FETCHEDDIR REPODIR EAPI FILES PKGMANAGER
 
-        unset -v ${!PALUDIS_CMDLINE_*} PALUDIS_OPTIONS
         unset -v ${!CONTRARIUS_CMDLINE_*} CONTRARIUS_OPTIONS
         unset -v ${!GTKPALUDIS_CMDLINE_*} GTKPALUDIS_OPTIONS
         unset -v ${!ADJUTRIX_CMDLINE_*} ADJUTRIX_OPTIONS
@@ -274,9 +271,7 @@ ebuild_scrub_environment()
         eval unset -v $(
             PALUDIS_CLIENT_UPPER=$(echo ${PALUDIS_CLIENT} | tr a-z A-Z)
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
-        unset -v PALUDIS_CLIENT
 
-        unset -v PALUDIS_HOME PALUDIS_PID PALUDIS_PIPE_COMMAND_WRITE_FD PALUDIS_PIPE_COMMAND_READ_FD ROOT
         unset -v CATEGORY PN PV P PNV PVR PF PNVR ${!LD_*}
 
         unset -v ebuild EBUILD
@@ -284,6 +279,7 @@ ebuild_scrub_environment()
             for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
                 echo E_${v}
             done )
+        unset -v ${!PALUDIS_*}
 
         unset -v $(
             for v in ${!SANDBOX_*}; do
