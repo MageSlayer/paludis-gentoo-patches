@@ -115,7 +115,7 @@ namespace
                 {
                     std::set<std::string> tokens;
                     tokenise_whitespace(lines[m.inherited().flat_list_index()], std::inserter(tokens, tokens.begin()));
-                    FSEntry eclassdir(id->repository()->location_key()->value() / "eclass");
+                    FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
                     for (std::set<std::string>::const_iterator it(tokens.begin()),
                              it_end(tokens.end()); it_end != it; ++it)
                     {
@@ -346,7 +346,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     {
                         std::vector<std::string> eclasses;
                         tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
-                        FSEntry eclassdir(id->repository()->location_key()->value() / "eclass");
+                        FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
                         for (std::vector<std::string>::const_iterator it(eclasses.begin()),
                                  it_end(eclasses.end()); it_end != it; ++it)
                         {

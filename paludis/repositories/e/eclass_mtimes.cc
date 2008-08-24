@@ -57,7 +57,7 @@ namespace
         {
             FSEntry f(*d / e);
             if (f.exists())
-                return & c.files.insert(std::make_pair(e, f)).first->second;
+                return & c.files.insert(std::make_pair(e, f.realpath())).first->second;
         }
 
         return 0;
