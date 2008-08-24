@@ -20,11 +20,23 @@ au BufNewFile,BufRead keywords.conf
 au BufNewFile,BufRead **/keywords.conf.d/*.conf
     \     set filetype=paludis-keywords-conf
 
+au BufNewFile,BufRead platforms.conf
+   \      set filetype=paludis-keywords-conf
+
+au BufNewFile,BufRead **/platforms.conf.d/*.conf
+   \      set filetype=paludis-keywords-conf
+
 au BufNewFile,BufRead licenses.conf
     \     set filetype=paludis-licenses-conf
 
 au BufNewFile,BufRead **/licenses.conf.d/*.conf
     \     set filetype=paludis-licenses-conf
+
+au BufNewFile,BufRead licences.conf
+   \      set filetype=paludis-licenses-conf
+
+au BufNewFile,BufRead **/licences.conf.d/*.conf
+   \      set filetype=paludis-licenses-conf
 
 au BufNewFile,BufRead mirrors.conf
     \     set filetype=paludis-mirrors-conf
@@ -49,6 +61,12 @@ au BufNewFile,BufRead use.conf
 
 au BufNewFile,BufRead **/use.conf.d/*.conf
     \     set filetype=paludis-use-conf
+
+au BufNewFile,BufRead options.conf
+   \      set filetype=paludis-use-conf
+
+au BufNewFile,BufRead **/options.conf.d/*.conf
+   \      set filetype=paludis-use-conf
 
 au BufNewFile,BufRead repository_defaults.conf
     \     set filetype=paludis-repositories-conf
