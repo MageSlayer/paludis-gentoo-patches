@@ -538,7 +538,7 @@ cat <<END > cat/flat_hash-full-eclass/flat_hash-full-eclass-1.ebuild || exit 1
 END
 cat <<END > metadata/cache/cat/flat_hash-full-eclass-1 || exit 1
 _mtime_=60
-_eclasses_=foo	$(../../ebuild/utils/canonicalise eclass)	180
+_eclasses_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	180
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -560,7 +560,7 @@ cat <<END > cat/flat_hash-full-eclass-nonstandard/flat_hash-full-eclass-nonstand
 END
 cat <<END > metadata/cache/cat/flat_hash-full-eclass-nonstandard-1 || exit 1
 _mtime_=60
-_eclasses_=foo	$(../../ebuild/utils/canonicalise eclass)	180	bar	$(../../ebuild/utils/canonicalise ../extra_eclasses)	180
+_eclasses_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	180	bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ../extra_eclasses)	180
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -590,7 +590,7 @@ DEPEND=""
 END
 cat <<END > metadata/cache/cat/flat_hash-full-eclass-stale-1 || exit 1
 _mtime_=60
-_eclasses_=foo	$(../../ebuild/utils/canonicalise eclass)	120
+_eclasses_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	120
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -620,7 +620,7 @@ DEPEND=""
 END
 cat <<END > metadata/cache/cat/flat_hash-full-eclass-wrong-1 || exit 1
 _mtime_=60
-_eclasses_=foo	$(../../ebuild/utils/canonicalise eclass)	180	bar	$(../../ebuild/utils/canonicalise eclass)	180
+_eclasses_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	180	bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	180
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -650,7 +650,7 @@ DEPEND=""
 END
 cat <<END > metadata/cache/cat/flat_hash-full-eclass-gone-1 || exit 1
 _mtime_=60
-_eclasses_=baz	$(../../ebuild/utils/canonicalise eclass)	180
+_eclasses_=baz	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)	180
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -680,7 +680,7 @@ DEPEND=""
 END
 cat <<END > metadata/cache/cat/flat_hash-eclasses-truncated-1 || exit 1
 _mtime_=60
-_eclasses_=foo	$(../../ebuild/utils/canonicalise eclass)
+_eclasses_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise eclass)
 DEPEND=the/depend
 RDEPEND=the/rdepend
 SLOT=the-slot
@@ -790,7 +790,7 @@ cat <<END > cat/flat_hash-exlib/flat_hash-exlib-1.ebuild || exit 1
 END
 cat <<END > metadata/cache/cat/flat_hash-exlib-1 || exit 1
 _mtime_=60
-_exlibs_=foo	$(../../ebuild/utils/canonicalise exlibs)	180
+_exlibs_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -809,7 +809,7 @@ cat <<END > cat/flat_hash-exlib-percat/flat_hash-exlib-percat-1.ebuild || exit 1
 END
 cat <<END > metadata/cache/cat/flat_hash-exlib-percat-1 || exit 1
 _mtime_=60
-_exlibs_=foo	$(../../ebuild/utils/canonicalise exlibs)	180	bar	$(../../ebuild/utils/canonicalise cat/exlibs)	180
+_exlibs_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	180	bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise cat/exlibs)	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -836,7 +836,7 @@ DEPENDENCIES=""
 END
 cat <<END > metadata/cache/cat/flat_hash-exlib-stale-1 || exit 1
 _mtime_=60
-_exlibs_=foo	$(../../ebuild/utils/canonicalise exlibs)	120
+_exlibs_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	120
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -863,7 +863,7 @@ DEPENDENCIES=""
 END
 cat <<END > metadata/cache/cat/flat_hash-exlib-wrong-1 || exit 1
 _mtime_=60
-_exlibs_=foo	$(../../ebuild/utils/canonicalise exlibs)	180	bar	$(../../ebuild/utils/canonicalise exlibs)	180
+_exlibs_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	180	bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -890,7 +890,7 @@ DEPENDENCIES=""
 END
 cat <<END > metadata/cache/cat/flat_hash-exlib-gone-1 || exit 1
 _mtime_=60
-_exlibs_=baz	$(../../ebuild/utils/canonicalise exlibs)	180
+_exlibs_=baz	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)	180
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -917,7 +917,7 @@ DEPENDENCIES=""
 END
 cat <<END > metadata/cache/cat/flat_hash-exlibs-truncated-1 || exit 1
 _mtime_=60
-_exlibs_=foo	$(../../ebuild/utils/canonicalise exlibs)
+_exlibs_=foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise exlibs)
 DEPENDENCIES=the/depend
 SLOT=the-slot
 DOWNLOADS=the-src-uri
@@ -1070,7 +1070,7 @@ END
 
 cat <<END > cache/expected/cat/write-eclasses-1
 _mtime_=60
-_eclasses_=bar	$(../ebuild/utils/canonicalise extra_eclasses)	180	foo	$(../ebuild/utils/canonicalise repo/eclass)	180
+_eclasses_=bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise extra_eclasses)	180	foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/eclass)	180
 DEPEND=cat/foo bar? ( cat/bar ) cat/baz
 RDEPEND=cat/foo bar? ( cat/bar )
 SLOT=0
@@ -1084,7 +1084,7 @@ END
 
 cat <<END > cache/expected/cat/write-exlibs-1
 _mtime_=60
-_exlibs_=bar	$(../ebuild/utils/canonicalise repo/cat/exlibs)	180	foo	$(../ebuild/utils/canonicalise repo/exlibs)	180
+_exlibs_=bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/cat/exlibs)	180	foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/exlibs)	180
 DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) cat/baz ( build: bar? ( ) ) cat/baz ( build: bar? ( ) ) 
 SLOT=0
 HOMEPAGE=http://example.com/
