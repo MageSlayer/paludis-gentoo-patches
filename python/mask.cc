@@ -38,7 +38,7 @@ namespace
                         value_for<n::comment>(s),
                         value_for<n::mask_file>(f)
                         )));
-    };
+    }
 }
 
 class MaskSptrToPythonVisitor :
