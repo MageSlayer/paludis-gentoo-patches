@@ -367,6 +367,19 @@ struct S
 	])
 dnl }}}
 
+dnl {{{ c++0x enum classes
+AC_MSG_CHECKING([for c++0x enum class support])
+AC_COMPILE_IFELSE([
+enum class C : long { c };
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
 need_xml_check=
 need_pcrepp_check=
 need_syck_check=
