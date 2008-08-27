@@ -132,6 +132,29 @@ namespace
             return v;
         return f(k);
     }
+
+    void parse_commandline_vars(
+        const std::string & varstr,
+        const std::tr1::shared_ptr<Map<std::string, std::string> > & varmap)
+    {
+        typedef std::list<std::string> SetsType;
+        SetsType sets;
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(varstr, ":", "", std::back_inserter(sets));
+
+        for (SetsType::const_iterator it = sets.begin(), end = sets.end(); end != it; ++it)
+        {
+            const std::string::size_type assign(it->find("="));
+
+            if (std::string::npos != assign)
+            {
+                const std::string var_name(it->substr(0, assign));
+                const std::string var_val(it->substr(assign + 1));
+
+                if (! var_name.empty()  && ! var_val.empty())
+                    varmap->insert(var_name,  var_val);
+            }
+        }
+    }
 }
 
 namespace paludis
@@ -173,6 +196,8 @@ namespace paludis
         mutable Set<std::string> accept_breaks_portage;
         mutable std::string reduced_username;
 
+        std::tr1::shared_ptr<Map<std::string, std::string> > commandline_environment;
+
         Implementation(PaludisEnvironment * const);
 
         void need_environment_conf() const;
@@ -191,7 +216,8 @@ namespace paludis
         mirrors_conf(new MirrorsConf(e)),
         has_environment_conf(false),
         accept_all_breaks_portage(false),
-        reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild"))
+        reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
+        commandline_environment(new Map<std::string, std::string>)
     {
     }
 
@@ -206,17 +232,27 @@ namespace paludis
         Context context("When loading environment.conf:");
 
         std::tr1::shared_ptr<KeyValueConfigFile> kv;
-        std::tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
-                new Map<std::string, std::string>);
-        conf_vars->insert("ROOT", root);
-        conf_vars->insert("root", root);
-        conf_vars->insert("accept_breaks_portage", "*");
         std::tr1::shared_ptr<FSEntry> world_file;
 
+        commandline_environment->insert("root", root);
+        commandline_environment->insert("ROOT", root);
+        commandline_environment->insert("accept_breaks_portage", "*");
+
+        const KeyValueConfigFile::DefaultFunction def_predefined =
+            std::tr1::bind(
+                &predefined,
+                commandline_environment,
+                std::tr1::placeholders::_1,
+                std::tr1::placeholders::_2);
+
         if ((FSEntry(config_dir) / "environment.conf").exists())
-            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions(),
-                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                        &KeyValueConfigFile::no_transformation));
+        {
+            kv.reset(new KeyValueConfigFile(
+                FSEntry(config_dir) / "environment.conf",
+                KeyValueConfigFileOptions(),
+                def_predefined,
+                &KeyValueConfigFile::no_transformation));
+        }
         else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
             std::stringstream s;
@@ -226,9 +262,11 @@ namespace paludis
                     .with_stderr_prefix("environment.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
-                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                        &KeyValueConfigFile::no_transformation));
+            kv.reset(new KeyValueConfigFile(
+                s,
+                KeyValueConfigFileOptions(),
+                def_predefined,
+                &KeyValueConfigFile::no_transformation));
 
             if (exit_status != 0)
             {
@@ -243,9 +281,11 @@ namespace paludis
             Log::get_instance()->message("paludis_environment.no_environment_conf", ll_debug, lc_context)
                 << "No environment.conf or environment.bash in '" << config_dir << "'";
             std::stringstream str;
-            kv.reset(new KeyValueConfigFile(str, KeyValueConfigFileOptions(),
-                        std::tr1::bind(&predefined, conf_vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                        &KeyValueConfigFile::no_transformation));
+            kv.reset(new KeyValueConfigFile(
+                str,
+                KeyValueConfigFileOptions(),
+                def_predefined,
+                &KeyValueConfigFile::no_transformation));
         }
 
         if (! kv->get("reduced_username").empty())
@@ -304,13 +344,26 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     Context context("When loading paludis configuration:");
 
     /* indirection */
-    std::string root_prefix;
     std::string local_config_suffix;
+
     if (! suffix.empty())
-        local_config_suffix = "-" + suffix;
+    {
+        const std::string::size_type delim(suffix.find(":"));
+
+        if (std::string::npos != delim)
+        {
+            local_config_suffix = "-" + suffix.substr(0, delim);
+            parse_commandline_vars(suffix.substr(delim + 1), _imp->commandline_environment);
+        }
+        else
+        {
+            local_config_suffix = "-" + suffix;
+        }
+    }
 
     FSEntry local_config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
             (".paludis" + local_config_suffix)), old_config_dir(local_config_dir);
+
     try
     {
         if (! local_config_dir.exists())
@@ -321,36 +374,71 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         local_config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + local_config_suffix));
     }
 
-    if (! local_config_dir.exists())
-        throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
-                + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
-
-    Log::get_instance()->message("paludis_environment.paludis_config.initial_dir", ll_debug, lc_no_context)
-        << "PaludisConfig initial directory is '" << local_config_dir << "'";
-
-    if ((local_config_dir / "specpath.conf").exists() || (local_config_dir / "specpath").exists())
+    if (_imp->commandline_environment->end() != _imp->commandline_environment->find("root"))
     {
-        KeyValueConfigFile* specpath;
-        if ((local_config_dir / "specpath.conf").exists())
-            specpath = new KeyValueConfigFile(local_config_dir / "specpath.conf", KeyValueConfigFileOptions(),
-                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
-        else
-        {
-            specpath = new KeyValueConfigFile(local_config_dir / "specpath", KeyValueConfigFileOptions(),
-                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
-            Log::get_instance()->message("paludis_environment.paludis_config.specpath.deprecated", ll_warning, lc_no_context)
-                << "Using specpath is deprecated, use specpath.conf instead";
-        }
+        if (! local_config_dir.exists())
+            throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
+                    + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
+
+        Log::get_instance()->message("paludis_environment.paludis_config.initial_dir", ll_debug, lc_no_context)
+            << "PaludisConfig initial directory is '" << local_config_dir << "'";
+    }
+
+    std::tr1::shared_ptr<KeyValueConfigFile> specpath;
+    const KeyValueConfigFile::DefaultFunction def_predefined =
+        std::tr1::bind(
+            &predefined,
+            _imp->commandline_environment,
+            std::tr1::placeholders::_1,
+            std::tr1::placeholders::_2);
+
+    if ((local_config_dir / "specpath.conf").exists())
+    {
+        specpath.reset(new KeyValueConfigFile(
+            local_config_dir / "specpath.conf",
+            KeyValueConfigFileOptions(),
+            def_predefined,
+            &KeyValueConfigFile::no_transformation));
+    }
+    else if ((local_config_dir / "specpath").exists())
+    {
+        specpath.reset(new KeyValueConfigFile(
+            local_config_dir / "specpath",
+            KeyValueConfigFileOptions(),
+            def_predefined,
+            &KeyValueConfigFile::no_transformation));
+
+        Log::get_instance()->message("paludis_environment.paludis_config.specpath.deprecated", ll_warning, lc_no_context)
+            << "Using specpath is deprecated, use specpath.conf instead";
+    }
+    else if (_imp->commandline_environment->end() != _imp->commandline_environment->find("root"))
+    {
+        std::istringstream strm;
+        specpath.reset(new KeyValueConfigFile(
+            strm,
+            KeyValueConfigFileOptions(),
+            def_predefined,
+            &KeyValueConfigFile::no_transformation));
+    }
+
+    std::string root_prefix;
+
+    if (specpath)
+    {
         root_prefix = specpath->get("root");
         local_config_suffix = specpath->get("config-suffix");
 
-        if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
-        {
-            local_config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
-            if (! local_config_dir.exists())
-                throw PaludisConfigError("Can't find configuration directory under root ("
-                        "tried '" + stringify(local_config_dir) + "'");
-        }
+        if (! local_config_suffix.empty())
+            local_config_suffix.insert(0, "-");
+    }
+
+    if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
+    {
+        local_config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
+        if (! local_config_dir.exists())
+            throw PaludisConfigError("Can't find configuration directory under root ("
+                    "tried '" + stringify(local_config_dir) + "' and couldn't find any \
+                    specpath variables on the commandline");
     }
 
     _imp->root = root_prefix.empty() ? "/" : root_prefix;

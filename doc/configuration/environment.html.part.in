@@ -5,7 +5,8 @@
 ###PALUDISENVIRONMENTONLY###
 
 <p>The <code>environment.conf</code> file can be used to control general environment settings. It is a standard
-key=value configuration file, and may optionally be in bash format. Recognised keys are as follows:</p>
+key=value configuration file, and may optionally be in bash format. This file overwrites the key=value sets from the
+commandline given in --environment(-E). Recognised keys are as follows:</p>
 
 <dl>
     <dt><code>world</code></dt>

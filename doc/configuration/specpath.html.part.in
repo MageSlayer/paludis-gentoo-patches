@@ -21,8 +21,8 @@ example for chroots.</p>
 <h2>specpath.conf</h2>
 
 <p>If a file named <code>specpath.conf</code> exists in the configuration directory, Paludis uses this to find a second,
-real configuration directory. <code>specpath.conf</code> is a standard key=value configuration file, with the following
-keys having recognised meaning:</p>
+real configuration directory. It is a standard key=value configuration file. This file overwrites the key=value sets
+from the commandline given in --environment(-E). Recognised keys are as follows:</p>
 
 <dl>
     <dt><code>root</code></dt>
