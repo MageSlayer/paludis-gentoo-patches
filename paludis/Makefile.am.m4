@@ -81,7 +81,7 @@ DEFS= \
 	-DPYTHONINSTALLDIR=\"$(PYTHON_INSTALL_DIR)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
-	repository_blacklist.txt hooker.bash \
+	hooker.bash \
 	stripper_TEST_binary.cc
 SUBDIRS = distributions fetchers syncers util selinux . repositories environments args
 BUILT_SOURCES = srcleanlist secleanlist
@@ -136,9 +136,6 @@ check_SCRIPTS = testscriptlist
 check_LTLIBRARIES = libpaludissohooks_TEST_@PALUDIS_PC_SLOT@.la
 
 stripper_TEST_binary_SOURCES = stripper_TEST_binary.cc
-
-paludis_datadir = $(datadir)/paludis
-paludis_data_DATA = repository_blacklist.txt
 
 paludis_libexecdir = $(libexecdir)/paludis
 paludis_libexec_SCRIPTS = hooker.bash

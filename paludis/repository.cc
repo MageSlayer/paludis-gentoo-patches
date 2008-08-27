@@ -20,7 +20,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -29,11 +28,13 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/distribution-impl.hh>
+#include <paludis/environment.hh>
 #include <tr1/functional>
 #include <map>
 #include <list>
@@ -71,26 +72,40 @@ RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_n
 {
 }
 
+namespace paludis
+{
+    namespace n
+    {
+        struct repository_blacklist;
+    }
+}
+
 namespace
 {
-    struct RepositoryBlacklist :
-        InstantiationPolicy<RepositoryBlacklist, instantiation_method::SingletonTag>
+    struct RepositoryDistribution
     {
-        std::map<std::string, std::string> items;
+        NamedValue<n::repository_blacklist, std::tr1::function<std::string (const std::string &)> > repository_blacklist;
+    };
 
-        RepositoryBlacklist()
+    typedef ExtraDistributionData<RepositoryDistribution> RepositoryDistributionData;
+}
+
+namespace paludis
+{
+    template <>
+    struct ExtraDistributionDataData<RepositoryDistribution>
+    {
+        static std::string config_file_name()
         {
-            if (! (FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt").exists())
-                return;
+            return "repository_blacklist.conf";
+        }
 
-            LineConfigFile f(FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt", LineConfigFileOptions());
-            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::string::size_type p(line->find(" - "));
-                if (std::string::npos != p)
-                    items.insert(std::make_pair(line->substr(0, p), line->substr(p + 3)));
-            }
+        static std::tr1::shared_ptr<RepositoryDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
+        {
+            return make_shared_ptr(new RepositoryDistribution(make_named_values<RepositoryDistribution>(
+                            value_for<n::repository_blacklist>(std::tr1::bind(std::tr1::mem_fn(&KeyValueConfigFile::get),
+                                    k, std::tr1::placeholders::_1))
+                            )));
         }
     };
 }
@@ -117,12 +132,14 @@ Repository::Repository(
     RepositoryCapabilities(caps),
     _imp(PrivateImplementationPattern<Repository>::_imp)
 {
-    std::map<std::string, std::string>::const_iterator i(
-            RepositoryBlacklist::get_instance()->items.find(stringify(name())));
-    if (RepositoryBlacklist::get_instance()->items.end() != i)
+    std::string reason(RepositoryDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->repository_blacklist()(stringify(our_name)));
+
+    if (! reason.empty())
         Log::get_instance()->message("repository.blacklisted", ll_warning, lc_no_context)
             << "Repository '" << stringify(name())
-            << "' is blacklisted with reason '" << i->second << "'. Consult the FAQ for more details.";
+            << "' is blacklisted with reason '" << reason << "'. Consult the FAQ for more details.";
 }
 
 Repository::~Repository()

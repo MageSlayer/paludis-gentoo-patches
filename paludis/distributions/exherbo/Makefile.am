@@ -4,7 +4,7 @@ SUBDIRS =
 
 distributiondir = $(datadir)/paludis/distributions/exherbo/
 
-distribution_DATA = e.conf gems.conf paludis.conf
+distribution_DATA = e.conf gems.conf paludis.conf repository_blacklist.conf
 
 EXTRA_DIST = $(distribution_DATA)
 
