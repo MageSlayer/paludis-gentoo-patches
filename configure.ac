@@ -1028,7 +1028,8 @@ if test "x$enable_python" = "xyes" ; then
 	],
 		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no])
-		AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required])])
+		AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required. If you think you have boost.python, \
+					  you may need to reinstall it if you have upgraded Python since installing Boost.])])
 	dnl Restore the C++ flags
 	CXXFLAGS="$save_CXXFLAGS"
 	dnl }}}
@@ -1053,7 +1054,8 @@ int main() { boost::python::throw_error_already_set(); return 0; }
 			[BOOST_PYTHON_LIB="-lboost_python-mt"
 			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 			[AC_MSG_RESULT([not found])
-			AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required])])])
+			AC_MSG_ERROR([Can't work out how to link to boost.python. You may need to reinstall boost.python, especially \
+						  if you have upgraded Python since installing Boost.])])])
 	AC_SUBST(BOOST_PYTHON_LIB)
 	dnl Restore the C++ flags
 	LIBS="$save_LIBS"
