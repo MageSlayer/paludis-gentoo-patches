@@ -68,7 +68,7 @@ namespace paludis
 
 EInstalledRepository::EInstalledRepository(const EInstalledRepositoryParams & p,
         const RepositoryName & n, const RepositoryCapabilities & c) :
-    Repository(n, c),
+    Repository(p.environment, n, c),
     PrivateImplementationPattern<EInstalledRepository>(new Implementation<EInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<EInstalledRepository>::_imp)
 {

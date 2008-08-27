@@ -89,7 +89,8 @@ namespace paludis
 }
 
 InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepositoryParams & params) :
-    Repository(RepositoryName("installed-gems"),
+    Repository(params.environment,
+            RepositoryName("installed-gems"),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),

@@ -35,18 +35,18 @@ namespace paludis
             return "e.conf";
         }
 
-        static std::tr1::shared_ptr<EDistribution> make_data(const KeyValueConfigFile & k)
+        static std::tr1::shared_ptr<EDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new EDistribution(make_named_values<EDistribution>(
-                            value_for<n::default_buildroot>(k.get("default_buildroot")),
-                            value_for<n::default_distdir>(k.get("default_distdir")),
-                            value_for<n::default_eapi_when_unknown>(k.get("default_eapi_when_unknown")),
-                            value_for<n::default_eapi_when_unspecified>(k.get("default_eapi_when_unspecified")),
-                            value_for<n::default_layout>(k.get("default_layout")),
-                            value_for<n::default_names_cache>(k.get("default_names_cache")),
-                            value_for<n::default_profile_eapi>(k.get("default_profile_eapi")),
-                            value_for<n::default_provides_cache>(k.get("default_provides_cache")),
-                            value_for<n::default_write_cache>(k.get("default_write_cache"))
+                            value_for<n::default_buildroot>(k->get("default_buildroot")),
+                            value_for<n::default_distdir>(k->get("default_distdir")),
+                            value_for<n::default_eapi_when_unknown>(k->get("default_eapi_when_unknown")),
+                            value_for<n::default_eapi_when_unspecified>(k->get("default_eapi_when_unspecified")),
+                            value_for<n::default_layout>(k->get("default_layout")),
+                            value_for<n::default_names_cache>(k->get("default_names_cache")),
+                            value_for<n::default_profile_eapi>(k->get("default_profile_eapi")),
+                            value_for<n::default_provides_cache>(k->get("default_provides_cache")),
+                            value_for<n::default_write_cache>(k->get("default_write_cache"))
                             )));
         }
     };

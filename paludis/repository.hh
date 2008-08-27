@@ -251,7 +251,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Repository(const RepositoryName &, const RepositoryCapabilities &);
+            Repository(const Environment * const, const RepositoryName &, const RepositoryCapabilities &);
 
             ///\}
 

@@ -110,6 +110,7 @@ namespace paludis
 }
 
 Repository::Repository(
+        const Environment * const env,
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
     PrivateImplementationPattern<Repository>(new Implementation<Repository>(our_name)),

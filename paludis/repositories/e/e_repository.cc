@@ -452,26 +452,28 @@ namespace
 }
 
 ERepository::ERepository(const ERepositoryParams & p) :
-    Repository(fetch_repo_name(p.location),
+    Repository(
+            p.environment,
+            fetch_repo_name(p.location),
             make_named_values<RepositoryCapabilities>(
-            value_for<n::destination_interface>(p.binary_destination ? this : 0),
-            value_for<n::e_interface>(this),
-            value_for<n::environment_variable_interface>(this),
-            value_for<n::hook_interface>(this),
-            value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-            value_for<n::manifest_interface>(this),
-            value_for<n::mirrors_interface>(this),
-            value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::destination_interface>(p.binary_destination ? this : 0),
+                value_for<n::e_interface>(this),
+                value_for<n::environment_variable_interface>(this),
+                value_for<n::hook_interface>(this),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(this),
+                value_for<n::mirrors_interface>(this),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
 #ifdef ENABLE_QA
-            value_for<n::qa_interface>(this),
+                value_for<n::qa_interface>(this),
 #else
-            value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
 #endif
-            value_for<n::sets_interface>(this),
-            value_for<n::syncable_interface>(this),
-            value_for<n::use_interface>(this),
-            value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment->distribution())).support_old_style_virtuals() ? this : 0)
-            )),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(this),
+                value_for<n::use_interface>(this),
+                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment->distribution())).support_old_style_virtuals() ? this : 0)
+                )),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
     _imp(PrivateImplementationPattern<ERepository>::_imp)
 {

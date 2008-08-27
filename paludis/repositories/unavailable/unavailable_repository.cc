@@ -83,6 +83,7 @@ UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError
 UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams & p) :
     PrivateImplementationPattern<UnavailableRepository>(new Implementation<UnavailableRepository>(this, p)),
     Repository(
+            p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),

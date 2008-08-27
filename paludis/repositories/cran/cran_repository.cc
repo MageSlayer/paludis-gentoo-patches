@@ -102,22 +102,24 @@ Implementation<CRANRepository>::~Implementation()
 
 
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
-    Repository(CRANRepository::fetch_repo_name(stringify(p.location)),
+    Repository(
+            p.environment,
+            CRANRepository::fetch_repo_name(stringify(p.location)),
             make_named_values<RepositoryCapabilities>(
-            value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-            value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
-            value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-            value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
-            value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-            value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-            value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
-            value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-            value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-            value_for<n::sets_interface>(this),
-            value_for<n::syncable_interface>(this),
-            value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
-            value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
-            )),
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(this),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                )),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex))),
     _imp(PrivateImplementationPattern<CRANRepository>::_imp)
 {

@@ -108,7 +108,7 @@ namespace
 
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
-    Repository(RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
+    Repository(env, RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),

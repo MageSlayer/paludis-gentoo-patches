@@ -157,22 +157,24 @@ Implementation<CRANInstalledRepository>::need_ids() const
 #endif
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
-    Repository(RepositoryName("installed-cran"),
+    Repository(
+            p.environment,
+            RepositoryName("installed-cran"),
             make_named_values<RepositoryCapabilities>(
-            value_for<n::destination_interface>(this),
-            value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
-            value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-            value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
-            value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-            value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-            value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
-            value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-            value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-            value_for<n::sets_interface>(this),
-            value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
-            value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
-            value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
-            )),
+                value_for<n::destination_interface>(this),
+                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
+                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
+                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
+                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
+                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
+                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
+                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
+                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
+                value_for<n::sets_interface>(this),
+                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
+                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
+                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                )),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
 {
