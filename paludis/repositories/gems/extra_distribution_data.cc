@@ -35,10 +35,10 @@ namespace paludis
             return "gems.conf";
         }
 
-        static std::tr1::shared_ptr<GemsDistribution> make_data(const KeyValueConfigFile & k)
+        static std::tr1::shared_ptr<GemsDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new GemsDistribution(make_named_values<GemsDistribution>(
-                            value_for<n::default_buildroot>(k.get("default_buildroot"))
+                            value_for<n::default_buildroot>(k->get("default_buildroot"))
                             )));
         }
     };

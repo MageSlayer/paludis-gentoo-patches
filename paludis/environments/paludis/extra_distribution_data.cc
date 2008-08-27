@@ -35,18 +35,18 @@ namespace paludis
             return "paludis.conf";
         }
 
-        static std::tr1::shared_ptr<PaludisDistribution> make_data(const KeyValueConfigFile & k)
+        static std::tr1::shared_ptr<PaludisDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new PaludisDistribution(make_named_values<PaludisDistribution>(
-                            value_for<n::bashrc_filename>(k.get("bashrc_filename")),
-                            value_for<n::keywords_filename_part>(k.get("keywords_filename_part")),
-                            value_for<n::licenses_filename_part>(k.get("licenses_filename_part")),
-                            value_for<n::mirrors_filename_part>(k.get("mirrors_filename_part")),
-                            value_for<n::package_mask_filename_part>(k.get("package_mask_filename_part")),
-                            value_for<n::package_unmask_filename_part>(k.get("package_unmask_filename_part")),
-                            value_for<n::repositories_directory>(k.get("repositories_directory")),
-                            value_for<n::repository_defaults_filename_part>(k.get("repository_defaults_filename_part")),
-                            value_for<n::use_filename_part>(k.get("use_filename_part"))
+                            value_for<n::bashrc_filename>(k->get("bashrc_filename")),
+                            value_for<n::keywords_filename_part>(k->get("keywords_filename_part")),
+                            value_for<n::licenses_filename_part>(k->get("licenses_filename_part")),
+                            value_for<n::mirrors_filename_part>(k->get("mirrors_filename_part")),
+                            value_for<n::package_mask_filename_part>(k->get("package_mask_filename_part")),
+                            value_for<n::package_unmask_filename_part>(k->get("package_unmask_filename_part")),
+                            value_for<n::repositories_directory>(k->get("repositories_directory")),
+                            value_for<n::repository_defaults_filename_part>(k->get("repository_defaults_filename_part")),
+                            value_for<n::use_filename_part>(k->get("use_filename_part"))
                             )));
         }
     };
