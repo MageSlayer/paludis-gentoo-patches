@@ -460,7 +460,7 @@ dnl }}}
 
 dnl {{{ check whether we can do extern template
 CAN_USE_EXTERN_TEMPLATE=
-AC_MSG_CHECKING([whether we can use extern template])
+AC_MSG_CHECKING([for c++0x 'extern template' support])
 AC_COMPILE_IFELSE([
 template <typename T_> class S
 {
@@ -471,9 +471,26 @@ extern template struct S<int>;
 template struct S<int>;
 ],
 	[AC_MSG_RESULT([yes])
-	 CAN_USE_EXTERN_TEMPLATE=yes
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+	 AC_MSG_CHECKING([whether c++0x 'extern template' works as we expect])
+	 AC_COMPILE_IFELSE([
+template <typename T_> struct B
+{
+	T_ f();
+};
+extern template class B<int>;
+void f()
+{
+	B<int> t;
+	t.f();
+}
+],
+		[AC_MSG_RESULT([yes])
+		 CAN_USE_EXTERN_TEMPLATE=yes
+		 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+		 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+		],
+		[AC_MSG_RESULT([no, your compiler is weird])
+		])
 	 ],
 	[AC_MSG_RESULT([no])])
 dnl }}}
