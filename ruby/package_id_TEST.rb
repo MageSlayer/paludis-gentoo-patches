@@ -342,12 +342,6 @@ module Paludis
             assert_kind_of Array, pid_installed.iuse_key.value
             assert_equal ['test', 'test_iuse'], pid_installed.iuse_key.value
         end
-
-        def test_inherited_key
-            assert_kind_of MetadataStringSetKey, pid_installed["INHERITED"]
-            assert_kind_of Array, pid_installed["INHERITED"].value
-            assert_equal ['test_inherited'], pid_installed["INHERITED"].value
-        end
     end
 
     class TestCase_BadKeys < Test::Unit::TestCase

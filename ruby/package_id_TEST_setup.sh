@@ -59,7 +59,6 @@ echo "cat-one" > installed/cat-one/pkg-one-1/CATEGORY
 touch installed/cat-one/pkg-one-1/CONTENTS
 echo "0" > installed/cat-one/pkg-one-1/EAPI
 echo "a description" > installed/cat-one/pkg-one-1/DESCRIPTION
-echo "test_inherited" > installed/cat-one/pkg-one-1/INHERITED
 echo "test_iuse test" > installed/cat-one/pkg-one-1/IUSE
 echo "test" > installed/cat-one/pkg-one-1/KEYWORDS
 echo "origin_test" > installed/cat-one/pkg-one-1/REPOSITORY

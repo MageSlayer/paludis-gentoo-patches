@@ -132,7 +132,7 @@ for i in SLOT EAPI; do
     echo "0" >installed/cat-one/pkg-one-1/${i}
 done
 
-for i in DEPEND RDEPEND LICENSE INHERITED IUSE PDEPEND PROVIDE; do
+for i in DEPEND RDEPEND LICENSE IUSE PDEPEND PROVIDE; do
     touch installed/cat-one/pkg-one-1/${i}
 done
 
