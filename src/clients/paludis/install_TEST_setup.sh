@@ -19,29 +19,29 @@ END
 
 for c in vdb exndbam ; do
 
-    mkdir -p root/${SYSCONFDIR}/paludis${c}/repositories
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/use.conf
+    mkdir -p root/${SYSCONFDIR}/paludis-${c}/repositories
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/use.conf
 */* foo
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/environment.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/environment.conf
 world = `pwd`/root/world-${c}
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/licenses.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/licenses.conf
 */* *
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/keywords.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/keywords.conf
 */* test
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/bashrc
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/bashrc
 export CHOST="my-chost"
 export USER_BASHRC_WAS_USED=yes
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis${c}/repositories/repo1.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = ebuild
@@ -52,7 +52,7 @@ END
 
 done
 
-cat <<END > root/${SYSCONFDIR}/paludisvdb/repositories/installed.conf
+cat <<END > root/${SYSCONFDIR}/paludis-vdb/repositories/installed.conf
 location = `pwd`/root/var/db/pkg
 format = vdb
 names_cache = /var/empty
@@ -60,7 +60,7 @@ provides_cache = /var/empty
 builddir = `pwd`/build
 END
 
-cat <<END > root/${SYSCONFDIR}/paludisexndbam/repositories/installed.conf
+cat <<END > root/${SYSCONFDIR}/paludis-exndbam/repositories/installed.conf
 location = `pwd`/root/var/db/exndbam
 format = exndbam
 builddir = `pwd`/build
