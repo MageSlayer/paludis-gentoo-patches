@@ -30,6 +30,7 @@
 #include <iosfwd>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <ctime>
 
 /** \file
  * Declarations for FSEntry.
