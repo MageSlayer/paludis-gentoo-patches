@@ -45,6 +45,9 @@ make_binary_tarball()
     echo "tar rvf "${bindistfile}".tar -C "${tmpdir}" 'PBIN'" 1>&2
     tar rvf "${bindistfile}".tar -C "${tmpdir}" 'PBIN' || die "adding env to tarball failed"
 
+    echo rm -fr "${tmpdir}" 1>&2
+    rm -fr "${tmpdir}"
+
     echo bzip2 "${bindistfile}".tar 1>&2
     bzip2 "${bindistfile}".tar || die "compressing tarball failed"
 }
