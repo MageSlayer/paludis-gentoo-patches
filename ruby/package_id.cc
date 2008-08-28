@@ -288,14 +288,6 @@ namespace
      * Our iuse flags
      */
     /*
-     * Document-method: inherited_key
-     *
-     * call-seq:
-     *     inherited_key -> MetadataCollectionKey
-     *
-     * Our inherited
-     */
-    /*
      * Document-method: short_description_key
      *
      * call-seq:
