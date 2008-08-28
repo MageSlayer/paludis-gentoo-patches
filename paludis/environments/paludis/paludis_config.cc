@@ -437,8 +437,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         local_config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
         if (! local_config_dir.exists())
             throw PaludisConfigError("Can't find configuration directory under root ("
-                    "tried '" + stringify(local_config_dir) + "' and couldn't find any \
-                    specpath variables on the commandline");
+                    "tried '" + stringify(local_config_dir) + "' and couldn't find any "
+                    "specpath variables on the commandline");
     }
 
     _imp->root = root_prefix.empty() ? "/" : root_prefix;
