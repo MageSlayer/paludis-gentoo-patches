@@ -265,8 +265,8 @@ namespace test
         try { \
             test::TwoVarHolder test_h(paludis::stringify(a), paludis::stringify(b)); \
             check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
-                    "Expected 'stringify(" #a ")' to equal 'stringify(" #b \
-                    ")' but got '" + test_h.s_a + "'" + test_h.s_d); \
+                    "Expected 'stringify(" #a ")' = '" + test_h.s_a + "' to equal 'stringify(" #b \
+                    ")' = '" + test_h.s_b + "'" + test_h.s_d); \
         } catch (const TestFailedException &) { \
             throw; \
         } catch (const std::exception & test_e) { \
