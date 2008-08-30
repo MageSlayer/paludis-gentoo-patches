@@ -39,6 +39,7 @@
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/merger-fwd.hh>
 #include <string>
+#include <tr1/functional>
 
 /** \file
  * Declarations for Repository classes.
@@ -76,6 +77,7 @@ namespace paludis
         struct status;
         struct syncable_interface;
         struct use_interface;
+        struct used_this_for_config_protect;
         struct virtual_name;
         struct virtuals_interface;
     }
@@ -161,6 +163,7 @@ namespace paludis
         NamedValue<n::image_dir, FSEntry> image_dir;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
     };
 
     /**

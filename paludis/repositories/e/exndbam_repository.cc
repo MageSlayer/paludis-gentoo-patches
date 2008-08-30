@@ -383,6 +383,8 @@ ExndbamRepository::merge(const MergeParams & m)
             value_for<n::root>(installed_root_key()->value())
             ));
 
+    (m.used_this_for_config_protect())(config_protect);
+
     if (! merger.check())
     {
         for (DirIterator d(target_ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end
@@ -398,7 +400,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true);
+        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true, config_protect);
     }
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
@@ -409,7 +411,7 @@ ExndbamRepository::merge(const MergeParams & m)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != if_overwritten_id && candidate->slot() == m.package_id()->slot())
-                perform_uninstall(candidate, false);
+                perform_uninstall(candidate, false, "");
         }
     }
 
@@ -422,7 +424,8 @@ ExndbamRepository::merge(const MergeParams & m)
 }
 
 void
-ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id, bool replace) const
+ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        bool replace, const std::string & merge_config_protect) const
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
 
@@ -454,10 +457,12 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
                     " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
             }
 
+            std::string final_config_protect(config_protect + " " + merge_config_protect);
+
             /* unmerge */
             NDBAMUnmerger unmerger(
                     make_named_values<NDBAMUnmergerOptions>(
-                    value_for<n::config_protect>(config_protect),
+                    value_for<n::config_protect>(final_config_protect),
                     value_for<n::config_protect_mask>(config_protect_mask),
                     value_for<n::contents_file>(ver_dir / "contents"),
                     value_for<n::environment>(_imp->params.environment),

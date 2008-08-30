@@ -58,6 +58,7 @@ namespace paludis
 
     struct FetchActionOptions;
     struct InstallActionOptions;
+    struct UninstallActionOptions;
 
     struct FetchActionFailure;
 

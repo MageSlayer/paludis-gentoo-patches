@@ -102,7 +102,7 @@ namespace paludis
             ///\{
 
             void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                    bool reinstalling) const;
+                    bool reinstalling, const std::string & merge_config_protect) const;
 
             ///\}
 

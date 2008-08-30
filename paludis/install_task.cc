@@ -70,6 +70,8 @@ namespace paludis
         FetchActionOptions fetch_options;
         InstallActionOptions install_options;
 
+        std::string config_protect;
+
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
         std::tr1::shared_ptr<std::string> add_to_world_spec;
@@ -100,8 +102,12 @@ namespace paludis
                     make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(std::tr1::shared_ptr<Repository>())
+                        value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
+                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                &Implementation<InstallTask>::assign_config_protect,
+                                this, std::tr1::placeholders::_1))
                     )),
+            config_protect(""),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
@@ -113,6 +119,11 @@ namespace paludis
             continue_on_failure(itcof_if_fetch_only),
             had_resolution_failures(false)
         {
+        }
+
+        void assign_config_protect(const std::string & s)
+        {
+            config_protect = s;
         }
     };
 }
@@ -782,7 +793,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             try
             {
-                UninstallAction uninstall_action;
+                UninstallAction uninstall_action(
+                        make_named_values<UninstallActionOptions>(
+                            value_for<n::config_protect>(_imp->config_protect)
+                            ));
                 (*c)->perform_action(uninstall_action);
             }
             catch (const UninstallActionError & e)

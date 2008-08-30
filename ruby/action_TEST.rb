@@ -240,17 +240,17 @@ module Paludis
 
     class TestCase_UninstallAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of UninstallAction, UninstallAction.new
-            assert_kind_of Action, UninstallAction.new
+            assert_kind_of UninstallAction, UninstallAction.new(UninstallActionOptions.new("monkey"))
+            assert_kind_of Action, UninstallAction.new(UninstallActionOptions.new("monkey"))
         end
 
         def test_bad_create
-            assert_raise ArgumentError do
+            assert_raise TypeError do
                 UninstallAction.new("foo")
             end
 
-            assert_raise ArgumentError do
-                InstallAction.new(InstallActionOptions.new({:monkey => false}))
+            assert_raise TypeError do
+                UninstallAction.new(UninstallActionOptions.new({:monkey => false}))
             end
         end
     end

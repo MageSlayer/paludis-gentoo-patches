@@ -80,7 +80,23 @@ FetchAction::~FetchAction()
 {
 }
 
-UninstallAction::UninstallAction()
+namespace paludis
+{
+    template <>
+    struct Implementation<UninstallAction>
+    {
+        const UninstallActionOptions options;
+
+        Implementation(const UninstallActionOptions & o) :
+            options(o)
+        {
+        }
+    };
+}
+
+UninstallAction::UninstallAction(const UninstallActionOptions & o) :
+    PrivateImplementationPattern<UninstallAction>(new Implementation<UninstallAction>(o)),
+    options(_imp->options)
 {
 }
 
@@ -312,6 +328,7 @@ template class PrivateImplementationPattern<FetchAction>;
 template class PrivateImplementationPattern<InstallAction>;
 template class PrivateImplementationPattern<PretendAction>;
 template class PrivateImplementationPattern<PretendFetchAction>;
+template class PrivateImplementationPattern<UninstallAction>;
 
 template class Sequence<FetchActionFailure>;
 

@@ -47,6 +47,10 @@ namespace
         else
             return mm->second;
     }
+
+    void dummy_used_this_for_config_protect(const std::string &)
+    {
+    }
 }
 
 namespace test_cases
@@ -113,10 +117,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(exndbam_repo)
+                        value_for<n::destination>(exndbam_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
 

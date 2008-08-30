@@ -50,6 +50,10 @@ class class_supports_action_test :
 
 namespace
 {
+    void dummy_used_this_for_config_protect(const std::string &)
+    {
+    }
+
     InstallActionOptions * make_install_action_options(
             const InstallActionChecksOption & c, const InstallActionDebugOption & d,
             const std::tr1::shared_ptr<paludis::Repository> & r)
@@ -57,7 +61,16 @@ namespace
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
                     value_for<n::checks>(c),
                     value_for<n::debug_build>(d),
-                    value_for<n::destination>(r)
+                    value_for<n::destination>(r),
+                    value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                    ));
+    }
+
+    UninstallActionOptions * make_uninstall_action_options(
+            const std::string & c)
+    {
+        return new UninstallActionOptions(make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(c)
                     ));
     }
 
@@ -145,6 +158,28 @@ void expose_action()
         ;
 
     /**
+     * UninstallActionOptions
+     */
+    bp::class_<UninstallActionOptions>
+        (
+         "UninstallActionOptions",
+         "Options for UninstallAction.",
+         bp::no_init
+        )
+
+        .def("__init__",
+                bp::make_constructor(&make_uninstall_action_options),
+                "__init__(String)"
+            )
+
+        .add_property("config_protect",
+                &named_values_getter<UninstallActionOptions, n::config_protect, std::string, &UninstallActionOptions::config_protect>,
+                &named_values_setter<UninstallActionOptions, n::config_protect, std::string, &UninstallActionOptions::config_protect>,
+                "[rw] String"
+                )
+        ;
+
+    /**
      * FetchActionOptions
      */
     bp::class_<FetchActionOptions>
@@ -212,7 +247,7 @@ void expose_action()
         (
          "UninstallAction",
          "An UninstallAction is used by UninstallTask to uninstall a PackageID.",
-         bp::init<>("__init__()")
+         bp::init<const UninstallActionOptions &>("__init__(UninstallActionOptions)")
         );
 
     /**

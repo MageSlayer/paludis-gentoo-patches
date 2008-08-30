@@ -35,6 +35,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -358,7 +359,10 @@ UninstallTask::execute()
 
         try
         {
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(
+                    make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                        ));
             i->package_id->perform_action(uninstall_action);
         }
         catch (const UninstallActionError & e)

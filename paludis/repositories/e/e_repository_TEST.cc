@@ -66,6 +66,10 @@ namespace
         else
             return mm->second;
     }
+
+    void dummy_used_this_for_config_protect(const std::string &)
+    {
+    }
 }
 
 namespace test_cases
@@ -1041,7 +1045,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -1296,7 +1301,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
             {
@@ -1391,7 +1397,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
             {
@@ -1556,7 +1563,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                         ));
 
             {
@@ -1758,7 +1766,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
             {
@@ -2242,7 +2251,8 @@ namespace test_cases
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(installed_repo)
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(

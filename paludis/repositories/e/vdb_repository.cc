@@ -391,7 +391,8 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 void
-VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id, bool reinstalling) const
+VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        bool reinstalling, const std::string & merge_config_protect) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
@@ -428,10 +429,12 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                     " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
             }
 
+            std::string final_config_protect(config_protect + " " + merge_config_protect);
+
             /* unmerge */
             VDBUnmerger unmerger(
                     make_named_values<VDBUnmergerOptions>(
-                        value_for<n::config_protect>(config_protect),
+                        value_for<n::config_protect>(final_config_protect),
                         value_for<n::config_protect_mask>(config_protect_mask),
                         value_for<n::contents_file>(pkg_dir / "CONTENTS"),
 
@@ -844,6 +847,8 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::root>(installed_root_key()->value())
             ));
 
+    (m.used_this_for_config_protect())(config_protect);
+
     if (! merger.check())
     {
         for (DirIterator d(tmp_vdb_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
@@ -871,7 +876,7 @@ VDBRepository::merge(const MergeParams & m)
     merger.merge();
 
     if (is_replace)
-        perform_uninstall(is_replace, true);
+        perform_uninstall(is_replace, true, config_protect);
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
@@ -881,7 +886,7 @@ VDBRepository::merge(const MergeParams & m)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != is_replace && candidate->slot() == m.package_id()->slot())
-                perform_uninstall(candidate, false);
+                perform_uninstall(candidate, false, "");
         }
     }
 

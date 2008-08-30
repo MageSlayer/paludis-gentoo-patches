@@ -30,6 +30,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <tr1/functional>
 
 /** \file
  * Declarations for action-related classes.
@@ -46,6 +47,7 @@ namespace paludis
     namespace n
     {
         struct checks;
+        struct config_protect;
         struct debug_build;
         struct destination;
         struct failed_automatic_fetching;
@@ -54,6 +56,7 @@ namespace paludis
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
+        struct used_this_for_config_protect;
     }
 
     /**
@@ -81,6 +84,19 @@ namespace paludis
         NamedValue<n::checks, InstallActionChecksOption> checks;
         NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
         NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
+        NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
+    };
+
+    /**
+     * Options for an UninstallAction.
+     *
+     * \see UninstallAction
+     * \ingroup g_actions
+     * \since 0.30
+     */
+    struct UninstallActionOptions
+    {
+        NamedValue<n::config_protect, std::string> config_protect;
     };
 
     /**
@@ -225,16 +241,20 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
+        private PrivateImplementationPattern<UninstallAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            UninstallAction();
+            UninstallAction(const UninstallActionOptions &);
             ~UninstallAction();
 
             ///\}
+
+            /// Options for the action.
+            const UninstallActionOptions & options;
     };
 
     /**

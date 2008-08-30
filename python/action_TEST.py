@@ -81,7 +81,7 @@ class TestCase_05_FetchAction(unittest.TestCase):
 
 class TestCase_06_UninstallAction(unittest.TestCase):
     def test_01_create(self):
-        UninstallAction()
+        UninstallAction(UninstallActionOptions("monkey"))
 
 class TestCase_07_InstalledAction(unittest.TestCase):
     def test_01_create(self):

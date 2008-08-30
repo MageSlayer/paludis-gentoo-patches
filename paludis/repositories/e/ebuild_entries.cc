@@ -635,7 +635,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::image_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
                                     stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
-                            value_for<n::package_id>(id)
+                            value_for<n::package_id>(id),
+                            value_for<n::used_this_for_config_protect>(o.used_this_for_config_protect())
                             ));
         }
         else if (phase->option("strip"))

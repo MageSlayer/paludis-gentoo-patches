@@ -59,6 +59,10 @@ namespace
         else
             return mm->second;
     }
+
+    void dummy_used_this_for_config_protect(const std::string &)
+    {
+    }
 }
 
 namespace test_cases
@@ -337,10 +341,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             InfoAction info_action;
             ConfigAction config_action;
@@ -451,10 +458,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             InfoAction info_action;
             ConfigAction config_action;
@@ -565,10 +575,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             {
                 std::vector<FSEntry> cache_contents;
@@ -954,10 +967,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
 
@@ -1189,7 +1205,8 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
@@ -1280,10 +1297,13 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::checks>(iaco_default),
                         value_for<n::debug_build>(iado_none),
-                        value_for<n::destination>(vdb_repo)
+                        value_for<n::destination>(vdb_repo),
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
 
-            UninstallAction uninstall_action;
+            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
 

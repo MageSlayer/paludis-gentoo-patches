@@ -79,6 +79,10 @@ namespace
             s << "fifo<" << f.name() << ">";
         }
     };
+
+    void dummy_used_this_for_config_protect(const std::string &)
+    {
+    }
 }
 
 namespace test_cases
@@ -255,7 +259,9 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::All())]->begin());
 
-            UninstallAction action;
+            UninstallAction action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
             id->perform_action(action);
 
             TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root2/first").exists());
@@ -304,7 +310,9 @@ namespace test_cases
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
                                 &env, UserPackageDepSpecOptions())))]->begin());
 
-            UninstallAction action;
+            UninstallAction action(make_named_values<UninstallActionOptions>(
+                        value_for<n::config_protect>("")
+                    ));
             id->perform_action(action);
 
             TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
@@ -388,7 +396,8 @@ namespace test_cases
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::checks>(iaco_default),
                             value_for<n::debug_build>(iado_none),
-                            value_for<n::destination>(repo)
+                            value_for<n::destination>(repo),
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
@@ -443,7 +452,8 @@ namespace test_cases
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::checks>(iaco_default),
                             value_for<n::debug_build>(iado_none),
-                            value_for<n::destination>(repo)
+                            value_for<n::destination>(repo),
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
@@ -501,7 +511,8 @@ namespace test_cases
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::checks>(iaco_default),
                             value_for<n::debug_build>(iado_none),
-                            value_for<n::destination>(repo)
+                            value_for<n::destination>(repo),
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
@@ -540,7 +551,9 @@ namespace test_cases
                             "cat/pkg4a-1.0:foo::installed-unpackaged cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action;
+                UninstallAction action(make_named_values<UninstallActionOptions>(
+                            value_for<n::config_protect>("")
+                        ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
                             &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
@@ -580,7 +593,9 @@ namespace test_cases
                             "cat/pkg4b-1.0:foo::installed-unpackaged");
                 }
 
-                UninstallAction action;
+                UninstallAction action(make_named_values<UninstallActionOptions>(
+                            value_for<n::config_protect>("")
+                        ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",
                             &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
