@@ -31,6 +31,7 @@ namespace paludis
         struct bashrc_filename;
         struct keywords_filename_part;
         struct licenses_filename_part;
+        struct mandatory_userpriv;
         struct mirrors_filename_part;
         struct package_mask_filename_part;
         struct package_unmask_filename_part;
@@ -46,6 +47,7 @@ namespace paludis
             NamedValue<n::bashrc_filename, std::string> bashrc_filename;
             NamedValue<n::keywords_filename_part, std::string> keywords_filename_part;
             NamedValue<n::licenses_filename_part, std::string> licenses_filename_part;
+            NamedValue<n::mandatory_userpriv, bool> mandatory_userpriv;
             NamedValue<n::mirrors_filename_part, std::string> mirrors_filename_part;
             NamedValue<n::package_mask_filename_part, std::string> package_mask_filename_part;
             NamedValue<n::package_unmask_filename_part, std::string> package_unmask_filename_part;

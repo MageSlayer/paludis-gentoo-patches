@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environments/paludis/extra_distribution_data.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/distribution-impl.hh>
@@ -41,6 +42,7 @@ namespace paludis
                             value_for<n::bashrc_filename>(k->get("bashrc_filename")),
                             value_for<n::keywords_filename_part>(k->get("keywords_filename_part")),
                             value_for<n::licenses_filename_part>(k->get("licenses_filename_part")),
+                            value_for<n::mandatory_userpriv>(destringify<bool>(k->get("mandatory_userpriv"))),
                             value_for<n::mirrors_filename_part>(k->get("mirrors_filename_part")),
                             value_for<n::package_mask_filename_part>(k->get("package_mask_filename_part")),
                             value_for<n::package_unmask_filename_part>(k->get("package_unmask_filename_part")),

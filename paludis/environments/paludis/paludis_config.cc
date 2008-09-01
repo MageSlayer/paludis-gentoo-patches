@@ -443,6 +443,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     _imp->root = root_prefix.empty() ? "/" : root_prefix;
     _imp->config_dir = stringify(local_config_dir);
+
+    const std::tr1::shared_ptr<const PaludisDistribution> dist(
+            PaludisExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(distribution())));
+
     /* check that we can safely use userpriv */
     {
         Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
@@ -456,11 +461,21 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             _imp->reduced_uid.reset(new uid_t(getuid()));
             _imp->reduced_gid.reset(new gid_t(getgid()));
         }
-    }
 
-    const std::tr1::shared_ptr<const PaludisDistribution> dist(
-            PaludisExtraDistributionData::get_instance()->data_from_distribution(
-                *DistributionData::get_instance()->distribution_from_string(distribution())));
+        if (dist->mandatory_userpriv() && ((0 == *_imp->reduced_uid || 0 == *_imp->reduced_gid)))
+        {
+            std::string s;
+            if (0 == *_imp->reduced_uid)
+                s = "uid " + stringify(*_imp->reduced_uid);
+            if (0 == *_imp->reduced_gid)
+            {
+                if (! s.empty())
+                    s.append(" or ");
+                s.append("gid " + stringify(*_imp->reduced_gid));
+            }
+            throw PaludisConfigError("Cannot use " + s + " for userpriv");
+        }
+    }
 
     std::tr1::function<std::string (const std::string &)> predefined_conf_vars_func(
             std::tr1::bind(&initial_conf_vars, root_prefix, std::tr1::placeholders::_1));
