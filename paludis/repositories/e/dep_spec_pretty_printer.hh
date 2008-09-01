@@ -48,6 +48,9 @@ namespace paludis
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
+            private:
+                void do_annotations(const DepSpec &);
+
             public:
                 ///\name Basic operations
                 ///\{

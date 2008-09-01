@@ -23,9 +23,11 @@
 #include <paludis/formatter.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/set.hh>
 #include <paludis/environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -173,7 +175,7 @@ namespace
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
+DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -208,6 +210,9 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
         else if (_imp->need_space)
             _imp->s << " ";
         _imp->s << ")";
+
+        do_annotations(a);
+
         if (_imp->use_newlines)
             _imp->s << _imp->formatter.newline();
         else
@@ -216,7 +221,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
+DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec & a,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -244,6 +249,9 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
     else if (_imp->need_space)
         _imp->s << " ";
     _imp->s << ")";
+
+    do_annotations(a);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -284,6 +292,9 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
     else if (_imp->need_space)
         _imp->s << " ";
     _imp->s << ")";
+
+    do_annotations(a);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -312,6 +323,8 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
     else
         _imp->s << _imp->formatter.format(p, format::Plain());
 
+    do_annotations(p);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -328,6 +341,8 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 
     _imp->s << _imp->formatter.format(p, format::Plain());
 
+    do_annotations(p);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -343,6 +358,8 @@ DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
         _imp->s << " ";
 
     _imp->s << _imp->formatter.format(p, format::Plain());
+
+    do_annotations(p);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -368,6 +385,8 @@ DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
     else
         _imp->s << _imp->formatter.format(p, format::Plain());
 
+    do_annotations(p);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -383,6 +402,8 @@ DepSpecPrettyPrinter::visit_leaf(const FetchableURIDepSpec & p)
         _imp->s << " ";
 
     _imp->s << _imp->formatter.format(p, format::Plain());
+
+    do_annotations(p);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -400,6 +421,8 @@ DepSpecPrettyPrinter::visit_leaf(const SimpleURIDepSpec & p)
 
     _imp->s << _imp->formatter.format(p, format::Plain());
 
+    do_annotations(p);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -415,6 +438,8 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
         _imp->s << " ";
 
     _imp->s << _imp->formatter.format(b, format::Plain());
+
+    do_annotations(b);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -437,6 +462,8 @@ DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
         _imp->s << " ";
 
     _imp->s << _imp->formatter.format(l, format::Plain());
+
+    do_annotations(l);
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -466,6 +493,8 @@ DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec & l)
 
     _imp->s << _imp->formatter.format(l, format::Plain());
 
+    do_annotations(l);
+
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
     else
@@ -475,6 +504,24 @@ DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec & l)
     {
         _imp->extra_label_indent = true;
         _imp->indent += 1;
+    }
+}
+
+void
+DepSpecPrettyPrinter::do_annotations(const DepSpec & p)
+{
+    if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
+    {
+        _imp->s << " [[ ";
+        for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()), k_end(p.annotations_key()->end_metadata()) ;
+                k != k_end ; ++k)
+        {
+            const MetadataValueKey<std::string> * r(visitor_cast<const MetadataValueKey<std::string> >(**k));
+            if (! r)
+                throw InternalError(PALUDIS_HERE, "annotations must be string keys");
+            _imp->s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+        }
+        _imp->s << "]]";
     }
 }
 

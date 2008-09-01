@@ -36,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -43,12 +44,55 @@
 
 using namespace paludis;
 
-DepSpec::DepSpec()
+namespace paludis
 {
+    template <>
+    struct Implementation<DepSpec>
+    {
+        std::tr1::shared_ptr<const MetadataSectionKey> annotations_key;
+
+        Implementation()
+        {
+        }
+
+        Implementation(const std::tr1::shared_ptr<const MetadataSectionKey> & k) :
+            annotations_key(k)
+        {
+        }
+    };
+}
+
+DepSpec::DepSpec() :
+    PrivateImplementationPattern<DepSpec>(new Implementation<DepSpec>),
+    _imp(PrivateImplementationPattern<DepSpec>::_imp)
+{
+}
+
+DepSpec::DepSpec(const std::tr1::shared_ptr<const MetadataSectionKey> & k) :
+    PrivateImplementationPattern<DepSpec>(new Implementation<DepSpec>(k)),
+    _imp(PrivateImplementationPattern<DepSpec>::_imp)
+{
+    if (_imp->annotations_key)
+        add_metadata_key(_imp->annotations_key);
 }
 
 DepSpec::~DepSpec()
 {
+}
+
+const std::tr1::shared_ptr<const MetadataSectionKey>
+DepSpec::annotations_key() const
+{
+    return _imp->annotations_key;
+}
+
+void
+DepSpec::set_annotations_key(const std::tr1::shared_ptr<const MetadataSectionKey> & k)
+{
+    clear_metadata_keys();
+    _imp->annotations_key = k;
+    if (_imp->annotations_key)
+        add_metadata_key(_imp->annotations_key);
 }
 
 const ConditionalDepSpec *
@@ -73,7 +117,18 @@ AnyDepSpec::clone() const
     return std::tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec());
 }
 
+void
+AnyDepSpec::need_keys_added() const
+{
+}
+
+
 AllDepSpec::AllDepSpec()
+{
+}
+
+void
+AllDepSpec::need_keys_added() const
 {
 }
 
@@ -120,7 +175,6 @@ ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     Cloneable<DepSpec>(),
     DepSpec(),
     PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(other._imp->data)),
-    MetadataKeyHolder(),
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
@@ -207,6 +261,11 @@ std::tr1::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
     return std::tr1::shared_ptr<NamedSetDepSpec>(new NamedSetDepSpec(_name));
+}
+
+void
+NamedSetDepSpec::need_keys_added() const
+{
 }
 
 const PackageDepSpec *
@@ -321,6 +380,12 @@ PlainTextDepSpec::clone() const
     return std::tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
 }
 
+void
+PlainTextDepSpec::need_keys_added() const
+{
+}
+
+
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
     StringDepSpec(s)
 {
@@ -332,6 +397,12 @@ LicenseDepSpec::clone() const
     return std::tr1::shared_ptr<DepSpec>(new LicenseDepSpec(text()));
 }
 
+void
+LicenseDepSpec::need_keys_added() const
+{
+}
+
+
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
     StringDepSpec(s)
 {
@@ -341,6 +412,11 @@ std::tr1::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
     return std::tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
+}
+
+void
+SimpleURIDepSpec::need_keys_added() const
+{
 }
 
 std::tr1::shared_ptr<const PackageDepSpec>
@@ -355,10 +431,21 @@ BlockDepSpec::clone() const
     return std::tr1::shared_ptr<DepSpec>(new BlockDepSpec(std::tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
 }
 
+void
+BlockDepSpec::need_keys_added() const
+{
+}
+
 FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
     StringDepSpec(s)
 {
 }
+
+void
+FetchableURIDepSpec::need_keys_added() const
+{
+}
+
 
 std::string
 FetchableURIDepSpec::original_url() const
@@ -415,7 +502,8 @@ namespace paludis
 
 template <typename T_>
 LabelsDepSpec<T_>::LabelsDepSpec() :
-    PrivateImplementationPattern<LabelsDepSpec<T_> >(new Implementation<LabelsDepSpec<T_> >)
+    PrivateImplementationPattern<LabelsDepSpec<T_> >(new Implementation<LabelsDepSpec<T_> >),
+    _imp(PrivateImplementationPattern<LabelsDepSpec<T_> >::_imp)
 {
 }
 
@@ -455,6 +543,12 @@ LabelsDepSpec<T_>::add_label(const std::tr1::shared_ptr<const typename T_::Basic
     _imp->items.push_back(item);
 }
 
+template <typename T_>
+void
+LabelsDepSpec<T_>::need_keys_added() const
+{
+}
+
 PackageDepSpecData::~PackageDepSpecData()
 {
 }
@@ -478,7 +572,8 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::tr1::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::tr1::shared_ptr<const DepTag>()))
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::tr1::shared_ptr<const DepTag>())),
+    _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
 }
 
@@ -490,7 +585,8 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
     StringDepSpec(d._imp->data->as_string()),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d._imp->data, d._imp->tag)),
-    CloneUsingThis<DepSpec, PackageDepSpec>(d)
+    CloneUsingThis<DepSpec, PackageDepSpec>(d),
+    _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
 }
 
@@ -604,6 +700,11 @@ std::tr1::shared_ptr<const PackageDepSpecData>
 PackageDepSpec::data() const
 {
     return _imp->data;
+}
+
+void
+PackageDepSpec::need_keys_added() const
+{
 }
 
 AdditionalPackageDepSpecRequirement::~AdditionalPackageDepSpecRequirement()

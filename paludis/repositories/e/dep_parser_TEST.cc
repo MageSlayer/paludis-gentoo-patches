@@ -431,5 +431,30 @@ namespace test_cases
                         &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->accept(d), EDepParseError);
         }
     } test_dep_spec_parser_kdebuild_uri_labels;
+
+    struct AnnotationsTest : TestCase
+    {
+        AnnotationsTest() : TestCase("annotations") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
+            StringifyFormatter ff;
+            DepSpecPrettyPrinter d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            parse_depend("cat/first [[ foo = bar bar = baz ]] cat/second cat/third [[ moo = oink ]]",
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            TEST_CHECK_EQUAL(stringify(d), "cat/first [[ bar = [ baz ] foo = [ bar ] ]] cat/second cat/third [[ moo = [ oink ] ]]");
+
+            DepSpecPrettyPrinter e(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            parse_depend("bar? ( foo? ( cat/first [[ for = first ]] ) [[ for = foo ]] baz? ( ) [[ for = baz ]] ) [[ for = bar ]]",
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+            TEST_CHECK_EQUAL(stringify(e), "bar? ( foo? ( cat/first [[ for = [ first ] ]] ) "
+                    "[[ for = [ foo ] ]] baz? ( ) [[ for = [ baz ] ]] ) [[ for = [ bar ] ]]");
+        }
+    } test_annotations;
 }
 

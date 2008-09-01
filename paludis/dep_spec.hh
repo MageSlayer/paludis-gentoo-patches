@@ -64,10 +64,16 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepSpec :
         private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<DepSpec>,
+        public MetadataKeyHolder,
         public virtual Cloneable<DepSpec>
     {
+        private:
+            PrivateImplementationPattern<DepSpec>::ImpPtr & _imp;
+
         protected:
             DepSpec();
+            DepSpec(const std::tr1::shared_ptr<const MetadataSectionKey> &);
 
         public:
             ///\name Basic operations
@@ -94,6 +100,17 @@ namespace paludis
             virtual const PackageDepSpec * as_package_dep_spec() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * The annotations_key, if non-zero, contains any annotations.
+             */
+            const std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Change the annotations key.
+             */
+            void set_annotations_key(const std::tr1::shared_ptr<const MetadataSectionKey> &);
+
             ///\}
     };
 
@@ -106,6 +123,9 @@ namespace paludis
     class PALUDIS_VISIBLE AnyDepSpec :
         public DepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -127,6 +147,9 @@ namespace paludis
     class PALUDIS_VISIBLE AllDepSpec :
         public DepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -149,7 +172,6 @@ namespace paludis
     class PALUDIS_VISIBLE ConditionalDepSpec :
         public DepSpec,
         private PrivateImplementationPattern<ConditionalDepSpec>,
-        public MetadataKeyHolder,
         public CloneUsingThis<DepSpec, ConditionalDepSpec>
     {
         friend std::ostream & operator<< (std::ostream &, const ConditionalDepSpec &);
@@ -399,6 +421,11 @@ namespace paludis
             const PackageDepSpec & operator= (const PackageDepSpec &);
             std::string _as_string() const;
 
+            PrivateImplementationPattern<PackageDepSpec>::ImpPtr & _imp;
+
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -565,6 +592,9 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextDepSpec :
         public StringDepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -587,6 +617,9 @@ namespace paludis
     {
         private:
             const SetName _name;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
@@ -612,6 +645,9 @@ namespace paludis
     class PALUDIS_VISIBLE LicenseDepSpec :
         public StringDepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -637,6 +673,9 @@ namespace paludis
     class PALUDIS_VISIBLE FetchableURIDepSpec :
         public StringDepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -678,6 +717,9 @@ namespace paludis
     class PALUDIS_VISIBLE SimpleURIDepSpec :
         public StringDepSpec
     {
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -722,6 +764,9 @@ namespace paludis
         private:
             std::tr1::shared_ptr<const PackageDepSpec> _spec;
 
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             ///\name Basic operations
             ///\{
@@ -754,7 +799,10 @@ namespace paludis
         private PrivateImplementationPattern<LabelsDepSpec<SpecTree_> >
     {
         private:
-            using PrivateImplementationPattern<LabelsDepSpec<SpecTree_> >::_imp;
+            typename PrivateImplementationPattern<LabelsDepSpec>::ImpPtr & _imp;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
