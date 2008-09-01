@@ -10,6 +10,7 @@ libexecprog2_SCRIPTS = \
 	src_compile.bash \
 	src_configure.bash \
 	src_install.bash \
+	src_prepare.bash \
 	src_test.bash \
 	src_unpack.bash \
 	output_functions.bash
