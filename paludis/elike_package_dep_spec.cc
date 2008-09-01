@@ -86,7 +86,7 @@ paludis::elike_check_sanity(const std::string & s)
 bool
 paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
         const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
-        const std::tr1::shared_ptr<const PackageID> & id)
+        bool & had_use_requirements, const std::tr1::shared_ptr<const PackageID> & id)
 {
     std::string::size_type use_group_p;
     if (std::string::npos == ((use_group_p = s.rfind('['))))
@@ -143,6 +143,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                     opos = flag.find_first_of("|&");
                     if (std::string::npos == opos)
                     {
+
                         ver = flag;
                         flag.clear();
                     }
@@ -178,31 +179,38 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             break;
 
         default:
-            if (options[epdso_allow_use_deps_portage] || ! options[epdso_allow_use_deps])
+            if (! options[epdso_allow_use_deps] && ! options[epdso_allow_use_deps_portage])
             {
-                if (! options[epdso_allow_use_deps_portage])
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("USE dependencies not safe for use here");
+                else
                 {
-                    if (options[epdso_strict_parsing])
-                        throw PackageDepSpecError("USE dependencies not safe for use here");
-                    else
-                    {
-                        // Use Portage syntax for this case, as it
-                        // should only happen in Gentoo EAPIs
-                        Log::get_instance()->message("e.package_dep_spec.use_not_allowed", ll_warning, lc_context)
-                            << "USE dependencies not safe for use here";
-                    }
+                    Log::get_instance()->message("e.package_dep_spec.use_not_allowed", ll_warning, lc_context)
+                        << "USE dependencies not safe for use here";
                 }
+            }
 
-                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                            id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
-                result.additional_requirement(req);
-            }
-            else
+            if (! options[epdso_allow_use_deps] && had_use_requirements)
             {
-                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                            id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-                result.additional_requirement(req);
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("multiple sets of USE dependencies not safe for use here");
+                else
+                {
+                    Log::get_instance()->message("e.package_dep_spec.use_multiple_not_allowed", ll_warning, lc_context)
+                        << "multiple sets of USE dependencies not safe for use here";
+                }
             }
+            had_use_requirements = true;
+
+            ELikeUseRequirementOptions euro;
+            euro += euro_allow_self_deps;
+            if (options[epdso_allow_use_deps_portage])
+                euro += options[epdso_allow_use_deps] ? euro_both_syntaxes : euro_portage_syntax;
+            if (options[epdso_strict_parsing])
+                euro += euro_strict_parsing;
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, id, euro));
+            result.additional_requirement(req);
 
             break;
     };
@@ -428,7 +436,7 @@ paludis::partial_parse_elike_package_dep_spec(
 
     Context context("When parsing elike package dep spec '" + ss + "':");
 
-    bool had_bracket_version_requirements(false);
+    bool had_bracket_version_requirements(false), had_use_requirements(false);
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
                 value_for<n::add_package_requirement>(std::tr1::bind(&elike_add_package_requirement, _1, _2)),
@@ -441,7 +449,7 @@ paludis::partial_parse_elike_package_dep_spec(
                 value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
-                        _1, _2, options, std::tr1::ref(had_bracket_version_requirements), id))
+                        _1, _2, options, std::tr1::ref(had_bracket_version_requirements), std::tr1::ref(had_use_requirements), id))
                 ));
 }
 

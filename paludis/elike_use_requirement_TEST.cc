@@ -44,25 +44,25 @@ namespace test_cases
             id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-                parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_strict_parsing));
             TEST_CHECK_EQUAL(req1->as_raw_string(), "[enabled]");
             TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'enabled' enabled");
             TEST_CHECK(req1->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-                parse_elike_use_requirement("disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                parse_elike_use_requirement("disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_strict_parsing));
             TEST_CHECK_EQUAL(req2->as_raw_string(), "[disabled]");
             TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'disabled' enabled");
             TEST_CHECK(! req2->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-                parse_elike_use_requirement("-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                parse_elike_use_requirement("-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_strict_parsing));
             TEST_CHECK_EQUAL(req3->as_raw_string(), "[-enabled]");
             TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'enabled' disabled");
             TEST_CHECK(! req3->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-                parse_elike_use_requirement("-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                parse_elike_use_requirement("-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_strict_parsing));
             TEST_CHECK_EQUAL(req4->as_raw_string(), "[-disabled]");
             TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'disabled' disabled");
             TEST_CHECK(req4->requirement_met(&env, *id));
@@ -82,25 +82,25 @@ namespace test_cases
             id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-                parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req1->as_raw_string(), "[enabled]");
             TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'enabled' enabled");
             TEST_CHECK(req1->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-                parse_elike_use_requirement("disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req2->as_raw_string(), "[disabled]");
             TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'disabled' enabled");
             TEST_CHECK(! req2->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-                parse_elike_use_requirement("-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req3->as_raw_string(), "[-enabled]");
             TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'enabled' disabled");
             TEST_CHECK(! req3->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-                parse_elike_use_requirement("-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req4->as_raw_string(), "[-disabled]");
             TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'disabled' disabled");
             TEST_CHECK(req4->requirement_met(&env, *id));
@@ -120,31 +120,31 @@ namespace test_cases
             id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-                parse_elike_use_requirement("enabled,-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("enabled,-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req1->as_raw_string(), "[enabled,-disabled]");
             TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'enabled' enabled; Flag 'disabled' disabled");
             TEST_CHECK(req1->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-                parse_elike_use_requirement("enabled,disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("enabled,disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req2->as_raw_string(), "[enabled,disabled]");
             TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'enabled' enabled; Flag 'disabled' enabled");
             TEST_CHECK(! req2->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-                parse_elike_use_requirement("-enabled,-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("-enabled,-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req3->as_raw_string(), "[-enabled,-disabled]");
             TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'enabled' disabled; Flag 'disabled' disabled");
             TEST_CHECK(! req3->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-                parse_elike_use_requirement("enabled,-disabled,-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("enabled,-disabled,-enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req4->as_raw_string(), "[enabled,-disabled,-enabled]");
             TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' disabled");
             TEST_CHECK(! req4->requirement_met(&env, *id));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
-                parse_elike_use_requirement("enabled,-disabled,enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax));
+                parse_elike_use_requirement("enabled,-disabled,enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
             TEST_CHECK_EQUAL(req5->as_raw_string(), "[enabled,-disabled,enabled]");
             TEST_CHECK_EQUAL(req5->as_human_string(), "Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' enabled");
             TEST_CHECK(req5->requirement_met(&env, *id));
@@ -154,6 +154,396 @@ namespace test_cases
     struct ComplexUseRequirementsTest : TestCase
     {
         ComplexUseRequirementsTest() : TestCase("complex use requirements") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
+            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req1->requirement_met(&env, *id));
+            TEST_CHECK(! req1->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req2->requirement_met(&env, *id));
+            TEST_CHECK(req2->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
+                parse_elike_use_requirement("-pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req3->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req3->requirement_met(&env, *id));
+            TEST_CHECK(req3->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
+                parse_elike_use_requirement("-pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req4->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req4->requirement_met(&env, *id));
+            TEST_CHECK(req4->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
+                parse_elike_use_requirement("pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req5->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req5->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req5->requirement_met(&env, *id));
+            TEST_CHECK(req5->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req6(
+                parse_elike_use_requirement("pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req6->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req6->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req6->requirement_met(&env, *id));
+            TEST_CHECK(! req6->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
+                parse_elike_use_requirement("-pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req7->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req7->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req7->requirement_met(&env, *id));
+            TEST_CHECK(req7->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
+                parse_elike_use_requirement("-pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req8->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req8->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req8->requirement_met(&env, *id));
+            TEST_CHECK(req8->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
+                parse_elike_use_requirement("pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req9->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req9->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req9->requirement_met(&env, *id));
+            TEST_CHECK(! req9->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
+                parse_elike_use_requirement("pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req10->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req10->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req10->requirement_met(&env, *id));
+            TEST_CHECK(req10->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
+                parse_elike_use_requirement("pkgname!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req11->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req11->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req11->requirement_met(&env, *id));
+            TEST_CHECK(req11->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
+                parse_elike_use_requirement("pkgname!=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req12->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req12->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req12->requirement_met(&env, *id));
+            TEST_CHECK(! req12->requirement_met(&env, *id2));
+        }
+    } test_complex_use_requirements;
+
+    struct ComplexUseRequirementsPortageSyntaxTest : TestCase
+    {
+        ComplexUseRequirementsPortageSyntaxTest() : TestCase("complex use requirements portage syntax") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
+            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req1->requirement_met(&env, *id));
+            TEST_CHECK(! req1->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req2->requirement_met(&env, *id));
+            TEST_CHECK(req2->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
+                parse_elike_use_requirement("!pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req7->as_raw_string(), "[!pkgname?]");
+            TEST_CHECK_EQUAL(req7->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req7->requirement_met(&env, *id));
+            TEST_CHECK(req7->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
+                parse_elike_use_requirement("!pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req8->as_raw_string(), "[!pkgname?]");
+            TEST_CHECK_EQUAL(req8->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req8->requirement_met(&env, *id));
+            TEST_CHECK(req8->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
+                parse_elike_use_requirement("pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req9->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req9->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req9->requirement_met(&env, *id));
+            TEST_CHECK(! req9->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
+                parse_elike_use_requirement("pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req10->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req10->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req10->requirement_met(&env, *id));
+            TEST_CHECK(req10->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
+                parse_elike_use_requirement("!pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req11->as_raw_string(), "[!pkgname=]");
+            TEST_CHECK_EQUAL(req11->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req11->requirement_met(&env, *id));
+            TEST_CHECK(req11->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
+                parse_elike_use_requirement("!pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req12->as_raw_string(), "[!pkgname=]");
+            TEST_CHECK_EQUAL(req12->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req12->requirement_met(&env, *id));
+            TEST_CHECK(! req12->requirement_met(&env, *id2));
+        }
+    } test_complex_use_requirements_portage_syntax;
+
+    struct ComplexUseRequirementsBothSyntaxesTest : TestCase
+    {
+        ComplexUseRequirementsBothSyntaxesTest() : TestCase("complex use requirements both syntaxes") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
+            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req1->requirement_met(&env, *id));
+            TEST_CHECK(! req1->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[pkgname?]");
+            TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req2->requirement_met(&env, *id));
+            TEST_CHECK(req2->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
+                parse_elike_use_requirement("!pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req7->as_raw_string(), "[!pkgname?]");
+            TEST_CHECK_EQUAL(req7->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req7->requirement_met(&env, *id));
+            TEST_CHECK(req7->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
+                parse_elike_use_requirement("!pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req8->as_raw_string(), "[!pkgname?]");
+            TEST_CHECK_EQUAL(req8->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req8->requirement_met(&env, *id));
+            TEST_CHECK(req8->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
+                parse_elike_use_requirement("pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req9->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req9->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req9->requirement_met(&env, *id));
+            TEST_CHECK(! req9->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
+                parse_elike_use_requirement("pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req10->as_raw_string(), "[pkgname=]");
+            TEST_CHECK_EQUAL(req10->as_human_string(), "Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req10->requirement_met(&env, *id));
+            TEST_CHECK(req10->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
+                parse_elike_use_requirement("!pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req11->as_raw_string(), "[!pkgname=]");
+            TEST_CHECK_EQUAL(req11->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req11->requirement_met(&env, *id));
+            TEST_CHECK(req11->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
+                parse_elike_use_requirement("!pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req12->as_raw_string(), "[!pkgname=]");
+            TEST_CHECK_EQUAL(req12->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req12->requirement_met(&env, *id));
+            TEST_CHECK(! req12->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
+                parse_elike_use_requirement("-pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req13->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req13->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req13->requirement_met(&env, *id));
+            TEST_CHECK(req13->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
+                parse_elike_use_requirement("-pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req14->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req14->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req14->requirement_met(&env, *id));
+            TEST_CHECK(req14->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
+                parse_elike_use_requirement("pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req15->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req15->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req15->requirement_met(&env, *id));
+            TEST_CHECK(req15->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
+                parse_elike_use_requirement("pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req16->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req16->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req16->requirement_met(&env, *id));
+            TEST_CHECK(! req16->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
+                parse_elike_use_requirement("-pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req17->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req17->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req17->requirement_met(&env, *id));
+            TEST_CHECK(req17->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
+                parse_elike_use_requirement("-pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req18->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req18->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req18->requirement_met(&env, *id));
+            TEST_CHECK(req18->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
+                parse_elike_use_requirement("pkgname!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req19->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req19->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req19->requirement_met(&env, *id));
+            TEST_CHECK(req19->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
+                parse_elike_use_requirement("pkgname!=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req20->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req20->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req20->requirement_met(&env, *id));
+            TEST_CHECK(! req20->requirement_met(&env, *id2));
+        }
+    } test_complex_use_requirements_both_syntaxes;
+
+    struct MalformedUseRequirementsTest : TestCase
+    {
+        MalformedUseRequirementsTest() : TestCase("malformed use requirements") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), NameError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!test?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!test=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test1,test2", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
+        }
+    } test_malformed_use_requirements;
+
+    struct MalformedUseRequirementsPortageSyntaxTest : TestCase
+    {
+        MalformedUseRequirementsPortageSyntaxTest() : TestCase("malformed use requirements portage syntax") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), NameError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement(",", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test,", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement(",test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test,,test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-test?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-test!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
+        }
+    } test_malformed_use_requirements_portage_syntax;
+
+    struct MalformedUseRequirementsBothSyntaxesTest : TestCase
+    {
+        MalformedUseRequirementsBothSyntaxesTest() : TestCase("malformed use requirements both syntaxes") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
+            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), NameError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+
+            TEST_CHECK_THROWS(parse_elike_use_requirement(",", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test,", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement(",test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+            TEST_CHECK_THROWS(parse_elike_use_requirement("test,,test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
+        }
+    } test_malformed_use_requirements_both_syntaxes;
+
+    struct ComplexUseRequirementsNonstrictTest : TestCase
+    {
+        ComplexUseRequirementsNonstrictTest() : TestCase("complex use requirements non-strict") { }
 
         void run()
         {
@@ -179,44 +569,16 @@ namespace test_cases
             TEST_CHECK(req2->requirement_met(&env, *id));
             TEST_CHECK(req2->requirement_met(&env, *id2));
 
-            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-                parse_elike_use_requirement("-pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req3->as_raw_string(), "[-pkgname?]");
-            TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'");
-            TEST_CHECK(! req3->requirement_met(&env, *id));
-            TEST_CHECK(req3->requirement_met(&env, *id2));
-
-            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-                parse_elike_use_requirement("-pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req4->as_raw_string(), "[-pkgname?]");
-            TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'");
-            TEST_CHECK(req4->requirement_met(&env, *id));
-            TEST_CHECK(req4->requirement_met(&env, *id2));
-
-            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
-                parse_elike_use_requirement("pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req5->as_raw_string(), "[pkgname!?]");
-            TEST_CHECK_EQUAL(req5->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'");
-            TEST_CHECK(req5->requirement_met(&env, *id));
-            TEST_CHECK(req5->requirement_met(&env, *id2));
-
-            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req6(
-                parse_elike_use_requirement("pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req6->as_raw_string(), "[pkgname!?]");
-            TEST_CHECK_EQUAL(req6->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'");
-            TEST_CHECK(req6->requirement_met(&env, *id));
-            TEST_CHECK(! req6->requirement_met(&env, *id2));
-
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-                parse_elike_use_requirement("-pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req7->as_raw_string(), "[-pkgname!?]");
+                parse_elike_use_requirement("!pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req7->as_raw_string(), "[!pkgname?]");
             TEST_CHECK_EQUAL(req7->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
             TEST_CHECK(req7->requirement_met(&env, *id));
             TEST_CHECK(req7->requirement_met(&env, *id2));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-                parse_elike_use_requirement("-pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req8->as_raw_string(), "[-pkgname!?]");
+                parse_elike_use_requirement("!pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req8->as_raw_string(), "[!pkgname?]");
             TEST_CHECK_EQUAL(req8->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
             TEST_CHECK(! req8->requirement_met(&env, *id));
             TEST_CHECK(req8->requirement_met(&env, *id2));
@@ -236,24 +598,80 @@ namespace test_cases
             TEST_CHECK(req10->requirement_met(&env, *id2));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-                parse_elike_use_requirement("pkgname!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req11->as_raw_string(), "[pkgname!=]");
+                parse_elike_use_requirement("!pkgname=", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req11->as_raw_string(), "[!pkgname=]");
             TEST_CHECK_EQUAL(req11->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
             TEST_CHECK(! req11->requirement_met(&env, *id));
             TEST_CHECK(req11->requirement_met(&env, *id2));
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-                parse_elike_use_requirement("pkgname!=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
-            TEST_CHECK_EQUAL(req12->as_raw_string(), "[pkgname!=]");
+                parse_elike_use_requirement("!pkgname=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req12->as_raw_string(), "[!pkgname=]");
             TEST_CHECK_EQUAL(req12->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
             TEST_CHECK(req12->requirement_met(&env, *id));
             TEST_CHECK(! req12->requirement_met(&env, *id2));
-        }
-    } test_complex_use_requirements;
 
-    struct ComplexUseRequirementsPortageSyntaxTest : TestCase
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
+                parse_elike_use_requirement("-pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req13->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req13->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req13->requirement_met(&env, *id));
+            TEST_CHECK(req13->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
+                parse_elike_use_requirement("-pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req14->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req14->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req14->requirement_met(&env, *id));
+            TEST_CHECK(req14->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
+                parse_elike_use_requirement("pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req15->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req15->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req15->requirement_met(&env, *id));
+            TEST_CHECK(req15->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
+                parse_elike_use_requirement("pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req16->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req16->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req16->requirement_met(&env, *id));
+            TEST_CHECK(! req16->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
+                parse_elike_use_requirement("-pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req17->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req17->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req17->requirement_met(&env, *id));
+            TEST_CHECK(req17->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
+                parse_elike_use_requirement("-pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req18->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req18->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req18->requirement_met(&env, *id));
+            TEST_CHECK(req18->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
+                parse_elike_use_requirement("pkgname!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req19->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req19->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req19->requirement_met(&env, *id));
+            TEST_CHECK(req19->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
+                parse_elike_use_requirement("pkgname!=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req20->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req20->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req20->requirement_met(&env, *id));
+            TEST_CHECK(! req20->requirement_met(&env, *id2));
+        }
+    } test_complex_use_requirements_nonstrict;
+
+    struct ComplexUseRequirementsPortageSyntaxNonstrictTest : TestCase
     {
-        ComplexUseRequirementsPortageSyntaxTest() : TestCase("complex use requirements portage syntax") { }
+        ComplexUseRequirementsPortageSyntaxNonstrictTest() : TestCase("complex use requirements portage syntax non-strict") { }
 
         void run()
         {
@@ -320,69 +738,63 @@ namespace test_cases
             TEST_CHECK_EQUAL(req12->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
             TEST_CHECK(req12->requirement_met(&env, *id));
             TEST_CHECK(! req12->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
+                parse_elike_use_requirement("-pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req13->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req13->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req13->requirement_met(&env, *id));
+            TEST_CHECK(req13->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
+                parse_elike_use_requirement("-pkgname?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req14->as_raw_string(), "[-pkgname?]");
+            TEST_CHECK_EQUAL(req14->as_human_string(), "Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req14->requirement_met(&env, *id));
+            TEST_CHECK(req14->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
+                parse_elike_use_requirement("pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req15->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req15->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req15->requirement_met(&env, *id));
+            TEST_CHECK(req15->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
+                parse_elike_use_requirement("pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req16->as_raw_string(), "[pkgname!?]");
+            TEST_CHECK_EQUAL(req16->as_human_string(), "Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req16->requirement_met(&env, *id));
+            TEST_CHECK(! req16->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
+                parse_elike_use_requirement("-pkgname!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req17->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req17->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(req17->requirement_met(&env, *id));
+            TEST_CHECK(req17->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
+                parse_elike_use_requirement("-pkgname!?", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req18->as_raw_string(), "[-pkgname!?]");
+            TEST_CHECK_EQUAL(req18->as_human_string(), "Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(! req18->requirement_met(&env, *id));
+            TEST_CHECK(req18->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
+                parse_elike_use_requirement("pkgname!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req19->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req19->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'");
+            TEST_CHECK(! req19->requirement_met(&env, *id));
+            TEST_CHECK(req19->requirement_met(&env, *id2));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
+                parse_elike_use_requirement("pkgname!=", id2, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));
+            TEST_CHECK_EQUAL(req20->as_raw_string(), "[pkgname!=]");
+            TEST_CHECK_EQUAL(req20->as_human_string(), "Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'");
+            TEST_CHECK(req20->requirement_met(&env, *id));
+            TEST_CHECK(! req20->requirement_met(&env, *id2));
         }
-    } test_complex_use_requirements_portage_syntax;
-
-    struct MalformedUseRequirementsTest : TestCase
-    {
-        MalformedUseRequirementsTest() : TestCase("malformed use requirements") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
-            env.package_database()->add_repository(1, fake);
-            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps), NameError);
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("?", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-?", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("=", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps), ELikeUseRequirementError);
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!test?", id, ELikeUseRequirementOptions() + euro_allow_self_deps), NameError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!test=", id, ELikeUseRequirementOptions() + euro_allow_self_deps), NameError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("test1,test2", id, ELikeUseRequirementOptions() + euro_allow_self_deps), NameError);
-        }
-    } test_malformed_use_requirements;
-
-    struct MalformedUseRequirementsPortageSyntaxTest : TestCase
-    {
-        MalformedUseRequirementsPortageSyntaxTest() : TestCase("malformed use requirements portage syntax") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
-            env.package_database()->add_repository(1, fake);
-            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), NameError);
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement(",", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("test,", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement(",test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("test,,test", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), ELikeUseRequirementError);
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("test!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), NameError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-test?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), NameError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("-test!?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), NameError);
-            TEST_CHECK_THROWS(parse_elike_use_requirement("test!=", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax), NameError);
-        }
-    } test_malformed_use_requirements_portage_syntax;
+    } test_complex_use_requirements_portage_syntax_nonstrict;
 }
 

@@ -57,7 +57,7 @@ namespace paludis
 
     bool elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
-            const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+            bool & had_use_requirements, const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
 
     void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;

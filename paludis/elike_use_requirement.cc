@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
@@ -278,10 +279,35 @@ namespace
             flag.erase(flag.length() - 1);
             if (flag.empty())
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
-            std::string::size_type not_position(options[euro_portage_syntax] ? 0 : flag.length() - 1);
-            if ('!' == flag.at(not_position))
+
+            if ('!' == flag.at(flag.length() - 1))
             {
-                flag.erase(not_position, 1);
+                if (options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[use!=] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.flag_not_equal_not_allowed", ll_warning, lc_context)
+                            << "[use!=] not safe for use here";
+                }
+
+                flag.erase(flag.length() - 1, 1);
+                if (flag.empty())
+                    throw ELikeUseRequirementError(s, "Invalid [] contents");
+                return make_shared_ptr(new NotEqualUseRequirement(UseFlagName(flag), id));
+            }
+            else if ('!' == flag.at(0))
+            {
+                if (! options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[!use=] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.not_flag_equal_not_allowed", ll_warning, lc_context)
+                            << "[!use=] not safe for use here";
+                }
+
+                flag.erase(0, 1);
                 if (flag.empty())
                     throw ELikeUseRequirementError(s, "Invalid [] contents");
                 return make_shared_ptr(new NotEqualUseRequirement(UseFlagName(flag), id));
@@ -297,16 +323,24 @@ namespace
             flag.erase(flag.length() - 1);
             if (flag.empty())
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
-            std::string::size_type not_position(options[euro_portage_syntax] ? 0 : flag.length() - 1);
-            if ('!' == flag.at(not_position))
+
+            if ('!' == flag.at(flag.length() - 1))
             {
-                flag.erase(not_position, 1);
+                flag.erase(flag.length() - 1, 1);
                 if (flag.empty())
                     throw ELikeUseRequirementError(s, "Invalid [] contents");
-                if (options[euro_portage_syntax])
-                    return make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
-                else if ('-' == flag.at(0))
+
+                if ('-' == flag.at(0))
                 {
+                    if (options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                    {
+                        if (options[euro_strict_parsing])
+                            throw ELikeUseRequirementError(s, "[-use!?] not safe for use here");
+                        else
+                            Log::get_instance()->message("e.use_requirement.minus_flag_not_question_not_allowed", ll_warning, lc_context)
+                                << "[-use!?] not safe for use here";
+                    }
+
                     flag.erase(0, 1);
                     if (flag.empty())
                         throw ELikeUseRequirementError(s, "Invalid [] contents");
@@ -314,12 +348,49 @@ namespace
                     return make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
                 }
                 else
+                {
+                    if (options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                    {
+                        if (options[euro_strict_parsing])
+                            throw ELikeUseRequirementError(s, "[use!?] not safe for use here");
+                        else
+                            Log::get_instance()->message("e.use_requirement.flag_not_question_not_allowed", ll_warning, lc_context)
+                                << "[use!?] not safe for use here";
+                    }
+
                     return make_shared_ptr(new IfNotMineThenUseRequirement(UseFlagName(flag), id));
+                }
+            }
+            else if ('!' == flag.at(0))
+            {
+                if (! options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[!use?] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.not_flag_question_not_allowed", ll_warning, lc_context)
+                            << "[!use?] not safe for use here";
+                }
+
+                flag.erase(0, 1);
+                if (flag.empty())
+                    throw ELikeUseRequirementError(s, "Invalid [] contents");
+
+                return make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
             }
             else
             {
-                if (! options[euro_portage_syntax] && '-' == flag.at(0))
+                if ('-' == flag.at(0))
                 {
+                    if (options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+                    {
+                        if (options[euro_strict_parsing])
+                            throw ELikeUseRequirementError(s, "[-use?] not safe for use here");
+                        else
+                            Log::get_instance()->message("e.use_requirement.minus_flag_question_not_allowed", ll_warning, lc_context)
+                                << "[-use?] not safe for use here";
+                    }
+
                     flag.erase(0, 1);
                     if (flag.empty())
                         throw ELikeUseRequirementError(s, "Invalid [] contents");
@@ -354,23 +425,25 @@ paludis::parse_elike_use_requirement(const std::string & s,
     Context context("When parsing use requirement '" + s + "':");
 
     std::tr1::shared_ptr<UseRequirements> result(new UseRequirements("[" + s + "]"));
-    if (options[euro_portage_syntax])
+    std::string::size_type pos(0);
+    for (;;)
     {
-        std::string::size_type pos(0);
-        for (;;)
-        {
-            std::string::size_type comma(s.find(',', pos));
-            std::string flag(s.substr(pos, std::string::npos == comma ? comma : comma - pos));
-            result->add_requirement(parse_one_use_requirement(s, flag, id, options));
-            if (std::string::npos == comma)
-                break;
-            pos = comma + 1;
-        }
-    }
-    else
-    {
-        std::string flag(s);
+        std::string::size_type comma(s.find(',', pos));
+        std::string flag(s.substr(pos, std::string::npos == comma ? comma : comma - pos));
         result->add_requirement(parse_one_use_requirement(s, flag, id, options));
+        if (std::string::npos == comma)
+            break;
+
+        if (! options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+        {
+            if (options[euro_strict_parsing])
+                throw ELikeUseRequirementError(s, "[use,use] not safe for use here");
+            else
+                Log::get_instance()->message("e.use_requirement.comma_separated_not_allowed", ll_warning, lc_context)
+                    << "[use,use] not safe for use here";
+        }
+
+        pos = comma + 1;
     }
 
     return result;

@@ -8,5 +8,7 @@ make_enum_ELikeUseRequirementOption()
 
     key euro_allow_self_deps          "Allow self-dependent use deps"
     key euro_portage_syntax           "Parse using Portage syntax"
+    key euro_both_syntaxes            "Accept both Portage and Paludis syntax"
+    key euro_strict_parsing           "Error rather than warn for violations"
 }
 
