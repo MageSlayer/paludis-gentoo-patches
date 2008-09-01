@@ -138,8 +138,8 @@ namespace
         void visit_leaf(const BlockDepSpec & b)
         {
             if (child_of_any)
-                reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '!"
-                            + stringify(*b.blocked_spec()) + "' in '" + stringify(key->raw_name()) + "'")
+                reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '"
+                            + stringify(b) + "' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
         }

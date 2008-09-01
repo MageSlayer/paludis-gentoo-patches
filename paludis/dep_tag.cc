@@ -197,7 +197,7 @@ namespace
         void
         visit_leaf(const BlockDepSpec & b)
         {
-            s << "!" << *b.blocked_spec() << " ";
+            s << b << " ";
         }
 
         void

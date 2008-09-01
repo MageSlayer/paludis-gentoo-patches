@@ -815,7 +815,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
     // TODO: check destinations
 
-    Context context("When checking BlockDepSpec '!" + stringify(*a.blocked_spec()) + "':");
+    Context context("When checking BlockDepSpec '" + stringify(a) + "':");
 
     Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
         &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
@@ -904,8 +904,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 throw BlockError(stringify(*a.blocked_spec()));
 
             case dl_blocks_discard:
-                Log::get_instance()->message("dep_list.discarding_block", ll_warning, lc_context) << "Discarding block '!"
-                    << *a.blocked_spec() << "'";
+                Log::get_instance()->message("dep_list.discarding_block", ll_warning, lc_context) << "Discarding block '" << a << "'";
                 break;
 
             case dl_blocks_discard_completely:
