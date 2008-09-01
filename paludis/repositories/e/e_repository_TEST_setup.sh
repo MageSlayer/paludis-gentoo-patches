@@ -913,6 +913,23 @@ pkg_preinst() {
     [[ -d "${T}" ]] || die "T not a dir"
 }
 END
+mkdir -p "cat/src_prepare"
+cat <<END > cat/src_prepare/src_prepare-0.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_prepare() {
+    die src_prepare
+}
+END
+cp cat/src_prepare/src_prepare-{0,1}.ebuild || exit 1
+cp cat/src_prepare/src_prepare-{0,2}.ebuild || exit 1
 mkdir -p "cat/src_configure"
 cat <<END > cat/src_configure/src_configure-0.ebuild || exit 1
 EAPI="\${PV}"
@@ -1267,6 +1284,8 @@ src_install() {
 END
 mkdir -p "cat/doman-kdebuild"
 sed -e /EAPI=/d cat/doman/doman-0.ebuild >cat/doman-kdebuild/doman-kdebuild-1.kdebuild-1 || exit 1
+mkdir -p "cat/src_prepare-kdebuild"
+sed -e /EAPI=/d cat/src_prepare/src_prepare-0.ebuild >cat/src_prepare-kdebuild/src_prepare-kdebuild-1.kdebuild-1 || exit 1
 mkdir -p "cat/src_configure-kdebuild"
 sed -e /EAPI=/d cat/src_configure/src_configure-0.ebuild >cat/src_configure-kdebuild/src_configure-kdebuild-1.kdebuild-1 || exit 1
 mkdir -p "cat/expand-vars"
