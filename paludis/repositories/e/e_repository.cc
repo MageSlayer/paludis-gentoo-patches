@@ -1583,8 +1583,13 @@ ERepository::repository_factory_create(
         if (master_repositories)
             std::copy((*master_repositories->begin())->params().profiles->begin(),
                     (*master_repositories->begin())->params().profiles->end(), profiles->back_inserter());
-        else
+        else if (FSEntry(location).is_directory_or_symlink_to_directory() &&
+                (DirIterator(FSEntry(location)) != DirIterator()))
+        {
+            /* only require profiles = if we've definitely been synced. requiring profiles = on
+             * unsynced doesn't play nice with layout.conf specifying masters. */
             throw ERepositoryConfigurationError("No profiles have been specified");
+        }
     }
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
