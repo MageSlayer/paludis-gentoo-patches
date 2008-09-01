@@ -261,7 +261,8 @@ namespace
                         value_for<n::package_dep_spec_parse_options>(package_dep_spec_parse_options),
                         value_for<n::pipe_commands>(make_pipe_commands(k)),
                         value_for<n::tools_options>(make_tool_options(k)),
-                        value_for<n::uri_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "uri_labels"))))
+                        value_for<n::uri_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "uri_labels")))),
+                        value_for<n::userpriv_cannot_use_root>(destringify_key<bool>(k, "userpriv_cannot_use_root"))
                         )));
     }
 }

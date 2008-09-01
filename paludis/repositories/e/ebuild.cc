@@ -92,14 +92,26 @@ EbuildCommand::failure()
 bool
 EbuildCommand::operator() ()
 {
+    Context context("When running an ebuild command on '" + stringify(*params.package_id()) + "':");
+
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/ebuild.bash '" + ebuild_file() + "' " + commands());
+
+    if (! params.package_id()->eapi()->supported())
+        throw InternalError(PALUDIS_HERE, "Tried to run EbuildCommand on an unsupported EAPI");
 
     if (params.sandbox())
         cmd.with_sandbox();
 
     if (params.userpriv())
+    {
+        if (params.package_id()->eapi()->supported()->userpriv_cannot_use_root())
+        {
+            if (0 == params.environment()->reduced_uid() || 0 == params.environment()->reduced_gid())
+                throw ActionError("Need to be able to use non-0 user and group for userpriv for '" + stringify(*params.package_id()) + "'");
+        }
         cmd.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
+    }
 
     using namespace std::tr1::placeholders;
     cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1));

@@ -138,6 +138,7 @@ namespace paludis
         struct uri_labels;
         struct use;
         struct use_expand_separator;
+        struct userpriv_cannot_use_root;
         struct utility_path_suffixes;
         struct vdb_from_env_unless_empty_variables;
         struct vdb_from_env_variables;
@@ -224,6 +225,7 @@ namespace paludis
             NamedValue<n::pipe_commands, std::tr1::shared_ptr<const EAPIPipeCommands> > pipe_commands;
             NamedValue<n::tools_options, std::tr1::shared_ptr<const EAPIToolsOptions> > tools_options;
             NamedValue<n::uri_labels, std::tr1::shared_ptr<const EAPILabels> > uri_labels;
+            NamedValue<n::userpriv_cannot_use_root, bool> userpriv_cannot_use_root;
         };
 
         struct EAPIEbuildEnvironmentVariables
