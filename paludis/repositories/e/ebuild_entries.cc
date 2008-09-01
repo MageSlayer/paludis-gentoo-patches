@@ -321,7 +321,7 @@ namespace
 namespace
 {
     bool
-    check_userpriv(const FSEntry & f, const Environment * env)
+    check_userpriv(const FSEntry & f, const Environment * env, bool mandatory)
     {
         Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
@@ -329,14 +329,21 @@ namespace
         {
             if (f.group() != env->reduced_gid())
             {
-                Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
+                if (mandatory)
+                    throw ConfigurationError("Directory '" + stringify(f) + "' owned by group '" + get_group_name(f.group())
+                            + "', not '" + get_group_name(env->reduced_gid()) + "'");
+                else
+                    Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
                         f << "' owned by group '" << get_group_name(f.group()) << "', not '"
                         << get_group_name(env->reduced_gid()) << "', so cannot enable userpriv";
                 return false;
             }
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
-                Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
+                if (mandatory)
+                    throw ConfigurationError("Directory '" + stringify(f) + "' does not have group write permission");
+                else
+                    Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
                         f << "' does not have group write permission, cannot enable userpriv";
                 return false;
             }
@@ -373,7 +380,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     }
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid() &&
-            check_userpriv(FSEntry(_imp->params.distdir), _imp->environment));
+            check_userpriv(FSEntry(_imp->params.distdir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string archives, all_archives;
     {
@@ -445,7 +452,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         if (c.need_nofetch())
         {
             bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-                    check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+                    check_userpriv(FSEntry(_imp->params.builddir), _imp->environment,
+                        id->eapi()->supported()->userpriv_cannot_use_root()));
             std::string use(make_use(_imp->params.environment, *id, p));
             std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
             std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
@@ -606,8 +614,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+            check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()) &&
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -748,7 +756,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     /* make use */
     std::string use(make_use(_imp->params.environment, *id, p));
@@ -830,7 +838,7 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -951,7 +959,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment));
+            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string use(make_use(_imp->params.environment, *id, p));
     std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
