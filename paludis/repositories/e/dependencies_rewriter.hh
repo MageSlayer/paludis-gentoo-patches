@@ -36,7 +36,7 @@ namespace paludis
                 DependenciesRewriter();
                 ~DependenciesRewriter();
 
-                void _add_where_necessary(const std::string &);
+                void _add_where_necessary(const std::string &, const DepSpec &);
 
                 void visit_leaf(const PackageDepSpec &);
                 void visit_leaf(const NamedSetDepSpec &);

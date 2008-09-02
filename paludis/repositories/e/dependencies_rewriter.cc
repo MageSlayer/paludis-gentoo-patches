@@ -24,12 +24,38 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/set.hh>
+#include <paludis/metadata_key.hh>
 #include <list>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+
+namespace
+{
+    const std::string get_annotations(const DepSpec & a)
+    {
+        std::stringstream s;
+        if (a.annotations_key() && (a.annotations_key()->begin_metadata() != a.annotations_key()->end_metadata()))
+        {
+            s << " [[ ";
+            for (MetadataSectionKey::MetadataConstIterator k(a.annotations_key()->begin_metadata()),
+                    k_end(a.annotations_key()->end_metadata()) ;
+                    k != k_end ; ++k)
+            {
+                const MetadataValueKey<std::string> * r(visitor_cast<const MetadataValueKey<std::string> >(**k));
+                if (! r)
+                    throw InternalError(PALUDIS_HERE, "annotations must be string keys");
+                s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+            }
+            s << "]]";
+        }
+        return s.str();
+    }
+}
 
 namespace paludis
 {
@@ -83,33 +109,33 @@ DependenciesRewriter::pdepend() const
 void
 DependenciesRewriter::visit_leaf(const PackageDepSpec & spec)
 {
-    _add_where_necessary(stringify(spec));
+    _add_where_necessary(stringify(spec), spec);
 }
 
 void
 DependenciesRewriter::visit_leaf(const NamedSetDepSpec & spec)
 {
-    _add_where_necessary(stringify(spec));
+    _add_where_necessary(stringify(spec), spec);
 }
 
 void
 DependenciesRewriter::visit_leaf(const BlockDepSpec & spec)
 {
-    _add_where_necessary(stringify(spec));
+    _add_where_necessary(stringify(spec), spec);
 }
 
 void
 DependenciesRewriter::visit_leaf(const DependencyLabelsDepSpec & spec)
 {
-    _imp->depend.append(" " + stringify(spec));
-    _imp->rdepend.append(" " + stringify(spec));
-    _imp->pdepend.append(" " + stringify(spec));
+    _imp->depend.append(" " + stringify(spec) + get_annotations(spec));
+    _imp->rdepend.append(" " + stringify(spec) + get_annotations(spec));
+    _imp->pdepend.append(" " + stringify(spec) + get_annotations(spec));
 
     _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), spec));
 }
 
 void
-DependenciesRewriter::visit_sequence(const AllDepSpec &,
+DependenciesRewriter::visit_sequence(const AllDepSpec & spec,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
@@ -123,13 +149,13 @@ DependenciesRewriter::visit_sequence(const AllDepSpec &,
 
     std::for_each(cur, end, accept_visitor(*this));
 
-    _imp->depend = d + " ( " + _imp->depend + " )";
-    _imp->rdepend = r + " ( " + _imp->rdepend + " )";
-    _imp->pdepend = p + " ( " + _imp->pdepend + " )";
+    _imp->depend = d + " ( " + _imp->depend + " )" + get_annotations(spec);
+    _imp->rdepend = r + " ( " + _imp->rdepend + " )" + get_annotations(spec);
+    _imp->pdepend = p + " ( " + _imp->pdepend + " )" + get_annotations(spec);
 }
 
 void
-DependenciesRewriter::visit_sequence(const AnyDepSpec &,
+DependenciesRewriter::visit_sequence(const AnyDepSpec & spec,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
@@ -143,9 +169,9 @@ DependenciesRewriter::visit_sequence(const AnyDepSpec &,
 
     std::for_each(cur, end, accept_visitor(*this));
 
-    _imp->depend = d + " || ( " + _imp->depend + " )";
-    _imp->rdepend = r + " || ( " + _imp->rdepend + " )";
-    _imp->pdepend = p + " || ( " + _imp->pdepend + " )";
+    _imp->depend = d + " || ( " + _imp->depend + " )" + get_annotations(spec);
+    _imp->rdepend = r + " || ( " + _imp->rdepend + " )" + get_annotations(spec);
+    _imp->pdepend = p + " || ( " + _imp->pdepend + " )" + get_annotations(spec);
 }
 
 void
@@ -163,9 +189,9 @@ DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
 
     std::for_each(cur, end, accept_visitor(*this));
 
-    _imp->depend = d + " " + stringify(spec) + " ( " + _imp->depend + " )";
-    _imp->rdepend = r + " " + stringify(spec) + " ( " + _imp->rdepend + " )";
-    _imp->pdepend = p + " " + stringify(spec) + " ( " + _imp->pdepend + " )";
+    _imp->depend = d + " " + stringify(spec) + " ( " + _imp->depend + " )" + get_annotations(spec);
+    _imp->rdepend = r + " " + stringify(spec) + " ( " + _imp->rdepend + " )" + get_annotations(spec);
+    _imp->pdepend = p + " " + stringify(spec) + " ( " + _imp->pdepend + " )" + get_annotations(spec);
 }
 
 namespace
@@ -175,46 +201,49 @@ namespace
     {
         std::string & d, & r, & p;
         const std::string & s;
+        const DepSpec & a;
 
-        AddWhereNecessary(std::string & dd, std::string & rr, std::string & pp, const std::string & ss) :
+        AddWhereNecessary(std::string & dd, std::string & rr, std::string & pp, const std::string & ss,
+                const DepSpec & aa) :
             d(dd),
             r(rr),
             p(pp),
-            s(ss)
+            s(ss),
+            a(aa)
         {
         }
 
         void visit(const DependencyRunLabel &)
         {
-            r.append(" " + s);
+            r.append(" " + s + get_annotations(a));
         }
 
         void visit(const DependencyPostLabel &)
         {
-            p.append(" " + s);
+            p.append(" " + s + get_annotations(a));
         }
 
         void visit(const DependencyBuildLabel &)
         {
-            d.append(" " + s);
+            d.append(" " + s + get_annotations(a));
         }
 
         void visit(const DependencyCompileLabel &)
         {
-            r.append(" " + s);
+            r.append(" " + s + get_annotations(a));
         }
 
         void visit(const DependencyInstallLabel &)
         {
-            d.append(" " + s);
+            d.append(" " + s + get_annotations(a));
         }
     };
 }
 
 void
-DependenciesRewriter::_add_where_necessary(const std::string & s)
+DependenciesRewriter::_add_where_necessary(const std::string & s, const DepSpec & a)
 {
-    AddWhereNecessary v(_imp->depend, _imp->rdepend, _imp->pdepend, s);
+    AddWhereNecessary v(_imp->depend, _imp->rdepend, _imp->pdepend, s, a);
     std::for_each(
             indirect_iterator((*_imp->labels.begin())->type_labels()->begin()),
             indirect_iterator((*_imp->labels.begin())->type_labels()->end()),
