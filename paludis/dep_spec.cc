@@ -68,14 +68,6 @@ DepSpec::DepSpec() :
 {
 }
 
-DepSpec::DepSpec(const std::tr1::shared_ptr<const MetadataSectionKey> & k) :
-    PrivateImplementationPattern<DepSpec>(new Implementation<DepSpec>(k)),
-    _imp(PrivateImplementationPattern<DepSpec>::_imp)
-{
-    if (_imp->annotations_key)
-        add_metadata_key(_imp->annotations_key);
-}
-
 DepSpec::~DepSpec()
 {
 }
@@ -114,7 +106,9 @@ AnyDepSpec::AnyDepSpec()
 std::tr1::shared_ptr<DepSpec>
 AnyDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec());
+    std::tr1::shared_ptr<AnyDepSpec> result(new AnyDepSpec);
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -135,7 +129,9 @@ AllDepSpec::need_keys_added() const
 std::tr1::shared_ptr<DepSpec>
 AllDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec());
+    std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 namespace paludis
@@ -178,6 +174,7 @@ ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
+    set_annotations_key(other.annotations_key());
 }
 
 ConditionalDepSpec::~ConditionalDepSpec()
@@ -260,7 +257,9 @@ NamedSetDepSpec::name() const
 std::tr1::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<NamedSetDepSpec>(new NamedSetDepSpec(_name));
+    std::tr1::shared_ptr<NamedSetDepSpec> result(new NamedSetDepSpec(_name));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -377,7 +376,9 @@ PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
 std::tr1::shared_ptr<DepSpec>
 PlainTextDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
+    std::tr1::shared_ptr<PlainTextDepSpec> result(new PlainTextDepSpec(text()));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -394,7 +395,9 @@ LicenseDepSpec::LicenseDepSpec(const std::string & s) :
 std::tr1::shared_ptr<DepSpec>
 LicenseDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<DepSpec>(new LicenseDepSpec(text()));
+    std::tr1::shared_ptr<LicenseDepSpec> result(new LicenseDepSpec(text()));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -411,7 +414,9 @@ SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
 std::tr1::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
+    std::tr1::shared_ptr<SimpleURIDepSpec> result(new SimpleURIDepSpec(text()));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -428,7 +433,10 @@ BlockDepSpec::blocked_spec() const
 std::tr1::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<DepSpec>(new BlockDepSpec(std::tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
+    std::tr1::shared_ptr<BlockDepSpec> result(new BlockDepSpec(std::tr1::static_pointer_cast<PackageDepSpec>(
+                    _spec->clone())));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 void
@@ -485,7 +493,9 @@ FetchableURIDepSpec::filename() const
 std::tr1::shared_ptr<DepSpec>
 FetchableURIDepSpec::clone() const
 {
-    return std::tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(text()));
+    std::tr1::shared_ptr<FetchableURIDepSpec> result(new FetchableURIDepSpec(text()));
+    result->set_annotations_key(annotations_key());
+    return result;
 }
 
 namespace paludis
@@ -518,6 +528,7 @@ LabelsDepSpec<T_>::clone() const
 {
     using namespace std::tr1::placeholders;
     std::tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
+    my_clone->set_annotations_key(annotations_key());
     std::for_each(begin(), end(), std::tr1::bind(std::tr1::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
 }
@@ -575,6 +586,7 @@ PackageDepSpec::PackageDepSpec(const std::tr1::shared_ptr<const PackageDepSpecDa
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::tr1::shared_ptr<const DepTag>())),
     _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
+    set_annotations_key(d->annotations_key());
 }
 
 PackageDepSpec::~PackageDepSpec()
@@ -588,6 +600,7 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
     _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
+    set_annotations_key(d.annotations_key());
 }
 
 std::tr1::shared_ptr<const QualifiedPackageName>
@@ -675,6 +688,9 @@ PackageDepSpec::without_additional_requirements() const
     if (in_repository_ptr())
         result.in_repository(*in_repository_ptr());
 
+    if (annotations_key())
+        result.annotations(annotations_key());
+
     return make_shared_ptr(new PackageDepSpec(result));
 }
 
@@ -738,6 +754,7 @@ namespace
         std::tr1::shared_ptr<const RepositoryName> from_repository;
         std::tr1::shared_ptr<const RepositoryName> in_repository;
         std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::tr1::shared_ptr<const MetadataSectionKey> annotations;
 
         PartiallyMadePackageDepSpecData() :
             PackageDepSpecData(),
@@ -755,7 +772,8 @@ namespace
             slot(other.slot_requirement_ptr()),
             from_repository(other.from_repository_ptr()),
             in_repository(other.in_repository_ptr()),
-            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0)
+            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
+            annotations(other.annotations_key())
         {
             if (version_requirements)
                 std::copy(other.version_requirements_ptr()->begin(), other.version_requirements_ptr()->end(),
@@ -776,7 +794,8 @@ namespace
             slot(other.slot),
             from_repository(other.from_repository),
             in_repository(other.in_repository),
-            additional_requirements(other.additional_requirements)
+            additional_requirements(other.additional_requirements),
+            annotations(other.annotations)
         {
         }
 
@@ -942,6 +961,11 @@ namespace
         {
             return additional_requirements;
         }
+
+        virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+        {
+            return annotations;
+        }
     };
 }
 
@@ -1052,6 +1076,13 @@ PartiallyMadePackageDepSpec::additional_requirement(const std::tr1::shared_ptr<c
     if (! _imp->data->additional_requirements)
         _imp->data->additional_requirements.reset(new AdditionalPackageDepSpecRequirements);
     _imp->data->additional_requirements->push_back(req);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::annotations(const std::tr1::shared_ptr<const MetadataSectionKey> & a)
+{
+    _imp->data->annotations = a;
     return *this;
 }
 

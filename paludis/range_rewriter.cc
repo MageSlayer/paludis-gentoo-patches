@@ -132,6 +132,11 @@ namespace
             return std::tr1::shared_ptr<const RepositoryName>();
         }
 
+        virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+        {
+            return std::tr1::shared_ptr<const MetadataSectionKey>();
+        }
+
         virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
             return std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();

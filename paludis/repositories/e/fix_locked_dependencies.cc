@@ -146,12 +146,10 @@ namespace
                 if (matches->empty())
                     break;
 
-                PackageDepSpec new_s(partial_parse_elike_package_dep_spec(stringify(s),
-                            eapi.supported()->package_dep_spec_parse_options(), id).slot_requirement(
+                PackageDepSpec new_s(PartiallyMadePackageDepSpec(s).slot_requirement(
                             make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot(), true))));
-
                 c.reset(new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(
-                                PackageDepSpec(new_s).clone())));
+                                new_s.clone())));
             } while (false);
 
             if (! c)

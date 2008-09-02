@@ -73,7 +73,6 @@ namespace paludis
 
         protected:
             DepSpec();
-            DepSpec(const std::tr1::shared_ptr<const MetadataSectionKey> &);
 
         public:
             ///\name Basic operations
@@ -383,6 +382,12 @@ namespace paludis
                     const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
 
             /**
+             * Add annotations
+             */
+            PartiallyMadePackageDepSpec & annotations(
+                    const std::tr1::shared_ptr<const MetadataSectionKey> &);
+
+            /**
              * Turn ourselves into a PackageDepSpec.
              */
             operator const PackageDepSpec() const;
@@ -581,6 +586,11 @@ namespace paludis
              * Fetch the additional requirements (may be a zero pointer).
              */
             virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
+
+            /**
+             * Fetch the annotations (may be a zero pointer).
+             */
+            virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
     };
 
     /**
