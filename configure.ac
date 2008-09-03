@@ -51,9 +51,12 @@ dnl }}}
 PALUDIS_PC_VERSION="${VERSION_FULL}"
 PALUDIS_PC_SLOT="${VERSION_MAJOR}.${VERSION_MINOR}"
 
-if [ $((VERSION_MINOR % 2)) == 1 ] ; then
+if test x"$((VERSION_MINOR % 2))" = x"1" ; then
 	PALUDIS_PC_SLOT="${PALUDIS_PC_SLOT}_"`printf "%.8s" ${GITHEAD}`
 fi
+
+AC_MSG_CHECKING([for slot])
+AC_MSG_RESULT([$PALUDIS_PC_SLOT])
 
 PALUDIS_PC_CFLAGS=
 PALUDIS_PC_LIBS="-lpaludis_${PALUDIS_PC_SLOT} -lpaludisutil_${PALUDIS_PC_SLOT} -lpaludisargs_${PALUDIS_PC_SLOT}"
