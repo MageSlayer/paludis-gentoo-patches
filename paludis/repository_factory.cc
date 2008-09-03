@@ -107,7 +107,7 @@ RepositoryFactory::_load_dir(const FSEntry & so_dir)
         if (d->is_directory())
             _load_dir(*d);
 
-        if (! is_file_with_extension(*d, ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
+        if (! is_file_with_extension(*d, "_" + stringify(PALUDIS_PC_SLOT) + ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
                     IsFileWithOptions()))
             continue;
 

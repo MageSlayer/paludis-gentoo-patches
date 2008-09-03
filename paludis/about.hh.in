@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,6 +60,13 @@
  * \ingroup g_about
  */
 #define PALUDIS_VERSION_MICRO @VERSION_MICRO@
+
+/**
+ * The suffix used for so names (eg "0.30" or "0.31_15ece615").
+ *
+ * \ingroup g_about
+ */
+#define PALUDIS_PC_SLOT "@PALUDIS_PC_SLOT@"
 
 /**
  * The version suffix (eg "_alpha1"), often an empty string.

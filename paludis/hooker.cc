@@ -52,7 +52,7 @@ HookFile::~HookFile()
 
 namespace
 {
-    static const std::string so_suffix("_" + stringify(PALUDIS_VERSION_MAJOR) + "." + stringify(PALUDIS_VERSION_MINOR)
+    static const std::string so_suffix("_" + stringify(PALUDIS_PC_SLOT)
             + ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
 
     class BashHookFile :
@@ -596,8 +596,7 @@ Hooker::_find_hooks(const Hook & hook) const
                     if (! load_try)
                     {
                         load_try = true;
-                        std::string soname("libpaludispythonhooks_" + stringify(PALUDIS_VERSION_MAJOR) + "."
-                                + stringify(PALUDIS_VERSION_MINOR) + ".so");
+                        std::string soname("libpaludispythonhooks_" + stringify(PALUDIS_PC_SLOT) + ".so");
 
                         pyhookfilehandle.handle = dlopen(soname.c_str(), RTLD_NOW | RTLD_GLOBAL);
                         if (pyhookfilehandle.handle)

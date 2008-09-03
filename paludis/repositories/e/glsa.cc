@@ -226,8 +226,7 @@ GLSA::create_from_xml_file(const std::string & filename)
         Lock lock(libxmlhandle.mutex);
 
         if (0 == libxmlhandle.handle)
-            libxmlhandle.handle = dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_VERSION_MAJOR) + "."
-                    + stringify(PALUDIS_VERSION_MINOR) + ".so").c_str(),
+            libxmlhandle.handle = dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(),
                     RTLD_NOW | RTLD_GLOBAL);
         if (0 == libxmlhandle.handle)
             throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
