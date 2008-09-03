@@ -374,11 +374,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         local_config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + local_config_suffix));
     }
 
-    if (_imp->commandline_environment->end() != _imp->commandline_environment->find("root"))
+    if (_imp->commandline_environment->end() == _imp->commandline_environment->find("root"))
     {
         if (! local_config_dir.exists())
             throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
-                    + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
+                + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
 
         Log::get_instance()->message("paludis_environment.paludis_config.initial_dir", ll_debug, lc_no_context)
             << "PaludisConfig initial directory is '" << local_config_dir << "'";
