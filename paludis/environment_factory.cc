@@ -99,9 +99,9 @@ EnvironmentFactory::create(const std::string & s) const
         {
             Keys::const_iterator i(_imp->keys.find(f));
             if (_imp->keys.end() == i)
-                return i->second(suffix);
-            else
                 throw;
+            else
+                return i->second(suffix);
         }
         else
             throw;
