@@ -70,6 +70,10 @@ script can be used to generate a Paludis configuration from an existing Portage 
     </code> option for some overlays.</li>
 </ul>
 
+<p>You may also wish to set up an unavailable repository for tracking repositories in layman. See <a
+    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+config.</p>
+
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 
 <h2 id="manual">Manually configuring Paludis</h2>
@@ -267,11 +271,17 @@ however, do not provide this.)</p>
 <p>For details on <code>sync</code> formats, use <code>paludis --list-sync-protocols</code>. The listed options can be
 used via <code>sync_options = </code>.</p>
 
+<h5>repositories/layman.conf</h5>
+
+<p>You may also wish to set up an unavailable repository for tracking repositories in layman. See <a
+    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+config.</p>
+
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 
 <h4>Repositories for Exherbo</h4>
 
-<p>Exherbo users will need at least the following two repositories:</p>
+<p>Exherbo users will need at least the following three repositories:</p>
 
 <h5>repositories/arbor.conf</h5>
 
@@ -292,6 +302,13 @@ format = exheres
 location = /var/db/paludis/repositories/installed
 format = exndbam
 </pre>
+
+<h5>repositories/unavailable.conf</h5>
+
+
+<p>You should usually set up an unavailable repository for tracking repositories that you do not have configured. See <a
+    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+config.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 

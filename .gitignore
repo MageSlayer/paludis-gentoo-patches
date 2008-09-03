@@ -122,6 +122,8 @@ man-*
 /doc/configuration/syncers.html.part
 /doc/configuration/synclist
 /doc/configuration/toplinks.html.part
+/doc/configuration/unavailable.html
+/doc/configuration/unavailable.html.part
 /doc/configuration/use.html
 /doc/configuration/use.html.part
 /doc/configuration/vdb.html

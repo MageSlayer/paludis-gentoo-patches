@@ -1153,7 +1153,7 @@ dnl }}}
 
 dnl {{{ repositories
 ALL_REPOSITORIES="cran e fake gems unavailable unpackaged virtuals"
-DEFAULT_REPOSITORIES="e fake unpackaged virtuals"
+DEFAULT_REPOSITORIES="e fake unavailable unpackaged virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...

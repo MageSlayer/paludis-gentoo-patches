@@ -1,0 +1,48 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>unavailable Options</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>As well as the general keys supported for all repositories, the following
+keys have meaning for unavailable format repositories:</p>
+
+<dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+
+    <dt><code>name</code></dt>
+    <dd>The name of the repository. Defaults to <code>unavailable</code>.</dd>
+
+    <dt><code>sync</code></dt>
+    <dd>How to sync the repository. See <a href="syncers.html">Syncers</a> for supported formats.</dd>
+
+    <dt><code>sync_options</code></dt>
+    <dd>Any options to be passed to the syncer. Optional.</dd>
+</dl>
+
+<h2>Reference Configurations</h2>
+
+<h3>Gentoo</h3>
+
+<p>The following makes <code>layman</code> repositories available:</p>
+
+<pre>
+format = unavailable
+name = layman
+location = /var/db/paludis/repositories/layman
+sync = tar+http://git.exherbo.org/layman_repositories.tar.bz2
+importance = -100
+</pre>
+
+<h3>Exherbo</h3>
+
+<p>The following lists all official repositories:</p>
+
+<pre>
+format = unavailable
+location = /var/db/paludis/repositories/unavailable
+sync = tar+http://git.exherbo.org/exherbo_repositories.tar.bz2
+importance = -100
+</pre>
+

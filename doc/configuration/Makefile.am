@@ -42,7 +42,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT \
 	vdb.html \
 	vdb.html.part \
 	exndbam.html \
-	exndbam.html.part
+	exndbam.html.part \
+	unavailable.html \
+	unavailable.html.part
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -68,6 +70,7 @@ EXTRA_DIST = \
 	repositories.html.part.in \
 	erepository.html.part.in \
 	installedunpackaged.html.part.in \
+	unavailable.html.part.in \
 	vdb.html.part.in \
 	exndbam.html.part.in
 
@@ -93,6 +96,7 @@ paludisconfigurationhtml_DATA = \
 	repositories.html \
 	erepository.html \
 	installedunpackaged.html \
+	unavailable.html \
 	vdb.html \
 	exndbam.html
 
@@ -174,6 +178,12 @@ erepository.html.part : $(srcdir)/erepository.html.part.in $(srcdir)/paludisenvi
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/erepository.html.part.in > erepository.html.part
+
+unavailable.html.part : $(srcdir)/unavailable.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/unavailable.html.part.in > unavailable.html.part
 
 installedunpackaged.html.part : $(srcdir)/installedunpackaged.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -288,6 +298,9 @@ erepository.html : header.html.part erepository.html.part footer.html.part
 
 installedunpackaged.html : header.html.part installedunpackaged.html.part footer.html.part
 	cat header.html.part installedunpackaged.html.part footer.html.part > $@
+
+unavailable.html : header.html.part unavailable.html.part footer.html.part
+	cat header.html.part unavailable.html.part footer.html.part > $@
 
 vdb.html : header.html.part vdb.html.part footer.html.part
 	cat header.html.part vdb.html.part footer.html.part > $@
