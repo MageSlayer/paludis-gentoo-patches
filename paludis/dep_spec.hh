@@ -782,6 +782,7 @@ namespace paludis
             ///\{
 
             BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> spec);
+            BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & spec, const std::string & text);
 
             ///\}
 

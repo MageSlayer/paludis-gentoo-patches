@@ -102,9 +102,17 @@ namespace
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
+            std::string::size_type specstart(1);
+            if (2 <= s.length() && '!' == s.at(1))
+            {
+                if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_hard_soft_blocks])
+                    throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
+                specstart = 2;
+            }
+
             std::tr1::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
-                        make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(1),
-                                    eapi.supported()->package_dep_spec_parse_options(), id)))));
+                        make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(specstart),
+                                    eapi.supported()->package_dep_spec_parse_options(), id))), s));
             (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(spec)));
             annotations_go_here(spec);
         }
@@ -161,7 +169,7 @@ namespace
             annotations_go_here(spec);
         }
         else
-            throw EDepParseError(s, "arrows in this EAPI");
+            throw EDepParseError(s, "Arrows not allowed in this EAPI");
     }
 
     void any_not_allowed_handler(const std::string & s) PALUDIS_ATTRIBUTE((noreturn));

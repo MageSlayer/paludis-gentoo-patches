@@ -279,6 +279,12 @@ BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
 {
 }
 
+BlockDepSpec::BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & a, const std::string & t) :
+    StringDepSpec(t),
+    _spec(a)
+{
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 {
@@ -303,7 +309,7 @@ paludis::operator<< (std::ostream & s, const NamedSetDepSpec & a)
 std::ostream &
 paludis::operator<< (std::ostream & s, const BlockDepSpec & a)
 {
-    s << "!" << *a.blocked_spec();
+    s << a.text();
     return s;
 }
 

@@ -9,5 +9,6 @@ make_enum_DependencySpecTreeParseOption()
 
     key dstpo_disallow_any_use           "Disallow || ( use? ( ... ) )"
     key dstpo_uri_supports_arrow         "Allow -> in FetchableURIDepSpec"
+    key dstpo_hard_soft_blocks           "Allow both !block and !!block"
 }
 
