@@ -332,6 +332,7 @@ paludis::elike_get_remove_version_operator(std::string & s, const ELikePackageDe
     {
         if (op != vo_equal)
             throw PackageDepSpecError("Package dep spec uses * with operator '" + stringify(op) + "'");
+        op = vo_equal_star;
         s.erase(s.length() - 1);
     }
 
