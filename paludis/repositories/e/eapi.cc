@@ -201,6 +201,7 @@ namespace
                         value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
                         value_for<n::failure_is_fatal>(destringify_key<bool>(k, "failure_is_fatal")),
                         value_for<n::unpack_fix_permissions>(destringify_key<bool>(k, "unpack_fix_permissions")),
+                        value_for<n::unpack_stupid_gitweb_hack>(destringify_key<bool>(k, "unpack_stupid_gitweb_hack")),
                         value_for<n::unpack_unrecognised_is_fatal>(destringify_key<bool>(k, "unpack_unrecognised_is_fatal"))
                         )));
     }

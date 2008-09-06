@@ -913,6 +913,37 @@ pkg_preinst() {
     [[ -d "${T}" ]] || die "T not a dir"
 }
 END
+mkdir -p "cat/stupid-gitweb-hack"
+cat <<END > cat/stupid-gitweb-hack/stupid-gitweb-hack-0.ebuild
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    touch "\${T}/foogz"
+    tar czf 'foo;sf=tgz' -C "\${T}" .
+    rm "\${T}/foogz"
+    [[ -f 'foo;sf=tgz' ]] || die
+    [[ -f foogz ]] && die
+    unpack './foo;sf=tgz'
+    [[ -f foogz ]] && die # MEH
+
+    touch "\${T}/foobz2"
+    tar cjf 'foo;sf=tbz2' -C "\${T}" .
+    rm "\${T}/foobz2"
+    [[ -f 'foo;sf=tbz2' ]] || die
+    [[ -f foobz2 ]] && die
+    unpack './foo;sf=tbz2'
+    [[ -f foobz2 ]] && die # MEH
+}
+END
+cp cat/stupid-gitweb-hack/stupid-gitweb-hack-{0,1}.ebuild || exit 1
+sed -e '/MEH/s/&&/||/' cat/stupid-gitweb-hack/stupid-gitweb-hack-0.ebuild > cat/stupid-gitweb-hack/stupid-gitweb-hack-2.ebuild || exit 1
 mkdir -p "cat/src_prepare"
 cat <<END > cat/src_prepare/src_prepare-0.ebuild || exit 1
 EAPI="\${PV}"

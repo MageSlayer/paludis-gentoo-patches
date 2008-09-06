@@ -1196,6 +1196,16 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("no stupid gitweb hack 0", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/stupid-gitweb-hack-0",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                id->perform_action(action);
+            }
+
+            {
                 TestMessageSuffix suffix("no src_prepare 0", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-0",
@@ -1336,6 +1346,16 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("no stupid gitweb hack 1", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/stupid-gitweb-hack-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                id->perform_action(action);
+            }
+
+            {
                 TestMessageSuffix suffix("no src_prepare 1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-1",
@@ -1415,6 +1435,16 @@ namespace test_cases
                 TestMessageSuffix suffix("doman 2", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("stupid gitweb hack 2", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/stupid-gitweb-hack-2",
                                         &env, UserPackageDepSpecOptions()))))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
