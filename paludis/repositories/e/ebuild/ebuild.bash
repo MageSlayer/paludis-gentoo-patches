@@ -25,6 +25,10 @@ if [[ -e ${ROOT}/etc/profile.env ]] && ! source "${ROOT}"/etc/profile.env; then
     exit 123
 fi
 
+# Force a few more things into PATH, since some users have crazy setups.
+# See ticket:374.
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:${PATH}"
+
 unalias -a
 set +C
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
@@ -69,10 +73,6 @@ export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
     export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
 done
-
-# Force a few more things into PATH, since some users have crazy setups.
-# See ticket:374.
-export PATH="${PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
 
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
