@@ -131,7 +131,6 @@ namespace paludis
         struct supported;
         struct tools_options;
         struct unpack_fix_permissions;
-        struct unpack_stupid_gitweb_hack;
         struct unpack_unrecognised_is_fatal;
         struct upstream_changelog;
         struct upstream_documentation;
@@ -336,7 +335,6 @@ namespace paludis
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
-            NamedValue<n::unpack_stupid_gitweb_hack, bool> unpack_stupid_gitweb_hack;
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;
         };
 
