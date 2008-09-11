@@ -18,8 +18,8 @@
 
 builtin_installbin()
 {
-    echo tar jvxpf ${!PALUDIS_BINARY_DISTDIR_VARIABLE}/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN 1>&2
-    tar jvxpf ${!PALUDIS_BINARY_DISTDIR_VARIABLE}/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN || die "Couldn't extract image"
+    echo tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN 1>&2
+    tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN || die "Couldn't extract image"
 }
 
 generic_internal_installbin()
