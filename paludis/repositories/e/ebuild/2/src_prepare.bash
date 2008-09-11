@@ -21,24 +21,9 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-eapi0_src_prepare()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi1_src_prepare()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi2_src_prepare()
-{
-    :
-}
-
 default_src_prepare()
 {
-    eapi2_src_prepare
+    :
 }
 
 src_prepare()

@@ -22,23 +22,8 @@
 
 ebuild_load_module 0/src_install
 
-eapi0_src_install()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi1_src_install()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi2_src_install()
-{
-    die "${FUNCNAME} is not supported"
-}
-
 default_src_install()
 {
-    eapi2_src_install
+    die "${FUNCNAME} is not supported"
 }
 

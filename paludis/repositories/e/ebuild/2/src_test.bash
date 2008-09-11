@@ -20,26 +20,70 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-ebuild_load_module 0/src_test
-eval "eapi0_$(declare -f src_test)"
-
-eapi1_src_test()
-{
-    eapi0_src_test
-}
-
-eapi2_src_test()
-{
-    eapi0_src_test
-}
-
 default_src_test()
 {
-    eapi2_src_test
+    if [[ -f Makefile ]] || [[ -f GNUmakefile ]] || [[ -f makefile ]] ; then
+        echo "Makefile found, looking for potential test targets"
+        if make -j1 -n check ; then
+            echo "Found check target"
+            emake -j1 check || die "make check failed"
+        elif make -j1 -n test ; then
+            echo "Found test target"
+            emake -j1 test || die "make test failed"
+        else
+            echo "No check or test target, skipping tests"
+        fi
+    else
+        echo "No Makefile, skipping tests"
+    fi
 }
 
 src_test()
 {
     default_src_test
+}
+
+ebuild_f_test()
+{
+    local old_sandbox_predict="${SANDBOX_PREDICT}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
+
+    local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
+    export PALUDIS_EXTRA_DIE_MESSAGE="
+!!! This package failed inside the test phase. You should read
+!!!    http://paludis.pioto.org/faq/stricter.html#testfailures
+!!! for more information on packages with test phase failures.
+"
+
+    if [[ -d "${S}" ]] ; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -d "${WORKDIR}" ]] ; then
+        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    fi
+
+    if hasq "test" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
+    else
+        if [[ $(type -t pre_src_test ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_test"
+            pre_src_test
+            ebuild_section "Done pre_src_test"
+        fi
+
+        ebuild_section "Starting src_test"
+        src_test
+        ebuild_section "Done src_test"
+
+        if [[ $(type -t post_src_test ) == "function" ]] ; then
+            ebuild_section "Starting post_src_test"
+            post_src_test
+            ebuild_section "Done post_src_test"
+        fi
+    fi
+
+    export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
+
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${old_sandbox_predict}"
+    true
 }
 

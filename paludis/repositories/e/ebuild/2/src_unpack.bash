@@ -20,26 +20,38 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-ebuild_load_module 0/src_unpack
-eval "eapi0_$(declare -f src_unpack)"
-
-eapi1_src_unpack()
-{
-    eapi0_src_unpack
-}
-
-eapi2_src_unpack()
-{
-    eapi0_src_unpack
-}
-
 default_src_unpack()
 {
-    eapi2_src_unpack
+    [[ -n "${A}" ]] && unpack ${A}
 }
 
 src_unpack()
 {
     default_src_unpack
+}
+
+ebuild_f_unpack()
+{
+    cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+
+    if hasq "unpack" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
+    else
+        if [[ $(type -t pre_src_unpack ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_unpack"
+            pre_src_unpack
+            ebuild_section "Done pre_src_unpack"
+        fi
+
+        ebuild_section "Starting src_unpack"
+        src_unpack
+        ebuild_section "Done src_unpack"
+
+        if [[ $(type -t post_src_unpack ) == "function" ]] ; then
+            ebuild_section "Starting post_src_unpack"
+            post_src_unpack
+            ebuild_section "Done post_src_unpack"
+        fi
+    fi
 }
 

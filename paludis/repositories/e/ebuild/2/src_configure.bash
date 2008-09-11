@@ -21,24 +21,9 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-eapi0_src_configure()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi1_src_configure()
-{
-    die "${FUNCNAME} is not supported"
-}
-
-eapi2_src_configure()
-{
-    [[ -x ${ECONF_SOURCE:-.}/configure ]] && econf
-}
-
 default_src_configure()
 {
-    eapi2_src_configure
+    [[ -x ${ECONF_SOURCE:-.}/configure ]] && econf
 }
 
 src_configure()

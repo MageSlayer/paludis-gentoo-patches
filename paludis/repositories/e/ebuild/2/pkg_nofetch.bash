@@ -20,26 +20,38 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-ebuild_load_module 0/pkg_nofetch
-eval "eapi0_$(declare -f pkg_nofetch)"
-
-eapi1_pkg_nofetch()
-{
-    eapi0_pkg_nofetch
-}
-
-eapi2_pkg_nofetch()
-{
-    eapi0_pkg_nofetch
-}
-
 default_pkg_nofetch()
 {
-    eapi2_pkg_nofetch
+    [[ -z "${A}" ]] && return
+
+    local f g=
+    for f in ${A} ; do
+        [[ -f "${DISTDIR}/${A}" ]] && continue
+        if [[ -z "${g}" ]] ; then
+            echo "The following files could not be fetched automatically for ${PN}:"
+            g=no
+        fi
+        echo "* ${f}"
+    done
 }
 
 pkg_nofetch()
 {
     default_pkg_nofetch
+}
+
+ebuild_f_nofetch()
+{
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
+    if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting pkg_nofetch"
+        pkg_nofetch
+        ebuild_section "Done pkg_nofetch"
+    fi
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    true
 }
 

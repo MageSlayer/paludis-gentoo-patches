@@ -21,26 +21,44 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-ebuild_load_module 0/src_compile
-eval "eapi0_$(declare -f src_compile)"
-
-ebuild_load_module 1/src_compile
-eval "eapi1_$(declare -f src_compile)"
-
-eapi2_src_compile()
+default_src_compile()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
         emake || die "emake failed"
     fi
 }
 
-default_src_compile()
-{
-    eapi2_src_compile
-}
-
 src_compile()
 {
     default_src_compile
+}
+
+ebuild_f_compile()
+{
+    if [[ -d "${S}" ]] ; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -d "${WORKDIR}" ]] ; then
+        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
+    fi
+
+    if hasq "compile" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
+    else
+        if [[ $(type -t pre_src_compile ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_compile"
+            pre_src_compile
+            ebuild_section "Done pre_src_compile"
+        fi
+
+        ebuild_section "Starting src_compile"
+        src_compile
+        ebuild_section "Done src_compile"
+
+        if [[ $(type -t post_src_compile ) == "function" ]] ; then
+            ebuild_section "Starting post_src_compile"
+            post_src_compile
+            ebuild_section "Done post_src_compile"
+        fi
+    fi
 }
 
