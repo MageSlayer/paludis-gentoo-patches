@@ -325,12 +325,22 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     {
         switch (d.kind)
         {
-            case dlk_provided:
-            case dlk_virtual:
             case dlk_already_installed:
                 if (! want_full_install_reasons())
                     return;
                 m = unimportant_entry;
+                continue;
+
+            case dlk_provided:
+            case dlk_virtual:
+                if (d.tags->empty())
+                {
+                    if (! want_full_install_reasons())
+                        return;
+                    m = unimportant_entry;
+                }
+                else
+                    m = normal_entry;
                 continue;
 
             case dlk_package:
@@ -1048,9 +1058,12 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                 output_no_endl(render_as_update_mode(" ["));
 
                 std::string destination_str;
-                std::tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
-                if (default_destinations->end() == default_destinations->find(d.destination))
-                    destination_str = " ::" + stringify(d.destination->name());
+                if (! d.package_id->virtual_for_key())
+                {
+                    std::tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
+                    if (default_destinations->end() == default_destinations->find(d.destination))
+                        destination_str = " ::" + stringify(d.destination->name());
+                }
 
                 if (existing_repo->empty())
                 {
