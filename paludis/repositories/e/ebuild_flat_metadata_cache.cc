@@ -121,7 +121,7 @@ namespace
                     {
                         const FSEntry * eclass(_imp->eclass_mtimes->eclass(*it));
                         if (eclass)
-                            Log::get_instance()->message("e.cache_flat_list.eclass.path", ll_debug, lc_context)
+                            Log::get_instance()->message("e.cache.flat_list.eclass.path", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << *it << "' maps to '" << *eclass << "'";
 
                         if (! eclass)
@@ -368,7 +368,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
                             const FSEntry * eclass(_imp->eclass_mtimes->eclass(eclass_name));
                             if (eclass)
-                                Log::get_instance()->message("e.cache_flat_hash.eclass.path", ll_debug, lc_context)
+                                Log::get_instance()->message("e.cache.flat_hash.eclass.path", ll_debug, lc_context)
                                     << "Cache-requested eclass '" << eclass_name << "' maps to '" << *eclass << "'";
 
                             if (! eclass)
@@ -424,7 +424,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
                             const FSEntry * exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
                             if (exlib)
-                                Log::get_instance()->message("e.cache_flat_hash.exlib.path", ll_debug, lc_context)
+                                Log::get_instance()->message("e.cache.flat_hash.exlib.path", ll_debug, lc_context)
                                     << "Cache-requested exlib '" << exlib_name << "' maps to '" << *exlib << "'";
 
                             if (! exlib)
