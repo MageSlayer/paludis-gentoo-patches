@@ -359,6 +359,8 @@ namespace paludis
             ActiveDependencyLabels(const ActiveDependencyLabels &, const DependencyLabelsDepSpec &);
             ~ActiveDependencyLabels();
 
+            ActiveDependencyLabels & operator= (const ActiveDependencyLabels &);
+
             ///\}
 
             ///\name Current label selections

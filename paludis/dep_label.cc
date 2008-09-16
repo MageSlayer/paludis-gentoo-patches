@@ -281,6 +281,26 @@ ActiveDependencyLabels::~ActiveDependencyLabels()
 {
 }
 
+ActiveDependencyLabels &
+ActiveDependencyLabels::operator= (const ActiveDependencyLabels & other)
+{
+    if (this != &other)
+    {
+        _imp->system_labels.reset(new DependencySystemLabelSequence);
+        std::copy(other._imp->system_labels->begin(), other._imp->system_labels->end(), _imp->system_labels->back_inserter());
+
+        _imp->type_labels.reset(new DependencyTypeLabelSequence);
+        std::copy(other._imp->type_labels->begin(), other._imp->type_labels->end(), _imp->type_labels->back_inserter());
+
+        _imp->suggest_labels.reset(new DependencySuggestLabelSequence);
+        std::copy(other._imp->suggest_labels->begin(), other._imp->suggest_labels->end(), _imp->suggest_labels->back_inserter());
+
+        _imp->abi_labels.reset(new DependencyABIsLabelSequence);
+        std::copy(other._imp->abi_labels->begin(), other._imp->abi_labels->end(), _imp->abi_labels->back_inserter());
+    }
+    return *this;
+}
+
 const std::tr1::shared_ptr<const DependencySystemLabelSequence>
 ActiveDependencyLabels::system_labels() const
 {
