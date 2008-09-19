@@ -28,6 +28,6 @@
 #include <paludis/environment-fwd.hh>
 
 /// Handle --contents.
-int do_contents(std::tr1::shared_ptr<paludis::Environment>);
+int do_contents(const std::tr1::shared_ptr<paludis::Environment> &);
 
 #endif

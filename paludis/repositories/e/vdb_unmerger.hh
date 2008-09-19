@@ -100,10 +100,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            bool check_dir(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            bool check_sym(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            bool check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            bool check_file(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            bool check_dir(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            bool check_sym(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            bool check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
 
         public:
             ///\name Basic operations

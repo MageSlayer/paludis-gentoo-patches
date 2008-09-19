@@ -94,7 +94,7 @@ SetsListModel::populate_in_paludis_thread()
 }
 
 void
-SetsListModel::populate_in_gui_thread(std::tr1::shared_ptr<const SetNameSet> names)
+SetsListModel::populate_in_gui_thread(const std::tr1::shared_ptr<const SetNameSet> & names)
 {
     clear();
     for (SetNameSet::ConstIterator n(names->begin()), n_end(names->end()) ;

@@ -32,7 +32,7 @@ namespace paludis
 }
 
 /// Handle --config.
-int do_config(std::tr1::shared_ptr<paludis::Environment>);
+int do_config(const std::tr1::shared_ptr<paludis::Environment> &);
 
 #endif
 

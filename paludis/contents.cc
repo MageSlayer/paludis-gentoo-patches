@@ -119,7 +119,7 @@ Contents::~Contents()
 }
 
 void
-Contents::add(std::tr1::shared_ptr<const ContentsEntry> c)
+Contents::add(const std::tr1::shared_ptr<const ContentsEntry> & c)
 {
     _imp->c.push_back(c);
 }

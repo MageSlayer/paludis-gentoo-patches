@@ -72,7 +72,7 @@ namespace
 }
 
 void do_one_package_query(
-        const std::tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain,
         std::tr1::shared_ptr<PackageDepSpec> spec)
 {
@@ -109,7 +109,7 @@ namespace
 }
 
 void do_one_set_query(
-        const std::tr1::shared_ptr<Environment>,
+        const std::tr1::shared_ptr<Environment> &,
         const std::string & q,
         const std::tr1::shared_ptr<Map<char, std::string> > &,
         std::tr1::shared_ptr<const SetSpecTree::ConstItem> set)
@@ -122,7 +122,7 @@ void do_one_set_query(
 }
 
 void do_one_query(
-        const std::tr1::shared_ptr<Environment> env,
+        const std::tr1::shared_ptr<Environment> & env,
         const std::string & q,
         const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain)
 {
@@ -139,7 +139,7 @@ void do_one_query(
     }
 }
 
-int do_query(std::tr1::shared_ptr<Environment> env)
+int do_query(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 

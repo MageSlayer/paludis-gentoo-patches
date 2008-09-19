@@ -38,12 +38,12 @@ namespace paludis
             }
 
             virtual void on_build_all_pre();
-            virtual void on_build_pre(std::tr1::shared_ptr<const StageBase>);
-            virtual void on_build_post(std::tr1::shared_ptr<const StageBase>);
-            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &)
+            virtual void on_build_pre(const std::tr1::shared_ptr<const StageBase> &);
+            virtual void on_build_post(const std::tr1::shared_ptr<const StageBase> &);
+            virtual void on_build_fail(const std::tr1::shared_ptr<const StageBase> &, const StageBuildError &)
                 PALUDIS_ATTRIBUTE((noreturn));
-            virtual void on_build_succeed(std::tr1::shared_ptr<const StageBase>);
-            virtual void on_build_skipped(std::tr1::shared_ptr<const StageBase>);
+            virtual void on_build_succeed(const std::tr1::shared_ptr<const StageBase> &);
+            virtual void on_build_skipped(const std::tr1::shared_ptr<const StageBase> &);
             virtual void on_build_all_post();
     };
 }

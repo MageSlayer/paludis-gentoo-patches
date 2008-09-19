@@ -142,14 +142,14 @@ namespace paludis
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<T_>
+        const std::tr1::shared_ptr<T_>
         TreeLeaf<H_, T_>::item()
         {
             return _item;
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<const T_>
+        const std::tr1::shared_ptr<const T_>
         TreeLeaf<H_, T_>::item() const
         {
             return _item;
@@ -175,21 +175,21 @@ namespace paludis
         }
 
         template <typename H_, typename T_>
-        TreeSequence<H_, T_>::TreeSequence(std::tr1::shared_ptr<T_> i) :
+        TreeSequence<H_, T_>::TreeSequence(const std::tr1::shared_ptr<T_> & i) :
             _item(i),
             _items(new Sequence<std::tr1::shared_ptr<AcceptInterface<H_> > >)
         {
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<const T_>
+        const std::tr1::shared_ptr<const T_>
         TreeSequence<H_, T_>::item() const
         {
             return _item;
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<T_>
+        const std::tr1::shared_ptr<T_>
         TreeSequence<H_, T_>::item()
         {
             return _item;
@@ -197,7 +197,7 @@ namespace paludis
 
         template <typename H_, typename T_>
         void
-        TreeSequence<H_, T_>::add(std::tr1::shared_ptr<AcceptInterface<H_> > i)
+        TreeSequence<H_, T_>::add(const std::tr1::shared_ptr<AcceptInterface<H_> > & i)
         {
             _items->push_back(i);
         }
@@ -247,21 +247,21 @@ namespace paludis
         }
 
         template <typename H_, typename T_>
-        ConstTreeSequence<H_, T_>::ConstTreeSequence(std::tr1::shared_ptr<T_> i) :
+        ConstTreeSequence<H_, T_>::ConstTreeSequence(const std::tr1::shared_ptr<T_> & i) :
             _item(i),
             _items(new Sequence<std::tr1::shared_ptr<const ConstAcceptInterface<H_> > >)
         {
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<T_>
+        const std::tr1::shared_ptr<T_>
         ConstTreeSequence<H_, T_>::item()
         {
             return _item;
         }
 
         template <typename H_, typename T_>
-        std::tr1::shared_ptr<const T_>
+        const std::tr1::shared_ptr<const T_>
         ConstTreeSequence<H_, T_>::item() const
         {
             return _item;
@@ -269,7 +269,7 @@ namespace paludis
 
         template <typename H_, typename T_>
         void
-        ConstTreeSequence<H_, T_>::add(std::tr1::shared_ptr<const ConstAcceptInterface<H_> > i)
+        ConstTreeSequence<H_, T_>::add(const std::tr1::shared_ptr<const ConstAcceptInterface<H_> > & i)
         {
             _items->push_back(i);
         }

@@ -75,7 +75,7 @@ namespace paludis
     };
 }
 
-ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, const std::tr1::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
     PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t, l))
 {

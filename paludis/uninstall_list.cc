@@ -111,13 +111,13 @@ UninstallList::~UninstallList()
 }
 
 void
-UninstallList::add(const std::tr1::shared_ptr<const PackageID> & e, std::tr1::shared_ptr<DepTag> t)
+UninstallList::add(const std::tr1::shared_ptr<const PackageID> & e, const std::tr1::shared_ptr<DepTag> & t)
 {
     real_add(e, t, false);
 }
 
 void
-UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, std::tr1::shared_ptr<DepTag> t,
+UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, const std::tr1::shared_ptr<DepTag> & t,
         const bool error)
 {
     std::list<UninstallListEntry>::iterator i;
@@ -200,7 +200,7 @@ UninstallListOptions::UninstallListOptions() :
 }
 
 void
-UninstallList::add_package(const std::tr1::shared_ptr<const PackageID> & e, std::tr1::shared_ptr<DepTag> t,
+UninstallList::add_package(const std::tr1::shared_ptr<const PackageID> & e, const std::tr1::shared_ptr<DepTag> & t,
         const UninstallListEntryKind k)
 {
     Context context("When adding package '" + stringify(*e) + "' to the uninstall list:");

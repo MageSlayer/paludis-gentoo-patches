@@ -445,7 +445,7 @@ namespace
 }
 
 void
-UninstallTask::world_remove_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem> a)
+UninstallTask::world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> & a)
 {
     WorldTargetFinder w(_imp->env, this);
     a->accept(w);

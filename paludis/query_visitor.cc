@@ -59,7 +59,7 @@ namespace paludis
     };
 }
 
-QueryVisitor::QueryVisitor(const DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
+QueryVisitor::QueryVisitor(const DepList * const d, const std::tr1::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::tr1::shared_ptr<const PackageID> & id) :
     PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
 {

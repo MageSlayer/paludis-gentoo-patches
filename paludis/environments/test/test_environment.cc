@@ -84,7 +84,7 @@ TestEnvironment::query_use(const UseFlagName & u, const PackageID & p) const
 }
 
 bool
-TestEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID &) const
+TestEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }

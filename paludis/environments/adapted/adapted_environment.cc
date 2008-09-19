@@ -49,7 +49,7 @@ namespace paludis
     };
 }
 
-AdaptedEnvironment::AdaptedEnvironment(std::tr1::shared_ptr<Environment> e) :
+AdaptedEnvironment::AdaptedEnvironment(const std::tr1::shared_ptr<Environment> & e) :
     PrivateImplementationPattern<AdaptedEnvironment>(new Implementation<AdaptedEnvironment>(e)),
     _imp(PrivateImplementationPattern<AdaptedEnvironment>::_imp)
 {
@@ -60,7 +60,7 @@ AdaptedEnvironment::~AdaptedEnvironment()
 }
 
 void
-AdaptedEnvironment::adapt_use(std::tr1::shared_ptr<const PackageDepSpec> p,
+AdaptedEnvironment::adapt_use(const std::tr1::shared_ptr<const PackageDepSpec> & p,
         const UseFlagName & u, const UseFlagState s)
 {
     _imp->use.insert(std::make_pair(u, std::make_pair(p, s)));
@@ -124,7 +124,7 @@ AdaptedEnvironment::accept_license(const std::string & l, const PackageID & e) c
 }
 
 bool
-AdaptedEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
+AdaptedEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID & e) const
 {
     return _imp->env->accept_keywords(k, e);
 }

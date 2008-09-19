@@ -84,7 +84,7 @@ CategoriesListModel::populate_in_paludis_thread()
 }
 
 void
-CategoriesListModel::populate_in_gui_thread(std::tr1::shared_ptr<const CategoryNamePartSet> names)
+CategoriesListModel::populate_in_gui_thread(const std::tr1::shared_ptr<const CategoryNamePartSet> & names)
 {
     clear();
     for (CategoryNamePartSet::ConstIterator n(names->begin()), n_end(names->end()) ;

@@ -70,7 +70,7 @@ ConsoleQueryTask::~ConsoleQueryTask()
 }
 
 void
-ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
+ConsoleQueryTask::show(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* we might be wildcarded. */
     if (! a.package_ptr())
@@ -93,8 +93,9 @@ ConsoleQueryTask::show(const PackageDepSpec & a, std::tr1::shared_ptr<const Pack
 }
 
 void
-ConsoleQueryTask::show_one(const PackageDepSpec & a, std::tr1::shared_ptr<const PackageID> display_entry) const
+ConsoleQueryTask::show_one(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & display_entry) const
 {
+    std::tr1::shared_ptr<const PackageID> our_display_entry(display_entry);
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::tr1::shared_ptr<const PackageIDSequence>
@@ -106,25 +107,25 @@ ConsoleQueryTask::show_one(const PackageDepSpec & a, std::tr1::shared_ptr<const 
     if (preferred_entries->empty())
         preferred_entries = entries;
 
-    if (! display_entry)
+    if (! our_display_entry)
     {
-        display_entry = *preferred_entries->last();
+        our_display_entry = *preferred_entries->last();
         for (PackageIDSequence::ConstIterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
             if (! (*i)->masked())
-                display_entry = *i;
+                our_display_entry = *i;
     }
 
     if (want_compact())
     {
-        display_compact(a, display_entry);
+        display_compact(a, our_display_entry);
     }
     else
     {
-        display_header(a, display_entry);
-        display_versions_by_repository(a, entries, display_entry);
-        display_metadata(a, display_entry);
-        display_masks(a, display_entry);
+        display_header(a, our_display_entry);
+        display_versions_by_repository(a, entries, our_display_entry);
+        display_metadata(a, our_display_entry);
+        display_masks(a, our_display_entry);
         output_endl();
     }
 }
@@ -161,7 +162,7 @@ ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shar
 
 void
 ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
-        std::tr1::shared_ptr<const PackageIDSequence> entries,
+        const std::tr1::shared_ptr<const PackageIDSequence> & entries,
         const std::tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* find all repository names. */

@@ -115,7 +115,7 @@ FakeRepository::virtual_packages() const
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepSpec> p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, const std::tr1::shared_ptr<const PackageDepSpec> & p)
 {
     _imp->virtual_packages->push_back(make_named_values<RepositoryVirtualsEntry>(
                 value_for<n::provided_by_spec>(p),

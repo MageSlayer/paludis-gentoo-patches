@@ -189,7 +189,7 @@ namespace paludis
             ///\{
 
             NoDestinationError(const PackageID &,
-                    std::tr1::shared_ptr<const DestinationsSet>) throw ();
+                    const std::tr1::shared_ptr<const DestinationsSet> &) throw ();
 
             ///\}
     };

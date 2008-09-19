@@ -92,7 +92,7 @@ PackagesPage::populate()
 }
 
 void
-PackagesPage::set_category(std::tr1::shared_ptr<const CategoryNamePart> c)
+PackagesPage::set_category(const std::tr1::shared_ptr<const CategoryNamePart> & c)
 {
     _imp->category = c;
     _imp->set.reset();
@@ -101,7 +101,7 @@ PackagesPage::set_category(std::tr1::shared_ptr<const CategoryNamePart> c)
 }
 
 void
-PackagesPage::set_set(std::tr1::shared_ptr<const SetName> c)
+PackagesPage::set_set(const std::tr1::shared_ptr<const SetName> & c)
 {
     _imp->set = c;
     _imp->category.reset();
@@ -122,7 +122,7 @@ PackagesPage::get_set() const
 }
 
 void
-PackagesPage::set_qpn(std::tr1::shared_ptr<const QualifiedPackageName> q)
+PackagesPage::set_qpn(const std::tr1::shared_ptr<const QualifiedPackageName> & q)
 {
     _imp->qpn = q;
     _imp->package_buttons.populate();
@@ -135,7 +135,7 @@ PackagesPage::get_qpn() const
 }
 
 void
-PackagesPage::set_repository_filter(std::tr1::shared_ptr<const Generator> q)
+PackagesPage::set_repository_filter(const std::tr1::shared_ptr<const Generator> & q)
 {
     _imp->repository_filter = q;
     _imp->categories_list.populate();

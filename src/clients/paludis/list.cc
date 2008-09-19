@@ -39,7 +39,7 @@
 using namespace paludis;
 
 int
-do_list_repositories(std::tr1::shared_ptr<Environment> env)
+do_list_repositories(const std::tr1::shared_ptr<Environment> & env)
 {
     int ret_code(1);
 
@@ -71,7 +71,7 @@ do_list_repositories(std::tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_categories(std::tr1::shared_ptr<Environment> env)
+do_list_categories(const std::tr1::shared_ptr<Environment> & env)
 {
     int ret_code(1);
 
@@ -124,7 +124,7 @@ do_list_categories(std::tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_packages(std::tr1::shared_ptr<Environment> env)
+do_list_packages(const std::tr1::shared_ptr<Environment> & env)
 {
     int ret_code(1);
 
@@ -189,7 +189,7 @@ do_list_packages(std::tr1::shared_ptr<Environment> env)
 }
 
 int
-do_list_sets(std::tr1::shared_ptr<Environment> env)
+do_list_sets(const std::tr1::shared_ptr<Environment> & env)
 {
     int ret_code(1);
 

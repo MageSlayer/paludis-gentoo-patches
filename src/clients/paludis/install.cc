@@ -151,7 +151,7 @@ namespace
 }
 
 int
-do_install(std::tr1::shared_ptr<Environment> env)
+do_install(const std::tr1::shared_ptr<Environment> & env)
 {
     Context context("When performing install action from command line:");
 

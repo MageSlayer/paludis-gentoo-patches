@@ -66,7 +66,7 @@ StageBuilderTask::~StageBuilderTask()
 }
 
 void
-StageBuilderTask::queue_stage(std::tr1::shared_ptr<const StageBase> p)
+StageBuilderTask::queue_stage(const std::tr1::shared_ptr<const StageBase> & p)
 {
     Context context("When queuing stage in build list:");
     _imp->stages.push_back(p);

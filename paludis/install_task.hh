@@ -76,7 +76,7 @@ namespace paludis
             ///\{
 
             InstallTask(Environment * const env, const DepListOptions & options,
-                    std::tr1::shared_ptr<const DestinationsSet> destinations);
+                    const std::tr1::shared_ptr<const DestinationsSet> & destinations);
 
             ///\}
 
@@ -209,7 +209,7 @@ namespace paludis
             ///\{
 
             virtual void world_update_set(const SetName &);
-            virtual void world_update_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem>);
+            virtual void world_update_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> &);
 
             ///\}
 

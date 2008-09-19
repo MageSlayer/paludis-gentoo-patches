@@ -300,7 +300,7 @@ namespace gtkpaludis
 }
 
 void
-VersionInfoModel::populate_in_paludis_thread(std::tr1::shared_ptr<const PackageID> p)
+VersionInfoModel::populate_in_paludis_thread(const std::tr1::shared_ptr<const PackageID> & p)
 {
     std::tr1::shared_ptr<PopulateData> data(new PopulateData);
     if (p)
@@ -320,7 +320,7 @@ VersionInfoModel::populate_in_paludis_thread(std::tr1::shared_ptr<const PackageI
 }
 
 void
-VersionInfoModel::populate_in_gui_thread(std::tr1::shared_ptr<const VersionInfoModel::PopulateData> names)
+VersionInfoModel::populate_in_gui_thread(const std::tr1::shared_ptr<const VersionInfoModel::PopulateData> & names)
 {
     clear();
 

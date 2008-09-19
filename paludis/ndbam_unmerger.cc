@@ -214,7 +214,7 @@ NDBAMUnmerger::populate_unmerge_set()
 }
 
 bool
-NDBAMUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
+NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
 {
     std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
@@ -243,7 +243,7 @@ NDBAMUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei)
 }
 
 bool
-NDBAMUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
+NDBAMUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
 {
     std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
@@ -260,13 +260,13 @@ NDBAMUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) 
 }
 
 bool
-NDBAMUnmerger::check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
+NDBAMUnmerger::check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
 {
     return false;
 }
 
 bool
-NDBAMUnmerger::check_dir(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
+NDBAMUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
 {
     if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));

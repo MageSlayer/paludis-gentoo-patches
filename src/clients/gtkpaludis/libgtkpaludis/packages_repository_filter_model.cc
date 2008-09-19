@@ -81,7 +81,7 @@ PackagesRepositoryFilterModel::populate_in_paludis_thread()
 }
 
 void
-PackagesRepositoryFilterModel::populate_in_gui_thread(std::tr1::shared_ptr<const RepositoryNameSequence> names)
+PackagesRepositoryFilterModel::populate_in_gui_thread(const std::tr1::shared_ptr<const RepositoryNameSequence> & names)
 {
     iterator repositories(append());
     (*repositories)[_imp->columns.col_text] = "Specific repository";

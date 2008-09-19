@@ -19,7 +19,7 @@ namespace gtkpaludis
     {
         protected:
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(std::tr1::shared_ptr<const paludis::SetNameSet> names);
+            void populate_in_gui_thread(const std::tr1::shared_ptr<const paludis::SetNameSet> & names);
 
         public:
             SetsListModel(MainWindow * const m, PackagesPage * const p);

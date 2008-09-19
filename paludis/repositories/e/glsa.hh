@@ -150,7 +150,7 @@ namespace paludis
             /**
              * Add a package.
              */
-            void add_package(std::tr1::shared_ptr<const GLSAPackage>);
+            void add_package(const std::tr1::shared_ptr<const GLSAPackage> &);
 
             /**
              * Set our ID.

@@ -140,7 +140,7 @@ do_one_executables(
 }
 
 int
-do_executables(std::tr1::shared_ptr<Environment> env)
+do_executables(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 

@@ -617,7 +617,7 @@ PortageEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-PortageEnvironment::accept_keywords(std::tr1::shared_ptr <const KeywordNameSet> keywords,
+PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNameSet> & keywords,
         const PackageID & d) const
 {
     bool result(false);

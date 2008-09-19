@@ -28,6 +28,6 @@
 #include <tr1/memory>
 
 /// Handle --executables.
-int do_executables(std::tr1::shared_ptr<paludis::Environment>);
+int do_executables(const std::tr1::shared_ptr<paludis::Environment> &);
 
 #endif

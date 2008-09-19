@@ -118,7 +118,7 @@ namespace
     }
 }
 
-int do_sync(std::tr1::shared_ptr<Environment> env)
+int do_sync(const std::tr1::shared_ptr<Environment> & env)
 {
     Context context("When performing sync action from command line:");
 

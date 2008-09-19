@@ -77,37 +77,37 @@ namespace paludis
                  * Fetch an environment variable.
                  */
                 virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle an install.
                  */
                 virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle a fetch.
                  */
                 virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle a pretend fetch.
                  */
                 virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle a pretend.
                  */
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Handle an info.
                  */
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle a merge.

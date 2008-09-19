@@ -129,7 +129,7 @@ namespace paludis
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
-        const std::tr1::shared_ptr<const DestinationsSet> d) :
+        const std::tr1::shared_ptr<const DestinationsSet> & d) :
     PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
@@ -1260,7 +1260,7 @@ namespace
 }
 
 void
-InstallTask::world_update_packages(std::tr1::shared_ptr<const SetSpecTree::ConstItem> a)
+InstallTask::world_update_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> & a)
 {
     WorldTargetFinder w(_imp->env, this);
     a->accept(w);

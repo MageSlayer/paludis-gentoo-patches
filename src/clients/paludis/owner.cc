@@ -147,7 +147,7 @@ do_one_owner(
 }
 
 int
-do_owner(std::tr1::shared_ptr<Environment> env)
+do_owner(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
     Context context("When performing owner action from command line:");

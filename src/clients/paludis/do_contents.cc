@@ -110,7 +110,7 @@ do_one_contents(
 }
 
 int
-do_contents(std::tr1::shared_ptr<Environment> env)
+do_contents(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 

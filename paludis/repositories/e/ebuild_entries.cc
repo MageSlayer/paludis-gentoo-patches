@@ -355,7 +355,7 @@ namespace
 
 void
 EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const FetchActionOptions & o, std::tr1::shared_ptr<const ERepositoryProfile> p) const
+        const FetchActionOptions & o, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -506,7 +506,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
 void
 EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        PretendFetchAction & a, std::tr1::shared_ptr<const ERepositoryProfile>) const
+        PretendFetchAction & a, const std::tr1::shared_ptr<const ERepositoryProfile> &) const
 {
     using namespace std::tr1::placeholders;
 
@@ -523,7 +523,7 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
 
 void
 EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const InstallActionOptions & o, std::tr1::shared_ptr<const ERepositoryProfile> p) const
+        const InstallActionOptions & o, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -738,7 +738,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
 void
 EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        std::tr1::shared_ptr<const ERepositoryProfile> p) const
+        const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -815,7 +815,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
 std::string
 EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & var, std::tr1::shared_ptr<const ERepositoryProfile>) const
+        const std::string & var, const std::tr1::shared_ptr<const ERepositoryProfile> &) const
 {
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
 
@@ -936,7 +936,7 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 
 bool
 EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        std::tr1::shared_ptr<const ERepositoryProfile> p) const
+        const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 

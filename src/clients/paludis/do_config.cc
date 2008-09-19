@@ -88,7 +88,7 @@ namespace
 }
 
 int
-do_config(std::tr1::shared_ptr<Environment> env)
+do_config(const std::tr1::shared_ptr<Environment> & env)
 {
     int ret_code(0);
 

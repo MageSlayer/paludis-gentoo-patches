@@ -159,7 +159,7 @@ GLSA::end_packages() const
 }
 
 void
-GLSA::add_package(std::tr1::shared_ptr<const GLSAPackage> p)
+GLSA::add_package(const std::tr1::shared_ptr<const GLSAPackage> & p)
 {
     _imp->packages.push_back(p);
 }

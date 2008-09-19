@@ -222,7 +222,7 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 }
 
 bool
-PaludisEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k,
+PaludisEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k,
         const PackageID & e) const
 {
     return _imp->config->keywords_conf()->query(k, e);

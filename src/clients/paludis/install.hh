@@ -32,6 +32,6 @@ namespace paludis
 }
 
 /// Handle --install.
-int do_install(std::tr1::shared_ptr<paludis::Environment>);
+int do_install(const std::tr1::shared_ptr<paludis::Environment> &);
 
 #endif

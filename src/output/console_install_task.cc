@@ -127,7 +127,7 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
-        std::tr1::shared_ptr<const DestinationsSet> d) :
+        const std::tr1::shared_ptr<const DestinationsSet> & d) :
     InstallTask(env, options, d),
     _download_size(0),
     _download_size_overflow(false),
@@ -861,7 +861,7 @@ ConsoleInstallTask::display_tag_summary_tag_pre_text(const DepTagCategory & c)
 }
 
 void
-ConsoleInstallTask::display_tag_summary_tag(std::tr1::shared_ptr<const DepTag> t)
+ConsoleInstallTask::display_tag_summary_tag(const std::tr1::shared_ptr<const DepTag> & t)
 {
     std::tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
     t->accept(*displayer.get());
@@ -1032,8 +1032,8 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageIDSequence> existing_repo,
-        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
         const DisplayMode m)
 {
     switch (m)
@@ -1137,8 +1137,8 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 
 void
 ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
-        std::tr1::shared_ptr<const PackageIDSequence>,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> &,
         const DisplayMode m)
 {
     if ((! d.package_id->short_description_key()) || d.package_id->short_description_key()->value().empty())
@@ -1175,7 +1175,7 @@ ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
 }
 
 void
-ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet> c,
+ConsoleInstallTask::_add_descriptions(const std::tr1::shared_ptr<const UseFlagNameSet> & c,
         const std::tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
 {
     for (UseFlagNameSet::ConstIterator f(c->begin()), f_end(c->end()) ;
@@ -1209,8 +1209,8 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet>
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageIDSequence> existing_repo,
-        std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)

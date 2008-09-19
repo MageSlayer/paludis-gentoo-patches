@@ -206,7 +206,7 @@ std::ostream & paludis::operator<<(std::ostream & os, const SecurityContext & co
     return os;
 }
 
-FSCreateCon::FSCreateCon(std::tr1::shared_ptr<const SecurityContext> newfscreatecon)
+FSCreateCon::FSCreateCon(const std::tr1::shared_ptr<const SecurityContext> & newfscreatecon)
     : _context(newfscreatecon), _prev_context(SecurityContext::fs_create_context())
 {
     if (0 != libselinux.setfscreatecon(_context->_imp->_context))
@@ -256,7 +256,7 @@ std::tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::strin
     return p;
 }
 
-int paludis::setfilecon(const paludis::FSEntry & path, std::tr1::shared_ptr<const SecurityContext> con)
+int paludis::setfilecon(const paludis::FSEntry & path, const std::tr1::shared_ptr<const SecurityContext> & con)
 {
     return libselinux.setfilecon(stringify(path).c_str(), con->_imp->_context);
 }

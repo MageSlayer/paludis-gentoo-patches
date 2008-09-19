@@ -40,16 +40,16 @@ namespace paludis
         protected:
             ConsoleQueryTask(const Environment * const env);
 
-            virtual void show_one(const PackageDepSpec &, std::tr1::shared_ptr<const PackageID> = std::tr1::shared_ptr<const PackageID>()) const;
+            virtual void show_one(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & = std::tr1::shared_ptr<const PackageID>()) const;
 
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepSpec &, std::tr1::shared_ptr<const PackageID> = std::tr1::shared_ptr<const PackageID>()) const;
+            virtual void show(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & = std::tr1::shared_ptr<const PackageID>()) const;
 
             virtual void display_header(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
             virtual void display_versions_by_repository(const PackageDepSpec &,
-                    std::tr1::shared_ptr<const PackageIDSequence>, const std::tr1::shared_ptr<const PackageID> &) const;
+                    const std::tr1::shared_ptr<const PackageIDSequence> &, const std::tr1::shared_ptr<const PackageID> &) const;
             virtual void display_metadata(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,

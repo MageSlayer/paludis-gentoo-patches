@@ -25,8 +25,8 @@ namespace gtkpaludis
             class MaskPopulator;
             class PopulateData;
 
-            void populate_in_paludis_thread(std::tr1::shared_ptr<const paludis::PackageID>);
-            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_paludis_thread(const std::tr1::shared_ptr<const paludis::PackageID> &);
+            void populate_in_gui_thread(const std::tr1::shared_ptr<const PopulateData> & names);
 
         public:
             VersionInfoModel(QueryWindow * const m, VersionsPage * const p);

@@ -122,7 +122,7 @@ namespace paludis
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
              */
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+            virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

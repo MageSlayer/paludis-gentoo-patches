@@ -38,13 +38,13 @@ namespace paludis
 
             public:
                 EMutableRepositoryMaskInfoKey(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, std::tr1::shared_ptr<const RepositoryMaskInfo>, const MetadataKeyType);
+                        const std::string &, const std::string &, const std::tr1::shared_ptr<const RepositoryMaskInfo> &, const MetadataKeyType);
                 ~EMutableRepositoryMaskInfoKey();
 
                 virtual const std::tr1::shared_ptr<const RepositoryMaskInfo> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void set_value(std::tr1::shared_ptr<const RepositoryMaskInfo>);
+                void set_value(const std::tr1::shared_ptr<const RepositoryMaskInfo> &);
         };
 
         class EDependenciesKey :

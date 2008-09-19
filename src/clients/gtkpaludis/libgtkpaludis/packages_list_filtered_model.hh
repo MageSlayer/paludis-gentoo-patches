@@ -26,7 +26,7 @@ namespace gtkpaludis
             class PopulateData;
 
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_gui_thread(const std::tr1::shared_ptr<const PopulateData> & names);
 
         public:
             PackagesListFilteredModel(MainWindow * const m, PackagesPage * const p,

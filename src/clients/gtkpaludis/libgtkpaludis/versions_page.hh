@@ -24,7 +24,7 @@ namespace gtkpaludis
 
             virtual void populate();
 
-            void set_id(std::tr1::shared_ptr<const paludis::PackageID>);
+            void set_id(const std::tr1::shared_ptr<const paludis::PackageID> &);
             std::tr1::shared_ptr<const paludis::PackageID> get_id() const;
     };
 }

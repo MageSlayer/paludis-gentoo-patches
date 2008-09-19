@@ -47,7 +47,7 @@ namespace paludis
             virtual void need_keys_added() const;
 
         public:
-            AdaptedEnvironment(std::tr1::shared_ptr<Environment>);
+            AdaptedEnvironment(const std::tr1::shared_ptr<Environment> &);
             ~AdaptedEnvironment();
 
             ///\name Adapting methods
@@ -56,7 +56,7 @@ namespace paludis
             /**
              * Set the state of a USE flag for the given PackageDepSpec.
              */
-            void adapt_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &, const UseFlagState);
+            void adapt_use(const std::tr1::shared_ptr<const PackageDepSpec> &, const UseFlagName &, const UseFlagState);
 
             /**
              * Clear all adaptions from this Environemnt.
@@ -78,7 +78,7 @@ namespace paludis
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+            virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<PackageDatabase> package_database()

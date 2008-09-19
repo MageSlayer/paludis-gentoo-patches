@@ -120,14 +120,14 @@ namespace paludis
             std::tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
             std::tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
 
-            void _add_descriptions(std::tr1::shared_ptr<const UseFlagNameSet>,
+            void _add_descriptions(const std::tr1::shared_ptr<const UseFlagNameSet> &,
                     const std::tr1::shared_ptr<const PackageID> &, UseDescriptionState);
 
             bool _resolution_finished;
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
-                    std::tr1::shared_ptr<const DestinationsSet>);
+                    const std::tr1::shared_ptr<const DestinationsSet> &);
 
         public:
             virtual void execute();
@@ -229,14 +229,14 @@ namespace paludis
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_for(const PackageID &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
-                    std::tr1::shared_ptr<const PackageIDSequence>,
-                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    const std::tr1::shared_ptr<const PackageIDSequence> &,
+                    const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
             virtual void display_merge_list_entry_description(const DepListEntry &,
-                    std::tr1::shared_ptr<const PackageIDSequence>,
-                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    const std::tr1::shared_ptr<const PackageIDSequence> &,
+                    const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
-                    std::tr1::shared_ptr<const PackageIDSequence>,
-                    std::tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+                    const std::tr1::shared_ptr<const PackageIDSequence> &,
+                    const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
             virtual void display_merge_list_entry_distsize(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_non_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_tags(const DepListEntry &, const DisplayMode);
@@ -247,7 +247,7 @@ namespace paludis
             virtual void display_tag_summary_start();
             virtual void display_tag_summary_tag_title(const DepTagCategory &);
             virtual void display_tag_summary_tag_pre_text(const DepTagCategory &);
-            virtual void display_tag_summary_tag(std::tr1::shared_ptr<const DepTag>);
+            virtual void display_tag_summary_tag(const std::tr1::shared_ptr<const DepTag> &);
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 

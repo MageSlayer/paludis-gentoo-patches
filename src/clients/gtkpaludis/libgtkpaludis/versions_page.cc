@@ -58,7 +58,7 @@ VersionsPage::populate()
 }
 
 void
-VersionsPage::set_id(std::tr1::shared_ptr<const PackageID> c)
+VersionsPage::set_id(const std::tr1::shared_ptr<const PackageID> & c)
 {
     _imp->id = c;
     _imp->version_info.populate();

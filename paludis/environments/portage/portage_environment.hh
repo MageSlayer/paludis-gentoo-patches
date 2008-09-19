@@ -133,7 +133,7 @@ namespace paludis
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+            virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const

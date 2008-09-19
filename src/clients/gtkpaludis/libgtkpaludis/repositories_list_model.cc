@@ -60,7 +60,7 @@ RepositoriesListModel::populate_in_paludis_thread()
 }
 
 void
-RepositoriesListModel::populate_in_gui_thread(std::tr1::shared_ptr<const RepositoryNameSequence> names)
+RepositoriesListModel::populate_in_gui_thread(const std::tr1::shared_ptr<const RepositoryNameSequence> & names)
 {
     clear();
     for (RepositoryNameSequence::ConstIterator n(names->begin()), n_end(names->end()) ;

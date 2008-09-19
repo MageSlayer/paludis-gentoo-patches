@@ -96,7 +96,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_license");
         }
 
-        virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID & p) const
+        virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());

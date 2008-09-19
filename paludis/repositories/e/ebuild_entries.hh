@@ -79,22 +79,22 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
-                        std::tr1::shared_ptr<const ERepositoryProfile>) const;
+                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
 

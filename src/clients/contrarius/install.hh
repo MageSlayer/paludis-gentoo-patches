@@ -29,6 +29,6 @@
  */
 
 /// Handle --install.
-int do_install(std::tr1::shared_ptr<paludis::Environment>, std::string spec_str);
+int do_install(const std::tr1::shared_ptr<paludis::Environment> &, std::string spec_str);
 
 #endif

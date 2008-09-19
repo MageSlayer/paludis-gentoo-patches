@@ -244,7 +244,7 @@ namespace paludis
             ///\}
 
             /// Add a new entry.
-            void add(std::tr1::shared_ptr<const ContentsEntry> c);
+            void add(const std::tr1::shared_ptr<const ContentsEntry> & c);
 
             ///\name Iterate over our entries
             ///\{

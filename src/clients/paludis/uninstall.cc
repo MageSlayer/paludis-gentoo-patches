@@ -328,13 +328,13 @@ namespace
 }
 
 int
-do_uninstall(std::tr1::shared_ptr<Environment> env)
+do_uninstall(const std::tr1::shared_ptr<Environment> & env)
 {
     return real_uninstall(env, false);
 }
 
 int
-do_uninstall_unused(std::tr1::shared_ptr<Environment> env)
+do_uninstall_unused(const std::tr1::shared_ptr<Environment> & env)
 {
     return real_uninstall(env, true);
 }

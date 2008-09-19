@@ -251,7 +251,7 @@ VDBUnmerger::populate_unmerge_set()
 }
 
 bool
-VDBUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
 {
     std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
@@ -280,7 +280,7 @@ VDBUnmerger::check_file(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) c
 }
 
 bool
-VDBUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
 {
     std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
@@ -297,7 +297,7 @@ VDBUnmerger::check_sym(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) co
 }
 
 bool
-VDBUnmerger::check_misc(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) const
+VDBUnmerger::check_misc(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
 {
     std::tr1::shared_ptr<MiscExtraInfo> mie(std::tr1::static_pointer_cast<MiscExtraInfo>(ei));
 
@@ -312,7 +312,7 @@ VDBUnmerger::check_misc(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo> ei) c
 }
 
 bool
-VDBUnmerger::check_dir(const FSEntry & f, std::tr1::shared_ptr<ExtraInfo>) const
+VDBUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
 {
     if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));

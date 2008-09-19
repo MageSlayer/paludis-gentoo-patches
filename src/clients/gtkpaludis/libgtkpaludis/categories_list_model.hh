@@ -19,7 +19,7 @@ namespace gtkpaludis
     {
         protected:
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(std::tr1::shared_ptr<const paludis::CategoryNamePartSet> names);
+            void populate_in_gui_thread(const std::tr1::shared_ptr<const paludis::CategoryNamePartSet> & names);
 
         public:
             CategoriesListModel(MainWindow * const m, PackagesPage * const p);

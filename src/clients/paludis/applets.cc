@@ -179,7 +179,7 @@ namespace
     };
 }
 
-int do_has_version(std::tr1::shared_ptr<Environment> env)
+int do_has_version(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
@@ -197,7 +197,7 @@ int do_has_version(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_best_version(std::tr1::shared_ptr<Environment> env)
+int do_best_version(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
@@ -238,7 +238,7 @@ int do_best_version(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_match(std::tr1::shared_ptr<Environment> env)
+int do_match(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
@@ -281,7 +281,7 @@ int do_match(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_environment_variable(std::tr1::shared_ptr<Environment> env)
+int do_environment_variable(const std::tr1::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
@@ -315,7 +315,7 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_configuration_variable(std::tr1::shared_ptr<Environment> env)
+int do_configuration_variable(const std::tr1::shared_ptr<Environment> & env)
 {
     Context context("When performing configuration-variable action from command line:");
 
@@ -351,7 +351,7 @@ int do_list_repository_formats()
     return return_code;
 }
 
-int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
+int do_list_sync_protocols(const std::tr1::shared_ptr<Environment> & env)
 {
     std::map<std::string, std::string> syncers;
 
@@ -397,7 +397,7 @@ int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_regenerate_cache(std::tr1::shared_ptr<Environment> env, bool installed)
+int do_regenerate_cache(const std::tr1::shared_ptr<Environment> & env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");
 

@@ -138,7 +138,7 @@ KeywordsConf::add(const FSEntry & filename)
 }
 
 bool
-KeywordsConf::query(std::tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
+KeywordsConf::query(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID & e) const
 {
     static const KeywordName star_keyword("*");
     static const KeywordName minus_star_keyword("-*");

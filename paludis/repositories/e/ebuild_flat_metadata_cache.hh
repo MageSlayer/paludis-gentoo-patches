@@ -47,7 +47,7 @@ namespace paludis
                 ///\{
 
                 EbuildFlatMetadataCache(const Environment * const, FSEntry & filename, const FSEntry & ebuild,
-                        time_t master_mtime, std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
+                        time_t master_mtime, const std::tr1::shared_ptr<const EclassMtimes> & eclass_mtimes, bool silent);
                 ~EbuildFlatMetadataCache();
 
                 ///\}

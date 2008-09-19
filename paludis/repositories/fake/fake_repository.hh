@@ -56,7 +56,7 @@ namespace paludis
             /**
              * Add a virtual package.
              */
-            void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepSpec>);
+            void add_virtual_package(const QualifiedPackageName &, const std::tr1::shared_ptr<const PackageDepSpec> &);
 
             /* RepositoryVirtualsInterface */
 

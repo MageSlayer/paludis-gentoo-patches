@@ -273,7 +273,7 @@ PackageDepSpec::as_package_dep_spec() const
     return this;
 }
 
-BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
+BlockDepSpec::BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & a) :
     StringDepSpec("!" + a->text()),
     _spec(a)
 {

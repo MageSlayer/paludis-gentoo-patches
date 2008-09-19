@@ -82,7 +82,7 @@ namespace paludis
             friend std::ostream& paludis::operator<<(std::ostream&, const SecurityContext &);
             friend class paludis::FSCreateCon;
             friend class paludis::MatchPathCon;
-            friend int paludis::setfilecon(const paludis::FSEntry &, std::tr1::shared_ptr<const SecurityContext>);
+            friend int paludis::setfilecon(const paludis::FSEntry &, const std::tr1::shared_ptr<const SecurityContext> &);
 
             /**
              * Returns a SecurityContext referring to the current process's context
@@ -124,7 +124,7 @@ namespace paludis
             /**
              * Constructor
              */
-            FSCreateCon(std::tr1::shared_ptr<const SecurityContext>);
+            FSCreateCon(const std::tr1::shared_ptr<const SecurityContext> &);
 
             /**
              * Destructor
@@ -170,7 +170,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisselinux
      */
-    int setfilecon(const FSEntry & file, std::tr1::shared_ptr<const SecurityContext> con) PALUDIS_VISIBLE;
+    int setfilecon(const FSEntry & file, const std::tr1::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
 
     /**
      * Whether SELinux is enabled. Ideally, you are not using this function.

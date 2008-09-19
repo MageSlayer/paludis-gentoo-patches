@@ -135,7 +135,7 @@ VersionsListModel::populate_in_paludis_thread()
 }
 
 void
-VersionsListModel::populate_in_gui_thread(std::tr1::shared_ptr<const VersionsListModel::PopulateData> names)
+VersionsListModel::populate_in_gui_thread(const std::tr1::shared_ptr<const VersionsListModel::PopulateData> & names)
 {
     clear();
 

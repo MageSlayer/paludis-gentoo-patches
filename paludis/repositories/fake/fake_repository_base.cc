@@ -208,7 +208,7 @@ FakeRepositoryBase::use_expand_separator(const PackageID & id) const
 }
 
 void
-FakeRepositoryBase::add_package_set(const SetName & n, std::tr1::shared_ptr<SetSpecTree::ConstItem> s)
+FakeRepositoryBase::add_package_set(const SetName & n, const std::tr1::shared_ptr<SetSpecTree::ConstItem> & s)
 {
     _imp->sets.insert(std::make_pair(n, s));
 }

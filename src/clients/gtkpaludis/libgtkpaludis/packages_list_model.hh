@@ -29,7 +29,7 @@ namespace gtkpaludis
                     PopulateDataIterator);
 
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(std::tr1::shared_ptr<const PopulateData> names);
+            void populate_in_gui_thread(const std::tr1::shared_ptr<const PopulateData> & names);
 
         public:
             PackagesListModel(MainWindow * const m, PackagesPage * const p);

@@ -186,7 +186,7 @@ namespace
     }
 }
 
-int do_report(std::tr1::shared_ptr<Environment> env)
+int do_report(const std::tr1::shared_ptr<Environment> & env)
 {
     Context context("When performing report action from command line:");
 

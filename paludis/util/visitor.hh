@@ -268,9 +268,9 @@ namespace paludis
                 ///\name Fetch our contained item
                 ///\{
 
-                std::tr1::shared_ptr<T_> item();
+                const std::tr1::shared_ptr<T_> item();
 
-                std::tr1::shared_ptr<const T_> item() const;
+                const std::tr1::shared_ptr<const T_> item() const;
 
                 ///\}
         };
@@ -308,23 +308,23 @@ namespace paludis
 
                 virtual ~TreeSequence();
 
-                TreeSequence(std::tr1::shared_ptr<T_> i);
+                TreeSequence(const std::tr1::shared_ptr<T_> & i);
 
                 ///\}
 
                 ///\name Fetch our contained item
                 ///\{
 
-                std::tr1::shared_ptr<const T_> item() const;
+                const std::tr1::shared_ptr<const T_> item() const;
 
-                std::tr1::shared_ptr<T_> item();
+                const std::tr1::shared_ptr<T_> item();
 
                 ///\}
 
                 ///\name Work on our children
                 ///\{
 
-                void add(std::tr1::shared_ptr<AcceptInterface<H_> > i);
+                void add(const std::tr1::shared_ptr<AcceptInterface<H_> > & i);
 
                 typename H_::ConstSequenceIterator
                 const_begin() const;
@@ -372,23 +372,23 @@ namespace paludis
 
                 virtual ~ConstTreeSequence();
 
-                ConstTreeSequence(std::tr1::shared_ptr<T_> i);
+                ConstTreeSequence(const std::tr1::shared_ptr<T_> & i);
 
                 ///\}
 
                 ///\name Fetch our contained item
                 ///\{
 
-                std::tr1::shared_ptr<T_> item();
+                const std::tr1::shared_ptr<T_> item();
 
-                std::tr1::shared_ptr<const T_> item() const;
+                const std::tr1::shared_ptr<const T_> item() const;
 
                 ///\}
 
                 ///\name Work on our children
                 ///\{
 
-                void add(std::tr1::shared_ptr<const ConstAcceptInterface<H_> > i);
+                void add(const std::tr1::shared_ptr<const ConstAcceptInterface<H_> > & i);
 
                 typename H_::ConstSequenceIterator
                 const_begin() const;

@@ -18,7 +18,7 @@ namespace gtkpaludis
         private paludis::PrivateImplementationPattern<PackageButtons>
     {
         private:
-            void populate_in_paludis_thread(std::tr1::shared_ptr<const paludis::QualifiedPackageName>);
+            void populate_in_paludis_thread(const std::tr1::shared_ptr<const paludis::QualifiedPackageName> &);
             void populate_in_gui_thread(const bool, const bool, const bool);
 
         protected:

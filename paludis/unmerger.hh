@@ -116,7 +116,7 @@ namespace paludis
             /**
              * Add entry to the unmerge set.
              */
-            void add_unmerge_entry(const std::string &, EntryType, std::tr1::shared_ptr<ExtraInfo>);
+            void add_unmerge_entry(const std::string &, EntryType, const std::tr1::shared_ptr<ExtraInfo> &);
 
             /**
              * Populate the unmerge set.
@@ -131,32 +131,32 @@ namespace paludis
             ///\name Unmerge operations
             ///\{
 
-            virtual void unmerge_file(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unmerge_dir(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unmerge_sym(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unmerge_misc(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            virtual void unmerge_file(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unmerge_dir(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unmerge_sym(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unmerge_misc(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
 
             ///\}
 
             ///\name Check operations
             ///\{
 
-            virtual bool check_file(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
+            virtual bool check_file(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
             {
                 return true;
             }
 
-            virtual bool check_dir(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
+            virtual bool check_dir(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
             {
                 return true;
             }
 
-            virtual bool check_sym(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
+            virtual bool check_sym(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
             {
                 return true;
             }
 
-            virtual bool check_misc(const FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const
+            virtual bool check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
             {
                 return true;
             }
@@ -166,10 +166,10 @@ namespace paludis
             ///\name Unlink operations
             ///\{
 
-            virtual void unlink_file(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unlink_dir(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unlink_sym(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
-            virtual void unlink_misc(FSEntry &, std::tr1::shared_ptr<ExtraInfo>) const;
+            virtual void unlink_file(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unlink_dir(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unlink_sym(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            virtual void unlink_misc(FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
 
             ///\}
 

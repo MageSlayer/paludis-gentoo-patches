@@ -113,7 +113,7 @@ namespace paludis
             ///\name Queue stage in build list
             ///\{
 
-            void queue_stage(std::tr1::shared_ptr<const StageBase>);
+            void queue_stage(const std::tr1::shared_ptr<const StageBase> &);
 
             ///\}
 
@@ -131,11 +131,11 @@ namespace paludis
             ///\{
 
             virtual void on_build_all_pre() = 0;
-            virtual void on_build_pre(std::tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_post(std::tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &) = 0;
-            virtual void on_build_skipped(std::tr1::shared_ptr<const StageBase>) = 0;
-            virtual void on_build_succeed(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_pre(const std::tr1::shared_ptr<const StageBase> &) = 0;
+            virtual void on_build_post(const std::tr1::shared_ptr<const StageBase> &) = 0;
+            virtual void on_build_fail(const std::tr1::shared_ptr<const StageBase> &, const StageBuildError &) = 0;
+            virtual void on_build_skipped(const std::tr1::shared_ptr<const StageBase> &) = 0;
+            virtual void on_build_succeed(const std::tr1::shared_ptr<const StageBase> &) = 0;
             virtual void on_build_all_post() = 0;
 
             ///\}

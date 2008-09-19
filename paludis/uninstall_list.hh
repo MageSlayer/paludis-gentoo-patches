@@ -56,10 +56,10 @@ namespace paludis
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {
         private:
-            void add_package(const std::tr1::shared_ptr<const PackageID> &, std::tr1::shared_ptr<DepTag>,
+            void add_package(const std::tr1::shared_ptr<const PackageID> &, const std::tr1::shared_ptr<DepTag> &,
                     const UninstallListEntryKind k);
             void real_add(const std::tr1::shared_ptr<const PackageID> &,
-                    std::tr1::shared_ptr<DepTag>, const bool);
+                    const std::tr1::shared_ptr<DepTag> &, const bool);
             void move_package_to_end(const std::tr1::shared_ptr<const PackageID> &);
             void add_unused_dependencies();
             void add_dependencies(const PackageID &, const bool);
@@ -89,7 +89,7 @@ namespace paludis
              * Add a package, optionally with a reason.
              */
             void add(const std::tr1::shared_ptr<const PackageID> &,
-                    std::tr1::shared_ptr<DepTag> = std::tr1::shared_ptr<DepTag>());
+                    const std::tr1::shared_ptr<DepTag> & = std::tr1::shared_ptr<DepTag>());
 
             /**
              * Add any unused packages that are dependencies of packages to uninstall.

@@ -121,7 +121,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoGraphTopologicalOrderExistsError(std::tr1::shared_ptr<const RemainingNodes>) throw ();
+            NoGraphTopologicalOrderExistsError(const std::tr1::shared_ptr<const RemainingNodes> &) throw ();
             ~NoGraphTopologicalOrderExistsError() throw ();
 
             ///\}

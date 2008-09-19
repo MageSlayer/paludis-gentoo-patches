@@ -309,7 +309,7 @@ PackagesListModel::populate_in_paludis_thread()
 }
 
 void
-PackagesListModel::populate_in_gui_thread(std::tr1::shared_ptr<const PackagesListModel::PopulateData> names)
+PackagesListModel::populate_in_gui_thread(const std::tr1::shared_ptr<const PackagesListModel::PopulateData> & names)
 {
     clear();
     Gtk::TreeNodeChildren c(children());
