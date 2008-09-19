@@ -263,6 +263,7 @@ namespace
         else
             id->set_slot(SlotName("UNKNOWN"));
 
+        Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
         return true;
     }
 }
@@ -580,6 +581,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
             else
                 id->set_slot(SlotName("UNKNOWN"));
 
+            Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
             return true;
         }
         catch (const InternalError &)
