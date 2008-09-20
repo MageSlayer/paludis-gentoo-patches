@@ -84,13 +84,13 @@ void expose_generator()
             );
 
     bp::class_<generator::InRepository, bp::bases<Generator> > generator_in_repository(
-            "Repository",
+            "InRepository",
             "Generate all packages in a given repository.",
             bp::init<const RepositoryName &>("__init__(repository)")
             );
 
     bp::class_<generator::FromRepository, bp::bases<Generator> > generator_from_repository(
-            "Repository",
+            "FromRepository",
             "Generate all packages originally from a given repository.",
             bp::init<const RepositoryName &>("__init__(repository)")
             );
