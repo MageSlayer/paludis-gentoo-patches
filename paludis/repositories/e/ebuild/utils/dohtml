@@ -107,6 +107,7 @@ install_file() {
     elif [[ $recurse == 1 && -d ${path} ]] &&
             ! has "${bn}" ${disallowed_dirs}; then
         for f in ${path}/*; do
+            [[ -e ${f} ]] || continue
             pfx=${bn}
             [[ -n ${prefix} ]] && pfx="${prefix}/${pfx}"
             install_file "$(basename "${f}")" "${dn}" "${pfx}"
