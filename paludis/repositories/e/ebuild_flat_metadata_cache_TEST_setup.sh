@@ -50,6 +50,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 
 mkdir cat/flat_list-stale
@@ -79,6 +80,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 TZ=UTC touch -t 199901010101 metadata/cache/cat/flat_list-stale-1 || exit 2
 
@@ -101,6 +103,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 
 mkdir cat/flat_list-eclass-stale
@@ -130,6 +133,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_list-eclass-stale/flat_list-eclass-stale-1.ebuild || exit 2
 TZ=UTC touch -t 197001010002 metadata/cache/cat/flat_list-eclass-stale-1 || exit 2
@@ -161,6 +165,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 
 mkdir cat/flat_list-eclass-gone
@@ -190,6 +195,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 
 mkdir cat/flat_list-detection
@@ -211,6 +217,7 @@ unused
 the/pdepend
 the/provide
 0
+the-properties
 END
 
 mkdir cat/flat_hash
@@ -231,6 +238,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash/flat_hash-1.ebuild || exit 2
 
@@ -252,6 +260,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-empty/flat_hash-empty-1.ebuild || exit 2
 
@@ -281,6 +290,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 
 mkdir cat/flat_hash-no-mtime
@@ -300,6 +310,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-no-mtime/flat_hash-no-mtime-1.ebuild || exit 2
 TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-no-mtime-1 || exit 2
@@ -329,6 +340,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-no-mtime-stale-1 || exit 2
 
@@ -358,6 +370,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-bad-mtime/flat_hash-bad-mtime-1 || exit 2
 TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-bad-mtime-1 || exit 2
@@ -440,6 +453,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclass/flat_hash-eclass-1.ebuild || exit 2
 
@@ -470,6 +484,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-stale/flat_hash-eclass-stale-1.ebuild || exit 2
 
@@ -500,6 +515,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-wrong/flat_hash-eclass-wrong-1.ebuild || exit 2
 
@@ -530,6 +546,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-gone/flat_hash-eclass-gone-1.ebuild || exit 2
 
@@ -552,6 +569,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-full-eclass/flat_hash-full-eclass-1.ebuild || exit 2
 
@@ -574,6 +592,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-full-eclass-nonstandard/flat_hash-full-eclass-nonstandard-1.ebuild || exit 2
 
@@ -604,6 +623,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-full-eclass-stale/flat_hash-full-eclass-stale-1.ebuild || exit 2
 
@@ -634,6 +654,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-full-eclass-wrong/flat_hash-full-eclass-wrong-1.ebuild || exit 2
 
@@ -664,6 +685,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-full-eclass-gone/flat_hash-full-eclass-gone-1.ebuild || exit 2
 
@@ -694,6 +716,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclasses-truncated/flat_hash-eclasses-truncated-1.ebuild || exit 2
 cat <<END > cat/flat_hash-eclasses-truncated/flat_hash-eclasses-truncated-2.ebuild || exit 1
@@ -722,6 +745,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclasses-truncated/flat_hash-eclasses-truncated-2.ebuild || exit 2
 
@@ -752,6 +776,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclasses-bad-mtime/flat_hash-eclasses-bad-mtime-1.ebuild || exit 2
 
@@ -782,6 +807,7 @@ IUSE=the-iuse
 PDEPEND=the/pdepend
 PROVIDE=the/provide
 EAPI=0
+PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclasses-spaces/flat_hash-eclasses-spaces-1.ebuild || exit 2
 

@@ -511,6 +511,9 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! m.restrictions().name().empty())
         id->load_restrict(m.restrictions().name(), m.restrictions().description(), get(keys, m.restrictions().name()));
 
+    if (! m.properties().name().empty())
+        id->load_properties(m.properties().name(), m.properties().description(), get(keys, m.properties().name()));
+
     if (! m.use().name().empty())
         id->load_use(m.use().name(), m.use().description(), get(keys, m.use().name()));
 

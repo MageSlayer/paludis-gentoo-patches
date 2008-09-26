@@ -85,6 +85,7 @@ namespace paludis
                 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const;
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
@@ -120,6 +121,7 @@ namespace paludis
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
                 void load_restrict(const std::string &, const std::string &, const std::string &) const;
+                void load_properties(const std::string &, const std::string &, const std::string &) const;
                 void load_long_description(const std::string &, const std::string &, const std::string &) const;
                 void load_upstream_changelog(const std::string &, const std::string &, const std::string &) const;
                 void load_upstream_documentation(const std::string &, const std::string &, const std::string &) const;

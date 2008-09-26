@@ -183,6 +183,9 @@ namespace
             if (-1 != m.restrictions().flat_list_index() && ! m.restrictions().name().empty())
                 id->load_restrict(m.restrictions().name(), m.restrictions().description(), lines.at(m.restrictions().flat_list_index()));
 
+            if (-1 != m.properties().flat_list_index() && ! m.properties().name().empty())
+                id->load_properties(m.properties().name(), m.properties().description(), lines.at(m.properties().flat_list_index()));
+
             if (-1 != m.homepage().flat_list_index() && ! m.homepage().name().empty())
                 id->load_homepage(m.homepage().name(), m.homepage().description(), lines.at(m.homepage().flat_list_index()));
 
@@ -487,6 +490,9 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 if (! m.restrictions().name().empty())
                     id->load_restrict(m.restrictions().name(), m.restrictions().description(), keys[m.restrictions().name()]);
 
+                if (! m.properties().name().empty())
+                    id->load_properties(m.properties().name(), m.properties().description(), keys[m.properties().name()]);
+
                 if (! m.homepage().name().empty())
                     id->load_homepage(m.homepage().name(), m.homepage().description(), keys[m.homepage().name()]);
 
@@ -723,6 +729,9 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
         if (! m.restrictions().name().empty() && id->restrict_key())
             write_kv(cache, m.restrictions().name(), flatten(id->restrict_key()->value()));
+
+        if (! m.properties().name().empty() && id->properties_key())
+            write_kv(cache, m.properties().name(), flatten(id->properties_key()->value()));
 
         if (! m.homepage().name().empty() && id->homepage_key())
             write_kv(cache, m.homepage().name(), flatten(id->homepage_key()->value()));

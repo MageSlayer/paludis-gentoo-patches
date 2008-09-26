@@ -109,6 +109,7 @@ namespace paludis
         struct package_dep_spec_parse_options;
         struct pdepend;
         struct pipe_commands;
+        struct properties;
         struct provide;
         struct rdepend_defaults_to_depend;
         struct remote_ids;
@@ -269,6 +270,7 @@ namespace paludis
             NamedValue<n::long_description, EAPIMetadataVariable> long_description;
             NamedValue<n::minimum_flat_list_size, int> minimum_flat_list_size;
             NamedValue<n::pdepend, EAPIMetadataVariable> pdepend;
+            NamedValue<n::properties, EAPIMetadataVariable> properties;
             NamedValue<n::provide, EAPIMetadataVariable> provide;
             NamedValue<n::remote_ids, EAPIMetadataVariable> remote_ids;
             NamedValue<n::restrictions, EAPIMetadataVariable> restrictions;

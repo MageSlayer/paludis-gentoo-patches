@@ -114,6 +114,7 @@ namespace
             value_for<n::long_description>(make_metadata_variable(k, "long_description")),
             value_for<n::minimum_flat_list_size>(destringify_key<int>(k, "flat_list_minimum_size")),
             value_for<n::pdepend>(make_metadata_variable(k, "pdepend")),
+            value_for<n::properties>(make_metadata_variable(k, "properties")),
             value_for<n::provide>(make_metadata_variable(k, "provide")),
             value_for<n::remote_ids>(make_metadata_variable(k, "remote_ids")),
             value_for<n::restrictions>(make_metadata_variable(k, "restrict")),

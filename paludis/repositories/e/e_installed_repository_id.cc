@@ -86,6 +86,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description;
@@ -274,6 +275,15 @@ EInstalledRepositoryID::need_keys_added() const
                         vars->restrictions().description(),
                         file_contents(_imp->dir / vars->restrictions().name()), mkt_internal));
             add_metadata_key(_imp->restrictions);
+        }
+
+    if (! vars->properties().name().empty())
+        if ((_imp->dir / vars->properties().name()).exists())
+        {
+            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties().name(),
+                        vars->properties().description(),
+                        file_contents(_imp->dir / vars->properties().name()), mkt_internal));
+            add_metadata_key(_imp->properties);
         }
 
     if (! vars->src_uri().name().empty())
@@ -640,6 +650,13 @@ EInstalledRepositoryID::restrict_key() const
 {
     need_keys_added();
     return _imp->restrictions;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+EInstalledRepositoryID::properties_key() const
+{
+    need_keys_added();
+    return _imp->properties;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
