@@ -26,7 +26,7 @@ EXPORT_FUNCTIONS()
 
     local e
     for e in "$@" ; do
-        if [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; then
+        if [[ ${EBUILD_PHASE} != metadata ]] && { [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; }; then
             ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
         fi
         eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
