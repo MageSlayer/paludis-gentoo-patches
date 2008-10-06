@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+master:
+    * Support for packages that haven't been written yet.
+
 0.30.0:
     * Paludis no longer includes wrappers for GNU awk, make, patch, and sed.
       Users of systems where the default versions are not the GNU versions
