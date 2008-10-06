@@ -128,10 +128,6 @@ namespace paludis
     class RepositoryFactory;
 }
 
-extern "C" void PALUDIS_VISIBLE paludis_initialise_repository_so(paludis::RepositoryFactory * const)
-{
-}
-
 namespace
 {
     struct SupportsActionQuery :

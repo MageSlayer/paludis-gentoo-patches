@@ -211,3 +211,28 @@ FakeInstalledRepository::installed_root_key() const
     return _imp->installed_root_key;
 }
 
+RepositoryName FakeInstalledRepository::repository_factory_name(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    return RepositoryName(f("name"));
+}
+
+std::tr1::shared_ptr<Repository>
+FakeInstalledRepository::repository_factory_create(
+        Environment * const env,
+        const std::tr1::function<std::string (const std::string &)> & f)
+{
+    Context context("When creating FakeInstalledRepository:");
+    RepositoryName name(f("name"));
+
+    return make_shared_ptr(new FakeInstalledRepository(env, name));
+}
+
+std::tr1::shared_ptr<const RepositoryNameSet>
+FakeInstalledRepository::repository_factory_dependencies(
+        const Environment * const,
+        const std::tr1::function<std::string (const std::string&)> &)
+{
+    return make_shared_ptr(new RepositoryNameSet);
+}

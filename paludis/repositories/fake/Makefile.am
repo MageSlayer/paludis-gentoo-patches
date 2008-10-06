@@ -74,7 +74,8 @@ libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	fake_repository_base.cc fake_repository_base.hh \
 	fake_repository.cc fake_repository.hh \
 	fake_installed_repository.cc fake_installed_repository.hh \
-	fake_package_id.cc fake_package_id.hh
+	fake_package_id.cc fake_package_id.hh \
+	registration.cc
 
 libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
