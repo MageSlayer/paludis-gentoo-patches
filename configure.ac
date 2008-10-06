@@ -1182,14 +1182,14 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran e fake gems unavailable unpackaged virtuals"
-DEFAULT_REPOSITORIES="e fake unavailable unpackaged virtuals"
+ALL_REPOSITORIES="cran e fake gems unavailable unpackaged unwritten virtuals"
+DEFAULT_REPOSITORIES="e fake unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
 			  all             All available repositories
-			  default         Equivalent to e,fake,virtuals
+			  default         Equivalent to e,fake,unavailable,unpackaged,unwritten,virtuals
 
 			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
@@ -1197,6 +1197,7 @@ AC_ARG_WITH([repositories],
 			  gems            Ruby gems (unusable)
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
+			  unwritten       Unwritten
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
@@ -1473,6 +1474,7 @@ AC_OUTPUT(
 	paludis/repositories/gems/Makefile
 	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
+	paludis/repositories/unwritten/Makefile
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
