@@ -70,6 +70,7 @@ the exheres repository format.</p>
     <li>... and configuration keys for <a href="configuration/exndbam.html">Exndbam repositories</a>.</li>
     <li>... and configuration keys for <a href="configuration/installedunpackaged.html">installed unpackaged repositories</a>.</li>
     <li>... and configuration keys for <a href="configuration/unavailable.html">unavailable repositories</a>.</li>
+    <li>... and configuration keys for <a href="configuration/unwritten.html">unwritten repositories</a>.</li>
 </ul>
 
 <h2>Client Documentation</h2>
