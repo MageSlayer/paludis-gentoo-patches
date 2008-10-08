@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_VersionSpecComponentType()
+{
+    prefix vsct
+
+    key vsct_alpha              "An alpha part"
+    key vsct_beta               "A beta part"
+    key vsct_pre                "A pre part"
+    key vsct_rc                 "An rc part"
+    key vsct_empty              "Used for ordering, not present in real versions."
+    key vsct_revision           "A revision part"
+    key vsct_patch              "A patch part"
+    key vsct_trypart            "A try part"
+    key vsct_letter             "A letter (e.g. x in 1.2x)"
+    key vsct_number             "A number (e.g. 1 or 2 in 1.2_pre3)"
+    key vsct_scm                "An scm part"
+
+    doxygen_comment << "END"
+        /**
+         * The type of a VersionSpec component.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.32
+         */
+END
+}
+
+

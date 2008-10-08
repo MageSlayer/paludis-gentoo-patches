@@ -24,6 +24,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <iosfwd>
 #include <string>
@@ -58,6 +60,43 @@ namespace paludis
             BadVersionSpecError(const std::string & name, const std::string & msg) throw ();
 
             ///\}
+    };
+
+    namespace n
+    {
+        struct number_value;
+        struct text;
+        struct type;
+    }
+
+    /**
+     * A VersionSpec component part.
+     *
+     * This is mostly for use by the Exheres 'ever' API.
+     *
+     * The version 1.2x_pre3_rc-scm would be split up into these parts:
+     *
+     * - (type,        number_value,   text)
+     * - (vsct_number, "1",            "1")
+     * - (vsct_number, "2",            ".2")
+     * - (vsct_letter, "x",            "x")
+     * - (vsct_pre,    "3",            "_pre3")
+     * - (vsct_rc,     "MAX"           "_rc0")
+     * - (vsct_scm,    "0"             "-scm")
+     *
+     * The type and number_value are mostly for internal use. In particular, the
+     * number_value is not always what you might expect it to be.
+     *
+     * The text includes any preceeding delimiter.
+     *
+     * \ingroup g_names
+     * \since 0.32
+     */
+    struct VersionSpecComponent
+    {
+        NamedValue<n::number_value, std::string> number_value;
+        NamedValue<n::text, std::string> text;
+        NamedValue<n::type, VersionSpecComponentType> type;
     };
 
     /**
@@ -168,6 +207,11 @@ namespace paludis
              * Do we have a local revision (-r1.2...)?
              */
             bool has_local_revision() const;
+
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const VersionSpecComponent> ConstIterator;
+            ConstIterator begin() const;
+            ConstIterator end() const;
     };
 }
 

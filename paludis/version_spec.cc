@@ -29,11 +29,14 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
 
 using namespace paludis;
+
+#include <paludis/version_spec-se.cc>
 
 BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
     NameError(name, "version spec")
@@ -47,44 +50,11 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::st
 
 namespace paludis
 {
-    namespace n
-    {
-        struct kind;
-        struct value;
-    }
-}
-
-namespace
-{
-    enum PartKind
-    {
-        alpha,
-        beta,
-        pre,
-        rc,
-        empty,
-        revision,
-        patch,
-        trypart,
-        letter,
-        number,
-        scm
-    };
-
-    struct Part
-    {
-        NamedValue<n::kind, PartKind> kind;
-        NamedValue<n::value, std::string> value;
-    };
-}
-
-namespace paludis
-{
     template<>
     struct Implementation<VersionSpec>
     {
         std::string text;
-        std::vector<Part> parts;
+        std::vector<VersionSpecComponent> parts;
 
         mutable Mutex hash_mutex;
         mutable bool has_hash;
@@ -117,49 +87,64 @@ VersionSpec::VersionSpec(const std::string & text) :
     SimpleParser parser(text);
 
     if (parser.consume(simple_parser::exact("scm")))
-        _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(scm), value_for<n::value>("")));
+        _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                    value_for<n::number_value>(""),
+                    value_for<n::text>("scm"),
+                    value_for<n::type>(vsct_scm)
+                    ));
     else
     {
         /* numbers... */
+        bool first_number(true);
         while (true)
         {
             std::string number_part;
             if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
-            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(number), value_for<n::value>(number_part)));
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        value_for<n::number_value>(number_part),
+                        value_for<n::text>(first_number ? number_part : "." + number_part),
+                        value_for<n::type>(vsct_number)
+                        ));
 
             if (! parser.consume(simple_parser::exact(".")))
                 break;
+            first_number = false;
         }
 
         /* letter */
         {
             std::string l;
             if (parser.consume(simple_parser::any_of("abcdefghijklmnopqrstuvwxyz") >> l))
-                _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(letter), value_for<n::value>(l)));
+                _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                            value_for<n::number_value>(l),
+                            value_for<n::text>(l),
+                            value_for<n::type>(vsct_letter)
+                            ));
         }
 
         while (true)
         {
             std::string suffix_str, number_str;
-            PartKind k(empty);
+            VersionSpecComponentType k(vsct_empty);
             if (parser.consume(simple_parser::exact("_alpha") >> suffix_str))
-                k = alpha;
+                k = vsct_alpha;
             else if (parser.consume(simple_parser::exact("_beta") >> suffix_str))
-                k = beta;
+                k = vsct_beta;
             else if (parser.consume(simple_parser::exact("_pre") >> suffix_str))
-                k = pre;
+                k = vsct_pre;
             else if (parser.consume(simple_parser::exact("_rc") >> suffix_str))
-                k = rc;
+                k = vsct_rc;
             else if (parser.consume(simple_parser::exact("_p") >> suffix_str))
-                k = patch;
+                k = vsct_patch;
             else
                 break;
 
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
+            std::string raw_text(suffix_str + number_str);
             if (number_str.size() > 0)
             {
                 number_str = strip_leading(number_str, "0");
@@ -167,7 +152,11 @@ VersionSpec::VersionSpec(const std::string & text) :
                     number_str = "0";
             }
 
-            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(k), value_for<n::value>(number_str)));
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        value_for<n::number_value>(number_str),
+                        value_for<n::text>(raw_text),
+                        value_for<n::type>(k)
+                        ));
         }
 
         /* try */
@@ -177,35 +166,45 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
+            std::string raw_text("-try" + number_str);
             if (number_str.size() > 0)
             {
                 number_str = strip_leading(number_str, "0");
                 if (number_str.empty())
                     number_str = "0";
             }
-            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(trypart), value_for<n::value>(number_str)));
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        value_for<n::number_value>(number_str),
+                        value_for<n::text>(raw_text),
+                        value_for<n::type>(vsct_trypart)
+                        ));
         }
 
         /* scm */
         if (parser.consume(simple_parser::exact("-scm")))
         {
             /* _suffix-scm? */
-            if (_imp->parts.back().value().empty())
-                _imp->parts.back().value() = "MAX";
+            if (_imp->parts.back().number_value().empty())
+                _imp->parts.back().number_value() = "MAX";
 
-            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(scm), value_for<n::value>("")));
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        value_for<n::number_value>(""),
+                        value_for<n::text>("-scm"),
+                        value_for<n::type>(vsct_scm)
+                        ));
         }
 
         /* Now we can change empty values to "0" */
-        for (std::vector<Part>::iterator i(_imp->parts.begin()),
+        for (std::vector<VersionSpecComponent>::iterator i(_imp->parts.begin()),
                 i_end(_imp->parts.end()) ; i != i_end ; ++i)
-            if ((*i).value().empty())
-                (*i).value() = "0";
+            if ((*i).number_value().empty())
+                (*i).number_value() = "0";
     }
 
     /* revision */
     if (parser.consume(simple_parser::exact("-r")))
     {
+        bool first_revision(true);
         do
         {
             std::string number_str;
@@ -215,10 +214,17 @@ VersionSpec::VersionSpec(const std::string & text) :
             /* Are we -r */
             bool empty(number_str.empty());
 
+            std::string raw_text(first_revision ? "" : ".");
+            raw_text.append(number_str);
+
             number_str = strip_leading(number_str, "0");
             if (number_str.empty())
                 number_str = "0";
-            _imp->parts.push_back(make_named_values<Part>(value_for<n::kind>(revision), value_for<n::value>(number_str)));
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        value_for<n::number_value>(number_str),
+                        value_for<n::text>(raw_text),
+                        value_for<n::type>(vsct_revision)
+                        ));
 
             if (empty)
             {
@@ -232,6 +238,8 @@ VersionSpec::VersionSpec(const std::string & text) :
             }
             else if (! parser.consume(simple_parser::exact(".")))
                 throw BadVersionSpecError(text, "Expected . or end after revision number at offset " + stringify(parser.offset()));
+
+            first_revision = false;
         }
         while (true);
     }
@@ -270,63 +278,67 @@ VersionSpec::~VersionSpec()
 int
 VersionSpec::compare(const VersionSpec & other) const
 {
-    std::vector<Part>::const_iterator
+    std::vector<VersionSpecComponent>::const_iterator
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(make_named_values<Part>(value_for<n::kind>(empty), value_for<n::value>("")));
+    VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
+                value_for<n::number_value>(""),
+                value_for<n::text>(""),
+                value_for<n::type>(vsct_empty)
+                ));
     bool first(true);
     while (true)
     {
-        const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
-        const Part * const p2(v2 == v2_end ? &end_part : &*v2++);
+        const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1++);
+        const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2++);
 
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if (p1 == &end_part && (*p2).kind() == revision && (*p2).value() == "0")
+        if (p1 == &end_part && (*p2).type() == vsct_revision && (*p2).number_value() == "0")
             continue;
 
-        if (p2 == &end_part && (*p1).kind() == revision && (*p1).value() == "0")
+        if (p2 == &end_part && (*p1).type() == vsct_revision && (*p1).number_value() == "0")
             continue;
 
-        if ((*p1).kind() < (*p2).kind())
+        if ((*p1).type() < (*p2).type())
             return -1;
-        if ((*p1).kind() > (*p2).kind())
+        if ((*p1).type() > (*p2).type())
             return 1;
 
         std::string p1s, p2s;
         bool length_cmp(true);
 
         /* number parts */
-        if ((*p1).kind() == number)
+        if ((*p1).type() == vsct_number)
         {
             if (first)
             {
                 /* first component - always as integer (leading zeroes removed) */
                 first = false;
-                p1s = strip_leading((*p1).value(), "0");
-                p2s = strip_leading((*p2).value(), "0");
+                p1s = strip_leading((*p1).number_value(), "0");
+                p2s = strip_leading((*p2).number_value(), "0");
             }
-            else if ((! (*p1).value().empty() && (*p1).value().at(0) == '0') ||
-                    (! (*p2).value().empty() && (*p2).value().at(0) == '0'))
+            else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
+                    (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
             {
                 /* leading zeroes - stringwise compare with trailing zeroes removed */
                 length_cmp = false;
-                p1s = strip_trailing((*p1).value(), "0");
-                p2s = strip_trailing((*p2).value(), "0");
+                p1s = strip_trailing((*p1).number_value(), "0");
+                p2s = strip_trailing((*p2).number_value(), "0");
             }
             else
             {
-                p1s = (*p1).value();
-                p2s = (*p2).value();
+                p1s = (*p1).number_value();
+                p2s = (*p2).number_value();
             }
         }
         /* anything else than number parts */
         else
         {
-            p1s = (*p1).value();
-            p2s = (*p2).value();
+            p1s = (*p1).number_value();
+            p2s = (*p2).number_value();
 
             /* _suffix-scm? */
             if (p1s == "MAX" && p2s == "MAX")
@@ -358,62 +370,66 @@ VersionSpec::compare(const VersionSpec & other) const
 bool
 VersionSpec::tilde_compare(const VersionSpec & other) const
 {
-    std::vector<Part>::const_iterator
+    std::vector<VersionSpecComponent>::const_iterator
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(make_named_values<Part>(value_for<n::kind>(empty), value_for<n::value>("")));
+    VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
+                value_for<n::number_value>(""),
+                value_for<n::text>(""),
+                value_for<n::type>(vsct_empty)
+                ));
     bool first(true);
     while (true)
     {
-        const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
-        const Part * const p2(v2 == v2_end ? &end_part : &*v2++);
+        const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1++);
+        const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2++);
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if ((*p1).kind() != (*p2).kind())
+        if ((*p1).type() != (*p2).type())
         {
-            if (p2 != &end_part || (*p1).kind() != revision)
+            if (p2 != &end_part || (*p1).type() != vsct_revision)
                 return false;
         }
         else
         {
             std::string p1s, p2s;
             /* number part */
-            if ((*p1).kind() == number)
+            if ((*p1).type() == vsct_number)
             {
                 if (first)
                 {
                     /* first component - remove leading zeroes and check whether equal */
                     first = false;
-                    if (strip_leading((*p1).value(), "0") != strip_leading((*p2).value(), "0"))
+                    if (strip_leading((*p1).number_value(), "0") != strip_leading((*p2).number_value(), "0"))
                         return false;
                 }
-                else if ((! (*p1).value().empty() && (*p1).value().at(0) == '0') ||
-                        (! (*p2).value().empty() && (*p2).value().at(0) == '0'))
+                else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
+                        (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
                 {
                     /* leading zeroes - remove trailing zeroes and check whether equal */
-                    if (strip_trailing((*p1).value(), "0") != strip_trailing((*p2).value(), "0"))
+                    if (strip_trailing((*p1).number_value(), "0") != strip_trailing((*p2).number_value(), "0"))
                         return false;
                 }
                 else
                 {
                     /* normal(!) case */
-                    if ((*p1).value() != (*p2).value())
+                    if ((*p1).number_value() != (*p2).number_value())
                         return false;
                 }
             }
             /* revision - compare as integers */
-            else if ((*p1).kind() == revision)
+            else if ((*p1).type() == vsct_revision)
             {
-                int c = (*p1).value().size() - (*p2).value().size();
+                int c = (*p1).number_value().size() - (*p2).number_value().size();
                 if (c < 0)
                     return false;
-                else if (c == 0 && (*p1).value().compare((*p2).value()) == -1)
+                else if (c == 0 && (*p1).number_value().compare((*p2).number_value()) == -1)
                     return false;
             }
             /* not a number part nor revision - must be just equal */
-            else if ((*p1).value() != (*p2).value())
+            else if ((*p1).number_value() != (*p2).number_value())
                 return false;
         }
     }
@@ -443,10 +459,10 @@ VersionSpec::hash() const
     do
     {
         bool first(true);
-        for (std::vector<Part>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
+        for (std::vector<VersionSpecComponent>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
                 r != r_end ; ++r)
         {
-            if ((*r).value() == "0" && (*r).kind() == revision)
+            if ((*r).number_value() == "0" && (*r).type() == vsct_revision)
                 continue;
 
             std::size_t hh(result & h_mask);
@@ -454,10 +470,10 @@ VersionSpec::hash() const
             result ^= (hh >> h_shift);
 
             std::string r_v;
-            if (! (*r).value().empty() && (*r).value().at(0) == '0')
-                r_v = strip_trailing((*r).value(), "0");
+            if (! (*r).number_value().empty() && (*r).number_value().at(0) == '0')
+                r_v = strip_trailing((*r).number_value(), "0");
             else
-                r_v = (*r).value();
+                r_v = (*r).number_value();
 
             size_t x(0);
             int zeroes(0);
@@ -472,7 +488,7 @@ VersionSpec::hash() const
             }
             first = false;
 
-            result ^= (static_cast<std::size_t>((*r).kind()) + (x << 3) + (zeroes << 12));
+            result ^= (static_cast<std::size_t>((*r).type()) + (x << 3) + (zeroes << 12));
         }
     } while (false);
 
@@ -483,13 +499,13 @@ VersionSpec::hash() const
 
 namespace
 {
-    template <PartKind p_>
-    struct IsPart :
-        std::unary_function<Part, bool>
+    template <VersionSpecComponentType p_>
+    struct IsVersionSpecComponentType :
+        std::unary_function<VersionSpecComponent, bool>
     {
-        bool operator() (const Part & p) const
+        bool operator() (const VersionSpecComponent & p) const
         {
-            return p.kind() == p_;
+            return p.type() == p_;
         }
     };
 }
@@ -503,7 +519,7 @@ VersionSpec::remove_revision() const
     result._imp->parts.erase(std::remove_if(
                 result._imp->parts.begin(),
                 result._imp->parts.end(),
-                IsPart<revision>()), result._imp->parts.end());
+                IsVersionSpecComponentType<vsct_revision>()), result._imp->parts.end());
 
     std::string::size_type p;
     if (std::string::npos != ((p = result._imp->text.rfind("-r"))))
@@ -516,7 +532,8 @@ VersionSpec::remove_revision() const
 std::string
 VersionSpec::revision_only() const
 {
-    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>()));
+    std::vector<VersionSpecComponent>::const_iterator r(std::find_if(
+                _imp->parts.begin(), _imp->parts.end(), IsVersionSpecComponentType<vsct_revision>()));
     if (r != _imp->parts.end())
     {
         std::string result;
@@ -527,8 +544,8 @@ VersionSpec::revision_only() const
             else
                 result = "r";
 
-            result.append((*r).value());
-            r = std::find_if(next(r), _imp->parts.end(), IsPart<revision>());
+            result.append((*r).number_value());
+            r = std::find_if(next(r), _imp->parts.end(), IsVersionSpecComponentType<vsct_revision>());
         } while (r != _imp->parts.end());
 
         return result;
@@ -555,13 +572,13 @@ VersionSpec::is_scm() const
     bool result(false);
     do
     {
-        std::vector<Part>::const_iterator r;
+        std::vector<VersionSpecComponent>::const_iterator r;
 
         if (_imp->parts.empty())
             break;
 
         /* are we an obvious scm version? */
-        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
+        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsVersionSpecComponentType<vsct_scm>());
         if (r != _imp->parts.end())
         {
             result = true;
@@ -569,9 +586,9 @@ VersionSpec::is_scm() const
         }
 
         /* are we a -r9999? */
-        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
+        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsVersionSpecComponentType<vsct_revision>());
         if (r != _imp->parts.end())
-            if ((*r).value() == "9999")
+            if ((*r).number_value() == "9999")
             {
                 result = true;
                 break;
@@ -597,27 +614,30 @@ VersionSpec::is_scm() const
 bool
 VersionSpec::has_try_part() const
 {
-    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<trypart>());
+    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(),
+            IsVersionSpecComponentType<vsct_trypart>());
 }
 
 bool
 VersionSpec::has_scm_part() const
 {
-    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
+    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(),
+            IsVersionSpecComponentType<vsct_scm>());
 }
 
 bool
 VersionSpec::has_local_revision() const
 {
-    return 1 < std::count_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
+    return 1 < std::count_if(_imp->parts.begin(), _imp->parts.end(),
+            IsVersionSpecComponentType<vsct_revision>());
 }
 
 VersionSpec
 VersionSpec::bump() const
 {
-    std::vector<Part> number_parts;
+    std::vector<VersionSpecComponent> number_parts;
     std::copy(_imp->parts.begin(),
-            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsPart<number>())),
+            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsVersionSpecComponentType<vsct_number>())),
             std::back_inserter(number_parts));
 
     if (number_parts.empty())
@@ -626,8 +646,8 @@ VersionSpec::bump() const
         number_parts.pop_back();
 
     /* ++string */
-    std::string::reverse_iterator i(number_parts.back().value().rbegin()),
-        i_end(number_parts.back().value().rend());
+    std::string::reverse_iterator i(number_parts.back().number_value().rbegin()),
+        i_end(number_parts.back().number_value().rend());
     bool add1(true);
     while (i != i_end && add1)
     {
@@ -641,16 +661,16 @@ VersionSpec::bump() const
         ++i;
     }
     if (add1)
-        number_parts.back().value().insert(0, "1");
+        number_parts.back().number_value().insert(0, "1");
 
     bool need_dot(false);
     std::string str;
-    for (std::vector<Part>::const_iterator r(number_parts.begin()), r_end(number_parts.end()) ;
+    for (std::vector<VersionSpecComponent>::const_iterator r(number_parts.begin()), r_end(number_parts.end()) ;
             r != r_end ; ++r)
     {
         if (need_dot)
             str.append(".");
-        str.append((*r).value());
+        str.append((*r).number_value());
         need_dot = true;
     }
     return VersionSpec(str);
@@ -673,4 +693,18 @@ VersionSpec::operator== (const VersionSpec & v) const
 {
     return 0 == compare(v);
 }
+
+VersionSpec::ConstIterator
+VersionSpec::begin() const
+{
+    return ConstIterator(_imp->parts.begin());
+}
+
+VersionSpec::ConstIterator
+VersionSpec::end() const
+{
+    return ConstIterator(_imp->parts.end());
+}
+
+template class WrappedForwardIterator<VersionSpec::ConstIteratorTag, const VersionSpecComponent>;
 

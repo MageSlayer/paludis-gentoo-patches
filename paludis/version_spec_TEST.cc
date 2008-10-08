@@ -18,6 +18,7 @@
  */
 
 #include <paludis/version_spec.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
@@ -513,5 +514,52 @@ namespace test_cases
             }
         }
     } test_version_spec_compare;
+
+    struct VersionSpecComponentsTest : TestCase
+    {
+        VersionSpecComponentsTest() : TestCase("components") { }
+
+        void run()
+        {
+            VersionSpec v1("1.2x_pre3_rc-scm");
+            VersionSpec::ConstIterator i(v1.begin()), i_end(v1.end());
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_number);
+            TEST_CHECK_EQUAL(i->number_value(), "1");
+            TEST_CHECK_EQUAL(i->text(), "1");
+            ++i;
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_number);
+            TEST_CHECK_EQUAL(i->number_value(), "2");
+            TEST_CHECK_EQUAL(i->text(), ".2");
+            ++i;
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_letter);
+            TEST_CHECK_EQUAL(i->number_value(), "x");
+            TEST_CHECK_EQUAL(i->text(), "x");
+            ++i;
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_pre);
+            TEST_CHECK_EQUAL(i->number_value(), "3");
+            TEST_CHECK_EQUAL(i->text(), "_pre3");
+            ++i;
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_rc);
+            TEST_CHECK_EQUAL(i->number_value(), "MAX");
+            TEST_CHECK_EQUAL(i->text(), "_rc");
+            ++i;
+
+            TEST_CHECK(i != i_end);
+            TEST_CHECK_EQUAL(i->type(), vsct_scm);
+            TEST_CHECK_EQUAL(i->number_value(), "0");
+            TEST_CHECK_EQUAL(i->text(), "-scm");
+            ++i;
+        }
+    } test_version_spec_components;
 }
 

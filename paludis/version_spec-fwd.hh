@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,10 @@ namespace paludis
 {
     class BadVersionSpecError;
     class VersionSpec;
+
+    struct VersionSpecComponent;
+
+#include <paludis/version_spec-se.hh>
 
     /**
      * Output a VersionSpec to a stream.
