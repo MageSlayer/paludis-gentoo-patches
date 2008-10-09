@@ -64,7 +64,8 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exndbam");
-            keys->insert("location", "exndbam_repository_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "repo1"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
@@ -92,8 +93,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "exndbam_repository_TEST_dir/postinsttest_src1");
-            keys->insert("profiles", "exndbam_repository_TEST_dir/postinsttest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -107,7 +108,7 @@ namespace test_cases
 
             keys.reset(new Map<std::string, std::string>);
             keys->insert("format", "exndbam");
-            keys->insert("location", "exndbam_repository_TEST_dir/postinsttest");
+            keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("exndbam_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,

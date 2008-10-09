@@ -79,7 +79,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -100,7 +100,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -124,7 +124,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -202,9 +202,9 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
+            keys->insert("world", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "world-no-match-no-eol"));
             std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -258,7 +258,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo2");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo2"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -314,8 +314,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/srcrepo");
-            keys->insert("profiles", "vdb_repository_TEST_dir/srcrepo/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", eapi);
             keys->insert("eapi_when_unspecified", eapi);
@@ -331,7 +331,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo3");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo3"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -431,8 +431,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/srcrepo");
-            keys->insert("profiles", "vdb_repository_TEST_dir/srcrepo/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", eapi);
             keys->insert("eapi_when_unspecified", eapi);
@@ -448,7 +448,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/repo3");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo3"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -527,7 +527,7 @@ namespace test_cases
 
         NamesCacheIncrementalTest() :
             TestCase("names cache incremental"),
-            names_cache("vdb_repository_TEST_dir/namesincrtest/.cache/names/installed")
+            names_cache(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest/.cache/names/installed"))
         {
         }
 
@@ -548,8 +548,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/namesincrtest_src");
-            keys->insert("profiles", "vdb_repository_TEST_dir/namesincrtest_src/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -565,7 +565,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", stringify(names_cache.dirname()));
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/namesincrtest");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -821,7 +821,7 @@ namespace test_cases
 
         ProvidesCacheTest() :
             TestCase("provides cache"),
-            provides_cache("vdb_repository_TEST_dir/providestest/.cache/provides")
+            provides_cache(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providestest/.cache/provides"))
         {
         }
 
@@ -839,7 +839,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", stringify(provides_cache));
-            keys->insert("location", "vdb_repository_TEST_dir/providestest");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providestest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -903,7 +903,7 @@ namespace test_cases
 
         ProvidesCacheIncrementalTest() :
             TestCase("provides cache incremental"),
-            provides_cache("vdb_repository_TEST_dir/providesincrtest/.cache/provides")
+            provides_cache(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest/.cache/provides"))
         {
         }
 
@@ -924,8 +924,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest_src1");
-            keys->insert("profiles", "vdb_repository_TEST_dir/providesincrtest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -940,8 +940,8 @@ namespace test_cases
             keys.reset(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest_src2");
-            keys->insert("profiles", "vdb_repository_TEST_dir/providesincrtest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src2"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -957,7 +957,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", stringify(provides_cache));
-            keys->insert("location", "vdb_repository_TEST_dir/providesincrtest");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -1162,8 +1162,8 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest_src1");
-            keys->insert("profiles", "vdb_repository_TEST_dir/reinstalltest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -1178,8 +1178,8 @@ namespace test_cases
             keys.reset(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest_src2");
-            keys->insert("profiles", "vdb_repository_TEST_dir/reinstalltest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src2"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -1195,7 +1195,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/reinstalltest");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -1265,13 +1265,13 @@ namespace test_cases
 
         void run()
         {
-            TestEnvironment env(FSEntry("vdb_repository_TEST_dir/root").realpath());
+            TestEnvironment env(FSEntry(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/postinsttest_src1");
-            keys->insert("profiles", "vdb_repository_TEST_dir/postinsttest_src1/profiles/profile");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
@@ -1287,7 +1287,7 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", "vdb_repository_TEST_dir/postinsttest");
+            keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
             std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,

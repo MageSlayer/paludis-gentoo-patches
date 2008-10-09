@@ -4,6 +4,8 @@
 mkdir ebuild_flat_metadata_cache_TEST_dir || exit 1
 cd ebuild_flat_metadata_cache_TEST_dir || exit 1
 
+mkdir build || exit 1
+
 mkdir extra_eclasses || exit 1
 touch extra_eclasses/bar.eclass || exit 1
 TZ=UTC touch -t 197001010003 extra_eclasses/bar.eclass || exit 1

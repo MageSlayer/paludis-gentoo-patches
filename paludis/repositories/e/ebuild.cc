@@ -356,7 +356,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Caught exception '"
                 << e.message() << "' (" << e.what() << ") when generating cache for '"
-                << *params.package_id() << "', input is '" << purdy(input) << "'";
+                << *params.package_id() << "', input is '" << purdy(input) << "', stderr is '" << captured_stderr << "'";
     }
 
     if (ok)
@@ -364,7 +364,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     else
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Could not generate cache for '"
-            << *params.package_id() << "'";
+            << *params.package_id() << "' stderr says '" << captured_stderr << "'";
         keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name());
 

@@ -429,6 +429,13 @@ ebuild_main()
         ebuild_notice "warning" "This will cause problems."
     fi
 
+    # this is fatal in builtin_init, but warn early for good measure
+    if [[ -z "${PALUDIS_TMPDIR}" ]] ; then
+        ebuild_notice "warning" "PALUDIS_TMPDIR unset or empty."
+    elif ! cd "${PALUDIS_TMPDIR}" ; then
+        ebuild_notice "warning" "Could not change directory to ${PALUDIS_TMPDIR}."
+    fi
+
     local action
     export EBUILD="${1}"
     shift

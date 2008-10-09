@@ -12,6 +12,7 @@ format = ebuild
 names_cache = /var/empty
 cache = /var/empty
 profiles = \${location}/profiles/testprofile
+builddir = `pwd`
 END
 
 cat <<END > home/.paludis/environment.conf

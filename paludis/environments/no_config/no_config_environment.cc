@@ -186,6 +186,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 keys->insert("ignore_deprecated_profiles", "true");
                 keys->insert("write_cache", stringify(params.write_cache));
                 keys->insert("names_cache", "/var/empty");
+                keys->insert("builddir", "/var/empty");
                 if (params.disable_metadata_cache)
                     keys->insert("cache", "/var/empty");
 
@@ -205,6 +206,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("ignore_deprecated_profiles", "true");
         keys->insert("write_cache", stringify(params.write_cache));
         keys->insert("names_cache", "/var/empty");
+        keys->insert("builddir", "/var/empty");
 
         if (params.disable_metadata_cache)
             keys->insert("cache", "/var/empty");

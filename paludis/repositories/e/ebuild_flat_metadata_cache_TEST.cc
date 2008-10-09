@@ -68,6 +68,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -95,6 +96,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -122,6 +124,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -152,6 +155,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -179,6 +183,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -206,6 +211,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -233,6 +239,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -260,6 +267,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -287,6 +295,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -315,6 +324,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -342,6 +352,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -369,6 +380,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -396,6 +408,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -423,6 +436,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -450,6 +464,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -477,6 +492,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -507,6 +523,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -534,6 +551,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -588,6 +606,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -618,6 +637,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -648,6 +668,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -675,6 +696,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -702,6 +724,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -729,6 +752,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -763,6 +787,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -790,6 +815,7 @@ namespace test_cases
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -818,6 +844,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -849,6 +876,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -880,6 +908,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -908,6 +937,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -936,6 +966,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -964,6 +995,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -999,6 +1031,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -1027,6 +1060,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -1061,6 +1095,7 @@ namespace test_cases
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -1094,8 +1129,11 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
             keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
-            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("eclassdirs",
+                    stringify((FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/eclass").realpath())
+                    + " " + stringify((FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/extra_eclasses").realpath()));
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -1132,6 +1170,7 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);

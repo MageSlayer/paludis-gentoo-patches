@@ -75,6 +75,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_OPTIONS="" \
 	PALUDIS_NO_CHOWN="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_TMPDIR="`pwd`/" \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
 TESTS = \

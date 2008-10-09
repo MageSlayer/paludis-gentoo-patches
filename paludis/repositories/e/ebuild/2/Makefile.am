@@ -26,6 +26,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_LOG_LEVEL="warning" \
 	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/`" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_TMPDIR="`pwd`/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
 TESTS =
