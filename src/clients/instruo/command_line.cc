@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,8 +43,11 @@ CommandLine::CommandLine() :
             "Where to find the repository (default: current directory)"),
     a_output_directory(&general_args, "output-dir", 'o',
             "Where to place generated metadata (default: current directory)"),
-    a_master_repository_dir(&general_args, "master-repository-dir", '\0',
-            "Use the specified location for the master repository"),
+    a_master_repository_name(&general_args, "master-repository-name", '\0',
+            "Use the specified name for the master repository. Specify the location using --extra-repository-dir. "
+            "Only for repositories with no metadata/layout.conf."),
+    a_extra_repository_dir(&general_args, "extra-repository-dir", '\0',
+            "Also include the repository at this location. May be specified multiple times, in creation order."),
     a_report_file(&general_args, "report-file", 'r',
             "Write report to the specified file, rather than stdout")
 {

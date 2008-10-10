@@ -11,7 +11,8 @@ make_class_Params()
     key accept_unstable bool
     key extra_accept_keywords std::string
     key repository_type no_config_environment::RepositoryType
-    key master_repository_dir "FSEntry"
+    key master_repository_name std::string
+    key extra_repository_dirs "std::tr1::shared_ptr<const FSEntrySequence>"
     key extra_params "std::tr1::shared_ptr<Map<std::string, std::string> >"
     allow_named_args
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -311,6 +311,49 @@ namespace paludis
                 AllowedArgConstIterator end_allowed_args() const;
 
                 ///\}
+
+                virtual bool can_be_negated() const;
+        };
+
+        /**
+         * An option that takes a set of strings.
+         *
+         * \since 0.32
+         * \ingroup g_args
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE StringSequenceArg :
+            public ArgsOption,
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSequenceArg>,
+            private PrivateImplementationPattern<StringSequenceArg>
+        {
+            public:
+                ///\name Basic operations
+                ///\{
+
+                StringSequenceArg(ArgsGroup * const, const std::string & long_name,
+                        const char short_name, const std::string & description);
+
+                ~StringSequenceArg();
+
+                ///\}
+
+                ///\name Iterate over our args.
+                ///\{
+
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
+
+                ConstIterator begin_args() const;
+
+                ConstIterator end_args() const;
+
+                ///\}
+
+                /**
+                 * Add an argument to the set.
+                 */
+                void add_argument(const std::string & arg);
 
                 virtual bool can_be_negated() const;
         };

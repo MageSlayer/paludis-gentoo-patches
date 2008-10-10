@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <set>
 #include <vector>
 #include <algorithm>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -34,6 +35,7 @@ template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
          const std::pair<std::string, std::string> >;
 template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
          const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
 
 namespace
 {
@@ -183,6 +185,45 @@ StringSetArg::add_argument(const std::string & arg)
         (*_validator)(arg);
 
     _imp->args.insert(arg);
+}
+
+namespace paludis
+{
+    template<>
+    struct Implementation<StringSequenceArg>
+    {
+        std::list<std::string> args;
+    };
+}
+
+StringSequenceArg::StringSequenceArg(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description) :
+    ArgsOption(g, our_long_name, our_short_name, our_description),
+    PrivateImplementationPattern<StringSequenceArg>(new Implementation<StringSequenceArg>)
+{
+}
+
+StringSequenceArg::~StringSequenceArg()
+{
+}
+
+StringSequenceArg::ConstIterator
+StringSequenceArg::begin_args() const
+{
+    return ConstIterator(_imp->args.begin());
+}
+
+StringSequenceArg::ConstIterator
+StringSequenceArg::end_args() const
+{
+    return ConstIterator(_imp->args.end());
+}
+
+void
+StringSequenceArg::add_argument(const std::string & arg)
+{
+    Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
+    _imp->args.push_back(arg);
 }
 
 IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long_name,
@@ -350,6 +391,12 @@ EnumArg::can_be_negated() const
 
 bool
 StringSetArg::can_be_negated() const
+{
+    return false;
+}
+
+bool
+StringSequenceArg::can_be_negated() const
 {
     return false;
 }

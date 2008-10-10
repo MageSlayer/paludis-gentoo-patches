@@ -61,6 +61,7 @@ namespace paludis
 
         std::tr1::shared_ptr<Repository> main_repo;
         std::tr1::shared_ptr<Repository> master_repo;
+        std::list<std::tr1::shared_ptr<Repository> > extra_repos;
 
         std::string paludis_command;
 
@@ -166,34 +167,40 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
     if (! is_vdb)
     {
-        if (FSEntry("/var/empty") != params.master_repository_dir)
+        for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs->begin()), d_end(params.extra_repository_dirs->end()) ;
+                d != d_end ; ++d)
         {
-            if (params.repository_dir.realpath() == params.master_repository_dir.realpath())
-                Log::get_instance()->message("no_config_environment.master_repository.ignoring", ll_warning, lc_context)
-                    << "Ignoring master_repository_dir '" << params.master_repository_dir
-                    << "' because it is the same as repository_dir";
-
-            else
+            if (params.repository_dir.realpath() == d->realpath())
             {
-                std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-
-                if (params.extra_params)
-                    std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
-
-                keys->insert("format", "ebuild");
-                keys->insert("location", stringify(params.master_repository_dir));
-                keys->insert("profiles", "/var/empty");
-                keys->insert("ignore_deprecated_profiles", "true");
-                keys->insert("write_cache", stringify(params.write_cache));
-                keys->insert("names_cache", "/var/empty");
-                keys->insert("builddir", "/var/empty");
-                if (params.disable_metadata_cache)
-                    keys->insert("cache", "/var/empty");
-
-                package_database->add_repository(1, ((master_repo =
-                                RepositoryFactory::get_instance()->create(env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
+                Log::get_instance()->message("no_config_environment.extra_repository.ignoring", ll_warning, lc_context)
+                    << "Ignoring extra_repository_dir '" << *d << "' because it is the same as repository_dir";
+                continue;
             }
+
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+
+            if (params.extra_params)
+                std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
+
+            keys->insert("format", "ebuild");
+            keys->insert("location", stringify(*d));
+            keys->insert("profiles", "/var/empty");
+            keys->insert("ignore_deprecated_profiles", "true");
+            keys->insert("write_cache", stringify(params.write_cache));
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("builddir", "/var/empty");
+            if (params.disable_metadata_cache)
+                keys->insert("cache", "/var/empty");
+
+            std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(
+                        env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            if (stringify(repo->name()) == params.master_repository_name)
+                master_repo = repo;
+            package_database->add_repository(1, repo);
         }
+
+        if ((! params.master_repository_name.empty()) && (! master_repo))
+            throw ConfigurationError("Can't find repository '" + params.master_repository_name + "'");
 
         std::tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
 
@@ -211,8 +218,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if (params.disable_metadata_cache)
             keys->insert("cache", "/var/empty");
 
-        if (master_repo)
-            keys->insert("master_repository", stringify(master_repo->name()));
+        if (! params.master_repository_name.empty())
+            keys->insert("master_repository", params.master_repository_name);
 
         if ((params.repository_dir / "metadata" / "profiles_desc.conf").exists())
             keys->insert("layout", "exheres");

@@ -339,34 +339,48 @@ namespace
      * call-seq:
      *     NoConfigEnvironment.new(environment_dir) -> NoConfigEnvironment
      *     NoConfigEnvironment.new(environment_dir, write_cache_dir) -> NoConfigEnvironment
-     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_dir) -> NoConfigEnvironment
+     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_name) -> NoConfigEnvironment
+     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_name, [extra_repository_dirs]) -> NoConfigEnvironment
      *
-     * Create a new NoConfigEnvironment from the specified directory. A write cache and master repository 
-     * may also be specified.
+     * Create a new NoConfigEnvironment from the specified directory. A write cache, master repository name
+     * and extra repository dirs may also be specified.
      */
     VALUE
     no_config_environment_new(int argc, VALUE* argv, VALUE self)
     {
         try
         {
-            std::string write_cache, master_repository_dir;
+            std::string write_cache, master_repository_name;
+            std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
             if (1 == argc)
             {
                 write_cache = "/var/empty/";
-                master_repository_dir = "/var/empty/";
+                master_repository_name = "";
             }
             else if (2 == argc)
             {
                 write_cache = StringValuePtr(argv[1]);
-                master_repository_dir = "/var/empty/";
+                master_repository_name = "";
             }
             else if (3 == argc)
             {
                 write_cache = StringValuePtr(argv[1]);
-                master_repository_dir = StringValuePtr(argv[2]);
+                master_repository_name = StringValuePtr(argv[2]);
+            }
+            else if (4 == argc)
+            {
+                write_cache = StringValuePtr(argv[1]);
+                master_repository_name = StringValuePtr(argv[2]);
+
+                Check_Type(argv[3], T_ARRAY);
+                for (int i(0) ; i < RARRAY(argv[3])->len ; ++i)
+                {
+                    VALUE entry(rb_ary_entry(argv[3], i));
+                    extra_repository_dirs->push_back(stringify(StringValuePtr(entry)));
+                }
             }
             else
-                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one to three arguments, but got %d", argc);
+                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one to four arguments, but got %d", argc);
 
             std::string path;
             if (rb_obj_is_kind_of(argv[0], rb_cDir))
@@ -385,8 +399,9 @@ namespace
                         .disable_metadata_cache(false)
                         .repository_type(no_config_environment::ncer_auto)
                         .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
+                        .extra_repository_dirs(extra_repository_dirs)
                         .extra_accept_keywords("")
-                        .master_repository_dir(FSEntry(master_repository_dir))));
+                        .master_repository_name(master_repository_name)));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;

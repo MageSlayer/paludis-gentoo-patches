@@ -32,6 +32,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -441,9 +442,11 @@ struct NoConfigEnvironmentWrapper :
     NoConfigEnvironment
 {
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
-            const FSEntry & master_repo_dir) :
+            const std::string & master_repo_name, const std::tr1::shared_ptr<const FSEntrySequence> & extra_repository_dirs
+            ) :
         NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false, false, "",
-                    no_config_environment::ncer_auto, master_repo_dir,
+                    no_config_environment::ncer_auto, master_repo_name,
+                    extra_repository_dirs,
                     std::tr1::shared_ptr<Map<std::string, std::string> >())
                 )
     {
@@ -727,11 +730,12 @@ void expose_environment()
         (
          "NoConfigEnvironment",
          "An environment that uses a single repository, with no user configuration.",
-         bp::init<const FSEntry &, const FSEntry &, const FSEntry &>(
+         bp::init<const FSEntry &, const FSEntry &, const std::string &, const std::tr1::shared_ptr<const FSEntrySequence> &>(
              (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
-              bp::arg("master_repository_dir")="/var/empty"),
+              bp::arg("master_repository_name")="",
+              bp::arg("extra_repository_dirs") = make_shared_ptr(new FSEntrySequence)),
              "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
-             "master_repository_dir=\"/var/empty\")"
+             "master_repository_name=\"\", extra_repository_dirs=[])"
              )
         )
         .add_property("main_repository", main_repository,

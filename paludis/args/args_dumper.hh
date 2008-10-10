@@ -81,6 +81,9 @@ namespace paludis
 
                 /// Visit a StringSetArg.
                 void visit(const StringSetArg &);
+
+                /// Visit a StringSequenceArg.
+                void visit(const StringSequenceArg &);
         };
     }
 }

@@ -84,9 +84,6 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_repository_directory.specified())
             CommandLine::get_instance()->a_repository_directory.set_argument(stringify(FSEntry::cwd()));
 
-        if (! CommandLine::get_instance()->a_master_repository_dir.specified())
-            CommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
-
         if (CommandLine::get_instance()->a_version.specified())
         {
             cout << "accerso, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
@@ -102,6 +99,12 @@ main(int argc, char *argv[])
         }
         else
         {
+            std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+            for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
+                    d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
+                    d != d_end ; ++d)
+                extra_repository_dirs->push_back(*d);
+
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
             NoConfigEnvironment env(no_config_environment::Params::create()
@@ -112,7 +115,8 @@ main(int argc, char *argv[])
                     .disable_metadata_cache(false)
                     .extra_params(keys)
                     .extra_accept_keywords("")
-                    .master_repository_dir(FSEntry(CommandLine::get_instance()->a_master_repository_dir.argument())));
+                    .extra_repository_dirs(extra_repository_dirs)
+                    .master_repository_name(CommandLine::get_instance()->a_master_repository_name.argument()));
 
             std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
                         generator::InRepository(env.main_repository()->name()))]);

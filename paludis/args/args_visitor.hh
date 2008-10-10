@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -47,6 +47,7 @@ namespace paludis
         class IntegerArg;
         class EnumArg;
         class StringSetArg;
+        class StringSequenceArg;
 
         /**
          * Visitor types for visitors that can visit Args.
@@ -62,7 +63,8 @@ namespace paludis
                 SwitchArg,
                 IntegerArg,
                 EnumArg,
-                StringSetArg>
+                StringSetArg,
+                StringSequenceArg>
         {
         };
 
@@ -112,6 +114,9 @@ namespace paludis
 
                 /// Visit a StringSetArg.
                 void visit(StringSetArg &);
+
+                /// Visit a StringSequenceArg.
+                void visit(StringSequenceArg &);
 
                 /// Change whether we're visiting a --no- option
                 void set_no(const bool);

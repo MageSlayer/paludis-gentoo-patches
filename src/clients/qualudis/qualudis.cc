@@ -335,15 +335,19 @@ int main(int argc, char *argv[])
         if (! QualudisCommandLine::get_instance()->a_write_cache_dir.specified())
             QualudisCommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
-        if (! QualudisCommandLine::get_instance()->a_master_repository_dir.specified())
-            QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
+        std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        for (args::StringSequenceArg::ConstIterator d(QualudisCommandLine::get_instance()->a_extra_repository_dir.begin_args()),
+                d_end(QualudisCommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
+                d != d_end ; ++d)
+            extra_repository_dirs->push_back(*d);
 
         std::tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
                     .repository_dir(get_location())
                     .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_ebuild)
-                    .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
+                    .extra_repository_dirs(extra_repository_dirs)
+                    .master_repository_name(QualudisCommandLine::get_instance()->a_master_repository_name.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
                     .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
                     .extra_accept_keywords("")

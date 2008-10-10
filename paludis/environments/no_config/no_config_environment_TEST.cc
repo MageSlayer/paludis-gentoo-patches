@@ -20,6 +20,9 @@
 #include "no_config_environment.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace test;
 using namespace paludis;
@@ -40,7 +43,8 @@ namespace test_cases
                     .disable_metadata_cache(false)
                     .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
                     .extra_accept_keywords("")
-                    .master_repository_dir(FSEntry("/var/empty")));
+                    .master_repository_name("")
+                    .extra_repository_dirs(make_shared_ptr(new FSEntrySequence)));
 
             TEST_CHECK(e.package_database());
         }

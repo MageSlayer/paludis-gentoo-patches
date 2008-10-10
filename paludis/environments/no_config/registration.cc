@@ -24,6 +24,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/sequence.hh>
 #include <list>
 
 using namespace paludis;
@@ -38,8 +39,9 @@ namespace
         std::tr1::shared_ptr<Map<std::string, std::string> > extra_params(
                 make_shared_ptr(new Map<std::string, std::string>));
         FSEntry repository_dir(FSEntry::cwd());
+        std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
         FSEntry write_cache("/var/empty");
-        FSEntry master_repository_dir("/var/empty");
+        std::string master_repository_name;
         bool disable_metadata_cache(false);
         bool accept_unstable(false);
         no_config_environment::RepositoryType repository_type(no_config_environment::ncer_auto);
@@ -59,8 +61,13 @@ namespace
 
                 if (key == "write-cache")
                     write_cache = value;
+                else if (key == "master-repository-name")
+                    master_repository_name = value;
                 else if (key == "master-repository-dir")
-                    master_repository_dir = value;
+                    throw ConfigurationError("NoConfigEnvironment key master-repository-dir is no longer "
+                            "supported, use master-repository-name and extra-repository-dir");
+                else if (key == "extra-repository-dir")
+                    extra_repository_dirs->push_back(value);
                 else if (key == "repository-dir")
                     repository_dir = value;
                 else if (key == "disable-metadata-cache")
@@ -80,7 +87,8 @@ namespace
                     no_config_environment::Params::create()
                     .repository_dir(repository_dir)
                     .write_cache(write_cache)
-                    .master_repository_dir(master_repository_dir)
+                    .master_repository_name(master_repository_name)
+                    .extra_repository_dirs(extra_repository_dirs)
                     .extra_params(extra_params)
                     .repository_type(repository_type)
                     .disable_metadata_cache(disable_metadata_cache)

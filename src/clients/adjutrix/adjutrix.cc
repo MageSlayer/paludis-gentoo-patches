@@ -33,6 +33,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <iostream>
 #include <cstdlib>
@@ -126,8 +127,12 @@ main(int argc, char *argv[])
 
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
-        if (! CommandLine::get_instance()->a_master_repository_dir.specified())
-            CommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
+
+        std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
+                d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
+                d != d_end ; ++d)
+            extra_repository_dirs->push_back(*d);
 
         NoConfigEnvironment env(no_config_environment::Params::create()
                 .repository_dir(get_location_and_add_filters())
@@ -137,8 +142,9 @@ main(int argc, char *argv[])
                     (CommandLine::get_instance()->a_reverse_deps.specified()) ? no_config_environment::ncer_auto :
                     no_config_environment::ncer_ebuild)
                 .disable_metadata_cache(false)
-                .master_repository_dir(CommandLine::get_instance()->a_master_repository_dir.argument())
+                .master_repository_name(CommandLine::get_instance()->a_master_repository_name.argument())
                 .extra_accept_keywords("")
+                .extra_repository_dirs(extra_repository_dirs)
                 .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >()));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())

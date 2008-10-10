@@ -88,6 +88,10 @@ namespace
 
             _dw.end_extra_arg();
         }
+
+        void visit(const StringSequenceArg &)
+        {
+        }
     };
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,8 +61,11 @@ QualudisCommandLine::QualudisCommandLine() :
             "Options that control general configuration."),
     a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
             "Use a subdirectory named for the repository name under the specified directory for repository write cache"),
-    a_master_repository_dir(&configuration_options, "master-repository-dir", '\0',
-            "Use the specified location for the master repository"),
+    a_master_repository_name(&configuration_options, "master-repository-name", '\0',
+            "Use the specified name for the master repository. Specify the location using --extra-repository-dir. "
+            "Only for repositories with no metadata/layout.conf."),
+    a_extra_repository_dir(&configuration_options, "extra-repository-dir", '\0',
+            "Also include the repository at this location. May be specified multiple times, in creation order."),
     a_use_repository_cache(&configuration_options, "use-repository-cache", '\0',
             "Use the repository's metadata cache, if available (faster, but may miss certain errors)", true)
 {

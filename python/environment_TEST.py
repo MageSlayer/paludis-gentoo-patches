@@ -40,8 +40,8 @@ class TestCase_01_Environments(unittest.TestCase):
     def test_01_create(self):
         NoConfigEnvironment(repo)
         NoConfigEnvironment(repo, "/var/empty")
-        NoConfigEnvironment(repo, "/var/empty", "/var/empty")
-        NoConfigEnvironment(repo, master_repository_dir="/var/empty")
+        NoConfigEnvironment(repo, "/var/empty", "")
+        NoConfigEnvironment(repo, master_repository_name="")
         NoConfigEnvironment(repo, write_cache_dir="/var/empty")
 
     def test_02_create_error(self):
@@ -73,7 +73,7 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(self.nce.set_names, SetNameIterable))
 
     def test_08_repositories(self):
-        nce2 = NoConfigEnvironment(repo, master_repository_dir=slaverepo)
+        nce2 = NoConfigEnvironment(repo, master_repository_name="slaverepo", extra_repository_dirs=[slaverepo])
 
         self.assert_(isinstance(self.nce.main_repository, Repository))
         self.assertEquals(self.nce.master_repository, None)

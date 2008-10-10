@@ -63,6 +63,11 @@ void ArgsDumper::visit(const StringSetArg & a)
         }
 }
 
+void ArgsDumper::visit(const StringSequenceArg & a)
+{
+    generic_visit(a);
+}
+
 void ArgsDumper::visit(const EnumArg & a)
 {
     generic_visit(a);
@@ -103,7 +108,7 @@ ArgsDumper::visit(const IntegerArg & a)
 void
 ArgsDumper::visit(const AliasArg & a)
 {
-    if(!a.hidden())
-	    generic_visit(a);
+    if(! a.hidden())
+        generic_visit(a);
 }
 

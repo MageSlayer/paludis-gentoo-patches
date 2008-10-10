@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -153,6 +153,23 @@ void ArgsVisitor::visit(EnumArg & arg)
 }
 
 void ArgsVisitor::visit(StringSetArg & arg)
+{
+    if (! _no)
+    {
+        arg.set_specified(true);
+
+        std::string param = get_param(arg);
+        arg.add_argument(param);
+
+        if (! _env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
+                        arg.end_args(), " ").c_str(), 1);
+    }
+    else
+        throw BadArgument("--no-" + arg.long_name());
+}
+
+void ArgsVisitor::visit(StringSequenceArg & arg)
 {
     if (! _no)
     {

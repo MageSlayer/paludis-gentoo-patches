@@ -68,7 +68,7 @@ module Paludis
             end
 
             assert_raise ArgumentError do
-                e = NoConfigEnvironment.new(1,2,3,4)
+                e = NoConfigEnvironment.new(1,2,3,4,5)
             end
         end
     end
@@ -322,7 +322,8 @@ module Paludis
         def env_master
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo",
                                    "/var/empty",
-                                   Dir.getwd().to_s + "/environment_TEST_dir/slaverepo")
+                                   "slaverepo",
+                                   [Dir.getwd().to_s + "/environment_TEST_dir/slaverepo"])
         end
 
         def test_master_repository
