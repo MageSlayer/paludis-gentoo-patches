@@ -22,6 +22,7 @@ Makefile
 *.1
 man-*
 .keep
+*.epicfail
 
 !/paludis/repositories/e/ebuild/utils/dolib.a
 !/paludis/repositories/e/ebuild/utils/dolib.so
