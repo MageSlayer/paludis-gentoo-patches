@@ -62,9 +62,9 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(not repo.has_package_named("bar/foo"))
 
     def test_07_package_ids(self):
-        self.assertEquals([x.version for x in repo.package_ids("foo/bar")],
-                [VersionSpec("1.0"), VersionSpec("2.0")]
-                )
+        y = list(x.version for x in repo.package_ids("foo/bar"));
+        z = [VersionSpec("1.0"), VersionSpec("2.0")]
+        self.assertEquals(y, z)
         self.assertEquals(len(list(repo.package_ids("bar/baz"))), 0)
 
     def test_08_category_names(self):
