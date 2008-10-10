@@ -292,7 +292,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
             else if (token == "comment")
                 entry->comment().reset(new LiteralMetadataValueKey<std::string>("comment", "Comment", mkt_normal, token2));
             else if (token == "added-by")
-                entry->added_by().reset(new LiteralMetadataValueKey<std::string>("added-by", "Description", mkt_author, token2));
+                entry->added_by().reset(new LiteralMetadataValueKey<std::string>("added-by", "Added by", mkt_author, token2));
             else if (token == "bug-ids")
             {
                 std::tr1::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
