@@ -845,7 +845,7 @@ namespace
      *     parse_user_package_dep_spec(String, Env, Array) -> PackageDepSpec
      *     parse_user_package_dep_spec(String, Env, Array, Filter) -> PackageDepSpec
      *
-     * Return a PackageDepSpec parsed from user input. The second parameter is either an empty
+     * Return a PackageDepSpec parsed from user input. The third parameter is either an empty
      * array, or can contain :allow_wildcards to allow wildcards, :throw_if_set to get a
      * GotASetNotAPackageDepSpec exception if the string is a set name and :no_disambiguation
      * to disallow disambiguation (require an explicit category). The Filter, if
