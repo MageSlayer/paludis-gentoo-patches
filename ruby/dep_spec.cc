@@ -61,6 +61,57 @@ namespace
 
     static VALUE c_version_requirements_mode;
 
+    static VALUE c_slot_requirement;
+    static VALUE c_slot_exact_requirement;
+    static VALUE c_slot_any_locked_requirement;
+    static VALUE c_slot_any_unlocked_requirement;
+
+    struct V :
+        ConstVisitor<SlotRequirementVisitorTypes>
+    {
+        VALUE value;
+        std::tr1::shared_ptr<const SlotRequirement> mm;
+
+        V(std::tr1::shared_ptr<const SlotRequirement> _m) :
+            mm(_m)
+        {
+        }
+
+        void visit(const SlotExactRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_exact_requirement, 0, &Common<std::tr1::shared_ptr<const SlotRequirement> >::free,
+                    new std::tr1::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyLockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_locked_requirement, 0, &Common<std::tr1::shared_ptr<const SlotRequirement> >::free,
+                    new std::tr1::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyUnlockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_unlocked_requirement, 0, &Common<std::tr1::shared_ptr<const SlotRequirement> >::free,
+                    new std::tr1::shared_ptr<const SlotRequirement>(mm));
+        }
+
+    };
+
+    VALUE
+    slot_requirement_to_value(std::tr1::shared_ptr<const SlotRequirement> m)
+    {
+        try
+        {
+            V v(m);
+            m->accept(v);
+            return v.value;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     static VALUE c_uri_label;
     static VALUE c_uri_mirrors_then_listed_label;
     static VALUE c_uri_mirrors_only_label;
@@ -645,23 +696,21 @@ namespace
         return rb_str_new2(stringify(*std::tr1::static_pointer_cast<const WrappedSpec<T_> >(*ptr)->spec()).c_str());
     }
 
-#if 0
     /*
      * call-seq:
-     *     slot -> String or Nil
+     *     slot_requirement_ptr -> SlotRequirement or Nil
      *
-     * Fetch the slot name.
+     * Fetch the slot requirement.
      */
     VALUE
-    package_dep_spec_slot_ptr(VALUE self)
+    package_dep_spec_slot_requirement_ptr(VALUE self)
     {
         std::tr1::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
-        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())
+        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_requirement_ptr())
             return Qnil;
-        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_ptr())).c_str());
+        return slot_requirement_to_value(std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_requirement_ptr());
     }
-#endif
 
     /*
      * call-seq:
@@ -972,6 +1021,14 @@ namespace
         return rb_str_new2((*ptr)->text().c_str());
     }
 
+    VALUE
+    slot_exact_requirement_slot(VALUE self)
+    {
+        std::tr1::shared_ptr<const SlotExactRequirement> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const SlotExactRequirement>, ptr);
+        return rb_str_new2(stringify((*ptr)->slot()).c_str());
+    }
+
     void do_register_dep_spec()
     {
         /*
@@ -1098,9 +1155,7 @@ namespace
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
-#ifdef CIARANM_REMOVED_THIS
-        rb_define_method(c_package_dep_spec, "slot", RUBY_FUNC_CAST(&package_dep_spec_slot_ptr), 0);
-#endif
+        rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
         rb_define_method(c_package_dep_spec, "in_repository", RUBY_FUNC_CAST(&package_dep_spec_in_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "from_repository", RUBY_FUNC_CAST(&package_dep_spec_from_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
@@ -1197,6 +1252,38 @@ namespace
         // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
 
         rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), -1);
+
+        /*
+         * Document-class: Paludis::SlotRequirement
+         *
+         * A SlotRequirement
+         */
+        c_slot_requirement = rb_define_class_under(paludis_module(), "SlotRequirement", rb_cObject);
+        rb_funcall(c_slot_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_slot_requirement, "as_string", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const SlotRequirement> >::to_s_via_ptr), 0);
+        rb_define_method(c_slot_requirement, "to_s", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const SlotRequirement> >::to_s_via_ptr), 0);
+
+        /*
+         * Document-class: Paludis::ExactSlotRequirement
+         *
+         * An exact slot requiremet (:)
+         */
+        c_slot_exact_requirement = rb_define_class_under(paludis_module(), "SlotExactRequirement", c_slot_requirement);
+        rb_define_method(c_slot_exact_requirement, "slot", RUBY_FUNC_CAST(&slot_exact_requirement_slot), 0);
+
+        /*
+         * Document-class: Paludis::SlotAnyLockedRequirement
+         *
+         * An any locked slot requiremet (:=)
+         */
+        c_slot_any_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyLockedRequirement", c_slot_requirement);
+
+        /*
+         * Document-class: Paludis::ExactSlotRequirement
+         *
+         * An any unlocked slot requiremet (:*)
+         */
+        c_slot_any_unlocked_requirement = rb_define_class_under(paludis_module(), "SlotAnyUnlockedRequirement", c_slot_requirement);
     }
 }
 

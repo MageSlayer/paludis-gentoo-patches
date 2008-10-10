@@ -108,10 +108,12 @@ module Paludis
                 Filter::SupportsAction.new(InstallAction)).to_s, "foo/bar"
         end
 
-###        def test_slot
-###            assert_equal "100", pda.slot
-###            assert_nil pdb.slot
-###        end
+        def test_slot
+            assert_kind_of SlotExactRequirement, pda.slot_requirement
+            assert_equal ":100", pda.slot_requirement.to_s
+            assert_equal "100", pda.slot_requirement.slot
+            assert_nil pdb.slot_requirement
+        end
 
         def test_package
             assert_equal QualifiedPackageName.new("foo/bar"), pda.package
