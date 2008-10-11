@@ -169,5 +169,10 @@ namespace test_cases
     EverTest test_at_least("ever-at-least");
     EverTest test_major("ever-major");
     EverTest test_range("ever-range");
+    EverTest test_remainder("ever-remainder");
+    EverTest test_replace("ever-replace");
+    EverTest test_replace_all("ever-replace_all");
+    EverTest test_delete("ever-delete");
+    EverTest test_delete_all("ever-delete_all");
 }
 

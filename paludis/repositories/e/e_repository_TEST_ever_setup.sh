@@ -69,7 +69,7 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 check() {
-    a=$(ever split $1 )
+    a=$(ever split "$1" )
     [[ "${a}" == "${2}" ]] || die "got $a wanted $2"
 }
 
@@ -91,7 +91,7 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 check() {
-    a=$(ever split_all $1 )
+    a=$(ever split_all "$1" )
     [[ "${a}" == "${2}" ]] || die "got $a wanted $2"
 }
 
@@ -113,7 +113,7 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 check() {
-    a=$(ever major $1 )
+    a=$(ever major "$1" )
     [[ "${a}" == "${2}" ]] || die "got $a wanted $2"
 }
 
@@ -137,7 +137,7 @@ LICENCES="GPL-2"
 PLATFORMS="test"
 
 check() {
-    a=$(ever range $1 $2 )
+    a=$(ever range "$1" "$2" )
     [[ "${a}" == "${3}" ]] || die "got $a wanted $3"
 }
 
@@ -149,6 +149,125 @@ pkg_setup() {
     check "1" "" "1"
 }
 END
+mkdir -p "packages/cat/ever-remainder"
+cat <<'END' > packages/cat/ever-remainder/ever-remainder-1.ebuild || exit 1
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+check() {
+    a=$(ever remainder "$1" )
+    [[ "${a}" == "${2}" ]] || die "got $a wanted $2"
+}
+
+pkg_setup() {
+    check "" ""
+    check "1" ""
+    check "1.2" "2"
+    check "1.2.3" "2.3"
+    check "7-scm" "scm"
+    check "scm" ""
+    check "1_pre7" "pre7"
+    check "2_beta1" "beta1"
+    check "1.3b" "3b"
+    check "123b" "b"
+}
+END
+mkdir -p "packages/cat/ever-replace"
+cat <<'END' > packages/cat/ever-replace/ever-replace-1.ebuild || exit 1
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+check() {
+    a=$(ever replace "$1" "$2" "$3" )
+    [[ "${a}" == "${4}" ]] || die "got '$a' wanted '$4'"
+}
+
+pkg_setup() {
+    check "1" - "2.3" "2-3"
+    check "2" - "1.2_beta3_pre1" "1.2-beta3_pre1"
+    check "0" _ "1.2.3" "1.2.3"
+    check "1" _ "1-scm" "1_scm"
+    check "2" _ "1-scm" "1-scm"
+    check "3" _ "1_beta2" "1_beta2"
+    check "99" . "1.2.3-r4" "1.2.3-r4"
+}
+END
+mkdir -p "packages/cat/ever-replace_all"
+cat <<'END' > packages/cat/ever-replace_all/ever-replace_all-1.ebuild || exit 1
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+check() {
+    a=$(ever replace_all "$1" "$2" )
+    [[ "${a}" == "${3}" ]] || die "got $a wanted '$3'"
+}
+
+pkg_setup() {
+    check "" "1.2.3" "123"
+    check _ "1.2.3" "1_2_3"
+    check . "1.2.3-scm-r42" "1.2.3.scm.r42"
+    check . "1.2_beta1_p3" "1.2.beta1.p3"
+    check . "1.3b" "1.3b"
+}
+END
+mkdir -p "packages/cat/ever-delete"
+cat <<'END' > packages/cat/ever-delete/ever-delete-1.ebuild || exit 1
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+check() {
+    a=$(ever delete "$1" "$2")
+    [[ "${a}" == "${3}" ]] || die "got '$a' wanted '$3'"
+}
+
+pkg_setup() {
+    check 0 "1.2.3" "1.2.3"
+    check 1 "1.2.3" "12.3"
+    check 2 "1.2.3" "1.23"
+    check 3 "1.2.3" "1.2.3"
+    check 1 "1_beta2-try3" "1beta2-try3"
+}
+END
+mkdir -p "packages/cat/ever-delete_all"
+cat <<'END' > packages/cat/ever-delete_all/ever-delete_all-1.ebuild || exit 1
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+check() {
+    a=$(ever delete_all "$1" )
+    [[ "${a}" == "${2}" ]] || die "got '$a' wanted '$2'"
+}
+
+pkg_setup() {
+    check "1" "1"
+    check "1.2.3" "123"
+    check "1.2-r1" "12r1"
+    check "1.2_alpha1" "12alpha1"
+    check "4.5.6_p7" "456p7"
+    check "1.2.3-scm" "123scm"
+}
+END
+
 cd ..
 
 cd ..

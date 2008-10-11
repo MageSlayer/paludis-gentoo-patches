@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2009 Ingmar Vanhassel
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -458,6 +459,86 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                                 if (c->text().length() > 1)
                                     result.append(c->text().substr(1));
 
+                            }
+                            break;
+
+                        default:
+                            result.append(c->text());
+                            break;
+                    }
+                }
+
+                return "O0;" + result;
+            }
+            else if (tokens[2] == "REPLACE")
+            {
+                if (tokens.size() != 6)
+                {
+                    Log::get_instance()->message("e.pipe_commands.ever.replace.bad", ll_warning, lc_context) << "Got bad EVER " + tokens[2] + " pipe command";
+                    return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
+                }
+
+                VersionSpec v(tokens[5]);
+                int current_pos(0);
+                int replace_pos(destringify<int>(tokens[3]));
+                std::string replacement(tokens[4]);
+                std::string result;
+
+                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (c->text().empty())
+                        continue;
+
+                    switch (c->text().at(0))
+                    {
+                        case '.':
+                        case '-':
+                        case '_':
+                            {
+                                if (current_pos == replace_pos)
+                                    result.append(replacement + c->text().substr(1));
+                                else
+                                    result.append(c->text());
+                            }
+                            break;
+
+                        default:
+                            result.append(c->text());
+                            break;
+                    }
+
+                    ++current_pos;
+                }
+
+                return "O0;" + result;
+            }
+            else if (tokens[2] == "REPLACE_ALL")
+            {
+                if (tokens.size() != 5)
+                {
+                    Log::get_instance()->message("e.pipe_commands.ever.replace_all.bad", ll_warning, lc_context) << "Got bad EVER " + tokens[2] + " pipe command";
+                    return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
+                }
+
+                VersionSpec v(tokens[4]);
+                std::string replacement(tokens[3]);
+                std::string result;
+                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (c->text().empty())
+                        continue;
+
+                    switch (c->text().at(0))
+                    {
+                        case '.':
+                        case '-':
+                        case '_':
+                            {
+                                result.append(replacement);
+                                if (c->text().length() > 1)
+                                    result.append(c->text().substr(1));
                             }
                             break;
 
