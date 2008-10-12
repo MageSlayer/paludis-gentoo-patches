@@ -61,13 +61,15 @@ namespace paludis
         bool outer_block;
         bool all_needs_parens;
         bool need_space;
+        bool check_conditions;
 
         Implementation(
                 const Environment * const e,
                 const std::tr1::shared_ptr<const PackageID> & i,
                 const GenericSpecTree::ItemFormatter & f,
                 unsigned in,
-                bool b) :
+                bool b,
+                bool c) :
             env(e),
             id(i),
             formatter(f),
@@ -76,7 +78,8 @@ namespace paludis
             use_newlines(b),
             outer_block(true),
             all_needs_parens(false),
-            need_space(false)
+            need_space(false),
+            check_conditions(c)
         {
         }
     };
@@ -87,8 +90,9 @@ DepSpecPrettyPrinter::DepSpecPrettyPrinter(
         const std::tr1::shared_ptr<const PackageID> & id,
         const GenericSpecTree::ItemFormatter & f,
         unsigned i,
-        bool b) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b))
+        bool b,
+        bool c) :
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b, c))
 {
 }
 
@@ -271,7 +275,9 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
     else if (_imp->need_space)
         _imp->s << " ";
 
-    if (a.condition_met())
+    if (! _imp->check_conditions)
+        _imp->s << _imp->formatter.format(a, format::Plain()) << " (";
+    else if (a.condition_met())
         _imp->s << _imp->formatter.format(a, format::Enabled()) << " (";
     else
         _imp->s << _imp->formatter.format(a, format::Disabled()) << " (";
@@ -309,7 +315,7 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    if (_imp->env)
+    if (_imp->env && _imp->check_conditions)
     {
         if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
@@ -375,7 +381,7 @@ DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    if (_imp->env && _imp->id)
+    if (_imp->env && _imp->id && _imp->check_conditions)
     {
         if (_imp->env->accept_license(p.text(), *_imp->id))
             _imp->s << _imp->formatter.format(p, format::Accepted());

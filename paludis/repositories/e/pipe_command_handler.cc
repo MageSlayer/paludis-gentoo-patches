@@ -246,7 +246,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 std::tr1::shared_ptr<const DependencySpecTree::ConstItem> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;
-                DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                 after->accept(p);
                 return "O0;" + stringify(p);
             }

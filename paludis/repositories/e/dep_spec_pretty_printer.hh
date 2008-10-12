@@ -72,13 +72,18 @@ namespace paludis
                  *   use_newlines is false.
                  *
                  * \param use_newlines Whether to format over multiple lines.
+                 *
+                 * \param check_conditions Whether to check conditions and format as appropriate.
+                 *   When writing cache files, formatting isn't useful and we don't have the choices
+                 *   key ready yet.
                  */
                 DepSpecPrettyPrinter(
                         const Environment * const env,
                         const std::tr1::shared_ptr<const PackageID> & id,
                         const GenericSpecTree::ItemFormatter & formatter,
                         unsigned initial_indent,
-                        bool use_newlines);
+                        bool use_newlines,
+                        bool check_conditions);
 
                 ~DepSpecPrettyPrinter();
 

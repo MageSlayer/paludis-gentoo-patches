@@ -623,7 +623,7 @@ namespace
     std::string flatten(const T_ & d)
     {
         StringifyFormatter ff;
-        DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+        DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
         d->accept(p);
         return stringify(p);
     }

@@ -270,17 +270,17 @@ namespace test_cases
 
             StringifyFormatter ff;
 
-            erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->build_dependencies_key());
             id->build_dependencies_key()->value()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
-            erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->run_dependencies_key());
             id->run_dependencies_key()->value()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
-            erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->post_dependencies_key());
             id->post_dependencies_key()->value()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build,run: suggested: post: cat/pkg5 )");

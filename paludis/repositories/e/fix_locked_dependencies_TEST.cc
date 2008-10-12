@@ -60,8 +60,8 @@ namespace test_cases
 
             StringifyFormatter ff;
             DepSpecPrettyPrinter
-                a(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false),
-                b(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                a(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
+                b(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             aa->accept(a);
             bb->accept(b);
 
@@ -72,8 +72,8 @@ namespace test_cases
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
             DepSpecPrettyPrinter
-                c(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false),
-                d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false);
+                c(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
+                d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             cc->accept(c);
             dd->accept(d);
 
