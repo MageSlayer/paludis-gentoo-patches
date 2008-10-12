@@ -1,4 +1,4 @@
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = generated-file.txt do_m4.bash make_sr.bash make_se.bash make_nn.bash
 

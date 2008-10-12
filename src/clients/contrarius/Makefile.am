@@ -75,7 +75,7 @@ man_contrarius_LDADD = \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
-CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = $(man_pages) $(noinst_DATA) \
 	contrarius_stage_options-sr.hh contrarius_stage_options-sr.cc
 MAINTAINERCLEANFILES = Makefile.in

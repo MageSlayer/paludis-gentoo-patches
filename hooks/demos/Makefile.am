@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	pretend_resume.hook.in
 
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so $(DEMOS)
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so $(DEMOS) *.epicfail
 
 hooksdemosdir = $(datadir)/paludis/hooks/demos/
 hooksdemos_SCRIPTS = $(DEMOS)

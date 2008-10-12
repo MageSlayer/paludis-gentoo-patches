@@ -45,7 +45,7 @@ bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
 		ecompress ecompressdir
 
-CLEANFILES = *~ $(bannedscripts)
+CLEANFILES = *~ $(bannedscripts) *.epicfail
 
 $(bannedscripts) : banned_in_eapi_exheres-0
 	cat $? > $@

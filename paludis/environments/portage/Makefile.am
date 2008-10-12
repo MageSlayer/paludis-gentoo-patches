@@ -1,4 +1,4 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES =
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in

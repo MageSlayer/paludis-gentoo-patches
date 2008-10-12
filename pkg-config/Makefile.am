@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 pkgconfigdir = $(libdir)/pkgconfig/
 pkgconfig_DATA = paludis.pc
 EXTRA_DIST = paludis.pc.in
-CLEANFILES = paludis.pc
+CLEANFILES = paludis.pc *.epicfail
 
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done

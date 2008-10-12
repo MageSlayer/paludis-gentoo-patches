@@ -11,7 +11,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_DEMOS = \

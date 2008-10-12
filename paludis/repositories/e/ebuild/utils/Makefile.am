@@ -85,7 +85,7 @@ prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman pre
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash prep.in $(TESTS)
 
-CLEANFILES = *~ $(prep_scripts)
+CLEANFILES = *~ $(prep_scripts) *.epicfail
 
 $(prep_scripts) : prep.in
 	cat $? > $@

@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dohg+file dohg+http dohg+https dohg+ssh dohg+static-http dorsync dorsync+ssh dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https
+CLEANFILES = *~ .keep dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh dohg+file dohg+http dohg+https dohg+ssh dohg+static-http dorsync dorsync+ssh dosvn dosvn+file dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http dotar+https *.epicfail
 SUBDIRS = .
 
 .keep :

@@ -1,5 +1,5 @@
 SUBDIRS = .
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES =
 
 MAINTAINERCLEANFILES = Makefile.in

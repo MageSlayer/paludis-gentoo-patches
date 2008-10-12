@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
 libexecprogkdebuild1dir = $(libexecdir)/paludis/kdebuild-1

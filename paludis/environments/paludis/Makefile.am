@@ -1,4 +1,4 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
 	use_config_entry-sr.hh use_config_entry-sr.cc
 BUILT_SOURCES = $(DISTCLEANFILES)

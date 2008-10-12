@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS = ftdetect syntax
 
 built-sources : $(BUILT_SOURCES)

@@ -1,4 +1,4 @@
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = vtemm libgtkpaludis .
 

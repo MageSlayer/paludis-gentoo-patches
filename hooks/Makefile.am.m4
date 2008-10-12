@@ -4,7 +4,7 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 dnl vim: set ft=m4 noet :
 
 MAINTAINERCLEANFILES = Makefile.in Makefile.am
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS = . demos
 
 installvarlibpaludisnewsdir = $(localstatedir)/gentoo/news

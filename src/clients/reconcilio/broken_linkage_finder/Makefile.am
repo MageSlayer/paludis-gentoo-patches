@@ -33,7 +33,7 @@ configuration_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 
 built-sources : $(BUILT_SOURCES)

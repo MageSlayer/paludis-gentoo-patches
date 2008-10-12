@@ -87,7 +87,7 @@ EXTRA_DIST = \
 	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh \
 	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 

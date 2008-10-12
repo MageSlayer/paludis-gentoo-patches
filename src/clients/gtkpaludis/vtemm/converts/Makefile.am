@@ -1,5 +1,5 @@
 noinst_DATA = convert.m4 convert_base.m4
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = $(noinst_DATA)
 

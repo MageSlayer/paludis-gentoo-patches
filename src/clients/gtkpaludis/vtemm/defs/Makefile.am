@@ -21,7 +21,7 @@ force_automake_to_include_cxxcompile.cc :
 generate_defs_vte : generate_defs_vte.cc
 	$(CXXCOMPILE) $(gtkmm_LIBS) $(vte_LIBS) -lglibmm_generate_extra_defs-2.4 -o $@ $<
 
-CLEANFILES = *~ force_automake_to_include_cxxcompile.cc generate_defs_vte
+CLEANFILES = *~ force_automake_to_include_cxxcompile.cc generate_defs_vte *.epicfail
 MAINTAINERCLEANFILES = Makefile.in $(vte_defs)
 
 vte_methods.defs :

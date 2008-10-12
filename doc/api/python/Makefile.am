@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-CLEANFILES = *~ python/*/*
+CLEANFILES = *~ python/*/* *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 
 examples = \

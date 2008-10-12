@@ -17,7 +17,7 @@ doxygen_files = \
 	references.doxygen
 
 EXTRA_DIST = doxygen.conf.in $(doxygen_files)
-CLEANFILES = *~ cplusplus/* cplusplus paludis.tag
+CLEANFILES = *~ cplusplus/* cplusplus paludis.tag *.epicfail
 
 MAINTAINERCLEANFILES = Makefile.in doxygen.conf $(tagfiles)
 

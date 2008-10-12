@@ -70,7 +70,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
 include(`paludis/files.m4')
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o *.epicfail
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh
 DISTCLEANFILES = srcleanlist secleanlist
 DEFS= \

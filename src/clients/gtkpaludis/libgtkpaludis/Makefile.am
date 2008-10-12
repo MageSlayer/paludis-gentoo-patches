@@ -1,4 +1,4 @@
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 
 noinst_LIBRARIES = libgtkpaludis.a

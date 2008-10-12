@@ -1,7 +1,7 @@
 SUBDIRS = . api clients configuration faq overview
 
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ \
+CLEANFILES = *~ *.epicfail \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \

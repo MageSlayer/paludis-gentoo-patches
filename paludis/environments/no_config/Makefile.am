@@ -1,4 +1,4 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o *.epicfail
 DISTCLEANFILES = no_config_environment-sr.hh no_config_environment-sr.cc no_config_environment-se.hh \
 		 no_config_environment-se.cc
 MAINTAINERCLEANFILES = Makefile.in

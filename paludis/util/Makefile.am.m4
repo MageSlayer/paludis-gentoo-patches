@@ -64,7 +64,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE
 
 include(`paludis/util/files.m4')
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
 	hashed_containers.hh util.hh echo_functions.bash
 DISTCLEANFILES = srcleanlist secleanlist

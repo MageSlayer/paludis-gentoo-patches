@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ dohttp dohttps doftp .keep
+CLEANFILES = *~ dohttp dohttps doftp .keep *.epicfail
 SUBDIRS = .
 
 .keep :

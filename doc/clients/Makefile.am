@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT \
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \

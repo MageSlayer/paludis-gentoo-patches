@@ -1,5 +1,5 @@
 SUBDIRS = .
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
 	installed_repository-sr.hh installed_repository-sr.cc
 

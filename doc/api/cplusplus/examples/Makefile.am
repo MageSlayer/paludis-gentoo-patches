@@ -1,4 +1,4 @@
-CLEANFILES = *~
+CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 DEFS= \

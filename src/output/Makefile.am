@@ -1,4 +1,4 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = console_install_task-sr.hh console_install_task-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = console_install_task.sr console_install_task-sr.hh console_install_task-sr.cc

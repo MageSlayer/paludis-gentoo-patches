@@ -61,7 +61,7 @@ man_qualudis_LDADD = \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
-CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno  *.gcda *.loT
+CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = $(man_pages) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = $(man_pages)
