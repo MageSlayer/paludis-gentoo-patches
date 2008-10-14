@@ -287,12 +287,47 @@ namespace
         virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env) const
         {
-            if (! spec.in_repository_ptr())
+            if ((! spec.in_repository_ptr()) && (! spec.installed_at_path_ptr()))
                 return AllGeneratorHandlerBase::repositories(env);
 
             std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
-            if (env->package_database()->has_repository_named(*spec.in_repository_ptr()))
-                result->insert(*spec.in_repository_ptr());
+
+            if (spec.in_repository_ptr())
+            {
+                if (env->package_database()->has_repository_named(*spec.in_repository_ptr()))
+                {
+                    if (spec.installed_at_path_ptr())
+                    {
+                        std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
+                                    *spec.in_repository_ptr()));
+                        if (! repo->installed_root_key())
+                            return result;
+                        if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
+                            return result;
+                    }
+
+                    result->insert(*spec.in_repository_ptr());
+                }
+            }
+            else
+            {
+                if (spec.installed_at_path_ptr())
+                {
+                    for (PackageDatabase::RepositoryConstIterator i(env->package_database()->begin_repositories()),
+                            i_end(env->package_database()->end_repositories()) ; i != i_end ; ++i)
+                    {
+                        if (! (*i)->installed_root_key())
+                            continue;
+
+                        if ((*i)->installed_root_key()->value() != *spec.installed_at_path_ptr())
+                            continue;
+
+                        result->insert((*i)->name());
+                    }
+                }
+                else
+                    return AllGeneratorHandlerBase::repositories(env);
+            }
 
             return result;
         }

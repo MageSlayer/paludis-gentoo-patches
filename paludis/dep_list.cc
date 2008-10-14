@@ -887,8 +887,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
-                    || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->in_repository_ptr()
-                    || a.blocked_spec()->from_repository_ptr())
+                    || a.blocked_spec()->additional_requirements_ptr()
+                    || a.blocked_spec()->from_repository_ptr()
+                    || a.blocked_spec()->in_repository_ptr()
+                    || a.blocked_spec()->installed_at_path_ptr()
+                    || a.blocked_spec()->installable_to_repository_ptr()
+                    || a.blocked_spec()->installable_to_path_ptr())
                 && d->_imp->current_package_id())
         {
             if ((*aa)->name() == d->_imp->current_package_id()->name())
@@ -928,8 +932,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
-                    || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->in_repository_ptr()
-                    || a.blocked_spec()->from_repository_ptr())
+                    || a.blocked_spec()->additional_requirements_ptr()
+                    || a.blocked_spec()->in_repository_ptr()
+                    || a.blocked_spec()->from_repository_ptr()
+                    || a.blocked_spec()->installed_at_path_ptr()
+                    || a.blocked_spec()->installable_to_repository_ptr()
+                    || a.blocked_spec()->installable_to_path_ptr())
                 && d->_imp->current_package_id())
         {
             if ((*r)->package_id->name() == d->_imp->current_package_id()->name())
@@ -954,8 +962,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
             if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_requirement_ptr()
-                        || a.blocked_spec()->additional_requirements_ptr() || a.blocked_spec()->in_repository_ptr()
-                        || a.blocked_spec()->from_repository_ptr())
+                        || a.blocked_spec()->additional_requirements_ptr()
+                        || a.blocked_spec()->in_repository_ptr()
+                        || a.blocked_spec()->from_repository_ptr()
+                        || a.blocked_spec()->installed_at_path_ptr()
+                        || a.blocked_spec()->installable_to_repository_ptr()
+                        || a.blocked_spec()->installable_to_path_ptr())
                     && d->_imp->current_package_id())
             {
                 if (r->package_id->name() == d->_imp->current_package_id()->name())

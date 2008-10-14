@@ -757,7 +757,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 generator::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .in_repository(dep->destination->name())) |
+                    .in_repository(dep->destination->name())
+                    ) |
                 filter::SupportsAction<UninstallAction>())];
 
     // don't clean the thing we just installed

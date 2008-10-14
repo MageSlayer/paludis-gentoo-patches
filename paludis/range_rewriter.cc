@@ -122,16 +122,6 @@ namespace
             return std::tr1::shared_ptr<const SlotRequirement>();
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
-        {
-            return std::tr1::shared_ptr<const RepositoryName>();
-        }
-
-        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
-        {
-            return std::tr1::shared_ptr<const RepositoryName>();
-        }
-
         virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
         {
             return std::tr1::shared_ptr<const MetadataSectionKey>();
@@ -167,6 +157,31 @@ namespace
         std::tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
         {
             return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        {
+            return make_null_shared_ptr();
         }
     };
 }
@@ -227,8 +242,14 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
     if (_imp->invalid)
         return;
 
-    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.in_repository_ptr() || a.package_name_part_ptr()
-            || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr() || a.from_repository_ptr())
+    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.package_name_part_ptr()
+            || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr()
+            || a.in_repository_ptr()
+            || a.from_repository_ptr()
+            || a.installable_to_repository_ptr()
+            || a.installable_to_path_ptr()
+            || a.installed_at_path_ptr()
+       )
     {
         _imp->invalid = true;
         return;

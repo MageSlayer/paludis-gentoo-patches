@@ -28,6 +28,10 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/action.hh>
+#include <paludis/repository.hh>
+#include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
 
@@ -121,6 +125,61 @@ paludis::match_package(
         if (entry.from_repositories_key()->value()->end() == entry.from_repositories_key()->value()->find(
                     stringify(*spec.from_repository_ptr())))
             return false;
+    }
+
+    if (spec.installed_at_path_ptr())
+    {
+        if (! entry.repository()->installed_root_key())
+            return false;
+        if (entry.repository()->installed_root_key()->value() != *spec.installed_at_path_ptr())
+            return false;
+        if (! entry.supports_action(SupportsActionTest<InstalledAction>()))
+            return false;
+    }
+
+    if (spec.installable_to_repository_ptr())
+    {
+        if (! entry.supports_action(SupportsActionTest<InstallAction>()))
+            return false;
+        if (! spec.installable_to_repository_ptr()->include_masked())
+            if (entry.masked())
+                return false;
+
+        const std::tr1::shared_ptr<const Repository> dest(env.package_database()->fetch_repository(
+                    spec.installable_to_repository_ptr()->repository()));
+        if (! dest->destination_interface())
+            return false;
+        if (! dest->destination_interface()->is_suitable_destination_for(entry))
+            return false;
+
+        return true;
+    }
+
+    if (spec.installable_to_path_ptr())
+    {
+        if (! entry.supports_action(SupportsActionTest<InstallAction>()))
+            return false;
+        if (! spec.installable_to_path_ptr()->include_masked())
+            if (entry.masked())
+                return false;
+
+        for (PackageDatabase::RepositoryConstIterator d(env.package_database()->begin_repositories()),
+                d_end(env.package_database()->end_repositories()) ;
+                d != d_end ; ++d)
+        {
+            if (! (*d)->destination_interface())
+                continue;
+            if (! (*d)->installed_root_key())
+                continue;
+            if ((*d)->installed_root_key()->value() != spec.installable_to_path_ptr()->path())
+                continue;
+            if (! (*d)->destination_interface()->is_suitable_destination_for(entry))
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 
     if (spec.slot_requirement_ptr())

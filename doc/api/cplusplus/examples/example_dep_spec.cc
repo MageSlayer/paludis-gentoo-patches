@@ -104,10 +104,26 @@ int main(int argc, char * argv[])
                 cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
 
             if (spec.in_repository_ptr())
-                cout << "    " << left << setw(24) << "In repository:" << " " << *spec.in_repository_ptr() << endl;
+                cout << "    " << left << setw(24) << "In repository:" << " " <<
+                    *spec.in_repository_ptr() << endl;
 
             if (spec.from_repository_ptr())
-                cout << "    " << left << setw(24) << "From repository:" << " " << *spec.from_repository_ptr() << endl;
+                cout << "    " << left << setw(24) << "From repository:" << " " <<
+                    *spec.from_repository_ptr() << endl;
+
+            if (spec.installed_at_path_ptr())
+                cout << "    " << left << setw(24) << "Installed at path:" << " " <<
+                    *spec.installed_at_path_ptr() << endl;
+
+            if (spec.installable_to_path_ptr())
+                cout << "    " << left << setw(24) << "Installable to path:" << " " <<
+                    spec.installable_to_path_ptr()->path() << ", " <<
+                    spec.installable_to_path_ptr()->include_masked() << endl;
+
+            if (spec.installable_to_repository_ptr())
+                cout << "    " << left << setw(24) << "Installable to repository:" << " " <<
+                    spec.installable_to_repository_ptr()->repository() << ", " <<
+                    spec.installable_to_repository_ptr()->include_masked() << endl;
 
             if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
             {

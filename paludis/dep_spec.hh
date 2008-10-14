@@ -25,6 +25,8 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/named_value.hh>
 
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -314,6 +316,37 @@ namespace paludis
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
+    namespace n
+    {
+        struct include_masked;
+        struct path;
+        struct repository;
+    }
+
+    /**
+     * Data for PackageDepSpec.installable_to_repository_ptr() etc.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.32
+     */
+    struct InstallableToRepository
+    {
+        NamedValue<n::include_masked, bool> include_masked;
+        NamedValue<n::repository, RepositoryName> repository;
+    };
+
+    /**
+     * Data for PackageDepSpec.installable_to_path_ptr() etc.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.32
+     */
+    struct InstallableToPath
+    {
+        NamedValue<n::include_masked, bool> include_masked;
+        NamedValue<n::path, FSEntry> path;
+    };
+
     /**
      * A PartiallyMadePackageDepSpec is returned by make_package_dep_spec()
      * and is used to incrementally build a PackageDepSpec.
@@ -346,14 +379,35 @@ namespace paludis
             PartiallyMadePackageDepSpec & slot_requirement(const std::tr1::shared_ptr<const SlotRequirement> &);
 
             /**
-             * Set our in-repository requirements, return ourself.
+             * Set our in-repository requirement, return ourself.
              */
             PartiallyMadePackageDepSpec & in_repository(const RepositoryName &);
 
             /**
-             * Set our from-repository requirements, return ourself.
+             * Set our from-repository requirement, return ourself.
              */
             PartiallyMadePackageDepSpec & from_repository(const RepositoryName &);
+
+            /**
+             * Set our installable-to-repository requirement, return ourself.
+             *
+             * \since 0.32
+             */
+            PartiallyMadePackageDepSpec & installable_to_repository(const InstallableToRepository &);
+
+            /**
+             * Set our installed-at-path requirement, return ourself.
+             *
+             * \since 0.32
+             */
+            PartiallyMadePackageDepSpec & installed_at_path(const FSEntry &);
+
+            /**
+             * Set our installable-to-path requirement, return ourself.
+             *
+             * \since 0.32
+             */
+            PartiallyMadePackageDepSpec & installable_to_path(const InstallableToPath &);
 
             /**
              * Set our package name part requirements, return ourself.
@@ -484,14 +538,35 @@ namespace paludis
             std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
-             * Fetch the in-repo name (may be a zero pointer).
+             * Fetch the in-repository requirement (may be a zero pointer).
              */
             std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const;
 
             /**
-             * Fetch the from-repo name (may be a zero pointer).
+             * Fetch the installable-to-repository requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
+
+            /**
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
             std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const;
+
+            /**
+             * Fetch the installed-at-path requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const;
+
+            /**
+             * Fetch the installable-to-path requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const;
 
             /**
              * Fetch any additional requirements (may be a zero pointer).
@@ -573,14 +648,35 @@ namespace paludis
             virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
 
             /**
-             * Fetch the in-repo name (may be a zero pointer).
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
             virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
 
             /**
-             * Fetch the from-repo name (may be a zero pointer).
+             * Fetch the installable-to-repository requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
+
+            /**
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
             virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
+
+            /**
+             * Fetch the installed-at-path requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
+
+            /**
+             * Fetch the installable-to-path requirement (may be a zero pointer).
+             *
+             * \since 0.32
+             */
+            virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
 
             /**
              * Fetch the additional requirements (may be a zero pointer).

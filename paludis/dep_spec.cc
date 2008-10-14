@@ -36,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
@@ -646,15 +647,33 @@ PackageDepSpec::slot_requirement_ptr() const
 }
 
 std::tr1::shared_ptr<const RepositoryName>
+PackageDepSpec::in_repository_ptr() const
+{
+    return _imp->data->in_repository_ptr();
+}
+
+std::tr1::shared_ptr<const InstallableToRepository>
+PackageDepSpec::installable_to_repository_ptr() const
+{
+    return _imp->data->installable_to_repository_ptr();
+}
+
+std::tr1::shared_ptr<const RepositoryName>
 PackageDepSpec::from_repository_ptr() const
 {
     return _imp->data->from_repository_ptr();
 }
 
-std::tr1::shared_ptr<const RepositoryName>
-PackageDepSpec::in_repository_ptr() const
+std::tr1::shared_ptr<const FSEntry>
+PackageDepSpec::installed_at_path_ptr() const
 {
-    return _imp->data->in_repository_ptr();
+    return _imp->data->installed_at_path_ptr();
+}
+
+std::tr1::shared_ptr<const InstallableToPath>
+PackageDepSpec::installable_to_path_ptr() const
+{
+    return _imp->data->installable_to_path_ptr();
 }
 
 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
@@ -688,11 +707,20 @@ PackageDepSpec::without_additional_requirements() const
     if (slot_requirement_ptr())
         result.slot_requirement(slot_requirement_ptr());
 
+    if (in_repository_ptr())
+        result.in_repository(*in_repository_ptr());
+
     if (from_repository_ptr())
         result.from_repository(*from_repository_ptr());
 
-    if (in_repository_ptr())
-        result.in_repository(*in_repository_ptr());
+    if (installed_at_path_ptr())
+        result.installed_at_path(*installed_at_path_ptr());
+
+    if (installable_to_path_ptr())
+        result.installable_to_path(*installable_to_path_ptr());
+
+    if (installable_to_repository_ptr())
+        result.installable_to_repository(*installable_to_repository_ptr());
 
     if (annotations_key())
         result.annotations(annotations_key());
@@ -757,8 +785,11 @@ namespace
         std::tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<const RepositoryName> from_repository;
         std::tr1::shared_ptr<const RepositoryName> in_repository;
+        std::tr1::shared_ptr<const RepositoryName> from_repository;
+        std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository;
+        std::tr1::shared_ptr<const FSEntry> installed_at_path;
+        std::tr1::shared_ptr<const InstallableToPath> installable_to_path;
         std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         std::tr1::shared_ptr<const MetadataSectionKey> annotations;
 
@@ -776,8 +807,11 @@ namespace
             version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
             version_requirements_mode_v(other.version_requirements_mode()),
             slot(other.slot_requirement_ptr()),
-            from_repository(other.from_repository_ptr()),
             in_repository(other.in_repository_ptr()),
+            from_repository(other.from_repository_ptr()),
+            installable_to_repository(other.installable_to_repository_ptr()),
+            installed_at_path(other.installed_at_path_ptr()),
+            installable_to_path(other.installable_to_path_ptr()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
             annotations(other.annotations_key())
         {
@@ -798,8 +832,11 @@ namespace
             version_requirements(other.version_requirements),
             version_requirements_mode_v(other.version_requirements_mode_v),
             slot(other.slot),
-            from_repository(other.from_repository),
             in_repository(other.in_repository),
+            from_repository(other.from_repository),
+            installable_to_repository(other.installable_to_repository),
+            installed_at_path(other.installed_at_path),
+            installable_to_path(other.installable_to_path),
             additional_requirements(other.additional_requirements),
             annotations(other.annotations)
         {
@@ -856,12 +893,57 @@ namespace
             if (slot_requirement_ptr())
                 s << stringify(*slot_requirement_ptr());
 
-            if (in_repository_ptr() && from_repository_ptr())
-                s << "::" << *from_repository_ptr() << "->" << *in_repository_ptr();
-            else if (in_repository_ptr())
-                s << "::" << *in_repository_ptr();
-            else if (from_repository_ptr())
-                s << "::" << *from_repository_ptr() << "->";
+            std::string left, right;
+            bool need_arrow(false);
+
+            if (from_repository_ptr())
+                left = stringify(*from_repository_ptr());
+
+            if (in_repository_ptr())
+                right = stringify(*in_repository_ptr());
+
+            if (installed_at_path_ptr())
+            {
+                if (! right.empty())
+                {
+                    need_arrow = true;
+                    right.append("->");
+                }
+                right.append(stringify(*installed_at_path_ptr()));
+            }
+
+            if (installable_to_repository_ptr())
+            {
+                if (! right.empty())
+                {
+                    need_arrow = true;
+                    right.append("->");
+                }
+                if (installable_to_repository_ptr()->include_masked())
+                    right.append(stringify(installable_to_repository_ptr()->repository()) + "??");
+                else
+                    right.append(stringify(installable_to_repository_ptr()->repository()) + "?");
+            }
+
+            if (installable_to_path_ptr())
+            {
+                if (! right.empty())
+                {
+                    need_arrow = true;
+                    right.append("->");
+                }
+                if (installable_to_path_ptr()->include_masked())
+                    right.append(stringify(installable_to_path_ptr()->path()) + "??");
+                else
+                    right.append(stringify(installable_to_path_ptr()->path()) + "?");
+            }
+
+            if (need_arrow || ((! left.empty()) && (! right.empty())))
+                s << "::" << left << "->" << right;
+            else if (! right.empty())
+                s << "::" << right;
+            else if (! left.empty())
+                s << "::" << left << "->";
 
             if (version_requirements_ptr())
             {
@@ -953,14 +1035,29 @@ namespace
             return slot;
         }
 
+        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        {
+            return in_repository;
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        {
+            return installable_to_repository;
+        }
+
         virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
         {
             return from_repository;
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const
         {
-            return in_repository;
+            return installed_at_path;
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        {
+            return installable_to_path;
         }
 
         virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
@@ -1033,17 +1130,38 @@ PartiallyMadePackageDepSpec::slot_requirement(const std::tr1::shared_ptr<const S
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::from_repository(const RepositoryName & repo)
+PartiallyMadePackageDepSpec::in_repository(const RepositoryName & s)
 {
-   _imp->data->from_repository.reset(new RepositoryName(repo));
-   return *this;
+    _imp->data->in_repository.reset(new RepositoryName(s));
+    return *this;
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::in_repository(const RepositoryName & repo)
+PartiallyMadePackageDepSpec::from_repository(const RepositoryName & s)
 {
-   _imp->data->in_repository.reset(new RepositoryName(repo));
-   return *this;
+    _imp->data->from_repository.reset(new RepositoryName(s));
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::installable_to_repository(const InstallableToRepository & s)
+{
+    _imp->data->installable_to_repository.reset(new InstallableToRepository(s));
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::installed_at_path(const FSEntry & s)
+{
+    _imp->data->installed_at_path.reset(new FSEntry(s));
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::installable_to_path(const InstallableToPath & s)
+{
+    _imp->data->installable_to_path.reset(new InstallableToPath(s));
+    return *this;
 }
 
 PartiallyMadePackageDepSpec &

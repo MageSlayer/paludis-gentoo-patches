@@ -23,6 +23,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -132,6 +133,21 @@ namespace
                 package_v.reset(new QualifiedPackageName(CategoryNamePart("cran") + PackageNamePart(cran_name_to_internal(s))));
 
             return *this;
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        {
+            return make_null_shared_ptr();
+        }
+
+        virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        {
+            return make_null_shared_ptr();
         }
     };
 }

@@ -134,7 +134,11 @@ void
 ConsoleQueryTask::display_header(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.in_repository_ptr() || a.from_repository_ptr())
+            a.in_repository_ptr() ||
+            a.from_repository_ptr() ||
+            a.installable_to_repository_ptr() ||
+            a.installable_to_path_ptr() ||
+            a.installed_at_path_ptr())
         output_starred_item(render_as_package_name(stringify(a)));
     else
         output_starred_item(render_as_package_name(stringify(e->name())));
@@ -144,7 +148,11 @@ void
 ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.in_repository_ptr() || a.from_repository_ptr())
+            a.in_repository_ptr() ||
+            a.from_repository_ptr() ||
+            a.installable_to_repository_ptr() ||
+            a.installable_to_path_ptr() ||
+            a.installed_at_path_ptr())
     {
         std::string pad(std::max<long>(1, 30 - stringify(a).length()), ' ');
         output_starred_item_no_endl(render_as_package_name(stringify(a)) + pad);

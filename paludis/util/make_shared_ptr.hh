@@ -41,6 +41,28 @@ namespace paludis
     {
         return std::tr1::shared_ptr<T_>(t);
     }
+
+    /**
+     * An object that can convert itself into an empty std::tr1::shared_ptr<>
+     * of any type.
+     *
+     * \see make_null_shared_ptr()
+     * \since 0.32
+     * \ingroup g_utils
+     */
+    struct PALUDIS_VISIBLE NullSharedPtr
+    {
+        template <typename T_>
+        inline operator std::tr1::shared_ptr<T_> () const
+        {
+            return std::tr1::shared_ptr<T_>();
+        }
+    };
+
+    inline NullSharedPtr make_null_shared_ptr()
+    {
+        return NullSharedPtr();
+    }
 }
 
 #endif

@@ -59,7 +59,10 @@ namespace
                 const std::string & slot_requirement,
                 const std::string & in_repository,
                 const std::string & from_repository,
-                const std::string & additional_requirement
+                const std::string & additional_requirement,
+                const std::string & installed_at_path = "",
+                const std::string & installable_to_path_f = "",
+                const bool installable_to_path_s = false
                 )
         {
             TestMessageSuffix s(stringify(spec), true);
@@ -134,6 +137,25 @@ namespace
                             indirect_iterator(spec.additional_requirements_ptr()->end()), ", "),
                         additional_requirement);
             }
+
+            if (installed_at_path.empty())
+                TEST_CHECK(! spec.installed_at_path_ptr());
+            else
+            {
+                TEST_CHECK(spec.installed_at_path_ptr());
+                TEST_CHECK_STRINGIFY_EQUAL(*spec.installed_at_path_ptr(),
+                        installed_at_path);
+            }
+
+            if (installable_to_path_f.empty())
+                TEST_CHECK(! spec.installable_to_path_ptr());
+            else
+            {
+                TEST_CHECK(spec.installable_to_path_ptr());
+                TEST_CHECK_STRINGIFY_EQUAL(spec.installable_to_path_ptr()->path(), installable_to_path_f);
+                TEST_CHECK_EQUAL(spec.installable_to_path_ptr()->include_masked(), installable_to_path_s);
+            }
+
         }
     };
 }
@@ -251,6 +273,30 @@ namespace test_cases
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg::r1->r2",
                         &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
             check_spec(d, "cat/pkg", "", "", "", "", "", "r2", "r1", "");
+
+            PackageDepSpec e(parse_user_package_dep_spec("cat/pkg::/",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(e, "cat/pkg", "", "", "", "", "", "", "", "", "/");
+
+            PackageDepSpec f(parse_user_package_dep_spec("cat/pkg::/path",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(f, "cat/pkg", "", "", "", "", "", "", "", "", "/path");
+
+            PackageDepSpec g(parse_user_package_dep_spec("cat/pkg::/?",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(g, "cat/pkg", "", "", "", "", "", "", "", "", "", "/", false);
+
+            PackageDepSpec h(parse_user_package_dep_spec("cat/pkg::/path?",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(h, "cat/pkg", "", "", "", "", "", "", "", "", "", "/path", false);
+
+            PackageDepSpec i(parse_user_package_dep_spec("cat/pkg::/??",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(i, "cat/pkg", "", "", "", "", "", "", "", "", "", "/", true);
+
+            PackageDepSpec j(parse_user_package_dep_spec("cat/pkg::/path??",
+                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            check_spec(j, "cat/pkg", "", "", "", "", "", "", "", "", "", "/path", true);
         }
     } test_user_package_dep_spec_repo;
 

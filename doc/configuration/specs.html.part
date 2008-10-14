@@ -25,16 +25,29 @@ the following order:</p>
 
 <ul>
     <li><code>:slot</code>: Match only in that slot.</li>
-    <li><code>::fromrepository-&gt;inrepository</code>: Match only from (originally, so <code>::foo-&gt;</code> will
-    match things that were installed from the <code>foo</code> repository) and in (now, so <code>::-&gt;installed</code>
-    matches things that are now in the <code>installed</code> repository). At most one of the two names can be
-    blank.</li>
-    <li><code>::repository</code>: like <code>::-&gt;repository</code>.</li>
+    <li><code>::repo-&gt;repo</code>: Repository requirements, described below.</li>
+    <li><code>::something</code>: like <code>::-&gt;something</code>, for all legal values of something.</li>
     <li><code>[use]</code> and <code>[-use]</code>: Match only if the named USE flag is enabled / disabled for this
     package. May be specified multiple times with different USE flag names.</li>
     <li><code>[=1.23]</code>: Match a particular version. Any operator described below
     can be used. May be extended to ranged dependencies, using either <code>[=1.23|=1.24|=1.25]</code> for an or
     dependency or <code>[&gt;=1.2&amp;&lt;2]</code> for an and dependency.</li>
+</ul>
+
+<p>Repository requirements are in the form <code>to</code>, <code>from-&gt;</code> or <code>::from-&gt;to</code>. The
+<code>from</code> may only be a repository name, and matches packages <em>originally</em> from that repository (so
+<code>*/*::myrepo-&gt;</code> finds installed packages that originated in <code>myrepo</code>. Valid forms for
+<code>to</code> are as follows:</p>
+
+<ul>
+    <li><code>repo</code>: currently in this repository. Note that an installed package is no longer 'in' the repository
+    whence it came; use a from specification for that.</li>
+    <li><code>repo?</code>: could be installed to <code>repo</code>.</li>
+    <li><code>repo??</code>: could be installed to <code>repo</code>, ignoring masks.</li>
+    <li><code>/path</code>: installed at root <code>/path</code> (typically <code>/</code>).</li>
+    <li><code>/path?</code>: could be installed to some installed repository with root path <code>/path</code>.</li>
+    <li><code>/path??</code>: could be installed to some installed repository with root path <code>/path</code>,
+    ignoring masks.</li>
 </ul>
 
 <h2>Operators</h2>

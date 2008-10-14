@@ -196,31 +196,73 @@ namespace
     }
 
     void
+    parse_rhs(PartiallyMadePackageDepSpec & reqs, const std::string & req)
+    {
+        if (req.empty())
+            throw PackageDepSpecError("Invalid empty :: requirement");
+
+        if ('/' == req.at(0))
+        {
+            if ('?' == req.at(req.length() - 1))
+            {
+                if (req.length() >= 2 && '?' == req.at(req.length() - 2))
+                    reqs.installable_to_path(make_named_values<InstallableToPath>(
+                                value_for<n::include_masked>(true),
+                                value_for<n::path>(FSEntry(req.substr(0, req.length() - 2)))));
+                else
+                    reqs.installable_to_path(make_named_values<InstallableToPath>(
+                                value_for<n::include_masked>(false),
+                                value_for<n::path>(FSEntry(req.substr(0, req.length() - 1)))));
+            }
+            else
+                reqs.installed_at_path(req);
+        }
+        else
+        {
+            if ('?' == req.at(req.length() - 1))
+            {
+                if (req.length() >= 3 && '?' == req.at(req.length() - 2))
+                    reqs.installable_to_repository(make_named_values<InstallableToRepository>(
+                                value_for<n::include_masked>(true),
+                                value_for<n::repository>(RepositoryName(req.substr(0, req.length() - 2)))));
+                else
+                    reqs.installable_to_repository(make_named_values<InstallableToRepository>(
+                                value_for<n::include_masked>(false),
+                                value_for<n::repository>(RepositoryName(req.substr(0, req.length() - 1)))));
+            }
+            else
+                reqs.in_repository(RepositoryName(req));
+        }
+    }
+
+    void
     user_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
     {
         std::string::size_type repo_p;
         if (std::string::npos == ((repo_p = s.rfind("::"))))
             return;
 
-        std::string repo_name(s.substr(repo_p + 2));
+        std::string req(s.substr(repo_p + 2));
         s.erase(repo_p);
+        if (req.empty())
+            throw PackageDepSpecError("Need something after ::");
 
-        std::string::size_type arrow_p(repo_name.find("->"));
+        std::string::size_type arrow_p(req.find("->"));
         if (std::string::npos == arrow_p)
-            result.in_repository(RepositoryName(repo_name));
+            parse_rhs(result, req);
         else
         {
-            std::string from_repository(repo_name.substr(0, arrow_p));
-            std::string to_repository(repo_name.substr(arrow_p + 2));
+            std::string left(req.substr(0, arrow_p));
+            std::string right(req.substr(arrow_p + 2));
 
-            if (from_repository.empty() && to_repository.empty())
+            if (left.empty() && right.empty())
                 throw PackageDepSpecError("::-> requires either a from or a to repository");
 
-            if (! to_repository.empty())
-                result.in_repository(RepositoryName(to_repository));
+            if (! right.empty())
+                parse_rhs(result, right);
 
-            if (! from_repository.empty())
-                result.from_repository(RepositoryName(from_repository));
+            if (! left.empty())
+                result.from_repository(RepositoryName(left));
         }
     }
 }

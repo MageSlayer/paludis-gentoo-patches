@@ -73,6 +73,9 @@ namespace paludis
 
     class AdditionalPackageDepSpecRequirement;
 
+    struct InstallableToRepository;
+    struct InstallableToPath;
+
     /**
      * An AdditionalPackageDepSpecRequirement can be written to an ostream.
      *

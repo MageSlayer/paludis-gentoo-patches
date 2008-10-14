@@ -206,10 +206,11 @@ ReportTask::execute()
                         {
                             std::tr1::shared_ptr<const PackageIDSequence> installable(
                                 (*e)[selection::BestVersionOnly(
+                                    generator::InRepository(RepositoryName(*o)) &
                                     generator::Matches(make_package_dep_spec()
                                         .package((*v)->name())
                                         .version_requirement(VersionRequirement(vo_equal, (*v)->version()))
-                                        .in_repository(RepositoryName(*o))) |
+                                        ) |
                                     filter::SupportsAction<InstallAction>())]);
 
                             if (! installable->empty())

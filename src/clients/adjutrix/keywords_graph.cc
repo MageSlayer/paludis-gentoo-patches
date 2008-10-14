@@ -73,9 +73,8 @@ namespace
 
         FindUnusedPackagesTask task(&e, &repo);
         std::tr1::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
-                generator::Matches(make_package_dep_spec()
-                    .package(package)
-                    .in_repository(repo.name())))]);
+                generator::InRepository(repo.name()) &
+                generator::Matches(make_package_dep_spec().package(package)))]);
         std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())

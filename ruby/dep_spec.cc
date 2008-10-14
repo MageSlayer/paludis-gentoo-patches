@@ -714,38 +714,6 @@ namespace
 
     /*
      * call-seq:
-     *     in_repository -> String or Nil
-     *
-     * Fetch the in-repository name.
-     */
-    VALUE
-    package_dep_spec_in_repository_ptr(VALUE self)
-    {
-        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
-        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr())
-            return Qnil;
-        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr())).c_str());
-    }
-
-    /*
-     * call-seq:
-     *     from_repository -> String or Nil
-     *
-     * Fetch the from-repository name.
-     */
-    VALUE
-    package_dep_spec_from_repository_ptr(VALUE self)
-    {
-        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
-        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr())
-            return Qnil;
-        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr())).c_str());
-    }
-
-    /*
-     * call-seq:
      *     version_requirements -> Array
      *
      * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
@@ -1156,8 +1124,6 @@ namespace
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
         rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
-        rb_define_method(c_package_dep_spec, "in_repository", RUBY_FUNC_CAST(&package_dep_spec_in_repository_ptr), 0);
-        rb_define_method(c_package_dep_spec, "from_repository", RUBY_FUNC_CAST(&package_dep_spec_from_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
 #ifdef CIARANM_REMOVED_THIS
