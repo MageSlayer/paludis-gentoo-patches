@@ -1645,6 +1645,300 @@ src_install() {
     nonfatal dobin monkey || die
 }
 END
+mkdir -p "packages/cat/herebin-success"
+cat <<END > packages/cat/herebin-success/herebin-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    herebin foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/herebin-argument-fail"
+cat <<END > packages/cat/herebin-argument-fail/herebin-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    herebin monkey
+}
+END
+mkdir -p "packages/cat/herebin-input-fail"
+cat <<END > packages/cat/herebin-input-fail/herebin-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    herebin <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereconfd-success"
+cat <<END > packages/cat/hereconfd-success/hereconfd-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereconfd foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereconfd-argument-fail"
+cat <<END > packages/cat/hereconfd-argument-fail/hereconfd-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereconfd monkey
+}
+END
+mkdir -p "packages/cat/hereconfd-input-fail"
+cat <<END > packages/cat/hereconfd-input-fail/hereconfd-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereconfd <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereenvd-success"
+cat <<END > packages/cat/hereenvd-success/hereenvd-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereenvd foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereenvd-argument-fail"
+cat <<END > packages/cat/hereenvd-argument-fail/hereenvd-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereenvd monkey
+}
+END
+mkdir -p "packages/cat/hereenvd-input-fail"
+cat <<END > packages/cat/hereenvd-input-fail/hereenvd-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereenvd <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereinitd-success"
+cat <<END > packages/cat/hereinitd-success/hereinitd-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereinitd foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereinitd-argument-fail"
+cat <<END > packages/cat/hereinitd-argument-fail/hereinitd-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereinitd monkey
+}
+END
+mkdir -p "packages/cat/hereinitd-input-fail"
+cat <<END > packages/cat/hereinitd-input-fail/hereinitd-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereinitd <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereins-success"
+cat <<END > packages/cat/hereins-success/hereins-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereins foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/hereins-argument-fail"
+cat <<END > packages/cat/hereins-argument-fail/hereins-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereins monkey
+}
+END
+mkdir -p "packages/cat/hereins-input-fail"
+cat <<END > packages/cat/hereins-input-fail/hereins-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    hereins <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/heresbin-success"
+cat <<END > packages/cat/heresbin-success/heresbin-success-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    heresbin foo <<EOF
+blah
+EOF
+}
+END
+mkdir -p "packages/cat/heresbin-argument-fail"
+cat <<END > packages/cat/heresbin-argument-fail/heresbin-argument-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    heresbin monkey
+}
+END
+mkdir -p "packages/cat/heresbin-input-fail"
+cat <<END > packages/cat/heresbin-input-fail/heresbin-input-fail-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+src_install() {
+    heresbin <<EOF
+blah
+EOF
+}
+END
 mkdir -p "packages/cat/fperms-success"
 cat <<END > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"

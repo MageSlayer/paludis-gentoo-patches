@@ -2003,6 +2003,168 @@ namespace test_cases
             }
 
             {
+                TestMessageSuffix suffix("herebin success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/herebin-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("herebin fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/herebin-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("herebin fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/herebin-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereconfd success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("hereconfd fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereconfd fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/hereconfd-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereenvd success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("hereenvd fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereenvd fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/hereenvd-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereinitd success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("hereinitd fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereinitd fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/hereinitd-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereins success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereins-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("hereins fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/hereins-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("hereins fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/hereins-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("heresbin success", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-success",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("heresbin fail missing argument", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-argument-fail",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("heresbin fail missing input", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/heresbin-input-fail-1",
+                                        &env, UserPackageDepSpecOptions()))))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
                 TestMessageSuffix suffix("fperms success", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fperms-success",

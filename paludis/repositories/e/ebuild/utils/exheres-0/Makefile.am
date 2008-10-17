@@ -8,6 +8,12 @@ libexecprog_SCRIPTS = \
 	dohtml \
 	dosed \
 	donewins \
+	herebin \
+	hereconfd \
+	hereenvd \
+	hereinitd \
+	hereins \
+	heresbin \
 	nonfatal \
 	prepall \
 	prepallstrip \
