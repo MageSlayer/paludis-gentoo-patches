@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 noinst_DATA = paludis adjutrix qualudis \
-	      contrarius inquisitio \
+	      inquisitio \
 	      accerso instruo reconcilio \
 	      importare
 EXTRA_DIST = $(noinst_DATA)

@@ -131,7 +131,6 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/no_config/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/adapted/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/fake/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs\`" \
@@ -183,7 +182,6 @@ libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
 
 libadditionaltests_@PALUDIS_PC_SLOT@_la_SOURCES = additional_tests.hh additional_tests.cc

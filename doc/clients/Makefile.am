@@ -62,16 +62,6 @@ adjutrix.html : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-contrarius.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/contrarius/man-contrarius ; then \
-	        $(top_builddir)/src/clients/contrarius/man-contrarius --html ; \
-	    else \
-	        echo "<h1>contrarius</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the contrarius client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 inquisitio.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/inquisitio/man-inquisitio ; then \

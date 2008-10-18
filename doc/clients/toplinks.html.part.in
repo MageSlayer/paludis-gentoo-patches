@@ -28,11 +28,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/contrarius.html">contrarius</a>
+                <a href="###TOPURI###clients/inquisitio.html">inquisitio</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/qualudis.html">qualudis</a>
+                &nbsp;
             </td>
         </tr>
 
@@ -56,7 +56,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/inquisitio.html">inquisitio</a>
+                <a href="###TOPURI###clients/qualudis.html">qualudis</a>
             </td>
 
             <td class="currentpage">

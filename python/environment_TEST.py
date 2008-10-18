@@ -95,43 +95,6 @@ class TestCase_01_Environments(unittest.TestCase):
     def test_12_config_dir(self):
         self.assert_(isinstance(self.e.config_dir, str))
 
-class TestCase_02_AdaptedEnvironment(unittest.TestCase):
-    def test_01_create(self):
-        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
-
-    def test_02_adapt_use(self):
-        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
-        pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=foo/bar-1.0", env, UserPackageDepSpecOptions())))]).next()
-        pds = parse_user_package_dep_spec("foo/bar", env, [])
-
-        self.assert_(env.query_use("enabled", pid))
-        self.assert_(not env.query_use("not_enabled", pid))
-        self.assert_(env.query_use("sometimes_enabled", pid))
-
-        env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
-        self.assert_(not env.query_use("enabled", pid))
-
-        env.adapt_use(pds, "not_enabled", UseFlagState.ENABLED)
-        self.assert_(env.query_use("not_enabled", pid))
-
-        env.adapt_use(pds, "sometimes_enabled", UseFlagState.ENABLED)
-        self.assert_(env.query_use("sometimes_enabled", pid))
-
-    def test_03_clear_adaptions(self):
-        env = AdaptedEnvironment(EnvironmentFactory.instance.create(""))
-        pid = iter(env[Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=foo/bar-1.0", env, [])))]).next()
-        pds = parse_user_package_dep_spec("foo/bar", env, [])
-
-        self.assert_(env.query_use("enabled", pid))
-
-        env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
-        self.assert_(not env.query_use("enabled", pid))
-
-        env.clear_adaptions()
-        self.assert_(env.query_use("enabled", pid))
-
 class TestCase_03_TestEnvironment(unittest.TestCase):
     def test_01_create(self):
         env = TestEnvironment()

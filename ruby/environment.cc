@@ -21,7 +21,6 @@
 #include <paludis_ruby.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
-#include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environment_factory.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
@@ -38,23 +37,7 @@ namespace
     static VALUE c_environment;
     static VALUE c_paludis_environment;
     static VALUE c_no_config_environment;
-    static VALUE c_adapted_environment;
     static VALUE c_environment_factory;
-
-    std::tr1::shared_ptr<AdaptedEnvironment>
-    value_to_adapted_environment(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_adapted_environment))
-        {
-            std::tr1::shared_ptr<Environment> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<Environment>, v_ptr);
-            return std::tr1::static_pointer_cast<AdaptedEnvironment>(*v_ptr);
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into AdaptedEnvironment", rb_obj_classname(v));
-        }
-    }
 
     /*
      * call-seq:
@@ -463,80 +446,6 @@ namespace
         return Qnil;
     }
 
-    VALUE
-    adapted_environment_init(int, VALUE *, VALUE self)
-    {
-        return self;
-    }
-
-    /*
-     * call-seq:
-     *     AdaptedEnvironment.new(environment) -> AdaptedEnvironment
-     *
-     * Return a new AdaptedEnvironment based on the given Environment.
-     */
-    VALUE
-    adapted_environment_new(int argc, VALUE * argv, VALUE self)
-    {
-        if (1 != argc)
-            rb_raise(rb_eArgError, "AdaptedEnvironment.new expects one argument, but got %d", argc);
-        try
-        {
-            std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(new AdaptedEnvironment(value_to_environment(argv[0])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
-            rb_obj_call_init(tdata, argc, argv);
-            return tdata;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     adapt_use(package_dep_spec, use_flag_name, use_flag_state) -> Nil
-     *
-     * Set the state of a USE flag for the given PackageDepSpec, enable == true, disabled == false.
-     */
-    VALUE
-    adapted_environment_adapt_use(VALUE self, VALUE package_dep_spec, VALUE use_flag_name, VALUE use_flag_state)
-    {
-        try
-        {
-            UseFlagState ufs;
-            if (use_flag_state == Qtrue)
-                ufs = use_enabled;
-            else if (use_flag_state == Qfalse)
-                ufs = use_disabled;
-            else
-                rb_raise(rb_eTypeError, "Can't convert %s into UseFlagState", rb_obj_classname(use_flag_state));
-
-            value_to_adapted_environment(self)->adapt_use(value_to_package_dep_spec(package_dep_spec),
-                    UseFlagName(StringValuePtr(use_flag_name)),
-                    ufs);
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     clear_adaptions -> Nil
-     *
-     *  Clear all adaptions from this Environment.
-     */
-    VALUE
-    adapted_environment_clear_adaptions(VALUE self)
-    {
-        value_to_adapted_environment(self)->clear_adaptions();
-        return Qnil;
-    }
-
-
     /*
      * call-seq:
      *     create(spec) -> Environment
@@ -611,19 +520,6 @@ namespace
         rb_define_method(c_no_config_environment, "main_repository", RUBY_FUNC_CAST(&no_config_environment_main_repository), 0);
         rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
         rb_define_method(c_no_config_environment, "accept_unstable=", RUBY_FUNC_CAST(&no_config_environment_set_accept_unstable), 1);
-
-        /*
-         * Document-class: Paludis::AdaptedEnvironment
-         *
-         * An Environment that allows you to change aspects of an
-         * existing Environment, e.g. the state of a USE flag for a
-         * package.
-         */
-        c_adapted_environment = rb_define_class_under(paludis_module(), "AdaptedEnvironment", c_environment);
-        rb_define_singleton_method(c_adapted_environment, "new", RUBY_FUNC_CAST(&adapted_environment_new), -1);
-        rb_define_method(c_adapted_environment, "initialize", RUBY_FUNC_CAST(&adapted_environment_init), -1);
-        rb_define_method(c_adapted_environment, "adapt_use", RUBY_FUNC_CAST(&adapted_environment_adapt_use), 3);
-        rb_define_method(c_adapted_environment, "clear_adaptions", RUBY_FUNC_CAST(&adapted_environment_clear_adaptions), 0);
 
         /*
          * Document-class: Paludis::EnvironmentFactory

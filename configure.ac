@@ -414,7 +414,6 @@ need_xml_check=
 need_pcrepp_check=
 need_syck_check=
 need_gem_check=
-need_gtkmm_check=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -1230,16 +1229,15 @@ fi
 dnl }}}
 
 dnl {{{ environments
-ALL_ENVIRONMENTS="adapted no_config paludis portage test"
-DEFAULT_ENVIRONMENTS="adapted no_config paludis test"
+ALL_ENVIRONMENTS="no_config paludis portage test"
+DEFAULT_ENVIRONMENTS="no_config paludis test"
 AC_MSG_CHECKING([which environments to build...])
 AC_ARG_WITH([environments],
 			[  --with-environments=foo,bar,...
 			  Build the specified environments:
 			  all             All available environments
-			  default         Equivalent to adapted,no_config,paludis,test
+			  default         Equivalent to no_config,paludis,test
 
-			  adapted         An environment adapter, for contrarius etc
 			  no_config       Configurationless environment, for adjutrix etc
 			  paludis         Standard Paludis environments
 			  portage         Portage configuration (dodgy)
@@ -1268,14 +1266,10 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis importare inquisitio instruo paludis qualudis reconcilio"
+ALL_CLIENTS="accerso adjutrix importare inquisitio instruo paludis qualudis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
-	if test x"$a" = "xgtkpaludis" ; then
-		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML"
-	else
-		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
-	fi
+	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
 DEFAULT_CLIENTS="adjutrix importare paludis reconcilio"
 if test x"$ENABLE_QA" = "xyes" ; then
@@ -1291,8 +1285,6 @@ AC_ARG_WITH([clients],
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
-			  contrarius      The cross toolchain creator
-			  gtkpaludis      GUI client (unusable)
 			  importare       On-the-fly unpackaged installer
 			  inquisitio      A search client
 			  instruo         A metadata generation client
@@ -1313,9 +1305,6 @@ AC_SUBST([BUILD_CLIENTS])
 
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
 	need_pcrepp_check=yes
-fi
-if echo $clients | tr ' ' '\n' | grep '^gtkpaludis$' >/dev/null ; then
-	need_gtkmm_check=yes
 fi
 dnl }}}
 
@@ -1364,21 +1353,6 @@ if test "x$need_gem_check" = "xyes" ; then
 	else
 		AC_MSG_ERROR([gem (http://rubygems.org/) is required for gems repositories])
 	fi
-fi
-dnl }}}
-
-dnl {{{ gtkmm check
-if test "x$need_gtkmm_check" = "xyes" ; then
-	PKG_CHECK_MODULES([gtkmm], [gtkmm-2.4 >= 2.8.0])
-	PKG_CHECK_MODULES([gthread], [gthread-2.0 >= 2.12.0])
-	PKG_CHECK_MODULES([vte], [vte >= 0.12.1])
-	PKG_CHECK_MODULES([pygtk], [pygtk-2.0 >= 2.6.0])
-	AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
-	GLIBMM_LIBDIR=`pkg-config --variable=libdir glibmm-2.4`
-	GMMPROC_DIR=$GLIBMM_LIBDIR/glibmm-2.4/proc
-	AC_SUBST(GMMPROC_DIR)
-	GMMPROC=$GMMPROC_DIR/gmmproc
-	AC_SUBST(GMMPROC)
 fi
 dnl }}}
 
@@ -1447,7 +1421,6 @@ AC_OUTPUT(
 	paludis/distributions/exherbo/Makefile
 	paludis/distributions/gentoo/Makefile
 	paludis/environments/Makefile
-	paludis/environments/adapted/Makefile
 	paludis/environments/no_config/Makefile
 	paludis/environments/paludis/Makefile
 	paludis/environments/portage/Makefile
@@ -1488,12 +1461,6 @@ AC_OUTPUT(
 	src/clients/Makefile
 	src/clients/accerso/Makefile
 	src/clients/adjutrix/Makefile
-	src/clients/contrarius/Makefile
-	src/clients/gtkpaludis/Makefile
-	src/clients/gtkpaludis/libgtkpaludis/Makefile
-	src/clients/gtkpaludis/vtemm/Makefile
-	src/clients/gtkpaludis/vtemm/converts/Makefile
-	src/clients/gtkpaludis/vtemm/defs/Makefile
 	src/clients/importare/Makefile
 	src/clients/inquisitio/Makefile
 	src/clients/instruo/Makefile

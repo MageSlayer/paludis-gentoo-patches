@@ -23,7 +23,6 @@
 
 #include <paludis/environment.hh>
 #include <paludis/environment_factory.hh>
-#include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -680,27 +679,6 @@ void expose_environment()
         .def("__getitem__", &EnvImp::operator[], &EnvImpW::default_operator_square_brackets,
                 "[selection] -> list of PackageID\n"
                 "Return PackageID instances matching a given selection."
-            )
-        ;
-
-    /**
-     * AdaptedEnvironment
-     */
-    bp::class_<AdaptedEnvironment, bp::bases<Environment>, boost::noncopyable>
-        (
-         "AdaptedEnvironment",
-         "An Environment that allows you to change aspects of an existing Environment,"
-         " e.g. the state of a USE flag for a package.",
-         bp::init<std::tr1::shared_ptr<Environment> >("__init__(Environment)")
-        )
-        .def("adapt_use", &AdaptedEnvironment::adapt_use,
-                "adapt_use(PackageDepSpeec, UseFlagName, UseFlagState)\n"
-                "Set the state of a USE flag for the given PackageDepSpec."
-            )
-
-        .def("clear_adaptions", &AdaptedEnvironment::clear_adaptions,
-                "clear_adaptions()\n"
-                "Clear all adaptions from this Environemnt."
             )
         ;
 
