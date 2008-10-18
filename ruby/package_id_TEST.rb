@@ -160,7 +160,7 @@ module Paludis
                 "profile_mask" => 1, "DEPEND" => 1, "RDEPEND" => 1, "PDEPEND" => 1, "LICENSE" => 1, "PROVIDE" => 1,
                 "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1 }
             pid_testrepo.each_metadata do | key |
-                assert keys.has_key?(key.raw_name)
+                assert keys.has_key?(key.raw_name), "no #{key.raw_name}"
                 keys.delete key.raw_name
             end
             assert keys.empty?
