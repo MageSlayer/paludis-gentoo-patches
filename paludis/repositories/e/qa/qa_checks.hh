@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 #include <paludis/environment-fwd.hh>
@@ -89,16 +88,12 @@ namespace paludis
                 )> PackageIDFileContentsCheckFunction;
 
         class QAChecks :
-            private PrivateImplementationPattern<QAChecks>,
-            public InstantiationPolicy<QAChecks, instantiation_method::SingletonTag>
+            private PrivateImplementationPattern<QAChecks>
         {
-            friend class InstantiationPolicy<QAChecks, instantiation_method::SingletonTag>;
-
-            private:
-                QAChecks();
+            public:
+                QAChecks(const Environment * const);
                 ~QAChecks();
 
-            public:
                 const std::tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
                     tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
 

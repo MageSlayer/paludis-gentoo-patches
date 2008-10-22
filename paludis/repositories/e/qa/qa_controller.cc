@@ -114,6 +114,8 @@ namespace paludis
         ThreadSafeQAReporter reporter;
         const FSEntry base_dir;
 
+        QAChecks qa_checks;
+
         std::set<CategoryNamePart> cats_pool;
         std::set<QualifiedPackageName> pkgs_pool;
         Mutex pools_mutex;
@@ -133,7 +135,8 @@ namespace paludis
             ignore_unless(u),
             minimum_level(m),
             reporter(q),
-            base_dir(d.realpath())
+            base_dir(d.realpath()),
+            qa_checks(e)
         {
         }
     };
@@ -235,8 +238,8 @@ QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
                                 "Couldn't get file contents for " + type.substr(1) + " '" + stringify(*it) + ")"));
                 else
                     std::find_if(
-                            QAChecks::get_instance()->eclass_file_contents_checks_group()->begin(),
-                            QAChecks::get_instance()->eclass_file_contents_checks_group()->end(),
+                            _imp->qa_checks.eclass_file_contents_checks_group()->begin(),
+                            _imp->qa_checks.eclass_file_contents_checks_group()->end(),
                             std::tr1::bind(std::equal_to<bool>(), false,
                                 std::tr1::bind<bool>(std::tr1::mem_fn(&EclassFileContentsCheckFunction::operator() ),
                                     _1, *it, std::tr1::ref(_imp->reporter),
@@ -268,8 +271,8 @@ QAController::_check_category(const CategoryNamePart c, const std::tr1::shared_p
     {
         using namespace std::tr1::placeholders;
         std::find_if(
-                QAChecks::get_instance()->category_dir_checks_group()->begin(),
-                QAChecks::get_instance()->category_dir_checks_group()->end(),
+                _imp->qa_checks.category_dir_checks_group()->begin(),
+                _imp->qa_checks.category_dir_checks_group()->end(),
                 std::tr1::bind(std::equal_to<bool>(), false,
                     std::tr1::bind<bool>(std::tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
                         _1, _imp->repo->layout()->category_directory(c), std::tr1::ref(_imp->reporter),
@@ -321,8 +324,8 @@ QAController::_check_package(const QualifiedPackageName p)
     if (_above_base_dir(p_dir) || _under_base_dir(p_dir))
     {
         std::find_if(
-                QAChecks::get_instance()->package_dir_checks_group()->begin(),
-                QAChecks::get_instance()->package_dir_checks_group()->end(),
+                _imp->qa_checks.package_dir_checks_group()->begin(),
+                _imp->qa_checks.package_dir_checks_group()->end(),
                 std::tr1::bind(std::equal_to<bool>(), false,
                     std::tr1::bind<bool>(std::tr1::mem_fn(&PackageDirCheckFunction::operator()),
                         _1, _imp->repo->layout()->package_directory(p),
@@ -349,8 +352,8 @@ QAController::_check_id(const std::tr1::shared_ptr<const PackageID> & i)
         if (_under_base_dir(p_dir))
         {
             std::find_if(
-                    QAChecks::get_instance()->package_id_checks_group()->begin(),
-                    QAChecks::get_instance()->package_id_checks_group()->end(),
+                    _imp->qa_checks.package_id_checks_group()->begin(),
+                    _imp->qa_checks.package_id_checks_group()->end(),
                     std::tr1::bind(std::equal_to<bool>(), false,
                         std::tr1::bind<bool>(std::tr1::mem_fn(&PackageIDCheckFunction::operator() ),
                             _1, i->fs_location_key()->value(), std::tr1::ref(_imp->reporter),
@@ -366,8 +369,8 @@ QAController::_check_id(const std::tr1::shared_ptr<const PackageID> & i)
                         .with_associated_key(i, i->fs_location_key()));
             else
                 std::find_if(
-                        QAChecks::get_instance()->package_id_file_contents_checks_group()->begin(),
-                        QAChecks::get_instance()->package_id_file_contents_checks_group()->end(),
+                        _imp->qa_checks.package_id_file_contents_checks_group()->begin(),
+                        _imp->qa_checks.package_id_file_contents_checks_group()->end(),
                         std::tr1::bind(std::equal_to<bool>(), false,
                             std::tr1::bind<bool>(std::tr1::mem_fn(&PackageIDFileContentsCheckFunction::operator() ),
                                 _1, i->fs_location_key()->value(), std::tr1::ref(_imp->reporter),
@@ -395,10 +398,10 @@ QAController::run()
     try
     {
         if (_under_base_dir(_imp->repo->params().location))
-            if (QAChecks::get_instance()->tree_checks_group()->end() !=
+            if (_imp->qa_checks.tree_checks_group()->end() !=
                     std::find_if(
-                        QAChecks::get_instance()->tree_checks_group()->begin(),
-                        QAChecks::get_instance()->tree_checks_group()->end(),
+                        _imp->qa_checks.tree_checks_group()->begin(),
+                        _imp->qa_checks.tree_checks_group()->end(),
                         std::tr1::bind(std::equal_to<bool>(), false,
                             std::tr1::bind<bool>(std::tr1::mem_fn(&TreeCheckFunction::operator() ),
                                 _1, _imp->repo->params().location, std::tr1::ref(_imp->reporter),

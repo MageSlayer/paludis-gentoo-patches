@@ -20,10 +20,23 @@
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/distribution-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+namespace
+{
+    std::tr1::shared_ptr<const Set<std::string> > make_set(const std::string & s)
+    {
+        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        tokenise_whitespace(s, result->inserter());
+        return result;
+    }
+}
 
 namespace paludis
 {
@@ -46,7 +59,13 @@ namespace paludis
                             value_for<n::default_names_cache>(k->get("default_names_cache")),
                             value_for<n::default_profile_eapi>(k->get("default_profile_eapi")),
                             value_for<n::default_provides_cache>(k->get("default_provides_cache")),
-                            value_for<n::default_write_cache>(k->get("default_write_cache"))
+                            value_for<n::default_write_cache>(k->get("default_write_cache")),
+                            value_for<n::qa_category_dir_checks>(make_set(k->get("qa_category_dir_checks"))),
+                            value_for<n::qa_eclass_file_contents_checks>(make_set(k->get("qa_eclass_file_contents_checks"))),
+                            value_for<n::qa_package_dir_checks>(make_set(k->get("qa_package_dir_checks"))),
+                            value_for<n::qa_package_id_checks>(make_set(k->get("qa_package_id_checks"))),
+                            value_for<n::qa_package_id_file_contents_checks>(make_set(k->get("qa_package_id_file_contents_checks"))),
+                            value_for<n::qa_tree_checks>(make_set(k->get("qa_tree_checks")))
                             )));
         }
     };

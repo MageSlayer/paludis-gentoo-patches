@@ -22,6 +22,8 @@
 
 #include <paludis/distribution-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/set.hh>
+#include <tr1/memory>
 #include <string>
 
 namespace paludis
@@ -37,6 +39,12 @@ namespace paludis
         struct default_profile_eapi;
         struct default_provides_cache;
         struct default_write_cache;
+        struct qa_category_dir_checks;
+        struct qa_eclass_file_contents_checks;
+        struct qa_package_dir_checks;
+        struct qa_package_id_checks;
+        struct qa_package_id_file_contents_checks;
+        struct qa_tree_checks;
     }
 
     namespace erepository
@@ -52,6 +60,12 @@ namespace paludis
             NamedValue<n::default_profile_eapi, std::string> default_profile_eapi;
             NamedValue<n::default_provides_cache, std::string> default_provides_cache;
             NamedValue<n::default_write_cache, std::string> default_write_cache;
+            NamedValue<n::qa_category_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_category_dir_checks;
+            NamedValue<n::qa_eclass_file_contents_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_eclass_file_contents_checks;
+            NamedValue<n::qa_package_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_dir_checks;
+            NamedValue<n::qa_package_id_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_id_checks;
+            NamedValue<n::qa_package_id_file_contents_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_id_file_contents_checks;
+            NamedValue<n::qa_tree_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_tree_checks;
         };
 
         typedef ExtraDistributionData<EDistribution> EExtraDistributionData;
