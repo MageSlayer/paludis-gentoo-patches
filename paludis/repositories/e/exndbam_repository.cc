@@ -109,7 +109,6 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
                 value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
-                value_for<n::use_interface>(this),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),
     PrivateImplementationPattern<ExndbamRepository>(new Implementation<ExndbamRepository>(p)),

@@ -53,14 +53,6 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.assert_(isinstance(self.pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey))
         self.assertEquals(self.ipid.find_metadata("KEYWORDS"), None)
 
-    def test_05_use(self):
-        self.assertEquals(self.pid.find_metadata("USE"), None)
-        self.assert_(isinstance(self.ipid.find_metadata("USE"), MetadataUseFlagNameIterableKey))
-
-    def test_06_iuse(self):
-        self.assert_(isinstance(self.pid.find_metadata("IUSE"), MetadataIUseFlagIterableKey))
-        self.assert_(isinstance(self.ipid.find_metadata("IUSE"), MetadataIUseFlagIterableKey))
-
     def test_07_inherited(self):
         self.assert_(isinstance(self.pid.find_metadata("INHERITED"), MetadataStringIterableKey))
         self.assert_(isinstance(self.ipid.find_metadata("INHERITED"), MetadataStringIterableKey))
@@ -136,34 +128,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_keyword_name_set_key(TestKey())
 
-    def test_07_use_flag_name_iterable(self):
-        class TestKey(MetadataUseFlagNameIterableKey):
-            def __init__(self):
-                MetadataUseFlagNameIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
-
-            def value(self):
-                return ["use"]
-
-            def pretty_print_flat(self, f):
-                return f.format_use_flag_name_plain(UseFlagName("foo"))
-
-        test_metadata_use_flag_name_set_key(TestKey())
-
-    def test_08_iuse_flag_iterable(self):
-        class TestKey(MetadataIUseFlagIterableKey):
-            def __init__(self):
-                MetadataIUseFlagIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
-
-            def value(self):
-                return [IUseFlag("iuse", IUseFlagParseOptions(), -1)]
-
-            def pretty_print_flat(self, f):
-                return f.format_iuse_flag_plain(IUseFlag("foo", UseFlagState.ENABLED, 0))
-
-            def pretty_print_flat_with_comparison(self, e, pid, f):
-                return f.format_iuse_flag_plain(IUseFlag("foo", UseFlagState.ENABLED, 0))
-
-        test_metadata_iuse_flag_set_key(TestKey())
 
     def test_09_string_iterable(self):
         class TestKey(MetadataStringIterableKey):

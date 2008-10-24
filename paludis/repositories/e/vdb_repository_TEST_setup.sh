@@ -19,6 +19,7 @@ for i in DEPEND RDEPEND LICENSE INHERITED IUSE PDEPEND PROVIDE; do
 done
 
 echo "flag1 flag2" >>repo1/cat-one/pkg-one-1/USE
+echo "flag1 flag2 flag3" >>repo1/cat-one/pkg-one-1/IUSE
 
 cat <<END >repo1/cat-one/pkg-one-1/CONTENTS
 dir /directory
@@ -399,6 +400,9 @@ done
 for f in providestest/cat1/{pkg1,pkg2,pkg3}-{1,2}/USE; do
     echo enabled >${f}
 done
+for f in providestest/cat1/{pkg1,pkg2,pkg3}-{1,2}/IUSE; do
+    echo disabled enabled >${f}
+done
 
 echo '            virtual/foo'                >providestest/cat1/pkg1-1/PROVIDE
 echo 'enabled?  ( virtual/foo )'              >providestest/cat1/pkg1-2/PROVIDE
@@ -427,6 +431,7 @@ cat <<END >providesincrtest_src1/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
 SLOT="\${PV:0:1}"
 PROVIDE="enabled? ( virtual/foo ) disabled? ( virtual/bar )"
+IUSE="enabled disabled"
 END
 cp providesincrtest_src1/cat1/pkg1/pkg1-{1,1.1}.ebuild
 cp providesincrtest_src1/cat1/pkg1/pkg1-{1,2}.ebuild
@@ -437,6 +442,7 @@ cat <<END >providesincrtest_src2/cat1/pkg1/pkg1-1.ebuild
 KEYWORDS="test"
 SLOT="\${PV:0:1}"
 PROVIDE="enabled? ( virtual/bar ) disabled? ( virtual/foo )"
+IUSE="enabled disabled"
 END
 
 cat <<END >providesincrtest_src1/cat2/pkg1/pkg1-1.ebuild

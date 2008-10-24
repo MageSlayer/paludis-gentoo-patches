@@ -264,46 +264,6 @@ namespace test_cases
     } test_slot_name_validation;
 
     /**
-     * \test Test UseFlagName creation.
-     *
-     */
-    struct UseFlagNameCreationTest : public TestCase
-    {
-        UseFlagNameCreationTest() : TestCase("creation") { }
-
-        void run()
-        {
-            UseFlagName u("foo");
-            TEST_CHECK(true);
-        }
-    } test_use_flag_name_creation;
-
-    /**
-     * \test Test UseFlagName validation.
-     *
-     */
-    struct UseFlagNameValidationTest : public TestCase
-    {
-        UseFlagNameValidationTest() : TestCase("validation") { }
-
-        void run()
-        {
-            UseFlagName u("use0+_x@-x");
-            TEST_CHECK_THROWS(u = UseFlagName(""), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("!!!"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("-foo"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("_foo"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("@foo"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("+foo"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("fo$o"), NameError);
-
-            TEST_CHECK_THROWS(u = UseFlagName("foo:"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName(":foo"), NameError);
-            TEST_CHECK_THROWS(u = UseFlagName("foo:_"), NameError);
-        }
-    } test_use_flag_name_validation;
-
-    /**
      * \test Test KeywordName creation.
      *
      */

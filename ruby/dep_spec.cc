@@ -54,6 +54,7 @@ namespace
     static VALUE c_plain_text_dep_spec;
     static VALUE c_simple_uri_dep_spec;
     static VALUE c_uri_labels_dep_spec;
+    static VALUE c_plain_text_label_dep_spec;
 
     static VALUE c_all_dep_spec;
     static VALUE c_any_dep_spec;
@@ -134,6 +135,7 @@ namespace
             WrappedSpec<PackageDepSpec>,
             WrappedSpec<BlockDepSpec>,
             WrappedSpec<URILabelsDepSpec>,
+            WrappedSpec<PlainTextLabelDepSpec>,
             WrappedSpec<DependencyLabelsDepSpec>,
             WrappedSpec<NamedSetDepSpec>,
             WrappedSpec<AllDepSpec>,
@@ -236,6 +238,12 @@ namespace
         {
             wrapped.reset(new WrappedSpec<URILabelsDepSpec>(std::tr1::static_pointer_cast<URILabelsDepSpec>(spec.clone())));
             klass = c_uri_labels_dep_spec;
+        }
+
+        void visit_leaf(const PlainTextLabelDepSpec & spec)
+        {
+            wrapped.reset(new WrappedSpec<PlainTextLabelDepSpec>(std::tr1::static_pointer_cast<PlainTextLabelDepSpec>(spec.clone())));
+            klass = c_plain_text_label_dep_spec;
         }
 
         void visit_leaf(const DependencyLabelsDepSpec & spec)
@@ -414,6 +422,11 @@ namespace
         }
 
         virtual void visit(const WrappedSpec<URILabelsDepSpec> & s)
+        {
+            do_visit_leaf(s);
+        }
+
+        virtual void visit(const WrappedSpec<PlainTextLabelDepSpec> & s)
         {
             do_visit_leaf(s);
         }
@@ -1168,6 +1181,17 @@ namespace
         VALUE (* uri_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<URILabelsDepSpec>;
         rb_define_method(c_uri_labels_dep_spec, "to_s", RUBY_FUNC_CAST(uri_labels_dep_spec_to_s), 0);
         rb_define_method(c_uri_labels_dep_spec, "labels", RUBY_FUNC_CAST(&uri_labels_dep_spec_labels), 0);
+
+        /*
+         * Document-class: Paludis::PlainTextLabelDepSpec
+         *
+         * A PlainTextLabelDepSpec holds a plain text label.
+         */
+        c_plain_text_label_dep_spec = rb_define_class_under(paludis_module(), "PlainTextLabelDepSpec", c_string_dep_spec);
+        rb_define_singleton_method(c_plain_text_label_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<PlainTextDepSpec>::dep_spec_new_1), 1);
+        rb_define_method(c_plain_text_label_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
+        VALUE (* plain_text_dep_label_spec_to_s) (VALUE) = &dep_spec_to_s<PlainTextLabelDepSpec>;
+        rb_define_method(c_plain_text_label_dep_spec, "to_s", RUBY_FUNC_CAST(plain_text_dep_label_spec_to_s), 0);
 
         /*
          * Document-class: Paludis::BlockDepSpec

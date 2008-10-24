@@ -107,6 +107,19 @@ namespace paludis
 
             ///\}
 
+            virtual const Tribool want_choice_enabled(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual std::tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -117,10 +130,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void set_paludis_command(const std::string &);
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                    const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

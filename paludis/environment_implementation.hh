@@ -64,9 +64,6 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

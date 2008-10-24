@@ -100,8 +100,6 @@ namespace paludis
                         )),
             install_options(
                     make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
@@ -1140,18 +1138,6 @@ void
 InstallTask::set_preserve_world(const bool value)
 {
     _imp->preserve_world = value;
-}
-
-void
-InstallTask::set_debug_mode(const InstallActionDebugOption value)
-{
-    _imp->install_options.debug_build() = value;
-}
-
-void
-InstallTask::set_checks_mode(const InstallActionChecksOption value)
-{
-    _imp->install_options.checks() = value;
 }
 
 void

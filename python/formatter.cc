@@ -114,63 +114,7 @@ struct PythonCanFormat<T_, format::AcceptableRoles> :
 };
 
 template <typename T_>
-struct PythonCanFormat<T_, format::UseRoles> :
-    CanFormat<T_>,
-    PythonCanFormatBase<T_>
-{
-    std::string format(const T_ & t, const format::Plain & f) const
-    {
-        return do_format(t, f);
-    }
-
-    std::string format(const T_ & t, const format::Enabled & f) const
-    {
-        return do_format(t, f);
-    }
-
-    std::string format(const T_ & t, const format::Disabled & f) const
-    {
-        return do_format(t, f);
-    }
-
-    std::string format(const T_ & t, const format::Forced & f) const
-    {
-        return do_format(t, f);
-    }
-
-    std::string format(const T_ & t, const format::Masked & f) const
-    {
-        return do_format(t, f);
-    }
-
-    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
-    {
-        return self.format(t, format::Plain());
-    }
-
-    static std::string format_enabled(const CanFormat<T_> & self, const T_ & t)
-    {
-        return self.format(t, format::Enabled());
-    }
-
-    static std::string format_disabled(const CanFormat<T_> & self, const T_ & t)
-    {
-        return self.format(t, format::Disabled());
-    }
-
-    static std::string format_forced(const CanFormat<T_> & self, const T_ & t)
-    {
-        return self.format(t, format::Forced());
-    }
-
-    static std::string format_masked(const CanFormat<T_> & self, const T_ & t)
-    {
-        return self.format(t, format::Masked());
-    }
-};
-
-template <typename T_>
-struct PythonCanFormat<T_, format::IUseRoles> :
+struct PythonCanFormat<T_, format::ChoiceRoles> :
     CanFormat<T_>,
     PythonCanFormatBase<T_>
 {
@@ -344,8 +288,6 @@ struct PythonCanSpaceWrapper :
 
 class PythonFormatterWrapper :
     public PythonCanFormat<std::string>,
-    public PythonCanFormat<UseFlagName>,
-    public PythonCanFormat<IUseFlag>,
     public PythonCanFormat<KeywordName>,
     public PythonCanFormat<PackageDepSpec>,
     public PythonCanFormat<BlockDepSpec>,
@@ -353,6 +295,7 @@ class PythonFormatterWrapper :
     public PythonCanFormat<SimpleURIDepSpec>,
     public PythonCanFormat<DependencyLabelsDepSpec>,
     public PythonCanFormat<URILabelsDepSpec>,
+    public PythonCanFormat<PlainTextLabelDepSpec>,
     public PythonCanFormat<PlainTextDepSpec>,
     public PythonCanFormat<LicenseDepSpec>,
     public PythonCanFormat<ConditionalDepSpec>,
@@ -379,40 +322,6 @@ void expose_formatter()
          bp::init<>("__init__()")
         )
         .def("format_string_plain", &PythonCanFormatWrapper<std::string>::format_plain)
-        ;
-
-    /**
-     * CanFormatUseFlagName
-     */
-    bp::class_<PythonCanFormatWrapper<UseFlagName>, boost::noncopyable>
-        (
-         "CanFormatUseFlagName",
-         "Descendents of this class implement the necessary methods to format a UseFlagName.",
-         bp::init<>("__init__()")
-        )
-        .def("format_use_flag_name_plain", &PythonCanFormatWrapper<UseFlagName>::format_plain)
-        .def("format_use_flag_name_enabled", &PythonCanFormatWrapper<UseFlagName>::format_enabled)
-        .def("format_use_flag_name_disabled", &PythonCanFormatWrapper<UseFlagName>::format_disabled)
-        .def("format_use_flag_name_forced", &PythonCanFormatWrapper<UseFlagName>::format_forced)
-        .def("format_use_flag_name_masked", &PythonCanFormatWrapper<UseFlagName>::format_masked)
-        ;
-
-    /**
-     * CanFormatIUseFlag
-     */
-    bp::class_<PythonCanFormatWrapper<IUseFlag>, boost::noncopyable>
-        (
-         "CanFormatIUseFlag",
-         "Descendents of this class implement the necessary methods to format a IUseFlag.",
-         bp::init<>("__init__()")
-        )
-        .def("format_iuse_flag_plain", &PythonCanFormatWrapper<IUseFlag>::format_plain)
-        .def("format_iuse_flag_enabled", &PythonCanFormatWrapper<IUseFlag>::format_enabled)
-        .def("format_iuse_flag_disabled", &PythonCanFormatWrapper<IUseFlag>::format_disabled)
-        .def("format_iuse_flag_forced", &PythonCanFormatWrapper<IUseFlag>::format_forced)
-        .def("format_iuse_flag_masked", &PythonCanFormatWrapper<IUseFlag>::format_masked)
-        .def("decorate_iuse_flag_added", &PythonCanFormatWrapper<IUseFlag>::decorate_added)
-        .def("decorate_iuse_flag_changed", &PythonCanFormatWrapper<IUseFlag>::decorate_changed)
         ;
 
     /**
@@ -502,6 +411,18 @@ void expose_formatter()
          bp::init<>("__init__()")
         )
         .def("format_uri_labels_dep_spec_plain", &PythonCanFormatWrapper<URILabelsDepSpec>::format_plain)
+        ;
+
+    /**
+     * CanFormatPlainTextLabelDepSpec
+     */
+    bp::class_<PythonCanFormatWrapper<PlainTextLabelDepSpec>, boost::noncopyable>
+        (
+         "CanFormatPlainTextLabelDepSpec",
+         "Descendents of this class implement the necessary methods to format a PlainTextLabelDepSpec.",
+         bp::init<>("__init__()")
+        )
+        .def("format_plain_text_label_dep_spec_plain", &PythonCanFormatWrapper<PlainTextLabelDepSpec>::format_plain)
         ;
 
     /**
@@ -599,26 +520,6 @@ void expose_formatter()
         );
 
     /**
-     * UseFlagNameFormatter
-     */
-    bp::class_<Formatter<UseFlagName>, bp::bases<CanFormat<UseFlagName> >, boost::noncopyable>
-        (
-         "UseFlagNameFormatter",
-         "A formatter that can handle UseFlagNames.",
-         bp::no_init
-        );
-
-    /**
-     * IUseFlagFormatter
-     */
-    bp::class_<Formatter<IUseFlag>, bp::bases<CanFormat<IUseFlag> >, boost::noncopyable>
-        (
-         "IUseFlagFormatter",
-         "A formatter that can handle IUseFlags.",
-         bp::no_init
-        );
-
-    /**
      * LicenseSpecTreeFormatter
      */
     bp::class_<LicenseSpecTree::ItemFormatter,
@@ -671,6 +572,7 @@ void expose_formatter()
     bp::class_<PlainTextSpecTree::ItemFormatter,
             bp::bases<
                 CanFormat<ConditionalDepSpec>,
+                CanFormat<PlainTextLabelDepSpec>,
                 CanFormat<PlainTextDepSpec> >,
             boost::noncopyable>
         (
@@ -716,8 +618,6 @@ void expose_formatter()
      */
     bp::implicitly_convertible<StringifyFormatter, Formatter<std::string> >();
     bp::implicitly_convertible<StringifyFormatter, Formatter<KeywordName> >();
-    bp::implicitly_convertible<StringifyFormatter, Formatter<UseFlagName> >();
-    bp::implicitly_convertible<StringifyFormatter, Formatter<IUseFlag> >();
     bp::implicitly_convertible<StringifyFormatter, LicenseSpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, ProvideSpecTree::ItemFormatter>();
     bp::implicitly_convertible<StringifyFormatter, DependencySpecTree::ItemFormatter>();
@@ -727,8 +627,6 @@ void expose_formatter()
     bp::class_<StringifyFormatter,
             bp::bases<
                 CanFormat<std::string>,
-                CanFormat<UseFlagName>,
-                CanFormat<IUseFlag>,
                 CanFormat<KeywordName>,
                 CanFormat<PackageDepSpec>,
                 CanFormat<BlockDepSpec>,
@@ -736,6 +634,7 @@ void expose_formatter()
                 CanFormat<SimpleURIDepSpec>,
                 CanFormat<DependencyLabelsDepSpec>,
                 CanFormat<URILabelsDepSpec>,
+                CanFormat<PlainTextLabelDepSpec>,
                 CanFormat<PlainTextDepSpec>,
                 CanFormat<LicenseDepSpec>,
                 CanFormat<ConditionalDepSpec>,
@@ -760,8 +659,6 @@ void expose_formatter()
      */
     bp::implicitly_convertible<PythonFormatterWrapper, Formatter<std::string> >();
     bp::implicitly_convertible<PythonFormatterWrapper, Formatter<KeywordName> >();
-    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<UseFlagName> >();
-    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<IUseFlag> >();
     bp::implicitly_convertible<PythonFormatterWrapper, LicenseSpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, ProvideSpecTree::ItemFormatter>();
     bp::implicitly_convertible<PythonFormatterWrapper, DependencySpecTree::ItemFormatter>();
@@ -771,8 +668,6 @@ void expose_formatter()
     bp::class_<PythonFormatterWrapper,
             bp::bases<
                 CanFormat<std::string>,
-                CanFormat<UseFlagName>,
-                CanFormat<IUseFlag>,
                 CanFormat<KeywordName>,
                 CanFormat<PackageDepSpec>,
                 CanFormat<BlockDepSpec>,
@@ -780,6 +675,7 @@ void expose_formatter()
                 CanFormat<SimpleURIDepSpec>,
                 CanFormat<DependencyLabelsDepSpec>,
                 CanFormat<URILabelsDepSpec>,
+                CanFormat<PlainTextLabelDepSpec>,
                 CanFormat<PlainTextDepSpec>,
                 CanFormat<LicenseDepSpec>,
                 CanFormat<ConditionalDepSpec>,

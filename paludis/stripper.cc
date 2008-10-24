@@ -65,7 +65,7 @@ Stripper::strip()
 {
     Context context("When stripping image '" + stringify(_imp->options.image_dir()) + "':");
 
-    if (_imp->options.debug_build() == iado_internal)
+    if (! _imp->options.strip())
         return;
 
     do_dir_recursive(_imp->options.image_dir());
@@ -148,19 +148,11 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
 {
     Context context("When splitting '" + stringify(f) + "' to '" + stringify(g) + "':");
 
-    switch (_imp->options.debug_build())
-    {
-        case iado_internal:
-        case last_iado:
-            return;
+    if (_imp->options.strip())
+        do_strip(f, "");
 
-        case iado_none:
-            do_strip(f, "");
-            return;
-
-        case iado_split:
-            break;
-    }
+    if (! _imp->options.split())
+        return;
 
     on_split(f, g);
 

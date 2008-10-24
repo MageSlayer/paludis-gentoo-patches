@@ -21,11 +21,11 @@ cat <<"END" > repo/profiles/repo_name
 repo
 END
 echo cat-one > repo/profiles/categories
-touch repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
-touch repo/cat-one/pkg-two/pkg-two-1.ebuild || exit 4
-touch repo/cat-one/pkg-three/pkg-three-1.ebuild || exit 4
-touch repo/cat-one/pkg-four/pkg-four-1.ebuild || exit 4
-touch repo/cat-one/pkg-x/pkg-x-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-two/pkg-two-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-three/pkg-three-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-four/pkg-four-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-x/pkg-x-1.ebuild || exit 4
 
 mkdir -p query_use/${SYSCONFDIR}/portage
 ln -s $(pwd )/profile query_use/${SYSCONFDIR}/make.profile

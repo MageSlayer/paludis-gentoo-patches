@@ -40,6 +40,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -126,9 +127,9 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
 
                     std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
                     if (p == "options")
-                        _imp->use_desc_files->push_back(std::make_pair(*d, ""));
+                        _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName("")));
                     else
-                        _imp->use_desc_files->push_back(std::make_pair(*d, p));
+                        _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName(p)));
                 }
             }
         }

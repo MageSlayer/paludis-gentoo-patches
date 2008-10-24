@@ -97,11 +97,17 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageID &) const
+            virtual const Tribool want_choice_enabled(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName &
+                    ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                    const UseFlagName &, const PackageID &) const
+            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &
+                    ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const

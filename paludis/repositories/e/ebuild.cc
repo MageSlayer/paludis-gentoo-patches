@@ -502,6 +502,9 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! m.iuse().name().empty())
         id->load_iuse(m.iuse().name(), m.iuse().description(), get(keys, m.iuse().name()));
 
+    if (! m.myoptions().name().empty())
+        id->load_myoptions(m.myoptions().name(), m.myoptions().description(), get(keys, m.myoptions().name()));
+
     if (! m.inherited().name().empty())
         id->load_inherited(m.inherited().name(), m.inherited().description(), get(keys, m.inherited().name()));
 
@@ -628,6 +631,9 @@ EbuildNoFetchCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
                 fetch_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                fetch_params.use_expand_hidden());
 
     for (Map<std::string, std::string>::ConstIterator
             i(fetch_params.expand_vars()->begin()),
@@ -683,6 +689,9 @@ EbuildInstallCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
                 install_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                install_params.use_expand_hidden());
 
     for (Map<std::string, std::string>::ConstIterator
             i(install_params.expand_vars()->begin()),
@@ -884,6 +893,9 @@ EbuildPretendCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
                 pretend_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                pretend_params.use_expand_hidden());
 
     for (Map<std::string, std::string>::ConstIterator
             i(pretend_params.expand_vars()->begin()),
@@ -946,6 +958,9 @@ EbuildInfoCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
                 info_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                info_params.use_expand_hidden());
 
     for (Map<std::string, std::string>::ConstIterator
             i(info_params.expand_vars()->begin()),

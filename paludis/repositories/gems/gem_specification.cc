@@ -342,12 +342,6 @@ GemSpecification::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-GemSpecification::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 GemSpecification::provide_key() const
 {
@@ -624,5 +618,11 @@ GemSpecification::breaks_portage() const
     std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
     why->insert("format");
     return why;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+GemSpecification::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
 }
 

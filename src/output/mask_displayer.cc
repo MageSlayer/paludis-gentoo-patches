@@ -124,18 +124,6 @@ namespace
             s << k.value();
         }
 
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
-        {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
-        }
-
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-        {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
-        }
-
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter formatter;
@@ -200,6 +188,11 @@ namespace
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
+        }
+
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        {
+            s << k.human_name();
         }
     };
 }

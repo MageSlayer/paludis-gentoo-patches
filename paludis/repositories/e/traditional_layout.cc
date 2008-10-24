@@ -39,6 +39,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -113,8 +114,8 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
             _imp->mirror_files->push_back(*l / "profiles" / "thirdpartymirrors");
             _imp->info_variables_files->push_back(*l / "profiles" / "info_vars");
 
-            _imp->use_desc_files->push_back(std::make_pair(*l / "profiles" / "use.desc", ""));
-            _imp->use_desc_files->push_back(std::make_pair(*l / "profiles" / "use.local.desc", ""));
+            _imp->use_desc_files->push_back(std::make_pair(*l / "profiles" / "use.desc", ChoicePrefixName("")));
+            _imp->use_desc_files->push_back(std::make_pair(*l / "profiles" / "use.local.desc", ChoicePrefixName("")));
             FSEntry descs(*l / "profiles" / "desc");
             if (descs.is_directory_or_symlink_to_directory())
             {
@@ -122,7 +123,7 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
                 {
                     if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
                         continue;
-                    _imp->use_desc_files->push_back(std::make_pair(*d, strip_trailing_string(d->basename(), ".desc")));
+                    _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName(strip_trailing_string(d->basename(), ".desc"))));
                 }
             }
         }

@@ -19,6 +19,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_TESTS = \
 	action_TEST.rb \
+	choice_TEST.rb \
 	contents_TEST.rb \
 	dep_list_TEST.rb \
 	dep_spec_TEST.rb \
@@ -42,6 +43,7 @@ IF_RUBY_QA_TESTS = \
 
 IF_RUBY_SOURCES = \
 	action.cc \
+	choice.cc \
 	contents.cc \
 	dep_list.cc \
 	dep_spec.cc \
@@ -73,6 +75,7 @@ IF_RUBY_QA_SOURCES = \
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	paludis_ruby_so.cc \
+	choice_TEST_setup.sh choice_TEST_cleanup.sh \
 	dep_spec_TEST_setup.sh dep_spec_TEST_cleanup.sh \
 	dep_tag_TEST_setup.sh dep_tag_TEST_cleanup.sh \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \

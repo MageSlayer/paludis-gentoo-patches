@@ -161,7 +161,7 @@ namespace
         using namespace std::tr1::placeholders;
         std::tr1::shared_ptr<ConstTreeSequence<T_, ConditionalDepSpec> > item(
                 new ConstTreeSequence<T_, ConditionalDepSpec>(make_shared_ptr(new ConditionalDepSpec(
-                            parse_elike_conditional_dep_spec(u, env, id)))));
+                            parse_elike_conditional_dep_spec(u, env, id, false)))));
         (*stack.begin()).add_handler()(item);
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<T_, ConditionalDepSpec>::add, item.get(), _1)),

@@ -28,27 +28,3 @@ END
 END
 }
 
-make_class_IUseFlag()
-{
-    visible
-
-    key flag UseFlagName
-    key state UseFlagState
-    key prefix_delim_pos "std::string::size_type"
-
-    comparison_operators all flag
-
-    extra_constructors <<END
-        IUseFlag(const std::string &, const IUseFlagParseOptions &, const std::string::size_type);
-END
-
-    doxygen_comment << "END"
-        /**
-         * Represents an IUse flag.
-         *
-         * \ingroup g_names
-         * \nosubgrouping
-         */
-END
-}
-

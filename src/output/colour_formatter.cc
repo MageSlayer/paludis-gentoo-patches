@@ -19,239 +19,53 @@
 
 #include "colour_formatter.hh"
 #include "colour.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/name.hh>
+#include <paludis/choice.hh>
 
 using namespace paludis;
 
-namespace paludis
+std::string
+ColourFormatter::format(const ChoiceValue & f, const format::Plain &) const
 {
-    template <>
-    struct Implementation<ColourFormatter>
-    {
-        const bool unchanged_are_new;
-
-        mutable std::string active_prefix;
-
-        const std::tr1::shared_ptr<UseFlagNameSet> seen_new_use_flag_names;
-        const std::tr1::shared_ptr<UseFlagNameSet> seen_changed_use_flag_names;
-        const std::tr1::shared_ptr<UseFlagNameSet> seen_use_flag_names;
-        const std::tr1::shared_ptr<UseFlagNameSet> seen_use_expand_prefixes;
-
-        Implementation(const bool b) :
-            unchanged_are_new(b),
-            seen_new_use_flag_names(new UseFlagNameSet),
-            seen_changed_use_flag_names(new UseFlagNameSet),
-            seen_use_flag_names(new UseFlagNameSet),
-            seen_use_expand_prefixes(new UseFlagNameSet)
-        {
-        }
-    };
-}
-
-ColourFormatter::ColourFormatter(const bool b) :
-    PrivateImplementationPattern<ColourFormatter>(new Implementation<ColourFormatter>(b))
-{
-}
-
-ColourFormatter::~ColourFormatter()
-{
-}
-
-const std::tr1::shared_ptr<const UseFlagNameSet>
-ColourFormatter::seen_new_use_flag_names() const
-{
-    return _imp->seen_new_use_flag_names;
-}
-
-const std::tr1::shared_ptr<const UseFlagNameSet>
-ColourFormatter::seen_changed_use_flag_names() const
-{
-    return _imp->seen_changed_use_flag_names;
-}
-
-const std::tr1::shared_ptr<const UseFlagNameSet>
-ColourFormatter::seen_use_flag_names() const
-{
-    return _imp->seen_use_flag_names;
-}
-
-const std::tr1::shared_ptr<const UseFlagNameSet>
-ColourFormatter::seen_use_expand_prefixes() const
-{
-    return _imp->seen_use_expand_prefixes;
+    return stringify(f.name_with_prefix());
 }
 
 std::string
-ColourFormatter::format(const IUseFlag & f, const format::Plain &) const
+ColourFormatter::format(const ChoiceValue & f, const format::Enabled &) const
 {
-    _imp->seen_use_flag_names->insert(f.flag);
-    if (_imp->unchanged_are_new)
-        _imp->seen_new_use_flag_names->insert(f.flag);
-
-    std::string g(stringify(f.flag)), h;
-
-    if (std::string::npos != f.prefix_delim_pos)
-    {
-        std::string p(g.substr(0, f.prefix_delim_pos));
-        if (_imp->active_prefix == p)
-            g.erase(0, f.prefix_delim_pos + 1);
-        else
-        {
-            _imp->active_prefix = p;
-            _imp->seen_use_expand_prefixes->insert(UseFlagName(_imp->active_prefix));
-            h = _imp->active_prefix + ": ";
-            g.erase(0, f.prefix_delim_pos + 1);
-        }
-    }
-
-    return h + g;
+    return colour(cl_flag_on, stringify(f.unprefixed_name()));
 }
 
 std::string
-ColourFormatter::format(const IUseFlag & f, const format::Enabled &) const
+ColourFormatter::format(const ChoiceValue & f, const format::Disabled &) const
 {
-    _imp->seen_use_flag_names->insert(f.flag);
-    if (_imp->unchanged_are_new)
-        _imp->seen_new_use_flag_names->insert(f.flag);
-    std::string g(stringify(f.flag)), h;
-
-    if (std::string::npos != f.prefix_delim_pos)
-    {
-        std::string p(g.substr(0, f.prefix_delim_pos));
-        if (_imp->active_prefix == p)
-            g.erase(0, f.prefix_delim_pos + 1);
-        else
-        {
-            _imp->active_prefix = p;
-            _imp->seen_use_expand_prefixes->insert(UseFlagName(_imp->active_prefix));
-            h = _imp->active_prefix + ": ";
-            g.erase(0, f.prefix_delim_pos + 1);
-        }
-    }
-
-    return h + colour(cl_flag_on, g);
+    return colour(cl_flag_off, "-" + stringify(f.unprefixed_name()));
 }
 
 std::string
-ColourFormatter::format(const IUseFlag & f, const format::Disabled &) const
+ColourFormatter::format(const ChoiceValue & f, const format::Forced &) const
 {
-    _imp->seen_use_flag_names->insert(f.flag);
-    if (_imp->unchanged_are_new)
-        _imp->seen_new_use_flag_names->insert(f.flag);
-    std::string g(stringify(f.flag)), h;
-
-    if (std::string::npos != f.prefix_delim_pos)
-    {
-        std::string p(g.substr(0, f.prefix_delim_pos));
-        if (_imp->active_prefix == p)
-            g.erase(0, f.prefix_delim_pos + 1);
-        else
-        {
-            _imp->active_prefix = p;
-            _imp->seen_use_expand_prefixes->insert(UseFlagName(_imp->active_prefix));
-            h = _imp->active_prefix + ": ";
-            g.erase(0, f.prefix_delim_pos + 1);
-        }
-    }
-
-    return h + colour(cl_flag_off, "-" + g);
+    return colour(cl_flag_on, "(" + stringify(f.unprefixed_name()) + ")");
 }
 
 std::string
-ColourFormatter::format(const IUseFlag & f, const format::Forced &) const
+ColourFormatter::format(const ChoiceValue & f, const format::Masked &) const
 {
-    _imp->seen_use_flag_names->insert(f.flag);
-    if (_imp->unchanged_are_new)
-        _imp->seen_new_use_flag_names->insert(f.flag);
-    std::string g(stringify(f.flag)), h;
-
-    if (std::string::npos != f.prefix_delim_pos)
-    {
-        std::string p(g.substr(0, f.prefix_delim_pos));
-        if (_imp->active_prefix == p)
-            g.erase(0, f.prefix_delim_pos + 1);
-        else
-        {
-            _imp->active_prefix = p;
-            _imp->seen_use_expand_prefixes->insert(UseFlagName(_imp->active_prefix));
-            h = _imp->active_prefix + ": ";
-            g.erase(0, f.prefix_delim_pos + 1);
-        }
-    }
-
-    return h + colour(cl_flag_on, "(" + g + ")");
+    return colour(cl_flag_off, "(-" + stringify(f.unprefixed_name()) + ")");
 }
 
 std::string
-ColourFormatter::format(const IUseFlag & f, const format::Masked &) const
+ColourFormatter::decorate(const ChoiceValue &, const std::string & f, const format::Added &) const
 {
-    _imp->seen_use_flag_names->insert(f.flag);
-    if (_imp->unchanged_are_new)
-        _imp->seen_new_use_flag_names->insert(f.flag);
-    std::string g(stringify(f.flag)), h;
-
-    if (std::string::npos != f.prefix_delim_pos)
-    {
-        std::string p(g.substr(0, f.prefix_delim_pos));
-        if (_imp->active_prefix == p)
-            g.erase(0, f.prefix_delim_pos + 1);
-        else
-        {
-            _imp->active_prefix = p;
-            _imp->seen_use_expand_prefixes->insert(UseFlagName(_imp->active_prefix));
-            h = _imp->active_prefix + ": ";
-            g.erase(0, f.prefix_delim_pos + 1);
-        }
-    }
-
-    return h + colour(cl_flag_off, "(-" + g + ")");
-}
-
-std::string
-ColourFormatter::decorate(const IUseFlag & i, const std::string & f, const format::Added &) const
-{
-    _imp->seen_new_use_flag_names->insert(i.flag);
     return f + "+";
 }
 
 std::string
-ColourFormatter::decorate(const IUseFlag & i, const std::string & f, const format::Changed &) const
+ColourFormatter::decorate(const ChoiceValue &, const std::string & f, const format::Changed &) const
 {
-    _imp->seen_changed_use_flag_names->insert(i.flag);
     return f + "*";
-}
-
-std::string
-ColourFormatter::format(const UseFlagName & f, const format::Plain &) const
-{
-    return stringify(f);
-}
-
-std::string
-ColourFormatter::format(const UseFlagName & f, const format::Enabled &) const
-{
-    return colour(cl_flag_on, f);
-}
-
-std::string
-ColourFormatter::format(const UseFlagName & f, const format::Disabled &) const
-{
-    return colour(cl_flag_off, "-" + stringify(f));
-}
-
-std::string
-ColourFormatter::format(const UseFlagName & f, const format::Forced &) const
-{
-    return colour(cl_flag_on, "(" + stringify(f) + ")");
-}
-
-std::string
-ColourFormatter::format(const UseFlagName & f, const format::Masked &) const
-{
-    return colour(cl_flag_off, "(-" + stringify(f) + ")");
 }
 
 std::string
@@ -282,6 +96,18 @@ std::string
 ColourFormatter::format(const ConditionalDepSpec & f, const format::Masked &) const
 {
     return colour(cl_flag_off, "(" + stringify(f) + ")");
+}
+
+std::string
+ColourFormatter::decorate(const ConditionalDepSpec &, const std::string & f, const format::Added &) const
+{
+    return f;
+}
+
+std::string
+ColourFormatter::decorate(const ConditionalDepSpec &, const std::string & f, const format::Changed &) const
+{
+    return f;
 }
 
 std::string
@@ -346,6 +172,12 @@ ColourFormatter::format(const KeywordName & f, const format::Unaccepted &) const
 
 std::string
 ColourFormatter::format(const std::string & f, const format::Plain &) const
+{
+    return stringify(f);
+}
+
+std::string
+ColourFormatter::format(const PlainTextLabelDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }

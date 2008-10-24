@@ -24,6 +24,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -34,6 +35,7 @@
 #include <paludis/package_database-fwd.hh>
 #include <paludis/selection-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
+#include <paludis/choice-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -79,25 +81,39 @@ namespace paludis
 
             ///\}
 
-            ///\name Use-related queries
+            ///\name Choice-related queries
             ///\{
 
             /**
-             * Is a particular use flag enabled for a particular package?
+             * Do we want a choice enabled for a particular package?
+             *
+             * Only for use by Repository, to get defaults from the environment.
+             * Clients should query the metadata key directly.
+             *
+             * The third parameter is the name of the value, which might not
+             * have been created yet.
              */
-            virtual bool query_use(const UseFlagName &, const PackageID &) const
+            virtual const Tribool want_choice_enabled(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName &
+                    ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Return a collection of known use flag names for a particular package that start
-             * with a particular use expand prefix.
+             * Return a collection of known value names for a particular
+             * choice.
              *
-             * It is up to subclasses to decide whether to return all known use flags with
-             * the specified prefix or merely all enabled use flags. It is not safe to assume
-             * that all flags in the returned value will be enabled for the specified package.
+             * Only for use by Repository, to get defaults from the environment.
+             * Clients should query the metadata key directly.
+             *
+             * This is to deal with cases like USE_EXPAND values, where the
+             * repository doesn't know all possible values.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                    const UseFlagName &, const PackageID &) const
+            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &
+                    ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

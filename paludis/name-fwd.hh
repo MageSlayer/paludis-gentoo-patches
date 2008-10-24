@@ -24,7 +24,6 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/options-fwd.hh>
 #include <string>
 
 /** \file
@@ -71,36 +70,7 @@ namespace paludis
      */
     typedef Set<CategoryNamePart> CategoryNamePartSet;
 
-    class UseFlagNameError;
-    class IUseFlagNameError;
-    class UseFlagNameValidator;
-
-    /**
-     * A UseFlagName holds a std::string that is a valid name for a USE flag.
-     *
-     * \ingroup g_names
-     */
-    typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
-
-    /**
-     * A collection of UseFlagName instances.
-     *
-     * \ingroup g_names
-     */
-    typedef Set<UseFlagName> UseFlagNameSet;
-
-#include <paludis/name-se.hh>
-
     class QualifiedPackageName;
-    class IUseFlag;
-
-    /**
-     * Options for IUseFlag.
-     *
-     * \ingroup g_names
-     * \since 0.26
-     */
-    typedef Options<IUseFlagParseOption> IUseFlagParseOptions;
 
     /**
      * Output a QualifiedPackageName to a stream.
@@ -108,13 +78,6 @@ namespace paludis
      * \ingroup g_names
      */
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
-
-    /**
-     * Output an IUseFlag to a stream.
-     *
-     * \ingroup g_names
-     */
-    std::ostream & operator<< (std::ostream &, const IUseFlag &) PALUDIS_VISIBLE;
 
     /**
      * Holds a collection of QualifiedPackageName instances.
@@ -204,13 +167,6 @@ namespace paludis
      * \ingroup g_names
      */
     typedef Set<SetName> SetNameSet;
-
-    /**
-     * A collection of use flags.
-     *
-     * \ingroup g_names
-     */
-    typedef Set<IUseFlag> IUseFlagSet;
 }
 
 #endif

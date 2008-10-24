@@ -38,6 +38,7 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/choice-fwd.hh>
 
 #include <tr1/memory>
 
@@ -172,13 +173,6 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const = 0;
 
             /**
-             * The iuse_key, if non-zero, is used when displaying single-line
-             * install-pretend output, and when resolving where DepList's
-             * DepListReinstallOption is dl_reinstall_if_use_changed.
-             */
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const = 0;
-
-            /**
              * The provide_key, if non-zero, indicates that a package provides
              * certain old-style virtuals. This affects dependency resolution.
              */
@@ -276,6 +270,13 @@ namespace paludis
              * PackageID's originating repository is volatile.
              */
             virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const = 0;
+
+            /**
+             * The choices_key, if non-zero, contains zero or more
+             * MetadataValueKey<std::tr1::shared_ptr<const Choice> > child
+             * keys holding choice information for this ID.
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const = 0;
 
             ///\}
 

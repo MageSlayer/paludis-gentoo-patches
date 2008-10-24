@@ -54,6 +54,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/tribool.hh>
 
 #include <tr1/functional>
 #include <functional>
@@ -76,7 +77,6 @@ namespace paludis
 
         std::tr1::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
-        std::list<UseConfigEntry> forced_use;
 
         std::tr1::shared_ptr<PackageDatabase> package_database;
 
@@ -162,63 +162,6 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
 
 PaludisEnvironment::~PaludisEnvironment()
 {
-}
-
-bool
-PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
-{
-    Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
-            "' in Paludis environment:");
-
-    /* first check package database use masks... */
-    if ((*e.repository()).use_interface())
-    {
-        if ((*e.repository()).use_interface()->query_use_mask(f, e))
-            return false;
-        if ((*e.repository()).use_interface()->query_use_force(f, e))
-            return true;
-    }
-
-    /* check configs */
-    do
-    {
-        switch (_imp->config->use_conf()->query(f, e))
-        {
-            case use_disabled:
-                return false;
-
-            case use_enabled:
-                return true;
-
-            case use_unspecified:
-                continue;
-
-            case last_use:
-                ;
-        }
-        throw InternalError(PALUDIS_HERE, "bad state");
-    } while (false);
-
-    /* check use: package database config */
-    if ((*e.repository()).use_interface())
-    {
-        switch ((*e.repository()).use_interface()->query_use(f, e))
-        {
-            case use_disabled:
-            case use_unspecified:
-                return false;
-
-            case use_enabled:
-                return true;
-
-            case last_use:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "bad state");
-    }
-
-    return false;
 }
 
 bool
@@ -435,12 +378,6 @@ PaludisEnvironment::mirrors(const std::string & m) const
     return _imp->config->mirrors_conf()->query(m);
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-PaludisEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
-{
-    return _imp->config->use_conf()->known_use_expand_names(prefix, e);
-}
-
 const FSEntry
 PaludisEnvironment::root() const
 {
@@ -580,5 +517,24 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 PaludisEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
+}
+
+const Tribool
+PaludisEnvironment::want_choice_enabled(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value
+        ) const
+{
+    return _imp->config->use_conf()->want_choice_enabled(id, choice, value);
+}
+
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+PaludisEnvironment::known_choice_value_names(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice
+        ) const
+{
+    return _imp->config->use_conf()->known_choice_value_names(id, choice);
 }
 

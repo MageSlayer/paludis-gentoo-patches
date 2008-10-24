@@ -74,6 +74,12 @@ namespace paludis
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
+         * Parse a myoptions heirarchy.
+         */
+        std::tr1::shared_ptr<PlainTextSpecTree::ConstItem> parse_myoptions(const std::string & s,
+                const Environment * const, const std::tr1::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+
+        /**
          * Parse a fetchable uri heirarchy.
          */
         std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
@@ -95,6 +101,11 @@ namespace paludis
          * Parse a URI label.
          */
         std::tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
+
+        /**
+         * Parse a plain text label.
+         */
+        std::tr1::shared_ptr<PlainTextLabelDepSpec> parse_plain_text_label(const std::string & s) PALUDIS_VISIBLE;
     }
 }
 

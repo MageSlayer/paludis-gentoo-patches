@@ -104,6 +104,14 @@ namespace
                  * example_contents.cc "example_contents.cc" for that. */
             }
 
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " <<
+                    "MetadataValueKey<std::tr1::shared_ptr<const Choices> > " << endl;
+                /* We won't display the contents of the choices key here, since
+                 * it has its own examples. */
+            }
+
             void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<
@@ -167,21 +175,9 @@ namespace
                 cout << indent << left << setw(30) << "    Initial label:" << " " << key.initial_label()->text() << endl;
             }
 
-            void visit(const MetadataCollectionKey<IUseFlagSet> & key)
-            {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<IUseFlagSet>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
-            }
-
             void visit(const MetadataCollectionKey<KeywordNameSet> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<KeywordNameSet>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
-            }
-
-            void visit(const MetadataCollectionKey<UseFlagNameSet> & key)
-            {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<UseFlagNameSet>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 

@@ -22,6 +22,7 @@
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/repositories/e/dep_parser-fwd.hh>
+#include <paludis/repositories/e/iuse.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -47,6 +48,7 @@ namespace paludis
         struct dependency_labels;
         struct dependency_spec_tree_parse_options;
         struct description;
+        struct description_choices;
         struct description_use;
         struct directory_if_exists_variables;
         struct directory_variables;
@@ -89,6 +91,8 @@ namespace paludis
         struct f_function_prefix;
         struct failure_is_fatal;
         struct flat_list_index;
+        struct has_optional_tests;
+        struct has_recommended_tests;
         struct homepage;
         struct ignore_pivot_env_functions;
         struct ignore_pivot_env_variables;
@@ -102,6 +106,7 @@ namespace paludis
         struct merger_options;
         struct metadata_key;
         struct minimum_flat_list_size;
+        struct myoptions;
         struct must_not_change_variables;
         struct name;
         struct no_slot_or_repo;
@@ -138,6 +143,8 @@ namespace paludis
         struct upstream_release_notes;
         struct uri_labels;
         struct use;
+        struct use_expand;
+        struct use_expand_hidden;
         struct use_expand_separator;
         struct userpriv_cannot_use_root;
         struct utility_path_suffixes;
@@ -220,6 +227,8 @@ namespace paludis
             NamedValue<n::ebuild_metadata_variables, std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
             NamedValue<n::ebuild_options, std::tr1::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
             NamedValue<n::ebuild_phases, std::tr1::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
+            NamedValue<n::has_optional_tests, bool> has_optional_tests;
+            NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
@@ -231,6 +240,7 @@ namespace paludis
 
         struct EAPIEbuildEnvironmentVariables
         {
+            NamedValue<n::description_choices, std::string> description_choices;
             NamedValue<n::description_use, std::string> description_use;
             NamedValue<n::env_a, std::string> env_a;
             NamedValue<n::env_aa, std::string> env_aa;
@@ -269,6 +279,7 @@ namespace paludis
             NamedValue<n::license, EAPIMetadataVariable> license;
             NamedValue<n::long_description, EAPIMetadataVariable> long_description;
             NamedValue<n::minimum_flat_list_size, int> minimum_flat_list_size;
+            NamedValue<n::myoptions, EAPIMetadataVariable> myoptions;
             NamedValue<n::pdepend, EAPIMetadataVariable> pdepend;
             NamedValue<n::properties, EAPIMetadataVariable> properties;
             NamedValue<n::provide, EAPIMetadataVariable> provide;
@@ -282,6 +293,8 @@ namespace paludis
             NamedValue<n::upstream_documentation, EAPIMetadataVariable> upstream_documentation;
             NamedValue<n::upstream_release_notes, EAPIMetadataVariable> upstream_release_notes;
             NamedValue<n::use, EAPIMetadataVariable> use;
+            NamedValue<n::use_expand, EAPIMetadataVariable> use_expand;
+            NamedValue<n::use_expand_hidden, EAPIMetadataVariable> use_expand_hidden;
         };
 
         struct EAPIEbuildOptions

@@ -50,11 +50,6 @@ namespace environment
         std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
         e.package_database()->add_repository(0, repo);
 
-        UseFlagName u("use");
-        bool PALUDIS_ATTRIBUTE((unused)) b1(e.query_use(u, *pid));
-
-        e.known_use_expand_names(u, *pid);
-
         bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
 
         std::tr1::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
@@ -196,21 +191,6 @@ namespace metadata_key
         m.pretty_print_flat(ff);
     }
 
-    template <>
-    void test_metadata_set_key(const MetadataCollectionKey<IUseFlagSet> & m)
-    {
-        test_metadata_key(m);
-        m.value();
-        StringifyFormatter ff;
-        m.pretty_print_flat(ff);
-
-        TestEnvironment e;
-        std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
-        std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
-
-        m.pretty_print_flat_with_comparison(&e, pid, ff);
-    }
-
     template <typename C_>
     void test_metadata_spec_tree_key(const MetadataSpecTreeKey<C_> & m)
     {
@@ -253,30 +233,6 @@ namespace formatter
         f.format(k, Unaccepted());
     }
 
-    // CanFormat for UseRoles
-    void test_use_roles(CanFormat<UseFlagName> & f)
-    {
-        UseFlagName u("use");
-        f.format(u, Plain());
-        f.format(u, Enabled());
-        f.format(u, Disabled());
-        f.format(u, Forced());
-        f.format(u, Masked());
-    }
-
-    // CanFormat for IUseRoles
-    void test_iuse_roles(CanFormat<IUseFlag> & f)
-    {
-        IUseFlag u("iuse_flag", IUseFlagParseOptions(), 1);
-        f.format(u, Plain());
-        f.format(u, Enabled());
-        f.format(u, Disabled());
-        f.format(u, Forced());
-        f.format(u, Masked());
-        f.decorate(u, "%", Added());
-        f.decorate(u, "*", Changed());
-    }
-
     // CanFormat for PackageRoles
     void test_package_roles(CanFormat<PackageDepSpec> & f)
     {
@@ -299,14 +255,6 @@ namespace formatter
     }
 
     void test_formmater_keyword_name(const Formatter<KeywordName> &)
-    {
-    }
-
-    void test_formatter_use_flag_name(const Formatter<UseFlagName> &)
-    {
-    }
-
-    void test_formatter_iuse_flag(const Formatter<IUseFlag> &)
     {
     }
 
@@ -360,8 +308,6 @@ void expose_additional_tests()
     bp::def("test_metadata_contents_key", &metadata_key::test_metadata_contents_key);
     bp::def("test_metadata_repository_mask_info_key", &metadata_key::test_metadata_repository_mask_info_key);
     bp::def("test_metadata_keyword_name_set_key", &metadata_key::test_metadata_set_key<KeywordNameSet>);
-    bp::def("test_metadata_use_flag_name_set_key", &metadata_key::test_metadata_set_key<UseFlagNameSet>);
-    bp::def("test_metadata_iuse_flag_set_key", &metadata_key::test_metadata_set_key<IUseFlagSet>);
     bp::def("test_metadata_string_set_key", &metadata_key::test_metadata_set_key<Set<std::string> >);
     bp::def("test_metadata_license_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<LicenseSpecTree>);
     bp::def("test_metadata_provide_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<ProvideSpecTree>);
@@ -376,15 +322,11 @@ void expose_additional_tests()
      */
     bp::def("test_plain_roles", &formatter::test_plain_roles);
     bp::def("test_acceptable_roles", &formatter::test_acceptable_roles);
-    bp::def("test_use_roles", &formatter::test_use_roles);
-    bp::def("test_iuse_roles", &formatter::test_iuse_roles);
     bp::def("test_package_roles", &formatter::test_package_roles);
     bp::def("test_can_space", &formatter::test_can_space);
 
     bp::def("test_formatter_string", &formatter::test_formatter_string);
     bp::def("test_formmater_keyword_name", &formatter::test_formmater_keyword_name);
-    bp::def("test_formatter_use_flag_name", &formatter::test_formatter_use_flag_name);
-    bp::def("test_formatter_iuse_flag", &formatter::test_formatter_iuse_flag);
     bp::def("test_formatter_license_spec_tree", &formatter::test_formatter_license_spec_tree);
     bp::def("test_formatter_provide_spec_tree", &formatter::test_formatter_provide_spec_tree);
     bp::def("test_formatter_dependency_spec_tree", &formatter::test_formatter_dependency_spec_tree);

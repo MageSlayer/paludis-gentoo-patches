@@ -45,12 +45,6 @@ void expose_name()
         ("QualifiedPackageNameError", "NameError",
          "May be thrown if an invalid name is assigned to a QualifiedPackageName "
          "(alternatively, the exception raised may be a PackageNamePartError or a CategoryNamePartError).");
-    ExceptionRegister::get_instance()->add_exception<UseFlagNameError>
-        ("UseFlagNameError", "NameError",
-         "Thrown if an invalid value is assigned to a UseFlagName.");
-    ExceptionRegister::get_instance()->add_exception<IUseFlagNameError>
-        ("IUseFlagNameError", "NameError",
-         "Thrown if an invalid value is assigned to a IUseFlagName.");
     ExceptionRegister::get_instance()->add_exception<SlotNameError>
         ("SlotNameError", "NameError",
          "Thrown if an invalid value is assigned to a SlotName.");
@@ -63,20 +57,6 @@ void expose_name()
     ExceptionRegister::get_instance()->add_exception<SetNameError>
         ("SetNameError", "NameError",
          "Thrown if an invalid value is assigned to a SetName.");
-
-    /**
-     * Enums
-     */
-    enum_auto("UseFlagState", last_use,
-            "A USE flag can be on, off or unspecified.");
-    enum_auto("IUseFlagParseOption", last_iufpo,
-            "How to parse an IUSE flag string.");
-
-    /**
-     * Options
-     */
-    class_options<IUseFlagParseOptions>("IUseFlagParseOptions", "IUseFlagParseOption",
-            "Options for IUseFlag.");
 
     /**
      * PackageNamePart
@@ -117,25 +97,6 @@ void expose_name()
         (
          "CategoryNamePartIterable",
          "Iterable of CategoryNamePart",
-         true
-        );
-
-    /**
-     * UseFlagName
-     */
-    class_validated<UseFlagName>
-        (
-         "UseFlagName",
-         "Holds a string that is a valid name for a USE flag."
-        );
-
-    /**
-     * UseFlagNameIterable
-     */
-    class_iterable<UseFlagNameSet>
-        (
-         "UseFlagNameIterable",
-         "Iterable of UseFlagName",
          true
         );
 
@@ -249,44 +210,4 @@ void expose_name()
          true
         );
 
-    /**
-     * IUseFlag
-     */
-    bp::class_<IUseFlag>
-        (
-         "IUseFlag",
-         "Represents an IUse flag.",
-         bp::init<const std::string &, IUseFlagParseOptions, const std::string::size_type>(
-             "__init__(string, IUseFlagParseOptions, Integer)")
-        )
-        .def(bp::init<const UseFlagName &, const UseFlagState &, const std::string::size_type>(
-                    "__init__(UseFlagName, UseFlagState, Integer)"))
-
-        .def_readwrite("flag", &IUseFlag::flag,
-                "[rw] UseFlagName"
-                )
-
-        .def_readwrite("state", &IUseFlag::state,
-                "[rw] UseFlagState"
-                )
-
-        .def_readwrite("prefix_delim_pos", &IUseFlag::prefix_delim_pos,
-                "[rw] Integer"
-                )
-
-        .def("__cmp__", &py_cmp<IUseFlag>)
-
-        .def(bp::self_ns::str(bp::self))
-
-        ;
-
-    /**
-     * IUseFlagNameIterable
-     */
-    class_iterable<IUseFlagSet>
-        (
-         "IUseFlagIterable",
-         "Iterable of IUseFlag",
-         true
-        );
 }

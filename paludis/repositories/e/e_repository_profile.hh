@@ -26,9 +26,12 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/mask-fwd.hh>
+#include <paludis/metadata_key-fwd.hh>
+#include <paludis/choice-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/tribool.hh>
 #include <string>
 
 /** \file
@@ -70,26 +73,41 @@ namespace paludis
             ///\{
 
             /// Is a use flag masked?
-            bool use_masked(const UseFlagName &, const PackageID &) const;
+            bool use_masked(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName & value_unprefixed,
+                    const ChoiceNameWithPrefix & value_prefixed
+                    ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Is a use flag forced?
-            bool use_forced(const UseFlagName &, const PackageID &) const;
+            bool use_forced(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName & value_unprefixed,
+                    const ChoiceNameWithPrefix & value_prefixed
+                    ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Use flag state, ignoring mask and force?
-            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageID &) const;
+            Tribool use_state_ignoring_masks(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName & value_unprefixed,
+                    const ChoiceNameWithPrefix & value_prefixed
+                    ) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &
+                    ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
             ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
             ///\{
 
-            struct UseExpandConstIteratorTag;
-            typedef WrappedForwardIterator<UseExpandConstIteratorTag, const UseFlagName> UseExpandConstIterator;
-
-            UseExpandConstIterator begin_use_expand() const;
-            UseExpandConstIterator end_use_expand() const;
-            UseExpandConstIterator begin_use_expand_hidden() const;
-            UseExpandConstIterator end_use_expand_hidden() const;
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand_hidden() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

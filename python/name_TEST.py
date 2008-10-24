@@ -28,19 +28,15 @@ class TestCase_Names(unittest.TestCase):
         self.names["pkg"] = PackageNamePart("pkg")
         self.names["cat-foo/pkg"] = QualifiedPackageName(self.names["cat-foo"], self.names["pkg"])
         self.names["cat-blah/pkg"] = QualifiedPackageName("cat-blah/pkg")
-        self.names["useflag"] = UseFlagName("useflag")
         self.names["3.3"] = SlotName("3.3")
         self.names["repo"] = RepositoryName("repo")
         self.names["keyword"] = KeywordName("keyword")
         self.names["set"] = SetName("set")
-        IUseFlag("foo", IUseFlagParseOptions(), -1)
-        IUseFlag("foo", UseFlagState.ENABLED, -1)
 
     def test_2_create_error(self):
         self.assertRaises(PackageNamePartError, PackageNamePart, ":bad")
         self.assertRaises(CategoryNamePartError, CategoryNamePart, ":bad")
         self.assertRaises(QualifiedPackageNameError, QualifiedPackageName, ":bad")
-        self.assertRaises(UseFlagNameError, UseFlagName, "-bad")
         self.assertRaises(SlotNameError, SlotName, ":bad")
         self.assertRaises(RepositoryNameError, RepositoryName, ":bad")
         self.assertRaises(KeywordNameError, KeywordName, ":bad")
@@ -48,7 +44,6 @@ class TestCase_Names(unittest.TestCase):
         self.assertRaises(Exception, PackageNamePartIterable)
         self.assertRaises(Exception, CategoryNamePartIterable)
         self.assertRaises(Exception, QualifiedPackageNameIterable)
-        self.assertRaises(Exception, UseFlagNameIterable)
         self.assertRaises(Exception, RepositoryNameIterable)
 
     def test_3_str(self):
@@ -56,13 +51,8 @@ class TestCase_Names(unittest.TestCase):
         for (k, v) in self.names.items():
             self.assertEqual(str(v), k)
 
-        self.assertEqual(str(IUseFlag("foo", UseFlagState.ENABLED, -1)), "+foo")
-
     def test_4_operators(self):
         self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
-        self.assert_(IUseFlag("foo", UseFlagState.ENABLED, -1) ==
-                     IUseFlag("+foo", IUseFlagParseOptions() + IUseFlagParseOption.ALLOW_IUSE_DEFAULTS, 2))
-
 
     def test_5_data_members(self):
         qpn = QualifiedPackageName("cat/foo")
@@ -72,11 +62,6 @@ class TestCase_Names(unittest.TestCase):
         qpn.package = "bar"
         self.assertEqual(str(qpn.category), "blah")
         self.assertEqual(str(qpn.package), "bar")
-
-        iuf = IUseFlag("foo", UseFlagState.ENABLED, -1)
-        iuf.flag = "blah"
-        iuf.state = UseFlagState.DISABLED
-        self.assertEqual(str(iuf), "-blah")
 
 if __name__ == "__main__":
     unittest.main()

@@ -937,6 +937,26 @@ namespace paludis
             virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE PlainTextLabelDepSpec :
+        public StringDepSpec
+    {
+        protected:
+            virtual void need_keys_added() const;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            PlainTextLabelDepSpec(const std::string &);
+            ~PlainTextLabelDepSpec();
+
+            ///\}
+
+            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class Cloneable<DepSpec>;
     extern template class PrivateImplementationPattern<ConditionalDepSpec>;
@@ -946,6 +966,7 @@ namespace paludis
     extern template class CloneUsingThis<DepSpec, PackageDepSpec>;
     extern template class PrivateImplementationPattern<DependencyLabelsDepSpec>;
     extern template class PrivateImplementationPattern<URILabelsDepSpec>;
+    extern template class PrivateImplementationPattern<PlainTextLabelDepSpec>;
 #endif
 }
 

@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH 1
 
-#include <iosfwd>
 #include <paludis/util/attributes.hh>
 #include <tr1/memory>
 
@@ -61,9 +60,6 @@ namespace paludis
     struct UninstallActionOptions;
 
     struct FetchActionFailure;
-
-#include <paludis/action-se.hh>
-
 }
 
 #endif

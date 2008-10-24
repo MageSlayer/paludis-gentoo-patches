@@ -22,8 +22,6 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/args/debug_build_arg.hh>
-#include <paludis/args/checks_arg.hh>
 #include <paludis/args/log_level_arg.hh>
 #include <paludis/args/deps_option_arg.hh>
 

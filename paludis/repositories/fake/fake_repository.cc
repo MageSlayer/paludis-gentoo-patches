@@ -72,7 +72,6 @@ FakeRepository::FakeRepository(const Environment * const env, const RepositoryNa
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
                 value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
-                value_for<n::use_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
                             env->distribution())).support_old_style_virtuals() ? this : 0)
             )),
@@ -95,7 +94,6 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
                 value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
-                value_for<n::use_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
                             params.environment->distribution())).support_old_style_virtuals() ? this : 0)
                 )),

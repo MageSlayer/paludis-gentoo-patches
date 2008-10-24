@@ -107,60 +107,6 @@ namespace paludis
         static void validate(const std::string &);
     };
 
-    /**
-     * A UseFlagNameError is thrown if an invalid value is assigned to
-     * a UseFlagName.
-     *
-     * \ingroup g_names
-     * \ingroup g_exceptions
-     */
-    class PALUDIS_VISIBLE UseFlagNameError :
-        public NameError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            UseFlagNameError(const std::string & name) throw ();
-    };
-
-    /**
-     * An IUseFlagNameError is thrown if an invalid value is assigned to
-     * an IUseFlagName.
-     *
-     * \ingroup g_names
-     * \ingroup g_exceptions
-     */
-    class PALUDIS_VISIBLE IUseFlagNameError :
-        public NameError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            IUseFlagNameError(const std::string & name, const std::string & msg) throw ();
-
-            IUseFlagNameError(const std::string & name) throw ();
-
-            ///\}
-    };
-
-    /**
-     * A UseFlagNameValidator handles validation rules for the value of a
-     * UseFlagName.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE UseFlagNameValidator :
-        private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
-    {
-        /**
-         * If the parameter is not a valid value for a UseFlagName,
-         * throw a UseFlagNameError.
-         */
-        static void validate(const std::string &);
-    };
-
 #include <paludis/name-sr.hh>
 
     /**

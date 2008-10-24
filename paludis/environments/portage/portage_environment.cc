@@ -36,6 +36,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>
@@ -48,6 +49,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <functional>
 #include <algorithm>
@@ -544,64 +546,42 @@ PortageEnvironment::~PortageEnvironment()
 {
 }
 
-bool
-PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
+const Tribool
+PortageEnvironment::want_choice_enabled(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & suffix) const
 {
-    Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
+    Context context("When querying flag '" + stringify(suffix) + "' for choice '" + choice->human_name() + "' for ID '" + stringify(*id) +
             "' in Portage environment:");
 
-    /* first check package database use masks... */
-    if ((*e.repository()).use_interface())
-    {
-        if ((*e.repository()).use_interface()->query_use_mask(f, e))
-            return false;
-        if ((*e.repository()).use_interface()->query_use_force(f, e))
-            return true;
-    }
-
-    UseFlagState state(use_unspecified);
-
-    /* check use: repo */
-    if ((*e.repository()).use_interface())
-        state = (*e.repository()).use_interface()->query_use(f, e);
+    Tribool state(indeterminate);
+    ChoiceNameWithPrefix f(stringify(choice->prefix()) + (stringify(choice->prefix()).empty() ? "" : "_") + stringify(suffix));
 
     /* check use: general user config */
     for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()), i_end(_imp->use_with_expands.end()) ;
             i != i_end ; ++i)
         if (*i == "-*")
-            state = use_disabled;
+            state = false;
         else if (*i == stringify(f))
-            state = use_enabled;
+            state = true;
         else if (*i == "-" + stringify(f))
-            state = use_disabled;
+            state = false;
 
     /* check use: per package config */
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, e))
+        if (! match_package(*this, *i->first, *id))
             continue;
 
         if (i->second == stringify(f))
-            state = use_enabled;
+            state = true;
         else if (i->second == "-" + stringify(f))
-            state = use_disabled;
+            state = false;
     }
 
-    switch (state)
-    {
-        case use_disabled:
-        case use_unspecified:
-            return false;
-
-        case use_enabled:
-            return true;
-
-        case last_use:
-            ;
-    }
-
-    throw InternalError(PALUDIS_HERE, "bad state");
+    return state;
 }
 
 std::string
@@ -675,35 +655,29 @@ PortageEnvironment::unmasked_by_user(const PackageID & e) const
     return false;
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
-        const PackageID & pde) const
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+PortageEnvironment::known_choice_value_names(const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice) const
 {
-    Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
+    Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + ":");
 
-    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    std::string prefix_lower;
-    std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
-    prefix_lower.append("_");
+    std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+    std::string prefix_lower(stringify(choice->prefix()) + "_");
 
     for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()),
             i_end(_imp->use_with_expands.end()) ; i != i_end ; ++i)
         if (0 == i->compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
-            result->insert(UseFlagName(*i));
+            result->insert(UnprefixedChoiceName(i->substr(prefix_lower.length())));
 
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, pde))
+        if (! match_package(*this, *i->first, *id))
             continue;
 
         if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
-            result->insert(UseFlagName(i->second));
+            result->insert(UnprefixedChoiceName(i->second.substr(prefix_lower.length())));
     }
-
-    Log::get_instance()->message("portage_environment.known_use_expand_names", ll_debug, lc_no_context)
-        << "PortageEnvironment::known_use_expand_names("
-        << prefix << ", " << pde << ") -> (" << join(result->begin(), result->end(), ", ") << ")";
 
     return result;
 }

@@ -98,14 +98,15 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakePackageID> id3(repo->add_version("cat", "pkg", "3"));
             id3->build_dependencies_key()->set_from_string("x? ( )");
-            id3->iuse_key()->set_from_string("x", IUseFlagParseOptions());
+            id3->choices_key()->add("", "x");
             TestReporter r3;
             TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r3, id3, "spec keys"));
             TEST_CHECK_EQUAL(r3.count, 1u);
 
             std::tr1::shared_ptr<FakePackageID> id4(repo->add_version("cat", "pkg", "4"));
             id4->build_dependencies_key()->set_from_string("x? ( ) ( y? ( || ( ) ) )");
-            id4->iuse_key()->set_from_string("x y", IUseFlagParseOptions());
+            id4->choices_key()->add("", "x");
+            id4->choices_key()->add("", "y");
             TestReporter r4;
             TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r4, id4, "spec keys"));
             TEST_CHECK_EQUAL(r4.count, 2u);
@@ -123,7 +124,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("|| ( v/w x? ( x/y ) )");
-            id->iuse_key()->set_from_string("x", IUseFlagParseOptions());
+            id->choices_key()->add("", "x");
 
             TestReporter r;
             TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r, id, "spec keys"));
@@ -199,7 +200,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakePackageID> id1(repo->add_version("cat", "pkg", "1"));
             id1->build_dependencies_key()->set_from_string("x? ( x? ( cat/pkg ) )");
-            id1->iuse_key()->set_from_string("x", IUseFlagParseOptions());
+            id1->choices_key()->add("", "x");
 
             TestReporter r1;
             TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r1, id1, "spec keys"));
@@ -207,7 +208,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakePackageID> id2(repo->add_version("cat", "pkg", "2"));
             id2->build_dependencies_key()->set_from_string("x? ( !x? ( cat/pkg ) )");
-            id2->iuse_key()->set_from_string("x", IUseFlagParseOptions());
+            id2->choices_key()->add("", "x");
 
             TestReporter r2;
             TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r2, id2, "spec keys"));

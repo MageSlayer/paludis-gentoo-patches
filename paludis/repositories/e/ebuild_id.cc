@@ -27,6 +27,7 @@
 #include <paludis/repositories/e/e_mask.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
+#include <paludis/repositories/e/e_choice_value.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -35,6 +36,7 @@
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/elike_choices.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -45,6 +47,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/tribool.hh>
 
 #include <iterator>
 #include <fstream>
@@ -86,9 +89,12 @@ namespace paludis
         mutable std::tr1::shared_ptr<const ESimpleURIKey> homepage;
         mutable std::tr1::shared_ptr<const ELicenseKey> license;
         mutable std::tr1::shared_ptr<const EKeywordsKey> keywords;
-        mutable std::tr1::shared_ptr<const EIUseKey> iuse;
-        mutable std::tr1::shared_ptr<const EInheritedKey> inherited;
-        mutable std::tr1::shared_ptr<const EUseKey> use;
+        mutable std::tr1::shared_ptr<const EStringSetKey> raw_iuse;
+        mutable std::tr1::shared_ptr<const EMyOptionsKey> raw_myoptions;
+        mutable std::tr1::shared_ptr<const EStringSetKey> inherited;
+        mutable std::tr1::shared_ptr<const EStringSetKey> raw_use;
+        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
+        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand_hidden;
         mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
         mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
         mutable std::tr1::shared_ptr<const EPlainTextSpecKey> remote_ids;
@@ -96,6 +102,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_changelog;
         mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_documentation;
         mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_release_notes;
+        mutable std::tr1::shared_ptr<const EChoicesKey> choices;
 
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
@@ -272,6 +279,29 @@ EbuildID::need_keys_added() const
     _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
         std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
     add_metadata_key(_imp->profile_mask);
+
+    if (_imp->eapi->supported())
+    {
+        _imp->raw_use_expand = make_shared_ptr(new LiteralMetadataStringSetKey(
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand().name(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand().description(),
+                    mkt_internal,
+                    std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand()));
+        _imp->raw_use_expand_hidden = make_shared_ptr(new LiteralMetadataStringSetKey(
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden().name(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden().description(),
+                    mkt_internal,
+                    std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand_hidden()));
+    }
+
+    if (_imp->eapi->supported())
+        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
+                    _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
+                    mkt_normal, std::tr1::static_pointer_cast<const ERepository>(repository())));
+    else
+        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
+                    std::tr1::static_pointer_cast<const ERepository>(repository())));
+    add_metadata_key(_imp->choices);
 }
 
 namespace
@@ -492,18 +522,39 @@ EbuildID::keywords_key() const
     return _imp->keywords;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-EbuildID::iuse_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::raw_iuse_key() const
 {
     need_keys_added();
-    return _imp->iuse;
+    return _imp->raw_iuse;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
-EbuildID::use_key() const
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+EbuildID::raw_myoptions_key() const
 {
     need_keys_added();
-    return _imp->use;
+    return _imp->raw_myoptions;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::raw_use_key() const
+{
+    need_keys_added();
+    return _imp->raw_use;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::raw_use_expand_key() const
+{
+    need_keys_added();
+    return _imp->raw_use_expand;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::raw_use_expand_hidden_key() const
+{
+    need_keys_added();
+    return _imp->raw_use_expand_hidden;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
@@ -769,16 +820,24 @@ void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->iuse.reset(new EIUseKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
-    add_metadata_key(_imp->iuse);
+    _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->raw_iuse);
+}
+
+void
+EbuildID::load_myoptions(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->raw_myoptions);
 }
 
 void
 EbuildID::load_use(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->use.reset(new EUseKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
-    add_metadata_key(_imp->use);
+    _imp->raw_use.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->raw_use);
 }
 
 void
@@ -793,7 +852,7 @@ void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
+    _imp->inherited.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->inherited);
 }
 
@@ -1024,5 +1083,99 @@ EbuildID::upstream_release_notes_key() const
 {
     need_keys_added();
     return _imp->upstream_release_notes;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+EbuildID::choices_key() const
+{
+    need_keys_added();
+    return _imp->choices;
+}
+
+std::tr1::shared_ptr<ChoiceValue>
+EbuildID::make_choice_value(
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value_name,
+        const Tribool iuse_default,
+        const bool explicitly_listed
+        ) const
+{
+    if (! eapi()->supported())
+        throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
+
+    std::string name_with_prefix_s;
+    if (stringify(choice->prefix()).empty())
+        name_with_prefix_s = stringify(value_name);
+    else
+    {
+        char use_expand_separator(eapi()->supported()->ebuild_options()->use_expand_separator());
+        if (! use_expand_separator)
+            throw InternalError(PALUDIS_HERE, "No use_expand_separator defined");
+        name_with_prefix_s = stringify(choice->prefix()) + std::string(1, use_expand_separator) + stringify(value_name);
+    }
+    ChoiceNameWithPrefix name_with_prefix(name_with_prefix_s);
+
+    bool locked(false), enabled(false);
+    if (raw_use_key())
+    {
+        locked = true;
+        enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix_s));
+    }
+    else
+    {
+        if (_imp->repository->profile()->use_masked(shared_from_this(), choice, value_name, name_with_prefix))
+        {
+            locked = true;
+            enabled = false;
+        }
+        else if (_imp->repository->profile()->use_forced(shared_from_this(), choice, value_name, name_with_prefix))
+        {
+            locked = true;
+            enabled = true;
+        }
+        else
+        {
+            Tribool env_want(_imp->environment->want_choice_enabled(shared_from_this(), choice, value_name));
+            if (env_want.is_true())
+                enabled = true;
+            else if (env_want.is_false())
+                enabled = false;
+            else
+            {
+                Tribool profile_want(_imp->repository->profile()->use_state_ignoring_masks(shared_from_this(), choice, value_name, name_with_prefix));
+                if (profile_want.is_true())
+                    enabled = true;
+                else if (profile_want.is_false())
+                    enabled = false;
+                else if (iuse_default.is_true())
+                    enabled = true;
+                else if (iuse_default.is_false())
+                    enabled = false;
+                else
+                    enabled = false;
+            }
+        }
+    }
+
+    return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
+                _imp->repository->use_desc(),
+                enabled, locked, explicitly_listed));
+}
+
+void
+EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
+{
+    if (eapi()->supported())
+    {
+        std::tr1::shared_ptr<Choice> build_options(new Choice(canonical_build_options_raw_name(), canonical_build_options_human_name(),
+                    canonical_build_options_prefix(), false, false, false, false));
+        choices->add(build_options);
+        if (eapi()->supported()->has_optional_tests())
+            build_options->add(make_shared_ptr(new ELikeOptionalTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        if (eapi()->supported()->has_recommended_tests())
+            build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+    }
 }
 

@@ -44,7 +44,6 @@ namespace paludis
     class Repository;
     class RepositorySetsInterface;
     class RepositorySyncableInterface;
-    class RepositoryUseInterface;
     class RepositoryEnvironmentVariableInterface;
     class RepositoryMirrorsInterface;
     class RepositoryProvidesInterface;

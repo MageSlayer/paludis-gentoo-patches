@@ -143,6 +143,12 @@ DepSpecFlattener<Heirarchy_, Item_>::visit_leaf(const Item_ & p)
     _imp->specs.push_back(std::tr1::static_pointer_cast<const Item_>(p.clone()));
 }
 
+template <typename Heirarchy_, typename Item_>
+void
+dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<Heirarchy_, Item_, true>::visit_leaf(const PlainTextLabelDepSpec &)
+{
+}
+
 template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;

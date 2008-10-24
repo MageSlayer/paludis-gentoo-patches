@@ -214,6 +214,9 @@ namespace
             if (-1 != m.iuse().flat_list_index() && ! m.iuse().name().empty())
                 id->load_iuse(m.iuse().name(), m.iuse().description(), lines.at(m.iuse().flat_list_index()));
 
+            if (-1 != m.myoptions().flat_list_index() && ! m.myoptions().name().empty())
+                id->load_myoptions(m.iuse().name(), m.myoptions().description(), lines.at(m.myoptions().flat_list_index()));
+
             if (-1 != m.pdepend().flat_list_index() && ! m.pdepend().name().empty())
                 id->load_post_depend(m.pdepend().name(), m.pdepend().description(), lines.at(m.pdepend().flat_list_index()));
 
@@ -535,6 +538,9 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 if (! m.iuse().name().empty())
                     id->load_iuse(m.iuse().name(), m.iuse().description(), keys[m.iuse().name()]);
 
+                if (! m.myoptions().name().empty())
+                    id->load_myoptions(m.myoptions().name(), m.myoptions().description(), keys[m.myoptions().name()]);
+
                 if (! m.pdepend().name().empty())
                     id->load_post_depend(m.pdepend().name(), m.pdepend().description(), keys[m.pdepend().name()]);
 
@@ -713,8 +719,8 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
             write_kv(cache, m.dependencies().name(), s);
         }
 
-        if (! m.use().name().empty() && id->use_key())
-            write_kv(cache, m.use().name(), join(id->use_key()->value()->begin(), id->use_key()->value()->end(), " "));
+        if (! m.use().name().empty() && id->raw_use_key())
+            write_kv(cache, m.use().name(), join(id->raw_use_key()->value()->begin(), id->raw_use_key()->value()->end(), " "));
 
         if (! m.build_depend().name().empty() && id->build_dependencies_key())
             write_kv(cache, m.build_depend().name(), flatten(id->build_dependencies_key()->value()));
@@ -745,8 +751,11 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         if (! m.keywords().name().empty() && id->keywords_key())
             write_kv(cache, m.keywords().name(), join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " "));
 
-        if (! m.iuse().name().empty() && id->iuse_key())
-            write_kv(cache, m.iuse().name(), join(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(), " "));
+        if (! m.iuse().name().empty() && id->raw_iuse_key())
+            write_kv(cache, m.iuse().name(), join(id->raw_iuse_key()->value()->begin(), id->raw_iuse_key()->value()->end(), " "));
+
+        if (! m.myoptions().name().empty() && id->raw_myoptions_key())
+            write_kv(cache, m.myoptions().name(), flatten(id->raw_myoptions_key()->value()));
 
         if (! m.pdepend().name().empty() && id->post_dependencies_key())
             write_kv(cache, m.pdepend().name(), flatten(id->post_dependencies_key()->value()));

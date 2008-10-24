@@ -41,27 +41,6 @@ namespace
 
     /*
      * call-seq:
-     *     query_use(use_flag, package_id) -> true or false
-     *
-     * Does the user want the specified USE flag set for a PackageID.
-     */
-
-    VALUE
-    environment_query_use(VALUE self, VALUE flag, VALUE pid)
-    {
-        try
-        {
-            return value_to_environment(self)->query_use(
-                    UseFlagName(StringValuePtr(flag)), *(value_to_package_id(pid))) ? Qtrue : Qfalse;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
      *     [](Selection) -> Array of PackageID
      *
      * Fetch PackageID instances using the supplied Selection.
@@ -484,7 +463,6 @@ namespace
          */
         c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);

@@ -30,12 +30,25 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/choice.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <cstdlib>
 
 using namespace paludis;
 using namespace test;
+
+namespace
+{
+    bool get_use(const std::string & f, const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        const std::tr1::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
+        if (! v)
+            return false;
+        return v->enabled();
+    }
+}
 
 namespace test_cases
 {
@@ -56,19 +69,19 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("quoted-name"), *one));
+            TEST_CHECK(get_use("foo", one));
+            TEST_CHECK(! get_use("foofoo", one));
+            TEST_CHECK(get_use("moo", one));
+            TEST_CHECK(get_use("quoted-name", one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
+            TEST_CHECK(get_use("more_exp_one", one));
+            TEST_CHECK(get_use("exp_two", one));
+            TEST_CHECK(get_use("exp_one", one));
+            TEST_CHECK(get_use("third_exp_one", one));
+            TEST_CHECK(! get_use("third_exp_two", one));
 
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *three));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
+            TEST_CHECK(get_use("third_exp_one", three));
+            TEST_CHECK(get_use("third_exp_two", three));
         }
     } paludis_environment_use_test;
 
@@ -83,11 +96,18 @@ namespace test_cases
 
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+            const std::tr1::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions()))))]->begin());
-            std::tr1::shared_ptr<const UseFlagNameSet> k1(env->known_use_expand_names(UseFlagName("foo_cards"), *one));
-            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
+            std::tr1::shared_ptr<const Choice> foo_cards;
+            for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
+                    c != c_end ; ++c)
+                if ((*c)->raw_name() == "FOO_CARDS")
+                    foo_cards = *c;
+            if (! foo_cards)
+                throw InternalError(PALUDIS_HERE, "oops");
+            std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > k1(env->known_choice_value_names(id1, foo_cards));
+            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "one three two");
         }
     } paludis_environment_use_test_known;
 
@@ -109,18 +129,18 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("moo"), *one));
+            TEST_CHECK(get_use("foo", one));
+            TEST_CHECK(! get_use("foofoo", one));
+            TEST_CHECK(! get_use("moo", one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
+            TEST_CHECK(get_use("more_exp_one", one));
+            TEST_CHECK(get_use("exp_two", one));
+            TEST_CHECK(! get_use("exp_one", one));
+            TEST_CHECK(get_use("third_exp_one", one));
+            TEST_CHECK(! get_use("third_exp_two", one));
 
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), *three));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
+            TEST_CHECK(! get_use("third_exp_one", three));
+            TEST_CHECK(get_use("third_exp_two", three));
         }
     } paludis_environment_use_test_minus_star;
 
@@ -142,18 +162,18 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), *one));
+            TEST_CHECK(get_use("foo", one));
+            TEST_CHECK(! get_use("foofoo", one));
+            TEST_CHECK(get_use("moo", one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), *one));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
+            TEST_CHECK(get_use("more_exp_one", one));
+            TEST_CHECK(get_use("exp_two", one));
+            TEST_CHECK(! get_use("exp_one", one));
+            TEST_CHECK(get_use("third_exp_one", one));
+            TEST_CHECK(! get_use("third_exp_two", one));
 
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), *three));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
+            TEST_CHECK(! get_use("third_exp_one", three));
+            TEST_CHECK(get_use("third_exp_two", three));
         }
     } paludis_environment_use_test_minus_star_partial;
 

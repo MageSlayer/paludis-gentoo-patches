@@ -90,6 +90,34 @@ namespace paludis
         };
 
         /**
+         * Implement visit for PlainTextLabelDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.32
+         * \nosubgrouping
+         */
+        template <typename H_, typename I_, bool b_>
+        struct VisitPlainTextLabelDepSpec
+        {
+            void visit_leaf(const NoType<1u> &);
+        };
+
+        /**
+         * Implement visit for PlainTextLabelDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.32
+         * \nosubgrouping
+         */
+        template <typename H_, typename I_>
+        class VisitPlainTextLabelDepSpec<H_, I_, true> :
+            public virtual visitor_internals::Visits<const TreeLeaf<H_, PlainTextLabelDepSpec> >
+        {
+            public:
+                void visit_leaf(const PlainTextLabelDepSpec &);
+        };
+
+        /**
          * Implement visit for ConditionalDepSpec, if necessary.
          *
          * \ingroup g_dep_spec
@@ -127,12 +155,12 @@ namespace paludis
      * This template can be instantiated as:
      *
      * - DepSpecFlattener<ProvideSpecTree, PlainTextDepSpec>
-     * - DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>
+     * - DepSpecFlattener<PlainTextDepSpec, PlainTextDepSpec>
      * - DepSpecFlattener<SetSpecTree, PackageDepSpec>
      * - DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>
      *
-     * It is <b>not</b> suitable for heirarchies that can contain AnyDepSpec
-     * or any kind of label.
+     * It is <b>not</b> suitable for heirarchies that can contain AnyDepSpec.
+     * Any labels are discarded.
      *
      * \ingroup g_dep_spec
      * \since 0.26
@@ -146,11 +174,15 @@ namespace paludis
         public ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>,
         public dep_spec_flattener_internals::VisitNamedSetDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>,
+        public dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<
+            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>,
         public dep_spec_flattener_internals::VisitConditionalDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>
     {
         friend class dep_spec_flattener_internals::VisitNamedSetDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>;
+        friend class dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<
+            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>;
         friend class dep_spec_flattener_internals::VisitConditionalDepSpec<
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>;
 
@@ -168,6 +200,9 @@ namespace paludis
 
             using dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_,
                 ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>::visit_leaf;
+
+            using dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<Heirarchy_, Item_,
+                ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>::visit_leaf;
 
             void visit_leaf(const Item_ &);
 

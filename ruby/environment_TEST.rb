@@ -73,30 +73,6 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentUse < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentFactory.instance.create("")
-        end
-
-        def test_query_use
-            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
-
-            assert env.query_use("enabled", pid)
-            assert ! env.query_use("not_enabled", pid)
-            assert env.query_use("sometimes_enabled", pid)
-        end
-
-        def test_query_use_bad
-            assert_raise ArgumentError do
-                env.query_use(1, 2, 3)
-            end
-            assert_raise ArgumentError do
-                env.query_use(123)
-            end
-        end
-    end
-
     class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentFactory.instance.create("")
@@ -149,27 +125,6 @@ module Paludis
 
             assert_raise TypeError do
                 env.accept_keywords([],'a string')
-            end
-        end
-    end
-
-    class TestCase_NoConfigEnvironmentUse < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_query_use
-            pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
-            assert ! env.query_use("foo", pid)
-        end
-
-        def test_query_use_bad
-            assert_raise ArgumentError do
-                env.query_use(1, 2, 3)
-            end
-            assert_raise ArgumentError do
-                env.query_use(123)
             end
         end
     end

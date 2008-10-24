@@ -36,6 +36,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
+#include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <tr1/functional>
@@ -134,9 +135,12 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag1"), *e1) == use_enabled);
-            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag2"), *e1) == use_enabled);
-            TEST_CHECK(repo->use_interface()->query_use(UseFlagName("flag3"), *e1) == use_disabled);
+            TEST_CHECK(e1->choices_key());
+            TEST_CHECK(e1->choices_key()->value());
+            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1")));
+            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
+            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
+            TEST_CHECK(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
         }
     } test_vdb_repository_query_use;
 
@@ -339,8 +343,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -456,8 +458,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -573,8 +573,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -965,8 +963,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -1203,8 +1199,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -1295,8 +1289,6 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(vdb_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));

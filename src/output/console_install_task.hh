@@ -24,24 +24,12 @@
 #include <paludis/util/set.hh>
 #include <src/output/console_task.hh>
 #include <iosfwd>
+#include <map>
+#include <list>
 
 namespace paludis
 {
     class ConsoleInstallTask;
-
-    enum UseDescriptionState
-    {
-        uds_all,
-        uds_changed,
-        uds_new
-    };
-
-#include <src/output/console_install_task-sr.hh>
-
-    struct UseDescriptionComparator
-    {
-        bool operator() (const UseDescription &, const UseDescription &) const;
-    };
 
     class PALUDIS_VISIBLE DepTagSummaryDisplayer :
         public ConstVisitor<DepTagVisitorTypes>
@@ -111,17 +99,16 @@ namespace paludis
                 suggested_entry
             };
 
+            typedef std::map<ChoiceNameWithPrefix, std::list<std::tr1::shared_ptr<const PackageID> > > ChoiceValueDescriptions;
+            typedef std::map<std::string, ChoiceValueDescriptions> ChoiceDescriptions;
+
         private:
             int _counts[last_count];
             unsigned long _download_size;
             bool _download_size_overflow;
             std::tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
-            std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
-            std::tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
             std::tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
-
-            void _add_descriptions(const std::tr1::shared_ptr<const UseFlagNameSet> &,
-                    const std::tr1::shared_ptr<const PackageID> &, UseDescriptionState);
+            ChoiceDescriptions _choice_descriptions;
 
             bool _resolution_finished;
 
@@ -222,6 +209,7 @@ namespace paludis
 
             virtual void display_merge_list_post_counts();
             virtual void display_merge_list_post_tags();
+            virtual void display_merge_list_post_use_descriptions();
 
             virtual void display_merge_list_entry_start(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_name(const DepListEntry &, const DisplayMode);
@@ -234,9 +222,8 @@ namespace paludis
             virtual void display_merge_list_entry_description(const DepListEntry &,
                     const std::tr1::shared_ptr<const PackageIDSequence> &,
                     const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
-            virtual void display_merge_list_entry_use(const DepListEntry &,
-                    const std::tr1::shared_ptr<const PackageIDSequence> &,
-                    const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
+            virtual void display_merge_list_entry_choices(const DepListEntry &, const DisplayMode,
+                    const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo);
             virtual void display_merge_list_entry_distsize(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_non_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_tags(const DepListEntry &, const DisplayMode);
@@ -251,11 +238,10 @@ namespace paludis
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 
-            virtual void display_merge_list_post_use_descriptions(const std::string &);
-            virtual void display_use_summary_start(const std::string &);
-            virtual void display_use_summary_flag(const std::string &,
-                    Set<UseDescription, UseDescriptionComparator>::ConstIterator,
-                    Set<UseDescription, UseDescriptionComparator>::ConstIterator);
+            virtual void display_use_summary_start();
+            virtual void display_use_summary_start_choice(const ChoiceDescriptions::const_iterator &);
+            virtual void display_use_summary_entry(const ChoiceValueDescriptions::const_iterator &);
+            virtual void display_use_summary_end_choice(const ChoiceDescriptions::const_iterator &);
             virtual void display_use_summary_end();
 
             virtual void show_resume_command() const;
@@ -289,11 +275,6 @@ namespace paludis
             std::tr1::shared_ptr<Set<DepTagEntry> > all_tags()
             {
                 return _all_tags;
-            }
-
-            std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > all_use_descriptions()
-            {
-                return _all_use_descriptions;
             }
 
             ///\}

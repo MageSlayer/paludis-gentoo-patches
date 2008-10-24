@@ -24,6 +24,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
+#include <paludis/choice-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -31,11 +32,12 @@ namespace paludis
     class ELikeConditionalDepSpecParseError;
 
     ConditionalDepSpec parse_elike_conditional_dep_spec(const std::string &,
-            const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+            const Environment * const, const std::tr1::shared_ptr<const PackageID> &,
+            const bool no_warning_for_unlisted) PALUDIS_VISIBLE;
 
     bool elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;
 
-    UseFlagName elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;
+    ChoiceNameWithPrefix elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -55,6 +55,7 @@ namespace paludis
             GenericSpecTree,
             DepSpec,
             TreeLeaf<GenericSpecTree, PlainTextDepSpec>,
+            TreeLeaf<GenericSpecTree, PlainTextLabelDepSpec>,
             TreeLeaf<GenericSpecTree, SimpleURIDepSpec>,
             TreeLeaf<GenericSpecTree, FetchableURIDepSpec>,
             TreeLeaf<GenericSpecTree, LicenseDepSpec>,
@@ -86,7 +87,8 @@ namespace paludis
             BlockDepSpec,
             URILabelsDepSpec,
             DependencyLabelsDepSpec,
-            NamedSetDepSpec
+            NamedSetDepSpec,
+            PlainTextLabelDepSpec
                 > ItemFormatter;
     };
 
@@ -225,6 +227,7 @@ namespace paludis
             PlainTextSpecTree,
             DepSpec,
             TreeLeaf<PlainTextSpecTree, PlainTextDepSpec>,
+            TreeLeaf<PlainTextSpecTree, PlainTextLabelDepSpec>,
             ConstTreeSequence<PlainTextSpecTree, AllDepSpec>,
             ConstTreeSequence<PlainTextSpecTree, ConditionalDepSpec>
         >
@@ -239,7 +242,8 @@ namespace paludis
          */
         typedef Formatter<
             ConditionalDepSpec,
-            PlainTextDepSpec
+            PlainTextDepSpec,
+            PlainTextLabelDepSpec
                 > ItemFormatter;
     };
 

@@ -65,7 +65,6 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
@@ -80,13 +79,19 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > contained_in_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
                 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
 
                 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const;
+
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
@@ -117,6 +122,7 @@ namespace paludis
                 void load_license(const std::string &, const std::string &, const std::string &) const;
                 void load_provide(const std::string &, const std::string &, const std::string &) const;
                 void load_iuse(const std::string &, const std::string &, const std::string &) const;
+                void load_myoptions(const std::string &, const std::string &, const std::string &) const;
                 void load_use(const std::string &, const std::string &, const std::string &) const;
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
@@ -135,6 +141,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void invalidate_masks() const;
+
+                virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
+                        const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
+                        const bool) const;
+
+                virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const;
         };
     }
 }

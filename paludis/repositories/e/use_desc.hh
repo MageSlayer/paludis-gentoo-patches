@@ -25,11 +25,12 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/choice-fwd.hh>
 #include <utility>
 
 namespace paludis
 {
-    typedef std::pair<FSEntry, std::string> UseDescFileInfo;
+    typedef std::pair<FSEntry, ChoicePrefixName> UseDescFileInfo;
     typedef Sequence<UseDescFileInfo> UseDescFileInfoSequence;
 
     /**
@@ -45,17 +46,20 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> &, const std::string & expand_sep);
+            UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> &);
             ~UseDesc();
 
             ///\}
 
             /**
-             * Describe the given use flag, possibly for the specified package.
+             * Describe the given use flag.
              *
              * May return an empty string.
              */
-            std::string describe(const UseFlagName &, const PackageID &) const;
+            const std::string describe(
+                    const QualifiedPackageName &,
+                    const ChoicePrefixName & prefix,
+                    const UnprefixedChoiceName & suffix) const;
     };
 }
 

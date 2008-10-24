@@ -165,7 +165,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.main_repository
-            [:sets_interface, :syncable_interface, :use_interface,
+            [:sets_interface, :syncable_interface,
                 :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :e_interface,
                 :qa_interface].each do |sym|
@@ -174,7 +174,6 @@ module Paludis
         end
 
         def test_interfaces
-            assert_equal repo.name, repo.use_interface.name
             assert_equal installed_repo.name, installed_repo.provides_interface.name
             assert_nil installed_repo.syncable_interface
         end
@@ -280,84 +279,6 @@ module Paludis
         end
     end
 
-    class TestCase_RepositoryQueryUse < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_query_use_local
-
-            assert repo.query_use('test1',p) == true
-            assert repo.query_use('test2',p) == false
-            assert repo.query_use('test3',p) == true
-            assert repo.query_use('test4',p) == nil
-            assert repo.query_use('test5',p) == false
-            assert repo.query_use('test6',p) == true
-            assert repo.query_use('test7',p) == true
-        end
-
-        def test_query_use_bad
-            assert_raise TypeError do
-                repo.query_use('test1',{})
-            end
-
-            assert_raise ArgumentError do
-                repo.query_use
-                repo.query_use(1,2,3)
-            end
-        end
-    end
-
-    class TestCase_RepositoryQueryUseMask < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_query_use_mask_local
-
-            assert ! repo.query_use_mask('test1',p)
-            assert ! repo.query_use_mask('test2',p)
-            assert ! repo.query_use_mask('test3',p)
-            assert ! repo.query_use_mask('test4',p)
-            assert repo.query_use_mask('test5',p)
-            assert ! repo.query_use_mask('test6',p)
-            assert ! repo.query_use_mask('test7',p)
-        end
-
-        def test_query_use_mask_bad
-            assert_raise TypeError do
-                repo.query_use_mask('test1',{})
-            end
-
-            assert_raise ArgumentError do
-                repo.query_use_mask
-                repo.query_use_mask(1,2,3)
-            end
-        end
-    end
-
-    class TestCase_RepositoryQueryUseForce < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_query_use_force_local
-
-            assert ! repo.query_use_force('test1',p)
-            assert ! repo.query_use_force('test2',p)
-            assert ! repo.query_use_force('test3',p)
-            assert ! repo.query_use_force('test4',p)
-            assert ! repo.query_use_force('test5',p)
-            assert repo.query_use_force('test6',p)
-            assert repo.query_use_force('test7',p)
-        end
-
-        def test_query_use_force_bad
-            assert_raise TypeError do
-                repo.query_use_force('test1',{})
-            end
-
-            assert_raise ArgumentError do
-                repo.query_use_force
-                repo.query_use_force(1,2,3)
-            end
-        end
-    end
-
     class TestCase_RepositoryMirrorsInterface < Test::Unit::TestCase
         include RepositoryTestCase
 
@@ -457,19 +378,6 @@ module Paludis
         def test_profile_status
             assert_kind_of String, profiles.first.status
             assert_equal 'stable', profiles.first.status
-        end
-    end
-
-    class TestCase_RepositoryDescribeUseFlag < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_responds
-            assert_respond_to repo, :describe_use_flag
-        end
-
-        def test_two_args
-            assert_kind_of String, repo.describe_use_flag('test1', p)
-            assert_equal 'A test local use flag', repo.describe_use_flag('test2', p)
         end
     end
 

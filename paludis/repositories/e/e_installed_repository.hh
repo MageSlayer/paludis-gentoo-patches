@@ -32,7 +32,6 @@ namespace paludis
 
         class EInstalledRepository :
             public Repository,
-            public RepositoryUseInterface,
             public RepositorySetsInterface,
             public RepositoryEnvironmentVariableInterface,
             public RepositoryDestinationInterface,
@@ -47,36 +46,6 @@ namespace paludis
                 ~EInstalledRepository();
 
             public:
-                /* RepositoryUseInterface */
-
-                virtual UseFlagState query_use(const UseFlagName &, const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual bool query_use_mask(const UseFlagName &, const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual bool query_use_force(const UseFlagName &, const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual char use_expand_separator(const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string describe_use_flag(const UseFlagName &,
-                        const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 /* RepositorySetsInterface */
 
                 virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const

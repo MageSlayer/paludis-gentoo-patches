@@ -51,10 +51,9 @@ int main(int argc, char * argv[])
          * called directly from clients. The system information and mirror
          * functions are mostly for use by Repository subclasses. The []
          * operator is covered in \ref example_selection.cc
-         * "example_selection.cc". That leaves the package database, sets and
-         * (currently, although this may well change in the future) use flag
-         * queries. The package database has its own examples, so we'll start
-         * with sets: */
+         * "example_selection.cc". That leaves the package database and sets.
+         * The package database has its own examples, so we'll start with sets:
+         * */
 
         std::tr1::shared_ptr<SetSpecTree::ConstItem> world(env->set(SetName("world")));
         if (world)
@@ -65,18 +64,6 @@ int main(int argc, char * argv[])
         }
         else
             cout << "No world set defined" << endl;
-
-        /* And use flags, for which we need a package IDs: */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis"))) |
-                    filter::SupportsAction<InstalledAction>())]);
-
-        if (! ids->empty())
-        {
-            UseFlagName u("ruby");
-            cout << "Use flag '" << u << "' for ID '" << **ids->rbegin() << "' is "
-                << (env->query_use(u, **ids->rbegin()) ? "enabled" : "disabled") << endl;
-        }
     }
     catch (const Exception & e)
     {

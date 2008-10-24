@@ -25,6 +25,7 @@
 #include <paludis/dep_tree.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/choice.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/clone-impl.hh>
@@ -34,10 +35,10 @@ using namespace paludis;
 
 namespace
 {
-    std::string format_two(const KeywordName & k, const UseFlagName & n,
-            const Formatter<KeywordName, UseFlagName> & f)
+    std::string format_two(const KeywordName & k, const LicenseDepSpec & n,
+            const Formatter<KeywordName, LicenseDepSpec> & f)
     {
-        return f.format(k, format::Accepted()) + " " + f.format(n, format::Enabled());
+        return f.format(k, format::Accepted()) + " " + f.format(n, format::Accepted());
     }
 
     std::string format_three(const PackageDepSpec & k, const BlockDepSpec & d, const NamedSetDepSpec & u,
@@ -99,7 +100,7 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
-            std::string s(format_two(KeywordName("one"), UseFlagName("two"), ff));
+            std::string s(format_two(KeywordName("one"), LicenseDepSpec("two"), ff));
             TEST_CHECK_EQUAL(s, "one two");
         }
     } test_stringify_formatter;
@@ -125,4 +126,5 @@ namespace test_cases
         }
     } test_stringify_formatter_partial;
 }
+
 

@@ -220,15 +220,15 @@ cat <<END >profiles/profile/package.use.force || exit 1
 cat-two/pkg-two flag5
 END
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5 test1 test2"
+IUSE="flag1 flag2 flag3 flag4 flag5"
 SLOT="0"
 END
 cat <<END > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5 test1 test2"
+IUSE="flag1 flag2 flag3 flag4 flag5"
 SLOT="0"
 END
 cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5 test1 test2"
+IUSE="flag1 flag2 flag3 flag4 flag5"
 SLOT="0"
 END
 cd ..
@@ -1181,7 +1181,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    [[ $USE == "enabled-weasel test linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 " ]] \
+    [[ $USE == "enabled-weasel linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 test " ]] \
         || die "USE=$USE is wrong"
     [[ $USERLAND == "GNU" ]] || die "USERLAND=$USERLAND is wrong"
     [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
@@ -1199,7 +1199,7 @@ END
 echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
-SUBOPTIONS="linguas"
+SUBOPTIONS="LINGUAS"
 LINGUAS="en en_GB en_GB@UTF-8"
 USERLAND="GNU"
 OPTIONS="weasel spinach"
@@ -2102,12 +2102,13 @@ SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
 DOWNLOADS=""
 SLOT="0"
-MYOPTIONS="enabled-weasel broccoli linguas:enabled-en_GB"
+MYOPTIONS="enabled-weasel broccoli linguas: enabled-en_GB"
 LICENCES="GPL-2"
 PLATFORMS="test"
 
 pkg_setup() {
     [[ ${OPTIONS%%+( )} == "enabled-weasel linguas:enabled-en_GB" ]] || die "OPTIONS=$OPTIONS is wrong"
+    [[ ${LINGUAS%%+( )} == "enabled-en_GB" ]] || die "LINGUAS=$LINGUAS is wrong"
 }
 END
 mkdir -p "packages/cat/doman-success"

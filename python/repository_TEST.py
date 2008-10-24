@@ -110,38 +110,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         si = repo.syncable_interface
         self.assert_(isinstance(si, RepositorySyncableInterface))
 
-    def test_04_use_interface(self):
-        ui = repo.use_interface
-        self.assert_(isinstance(ui, RepositoryUseInterface))
-
-        pid = list(repo.package_ids("foo/bar"))[1]
-
-        self.assertEquals(ui.query_use("test1", pid), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test2", pid), UseFlagState.DISABLED)
-        self.assertEquals(ui.query_use("test3", pid), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test4", pid), UseFlagState.UNSPECIFIED)
-        self.assertEquals(ui.query_use("test5", pid), UseFlagState.DISABLED)
-        self.assertEquals(ui.query_use("test6", pid), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test7", pid), UseFlagState.ENABLED)
-
-        self.assert_(not ui.query_use_mask("test1", pid))
-        self.assert_(not ui.query_use_mask("test2", pid))
-        self.assert_(not ui.query_use_mask("test3", pid))
-        self.assert_(not ui.query_use_mask("test4", pid))
-        self.assert_(ui.query_use_mask("test5", pid))
-        self.assert_(not ui.query_use_mask("test6", pid))
-        self.assert_(not ui.query_use_mask("test7", pid))
-
-        self.assert_(not ui.query_use_force("test1", pid))
-        self.assert_(not ui.query_use_force("test2", pid))
-        self.assert_(not ui.query_use_force("test3", pid))
-        self.assert_(not ui.query_use_force("test4", pid))
-        self.assert_(not ui.query_use_force("test5", pid))
-        self.assert_(ui.query_use_force("test6", pid))
-        self.assert_(ui.query_use_force("test7", pid))
-
-        self.assert_(ui.describe_use_flag("test1", pid), "A test use flag")
-
     def test_06_environment_variable_interface(self):
         evi = repo.environment_variable_interface
         self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))

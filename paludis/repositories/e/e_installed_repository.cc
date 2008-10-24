@@ -154,33 +154,6 @@ EInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
-UseFlagState
-EInstalledRepository::query_use(const UseFlagName & f, const PackageID & e) const
-{
-    if (this != e.repository().get())
-        return use_unspecified;
-
-    if (! static_cast<const ERepositoryID *>(&e)->use_key())
-        return use_unspecified;
-
-    if (static_cast<const ERepositoryID *>(&e)->use_key()->value()->end() != static_cast<const ERepositoryID *>(&e)->use_key()->value()->find(f))
-        return use_enabled;
-    else
-        return use_disabled;
-}
-
-bool
-EInstalledRepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
-{
-    return use_disabled == query_use(u, e);
-}
-
-bool
-EInstalledRepository::query_use_force(const UseFlagName & u, const PackageID & e) const
-{
-    return use_enabled == query_use(u, e);
-}
-
 HookResult
 EInstalledRepository::perform_hook(const Hook & hook) const
 {
@@ -188,30 +161,6 @@ EInstalledRepository::perform_hook(const Hook & hook) const
             + stringify(name()) + "':");
 
     return HookResult(0, "");
-}
-
-std::string
-EInstalledRepository::describe_use_flag(const UseFlagName &, const PackageID &) const
-{
-    return "";
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-EInstalledRepository::use_expand_flags() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-EInstalledRepository::use_expand_prefixes() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-EInstalledRepository::use_expand_hidden_prefixes() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 std::tr1::shared_ptr<SetSpecTree::ConstItem>
@@ -286,21 +235,6 @@ EInstalledRepository::unimportant_category_names() const
     std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-EInstalledRepository::arch_flags() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-char
-EInstalledRepository::use_expand_separator(const PackageID & id) const
-{
-    if (this != id.repository().get())
-        return '\0';
-    const std::tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
-    return eapi->supported() ? eapi->supported()->ebuild_options()->use_expand_separator() : '\0';
 }
 
 std::string
@@ -484,7 +418,8 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
                     value_for<n::root>(stringify(_imp->params.root)),
                     value_for<n::use>(""),
                     value_for<n::use_ebuild_file>(false),
-                    value_for<n::use_expand>("")
+                    value_for<n::use_expand>(""),
+                    value_for<n::use_expand_hidden>("")
                     ));
 
         info_cmd();

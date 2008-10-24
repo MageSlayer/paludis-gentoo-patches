@@ -84,6 +84,14 @@ namespace
         {
         }
 
+        void visit_leaf(const PlainTextLabelDepSpec & t)
+        {
+            reporter.message(QAMessage(entry, qaml_normal, name,
+                        "Unexpected label '" + stringify(t) + "' in '" + key->raw_name() + "@")
+                    .with_associated_id(id)
+                    .with_associated_key(id, key));
+        }
+
         void visit_leaf(const PlainTextDepSpec & t)
         {
             if (allowed_restricts.end() == allowed_restricts.find(t.text()))

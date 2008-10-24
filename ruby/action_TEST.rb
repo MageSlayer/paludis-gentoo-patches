@@ -30,14 +30,12 @@ module Paludis
 
         def hash_args
             InstallActionOptions.new(
-                {:debug_build => InstallActionDebugOption::Internal,
-                    :checks => InstallActionChecksOption::Always, :destination => destination}
+                {:destination => destination}
             )
         end
 
         def long_args
-                InstallActionOptions.new(InstallActionDebugOption::Split,
-                                        InstallActionChecksOption::Default, destination)
+            InstallActionOptions.new(destination)
         end
 
         def destination
@@ -105,15 +103,11 @@ module Paludis
 
         def test_methods_hash_args
             opts = hash_args
-            assert_equal InstallActionDebugOption::Internal, opts.debug_build
-            assert_equal InstallActionChecksOption::Always, opts.checks
             assert_equal destination.name, opts.destination.name
         end
 
         def test_methods_long_args
             opts = long_args
-            assert_equal InstallActionDebugOption::Split, opts.debug_build
-            assert_equal InstallActionChecksOption::Default, opts.checks
             assert_equal destination.name, opts.destination.name
         end
     end
@@ -232,8 +226,6 @@ module Paludis
         def test_options_hash_args
             action = InstallAction.new(hash_args)
             assert_kind_of InstallActionOptions, action.options
-            assert_equal InstallActionDebugOption::Internal, action.options.debug_build
-            assert_equal InstallActionChecksOption::Always, action.options.checks
             assert_equal destination.name, action.options.destination.name
         end
     end

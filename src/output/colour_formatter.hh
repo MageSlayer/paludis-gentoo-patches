@@ -23,12 +23,10 @@
 #include <paludis/formatter.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 class ColourFormatter :
-    public paludis::CanFormat<paludis::UseFlagName>,
-    public paludis::CanFormat<paludis::IUseFlag>,
+    public paludis::CanFormat<paludis::ChoiceValue>,
     public paludis::CanFormat<paludis::KeywordName>,
     public paludis::CanFormat<paludis::ConditionalDepSpec>,
     public paludis::CanFormat<paludis::PackageDepSpec>,
@@ -37,43 +35,31 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::URILabelsDepSpec>,
     public paludis::CanFormat<paludis::PlainTextDepSpec>,
     public paludis::CanFormat<paludis::SimpleURIDepSpec>,
+    public paludis::CanFormat<paludis::PlainTextLabelDepSpec>,
     public paludis::CanFormat<paludis::FetchableURIDepSpec>,
     public paludis::CanFormat<paludis::LicenseDepSpec>,
     public paludis::CanFormat<paludis::NamedSetDepSpec>,
     public paludis::CanFormat<paludis::FSEntry>,
     public paludis::CanFormat<paludis::PackageID>,
     public paludis::CanFormat<std::string>,
-    public paludis::CanSpace,
-    private paludis::PrivateImplementationPattern<ColourFormatter>
+    public paludis::CanSpace
 {
     public:
-        ColourFormatter(const bool unchanged_are_new = false);
-        ~ColourFormatter();
-
-        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_new_use_flag_names() const;
-        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_changed_use_flag_names() const;
-        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_flag_names() const;
-        const std::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_expand_prefixes() const;
-
-        std::string format(const paludis::IUseFlag &, const paludis::format::Plain &) const;
-        std::string format(const paludis::IUseFlag &, const paludis::format::Enabled &) const;
-        std::string format(const paludis::IUseFlag &, const paludis::format::Disabled &) const;
-        std::string format(const paludis::IUseFlag &, const paludis::format::Forced &) const;
-        std::string format(const paludis::IUseFlag &, const paludis::format::Masked &) const;
-        std::string decorate(const paludis::IUseFlag &, const std::string &, const paludis::format::Added &) const;
-        std::string decorate(const paludis::IUseFlag &, const std::string &, const paludis::format::Changed &) const;
-
-        std::string format(const paludis::UseFlagName &, const paludis::format::Plain &) const;
-        std::string format(const paludis::UseFlagName &, const paludis::format::Enabled &) const;
-        std::string format(const paludis::UseFlagName &, const paludis::format::Disabled &) const;
-        std::string format(const paludis::UseFlagName &, const paludis::format::Forced &) const;
-        std::string format(const paludis::UseFlagName &, const paludis::format::Masked &) const;
+        std::string format(const paludis::ChoiceValue &, const paludis::format::Plain &) const;
+        std::string format(const paludis::ChoiceValue &, const paludis::format::Enabled &) const;
+        std::string format(const paludis::ChoiceValue &, const paludis::format::Disabled &) const;
+        std::string format(const paludis::ChoiceValue &, const paludis::format::Forced &) const;
+        std::string format(const paludis::ChoiceValue &, const paludis::format::Masked &) const;
+        std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Added &) const;
+        std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Changed &) const;
 
         std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Plain &) const;
         std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Enabled &) const;
         std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Disabled &) const;
         std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Forced &) const;
         std::string format(const paludis::ConditionalDepSpec &, const paludis::format::Masked &) const;
+        std::string decorate(const paludis::ConditionalDepSpec &, const std::string &, const paludis::format::Added &) const;
+        std::string decorate(const paludis::ConditionalDepSpec &, const std::string &, const paludis::format::Changed &) const;
 
         std::string format(const paludis::PackageDepSpec &, const paludis::format::Plain &) const;
         std::string format(const paludis::PackageDepSpec &, const paludis::format::Installed &) const;
@@ -90,6 +76,8 @@ class ColourFormatter :
         std::string format(const paludis::KeywordName &, const paludis::format::Unaccepted &) const;
 
         std::string format(const std::string &, const paludis::format::Plain &) const;
+
+        std::string format(const paludis::PlainTextLabelDepSpec &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::URILabelsDepSpec &, const paludis::format::Plain &) const;
 

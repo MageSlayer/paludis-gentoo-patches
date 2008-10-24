@@ -31,6 +31,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <algorithm>
 
@@ -158,6 +159,12 @@ namespace
                     result |= _m(stringify(s));
             }
 
+            void visit_leaf(const PlainTextLabelDepSpec & s)
+            {
+                if (! result)
+                    result |= _m(stringify(s));
+            }
+
             void visit_leaf(const DependencyLabelsDepSpec & s)
             {
                 if (! result)
@@ -235,28 +242,6 @@ namespace
                 result = _m(stringify(*s.value()));
             }
 
-            void visit(const MetadataCollectionKey<UseFlagNameSet> & s)
-            {
-                using namespace std::tr1::placeholders;
-
-                if (_flatten)
-                    result = _m(join(s.value()->begin(), s.value()->end(), " "));
-                else
-                    result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<UseFlagName>, _1)));
-            }
-
-            void visit(const MetadataCollectionKey<IUseFlagSet> & s)
-            {
-                using namespace std::tr1::placeholders;
-
-                if (_flatten)
-                    result = _m(join(s.value()->begin(), s.value()->end(), " "));
-                else
-                    result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<IUseFlag>, _1)));
-            }
-
             void visit(const MetadataCollectionKey<KeywordNameSet> & s)
             {
                 using namespace std::tr1::placeholders;
@@ -266,6 +251,33 @@ namespace
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             std::tr1::bind(&Matcher::operator(), std::tr1::cref(_m), std::tr1::bind(&stringify<KeywordName>, _1)));
+            }
+
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & s)
+            {
+                if (_flatten)
+                {
+                    std::string r;
+                    for (Choices::ConstIterator c(s.value()->begin()), c_end(s.value()->end()) ;
+                            c != c_end ; ++c)
+                        for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                                i != i_end ; ++i)
+                        {
+                            if (! r.empty())
+                                r.append(" ");
+                            r.append(stringify((*i)->name_with_prefix()));
+                        }
+
+                    result = _m(r);
+                }
+                else
+                {
+                    for (Choices::ConstIterator c(s.value()->begin()), c_end(s.value()->end()) ;
+                            c != c_end && ! result ; ++c)
+                        for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                                i != i_end && ! result ; ++i)
+                            result = _m(stringify((*i)->name_with_prefix()));
+                }
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & s)

@@ -101,7 +101,7 @@ namespace
                             archs.erase("*");
                             for (std::set<std::string>::const_iterator r(archs.begin()), r_end(archs.end()) ;
                                     r != r_end ; ++r)
-                                pkg->add_arch(UseFlagName(*r));
+                                pkg->add_arch(*r);
                         }
                     }
                 }

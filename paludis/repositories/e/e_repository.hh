@@ -51,7 +51,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ERepository :
         public Repository,
-        public RepositoryUseInterface,
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
         public RepositoryEnvironmentVariableInterface,
@@ -136,36 +135,6 @@ namespace paludis
 
             virtual bool sync() const;
 
-            /* RepositoryUseInterface */
-
-            virtual UseFlagState query_use(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool query_use_mask(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool query_use_force(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual char use_expand_separator(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string describe_use_flag(const UseFlagName &,
-                    const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /* RepositoryEnvironmentVariableInterface */
 
             virtual std::string get_environment_variable(
@@ -217,7 +186,7 @@ namespace paludis
 
             ProfilesConstIterator find_profile(const FSEntry & location) const;
             void set_profile(const ProfilesConstIterator & iter);
-            void set_profile_by_arch(const UseFlagName &);
+            void set_profile_by_arch(const std::string &);
 
             ///\}
 
@@ -262,6 +231,9 @@ namespace paludis
                     const std::tr1::function<std::string (const std::string &)> &);
 
             ///\}
+
+            const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > arch_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

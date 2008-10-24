@@ -7,6 +7,7 @@ DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
+	iuse-se.hh iuse-se.cc \
 	manifest2_entry-sr.hh manifest2_entry-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
@@ -38,6 +39,7 @@ paludis_repositories_e_include_HEADERS = \
 	dep_parser-fwd.hh \
 	dep_spec_pretty_printer.hh \
 	dependencies_rewriter.hh \
+	e_choice_value.hh \
 	e_installed_repository.hh \
 	e_installed_repository-sr.hh \
 	e_installed_repository_id.hh \
@@ -71,6 +73,8 @@ paludis_repositories_e_include_HEADERS = \
 	extra_distribution_data.hh \
 	fetch_visitor.hh \
 	info_metadata_key.hh \
+	iuse.hh \
+	iuse-se.hh \
 	pretend_fetch_visitor.hh \
 	fix_locked_dependencies.hh \
 	glsa-sr.hh \
@@ -95,6 +99,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
+	e_choice_value.cc \
 	e_installed_repository.cc \
 	e_installed_repository_id.cc \
 	e_key.cc \
@@ -123,6 +128,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	extra_distribution_data.cc \
 	fetch_visitor.cc \
 	info_metadata_key.cc \
+	iuse.cc \
 	pretend_fetch_visitor.cc \
 	fix_locked_dependencies.cc \
 	glsa.cc \
@@ -351,6 +357,9 @@ EXTRA_DIST = \
 	fetch_visitor_TEST_setup.sh \
 	fetch_visitor_TEST_cleanup.sh \
 	fix_locked_dependencies_TEST.cc \
+	iuse.se \
+	iuse-se.hh \
+	iuse-se.cc \
 	manifest2_entry.sr \
 	manifest2_entry-sr.hh \
 	manifest2_entry-sr.cc \
@@ -382,6 +391,8 @@ BUILT_SOURCES = \
 	e_repository_params-se.cc \
 	glsa-sr.hh \
 	glsa-sr.cc \
+	iuse-se.hh \
+	iuse-se.cc \
 	exndbam_repository-sr.hh \
 	exndbam_repository-sr.cc \
 	vdb_repository-sr.hh \
@@ -461,6 +472,12 @@ dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
 
 dep_parser-se.cc : dep_parser.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+iuse-se.hh : iuse.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/iuse.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+iuse-se.cc : iuse.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/iuse.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 e_repository_params-se.hh : e_repository_params.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/e_repository_params.se > $@ ; then rm -f $@ ; exit 1 ; fi

@@ -64,7 +64,6 @@ namespace paludis
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
         const RepositoryName & our_name, const RepositoryCapabilities & caps) :
     Repository(e, our_name, caps),
-    RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e)),
     _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
 {
@@ -142,30 +141,6 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
     return id;
 }
 
-UseFlagState
-FakeRepositoryBase::query_use(const UseFlagName &, const PackageID &) const
-{
-    return use_unspecified;
-}
-
-bool
-FakeRepositoryBase::query_use_mask(const UseFlagName &, const PackageID &) const
-{
-    return false;
-}
-
-bool
-FakeRepositoryBase::query_use_force(const UseFlagName &, const PackageID &) const
-{
-    return false;
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::arch_flags() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
 void
 FakeRepositoryBase::invalidate()
 {
@@ -179,32 +154,6 @@ FakeRepositoryBase::invalidate_masks()
         for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::use_expand_flags() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::use_expand_hidden_prefixes() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::use_expand_prefixes() const
-{
-    return std::tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
-}
-
-char
-FakeRepositoryBase::use_expand_separator(const PackageID & id) const
-{
-    if (this != id.repository().get())
-        return '\0';
-    return static_cast<const FakePackageID &>(id).use_expand_separator();
 }
 
 void
@@ -230,13 +179,6 @@ FakeRepositoryBase::sets_list() const
     std::transform(_imp->sets.begin(), _imp->sets.end(), result->inserter(),
             std::tr1::mem_fn(&std::pair<const SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> >::first));
     return result;
-}
-
-std::string
-FakeRepositoryBase::describe_use_flag(const UseFlagName &,
-        const PackageID &) const
-{
-    return "";
 }
 
 const Environment *

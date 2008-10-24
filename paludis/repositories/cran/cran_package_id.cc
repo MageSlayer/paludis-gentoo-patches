@@ -337,12 +337,6 @@ CRANPackageID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-CRANPackageID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 CRANPackageID::provide_key() const
 {
@@ -545,5 +539,11 @@ const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 CRANPackageID::transient_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+CRANPackageID::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
 }
 

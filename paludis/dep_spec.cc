@@ -354,6 +354,13 @@ paludis::operator<< (std::ostream & s, const URILabelsDepSpec & l)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & s, const PlainTextLabelDepSpec & l)
+{
+    s << l.label() << ":";
+    return s;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & s, const DependencyLabelsDepSpec & l)
 {
     s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
@@ -393,6 +400,33 @@ PlainTextDepSpec::need_keys_added() const
 {
 }
 
+PlainTextLabelDepSpec::PlainTextLabelDepSpec(const std::string & s) :
+    StringDepSpec(s)
+{
+}
+
+PlainTextLabelDepSpec::~PlainTextLabelDepSpec()
+{
+}
+
+std::tr1::shared_ptr<DepSpec>
+PlainTextLabelDepSpec::clone() const
+{
+    std::tr1::shared_ptr<PlainTextLabelDepSpec> result(new PlainTextLabelDepSpec(text()));
+    result->set_annotations_key(annotations_key());
+    return result;
+}
+
+const std::string
+PlainTextLabelDepSpec::label() const
+{
+    return text().substr(0, text().length() - 1);
+}
+
+void
+PlainTextLabelDepSpec::need_keys_added() const
+{
+}
 
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
     StringDepSpec(s)
@@ -411,7 +445,6 @@ void
 LicenseDepSpec::need_keys_added() const
 {
 }
-
 
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
     StringDepSpec(s)

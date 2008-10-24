@@ -122,6 +122,8 @@ namespace paludis
 
                 void visit_leaf(const NamedSetDepSpec &);
 
+                void visit_leaf(const PlainTextLabelDepSpec &);
+
                 ///}
         };
 

@@ -39,6 +39,7 @@
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice-fwd.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 
@@ -97,6 +98,10 @@ namespace paludis
         VALUE package_dep_spec_to_value(const std::tr1::shared_ptr<const PackageDepSpec> &);
         VALUE uri_label_to_value(const std::tr1::shared_ptr<const URILabel> &);
         VALUE mask_to_value(std::tr1::shared_ptr<const Mask>);
+        VALUE choices_to_value(const std::tr1::shared_ptr<const Choices> & c);
+        VALUE choice_to_value(const std::tr1::shared_ptr<const Choice> & c);
+        VALUE choice_value_to_value(const std::tr1::shared_ptr<const ChoiceValue> & c);
+        VALUE bool_to_value(bool b);
 
         VersionSpec value_to_version_spec(VALUE v);
         std::tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
@@ -110,6 +115,10 @@ namespace paludis
         std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
         std::tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
         std::tr1::shared_ptr<Action> value_to_action(VALUE v);
+        std::tr1::shared_ptr<const Choices> value_to_choices(VALUE v);
+        std::tr1::shared_ptr<const Choice> value_to_choice(VALUE v);
+        std::tr1::shared_ptr<const ChoiceValue> value_to_choice_value(VALUE v);
+        bool value_to_bool(VALUE v);
 
         Filter value_to_filter(VALUE v);
         Selection value_to_selection(VALUE v);

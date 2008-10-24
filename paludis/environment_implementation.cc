@@ -140,35 +140,6 @@ EnvironmentImplementation::set(const SetName & s) const
     return result;
 }
 
-bool
-EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e) const
-{
-    if ((*e.repository()).use_interface())
-    {
-        if ((*e.repository()).use_interface()->query_use_mask(f, e))
-            return false;
-        if ((*e.repository()).use_interface()->query_use_force(f, e))
-            return true;
-
-        switch ((*e.repository()).use_interface()->query_use(f, e))
-        {
-            case use_disabled:
-            case use_unspecified:
-                return false;
-
-            case use_enabled:
-                return true;
-
-            case last_use:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "bad state");
-    }
-    else
-        return false;
-}
-
 std::string
 EnvironmentImplementation::distribution() const
 {

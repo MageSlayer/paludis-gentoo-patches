@@ -77,11 +77,6 @@ namespace
         std::ostringstream stream;
         StringifyFormatter formatter;
 
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-        {
-            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
-        }
-
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
@@ -93,11 +88,6 @@ namespace
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
-        {
-            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
@@ -183,6 +173,11 @@ namespace
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
+        {
+            stream << k.raw_name() << "\n";
+        }
+
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
         {
             stream << k.raw_name() << "\n";
         }

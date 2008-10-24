@@ -30,6 +30,7 @@ make_nn_NiceNames() {
     name "NamedSetDepSpec"
     name "URILabelsDepSpec"
     name "DependencyLabelsDepSpec"
+    name "PlainTextLabelDepSpec"
 
     # paludis/dep_tree-fwd.hh
     name "GenericSpecTree"

@@ -38,6 +38,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -1487,21 +1488,44 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 
     if (dl_reinstall_if_use_changed == _imp->opts->reinstall)
     {
-        std::set<UseFlagName> use_common;
-        if (installed.iuse_key() && uninstalled.iuse_key())
+        std::set<ChoiceNameWithPrefix> common;
+        if (installed.choices_key() && uninstalled.choices_key())
         {
-            std::set<IUseFlag> iuse_common;
+            std::set<ChoiceNameWithPrefix> i_common, u_common;
+            for (Choices::ConstIterator k(installed.choices_key()->value()->begin()),
+                    k_end(installed.choices_key()->value()->end()) ;
+                    k != k_end ; ++k)
+            {
+                if (! (*k)->consider_added_or_changed())
+                    continue;
+
+                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                        i != i_end ; ++i)
+                    i_common.insert((*i)->name_with_prefix());
+            }
+
+            for (Choices::ConstIterator k(uninstalled.choices_key()->value()->begin()),
+                    k_end(uninstalled.choices_key()->value()->end()) ;
+                    k != k_end ; ++k)
+            {
+                if (! (*k)->consider_added_or_changed())
+                    continue;
+
+                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                        i != i_end ; ++i)
+                    u_common.insert((*i)->name_with_prefix());
+            }
+
             std::set_intersection(
-                    installed.iuse_key()->value()->begin(), installed.iuse_key()->value()->end(),
-                    uninstalled.iuse_key()->value()->begin(), uninstalled.iuse_key()->value()->end(),
-                    std::inserter(iuse_common, iuse_common.begin()));
-            std::transform(iuse_common.begin(), iuse_common.end(), std::inserter(use_common, use_common.begin()),
-                    std::tr1::mem_fn(&IUseFlag::flag));
+                    i_common.begin(), i_common.end(),
+                    u_common.begin(), u_common.end(),
+                    std::inserter(common, common.begin()));
         }
 
-        for (std::set<UseFlagName>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
+        for (std::set<ChoiceNameWithPrefix>::const_iterator f(common.begin()), f_end(common.end()) ;
                 f != f_end ; ++f)
-            if (_imp->env->query_use(*f, installed) != _imp->env->query_use(*f, uninstalled))
+            if (installed.choices_key()->value()->find_by_name_with_prefix(*f)->enabled() !=
+                    uninstalled.choices_key()->value()->find_by_name_with_prefix(*f)->enabled())
                 return false;
     }
 

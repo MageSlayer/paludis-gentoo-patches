@@ -23,11 +23,27 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <list>
 
 using namespace paludis;
 using namespace test;
+
+namespace
+{
+    void set_conditionals(const std::tr1::shared_ptr<FakePackageID> & id, const std::string & s)
+    {
+        std::list<std::string> tokens;
+        tokenise_whitespace(s, std::back_inserter(tokens));
+
+        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
+            id->choices_key()->add("", *t);
+    }
+}
 
 namespace test_cases
 {
@@ -41,7 +57,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
-            id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
+            set_conditionals(id, "enabled disabled");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_strict_parsing));
@@ -79,7 +95,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
-            id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
+            set_conditionals(id, "enabled disabled");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("enabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
@@ -117,7 +133,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
-            id->iuse_key()->set_from_string("enabled disabled", IUseFlagParseOptions());
+            set_conditionals(id, "enabled disabled");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("enabled,-disabled", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_portage_syntax + euro_strict_parsing));
@@ -161,9 +177,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id, "pkgname");
             std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
-            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id2, "pkgname");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing));
@@ -261,9 +277,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id, "pkgname");
             std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
-            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id2, "pkgname");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing));
@@ -333,9 +349,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id, "pkgname");
             std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
-            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id2, "pkgname");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing));
@@ -461,9 +477,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), NameError);
+            set_conditionals(id, "pkgname");
 
             TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
             TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_strict_parsing), ELikeUseRequirementError);
@@ -490,9 +504,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), NameError);
+            set_conditionals(id, "pkgname");
 
             TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
             TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax + euro_strict_parsing), ELikeUseRequirementError);
@@ -523,9 +535,7 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
-
-            TEST_CHECK_THROWS(parse_elike_use_requirement("te/st", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), NameError);
+            set_conditionals(id, "pkgname");
 
             TEST_CHECK_THROWS(parse_elike_use_requirement("", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
             TEST_CHECK_THROWS(parse_elike_use_requirement("-", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_both_syntaxes + euro_strict_parsing), ELikeUseRequirementError);
@@ -551,9 +561,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id, "pkgname");
             std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
-            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id2, "pkgname");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps));
@@ -679,9 +689,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
-            id->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id, "pkgname");
             std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
-            id2->iuse_key()->set_from_string("pkgname", IUseFlagParseOptions());
+            set_conditionals(id2, "pkgname");
 
             std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
                 parse_elike_use_requirement("pkgname?", id, ELikeUseRequirementOptions() + euro_allow_self_deps + euro_portage_syntax));

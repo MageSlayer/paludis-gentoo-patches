@@ -30,6 +30,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -515,12 +516,6 @@ NoConfigEnvironment::hook_dirs() const
     return make_shared_ptr(new FSEntrySequence);
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-NoConfigEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
-{
-    return make_shared_ptr(new UseFlagNameSet);
-}
-
 void
 NoConfigEnvironment::need_keys_added() const
 {
@@ -536,5 +531,24 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 NoConfigEnvironment::config_location_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const Tribool
+NoConfigEnvironment::want_choice_enabled(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> &,
+        const UnprefixedChoiceName &
+        ) const
+{
+    return Tribool(indeterminate);
+}
+
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+NoConfigEnvironment::known_choice_value_names(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> &
+        ) const
+{
+    return make_shared_ptr(new Set<UnprefixedChoiceName>);
 }
 

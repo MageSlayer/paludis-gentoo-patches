@@ -69,9 +69,10 @@ namespace test_cases
         void run()
         {
             TestStripper s(make_named_values<StripperOptions>(
-                        value_for<n::debug_build>(iado_split),
                         value_for<n::debug_dir>(FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug"),
-                        value_for<n::image_dir>(FSEntry("stripper_TEST_dir/image").realpath())
+                        value_for<n::image_dir>(FSEntry("stripper_TEST_dir/image").realpath()),
+                        value_for<n::split>(true),
+                        value_for<n::strip>(true)
                     ));
             s.strip();
 

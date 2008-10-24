@@ -66,9 +66,6 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -85,10 +82,6 @@ namespace paludis
              */
             const std::tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
                     const VersionSpec &, const RepositoryName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                    const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -132,6 +125,20 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
 
             void add_set(const SetName &, const std::string &);
+
+            virtual const Tribool want_choice_enabled(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
     };
 }
 

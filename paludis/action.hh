@@ -46,9 +46,7 @@ namespace paludis
 {
     namespace n
     {
-        struct checks;
         struct config_protect;
-        struct debug_build;
         struct destination;
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
@@ -81,8 +79,6 @@ namespace paludis
      */
     struct InstallActionOptions
     {
-        NamedValue<n::checks, InstallActionChecksOption> checks;
-        NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
         NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
     };

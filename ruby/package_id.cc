@@ -280,14 +280,6 @@ namespace
      * Our keywords
      */
     /*
-     * Document-method: iuse_key
-     *
-     * call-seq:
-     *     iuse_key -> MetadataCollectionKey
-     *
-     * Our iuse flags
-     */
-    /*
      * Document-method: short_description_key
      *
      * call-seq:
@@ -383,6 +375,14 @@ namespace
      *
      * Things we fetch
      */
+    /*
+     * Document-method: choices_key
+     *
+     * call-seq:
+     *     choices_key -> MetadataChoicesKey
+     *
+     * Our choices
+     */
     template <typename T_, const std::tr1::shared_ptr<const T_> (PackageID::* m_) () const>
     struct KeyValue
     {
@@ -431,7 +431,6 @@ namespace
 
         rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::tr1::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
-        rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
         rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<ProvideSpecTree>, &PackageID::provide_key>::fetch)), 0);
         rb_define_method(c_package_id, "build_dependencies_key", RUBY_FUNC_CAST((
@@ -457,6 +456,8 @@ namespace
                         &KeyValue<MetadataValueKey<FSEntry>, &PackageID::fs_location_key>::fetch)), 0);
         rb_define_method(c_package_id, "fetches_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<FetchableURISpecTree>, &PackageID::fetches_key>::fetch)), 0);
+        rb_define_method(c_package_id, "choices_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Choices> >, &PackageID::choices_key>::fetch)), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm

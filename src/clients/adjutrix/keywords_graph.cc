@@ -26,6 +26,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/log.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -34,6 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <set>
 #include <map>
@@ -80,12 +82,30 @@ namespace
         if (packages->empty())
             return;
 
-        if (! repo.use_interface())
-            throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
+        std::set<std::string> arch_flags;
+        for (PackageIDSequence::ConstIterator p(packages->begin()), p_end(packages->end()) ;
+                p != p_end ; ++p)
+        {
+            if (! (*p)->choices_key())
+                continue;
 
-        std::tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo.use_interface()->arch_flags());
-        if (arch_flags->empty())
+            for (Choices::ConstIterator c((*p)->choices_key()->value()->begin()), c_end((*p)->choices_key()->value()->end()) ;
+                    c != c_end ; ++c)
+            {
+                if ((*c)->raw_name() != "ARCH")
+                    continue;
+
+                for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                        i != i_end ; ++i)
+                    arch_flags.insert(stringify((*i)->unprefixed_name()));
+            }
+        }
+
+        if (arch_flags.empty())
+        {
+            Log::get_instance()->message("adjutrix.keywords_graph.no_arch_flags", ll_warning, lc_context) << "Couldn't find any arch flags";
             return;
+        }
 
         std::set<SlotName> slots;
         std::transform(indirect_iterator(packages->begin()), indirect_iterator(packages->end()),
@@ -99,8 +119,8 @@ namespace
                         std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _2, idcf_version))
                     )->canonical_form(idcf_version).length() + 1);
 
-        unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags->begin(),
-                            arch_flags->end(), CompareByStringLength<UseFlagName>())).length(), static_cast<std::size_t>(6)));
+        unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags.begin(),
+                            arch_flags.end(), CompareByStringLength<std::string>())).length(), static_cast<std::size_t>(6)));
 
         unsigned longest_slot_name(stringify(*std::max_element(slots.begin(),
                         slots.end(), CompareByStringLength<SlotName>())).length());
@@ -108,13 +128,13 @@ namespace
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
             cout << std::left << std::setw(version_specs_columns_width) << " " << "| ";
-            for (UseFlagNameSet::ConstIterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (std::set<std::string>::const_iterator a(arch_flags.begin()), a_end(arch_flags.end()) ;
                     a != a_end ; ++a)
             {
-                if ((tallest_arch_name - h) > a->data().length())
+                if ((tallest_arch_name - h) > a->length())
                     cout << "  ";
                 else
-                    cout << a->data().at(a->data().length() - tallest_arch_name + h) << " ";
+                    cout << a->at(a->length() - tallest_arch_name + h) << " ";
             }
             cout << "| ";
             if ((tallest_arch_name - h) <= 6)
@@ -130,7 +150,7 @@ namespace
         }
 
         cout << std::string(version_specs_columns_width, '-') << "+"
-            << std::string(arch_flags->size() * 2 + 1, '-') << "+"
+            << std::string(arch_flags.size() * 2 + 1, '-') << "+"
             << std::string(longest_slot_name + 3, '-') << endl;
 
         SlotName old_slot("first_slot");
@@ -143,14 +163,14 @@ namespace
             if (p->slot() != old_slot)
                 if (old_slot != SlotName("first_slot"))
                     cout << std::string(version_specs_columns_width, '-') << "+"
-                        << std::string(arch_flags->size() * 2 + 1, '-') << "+"
+                        << std::string(arch_flags.size() * 2 + 1, '-') << "+"
                         << std::string(longest_slot_name + 3, '-') << endl;
 
             cout << std::left << std::setw(version_specs_columns_width) << p->canonical_form(idcf_version) << "| ";
 
             std::tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
 
-            for (UseFlagNameSet::ConstIterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (std::set<std::string>::const_iterator a(arch_flags.begin()), a_end(arch_flags.end()) ;
                     a != a_end ; ++a)
             {
                 if (keywords->end() != keywords->find(KeywordName(stringify(*a))))

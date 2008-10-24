@@ -42,7 +42,7 @@ if [[ 0 != ${code} ]] ; then
         out=`pwd`/${testname#./}.epicfail
         echo ">>> rerunning test ${testname} verbosely redirected to ${out}"
         env PALUDIS_TESTS_RERUN_VERBOSELY=no PALUDIS_TESTS_KEEP_STDERR=yes \
-            PALUDIS_TESTS_KEEP_LOG=yes $@ > $out 2>&1
+            PALUDIS_TESTS_KEEP_LOG=yes $0 $@ > $out 2>&1
         echo ">>> saved output of verbose ${testname} rerun to ${out}"
     fi
     echo ">>> exiting with error for test ${testname}"

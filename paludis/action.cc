@@ -26,8 +26,6 @@
 
 using namespace paludis;
 
-#include <paludis/action-se.cc>
-
 Action::~Action()
 {
 }

@@ -24,8 +24,6 @@
 #include <paludis/util/set.hh>
 
 #include <paludis/args/args.hh>
-#include <paludis/args/checks_arg.hh>
-#include <paludis/args/debug_build_arg.hh>
 #include <paludis/dep_list-fwd.hh>
 #include <paludis/install_task.hh>
 
@@ -73,12 +71,6 @@ namespace paludis
 
                 /// --add-to-world-spec
                 paludis::args::StringArg a_add_to_world_spec;
-
-                /// --debug-build
-                paludis::args::DebugBuildArg a_debug_build;
-
-                /// --checks
-                paludis::args::ChecksArg a_checks;
 
                 /// --fetch
                 paludis::args::SwitchArg a_fetch;

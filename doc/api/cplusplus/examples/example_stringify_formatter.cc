@@ -52,13 +52,6 @@ int main(int argc, char * argv[])
              * formatter for all of the keys. */
             StringifyFormatter formatter;
 
-            /* We need to check that _key() methods don't return zero. */
-            if ((*i)->iuse_key())
-            {
-                cout << "    " << (*i)->iuse_key()->human_name() << ":" << endl;
-                cout << "        " << (*i)->iuse_key()->pretty_print_flat(formatter) << endl;
-            }
-
             if ((*i)->keywords_key())
             {
                 cout << "    " << (*i)->keywords_key()->human_name() << ":" << endl;

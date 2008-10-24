@@ -97,8 +97,6 @@ namespace paludis
             void set_fetch_only(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
-            void set_debug_mode(const InstallActionDebugOption value);
-            void set_checks_mode(const InstallActionChecksOption value);
             void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
             void set_continue_on_failure(const InstallTaskContinueOnFailure);

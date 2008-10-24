@@ -20,9 +20,16 @@
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/repositories/unpackaged/dep_parser.hh>
+#include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/validated.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/choice.hh>
+#include <paludis/elike_choices.hh>
+#include <tr1/memory>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -86,5 +93,53 @@ const std::tr1::shared_ptr<const DependencyLabelSequence>
 UnpackagedDependencyKey::initial_labels() const
 {
     return _imp->labels;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<UnpackagedChoicesKey>
+    {
+        const Environment * const env;
+        const UnpackagedID * const id;
+
+        mutable Mutex mutex;
+        mutable std::tr1::shared_ptr<Choices> value;
+
+        Implementation(const Environment * const e, const UnpackagedID * const i) :
+            env(e),
+            id(i)
+        {
+        }
+    };
+}
+
+UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const std::string & r, const std::string & h,
+        const MetadataKeyType t, const UnpackagedID * const id) :
+    MetadataValueKey<std::tr1::shared_ptr<const Choices> >(r, h, t),
+    PrivateImplementationPattern<UnpackagedChoicesKey>(new Implementation<UnpackagedChoicesKey>(env, id)),
+    _imp(PrivateImplementationPattern<UnpackagedChoicesKey>::_imp)
+{
+}
+
+UnpackagedChoicesKey::~UnpackagedChoicesKey()
+{
+}
+
+const std::tr1::shared_ptr<const Choices>
+UnpackagedChoicesKey::value() const
+{
+    Lock lock(_imp->mutex);
+    if (! _imp->value)
+    {
+        _imp->value.reset(new Choices);
+        std::tr1::shared_ptr<Choice> build_options(new Choice(canonical_build_options_raw_name(), canonical_build_options_human_name(),
+                    canonical_build_options_prefix(), false, false, false, false));
+        build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
+        build_options->add(make_shared_ptr(new ELikeStripChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
+        _imp->value->add(build_options);
+    }
+
+    return _imp->value;
 }
 

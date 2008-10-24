@@ -5,43 +5,60 @@ mkdir install_TEST_dir || exit 1
 cd install_TEST_dir || exit 1
 mkdir -p build
 
-mkdir -p config/.paludis-install-test-vdb_config
-cat <<END > config/.paludis-install-test-vdb_config/specpath.conf
+mkdir -p config-checks-always/.paludis-install-test-vdb_config
+cat <<END > config-checks-always/.paludis-install-test-vdb_config/specpath.conf
 root = `pwd`/root
-config-suffix = vdb
+config-suffix = vdb-checks-always
 END
 
-mkdir -p config/.paludis-install-test-exndbam_config
-cat <<END > config/.paludis-install-test-exndbam_config/specpath.conf
+mkdir -p config-checks-always/.paludis-install-test-exndbam_config
+cat <<END > config-checks-always/.paludis-install-test-exndbam_config/specpath.conf
 root = `pwd`/root
-config-suffix = exndbam
+config-suffix = exndbam-checks-always
+END
+
+mkdir -p config-checks-none/.paludis-install-test-vdb_config
+cat <<END > config-checks-none/.paludis-install-test-vdb_config/specpath.conf
+root = `pwd`/root
+config-suffix = vdb-checks-none
+END
+
+mkdir -p config-checks-none/.paludis-install-test-exndbam_config
+cat <<END > config-checks-none/.paludis-install-test-exndbam_config/specpath.conf
+root = `pwd`/root
+config-suffix = exndbam-checks-none
 END
 
 for c in vdb exndbam ; do
-
-    mkdir -p root/${SYSCONFDIR}/paludis-${c}/repositories
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/use.conf
-*/* foo
+    mkdir -p root/${SYSCONFDIR}/paludis-${c}-checks-{always,none}/repositories
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-always/use.conf
+*/* foo build_options: optional_tests recommended_tests
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/environment.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-none/use.conf
+*/* foo build_options: -optional_tests -recommended_tests
+END
+
+    for d in always none ; do
+
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/environment.conf
 world = `pwd`/root/world-${c}
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/licenses.conf
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/licenses.conf
 */* *
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/keywords.conf
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/keywords.conf
 */* test
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/bashrc
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/bashrc
 export CHOST="my-chost"
 export USER_BASHRC_WAS_USED=yes
 END
 
-    cat <<END > root/${SYSCONFDIR}/paludis-${c}/repositories/repo1.conf
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = ebuild
@@ -50,9 +67,12 @@ profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestpr
 builddir = `pwd`/build
 END
 
+    done
+
 done
 
-cat <<END > root/${SYSCONFDIR}/paludis-vdb/repositories/installed.conf
+for d in always none ; do
+    cat <<END > root/${SYSCONFDIR}/paludis-vdb-checks-${d}/repositories/installed.conf
 location = `pwd`/root/var/db/pkg
 format = vdb
 names_cache = /var/empty
@@ -60,11 +80,13 @@ provides_cache = /var/empty
 builddir = `pwd`/build
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis-exndbam/repositories/installed.conf
+    cat <<END > root/${SYSCONFDIR}/paludis-exndbam-checks-${d}/repositories/installed.conf
 location = `pwd`/root/var/db/exndbam
 format = exndbam
 builddir = `pwd`/build
 END
+
+done
 
 mkdir -p root/tmp
 mkdir -p root/var/db/pkg

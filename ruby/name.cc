@@ -28,21 +28,8 @@ using namespace paludis::ruby;
 
 namespace
 {
-    static VALUE c_iuse_flag_parse_option;
-
     void do_register_names()
     {
-        /*
-         * Document-module: Paludis::IUseFlagParseMode
-         *
-         * How to parse an IUSE flag string.
-         */
-        c_iuse_flag_parse_option = rb_define_module_under(paludis_module(), "IUseFlagParseOption");
-        for (IUseFlagParseOption l(static_cast<IUseFlagParseOption>(0)), l_end(last_iufpo) ; l != l_end ;
-                l = static_cast<IUseFlagParseOption>(static_cast<int>(l) + 1))
-            rb_define_const(c_iuse_flag_parse_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/name-se.hh, IUseFlagParseOptions , c_iuse_flag_parse_options>
     }
 }
 

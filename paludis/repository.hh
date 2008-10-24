@@ -76,7 +76,6 @@ namespace paludis
         struct sets_interface;
         struct status;
         struct syncable_interface;
-        struct use_interface;
         struct used_this_for_config_protect;
         struct virtual_name;
         struct virtuals_interface;
@@ -102,7 +101,6 @@ namespace paludis
         NamedValue<n::qa_interface, RepositoryQAInterface *> qa_interface;
         NamedValue<n::sets_interface, RepositorySetsInterface *> sets_interface;
         NamedValue<n::syncable_interface, RepositorySyncableInterface *> syncable_interface;
-        NamedValue<n::use_interface, RepositoryUseInterface *> use_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
     };
 
@@ -384,70 +382,6 @@ namespace paludis
     };
 
     /**
-     * Interface for handling USE flags for the Repository class.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryUseInterface
-    {
-        public:
-            ///\name USE queries
-            ///\{
-
-            /**
-             * Query the state of the specified use flag.
-             */
-            virtual UseFlagState query_use(const UseFlagName & u, const PackageID &) const = 0;
-
-            /**
-             * Query whether the specified use flag is masked.
-             */
-            virtual bool query_use_mask(const UseFlagName & u, const PackageID & pde) const = 0;
-
-            /**
-             * Query whether the specified use flag is forced.
-             */
-            virtual bool query_use_force(const UseFlagName & u, const PackageID & pde) const = 0;
-
-            /**
-             * Fetch all arch flags.
-             */
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> arch_flags() const = 0;
-
-            /**
-             * Fetch all expand flags.
-             */
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const = 0;
-
-            /**
-             * Fetch all expand hidden flags.
-             */
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const = 0;
-
-            /**
-             * Fetch all use expand prefixes.
-             */
-            virtual std::tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const = 0;
-
-            /**
-             * Fetch the use expand separator (eg _ or :) for the
-             * specified package, or null if unknown.
-             */
-            virtual char use_expand_separator(const PackageID & pkg) const = 0;
-
-            /**
-             * Describe a use flag.
-             */
-            virtual std::string describe_use_flag(const UseFlagName & n, const PackageID & pkg) const = 0;
-
-            ///\}
-
-            virtual ~RepositoryUseInterface();
-    };
-
-    /**
      * Interface for package sets for repositories.
      *
      * \see Repository
@@ -711,7 +645,7 @@ namespace paludis
 
             virtual ProfilesConstIterator find_profile(const FSEntry & location) const = 0;
             virtual void set_profile(const ProfilesConstIterator & iter) = 0;
-            virtual void set_profile_by_arch(const UseFlagName &) = 0;
+            virtual void set_profile_by_arch(const std::string &) = 0;
 
             ///\}
 

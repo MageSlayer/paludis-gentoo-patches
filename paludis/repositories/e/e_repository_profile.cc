@@ -30,6 +30,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -38,6 +39,8 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -57,20 +60,20 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<ERepositoryProfile::UseExpandConstIteratorTag, const UseFlagName>;
 template class WrappedForwardIterator<ERepositoryProfile::VirtualsConstIteratorTag,
          const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >;
 
+typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<UnprefixedChoiceName> > > KnownMap;
+
 namespace
 {
-    typedef std::tr1::unordered_set<UseFlagName, Hash<UseFlagName> > UseFlagSet;
     typedef std::tr1::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
     typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
     typedef std::tr1::unordered_map<QualifiedPackageName,
             std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
             Hash<QualifiedPackageName> > PackageMaskMap;
 
-    typedef std::tr1::unordered_map<UseFlagName, bool, Hash<UseFlagName> > FlagStatusMap;
+    typedef std::tr1::unordered_map<ChoiceNameWithPrefix, bool, Hash<ChoiceNameWithPrefix> > FlagStatusMap;
     typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
@@ -113,6 +116,7 @@ namespace paludis
             void load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m);
 
             void add_use_expand_to_use();
+            void fish_out_use_expand_names();
             void make_vars_from_file_vars();
             void handle_profile_arch_var(const std::string &);
             void load_special_make_defaults_vars();
@@ -157,9 +161,10 @@ namespace paludis
             ///\name USE related values
             ///\{
 
-            UseFlagSet use;
-            UseFlagSet use_expand;
-            UseFlagSet use_expand_hidden;
+            std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
+            std::tr1::shared_ptr<Set<std::string> > use_expand;
+            std::tr1::shared_ptr<Set<std::string> > use_expand_hidden;
+            KnownMap known_choice_value_names;
             StackedValuesList stacked_values_list;
 
             ///\}
@@ -181,7 +186,9 @@ namespace paludis
                 repository(p),
                 system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                             std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
-                system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
+                system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
+                use_expand(new Set<std::string>),
+                use_expand_hidden(new Set<std::string>)
             {
                 Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
                 load_environment();
@@ -202,6 +209,7 @@ namespace paludis
                 make_vars_from_file_vars();
                 load_special_make_defaults_vars();
                 add_use_expand_to_use();
+                fish_out_use_expand_names();
                 if (! arch_var_if_special.empty())
                     handle_profile_arch_var(arch_var_if_special);
             }
@@ -340,10 +348,9 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
                 repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
-        use_expand.clear();
+        use_expand->clear();
         if (! use_expand_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_var],
-                    create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
+            tokenise_whitespace(environment_variables[use_expand_var], use_expand->inserter());
     }
     catch (const InternalError &)
     {
@@ -365,8 +372,13 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     {
         use.clear();
         if (! use_var.empty())
-            tokenise_whitespace(environment_variables[use_var],
-                    create_inserter<UseFlagName>(std::inserter(use, use.end())));
+        {
+            std::list<std::string> tokens;
+            tokenise_whitespace(environment_variables[use_var], std::back_inserter(tokens));
+            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+                use.insert(std::make_pair("", *t));
+        }
     }
     catch (const InternalError &)
     {
@@ -382,10 +394,9 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
-        use_expand.clear();
+        use_expand->clear();
         if (! use_expand_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_var],
-                    create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
+            tokenise_whitespace(environment_variables[use_expand_var], use_expand->inserter());
     }
     catch (const InternalError &)
     {
@@ -401,10 +412,9 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand_hidden());
     try
     {
-        use_expand_hidden.clear();
+        use_expand_hidden->clear();
         if (! use_expand_hidden_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_hidden_var],
-                    create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
+            tokenise_whitespace(environment_variables[use_expand_hidden_var], use_expand_hidden->inserter());
     }
     catch (const InternalError &)
     {
@@ -423,35 +433,15 @@ Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
     std::tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
 
-    try
-    {
-        Context c("When checking whether '" + s + "' is incremental:");
+    Context c("When checking whether '" + s + "' is incremental:");
 
-        return (! s.empty()) && (
-                (s == e->supported()->ebuild_environment_variables()->env_use())
-                || (s == e->supported()->ebuild_environment_variables()->env_use_expand())
-                || (s == e->supported()->ebuild_environment_variables()->env_use_expand_hidden())
-                || s == "CONFIG_PROTECT"
-                || s == "CONFIG_PROTECT_MASK"
-                || use_expand.end() != use_expand.find(UseFlagName(s)));
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & x)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.incremental_check_failure", ll_qa, lc_context)
-            << "Caught exception '" << x.message() << "' (" << x.what()
-            << "), possibly due to weird variable name being used in profile";
-
-        return (! s.empty()) && (
-                (s == e->supported()->ebuild_environment_variables()->env_use())
-                || (s == e->supported()->ebuild_environment_variables()->env_use_expand())
-                || (s == e->supported()->ebuild_environment_variables()->env_use_expand_hidden())
-                || s == "CONFIG_PROTECT"
-                || s == "CONFIG_PROTECT_MASK");
-    }
+    return (! s.empty()) && (
+            (s == e->supported()->ebuild_environment_variables()->env_use())
+            || (s == e->supported()->ebuild_environment_variables()->env_use_expand())
+            || (s == e->supported()->ebuild_environment_variables()->env_use_expand_hidden())
+            || s == "CONFIG_PROTECT"
+            || s == "CONFIG_PROTECT_MASK"
+            || use_expand->end() != use_expand->find(s));
 }
 
 void
@@ -572,9 +562,9 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
                 if (t->empty())
                     continue;
                 if ('-' == t->at(0))
-                    m[UseFlagName(t->substr(1))] = false;
+                    m[ChoiceNameWithPrefix(t->substr(1))] = false;
                 else
-                    m[UseFlagName(*t)] = true;
+                    m[ChoiceNameWithPrefix(*t)] = true;
             }
             catch (const InternalError &)
             {
@@ -622,9 +612,9 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
                     if (t->empty())
                         continue;
                     if ('-' == t->at(0))
-                        n->second[UseFlagName(t->substr(1))] = false;
+                        n->second[ChoiceNameWithPrefix(t->substr(1))] = false;
                     else
-                        n->second[UseFlagName(*t)] = true;
+                        n->second[ChoiceNameWithPrefix(*t)] = true;
                 }
                 catch (const InternalError &)
                 {
@@ -652,22 +642,43 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
 
     stacked_values_list.push_back(StackedValues("use_expand special values"));
 
-    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
-                    repository->params().profile_eapi)->supported()->ebuild_options()->use_expand_separator()));
-
-    for (UseFlagSet::const_iterator x(use_expand.begin()), x_end(use_expand.end()) ;
+    for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
             x != x_end ; ++x)
     {
         std::string lower_x;
-        std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
-                &::tolower);
+        std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
 
         std::list<std::string> uses;
-        tokenise_whitespace(environment_variables[stringify(*x)],
-                std::back_inserter(uses));
+        tokenise_whitespace(environment_variables[stringify(*x)], std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
-            use.insert(UseFlagName(lower_x + expand_sep + *u));
+            use.insert(std::make_pair(lower_x, *u));
+    }
+}
+
+void
+Implementation<ERepositoryProfile>::fish_out_use_expand_names()
+{
+    Context context("When finding all known USE_EXPAND names:");
+
+    for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
+            x != x_end ; ++x)
+    {
+        std::string lower_x;
+        std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
+        known_choice_value_names.insert(std::make_pair(lower_x, make_shared_ptr(new Set<UnprefixedChoiceName>)));
+    }
+
+    for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(use.begin()), u_end(use.end()) ;
+            u != u_end ; ++u)
+    {
+        if (! stringify(u->first).empty())
+        {
+            KnownMap::iterator i(known_choice_value_names.find(stringify(u->first)));
+            if (i == known_choice_value_names.end())
+                throw InternalError(PALUDIS_HERE, stringify(u->first));
+            i->second->insert(u->second);
+        }
     }
 }
 
@@ -683,10 +694,10 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & 
     stacked_values_list.push_back(StackedValues("arch special values"));
     try
     {
-        UseFlagName arch(arch_s);
+        std::string arch(arch_s);
 
-        use.insert(arch);
-        stacked_values_list.back().use_force[arch] = true;
+        use.insert(std::make_pair(ChoicePrefixName(""), arch));
+        stacked_values_list.back().use_force[ChoiceNameWithPrefix(arch)] = true;
     }
     catch (const InternalError &)
     {
@@ -712,28 +723,33 @@ ERepositoryProfile::~ERepositoryProfile()
 }
 
 bool
-ERepositoryProfile::use_masked(const UseFlagName & u,
-        const PackageID & e) const
+ERepositoryProfile::use_masked(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value_unprefixed,
+        const ChoiceNameWithPrefix & value_prefixed
+        ) const
 {
-    if (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(u) &&
-        use_enabled != use_state_ignoring_masks(u, e))
+    if (stringify(choice->prefix()).empty() &&
+            _imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(value_unprefixed) &&
+            (! use_state_ignoring_masks(id, choice, value_unprefixed, value_prefixed).is_true()))
         return true;
 
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
     {
-        FlagStatusMap::const_iterator f(i->use_mask.find(u));
+        FlagStatusMap::const_iterator f(i->use_mask.find(value_prefixed));
         if (i->use_mask.end() != f)
             result = f->second;
 
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, e))
+            if (! match_package(*_imp->env, *g->first, *id))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(u));
+            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
             if (g->second.end() != h)
                 result = h->second;
         }
@@ -743,28 +759,33 @@ ERepositoryProfile::use_masked(const UseFlagName & u,
 }
 
 bool
-ERepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
+ERepositoryProfile::use_forced(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value_unprefixed,
+        const ChoiceNameWithPrefix & value_prefixed
+        ) const
 {
-    if (use_masked(u, e))
+    if (use_masked(id, choice, value_unprefixed, value_prefixed))
         return false;
-    if (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(u))
+    if (stringify(choice->prefix()).empty() && (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(value_unprefixed)))
         return true;
 
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
     {
-        FlagStatusMap::const_iterator f(i->use_force.find(u));
+        FlagStatusMap::const_iterator f(i->use_force.find(value_prefixed));
         if (i->use_force.end() != f)
             result = f->second;
 
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, e))
+            if (! match_package(*_imp->env, *g->first, *id))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(u));
+            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
             if (g->second.end() != h)
                 result = h->second;
         }
@@ -773,13 +794,16 @@ ERepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
     return result;
 }
 
-UseFlagState
-ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
-        const PackageID & e) const
+Tribool
+ERepositoryProfile::use_state_ignoring_masks(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value_unprefixed,
+        const ChoiceNameWithPrefix & value_prefixed
+        ) const
 {
-    UseFlagState result(use_unspecified);
-
-    result = _imp->use.end() != _imp->use.find(u) ? use_enabled : use_unspecified;
+    std::pair<ChoicePrefixName, UnprefixedChoiceName> prefix_value(choice->prefix(), value_unprefixed);
+    Tribool result(_imp->use.end() != _imp->use.find(prefix_value) ? Tribool(true) : Tribool(indeterminate));
 
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
@@ -787,26 +811,30 @@ ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, e))
+            if (! match_package(*_imp->env, *g->first, *id))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(u));
+            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
             if (g->second.end() != h)
-                result = h->second ? use_enabled : use_disabled;
-        }
-    }
-
-    if (use_unspecified == result)
-    {
-        if (e.iuse_key())
-        {
-            IUseFlagSet::ConstIterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified, std::string::npos)));
-            if (i != e.iuse_key()->value()->end())
-                result = i->state;
+                result = h->second ? true : false;
         }
     }
 
     return result;
+}
+
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+ERepositoryProfile::known_choice_value_names(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> & choice
+        ) const
+{
+    std::string lower_x;
+    std::transform(choice->raw_name().begin(), choice->raw_name().end(), std::back_inserter(lower_x), &::tolower);
+    KnownMap::const_iterator i(_imp->known_choice_value_names.find(lower_x));
+    if (_imp->known_choice_value_names.end() == i)
+        throw InternalError(PALUDIS_HERE, lower_x);
+    return i->second;
 }
 
 std::string
@@ -823,30 +851,6 @@ std::tr1::shared_ptr<SetSpecTree::ConstItem>
 ERepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
-}
-
-ERepositoryProfile::UseExpandConstIterator
-ERepositoryProfile::begin_use_expand() const
-{
-    return UseExpandConstIterator(_imp->use_expand.begin());
-}
-
-ERepositoryProfile::UseExpandConstIterator
-ERepositoryProfile::end_use_expand() const
-{
-    return UseExpandConstIterator(_imp->use_expand.end());
-}
-
-ERepositoryProfile::UseExpandConstIterator
-ERepositoryProfile::begin_use_expand_hidden() const
-{
-    return UseExpandConstIterator(_imp->use_expand_hidden.begin());
-}
-
-ERepositoryProfile::UseExpandConstIterator
-ERepositoryProfile::end_use_expand_hidden() const
-{
-    return UseExpandConstIterator(_imp->use_expand_hidden.end());
 }
 
 ERepositoryProfile::VirtualsConstIterator
@@ -882,5 +886,17 @@ ERepositoryProfile::profile_masked(const PackageID & id) const
     }
 
     return std::tr1::shared_ptr<const RepositoryMaskInfo>();
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::use_expand() const
+{
+    return _imp->use_expand;
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::use_expand_hidden() const
+{
+    return _imp->use_expand_hidden;
 }
 

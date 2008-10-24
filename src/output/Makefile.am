@@ -1,8 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-DISTCLEANFILES = console_install_task-sr.hh console_install_task-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
-EXTRA_DIST = console_install_task.sr console_install_task-sr.hh console_install_task-sr.cc
-BUILT_SOURCES = console_install_task-sr.hh console_install_task-sr.cc
 
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
@@ -27,11 +24,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
-
-console_install_task-sr.hh : console_install_task.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/console_install_task.sr > $@
-
-console_install_task-sr.cc : console_install_task.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/console_install_task.sr > $@
-
 

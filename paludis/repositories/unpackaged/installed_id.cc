@@ -454,12 +454,6 @@ InstalledUnpackagedID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-InstalledUnpackagedID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 InstalledUnpackagedID::provide_key() const
 {
@@ -774,3 +768,8 @@ InstalledUnpackagedID::uninstall(const bool replace) const
     }
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+InstalledUnpackagedID::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
+}

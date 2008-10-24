@@ -40,6 +40,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice.hh>
 #include <set>
 #include <algorithm>
 
@@ -222,9 +223,48 @@ namespace
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
-            viable =
-                ((! elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_masked(elike_conditional_dep_spec_flag(u), *id))) ||
-                ((elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_forced(elike_conditional_dep_spec_flag(u), *id)));
+            ChoiceNameWithPrefix prefixed(elike_conditional_dep_spec_flag(u));
+            UnprefixedChoiceName value("x");
+            std::tr1::shared_ptr<const Choice> choice;
+            if (id->choices_key())
+                for (Choices::ConstIterator c(id->choices_key()->value()->begin()),
+                        c_end(id->choices_key()->value()->end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (0 != prefixed.data().compare(0, (*c)->prefix().data().length(), (*c)->prefix().data(),
+                                0, (*c)->prefix().data().length()))
+                        continue;
+
+                    for (Choice::ConstIterator d((*c)->begin()), d_end((*c)->end()) ;
+                            d != d_end ; ++d)
+                        if ((*d)->name_with_prefix() == prefixed)
+                        {
+                            choice = *c;
+                            value = (*d)->unprefixed_name();
+                            break;
+                        }
+
+                    if (choice)
+                        break;
+                }
+
+            if (! choice)
+            {
+                viable = false;
+                if (reporter)
+                    reporter->message(QAMessage(entry, qaml_normal, name, "No flag matching '"
+                                + stringify(prefixed) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
+                                + stringify((*profile).path()) + "' (" + stringify((*profile).arch()) + "." + stringify((*profile).status())
+                                + (unstable ? ".unstable" : ".stable") + ")")
+                            .with_associated_id(id)
+                            .with_associated_key(id, key));
+            }
+            else
+                viable =
+                    ((! elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_masked(
+                            id, choice, value, prefixed))) ||
+                    ((elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_forced(
+                            id, choice, value, prefixed)));
 
             if (viable)
                 std::for_each(cur, end, accept_visitor(*this));

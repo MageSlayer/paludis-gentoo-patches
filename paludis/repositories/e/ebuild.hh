@@ -77,6 +77,7 @@ namespace paludis
         struct use;
         struct use_ebuild_file;
         struct use_expand;
+        struct use_expand_hidden;
         struct userpriv;
     }
 
@@ -125,6 +126,7 @@ namespace paludis
             NamedValue<n::root, std::string> root;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
         };
 
         /**
@@ -147,6 +149,7 @@ namespace paludis
             NamedValue<n::slot, SlotName> slot;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
         };
 
         /**
@@ -163,6 +166,7 @@ namespace paludis
             NamedValue<n::root, std::string> root;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
         };
 
         /**
@@ -210,6 +214,7 @@ namespace paludis
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_ebuild_file, bool> use_ebuild_file;
             NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
         };
 
         /**

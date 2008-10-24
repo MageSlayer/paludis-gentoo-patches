@@ -504,6 +504,20 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     RegisterRubyClass::get_instance()->execute();
 }
 
+bool
+paludis::ruby::value_to_bool(VALUE v)
+{
+    if (Qfalse == v || Qnil == v)
+        return false;
+    return true;
+}
+
+VALUE
+paludis::ruby::bool_to_value(bool b)
+{
+    return b ? Qtrue : Qfalse;
+}
+
 #ifdef ENABLE_RUBY_QA
 paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter) {
     this->reporter = ruby_reporter;

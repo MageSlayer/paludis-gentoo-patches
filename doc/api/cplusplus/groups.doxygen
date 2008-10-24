@@ -30,6 +30,20 @@ using namespace paludis;
  * - \ref example_action.cc "example_action.cc"
  */
 
+/** \defgroup g_choices Choices
+ *
+ * \ingroup g_package_id
+ *
+ * Choices represent things like USE flags, the various USE_EXPAND values
+ * (LINGUAS, VIDEO_CARDS etc) and fancy things like build_options.
+ *
+ * \since 0.32
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 /** \defgroup g_contents Contents
  *
  * \ingroup g_metadata_key

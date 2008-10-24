@@ -56,6 +56,7 @@
 #include <paludis/qa.hh>
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/about.hh>
+#include <paludis/choice.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -183,15 +184,14 @@ namespace paludis
 
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
-        mutable std::tr1::shared_ptr<UseFlagNameSet> arch_flags;
+        mutable std::tr1::shared_ptr<Set<UnprefixedChoiceName> > arch_flags;
+        mutable std::tr1::shared_ptr<const UseDesc> use_desc;
 
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
 
         mutable bool has_profiles_desc;
         mutable ProfilesDesc profiles_desc;
-
-        mutable std::list<std::tr1::shared_ptr<UseDesc> > use_desc;
 
         mutable std::tr1::shared_ptr<ERepositoryProfile> profile_ptr;
 
@@ -471,7 +471,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
 #endif
                 value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(this),
-                value_for<n::use_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
@@ -611,130 +610,14 @@ ERepository::repository_masked(const PackageID & id) const
     return std::tr1::shared_ptr<const RepositoryMaskInfo>();
 }
 
-UseFlagState
-ERepository::query_use(const UseFlagName & f, const PackageID & e) const
-{
-    if (this != e.repository().get())
-        return use_unspecified;
-
-    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
-
-    if (! id.eapi()->supported())
-    {
-        Log::get_instance()->message("e.query_use.unsupported_eapi", ll_qa, lc_no_context)
-            << "Was asked for the state of USE flag '" << f << "' for ID '" << e
-            << "', but this ID has an unsupported EAPI";
-        return use_disabled;
-    }
-
-    if (id.use_key())
-    {
-        if (id.use_key()->value()->end() != id.use_key()->value()->find(f))
-            return use_enabled;
-        else
-            return use_disabled;
-    }
-    else
-    {
-        _imp->need_profiles();
-
-        /* Check that the value is in iuse, and return false if it isn't. Otherwise weird stuff
-         * happens, like ticket:560. But don't for USE_EXPAND and ARCH things on EAPIs where
-         * they don't have to be listed. */
-        do
-        {
-            if (! id.iuse_key())
-                break;
-
-            if (id.iuse_key()->value()->end() != id.iuse_key()->value()->find(IUseFlag(f, use_disabled, 0)))
-                break;
-
-            if (! id.eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
-            {
-                if (arch_flags()->end() != arch_flags()->find(f))
-                    break;
-
-                bool is_expand(false);
-                const std::tr1::shared_ptr<const UseFlagNameSet> prefixes(use_expand_prefixes());
-                for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
-                        p != p_end && ! is_expand ; ++p)
-                    if (0 == stringify(*p).compare(0, stringify(*p).length(), stringify(f), 0, stringify(*p).length()))
-                        is_expand = true;
-
-                if (is_expand)
-                    break;
-
-                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_context)
-                    << "Was asked for the state of "
-                    << id.eapi()->supported()->ebuild_environment_variables()->env_use()
-                    << " flag '" << f << "' for ID '" << e
-                    << "', but that flag is not listed in " << id.iuse_key()->raw_name() << " and is not a "
-                    << id.eapi()->supported()->ebuild_environment_variables()->env_use_expand() << " or "
-                    << id.eapi()->supported()->ebuild_environment_variables()->env_arch() << " value";
-            }
-            else
-                Log::get_instance()->message("e.query_use.not_in_iuse", ll_qa, lc_context)
-                    << "Was asked for the state of "
-                    << id.eapi()->supported()->ebuild_environment_variables()->env_use()
-                    << " flag '" << f << "' for ID '" << e
-                    << "', but that flag is not listed in " << id.iuse_key()->raw_name();
-
-            return use_disabled;
-        } while (false);
-
-        if (query_use_mask(f, e))
-            return use_disabled;
-        else if (query_use_force(f, e))
-            return use_enabled;
-        else
-            return _imp->profile_ptr->use_state_ignoring_masks(f, e);
-    }
-}
-
-bool
-ERepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
-{
-    if (this != e.repository().get())
-        return use_unspecified;
-
-    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
-    if (id.use_key())
-    {
-        return (id.use_key()->value()->end() == id.use_key()->value()->find(u));
-    }
-    else
-    {
-        _imp->need_profiles();
-        return _imp->profile_ptr->use_masked(u, e);
-    }
-}
-
-bool
-ERepository::query_use_force(const UseFlagName & u, const PackageID & e) const
-{
-    if (this != e.repository().get())
-        return use_unspecified;
-
-    const ERepositoryID & id(static_cast<const ERepositoryID &>(e));
-    if (id.use_key())
-    {
-        return (id.use_key()->value()->end() != id.use_key()->value()->find(u));
-    }
-    else
-    {
-        _imp->need_profiles();
-        return _imp->profile_ptr->use_forced(u, e);
-    }
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
+const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 ERepository::arch_flags() const
 {
     Lock l(_imp->mutexes->arch_flags_mutex);
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
-        _imp->arch_flags.reset(new UseFlagNameSet);
+        _imp->arch_flags.reset(new Set<UnprefixedChoiceName>);
 
         bool found_one(false);
         std::tr1::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
@@ -745,7 +628,7 @@ ERepository::arch_flags() const
                 continue;
 
             LineConfigFile archs(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
-            std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
+            std::copy(archs.begin(), archs.end(), create_inserter<UnprefixedChoiceName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
 
@@ -973,75 +856,6 @@ ERepository::virtual_packages() const
     return result;
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-ERepository::use_expand_flags() const
-{
-    _imp->need_profiles();
-
-    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
-                    _imp->params.profile_eapi)->supported()->ebuild_options()->use_expand_separator()));
-    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-    {
-        std::list<std::string> values;
-        tokenise_whitespace(_imp->profile_ptr->environment_variable(
-                    stringify(*i)), std::back_inserter(values));
-        for (std::list<std::string>::const_iterator j(values.begin()), j_end(values.end()) ;
-                j != j_end ; ++j)
-        {
-            std::string f(stringify(*i) + expand_sep + *j), lower_f;
-            std::transform(f.begin(), f.end(), std::back_inserter(lower_f), &::tolower);
-            result->insert(UseFlagName(lower_f));
-        }
-    }
-
-    return result;
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-ERepository::use_expand_prefixes() const
-{
-    _imp->need_profiles();
-
-    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-    {
-        std::string lower_i;
-        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), &::tolower);
-        result->insert(UseFlagName(lower_i));
-    }
-
-    return result;
-}
-
-std::tr1::shared_ptr<const UseFlagNameSet>
-ERepository::use_expand_hidden_prefixes() const
-{
-    _imp->need_profiles();
-
-    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
-            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
-    {
-        std::string lower_i;
-        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), &::tolower);
-        result->insert(UseFlagName(lower_i));
-    }
-
-    return result;
-}
-
-char
-ERepository::use_expand_separator(const PackageID & id) const
-{
-    if (this != id.repository().get())
-        return '\0';
-    const std::tr1::shared_ptr<const EAPI> & eapi(static_cast<const ERepositoryID &>(id).eapi());
-    return eapi->supported() ? eapi->supported()->ebuild_options()->use_expand_separator() : '\0';
-}
-
 void
 ERepository::regenerate_cache() const
 {
@@ -1104,7 +918,7 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 }
 
 void
-ERepository::set_profile_by_arch(const UseFlagName & arch)
+ERepository::set_profile_by_arch(const std::string & arch)
 {
     Context context("When setting profile by arch '" + stringify(arch) + "':");
 
@@ -1123,31 +937,6 @@ ERepository::set_profile_by_arch(const UseFlagName & arch)
         }
 
     throw ConfigurationError("Cannot find a profile appropriate for '" + stringify(arch) + "'");
-}
-
-std::string
-ERepository::describe_use_flag(const UseFlagName & f,
-        const PackageID & e) const
-{
-    Lock l(_imp->mutexes->use_desc_mutex);
-
-    if (_imp->use_desc.empty())
-    {
-        std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
-                        _imp->params.profile_eapi)->supported()->ebuild_options()->use_expand_separator()));
-        std::tr1::shared_ptr<const UseDescFileInfoSequence> use_desc_info(_imp->layout->use_desc_files());
-        _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(use_desc_info, expand_sep)));
-    }
-
-    std::string result;
-    for (std::list<std::tr1::shared_ptr<UseDesc> >::const_iterator i(_imp->use_desc.begin()),
-            i_end(_imp->use_desc.end()) ; i != i_end ; ++i)
-    {
-        std::string new_result((*i)->describe(f, e));
-        if (! new_result.empty())
-            result = new_result;
-    }
-    return result;
 }
 
 const ERepositoryParams &
@@ -1833,5 +1622,17 @@ ERepository::repository_factory_dependencies(
     }
 
     return result;
+}
+
+const std::tr1::shared_ptr<const UseDesc>
+ERepository::use_desc() const
+{
+    Lock l(_imp->mutexes->use_desc_mutex);
+    if (! _imp->use_desc)
+    {
+        _imp->use_desc.reset(new UseDesc(_imp->layout->use_desc_files()));
+    }
+
+    return _imp->use_desc;
 }
 

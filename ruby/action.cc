@@ -50,8 +50,6 @@ namespace
     static VALUE c_config_action;
 
     static VALUE c_install_action_options;
-    static VALUE c_install_action_debug_option;
-    static VALUE c_install_action_checks_option;
     static VALUE c_install_action;
 
     static VALUE c_uninstall_action_options;
@@ -62,20 +60,6 @@ namespace
     static VALUE c_pretend_action;
 
     static VALUE c_pretend_fetch_action;
-
-    bool
-    value_to_bool(VALUE v)
-    {
-        if (Qfalse == v || Qnil == v)
-            return false;
-        return true;
-    }
-
-    VALUE
-    bool_to_value(bool b)
-    {
-        return b ? Qtrue : Qfalse;
-    }
 
     const FetchActionOptions
     value_to_fetch_action_options(VALUE v)
@@ -454,35 +438,6 @@ namespace
     };
 
     /*
-     * Document-method: debug_build
-     *
-     * call-seq:
-     *     debug_build -> InstallActionDebugOption
-     *
-     * Our InstallActionDebugOption
-     */
-    /*
-     * Document-method: checks
-     *
-     * call-seq:
-     *     checks -> InstallActionChecksOption
-     *
-     * Our InstallActionChecksOption
-     *
-     */
-    template <typename T_, typename K_, typename R_, NamedValue<K_, R_> (T_::* f_) >
-    struct NVFetchEnum
-    {
-        static VALUE
-        fetch(VALUE self)
-        {
-            T_ * p;
-            Data_Get_Struct(self, T_, p);
-            return INT2FIX((p->*f_)());
-        }
-    };
-
-    /*
      * Document-method InfoAction.new
      *
      * call-seq:
@@ -521,7 +476,7 @@ namespace
 
     /*
      * call-seq:
-     *     InstallActionOptions.new(debug_build, checks, destination) -> InstallActionOptions
+     *     InstallActionOptions.new(destination) -> InstallActionOptions
      *     InstallActionOptions.new(Hash) -> InstallActionOptions
      *
      * InstallActionOptions.new can either be called with all parameters in order, or with one hash
@@ -534,42 +489,26 @@ namespace
         try
         {
             bool v_no_config_protect;
-            InstallActionDebugOption v_debug_build;
-            InstallActionChecksOption v_checks;
             std::tr1::shared_ptr<Repository> v_destination;
 
             if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
-                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("debug_build"))))
-                    rb_raise(rb_eArgError, "Missing Parameter: debug_build");
-                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("checks"))))
-                    rb_raise(rb_eArgError, "Missing Parameter: checks");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))))
                     rb_raise(rb_eArgError, "Missing Parameter: destination");
                 v_no_config_protect =
                     value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))));
-                v_debug_build = static_cast<InstallActionDebugOption>(NUM2INT(
-                            rb_hash_aref(argv[0], ID2SYM(rb_intern("debug_build")))
-                ));
-                v_checks = static_cast<InstallActionChecksOption>(NUM2INT(
-                            rb_hash_aref(argv[0], ID2SYM(rb_intern("checks")))
-                ));
                 v_destination = value_to_repository(rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))));
             }
-            else if (3 == argc)
+            else if (1 == argc)
             {
-                v_debug_build = static_cast<InstallActionDebugOption>(NUM2INT(argv[0]));
-                v_checks = static_cast<InstallActionChecksOption>(NUM2INT(argv[1]));
-                v_destination = value_to_repository(argv[2]);
+                v_destination = value_to_repository(argv[0]);
             }
             else
             {
-                rb_raise(rb_eArgError, "InstallActionOptions expects one or three arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "InstallActionOptions expects one argument, but got %d",argc);
             }
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(v_checks),
-                        value_for<n::debug_build>(v_debug_build),
                         value_for<n::destination>(v_destination),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -829,34 +768,6 @@ namespace
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
-         * Document-module: Paludis::InstallActionDebugOption
-         *
-         * Debug build mode for an InstallAction.
-         *
-         * May be ignored by some repositories, and by packages where there isn't a sensible concept of debugging.
-         *
-         */
-        c_install_action_debug_option = rb_define_module_under(paludis_module(), "InstallActionDebugOption");
-        for (InstallActionDebugOption l(static_cast<InstallActionDebugOption>(0)), l_end(last_iado) ; l != l_end ;
-                l = static_cast<InstallActionDebugOption>(static_cast<int>(l) + 1))
-            rb_define_const(c_install_action_debug_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/action-se.hh, InstallActionDebugOption, c_install_action_debug_option>
-
-        /*
-         * Document-module: Paludis::InstallActionChecksOption
-         *
-         * Whether to run post-build checks (for example, 'make check' or 'src_test'), if they are available.
-         *
-         */
-        c_install_action_checks_option = rb_define_module_under(paludis_module(), "InstallActionChecksOption");
-        for (InstallActionChecksOption l(static_cast<InstallActionChecksOption>(0)), l_end(last_iaco) ; l != l_end ;
-                l = static_cast<InstallActionChecksOption>(static_cast<int>(l) + 1))
-            rb_define_const(c_install_action_checks_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/action-se.hh, InstallActionChecksOption, c_install_action_checks_option>
-
-        /*
          * Document-class: Paludis::InstallActionOptions
          *
          * Options for Paludis::InstallAction.
@@ -864,12 +775,6 @@ namespace
         c_install_action_options = rb_define_class_under(paludis_module(), "InstallActionOptions", rb_cObject);
         rb_define_singleton_method(c_install_action_options, "new", RUBY_FUNC_CAST(&install_action_options_new), -1);
         rb_define_method(c_install_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_install_action_options, "debug_build",
-                RUBY_FUNC_CAST((&NVFetchEnum<InstallActionOptions, n::debug_build, InstallActionDebugOption,
-                        &InstallActionOptions::debug_build>::fetch)), 0);
-        rb_define_method(c_install_action_options, "checks",
-                RUBY_FUNC_CAST((&NVFetchEnum<InstallActionOptions, n::checks, InstallActionChecksOption,
-                        &InstallActionOptions::checks>::fetch)), 0);
         rb_define_method(c_install_action_options, "destination", RUBY_FUNC_CAST(&install_action_options_destination), 0);
 
         /*

@@ -56,8 +56,8 @@ module Paludis
         include TestStuff
 
         def classes
-            [MetadataStringKey, MetadataContentsKey, MetadataTimeKey, MetadataUseFlagNameSetKey, MetadataKeywordNameSetKey,
-                MetadataIUseFlagSetKey, MetadataStringSetKey]
+            [MetadataStringKey, MetadataContentsKey, MetadataTimeKey, MetadataKeywordNameSetKey,
+                MetadataStringSetKey]
         end
 
         def all_classes
@@ -110,7 +110,7 @@ module Paludis
 
         def test_members
             { :name => QualifiedPackageName, :version => VersionSpec, :slot => String, :repository_name => String,
-                :keywords_key => MetadataKeywordNameSetKey, :iuse_key => MetadataIUseFlagSetKey,
+                :keywords_key => MetadataKeywordNameSetKey, :choices_key => MetadataChoicesKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
                 :from_repositories_key => Array, :masks => Array
@@ -156,14 +156,15 @@ module Paludis
         end
 
         def test_each_metadata
-            keys = { "DESCRIPTION" => 1, "IUSE" => 1, "INHERITED" => 1, "KEYWORDS" => 1, "EAPI" => 1, "repository_mask" => 1,
+            keys = { "DESCRIPTION" => 1, "INHERITED" => 1, "KEYWORDS" => 1, "EAPI" => 1, "repository_mask" => 1,
                 "profile_mask" => 1, "DEPEND" => 1, "RDEPEND" => 1, "PDEPEND" => 1, "LICENSE" => 1, "PROVIDE" => 1,
-                "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1 }
+                "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1, "IUSE" => 1,
+                "PALUDIS_CHOICES" => 1 }
             pid_testrepo.each_metadata do | key |
-                assert keys.has_key?(key.raw_name), "no #{key.raw_name}"
+                assert keys.has_key?(key.raw_name), "no key #{key.raw_name}"
                 keys.delete key.raw_name
             end
-            assert keys.empty?
+            assert keys.empty?, "keys is #{keys}"
         end
 
         def test_masked?
@@ -240,16 +241,6 @@ module Paludis
             assert_kind_of MetadataKeywordNameSetKey, pid_testrepo.keywords_key
             assert_kind_of Array, pid_testrepo.keywords_key.value
             assert_equal ['test'], pid_testrepo.keywords_key.value
-        end
-
-        def test_use_key
-            assert_nil pid_testrepo["USE"]
-        end
-
-        def test_iuse_key
-            assert_kind_of MetadataIUseFlagSetKey, pid_testrepo.iuse_key
-            assert_kind_of Array, pid_testrepo.iuse_key.value
-            assert_equal ['testflag'], pid_testrepo.iuse_key.value
         end
 
         def test_repository_mask_info_keys
@@ -330,18 +321,6 @@ module Paludis
         def test_keywords_key
             assert_nil pid_installed.keywords_key
         end
-
-        def test_use_key
-            assert_kind_of MetadataUseFlagNameSetKey, pid_installed["USE"]
-            assert_kind_of Array, pid_installed["USE"].value
-            assert_equal ['test', 'test_use'], pid_installed["USE"].value
-        end
-
-        def test_iuse_key
-            assert_kind_of MetadataIUseFlagSetKey, pid_installed.iuse_key
-            assert_kind_of Array, pid_installed.iuse_key.value
-            assert_equal ['test', 'test_iuse'], pid_installed.iuse_key.value
-        end
     end
 
     class TestCase_BadKeys < Test::Unit::TestCase
@@ -350,12 +329,6 @@ module Paludis
         def test_keywords_key
             assert_raise NameError do
                 pid_bad.keywords_key.value
-            end
-        end
-
-        def test_iuse_key
-            assert_raise NameError do
-                pid_bad.iuse_key.value
             end
         end
 

@@ -26,6 +26,8 @@
 
 namespace paludis
 {
+    class ERepository;
+
     namespace erepository
     {
         class ERepositoryID;
@@ -148,6 +150,29 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
+        class EMyOptionsKey :
+            public MetadataSpecTreeKey<PlainTextSpecTree>,
+            private PrivateImplementationPattern<EMyOptionsKey>
+        {
+            private:
+                PrivateImplementationPattern<EMyOptionsKey>::ImpPtr & _imp;
+
+            public:
+                EMyOptionsKey(const Environment * const,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                ~EMyOptionsKey();
+
+                virtual const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat(const PlainTextSpecTree::ItemFormatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         class EProvideKey :
             public MetadataSpecTreeKey<ProvideSpecTree>,
             private PrivateImplementationPattern<EProvideKey>
@@ -195,34 +220,6 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class EIUseKey :
-            public MetadataCollectionKey<IUseFlagSet>,
-            private PrivateImplementationPattern<EIUseKey>
-        {
-            private:
-                PrivateImplementationPattern<EIUseKey>::ImpPtr & _imp;
-
-            public:
-                EIUseKey(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EIUseKey();
-
-                const std::tr1::shared_ptr<const IUseFlagSet> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat_with_comparison(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const Formatter<IUseFlag> &
-                        ) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class EKeywordsKey :
             public MetadataCollectionKey<KeywordNameSet>,
             private PrivateImplementationPattern<EKeywordsKey>
@@ -244,38 +241,17 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class EUseKey :
-            public MetadataCollectionKey<UseFlagNameSet>,
-            private PrivateImplementationPattern<EUseKey>
-        {
-            private:
-                PrivateImplementationPattern<EUseKey>::ImpPtr & _imp;
-
-            public:
-                EUseKey(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EUseKey();
-
-                const std::tr1::shared_ptr<const UseFlagNameSet> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const Formatter<UseFlagName> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class EInheritedKey :
+        class EStringSetKey :
             public MetadataCollectionKey<Set<std::string> >,
-            private PrivateImplementationPattern<EInheritedKey>
+            private PrivateImplementationPattern<EStringSetKey>
         {
             private:
-                PrivateImplementationPattern<EInheritedKey>::ImpPtr & _imp;
+                PrivateImplementationPattern<EStringSetKey>::ImpPtr & _imp;
 
             public:
-                EInheritedKey(const std::tr1::shared_ptr<const ERepositoryID> &,
+                EStringSetKey(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EInheritedKey();
+                ~EStringSetKey();
 
                 const std::tr1::shared_ptr<const Set<std::string> > value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -315,6 +291,27 @@ namespace paludis
 
                 time_t value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class EChoicesKey :
+            public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+            private PrivateImplementationPattern<EChoicesKey>
+        {
+            private:
+                PrivateImplementationPattern<EChoicesKey>::ImpPtr & _imp;
+
+            public:
+                EChoicesKey(
+                        const Environment * const,
+                        const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &,
+                        const std::string &,
+                        const MetadataKeyType,
+                        const std::tr1::shared_ptr<const ERepository> & maybe_profile);
+
+                ~EChoicesKey();
+
+                const std::tr1::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

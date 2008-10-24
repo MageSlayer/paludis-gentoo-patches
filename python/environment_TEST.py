@@ -51,16 +51,6 @@ class TestCase_01_Environments(unittest.TestCase):
     def test_03_subclass(self):
         self.assert_(isinstance(NoConfigEnvironment(repo), Environment))
 
-    def test_04_query_use(self):
-        pid = iter(self.e[Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=foo/bar-1.0", self.e, [])))]).next()
-
-        self.assert_(self.e.query_use("enabled", pid))
-        self.assert_(not self.e.query_use("not_enabled", pid))
-        self.assert_(self.e.query_use("sometimes_enabled", pid))
-
-        self.assert_(not self.nce.query_use("foo", pid))
-
     def test_06_package_database(self):
         self.assert_(isinstance(self.e.package_database, PackageDatabase))
         self.assert_(isinstance(self.nce.package_database, PackageDatabase))
@@ -103,12 +93,6 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
     class SubEnv(EnvironmentImplementation):
         def __init__(self):
             EnvironmentImplementation.__init__(self)
-
-        def query_use(self, use, pid):
-            return EnvironmentImplementation.query_use(self, use, pid)
-
-        def known_use_expand_names(self, use, pid):
-            return [UseFlagName("a"), "u"]
 
         def accept_license(self, l, pid):
             return False

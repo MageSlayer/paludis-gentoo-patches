@@ -117,11 +117,6 @@ ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraMeta
 {
 }
 
-MetadataCollectionKey<IUseFlagSet>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
 template <typename C_>
 MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
@@ -139,12 +134,8 @@ MetadataSpecTreeKey<DependencySpecTree>::MetadataSpecTreeKey(const std::string &
 }
 
 template class MetadataCollectionKey<KeywordNameSet>;
-#ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
-template class MetadataCollectionKey<IUseFlagSet>;
-#endif
 template class MetadataCollectionKey<Set<std::string> >;
 template class MetadataCollectionKey<Sequence<std::string> >;
-template class MetadataCollectionKey<UseFlagNameSet>;
 template class MetadataCollectionKey<PackageIDSequence>;
 template class MetadataCollectionKey<FSEntrySequence>;
 
@@ -164,4 +155,5 @@ template class MetadataValueKey<FSEntry>;
 template class MetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
 template class MetadataValueKey<std::tr1::shared_ptr<const Contents> >;
 template class MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >;
+template class MetadataValueKey<std::tr1::shared_ptr<const Choices> >;
 

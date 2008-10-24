@@ -105,7 +105,6 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
                 value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
-                value_for<n::use_interface>(static_cast<RepositoryUseInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),
     _imp(PrivateImplementationPattern<UnpackagedRepository>::_imp)

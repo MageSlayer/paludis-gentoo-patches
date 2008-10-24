@@ -43,8 +43,7 @@ namespace paludis
     struct Implementation<StringifyFormatter>
     {
         const CanFormat<std::string> * const f_str;
-        const CanFormat<IUseFlag> * const f_iuse;
-        const CanFormat<UseFlagName> * const f_use;
+        const CanFormat<ChoiceValue> * const f_conf;
         const CanFormat<KeywordName> * const f_keyword;
         const CanFormat<PackageDepSpec> * const f_package;
         const CanFormat<BlockDepSpec> * const f_block;
@@ -58,12 +57,12 @@ namespace paludis
         const CanFormat<NamedSetDepSpec> * const f_named;
         const CanFormat<FSEntry> * const f_fsentry;
         const CanFormat<PackageID> * const f_package_id;
+        const CanFormat<PlainTextLabelDepSpec> * const f_plain_label;
         const CanSpace * const f_space;
 
         Implementation(
                 const CanFormat<std::string> * const f_str_v,
-                const CanFormat<IUseFlag> * const f_iuse_v,
-                const CanFormat<UseFlagName> * const f_use_v,
+                const CanFormat<ChoiceValue> * const f_conf_v,
                 const CanFormat<KeywordName> * const f_keyword_v,
                 const CanFormat<PackageDepSpec> * const f_package_v,
                 const CanFormat<BlockDepSpec> * const f_block_v,
@@ -77,11 +76,11 @@ namespace paludis
                 const CanFormat<NamedSetDepSpec> * const f_named_v,
                 const CanFormat<FSEntry> * const f_fsentry_v,
                 const CanFormat<PackageID> * const f_package_id_v,
+                const CanFormat<PlainTextLabelDepSpec> * const f_plain_label_v,
                 const CanSpace * const f_space_v
                 ) :
             f_str(f_str_v),
-            f_iuse(f_iuse_v),
-            f_use(f_use_v),
+            f_conf(f_conf_v),
             f_keyword(f_keyword_v),
             f_package(f_package_v),
             f_block(f_block_v),
@@ -95,6 +94,7 @@ namespace paludis
             f_named(f_named_v),
             f_fsentry(f_fsentry_v),
             f_package_id(f_package_id_v),
+            f_plain_label(f_plain_label_v),
             f_space(f_space_v)
         {
         }
@@ -184,8 +184,7 @@ namespace paludis
     StringifyFormatter::StringifyFormatter(const T_ & t) :
         PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
-                    StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<IUseFlag> *>::value, IUseFlag>::get(&t),
-                    StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<UseFlagName> *>::value, UseFlagName>::get(&t),
+                    StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<ChoiceValue> *>::value, ChoiceValue>::get(&t),
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
@@ -211,6 +210,7 @@ namespace paludis
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
                     StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),
+                    StringifyFormatterGetForwarder<std::tr1::is_convertible<T_ *, CanFormat<PlainTextLabelDepSpec> *>::value, PlainTextLabelDepSpec>::get(&t),
                     StringifyFormatterGetSpaceForwarder<std::tr1::is_convertible<T_ *, CanSpace *>::value>::get(&t)
                     )),
         CanSpace()

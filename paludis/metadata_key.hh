@@ -30,6 +30,7 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/formatter-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
+#include <paludis/choice-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -62,8 +63,6 @@ namespace paludis
         VisitorTypes<
             MetadataKeyVisitorTypes,
             MetadataKey,
-            MetadataCollectionKey<UseFlagNameSet>,
-            MetadataCollectionKey<IUseFlagSet>,
             MetadataCollectionKey<KeywordNameSet>,
             MetadataCollectionKey<Set<std::string> >,
             MetadataCollectionKey<Sequence<std::string> >,
@@ -82,6 +81,7 @@ namespace paludis
             MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
             MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
             MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,
+            MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
             MetadataTimeKey,
             MetadataSectionKey
             >
@@ -340,58 +340,6 @@ namespace paludis
              */
             virtual std::string pretty_print_flat(const Formatter<
                     typename std::tr1::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * A MetadataCollectionKey<IUseFlagSet> is a MetadataKey that holds an IUseFlagSet
-     * as its value.
-     *
-     * This specialisation of MetadataCollectionKey provides an additional
-     * pretty_print_flat_with_comparison method.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     * \nosubgrouping
-     */
-    template <>
-    class PALUDIS_VISIBLE MetadataCollectionKey<IUseFlagSet> :
-        public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<IUseFlagSet> >
-    {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
-        public:
-            /**
-             * Fetch our value.
-             */
-            virtual const std::tr1::shared_ptr<const IUseFlagSet> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items, and the supplied
-             * PackageID to decorate using format::Added and format::Changed as
-             * appropriate.
-             */
-            virtual std::string pretty_print_flat_with_comparison(
-                    const Environment * const,
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const Formatter<IUseFlag> &
-                    ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

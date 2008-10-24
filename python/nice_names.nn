@@ -32,6 +32,7 @@ make_nn_NiceNames() {
     name "StringDepSpec"
     name "NamedSetDepSpec"
     name "URILabelsDepSpec"
+    name "PlainTextLabelDepSpec"
     name "DependencyLabelsDepSpec"
 
     # paludis/dep_tree-fwd.hh
@@ -51,10 +52,7 @@ make_nn_NiceNames() {
     name "PackageNamePartSet"
     name "CategoryNamePart"
     name "CategoryNamePartSet"
-    name "UseFlagName"
-    name "UseFlagNameSet"
     name "QualifiedPackageName"
-    name "IUseFlag"
     name "QualifiedPackageNameSet"
     name "SlotName"
     name "RepositoryName"
@@ -63,7 +61,6 @@ make_nn_NiceNames() {
     name "KeywordNameSet"
     name "SetName"
     name "SetNameSet"
-    name "IUseFlagSet"
 }
 
 make_nn_LowercaseNiceNames() {
@@ -71,8 +68,6 @@ make_nn_LowercaseNiceNames() {
 
     name "std::string" "string"
 
-    name "UseFlagName" "use_flag_name"
-    name "IUseFlag" "iuse_flag"
     name "KeywordName" "keyword_name"
     name "PackageDepSpec" "package_dep_spec"
     name "BlockDepSpec" "block_dep_spec"
@@ -80,6 +75,7 @@ make_nn_LowercaseNiceNames() {
     name "SimpleURIDepSpec" "simple_uri_dep_spec"
     name "DependencyLabelsDepSpec" "dependency_labels_dep_spec"
     name "URILabelsDepSpec" "uri_labels_dep_spec"
+    name "PlainTextLabelDepSpec" "plain_text_label_dep_spec"
     name "PlainTextDepSpec" "plain_text_dep_spec"
     name "LicenseDepSpec" "license_dep_spec"
     name "ConditionalDepSpec" "conditional_dep_spec"

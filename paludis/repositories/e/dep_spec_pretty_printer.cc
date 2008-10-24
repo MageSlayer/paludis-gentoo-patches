@@ -143,6 +143,11 @@ namespace
         {
         }
 
+        void visit_leaf(const PlainTextLabelDepSpec &)
+        {
+            result = true;
+        }
+
         void visit_leaf(const URILabelsDepSpec &)
         {
             result = true;
@@ -455,6 +460,36 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 
 void
 DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
+{
+    if (_imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = false;
+        _imp->indent -= 1;
+    }
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(l, format::Plain());
+
+    do_annotations(l);
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+
+    if (! _imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = true;
+        _imp->indent += 1;
+    }
+}
+
+void
+DepSpecPrettyPrinter::visit_leaf(const PlainTextLabelDepSpec & l)
 {
     if (_imp->extra_label_indent)
     {

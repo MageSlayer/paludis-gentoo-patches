@@ -31,24 +31,17 @@ class TestCase_01_InstallActionOptions(unittest.TestCase):
         repo2 = FakeRepository(env, "2")
 
     def test_01_create(self):
-        InstallActionOptions(InstallActionChecksOption.values[0], InstallActionDebugOption.values[0], repo1)
+        InstallActionOptions(repo1)
 
     def test_02_data_members(self):
-        iao = InstallActionOptions(InstallActionChecksOption.values[0],
-                InstallActionDebugOption.values[0], repo1)
+        iao = InstallActionOptions(repo1)
 
-        self.assertEquals(iao.debug_build, InstallActionDebugOption.values[0])
-        self.assertEquals(iao.checks, InstallActionChecksOption.values[0])
         self.assertEquals(str(iao.destination.name), "1")
 
         iao.no_config_protect = False
-        iao.debug_build = InstallActionDebugOption.values[1]
-        iao.checks = InstallActionChecksOption.values[1]
         iao.destination = repo2
 
         self.assertEquals(iao.no_config_protect, False)
-        self.assertEquals(iao.debug_build, InstallActionDebugOption.values[1])
-        self.assertEquals(iao.checks, InstallActionChecksOption.values[1])
         self.assertEquals(str(iao.destination.name), "2")
 
 class TestCase_02_FetchActionOptions(unittest.TestCase):
@@ -71,8 +64,7 @@ class TestCase_04_InstallAction(unittest.TestCase):
     def test_01_create(self):
         env = TestEnvironment()
         repo1 = FakeRepository(env, "1")
-        iao = InstallActionOptions(InstallActionChecksOption.values[0],
-                InstallActionDebugOption.values[0], repo1)
+        iao = InstallActionOptions(repo1)
         InstallAction(iao)
 
 class TestCase_05_FetchAction(unittest.TestCase):

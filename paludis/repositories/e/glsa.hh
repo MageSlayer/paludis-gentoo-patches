@@ -75,7 +75,7 @@ namespace paludis
             ///\{
 
             struct ArchsConstIteratorTag;
-            typedef WrappedForwardIterator<ArchsConstIteratorTag, const UseFlagName> ArchsConstIterator;
+            typedef WrappedForwardIterator<ArchsConstIteratorTag, const std::string> ArchsConstIterator;
             ArchsConstIterator begin_archs() const;
             ArchsConstIterator end_archs() const;
 
@@ -84,7 +84,7 @@ namespace paludis
             /**
              * Add an arch.
              */
-            void add_arch(const UseFlagName &);
+            void add_arch(const std::string &);
 
             ///\name Iterate over our ranges.
             ///\{

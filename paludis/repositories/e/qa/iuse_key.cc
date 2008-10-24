@@ -29,9 +29,12 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/iuse.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
+#include <paludis/choice.hh>
 #include <set>
 
 using namespace paludis;
@@ -42,7 +45,7 @@ namespace
     struct IUseBlacklist :
         InstantiationPolicy<IUseBlacklist, instantiation_method::SingletonTag>
     {
-        std::set<UseFlagName> iuse_blacklist;
+        std::set<ChoiceNameWithPrefix> iuse_blacklist;
 
         IUseBlacklist(const FSEntry & f = FSEntry(getenv_with_default("PALUDIS_QA_DATA_DIR",
                         stringify(FSEntry(DATADIR) / "paludis" / "qa"))) / "iuse_blacklist.conf")
@@ -51,7 +54,7 @@ namespace
             {
                 LineConfigFile iuse_blacklist_file(f, LineConfigFileOptions());
                 std::copy(iuse_blacklist_file.begin(), iuse_blacklist_file.end(),
-                        create_inserter<UseFlagName>(std::inserter(iuse_blacklist, iuse_blacklist.end())));
+                        create_inserter<ChoiceNameWithPrefix>(std::inserter(iuse_blacklist, iuse_blacklist.end())));
             }
             catch (const InternalError &)
             {
@@ -71,34 +74,31 @@ bool
 paludis::erepository::iuse_key_check(
         const FSEntry & entry,
         QAReporter & reporter,
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Repository> &,
+        const std::tr1::shared_ptr<const PackageID> & id_raw,
         const std::string & name)
 {
-    Context context("When performing check '" + name + "' using iuse_key_check on ID '" + stringify(*id) + "':");
+    Context context("When performing check '" + name + "' using iuse_key_check on ID '" + stringify(*id_raw) + "':");
     Log::get_instance()->message("e.qa.iuse_key_check", ll_debug, lc_context) << "iuse_key_check '"
-        << entry << "', " << *id << "', " << name << "'";
+        << entry << "', " << *id_raw << "', " << name << "'";
 
-    if (id->iuse_key())
+    std::tr1::shared_ptr<const ERepositoryID> id(std::tr1::static_pointer_cast<const ERepositoryID>(id_raw));
+    if (id->raw_iuse_key())
     {
         try
         {
-            const std::set<UseFlagName> & iuse_blacklist(IUseBlacklist::get_instance()->iuse_blacklist);
+            const std::set<ChoiceNameWithPrefix> & iuse_blacklist(IUseBlacklist::get_instance()->iuse_blacklist);
 
-            for (IUseFlagSet::ConstIterator it(id->iuse_key()->value()->begin()),
-                     it_end(id->iuse_key()->value()->end()); it_end != it; ++it)
+            for (Set<std::string>::ConstIterator
+                    it(id->raw_iuse_key()->value()->begin()),
+                    it_end(id->raw_iuse_key()->value()->end()); it_end != it; ++it)
             {
-                if (iuse_blacklist.end() != iuse_blacklist.find(it->flag))
+                ChoiceNameWithPrefix flag(parse_iuse(id->eapi(), *it).first);
+                if (iuse_blacklist.end() != iuse_blacklist.find(flag))
                     reporter.message(QAMessage(entry, qaml_minor, name,
-                                "Deprecated flag '" + stringify(it->flag) + "' in '" + id->iuse_key()->raw_name() + "'")
+                                "Deprecated flag '" + stringify(flag) + "' in '" + id->raw_iuse_key()->raw_name() + "'")
                                     .with_associated_id(id)
-                                    .with_associated_key(id, id->iuse_key()));
-
-                if ("" == (*repo).use_interface()->describe_use_flag(it->flag, *id))
-                    reporter.message(QAMessage(entry, qaml_minor, name,
-                                "Flag '" + stringify(it->flag) + "' in '" + id->iuse_key()->raw_name() + "' has no description")
-                                    .with_associated_id(id)
-                                    .with_associated_key(id, id->iuse_key()));
+                                    .with_associated_key(id, id->raw_iuse_key()));
             }
         }
         catch (const InternalError &)
@@ -109,9 +109,9 @@ paludis::erepository::iuse_key_check(
         {
             reporter.message(QAMessage(entry, qaml_severe, name,
                         "Caught exception '" + stringify(e.message()) + "' ("
-                        + stringify(e.what()) + ") when handling key '" + id->iuse_key()->raw_name() + "'")
+                        + stringify(e.what()) + ") when handling key '" + id->raw_iuse_key()->raw_name() + "'")
                             .with_associated_id(id)
-                            .with_associated_key(id, id->iuse_key()));
+                            .with_associated_key(id, id->raw_iuse_key()));
         }
     }
 

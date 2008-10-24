@@ -36,6 +36,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/choice.hh>
+#include <paludis/elike_choices.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
@@ -224,7 +226,7 @@ namespace
 
 namespace
 {
-    std::string make_use(const Environment * const env,
+    std::string make_use(const Environment * const,
             const ERepositoryID & id,
             std::tr1::shared_ptr<const ERepositoryProfile> profile)
     {
@@ -237,11 +239,21 @@ namespace
 
         std::string use;
 
-        if (id.iuse_key())
-            for (IUseFlagSet::ConstIterator i(id.iuse_key()->value()->begin()),
-                    i_end(id.iuse_key()->value()->end()) ; i != i_end ; ++i)
-                if (env->query_use(i->flag, id))
-                    use += stringify(i->flag) + " ";
+        if (id.choices_key())
+        {
+            for (Choices::ConstIterator k(id.choices_key()->value()->begin()),
+                    k_end(id.choices_key()->value()->end()) ;
+                    k != k_end ; ++k)
+            {
+                if ((*k)->prefix() == canonical_build_options_prefix())
+                    continue;
+
+                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                        i != i_end ; ++i)
+                    if ((*i)->enabled())
+                        use += stringify((*i)->name_with_prefix()) + " ";
+            }
+        }
 
         if (! id.eapi()->supported()->ebuild_environment_variables()->env_arch().empty())
             use += profile->environment_variable(id.eapi()->supported()->ebuild_environment_variables()->env_arch()) + " ";
@@ -250,11 +262,9 @@ namespace
     }
 
     std::tr1::shared_ptr<Map<std::string, std::string> >
-    make_expand(const Environment * const env,
+    make_expand(const Environment * const,
             const ERepositoryID & e,
-            std::tr1::shared_ptr<const ERepositoryProfile> profile,
-            std::string & use,
-            const std::string & expand_sep)
+            std::tr1::shared_ptr<const ERepositoryProfile> profile)
     {
         std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
@@ -266,52 +276,36 @@ namespace
             return expand_vars;
         }
 
-        for (ERepositoryProfile::UseExpandConstIterator x(profile->begin_use_expand()),
-                x_end(profile->end_use_expand()) ; x != x_end ; ++x)
-        {
-            std::string lower_x;
-            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x), &::tolower);
+        if (! e.choices_key())
+            return expand_vars;
 
+        for (Set<std::string>::ConstIterator x(profile->use_expand()->begin()), x_end(profile->use_expand()->end()) ;
+                x != x_end ; ++x)
+        {
             expand_vars->insert(stringify(*x), "");
 
-            /* possible values from profile */
-            std::set<UseFlagName> possible_values;
-            tokenise_whitespace(profile->environment_variable(stringify(*x)),
-                    create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
+            Choices::ConstIterator k(std::find_if(e.choices_key()->value()->begin(), e.choices_key()->value()->end(),
+                        std::tr1::bind(std::equal_to<std::string>(), *x,
+                            std::tr1::bind(std::tr1::mem_fn(&Choice::raw_name), std::tr1::placeholders::_1))));
+            if (k == e.choices_key()->value()->end())
+                continue;
 
-            /* possible values from environment */
-            std::tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
-                    env->known_use_expand_names(*x, e));
-            for (UseFlagNameSet::ConstIterator i(possible_values_from_env->begin()),
-                    i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
-                possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
-
-            for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
-                    u != u_end ; ++u)
-            {
-                if (e.eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
-                    if (e.iuse_key() && e.iuse_key()->value()->end() == e.iuse_key()->value()->find(
-                                IUseFlag(*u, use_unspecified, std::string::npos)))
-                        continue;
-
-                if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
-                    continue;
-
-                if (! e.eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
-                    use.append(lower_x + expand_sep + stringify(*u) + " ");
-
-                std::string value;
-                Map<std::string, std::string>::ConstIterator i(expand_vars->find(stringify(*x)));
-                if (expand_vars->end() != i)
+            for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                    i != i_end ; ++i)
+                if ((*i)->enabled())
                 {
-                    value = i->second;
-                    if (! value.empty())
-                        value.append(" ");
-                    expand_vars->erase(i);
+                    std::string value;
+                    Map<std::string, std::string>::ConstIterator v(expand_vars->find(stringify(*x)));
+                    if (expand_vars->end() != v)
+                    {
+                        value = v->second;
+                        if (! value.empty())
+                            value.append(" ");
+                        expand_vars->erase(v);
+                    }
+                    value.append(stringify((*i)->unprefixed_name()));
+                    expand_vars->insert(stringify(*x), value);
                 }
-                value.append(stringify(*u));
-                expand_vars->insert(stringify(*x), value);
-            }
         }
 
         return expand_vars;
@@ -455,9 +449,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     check_userpriv(FSEntry(_imp->params.builddir), _imp->environment,
                         id->eapi()->supported()->userpriv_cannot_use_root()));
             std::string use(make_use(_imp->params.environment, *id, p));
-            std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
             std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                        _imp->params.environment, *id, p, use, expand_sep));
+                        _imp->params.environment, *id, p));
 
             std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -491,7 +484,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::profiles>(_imp->params.profiles),
                         value_for<n::root>("/"),
                         value_for<n::use>(use),
-                        value_for<n::use_expand>(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                        value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                        value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
                         ));
 
                 if (! nofetch_cmd())
@@ -607,9 +601,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p, use, expand_sep));
+                _imp->params.environment, *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -655,13 +648,19 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
                 Log::get_instance()->message("e.ebuild.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
+                std::tr1::shared_ptr<const ChoiceValue> strip_choice(id->choices_key()->value()->find_by_name_with_prefix(
+                            ELikeStripChoiceValue::canonical_name_with_prefix()));
+                std::tr1::shared_ptr<const ChoiceValue> split_choice(id->choices_key()->value()->find_by_name_with_prefix(
+                            ELikeSplitChoiceValue::canonical_name_with_prefix()));
+
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        value_for<n::debug_build>(o.debug_build()),
                         value_for<n::debug_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
                                 stringify(id->name().package) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
                         value_for<n::image_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
                                 stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
-                        value_for<n::package_id>(id)
+                        value_for<n::package_id>(id),
+                        value_for<n::split>(split_choice && split_choice->enabled()),
+                        value_for<n::strip>(strip_choice && strip_choice->enabled())
                         ));
                 stripper.strip();
             }
@@ -670,31 +669,19 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 ((*o.destination()).destination_interface() &&
                  (*o.destination()).destination_interface()->want_pre_post_phases()))
         {
-            if (phase->option("checkphase"))
+            if (phase->option("optional_tests"))
             {
-                if (test_restrict)
+                std::tr1::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
+                            ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()));
+                if (choice && ! choice->enabled())
                     continue;
-
-                switch (o.checks())
-                {
-                    case iaco_none:
-                        if (! phase->option("checks=none"))
-                            continue;
-                        break;
-
-                    case iaco_default:
-                        if (! phase->option("checks=default"))
-                            continue;
-                        break;
-
-                    case iaco_always:
-                        if (! phase->option("checks=always"))
-                            continue;
-                        break;
-
-                    case last_iaco:
-                        break;
-                }
+            }
+            else if (phase->option("recommended_tests"))
+            {
+                std::tr1::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
+                            ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()));
+                if (choice && ! choice->enabled())
+                    continue;
             }
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
@@ -727,7 +714,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::root>(o.destination()->installed_root_key() ?  stringify(o.destination()->installed_root_key()->value()) : "/"),
                             value_for<n::slot>(SlotName(id->slot())),
                             value_for<n::use>(use),
-                            value_for<n::use_expand>(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                            value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                            value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
                             ));
 
             EbuildInstallCommand cmd(command_params, install_params);
@@ -764,9 +752,8 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p, use, expand_sep));
+                _imp->params.environment, *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -805,7 +792,8 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::root>(stringify(_imp->params.environment->root())),
                 value_for<n::use>(use),
                 value_for<n::use_ebuild_file>(true),
-                value_for<n::use_expand>(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
                 ));
 
         EbuildInfoCommand cmd(command_params, info_params);
@@ -963,9 +951,8 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
             check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string use(make_use(_imp->params.environment, *id, p));
-    std::string expand_sep(stringify(id->eapi()->supported()->ebuild_options()->use_expand_separator()));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p, use, expand_sep));
+                _imp->params.environment, *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -997,7 +984,8 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::profiles>(_imp->params.profiles),
                 value_for<n::root>(stringify(_imp->params.environment->root())),
                 value_for<n::use>(use),
-                value_for<n::use_expand>(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
                 ));
 
         if (! pretend_cmd())

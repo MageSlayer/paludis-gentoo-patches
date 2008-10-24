@@ -219,12 +219,6 @@ UnwrittenID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-UnwrittenID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 UnwrittenID::provide_key() const
 {
@@ -297,6 +291,11 @@ UnwrittenID::from_repositories_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+UnwrittenID::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
+}
 
 template class PrivateImplementationPattern<UnwrittenID>;
 

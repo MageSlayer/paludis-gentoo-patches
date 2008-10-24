@@ -26,6 +26,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/override_functions.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/choice.hh>
 
 using namespace paludis;
 using namespace test;
@@ -450,7 +451,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("enabled? ( cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("enabled? ( cat/two )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
         }
 
@@ -470,7 +473,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("!enabled? ( cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("!enabled? ( cat/two )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
         }
 
@@ -489,7 +494,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("disabled? ( cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("disabled? ( cat/two )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
         }
 
@@ -508,7 +515,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("!disabled? ( cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("!disabled? ( cat/two )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
         }
 
@@ -528,7 +537,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( enabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( enabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -549,7 +560,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( !enabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( !enabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -570,7 +583,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( disabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( disabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -591,7 +606,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( !disabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( !disabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -612,7 +629,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -633,7 +652,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -654,7 +675,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -675,7 +698,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/two ) cat/three )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/two ) cat/three )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -696,7 +721,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/three ) cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/three ) cat/two )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -717,7 +744,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/three ) cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/three ) cat/two )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -739,7 +768,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/three ) cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/three ) cat/two )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -761,7 +792,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/three ) cat/two )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/three ) cat/two )");
+            idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -782,7 +815,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            idcat->choices_key()->add("", "enabled1");
+            idcat->choices_key()->add("", "enabled2");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -803,7 +839,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            idcat->choices_key()->add("", "enabled1");
+            idcat->choices_key()->add("", "enabled2");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -824,7 +863,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            idcat->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )");
+            idcat->choices_key()->add("", "enabled1");
+            idcat->choices_key()->add("", "enabled2");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -922,7 +964,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "enabled");
         }
 
         void populate_expected()
@@ -942,7 +984,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[-disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "disabled");
         }
 
         void populate_expected()
@@ -962,7 +1004,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "disabled");
         }
 
         void populate_expected()
@@ -990,7 +1032,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two[-enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "enabled");
         }
 
         void populate_expected()
@@ -1018,7 +1060,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "enabled");
         }
 
         void populate_expected()
@@ -1038,7 +1080,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[-disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "disabled");
         }
 
         void populate_expected()
@@ -1058,7 +1100,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[disabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "disabled");
         }
 
         void populate_expected()
@@ -1086,7 +1128,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("( cat/two cat/two[-enabled] )");
-            repo->add_version("cat", "two", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            repo->add_version("cat", "two", "1")->choices_key()->add("", "enabled");
         }
 
         void populate_expected()
@@ -1408,13 +1450,21 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname?] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
+            idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname?] )");
+            idcat5->choices_key()->add("", "pkgname");
+            repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1438,8 +1488,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1466,13 +1518,21 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname!?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!?] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
+            idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname!?] )");
+            idcat5->choices_key()->add("", "pkgname");
+            repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1496,8 +1556,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1524,13 +1586,21 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat5", "disabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname?] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
+            idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname?] )");
+            idcat5->choices_key()->add("", "pkgname");
+            repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1554,8 +1624,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[-pkgname?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[-pkgname?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1582,13 +1654,21 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "enabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname!?] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat5", "enabled", "1")->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname!?] )");
-            repo->add_version("cat6", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname!?] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
+            idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname!?] )");
+            idcat5->choices_key()->add("", "pkgname");
+            repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1612,8 +1692,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1640,11 +1722,17 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/disabled[pkgname=] )");
-            repo->add_version("cat4", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/disabled[pkgname=] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1666,8 +1754,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1694,8 +1784,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1722,11 +1814,17 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat3", "disabled", "1")->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!=] )");
-            repo->add_version("cat4", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
-            repo->add_version("cat", "all", "1")->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!=] )");
+            idcat3->choices_key()->add("", "pkgname");
+            repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            idcat->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
+            idcat->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1748,8 +1846,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "enabled", "1")->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
-            repo->add_version("cat2", "enabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -1776,8 +1876,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat1", "disabled", "1")->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!=] )");
-            repo->add_version("cat2", "disabled", "1")->iuse_key()->set_from_string("ebuild", IUseFlagParseOptions());
+            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!=] )");
+            idcat1->choices_key()->add("", "pkgname");
+            repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
         }
 
         void populate_expected()
@@ -2122,7 +2224,9 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three");
-            repo->add_version("cat", "two", "1")->build_dependencies_key()->set_from_string("enabled? ( || ( ( <cat/three-1 cat/three:0 =cat/four-1 ) cat/five ) )");
+            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "two", "1"));
+            idcat->build_dependencies_key()->set_from_string("enabled? ( || ( ( <cat/three-1 cat/three:0 =cat/four-1 ) cat/five ) )");
+            idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "three", "0.9");
             repo->add_version("cat", "four", "1");
 

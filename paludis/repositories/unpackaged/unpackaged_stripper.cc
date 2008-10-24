@@ -42,9 +42,10 @@ namespace paludis
 
 UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
-                value_for<n::debug_build>(options.debug_build()),
                 value_for<n::debug_dir>(options.debug_dir()),
-                value_for<n::image_dir>(options.image_dir())
+                value_for<n::image_dir>(options.image_dir()),
+                value_for<n::split>(options.split()),
+                value_for<n::strip>(options.strip())
             )),
     PrivateImplementationPattern<UnpackagedStripper>(new Implementation<UnpackagedStripper>(options)),
     _imp(PrivateImplementationPattern<UnpackagedStripper>::_imp)

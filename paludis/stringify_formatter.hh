@@ -60,8 +60,7 @@ namespace paludis
     class PALUDIS_VISIBLE StringifyFormatter :
         private PrivateImplementationPattern<StringifyFormatter>,
         public CanFormat<std::string>,
-        public CanFormat<UseFlagName>,
-        public CanFormat<IUseFlag>,
+        public CanFormat<ChoiceValue>,
         public CanFormat<KeywordName>,
         public CanFormat<PackageDepSpec>,
         public CanFormat<BlockDepSpec>,
@@ -75,6 +74,7 @@ namespace paludis
         public CanFormat<NamedSetDepSpec>,
         public CanFormat<FSEntry>,
         public CanFormat<PackageID>,
+        public CanFormat<PlainTextLabelDepSpec>,
         public CanSpace
     {
         private:
@@ -98,19 +98,13 @@ namespace paludis
 
             virtual std::string format(const std::string &, const format::Plain &) const;
 
-            virtual std::string format(const UseFlagName &, const format::Enabled &) const;
-            virtual std::string format(const UseFlagName &, const format::Disabled &) const;
-            virtual std::string format(const UseFlagName &, const format::Forced &) const;
-            virtual std::string format(const UseFlagName &, const format::Masked &) const;
-            virtual std::string format(const UseFlagName &, const format::Plain &) const;
-
-            virtual std::string format(const IUseFlag &, const format::Enabled &) const;
-            virtual std::string format(const IUseFlag &, const format::Disabled &) const;
-            virtual std::string format(const IUseFlag &, const format::Forced &) const;
-            virtual std::string format(const IUseFlag &, const format::Masked &) const;
-            virtual std::string format(const IUseFlag &, const format::Plain &) const;
-            virtual std::string decorate(const IUseFlag &, const std::string &, const format::Changed &) const;
-            virtual std::string decorate(const IUseFlag &, const std::string &, const format::Added &) const;
+            virtual std::string format(const ChoiceValue &, const format::Enabled &) const;
+            virtual std::string format(const ChoiceValue &, const format::Disabled &) const;
+            virtual std::string format(const ChoiceValue &, const format::Forced &) const;
+            virtual std::string format(const ChoiceValue &, const format::Masked &) const;
+            virtual std::string format(const ChoiceValue &, const format::Plain &) const;
+            virtual std::string decorate(const ChoiceValue &, const std::string &, const format::Changed &) const;
+            virtual std::string decorate(const ChoiceValue &, const std::string &, const format::Added &) const;
 
             virtual std::string format(const KeywordName &, const format::Accepted &) const;
             virtual std::string format(const KeywordName &, const format::Unaccepted &) const;
@@ -143,12 +137,16 @@ namespace paludis
             virtual std::string format(const ConditionalDepSpec &, const format::Forced &) const;
             virtual std::string format(const ConditionalDepSpec &, const format::Masked &) const;
             virtual std::string format(const ConditionalDepSpec &, const format::Plain &) const;
+            virtual std::string decorate(const ConditionalDepSpec &, const std::string &, const format::Changed &) const;
+            virtual std::string decorate(const ConditionalDepSpec &, const std::string &, const format::Added &) const;
 
             virtual std::string format(const FSEntry &, const format::Plain &) const;
 
             virtual std::string format(const PackageID &, const format::Plain &) const;
             virtual std::string format(const PackageID &, const format::Installed &) const;
             virtual std::string format(const PackageID &, const format::Installable &) const;
+
+            virtual std::string format(const PlainTextLabelDepSpec &, const format::Plain &) const;
 
             virtual std::string newline() const;
             virtual std::string indent(const int) const;

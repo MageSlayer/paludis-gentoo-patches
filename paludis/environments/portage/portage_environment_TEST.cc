@@ -34,6 +34,8 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/choice.hh>
 
 using namespace paludis;
 using namespace test;
@@ -59,6 +61,14 @@ namespace
         kk->insert(k);
         return env.accept_keywords(kk, e);
     }
+
+    bool get_use(const std::string & f, const Environment &, const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        const std::tr1::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
+        if (! v)
+            return false;
+        return v->enabled();
+    }
 }
 
 namespace test_cases
@@ -69,7 +79,7 @@ namespace test_cases
 
         void run()
         {
-            PortageEnvironment env("portage_environment_TEST_dir/query_use");
+            PortageEnvironment env(stringify(FSEntry("portage_environment_TEST_dir/query_use").realpath()));
 
             const std::tr1::shared_ptr<const PackageID> idx(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1",
@@ -79,19 +89,19 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions()))))]->begin());
 
-            TEST_CHECK(env.query_use(UseFlagName("one"), *idx));
-            TEST_CHECK(env.query_use(UseFlagName("two"), *idx));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), *idx));
-            TEST_CHECK(! env.query_use(UseFlagName("four"), *idx));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), *idx));
-            TEST_CHECK(! env.query_use(UseFlagName("six"), *idx));
+            TEST_CHECK(get_use("one", env, idx));
+            TEST_CHECK(get_use("two", env, idx));
+            TEST_CHECK(! get_use("three", env, idx));
+            TEST_CHECK(! get_use("four", env, idx));
+            TEST_CHECK(! get_use("five", env, idx));
+            TEST_CHECK(! get_use("six", env, idx));
 
-            TEST_CHECK(! env.query_use(UseFlagName("one"), *id1));
-            TEST_CHECK(env.query_use(UseFlagName("two"), *id1));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), *id1));
-            TEST_CHECK(env.query_use(UseFlagName("four"), *id1));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), *id1));
-            TEST_CHECK(! env.query_use(UseFlagName("six"), *id1));
+            TEST_CHECK(! get_use("one", env, id1));
+            TEST_CHECK(get_use("two", env, id1));
+            TEST_CHECK(! get_use("three", env, id1));
+            TEST_CHECK(get_use("four", env, id1));
+            TEST_CHECK(! get_use("five", env, id1));
+            TEST_CHECK(! get_use("six", env, id1));
         }
     } test_query_use;
 
@@ -101,13 +111,20 @@ namespace test_cases
 
         void run()
         {
-            PortageEnvironment env("portage_environment_TEST_dir/known_use_expand_names");
+            PortageEnvironment env(stringify(FSEntry("portage_environment_TEST_dir/known_use_expand_names").realpath()));
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions()))))]->begin());
-            std::tr1::shared_ptr<const UseFlagNameSet> k1(env.known_use_expand_names(UseFlagName("foo_cards"), *id1));
-            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three");
+            std::tr1::shared_ptr<const Choice> foo_cards;
+            for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
+                    c != c_end ; ++c)
+                if ((*c)->raw_name() == "FOO_CARDS")
+                    foo_cards = *c;
+            if (! foo_cards)
+                throw InternalError(PALUDIS_HERE, "oops");
+            std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > k1(env.known_choice_value_names(id1, foo_cards));
+            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "one three");
         }
     } test_known_use_expand;
 

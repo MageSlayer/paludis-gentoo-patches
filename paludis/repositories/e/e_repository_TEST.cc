@@ -43,6 +43,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
+#include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <tr1/functional>
@@ -603,19 +604,20 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
                                         &env, UserPackageDepSpecOptions()))))]->begin());
 
-                TEST_CHECK(repo->query_use(UseFlagName("flag1"), *p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag2"), *p1) == use_disabled);
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), *p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), *p2));
-                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), *p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), *p4));
-                TEST_CHECK(repo->query_use(UseFlagName("flag3"), *p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p2) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p1) == use_unspecified);
-                TEST_CHECK(repo->query_use(UseFlagName("test"), *p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("test2"), *p1) == use_disabled);
-                TEST_CHECK(! repo->query_use_mask(UseFlagName("test"), *p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("test2"), *p1));
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
+                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
+                TEST_CHECK(p2->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag5"))->enabled());
+                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag5"))->enabled());
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->enabled());
+                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2"))->enabled());
+
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->locked());
+                TEST_CHECK(p2->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
+                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
+                TEST_CHECK(p4->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->locked());
+                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2"))->locked());
             }
         }
     } test_e_repository_query_use;
@@ -1065,8 +1067,6 @@ namespace test_cases
 #endif
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -1321,8 +1321,6 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -1416,8 +1414,6 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -1541,8 +1537,6 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                         ));
@@ -1744,8 +1738,6 @@ namespace test_cases
 #endif
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -2338,8 +2330,6 @@ namespace test_cases
             env.package_database()->add_repository(1, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));

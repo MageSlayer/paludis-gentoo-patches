@@ -38,6 +38,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice.hh>
 #include <list>
 
 using namespace paludis;
@@ -291,24 +292,6 @@ namespace
             {
             }
 
-            void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-            {
-                if (k.type() == type)
-                {
-                    ColourFormatter formatter;
-                    if (task->want_raw())
-                    {
-                        task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
-                    }
-                    else
-                    {
-                        task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
-                    }
-                }
-            }
-
             void visit(const MetadataCollectionKey<FSEntrySequence> & k)
             {
                 if (k.type() == type)
@@ -346,24 +329,6 @@ namespace
             }
 
             void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
-            {
-                if (k.type() == type)
-                {
-                    ColourFormatter formatter;
-                    if (task->want_raw())
-                    {
-                        task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
-                    }
-                    else
-                    {
-                        task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
-                    }
-                }
-            }
-
-            void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
             {
                 if (k.type() == type)
                 {
@@ -693,6 +658,107 @@ namespace
                 }
             }
 
+            void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+            {
+                ColourFormatter formatter;
+                if (k.type() == type)
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column("");
+                        for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                                c != c_end ; ++c)
+                        {
+                            task->output_left_column((*c)->raw_name() + ":", in + 4);
+
+                            std::string v;
+                            for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                                    i != i_end ; ++i)
+                            {
+                                if (! v.empty())
+                                    v.append(" ");
+
+                                std::string t;
+                                if ((*i)->enabled())
+                                {
+                                    if ((*i)->locked())
+                                        t = formatter.format(**i, format::Forced());
+                                    else
+                                        t = formatter.format(**i, format::Enabled());
+                                }
+                                else
+                                {
+                                    if ((*i)->locked())
+                                        t = formatter.format(**i, format::Masked());
+                                    else
+                                        t = formatter.format(**i, format::Disabled());
+                                }
+
+                                v.append(t);
+                            }
+                            task->output_right_column(v);
+                        }
+                    }
+                    else
+                    {
+                        std::string s;
+                        bool shown_prefix(false);
+
+                        for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                                c != c_end ; ++c)
+                        {
+                            bool done_leader(false);
+                            for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                                    i != i_end ; ++i)
+                            {
+                                if ((*c)->hidden())
+                                    continue;
+                                if (! (*i)->explicitly_listed())
+                                    continue;
+
+                                if (! done_leader)
+                                {
+                                    if (shown_prefix || ! (*c)->show_with_no_prefix())
+                                    {
+                                        if (! s.empty())
+                                            s.append(" ");
+
+                                        s.append((*c)->human_name() + ":");
+                                        done_leader = true;
+                                        shown_prefix = true;
+                                    }
+                                }
+
+                                if (! s.empty())
+                                    s.append(" ");
+
+                                std::string t;
+                                if ((*i)->enabled())
+                                {
+                                    if ((*i)->locked())
+                                        t = formatter.format(**i, format::Forced());
+                                    else
+                                        t = formatter.format(**i, format::Enabled());
+                                }
+                                else
+                                {
+                                    if ((*i)->locked())
+                                        t = formatter.format(**i, format::Masked());
+                                    else
+                                        t = formatter.format(**i, format::Disabled());
+                                }
+
+                                s.append(t);
+                            }
+                        }
+
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column(s);
+                    }
+                }
+            }
+
             void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
             {
             }
@@ -815,6 +881,10 @@ namespace
         }
 
         void visit_leaf(const URILabelsDepSpec &)
+        {
+        }
+
+        void visit_leaf(const PlainTextLabelDepSpec &)
         {
         }
 

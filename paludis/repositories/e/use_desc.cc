@@ -30,20 +30,24 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/choice.hh>
 #include <tr1/unordered_map>
 
 using namespace paludis;
 
 template class Sequence<UseDescFileInfo>;
+typedef std::tr1::unordered_map<std::pair<ChoicePrefixName, UnprefixedChoiceName>, std::string,
+        Hash<std::pair<ChoicePrefixName, UnprefixedChoiceName> > > UseDescs;
 
 namespace paludis
 {
     template<>
     struct Implementation<UseDesc>
     {
-        std::tr1::unordered_map<std::string, std::string, Hash<std::string> > desc;
+        std::tr1::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> > local_descs;
+        UseDescs global_descs;
 
-        void add(const FSEntry & f, const std::string & prefix)
+        void add(const FSEntry & f, const ChoicePrefixName & prefix)
         {
             if (f.is_regular_file_or_symlink_to_regular_file())
             {
@@ -54,23 +58,28 @@ namespace paludis
                     std::string::size_type p(line->find(" - "));
                     if (std::string::npos == p)
                         continue;
+                    std::string lhs(line->substr(0, p)), rhs(line->substr(p + 3));
 
-                    desc.insert(std::make_pair(prefix + line->substr(0, p), line->substr(p + 3)));
+                    std::string::size_type q(lhs.find(':'));
+                    if (std::string::npos == q)
+                        global_descs.insert(make_pair(make_pair(prefix, lhs), rhs));
+                    else
+                        local_descs[QualifiedPackageName(lhs.substr(0, q))].insert(make_pair(make_pair(prefix, lhs.substr(q + 1)), rhs));
                 }
             }
         }
 
-        Implementation(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f, const std::string & expand_sep)
+        Implementation(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f)
         {
             for (UseDescFileInfoSequence::ConstIterator ff(f->begin()), ff_end(f->end()) ;
                     ff != ff_end ; ++ff)
-                add(ff->first, ff->second.empty() ? ff->second : ff->second + expand_sep);
+                add(ff->first, ff->second);
         }
     };
 }
 
-UseDesc::UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f, const std::string & expand_sep) :
-    PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f, expand_sep))
+UseDesc::UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f) :
+    PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f))
 {
 }
 
@@ -78,16 +87,23 @@ UseDesc::~UseDesc()
 {
 }
 
-std::string
-UseDesc::describe(const UseFlagName & f, const PackageID & e) const
+const std::string
+UseDesc::describe(
+        const QualifiedPackageName & id,
+        const ChoicePrefixName & prefix,
+        const UnprefixedChoiceName & flag
+        ) const
 {
-    std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator i(
-            _imp->desc.find(stringify(e.name()) + ":" + stringify(f)));
-    if (_imp->desc.end() != i)
-        return i->second;
+    std::tr1::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> >::const_iterator i(_imp->local_descs.find(id));
+    if (i != _imp->local_descs.end())
+    {
+        UseDescs::const_iterator j(i->second.find(make_pair(prefix, flag)));
+        if (j != i->second.end())
+            return j->second;
+    }
 
-    std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator j(_imp->desc.find(stringify(f)));
-    if (_imp->desc.end() != j)
+    UseDescs::const_iterator j(_imp->global_descs.find(make_pair(prefix, flag)));
+    if (j != _imp->global_descs.end())
         return j->second;
 
     return "";

@@ -1,27 +1,11 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et ft=sh :
 
-make_enum_UseFlagState()
-{
-    prefix use
-
-    key use_unspecified     "unspecified"
-    key use_disabled        "disabled"
-    key use_enabled         "enabled"
-
-    doxygen_comment << "END"
-        /**
-         * A USE flag can be on, off or unspecified.
-         *
-         * \ingroup g_names
-         */
-END
-}
-
 make_enum_IUseFlagParseOption()
 {
     prefix iufpo
     want_destringify
+    namespace paludis::erepository
 
     key iufpo_allow_iuse_defaults        "Allow +/- prefixes"
     key iufpo_strict_parsing             "Error rather than warn for violations"

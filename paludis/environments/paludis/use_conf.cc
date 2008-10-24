@@ -37,6 +37,8 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/tribool.hh>
+#include <paludis/choice.hh>
 #include <tr1/unordered_map>
 #include <algorithm>
 #include <list>
@@ -45,9 +47,11 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef std::tr1::unordered_map<UseFlagName, UseFlagState, Hash<UseFlagName> > UseFlagWithStateMap;
-typedef std::list<std::string> MinusStarPrefixList;
-typedef std::pair<UseFlagWithStateMap, MinusStarPrefixList> UseInfo;
+typedef std::pair<ChoicePrefixName, UnprefixedChoiceName> FlagNamePair;
+
+typedef std::tr1::unordered_map<FlagNamePair, Tribool, Hash<FlagNamePair> > FlagNamePairWithStateMap;
+typedef std::list<ChoicePrefixName> MinusStarPrefixList;
+typedef std::pair<FlagNamePairWithStateMap, MinusStarPrefixList> UseInfo;
 typedef std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
 typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, UseInfo> DSWithUseInfo;
 typedef std::list<PDSWithUseInfo> PDSWithUseInfoList;
@@ -126,128 +130,119 @@ UseConf::add(const FSEntry & filename)
                 Qualified::iterator ii(_imp->qualified.insert(std::make_pair(*d->package_ptr(), PDSWithUseInfoList())).first);
                 PDSWithUseInfoList::iterator i(ii->second.insert(ii->second.end(), PDSWithUseInfo(d, UseInfo())));
 
-                std::string prefix_upper, prefix_lower;
+                ChoicePrefixName prefix("");
                 for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                 {
                     if (*t == "-*")
-                        i->second.second.push_back(strip_trailing(prefix_lower, "_"));
+                        i->second.second.push_back(prefix);
                     else if ('-' == t->at(0))
                         i->second.first.insert(std::make_pair(
-                                    UseFlagName(prefix_lower + t->substr(1)), use_disabled)).first->second = use_disabled;
+                                    FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
                     else if (':' == t->at(t->length() - 1))
                     {
-                        std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_lower), &::tolower);
-                        std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_upper), &::toupper);
-                        prefix_lower.append("_");
-                        prefix_upper.append("_");
+                        std::string p;
+                        std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
+                        prefix = ChoicePrefixName(p);
                     }
                     else
-                        i->second.first.insert(std::make_pair(UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
+                        i->second.first.insert(std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
                 }
             }
             else
             {
                 Unqualified::iterator i(_imp->unqualified.insert(_imp->unqualified.end(), PDSWithUseInfo(d, UseInfo())));
 
-                std::string prefix_upper, prefix_lower;
+                ChoicePrefixName prefix("");
                 for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                 {
                     if (*t == "-*")
-                        i->second.second.push_back(strip_trailing(prefix_lower, "_"));
+                        i->second.second.push_back(prefix);
                     else if ('-' == t->at(0))
                         i->second.first.insert(
-                                std::make_pair(UseFlagName(prefix_lower + t->substr(1)), use_disabled)).first->second = use_disabled;
+                                std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
                     else if (':' == t->at(t->length() - 1))
                     {
-                        std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_lower), &::tolower);
-                        std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_upper), &::toupper);
-                        prefix_lower.append("_");
-                        prefix_upper.append("_");
+                        std::string p;
+                        std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
+                        prefix = ChoicePrefixName(p);
                     }
                     else
-                        i->second.first.insert(std::make_pair(UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
+                        i->second.first.insert(std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
                 }
             }
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
             Sets::iterator i(_imp->sets.insert(std::make_pair(SetName(tokens.at(0)), DSWithUseInfo())).first);
-            std::string prefix_upper, prefix_lower;
+            ChoicePrefixName prefix("");
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
             {
                 if (*t == "-*")
-                    i->second.second.second.push_back(strip_trailing(prefix_lower, "_"));
+                    i->second.second.second.push_back(prefix);
                 else if ('-' == t->at(0))
                     i->second.second.first.insert(std::make_pair(
-                                UseFlagName(prefix_lower + t->substr(1)), use_disabled)).first->second = use_disabled;
+                                FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
                 else if (':' == t->at(t->length() - 1))
                 {
-                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_lower), &::tolower);
-                    std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix_upper), &::toupper);
-                    prefix_lower.append("_");
-                    prefix_upper.append("_");
+                    std::string p;
+                    std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
+                    prefix = ChoicePrefixName(p);
                 }
                 else
                     i->second.second.first.insert(std::make_pair(
-                                UseFlagName(prefix_lower + *t), use_enabled)).first->second = use_enabled;
+                                FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
             }
         }
     }
 }
 
-UseFlagState
-UseConf::query(const UseFlagName & f, const PackageID & e) const
+const Tribool
+UseConf::want_choice_enabled(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & f
+        ) const
 {
-    Context context("When checking state of flag '" + stringify(f) + "' for '" + stringify(e) + "':");
+    Context context("When checking state of flag prefix '" + stringify(choice->prefix()) +
+            "' name '" + stringify(f) + "' for '" + stringify(*id) + "':");
 
-    UseFlagState result(use_unspecified);
+    Tribool result(indeterminate);
 
-    bool ignore_empty_minus_star(false);
-    if ((*e.repository()).use_interface())
-    {
-        std::tr1::shared_ptr<const UseFlagNameSet> prefixes((*e.repository()).use_interface()->use_expand_prefixes());
-        for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
-                p != p_end ; ++p)
-            if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
-            {
-                ignore_empty_minus_star = true;
-                break;
-            }
-    }
+    bool ignore_empty_minus_star(! stringify(choice->prefix()).empty());
 
     /* highest priority: specific */
-    Qualified::const_iterator q(_imp->qualified.find(e.name()));
+    Qualified::const_iterator q(_imp->qualified.find(id->name()));
     if (_imp->qualified.end() != q)
     {
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
         {
-            if (! match_package(*_imp->env, *p->first, e))
+            if (! match_package(*_imp->env, *p->first, *id))
                 continue;
 
-            UseFlagWithStateMap::const_iterator i(p->second.first.find(f));
+            FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
             if (p->second.first.end() != i)
                 result = i->second;
 
-            if (use_unspecified == result)
+            if (result.is_indeterminate())
                 for (MinusStarPrefixList::const_iterator m(p->second.second.begin()), m_end(p->second.second.end()) ;
                         m != m_end ; ++m)
                 {
-                    if (m->empty() && ignore_empty_minus_star)
+                    if (stringify(*m).empty() && ignore_empty_minus_star)
                         continue;
 
-                    if (0 == m->compare(0, m->length(), stringify(f), 0, m->length()))
+                    if (choice->prefix() == *m)
                     {
-                        result = use_disabled;
+                        result = false;
                         break;
                     }
                 }
         }
     }
 
-    if (use_unspecified != result)
+    if (! result.is_indeterminate())
         return result;
 
     /* next: named sets */
@@ -266,52 +261,52 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
             }
         }
 
-        if (! match_package_in_set(*_imp->env, *r->second.first, e))
+        if (! match_package_in_set(*_imp->env, *r->second.first, *id))
             continue;
 
-        UseFlagWithStateMap::const_iterator i(r->second.second.first.find(f));
+        FlagNamePairWithStateMap::const_iterator i(r->second.second.first.find(std::make_pair(choice->prefix(), f)));
         if (i != r->second.second.first.end())
             result = i->second;
 
-        if (use_unspecified == result)
+        if (result.is_indeterminate())
             for (MinusStarPrefixList::const_iterator m(r->second.second.second.begin()), m_end(r->second.second.second.end()) ;
                     m != m_end ; ++m)
             {
-                if (m->empty() && ignore_empty_minus_star)
+                if (stringify(*m).empty() && ignore_empty_minus_star)
                     continue;
 
-                if (0 == m->compare(0, m->length(), stringify(f), 0, m->length()))
+                if (choice->prefix() == *m)
                 {
-                    result = use_disabled;
+                    result = false;
                     break;
                 }
             }
     }
 
-    if (use_unspecified != result)
+    if (! result.is_indeterminate())
         return result;
 
     /* last: unspecific */
 
     for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)
     {
-        if (! match_package(*_imp->env, *p->first, e))
+        if (! match_package(*_imp->env, *p->first, *id))
             continue;
 
-        UseFlagWithStateMap::const_iterator i(p->second.first.find(f));
+        FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
         if (p->second.first.end() != i)
             result = i->second;
 
-        if (use_unspecified == result)
+        if (result.is_indeterminate())
             for (MinusStarPrefixList::const_iterator m(p->second.second.begin()), m_end(p->second.second.end()) ;
                     m != m_end ; ++m)
             {
-                if (m->empty() && ignore_empty_minus_star)
+                if (stringify(*m).empty() && ignore_empty_minus_star)
                     continue;
 
-                if (0 == m->compare(0, m->length(), stringify(f), 0, m->length()))
+                if (choice->prefix() == *m)
                 {
-                    result = use_disabled;
+                    result = false;
                     break;
                 }
             }
@@ -320,27 +315,27 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     return result;
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+UseConf::known_choice_value_names(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice
+        ) const
 {
-    Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
+    Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + ":");
 
-    std::tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    std::string prefix_lower;
-    std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
-    prefix_lower.append("_");
+    std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
 
-    Qualified::const_iterator q(_imp->qualified.find(e.name()));
+    Qualified::const_iterator q(_imp->qualified.find(id->name()));
     if (_imp->qualified.end() != q)
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
         {
-            if (! match_package(*_imp->env, *p->first, e))
+            if (! match_package(*_imp->env, *p->first, *id))
                 continue;
 
-            for (UseFlagWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
+            for (FlagNamePairWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
                     i != i_end ; ++i)
-                if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
-                    result->insert(i->first);
+                if (i->first.first == choice->prefix())
+                    result->insert(i->first.second);
         }
 
     {
@@ -359,25 +354,25 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e)
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *r->second.first, e))
+            if (! match_package_in_set(*_imp->env, *r->second.first, *id))
                 continue;
 
-            for (UseFlagWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
+            for (FlagNamePairWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
                     i != i_end ; ++i)
-                if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
-                    result->insert(i->first);
+                if (i->first.first == choice->prefix())
+                    result->insert(i->first.second);
         }
     }
 
     for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)
     {
-        if (! match_package(*_imp->env, *p->first, e))
+        if (! match_package(*_imp->env, *p->first, *id))
             continue;
 
-        for (UseFlagWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
+        for (FlagNamePairWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
                 i != i_end ; ++i)
-            if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
-                result->insert(i->first);
+            if (i->first.first == choice->prefix())
+                result->insert(i->first.second);
     }
 
     return result;

@@ -89,6 +89,12 @@ namespace
             return_code |= 1;
         }
 
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        {
+            std::cout << "(unprintable)" << std::endl;
+            return_code |= 1;
+        }
+
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             StringifyFormatter f;
@@ -138,18 +144,6 @@ namespace
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
-        {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
-        }
-
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-        {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;

@@ -38,6 +38,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/choice.hh>
+#include <paludis/elike_choices.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -60,6 +62,7 @@ namespace paludis
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
+        const std::tr1::shared_ptr<const UnpackagedChoicesKey> choices_key;
 
         Implementation(const Environment * const e,
                 const QualifiedPackageName & q,
@@ -69,7 +72,8 @@ namespace paludis
                 const FSEntry & l,
                 const std::string & b,
                 const std::string & r,
-                const std::string & d) :
+                const std::string & d,
+                const UnpackagedID * const id) :
             env(e),
             name(q),
             version(v),
@@ -82,7 +86,8 @@ namespace paludis
                         build_dependencies_labels, b)),
             run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies,
                         run_dependencies_labels, r)),
-            description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d))
+            description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d)),
+            choices_key(new UnpackagedChoicesKey(env, "choices", "Choices", mkt_normal, id))
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build_dependencies")));
             run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run_dependencies")));
@@ -93,13 +98,14 @@ namespace paludis
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string & b, const std::string & r, const std::string & d) :
-    PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d)),
+    PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d, this)),
     _imp(PrivateImplementationPattern<UnpackagedID>::_imp)
 {
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->build_dependencies_key);
     add_metadata_key(_imp->run_dependencies_key);
     add_metadata_key(_imp->description_key);
+    add_metadata_key(_imp->choices_key);
 }
 
 UnpackagedID::~UnpackagedID()
@@ -173,12 +179,6 @@ const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnpackagedID::keywords_key() const
 {
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
-}
-
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-UnpackagedID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
@@ -307,11 +307,17 @@ UnpackagedID::perform_action(Action & action) const
 
     Log::get_instance()->message("unpackaged.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
+    std::tr1::shared_ptr<const ChoiceValue> strip_choice(choices_key()->value()->find_by_name_with_prefix(
+                ELikeStripChoiceValue::canonical_name_with_prefix()));
+    std::tr1::shared_ptr<const ChoiceValue> split_choice(choices_key()->value()->find_by_name_with_prefix(
+                ELikeSplitChoiceValue::canonical_name_with_prefix()));
+
     UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
-                value_for<n::debug_build>(install_action->options.debug_build()),
                 value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
                 value_for<n::image_dir>(fs_location_key()->value()),
-                value_for<n::package_id>(shared_from_this())
+                value_for<n::package_id>(shared_from_this()),
+                value_for<n::split>(split_choice && split_choice->enabled()),
+                value_for<n::strip>(strip_choice && strip_choice->enabled())
             ));
 
     stripper.strip();
@@ -349,5 +355,11 @@ std::size_t
 UnpackagedID::extra_hash_value() const
 {
     return Hash<SlotName>()(slot());
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+UnpackagedID::choices_key() const
+{
+    return _imp->choices_key;
 }
 

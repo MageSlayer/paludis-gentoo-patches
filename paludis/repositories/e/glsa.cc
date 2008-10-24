@@ -33,7 +33,7 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const UseFlagName>;
+template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
 template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const GLSARange>;
 template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
 
@@ -49,7 +49,7 @@ namespace paludis
     struct Implementation<GLSAPackage>
     {
         QualifiedPackageName name;
-        std::list<UseFlagName> archs;
+        std::list<std::string> archs;
         std::list<GLSARange> unaffected;
         std::list<GLSARange> vulnerable;
 
@@ -90,7 +90,7 @@ GLSAPackage::end_archs() const
 }
 
 void
-GLSAPackage::add_arch(const UseFlagName & n)
+GLSAPackage::add_arch(const std::string & n)
 {
     _imp->archs.push_back(n);
 }

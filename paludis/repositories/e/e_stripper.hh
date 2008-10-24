@@ -29,20 +29,22 @@ namespace paludis
 {
     namespace n
     {
-        struct debug_build;
         struct debug_dir;
         struct image_dir;
         struct package_id;
+        struct split;
+        struct strip;
     }
 
     namespace erepository
     {
         struct EStripperOptions
         {
-            NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
             NamedValue<n::debug_dir, FSEntry> debug_dir;
             NamedValue<n::image_dir, FSEntry> image_dir;
             NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::split, bool> split;
+            NamedValue<n::strip, bool> strip;
         };
 
         class EStripper :

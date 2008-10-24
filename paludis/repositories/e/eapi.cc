@@ -71,6 +71,7 @@ namespace
     std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> make_ebuild_environment_variables(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildEnvironmentVariables(make_named_values<EAPIEbuildEnvironmentVariables>(
+                        value_for<n::description_choices>(check_get(k, "description_choices")),
                         value_for<n::description_use>(check_get(k, "description_use")),
                         value_for<n::env_a>(check_get(k, "env_a")),
                         value_for<n::env_aa>(check_get(k, "env_aa")),
@@ -113,6 +114,7 @@ namespace
             value_for<n::license>(make_metadata_variable(k, "license")),
             value_for<n::long_description>(make_metadata_variable(k, "long_description")),
             value_for<n::minimum_flat_list_size>(destringify_key<int>(k, "flat_list_minimum_size")),
+            value_for<n::myoptions>(make_metadata_variable(k, "myoptions")),
             value_for<n::pdepend>(make_metadata_variable(k, "pdepend")),
             value_for<n::properties>(make_metadata_variable(k, "properties")),
             value_for<n::provide>(make_metadata_variable(k, "provide")),
@@ -125,7 +127,9 @@ namespace
             value_for<n::upstream_changelog>(make_metadata_variable(k, "upstream_changelog")),
             value_for<n::upstream_documentation>(make_metadata_variable(k, "upstream_documentation")),
             value_for<n::upstream_release_notes>(make_metadata_variable(k, "upstream_release_notes")),
-            value_for<n::use>(make_metadata_variable(k, "use"))
+            value_for<n::use>(make_metadata_variable(k, "use")),
+            value_for<n::use_expand>(make_metadata_variable(k, "use_expand")),
+            value_for<n::use_expand_hidden>(make_metadata_variable(k, "use_expand_hidden"))
             )));
     }
 
@@ -257,6 +261,8 @@ namespace
                         value_for<n::ebuild_metadata_variables>(make_ebuild_metadata_variables(k)),
                         value_for<n::ebuild_options>(make_ebuild_options(k)),
                         value_for<n::ebuild_phases>(make_ebuild_phases(k)),
+                        value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
+                        value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests")),
                         value_for<n::iuse_flag_parse_options>(iuse_flag_parse_options),
                         value_for<n::merger_options>(merger_options),
                         value_for<n::package_dep_spec_parse_options>(package_dep_spec_parse_options),

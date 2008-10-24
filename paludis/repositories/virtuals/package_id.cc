@@ -246,12 +246,6 @@ VirtualsPackageID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-VirtualsPackageID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 VirtualsPackageID::provide_key() const
 {
@@ -511,5 +505,11 @@ const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 VirtualsPackageID::transient_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+VirtualsPackageID::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
 }
 

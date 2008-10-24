@@ -38,7 +38,6 @@ namespace paludis
     class MetadataSectionKey;
     class MetadataTimeKey;
     template <typename C_> class MetadataCollectionKey;
-    template <> class MetadataCollectionKey<IUseFlagSet>;
     template <typename C_> class MetadataSpecTreeKey;
     template <typename V_> class MetadataValueKey;
 

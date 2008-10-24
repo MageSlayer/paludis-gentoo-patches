@@ -131,14 +131,9 @@ namespace
             const std::tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
         {
-            const std::tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
-        {
-            const std::tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::tr1::shared_ptr<const Choices> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataSectionKey & k)

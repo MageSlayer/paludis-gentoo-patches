@@ -79,6 +79,11 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >(_m_ptr));
         }
 
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        {
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >(_m_ptr));
+        }
+
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
@@ -92,16 +97,6 @@ class MetadataKeySptrToPythonVisitor :
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(_m_ptr));
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
-        {
-            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(_m_ptr));
-        }
-
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-        {
-            obj = bp::object(std::tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
@@ -387,53 +382,6 @@ struct MetadataCollectionKeyWrapper :
     }
 };
 
-template <>
-struct MetadataCollectionKeyWrapper<IUseFlagSet> :
-    MetadataCollectionKey<IUseFlagSet>,
-    bp::wrapper<MetadataCollectionKey<IUseFlagSet> >
-{
-    MetadataCollectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataCollectionKey<IUseFlagSet>(r, h, t)
-    {
-    }
-
-    virtual const std::tr1::shared_ptr<const IUseFlagSet> value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("value"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
-    }
-
-    std::string pretty_print_flat(const Formatter<IUseFlag> & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat");
-    }
-
-    std::string pretty_print_flat_with_comparison(
-            const Environment * const e,
-            const std::tr1::shared_ptr<const PackageID> & pid,
-            const Formatter<IUseFlag> & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat_with_comparison"))
-            return f(boost::cref(e), pid, boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat_with_comparison");
-    }
-};
-
 template <typename C_>
 struct MetadataSpecTreeKeyWrapper :
     MetadataSpecTreeKey<C_>,
@@ -619,50 +567,6 @@ struct class_set_key :
                 ("pretty_print_flat(" + set +"Formatter) -> string\n"
                  "Return a single-line formatted version of our value, using the\n"
                  "supplied Formatter to format individual items.").c_str()
-           );
-    }
-};
-
-template <>
-struct class_set_key<IUseFlagSet> :
-    bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
-        bp::bases<MetadataKey>, boost::noncopyable>
-{
-    class_set_key(const std::string & set) :
-        bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
-            bp::bases<MetadataKey>, boost::noncopyable>(
-                    ("Metadata" + set + "Key").c_str(),
-                    "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
-                    "as its value.\n\n"
-
-                    "This class can be subclassed in Python.",
-                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
-                        "__init__(raw_name, human_name, MetadataKeyType)"
-                        )
-                    )
-    {
-        bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >();
-        bp::implicitly_convertible<std::tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
-                std::tr1::shared_ptr<MetadataKey> >();
-
-        def("value", bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::value),
-                ("value() -> " + set + "\n"
-                 "Fetch our value.").c_str()
-           );
-
-        def("pretty_print_flat", bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::pretty_print_flat),
-                ("pretty_print_flat(" + set +"Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items.").c_str()
-           );
-
-        def("pretty_print_flat_with_comparison",
-                bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::pretty_print_flat_with_comparison),
-                ("pretty_print_flat_with_comparison(Environment, PackageID, " + set +"Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items, and the supplied\n"
-                 "PackageID to decorate using format::Added and format::Changed as\n"
-                 "appropriate.").c_str()
            );
     }
 };
@@ -1051,8 +955,6 @@ void expose_metadata_key()
      * MetadataCollectionKeys
      */
     class_set_key<KeywordNameSet>("KeywordNameIterable");
-    class_set_key<UseFlagNameSet>("UseFlagNameIterable");
-    class_set_key<IUseFlagSet>("IUseFlagIterable");
     class_set_key<Set<std::string> >("StringIterable");
     class_set_key<FSEntrySequence>("FSEntryIterable");
     class_set_key<PackageIDSequence>("PackageIDIterable");

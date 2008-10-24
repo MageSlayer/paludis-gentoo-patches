@@ -27,6 +27,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/choice.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -37,7 +38,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
-
+#include <paludis/util/tribool.hh>
+#include <map>
 #include <list>
 #include <sstream>
 
@@ -99,25 +101,6 @@ FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 {
     _imp->collection.reset(new KeywordNameSet);
     tokenise_whitespace(s, create_inserter<KeywordName>(_imp->collection->inserter()));
-}
-
-FakeMetadataIUseSetKey::FakeMetadataIUseSetKey(const std::string & r,
-        const std::string & h, const std::string & v, const IUseFlagParseOptions & o, const MetadataKeyType t,
-        const PackageID * const i, const Environment * const e) :
-    FakeMetadataCollectionKey<IUseFlagSet>(r, h, t, i, e)
-{
-    set_from_string(v, o);
-}
-
-void
-FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagParseOptions & o)
-{
-    _imp->collection.reset(new IUseFlagSet);
-    std::list<std::string> tokens;
-    tokenise_whitespace(s, std::back_inserter(tokens));
-    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
-        _imp->collection->insert(IUseFlag(*t, o, std::string::npos));
 }
 
 namespace paludis
@@ -308,6 +291,112 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::initial_labels() const
 namespace paludis
 {
     template <>
+    struct Implementation<FakeMetadataChoicesKey>
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const PackageID> id;
+        std::tr1::shared_ptr<Choices> value;
+        std::map<std::string, std::tr1::shared_ptr<Choice> > choices;
+
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i) :
+            env(e),
+            id(i),
+            value(new Choices)
+        {
+        }
+    };
+}
+
+namespace
+{
+    struct FakeChoiceValue :
+        ChoiceValue
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const PackageID> id;
+        const std::tr1::shared_ptr<const Choice> choice;
+        const UnprefixedChoiceName value_name;
+
+        FakeChoiceValue(
+                const Environment * const e,
+                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::tr1::shared_ptr<const Choice> & c,
+                const UnprefixedChoiceName & n) :
+            env(e),
+            id(i),
+            choice(c),
+            value_name(n)
+        {
+        }
+
+        const UnprefixedChoiceName unprefixed_name() const
+        {
+            return value_name;
+        }
+
+        virtual const ChoiceNameWithPrefix name_with_prefix() const
+        {
+            return ChoiceNameWithPrefix((choice->prefix().data().empty() ? "" : stringify(choice->prefix()) + "*") + stringify(value_name));
+        }
+
+        virtual bool enabled() const
+        {
+            return env->want_choice_enabled(id, choice, value_name).is_true();
+        }
+
+        virtual bool locked() const
+        {
+            return false;
+        }
+
+        virtual const std::string description() const
+        {
+            return "monkey";
+        }
+
+        virtual bool explicitly_listed() const
+        {
+            return true;
+        }
+    };
+}
+
+FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
+        const std::tr1::shared_ptr<const PackageID> & i) :
+    MetadataValueKey<std::tr1::shared_ptr<const Choices> >("Choices", "Choices", mkt_normal),
+    PrivateImplementationPattern<FakeMetadataChoicesKey>(new Implementation<FakeMetadataChoicesKey>(e, i)),
+    _imp(PrivateImplementationPattern<FakeMetadataChoicesKey>::_imp)
+{
+}
+
+FakeMetadataChoicesKey::~FakeMetadataChoicesKey()
+{
+}
+
+void
+FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
+{
+    if (_imp->choices.end() == _imp->choices.find(n))
+    {
+        std::tr1::shared_ptr<Choice> c(new Choice(n.empty() ? "default" : n, n.empty() ? "default" : n, ChoicePrefixName(n),
+                    false, false, false, false));
+        _imp->value->add(c);
+        _imp->choices.insert(std::make_pair(n, c));
+    }
+
+    _imp->choices.find(n)->second->add(make_shared_ptr(new FakeChoiceValue(_imp->env, _imp->id,
+                    _imp->choices.find(n)->second, UnprefixedChoiceName(v))));
+}
+
+const std::tr1::shared_ptr<const Choices>
+FakeMetadataChoicesKey::value() const
+{
+    return _imp->value;
+}
+
+namespace paludis
+{
+    template <>
     struct Implementation<FakeUnacceptedMask>
     {
         const char key;
@@ -399,7 +488,6 @@ namespace paludis
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > package_id;
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for;
         std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
-        std::tr1::shared_ptr<FakeMetadataIUseSetKey> iuse;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -409,6 +497,7 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
+        std::tr1::shared_ptr<FakeMetadataChoicesKey> choices;
 
         std::tr1::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
@@ -425,8 +514,6 @@ namespace paludis
             post_dependencies_labels(new DependencyLabelSequence),
             suggested_dependencies_labels(new DependencyLabelSequence),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
-            iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "",
-                        IUseFlagParseOptions() + iufpo_allow_iuse_defaults + iufpo_strict_parsing, mkt_normal, id, env)),
             has_masks(false)
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
@@ -444,7 +531,6 @@ FakePackageID::FakePackageID(const Environment * const e, const std::tr1::shared
     _imp(PrivateImplementationPattern<FakePackageID>::_imp)
 {
     add_metadata_key(_imp->keywords);
-    add_metadata_key(_imp->iuse);
 }
 
 FakePackageID::~FakePackageID()
@@ -510,13 +596,6 @@ FakePackageID::keywords_key() const
     return _imp->keywords;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-FakePackageID::iuse_key() const
-{
-    need_keys_added();
-    return _imp->iuse;
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 FakePackageID::license_key() const
 {
@@ -564,13 +643,6 @@ FakePackageID::keywords_key()
 {
     need_keys_added();
     return _imp->keywords;
-}
-
-const std::tr1::shared_ptr<FakeMetadataIUseSetKey>
-FakePackageID::iuse_key()
-{
-    need_keys_added();
-    return _imp->iuse;
 }
 
 const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> >
@@ -728,6 +800,8 @@ FakePackageID::need_keys_added() const
                     "", std::tr1::bind(&parse_provide, _1, _imp->env,
                         shared_from_this()), mkt_normal));
 
+        _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
+
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
         add_metadata_key(_imp->post_dependencies);
@@ -736,6 +810,7 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->homepage);
         add_metadata_key(_imp->provide);
         add_metadata_key(_imp->license);
+        add_metadata_key(_imp->choices);
     }
 }
 
@@ -995,87 +1070,6 @@ FakePackageID::use_expand_separator() const
 }
 
 std::string
-FakeMetadataIUseSetKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
-{
-    std::string result;
-    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Masked()));
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Forced()));
-        else if (_imp->env->query_use(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Enabled()));
-        else
-            result.append(f.format(*i, format::Disabled()));
-    }
-
-    return result;
-}
-
-std::string
-FakeMetadataIUseSetKey::pretty_print_flat_with_comparison(
-        const Environment * const env,
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const Formatter<IUseFlag> & f) const
-{
-    std::string result;
-    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        std::string l;
-        bool n;
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Masked());
-            n = false;
-        }
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Forced());
-            n = true;
-        }
-        else if (_imp->env->query_use(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Enabled());
-            n = true;
-        }
-        else
-        {
-            l = f.format(*i, format::Disabled());
-            n = true;
-        }
-
-        if (! id->iuse_key())
-            l = f.decorate(*i, l, format::Added());
-        else
-        {
-            using namespace std::tr1::placeholders;
-            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
-                        std::tr1::bind(std::equal_to<UseFlagName>(), i->flag, std::tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
-
-            if (p == id->iuse_key()->value()->end())
-                l = f.decorate(*i, l, format::Added());
-            else if (n != env->query_use(i->flag, *id))
-                l = f.decorate(*i, l, format::Changed());
-        }
-
-        result.append(l);
-    }
-
-    return result;
-}
-
-
-std::string
 FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) const
 {
     std::string result;
@@ -1096,6 +1090,20 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
     return result;
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+FakePackageID::choices_key() const
+{
+    need_keys_added();
+    return _imp->choices;
+}
+
+const std::tr1::shared_ptr<FakeMetadataChoicesKey>
+FakePackageID::choices_key()
+{
+    need_keys_added();
+    return _imp->choices;
+}
+
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<PlainTextSpecTree>;
@@ -1107,5 +1115,4 @@ template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class FakeMetadataCollectionKey<KeywordNameSet>;
-template class FakeMetadataCollectionKey<IUseFlagSet>;
 

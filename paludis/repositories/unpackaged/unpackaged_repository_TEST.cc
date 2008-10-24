@@ -225,8 +225,6 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -280,8 +278,6 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::checks>(iaco_default),
-                        value_for<n::debug_build>(iado_none),
                         value_for<n::destination>(installed_repo),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));

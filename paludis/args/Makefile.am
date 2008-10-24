@@ -17,8 +17,6 @@ paludis_args_include_HEADERS = \
 	args_visitor.hh        \
 	args_dumper.hh         \
 	man.hh                 \
-	checks_arg.hh          \
-	debug_build_arg.hh     \
 	deps_option_arg.hh     \
 	log_level_arg.hh       \
 	dep_list_args_group.hh \
@@ -34,8 +32,6 @@ libpaludisargs_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	bad_argument.cc \
 	args_visitor.cc \
 	args_dumper.cc \
-	checks_arg.cc \
-	debug_build_arg.cc \
 	deps_option_arg.cc \
 	log_level_arg.cc \
 	dep_list_args_group.cc \

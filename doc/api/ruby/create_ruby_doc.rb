@@ -44,14 +44,16 @@ module RDoc
                     end
                     next
                 end
+                line.gsub!(/FAKE_RDOC_METHOD\(([a-zA-Z0-9_\-]+)\);/) {|match| "VALUE #{$1}(VALUE self) { }"}
                 if line =~ /rb_define/
                     #help rdoc recognise normal methods
                     line.gsub!('&','')
                     line.gsub!(/RUBY_FUNC_CAST\(*([^)]+)\)*/) {|match| $1}
+                    line.gsub!(/RDOC_IS_STUPID\((\w+),.*, ([0-9\-])+\);/) {|match| "#{$1}, #{$2})"}
                     #help rdoc recognise template methods
-                    line.gsub!(/\w+<\s*\w+(::\w+)*(,\s*\w+)*(::\w+)?>::\w+/,'template_methods')
-                    #catch more templates
-                    line.gsub!(/\w+\s*<\s*\w+\s*<\s*\w+\s*>,\s*\w+::\w+>::\w+/, 'template_methods')
+                    line.gsub!(/[a-zA-Z0-9\-_:]+<\s*[a-zA-Z0-9\-_:]+(::[a-zA-Z0-9\-_:]+)*(,\s*[a-zA-Z0-9\-_:]+)*(::[a-zA-Z0-9\-_:]+)?>::[a-zA-Z0-9\-_:]+/,'template_methods')
+                    line.gsub!(/[a-zA-Z0-9\-_:]+\s*<\s*[a-zA-Z0-9\-_:]+\s*<\s*[a-zA-Z0-9\-_:]+\s*>,\s*[a-zA-Z0-9\-_:]+::[a-zA-Z0-9\-_:]+>::[a-zA-Z0-9\-_:]+/, 'template_methods')
+                    line.gsub!(/[a-zA-Z0-9\-_:]+\s*<\s*[a-zA-Z0-9\-_:]+\s*<\s*[a-zA-Z0-9\-_:]+\s*<[^>]+>\s*>,\s*[a-zA-Z0-9\-_:]+::[a-zA-Z0-9\-_:]+>::[a-zA-Z0-9\-_:]+/, 'template_methods')
                 end
                 new_body+= line
             end

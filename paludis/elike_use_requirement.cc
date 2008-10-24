@@ -24,9 +24,13 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/choice.hh>
 #include <vector>
 #include <functional>
 #include <algorithm>
@@ -35,19 +39,38 @@ using namespace paludis;
 
 namespace
 {
+    bool icky_use_query(const ChoiceNameWithPrefix & f, const PackageID & id)
+    {
+        if (! id.choices_key())
+        {
+            Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+                "ID '" << id << "' has no choices, so couldn't get the state of flag '" << f << "'";
+            return false;
+        }
+
+        const std::tr1::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        if (v)
+            return v->enabled();
+
+        if (! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
+            Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+                "ID '" << id << "' has no flag named '" << f << "'";
+        return false;
+    }
+
     class UseRequirement
     {
         private:
-            const UseFlagName _name;
+            const ChoiceNameWithPrefix _name;
 
         public:
-            UseRequirement(const UseFlagName & n) :
+            UseRequirement(const ChoiceNameWithPrefix & n) :
                 _name(n)
             {
             }
             virtual ~UseRequirement() { }
 
-            const UseFlagName flag() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const ChoiceNameWithPrefix flag() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _name;
             }
@@ -60,15 +83,16 @@ namespace
         public UseRequirement
     {
         public:
-            EnabledUseRequirement(const UseFlagName & n) :
+            EnabledUseRequirement(const ChoiceNameWithPrefix & n) :
                 UseRequirement(n)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return env->query_use(flag(), pkg);
+                return icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' enabled";
@@ -79,15 +103,16 @@ namespace
         public UseRequirement
     {
         public:
-            DisabledUseRequirement(const UseFlagName & n) :
+            DisabledUseRequirement(const ChoiceNameWithPrefix & n) :
                 UseRequirement(n)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return ! env->query_use(flag(), pkg);
+                return ! icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' disabled";
@@ -101,7 +126,7 @@ namespace
             const std::tr1::shared_ptr<const PackageID> _id;
 
         public:
-            ConditionalUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            ConditionalUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 UseRequirement(n),
                 _id(i)
             {
@@ -117,15 +142,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            IfMineThenUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            IfMineThenUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return ! env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+                return ! icky_use_query(flag(), *package_id()) || icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' enabled if it is enabled for '" + stringify(*package_id()) + "'";
@@ -136,15 +162,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            IfNotMineThenUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            IfNotMineThenUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return env->query_use(flag(), *package_id()) || env->query_use(flag(), pkg);
+                return icky_use_query(flag(), *package_id()) || icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' enabled if it is disabled for '" + stringify(*package_id()) + "'";
@@ -155,15 +182,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            IfMineThenNotUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            IfMineThenNotUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return ! env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
+                return ! icky_use_query(flag(), *package_id()) || ! icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' disabled if it is enabled for '" + stringify(*package_id()) + "'";
@@ -174,15 +202,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            IfNotMineThenNotUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            IfNotMineThenNotUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return env->query_use(flag(), *package_id()) || ! env->query_use(flag(), pkg);
+                return icky_use_query(flag(), *package_id()) || ! icky_use_query(flag(), pkg);
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' disabled if it is disabled for '" + stringify(*package_id()) + "'";
@@ -193,15 +222,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            EqualUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            EqualUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return env->query_use(flag(), pkg) == env->query_use(flag(), *package_id());
+                return icky_use_query(flag(), pkg) == icky_use_query(flag(), *package_id());
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' enabled or disabled like it is for '" + stringify(*package_id()) + "'";
@@ -212,15 +242,16 @@ namespace
         public ConditionalUseRequirement
     {
         public:
-            NotEqualUseRequirement(const UseFlagName & n, const std::tr1::shared_ptr<const PackageID> & i) :
+            NotEqualUseRequirement(const ChoiceNameWithPrefix & n, const std::tr1::shared_ptr<const PackageID> & i) :
                 ConditionalUseRequirement(n, i)
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & pkg) const
+            virtual bool requirement_met(const Environment * const, const PackageID & pkg) const
             {
-                return env->query_use(flag(), pkg) != env->query_use(flag(), *package_id());
+                return icky_use_query(flag(), pkg) != icky_use_query(flag(), *package_id());
             }
+
             virtual const std::string as_human_string() const
             {
                 return "Flag '" + stringify(flag()) + "' enabled or disabled opposite to how it is for '" + stringify(*package_id()) + "'";
@@ -294,7 +325,7 @@ namespace
                 flag.erase(flag.length() - 1, 1);
                 if (flag.empty())
                     throw ELikeUseRequirementError(s, "Invalid [] contents");
-                return make_shared_ptr(new NotEqualUseRequirement(UseFlagName(flag), id));
+                return make_shared_ptr(new NotEqualUseRequirement(ChoiceNameWithPrefix(flag), id));
             }
             else if ('!' == flag.at(0))
             {
@@ -310,10 +341,10 @@ namespace
                 flag.erase(0, 1);
                 if (flag.empty())
                     throw ELikeUseRequirementError(s, "Invalid [] contents");
-                return make_shared_ptr(new NotEqualUseRequirement(UseFlagName(flag), id));
+                return make_shared_ptr(new NotEqualUseRequirement(ChoiceNameWithPrefix(flag), id));
             }
             else
-                return make_shared_ptr(new EqualUseRequirement(UseFlagName(flag), id));
+                return make_shared_ptr(new EqualUseRequirement(ChoiceNameWithPrefix(flag), id));
         }
         else if ('?' == flag.at(flag.length() - 1))
         {
@@ -345,7 +376,7 @@ namespace
                     if (flag.empty())
                         throw ELikeUseRequirementError(s, "Invalid [] contents");
 
-                    return make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
+                    return make_shared_ptr(new IfNotMineThenNotUseRequirement(ChoiceNameWithPrefix(flag), id));
                 }
                 else
                 {
@@ -358,7 +389,7 @@ namespace
                                 << "[use!?] not safe for use here";
                     }
 
-                    return make_shared_ptr(new IfNotMineThenUseRequirement(UseFlagName(flag), id));
+                    return make_shared_ptr(new IfNotMineThenUseRequirement(ChoiceNameWithPrefix(flag), id));
                 }
             }
             else if ('!' == flag.at(0))
@@ -376,7 +407,7 @@ namespace
                 if (flag.empty())
                     throw ELikeUseRequirementError(s, "Invalid [] contents");
 
-                return make_shared_ptr(new IfNotMineThenNotUseRequirement(UseFlagName(flag), id));
+                return make_shared_ptr(new IfNotMineThenNotUseRequirement(ChoiceNameWithPrefix(flag), id));
             }
             else
             {
@@ -395,10 +426,10 @@ namespace
                     if (flag.empty())
                         throw ELikeUseRequirementError(s, "Invalid [] contents");
 
-                    return make_shared_ptr(new IfMineThenNotUseRequirement(UseFlagName(flag), id));
+                    return make_shared_ptr(new IfMineThenNotUseRequirement(ChoiceNameWithPrefix(flag), id));
                 }
                 else
-                    return make_shared_ptr(new IfMineThenUseRequirement(UseFlagName(flag), id));
+                    return make_shared_ptr(new IfMineThenUseRequirement(ChoiceNameWithPrefix(flag), id));
             }
         }
         else if ('-' == flag.at(0))
@@ -406,10 +437,10 @@ namespace
             flag.erase(0, 1);
             if (flag.empty())
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
-            return make_shared_ptr(new DisabledUseRequirement(UseFlagName(flag)));
+            return make_shared_ptr(new DisabledUseRequirement(ChoiceNameWithPrefix(flag)));
         }
         else
-            return make_shared_ptr(new EnabledUseRequirement(UseFlagName(flag)));
+            return make_shared_ptr(new EnabledUseRequirement(ChoiceNameWithPrefix(flag)));
     }
 }
 

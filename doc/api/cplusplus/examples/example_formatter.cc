@@ -107,6 +107,16 @@ namespace
                 return span_colour(escape_html(stringify(s)), "#66ff66");
             }
 
+            std::string decorate(const ConditionalDepSpec &, const std::string & s, const format::Added &) const
+            {
+                return s;
+            }
+
+            std::string decorate(const ConditionalDepSpec &, const std::string & s, const format::Changed &) const
+            {
+                return s;
+            }
+
             std::string format(const ConditionalDepSpec & s, const format::Disabled &) const
             {
                 return span_colour(escape_html(stringify(s)), "#ff6666");

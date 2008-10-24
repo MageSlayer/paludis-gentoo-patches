@@ -23,6 +23,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/tribool-fwd.hh>
+#include <paludis/choice-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
@@ -56,17 +58,17 @@ namespace paludis
                  */
                 void add(const FSEntry &);
 
-                /**
-                 * Query a use flag.
-                 */
-                UseFlagState query(const UseFlagName &, const PackageID &) const
+                const Tribool want_choice_enabled(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const Choice> &,
+                        const UnprefixedChoiceName &
+                        ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                /**
-                 * Fetch the known use expand names for a prefix.
-                 */
-                std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                        const UseFlagName &, const PackageID &) const
+                std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const Choice> &
+                        ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

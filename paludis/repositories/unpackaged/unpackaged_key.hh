@@ -27,6 +27,8 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
+        struct UnpackagedID;
+
         class UnpackagedDependencyKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
             private PrivateImplementationPattern<UnpackagedDependencyKey>
@@ -49,6 +51,22 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class UnpackagedChoicesKey :
+            public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+            private PrivateImplementationPattern<UnpackagedChoicesKey>
+        {
+            private:
+                PrivateImplementationPattern<UnpackagedChoicesKey>::ImpPtr & _imp;
+
+            public:
+                UnpackagedChoicesKey(const Environment * const env,
+                        const std::string & r, const std::string & h, const MetadataKeyType t,
+                        const UnpackagedID * const id);
+                ~UnpackagedChoicesKey();
+
+                virtual const std::tr1::shared_ptr<const Choices> value() const;
         };
     }
 }

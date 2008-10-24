@@ -60,7 +60,6 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
@@ -79,7 +78,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
 
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
@@ -98,6 +102,12 @@ namespace paludis
                 virtual std::string fs_location_human_name() const = 0;
                 virtual std::string contents_filename() const = 0;
                 virtual std::tr1::shared_ptr<MetadataValueKey<std::tr1::shared_ptr<const Contents> > > make_contents_key() const = 0;
+
+                virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
+                        const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
+                        const bool) const;
+
+                virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const;
         };
     }
 }

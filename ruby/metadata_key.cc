@@ -40,10 +40,9 @@ namespace
     static VALUE c_metadata_size_key;
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
+    static VALUE c_metadata_choices_key;
     static VALUE c_metadata_repository_mask_info_key;
     static VALUE c_metadata_keyword_name_set_key;
-    static VALUE c_metadata_use_flag_name_set_key;
-    static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_string_sequence_key;
     static VALUE c_metadata_package_id_sequence_key;
@@ -141,6 +140,12 @@ namespace
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        {
+            value = Data_Wrap_Struct(c_metadata_choices_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
+                    new std::tr1::shared_ptr<const MetadataKey>(mm));
+        }
+
         void visit(const MetadataValueKey<FSEntry> &)
         {
             value = Data_Wrap_Struct(c_metadata_fsentry_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
@@ -162,18 +167,6 @@ namespace
         void visit(const MetadataCollectionKey<KeywordNameSet> &)
         {
             value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
-                    new std::tr1::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> &)
-        {
-            value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
-                    new std::tr1::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataCollectionKey<IUseFlagSet> &)
-        {
-            value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -396,6 +389,27 @@ namespace
             if ((std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >(*self_ptr))->value())
                 return repository_mask_info_to_value(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >(*self_ptr)->value());
             return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     value -> Choices
+     *
+     * Our Value.
+     * */
+    VALUE
+    metadata_choices_key_value(VALUE self)
+    {
+        try
+        {
+            std::tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return choices_to_value(std::tr1::static_pointer_cast<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >(*self_ptr)->value());
         }
         catch (const std::exception & e)
         {
@@ -644,6 +658,14 @@ namespace
         rb_define_method(c_metadata_contents_key, "value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
 
         /*
+         * Document-class: Paludis::MetadataChoicesKey
+         *
+         * Metadata class for Contents.
+         */
+        c_metadata_choices_key = rb_define_class_under(paludis_module(), "MetadataChoicesKey", c_metadata_key);
+        rb_define_method(c_metadata_choices_key, "value", RUBY_FUNC_CAST(&metadata_choices_key_value), 0);
+
+        /*
          * Document-class: Paludis::MetadataRepositoryMaskInfoKey
          *
          * Metadata class for RepositoryMaskInfo.
@@ -660,14 +682,6 @@ namespace
         rb_define_method(c_metadata_keyword_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<KeywordNameSet>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataUseFlagNameSetKey
-         *
-         * Metadata class for Use flag names.
-         */
-        c_metadata_use_flag_name_set_key = rb_define_class_under(paludis_module(), "MetadataUseFlagNameSetKey", c_metadata_key);
-        rb_define_method(c_metadata_use_flag_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<UseFlagNameSet>::fetch)), 0);
-
-        /*
          * Document-class: Paludis::MetadataPackageIDSequenceKey
          *
          * Metadata class for package IDs.
@@ -682,14 +696,6 @@ namespace
          */
         c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSEntrySequenceKey", c_metadata_key);
         rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSEntrySequence>::fetch)), 0);
-
-        /*
-         * Document-class: Paludis::MetadataIUseFlagSetKey
-         *
-         * Metadata class for IUse flags.
-         */
-        c_metadata_iuse_flag_set_key = rb_define_class_under(paludis_module(), "MetadataIUseFlagSetKey", c_metadata_key);
-        rb_define_method(c_metadata_iuse_flag_set_key, "value", RUBY_FUNC_CAST((&SetValue<IUseFlagSet>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSetKey

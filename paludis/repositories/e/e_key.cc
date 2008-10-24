@@ -23,6 +23,8 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
+#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/e_repository.hh>
 
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -35,17 +37,22 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/tribool.hh>
+#include <paludis/util/member_iterator-impl.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/choice.hh>
 
 #include <tr1/functional>
 #include <list>
 #include <vector>
 #include <fstream>
+#include <set>
 #include <map>
 
 using namespace paludis;
@@ -463,6 +470,70 @@ EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f)
 namespace paludis
 {
     template <>
+    struct Implementation<EMyOptionsKey>
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::string string_value;
+        mutable Mutex value_mutex;
+        mutable std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value;
+
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
+            id(i),
+            string_value(v)
+        {
+        }
+    };
+}
+
+EMyOptionsKey::EMyOptionsKey(const Environment * const e,
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<PlainTextSpecTree>(r, h, t),
+    PrivateImplementationPattern<EMyOptionsKey>(new Implementation<EMyOptionsKey>(e, id, v)),
+    _imp(PrivateImplementationPattern<EMyOptionsKey>::_imp)
+{
+}
+
+EMyOptionsKey::~EMyOptionsKey()
+{
+}
+
+const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem>
+EMyOptionsKey::value() const
+{
+    Lock l(_imp->value_mutex);
+
+    if (_imp->value)
+        return _imp->value;
+
+    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
+    _imp->value = parse_myoptions(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    return _imp->value;
+}
+
+std::string
+EMyOptionsKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
+    value()->accept(p);
+    return stringify(p);
+}
+
+std::string
+EMyOptionsKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
+    value()->accept(p);
+    return stringify(p);
+}
+
+namespace paludis
+{
+    template <>
     struct Implementation<EProvideKey>
     {
         const Environment * const env;
@@ -521,237 +592,6 @@ EProvideKey::pretty_print_flat(const ProvideSpecTree::ItemFormatter & f) const
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->accept(p);
     return stringify(p);
-}
-
-namespace paludis
-{
-    template <>
-    struct Implementation<EIUseKey>
-    {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
-        const Environment * const env;
-        const std::string string_value;
-        mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<IUseFlagSet> value;
-        mutable std::tr1::function<void () throw ()> value_used;
-
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v) :
-            id(i),
-            env(e),
-            string_value(v)
-        {
-        }
-    };
-}
-
-EIUseKey::EIUseKey(
-        const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<IUseFlagSet>(r, h, t),
-    PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, e, v)),
-    _imp(PrivateImplementationPattern<EIUseKey>::_imp)
-{
-}
-
-EIUseKey::~EIUseKey()
-{
-}
-
-const std::tr1::shared_ptr<const IUseFlagSet>
-EIUseKey::value() const
-{
-    Lock l(_imp->value_mutex);
-    if (_imp->value)
-    {
-        if (_imp->value_used)
-        {
-            _imp->value_used();
-            _imp->value_used = std::tr1::function<void () throw ()>();
-        }
-        return _imp->value;
-    }
-
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value.reset(new IUseFlagSet);
-    std::list<std::string> tokens;
-    tokenise_whitespace(_imp->string_value, std::back_inserter(tokens));
-
-    std::tr1::shared_ptr<const UseFlagNameSet> prefixes;
-    if ((*_imp->id->repository()).use_interface())
-        prefixes = (*_imp->id->repository()).use_interface()->use_expand_prefixes();
-    else
-        prefixes.reset(new UseFlagNameSet);
-
-    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
-    {
-        IUseFlag f(*t, _imp->id->eapi()->supported()->iuse_flag_parse_options(), std::string::npos);
-        for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
-                p != p_end ; ++p)
-            if (0 == stringify(f.flag).compare(0, stringify(*p).length(), stringify(*p), 0, stringify(*p).length()))
-                f.prefix_delim_pos = stringify(*p).length();
-        _imp->value->insert(f);
-    }
-
-    return _imp->value;
-}
-
-std::string
-EIUseKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
-{
-    std::string result;
-    std::multimap<std::string, IUseFlag> prefixes;
-    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (std::string::npos != i->prefix_delim_pos)
-        {
-            prefixes.insert(std::make_pair(stringify(i->flag).substr(0, i->prefix_delim_pos), *i));
-            continue;
-        }
-
-        if (! result.empty())
-            result.append(" ");
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Masked()));
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Forced()));
-        else if (_imp->env->query_use(i->flag, *_imp->id))
-            result.append(f.format(*i, format::Enabled()));
-        else
-            result.append(f.format(*i, format::Disabled()));
-    }
-
-    for (std::multimap<std::string, IUseFlag>::const_iterator j(prefixes.begin()), j_end(prefixes.end()) ;
-            j != j_end ; ++j)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(j->second.flag, *_imp->id))
-            result.append(f.format(j->second, format::Masked()));
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(j->second.flag, *_imp->id))
-            result.append(f.format(j->second, format::Forced()));
-        else if (_imp->env->query_use(j->second.flag, *_imp->id))
-            result.append(f.format(j->second, format::Enabled()));
-        else
-            result.append(f.format(j->second, format::Disabled()));
-    }
-
-    return result;
-}
-
-std::string
-EIUseKey::pretty_print_flat_with_comparison(
-        const Environment * const env,
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const Formatter<IUseFlag> & f) const
-{
-    std::string result;
-    std::multimap<std::string, IUseFlag> prefixes;
-    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (std::string::npos != i->prefix_delim_pos)
-        {
-            prefixes.insert(std::make_pair(stringify(i->flag).substr(0, i->prefix_delim_pos), *i));
-            continue;
-        }
-
-        if (! result.empty())
-            result.append(" ");
-
-        std::string l;
-        bool n;
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Masked());
-            n = false;
-        }
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Forced());
-            n = true;
-        }
-        else if (_imp->env->query_use(i->flag, *_imp->id))
-        {
-            l = f.format(*i, format::Enabled());
-            n = true;
-        }
-        else
-        {
-            l = f.format(*i, format::Disabled());
-            n = false;
-        }
-
-        if (! id->iuse_key())
-            l = f.decorate(*i, l, format::Added());
-        else
-        {
-            using namespace std::tr1::placeholders;
-            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
-                        std::tr1::bind(std::equal_to<UseFlagName>(), i->flag, std::tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
-
-            if (p == id->iuse_key()->value()->end())
-                l = f.decorate(*i, l, format::Added());
-            else if (n != env->query_use(i->flag, *id))
-                l = f.decorate(*i, l, format::Changed());
-        }
-
-        result.append(l);
-    }
-
-    for (std::multimap<std::string, IUseFlag>::const_iterator j(prefixes.begin()), j_end(prefixes.end()) ;
-            j != j_end ; ++j)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        std::string l;
-        bool n;
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(j->second.flag, *_imp->id))
-        {
-            l = f.format(j->second, format::Masked());
-            n = false;
-        }
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(j->second.flag, *_imp->id))
-        {
-            l = f.format(j->second, format::Forced());
-            n = true;
-        }
-        else if (_imp->env->query_use(j->second.flag, *_imp->id))
-        {
-            l = f.format(j->second, format::Enabled());
-            n = true;
-        }
-        else
-        {
-            l = f.format(j->second, format::Disabled());
-            n = false;
-        }
-
-        if (! id->iuse_key())
-            l = f.decorate(j->second, l, format::Added());
-        else
-        {
-            using namespace std::tr1::placeholders;
-            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
-                        std::tr1::bind(std::equal_to<UseFlagName>(), j->second.flag, std::tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
-
-            if (p == id->iuse_key()->value()->end())
-                l = f.decorate(j->second, l, format::Added());
-            else if (n != env->query_use(j->second.flag, *id))
-                l = f.decorate(j->second, l, format::Changed());
-        }
-
-        result.append(l);
-    }
-
-    return result;
 }
 
 namespace paludis
@@ -831,94 +671,7 @@ EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
 namespace paludis
 {
     template <>
-    struct Implementation<EUseKey>
-    {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
-        const Environment * const env;
-        const std::string string_value;
-        mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<UseFlagNameSet> value;
-
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v) :
-            id(i),
-            env(e),
-            string_value(v)
-        {
-        }
-    };
-}
-
-EUseKey::EUseKey(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<UseFlagNameSet>(r, h, t),
-    PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, e, v)),
-    _imp(PrivateImplementationPattern<EUseKey>::_imp)
-{
-}
-
-EUseKey::~EUseKey()
-{
-}
-
-const std::tr1::shared_ptr<const UseFlagNameSet>
-EUseKey::value() const
-{
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return _imp->value;
-
-    _imp->value.reset(new UseFlagNameSet);
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    std::list<std::string> tokens;
-    tokenise_whitespace(_imp->string_value, std::back_inserter(tokens));
-    try
-    {
-        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                t != t_end ; ++t)
-            if ('-' != t->at(0))
-                _imp->value->insert(UseFlagName(*t));
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.use.malformed", ll_warning, lc_context) << "Error loading " << raw_name() << " for '" << *_imp->id << "' due to exception '"
-                << e.message() << "' (" << e.what() << "), pretending " << raw_name() << " is empty for this package";
-    }
-
-    return _imp->value;
-}
-
-std::string
-EUseKey::pretty_print_flat(const Formatter<UseFlagName> & f) const
-{
-    std::string result;
-    for (UseFlagNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_mask(*i, *_imp->id))
-            result.append(f.format(*i, format::Masked()));
-        else if ((*_imp->id->repository()).use_interface() && (*_imp->id->repository()).use_interface()->query_use_force(*i, *_imp->id))
-            result.append(f.format(*i, format::Forced()));
-        else if (_imp->env->query_use(*i, *_imp->id))
-            result.append(f.format(*i, format::Enabled()));
-        else
-            result.append(f.format(*i, format::Disabled()));
-    }
-
-    return result;
-}
-
-namespace paludis
-{
-    template <>
-    struct Implementation<EInheritedKey>
+    struct Implementation<EStringSetKey>
     {
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
@@ -933,20 +686,20 @@ namespace paludis
     };
 }
 
-EInheritedKey::EInheritedKey(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EStringSetKey::EStringSetKey(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataCollectionKey<Set<std::string> >(r, h, t),
-    PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
-    _imp(PrivateImplementationPattern<EInheritedKey>::_imp)
+    PrivateImplementationPattern<EStringSetKey>(new Implementation<EStringSetKey>(id, v)),
+    _imp(PrivateImplementationPattern<EStringSetKey>::_imp)
 {
 }
 
-EInheritedKey::~EInheritedKey()
+EStringSetKey::~EStringSetKey()
 {
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-EInheritedKey::value() const
+EStringSetKey::value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -968,7 +721,7 @@ namespace
 }
 
 std::string
-EInheritedKey::pretty_print_flat(const Formatter<std::string> & f) const
+EStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
     using namespace std::tr1::placeholders;
     return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
@@ -1111,5 +864,302 @@ EMTimeKey::value() const
     }
 
     return *_imp->value;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<EChoicesKey>
+    {
+        mutable Mutex mutex;
+        mutable std::tr1::shared_ptr<Choices> value;
+
+        const Environment * const env;
+        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::tr1::shared_ptr<const ERepository> maybe_e_repository;
+
+        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
+                const std::tr1::shared_ptr<const ERepository> & p) :
+            env(e),
+            id(i),
+            maybe_e_repository(p)
+        {
+        }
+    };
+}
+
+EChoicesKey::EChoicesKey(
+        const Environment * const e,
+        const std::tr1::shared_ptr<const ERepositoryID> & i,
+        const std::string & r, const std::string & h, const MetadataKeyType t,
+        const std::tr1::shared_ptr<const ERepository> & p) :
+    MetadataValueKey<std::tr1::shared_ptr<const Choices> > (r, h, t),
+    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p)),
+    _imp(PrivateImplementationPattern<EChoicesKey>::_imp)
+{
+}
+
+EChoicesKey::~EChoicesKey()
+{
+}
+
+namespace
+{
+    struct IsExpand
+    {
+        ChoiceNameWithPrefix flag;
+        std::string delim;
+
+        IsExpand(const ChoiceNameWithPrefix & f, const std::string & d) :
+            flag(f),
+            delim(d)
+        {
+        }
+
+        bool operator() (const std::string & s) const
+        {
+            std::string lower_s;
+            std::transform(s.begin(), s.end(), std::back_inserter(lower_s), &::tolower);
+            lower_s.append(delim);
+            return (0 == flag.data().compare(0, lower_s.length(), lower_s, 0, lower_s.length()));
+        }
+    };
+
+    struct MyOptionsFinder :
+        ConstVisitor<PlainTextSpecTree>
+    {
+        typedef std::list<std::tr1::shared_ptr<const PlainTextDepSpec> > Values;
+        typedef std::map<ChoicePrefixName, Values> Prefixes;
+
+        Prefixes prefixes;
+        std::list<ChoicePrefixName> current_prefix_stack;
+
+        MyOptionsFinder()
+        {
+            current_prefix_stack.push_front(ChoicePrefixName(""));
+        }
+
+        void visit_leaf(const PlainTextDepSpec & s)
+        {
+            prefixes[*current_prefix_stack.begin()].push_back(std::tr1::static_pointer_cast<const PlainTextDepSpec>(s.clone()));
+        }
+
+        void visit_leaf(const PlainTextLabelDepSpec & s)
+        {
+            *current_prefix_stack.begin() = ChoicePrefixName(s.label());
+        }
+
+        void visit_sequence(const ConditionalDepSpec &,
+                PlainTextSpecTree::ConstSequenceIterator cur,
+                PlainTextSpecTree::ConstSequenceIterator end)
+        {
+            if (cur != end)
+                throw InternalError(PALUDIS_HERE, "Don't know how to handle conditionals here yet");
+        }
+
+        void visit_sequence(const AllDepSpec &,
+                PlainTextSpecTree::ConstSequenceIterator cur,
+                PlainTextSpecTree::ConstSequenceIterator end)
+        {
+            current_prefix_stack.push_front(*current_prefix_stack.begin());
+            std::for_each(cur, end, accept_visitor(*this));
+            current_prefix_stack.pop_front();
+        }
+    };
+}
+
+#include <iostream>
+#include <paludis/util/join.hh>
+#include <paludis/util/member_iterator-impl.hh>
+
+const std::tr1::shared_ptr<const Choices>
+EChoicesKey::value() const
+{
+    Lock l(_imp->mutex);
+    if (_imp->value)
+        return _imp->value;
+
+    Context context("When making Choices key for '" + stringify(*_imp->id) + "':");
+
+    _imp->value.reset(new Choices);
+    if (! _imp->id->eapi()->supported())
+        return _imp->value;
+
+    std::tr1::shared_ptr<Choice> use(new Choice(
+                _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                ChoicePrefixName(""),
+                false,
+                false,
+                true,
+                true));
+    _imp->value->add(use);
+
+    std::tr1::shared_ptr<const Set<std::string> > hidden;
+    if (_imp->id->raw_use_expand_hidden_key())
+        hidden = _imp->id->raw_use_expand_hidden_key()->value();
+
+    if (_imp->id->raw_myoptions_key())
+    {
+        Context local_context("When using raw_myoptions_key to populate choices:");
+
+        /* yay. myoptions is easy. */
+        MyOptionsFinder myoptions;
+        _imp->id->raw_myoptions_key()->value()->accept(myoptions);
+
+        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
+                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+                u != u_end ; ++u)
+        {
+            Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
+
+            std::string lower_u;
+            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+            std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
+                        false, hidden ? hidden->end() != hidden->find(*u) : false, false, true));
+            _imp->value->add(exp);
+
+            MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
+            if (myoptions.prefixes.end() != p)
+            {
+                for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                        v != v_end ; ++v)
+                    exp->add(_imp->id->make_choice_value(exp, UnprefixedChoiceName((*v)->text()), indeterminate, true));
+                myoptions.prefixes.erase(p);
+            }
+        }
+
+        MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName("")));
+        if (myoptions.prefixes.end() != p)
+        {
+            Context local_local_context("When using empty prefix to populate choices:");
+            for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                    v != v_end ; ++v)
+                use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName((*v)->text()), indeterminate, true));
+            myoptions.prefixes.erase(p);
+        }
+
+        if (! myoptions.prefixes.empty())
+        {
+            Log::get_instance()->message("e.myoptions_key.invalid", ll_warning, lc_context) << "Key '" << raw_name() << "' for '"
+                << *_imp->id << "' uses unknown prefixes { '" << join(first_iterator(myoptions.prefixes.begin()),
+                        first_iterator(myoptions.prefixes.end()), "', '") << "' }";
+        }
+    }
+    else
+    {
+        /* ugh. iuse and all that mess. */
+        Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
+
+        std::map<ChoiceNameWithPrefix, Tribool> i_values;
+        std::string delim(1, _imp->id->eapi()->supported()->ebuild_options()->use_expand_separator());
+
+        if (_imp->id->raw_iuse_key())
+        {
+            for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_key()->value()->begin()), u_end(_imp->id->raw_iuse_key()->value()->end()) ;
+                    u != u_end ; ++u)
+            {
+                std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), *u));
+                if (_imp->id->raw_use_expand_key() &&
+                        _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
+                            _imp->id->raw_use_expand_key()->value()->begin(),
+                            _imp->id->raw_use_expand_key()->value()->end(),
+                            IsExpand(flag.first, delim)))
+                    i_values.insert(flag);
+                else
+                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true));
+            }
+
+            /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
+             * even if x86 isn't listed in IUSE. */
+            if (_imp->id->raw_use_key())
+            {
+                for (Set<std::string>::ConstIterator u(_imp->id->raw_use_key()->value()->begin()), u_end(_imp->id->raw_use_key()->value()->end()) ;
+                        u != u_end ; ++u)
+                {
+                    if (_imp->id->raw_iuse_key()->value()->end() != _imp->id->raw_iuse_key()->value()->find(*u))
+                        continue;
+
+                    std::pair<ChoiceNameWithPrefix, Tribool> flag(ChoiceNameWithPrefix("x"), indeterminate);
+                    if (0 == u->compare(0, 1, "-", 0, 1))
+                        flag = std::make_pair(ChoiceNameWithPrefix(u->substr(1)), false);
+                    else
+                        flag = std::make_pair(ChoiceNameWithPrefix(*u), true);
+
+                    if (_imp->id->raw_use_expand_key() &&
+                            _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
+                                _imp->id->raw_use_expand_key()->value()->begin(),
+                                _imp->id->raw_use_expand_key()->value()->end(),
+                                IsExpand(flag.first, delim)))
+                    {
+                        /* don't need to worry */
+                    }
+                    else
+                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false));
+                }
+            }
+        }
+
+        std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
+        if ((! env_arch.empty()) && _imp->maybe_e_repository)
+        {
+            std::tr1::shared_ptr<Choice> arch(new Choice(env_arch, env_arch, ChoicePrefixName(""), false, true, false, false));
+            _imp->value->add(arch);
+
+            for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
+                    a != a_end ; ++a)
+                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false));
+        }
+
+        if (_imp->id->raw_use_expand_key())
+        {
+            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
+                    u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+                    u != u_end ; ++u)
+            {
+                std::string lower_u;
+                std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+                std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
+                            ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
+                            hidden ? hidden->end() != hidden->find(*u) : false, false, true));
+                _imp->value->add(exp);
+
+                std::set<UnprefixedChoiceName> values;
+
+                if (! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
+                {
+                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+                        e_values(_imp->env->known_choice_value_names(_imp->id, exp)),
+                        r_values;
+
+                    if (_imp->maybe_e_repository)
+                        r_values = _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp);
+                    else
+                        r_values = make_shared_ptr(new Set<UnprefixedChoiceName>);
+
+                    std::set_union(e_values->begin(), e_values->end(), r_values->begin(), r_values->end(),
+                            std::inserter(values, values.begin()));
+                }
+
+                for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
+                        i != i_end ; ++i)
+                    if (IsExpand(i->first, delim)(*u))
+                        values.insert(UnprefixedChoiceName(i->first.data().substr(u->length() + delim.length())));
+
+                for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
+                        v != v_end ; ++v)
+                {
+                    std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
+                    if (i_values.end() != i)
+                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true));
+                    else
+                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false));
+                }
+            }
+        }
+    }
+
+    _imp->id->add_build_options(_imp->value);
+    return _imp->value;
 }
 

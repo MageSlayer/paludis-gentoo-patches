@@ -36,8 +36,6 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
     a_preserve_world(this, "preserve-world", '1', "Don't modify the world file", true),
     a_add_to_world_spec(this, "add-to-world-spec", '\0',
             "Use this spec, rather than all targets, for updating world (for resume commands)"),
-    a_debug_build(this, "debug-build", '\0'),
-    a_checks(this, "checks", '\0'),
     a_fetch(this, "fetch", 'f', "Only fetch sources; don't install anything", false),
     a_no_safe_resume(this, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed", false),
     a_show_reasons(this, "show-reasons", '\0', "Show why packages are being (un)installed",
@@ -117,9 +115,6 @@ InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task)
 
     if (a_add_to_world_spec.specified())
         task.set_add_to_world_spec(a_add_to_world_spec.argument());
-
-    task.set_debug_mode(a_debug_build.option());
-    task.set_checks_mode(a_checks.option());
 
     if (a_continue_on_failure.argument() == "if-fetch-only")
         task.set_continue_on_failure(itcof_if_fetch_only);
@@ -201,9 +196,6 @@ InstallArgsGroup::paludis_command_fragment() const
 
     if (a_preserve_world.specified())
         paludis_command.append(" --" + a_preserve_world.long_name());
-
-    if (a_debug_build.specified())
-        paludis_command.append(" --" + a_debug_build.long_name() + " " + a_debug_build.argument());
 
     if (a_no_safe_resume.specified())
         paludis_command.append(" --" + a_no_safe_resume.long_name());

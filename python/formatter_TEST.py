@@ -34,8 +34,6 @@ class TestCase_01_StringifyFormatter(unittest.TestCase):
 
         test_formatter_string(f)
         test_formmater_keyword_name(f)
-        test_formatter_use_flag_name(f)
-        test_formatter_iuse_flag(f)
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)
@@ -52,8 +50,6 @@ class TestCase_02_PythonFormatter(unittest.TestCase):
 
         test_formatter_string(f)
         test_formmater_keyword_name(f)
-        test_formatter_use_flag_name(f)
-        test_formatter_iuse_flag(f)
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)
@@ -78,44 +74,6 @@ class TestCase_03_Formatters_suclassing(unittest.TestCase):
             def format_keyword_name_unaccepted(self, k):
                 return str(k)
 
-        class TestCanFormatUse(CanFormatUseFlagName):
-            def format_use_flag_name_plain(self, u):
-                return str(u)
-
-            def format_use_flag_name_enabled(self, u):
-                return str(u)
-
-            def format_use_flag_name_disabled(self, u):
-                return str(u)
-
-            def format_use_flag_name_forced(self, u):
-                return str(u)
-
-            def format_use_flag_name_masked(self, u):
-                return str(u)
-
-        class TestCanFormatIUse(CanFormatIUseFlag):
-            def format_iuse_flag_plain(self, u):
-                return str(u)
-
-            def format_iuse_flag_enabled(self, u):
-                return str(u)
-
-            def format_iuse_flag_disabled(self, u):
-                return str(u)
-
-            def format_iuse_flag_forced(self, u):
-                return str(u)
-
-            def format_iuse_flag_masked(self, u):
-                return str(u)
-
-            def decorate_iuse_flag_added(self, u, s):
-                return str(u) + s
-
-            def decorate_iuse_flag_changed(self, u, s):
-                return str(u) + s
-
         class TestCanFormatPackage(CanFormatPackageDepSpec):
             def format_package_dep_spec_plain(self, pds):
                 return str(pds)
@@ -128,8 +86,6 @@ class TestCase_03_Formatters_suclassing(unittest.TestCase):
 
         test_plain_roles(TestCanFormatPlain())
         test_acceptable_roles(TestCanFormatAcceptable())
-        test_use_roles(TestCanFormatUse())
-        test_iuse_roles(TestCanFormatIUse())
         test_package_roles(TestCanFormatPackage())
 
     def test_can_space(self):
@@ -158,42 +114,6 @@ class TestCase_03_Formatters_suclassing(unittest.TestCase):
             def format_keyword_name_unaccepted(self, k):
                 return str(k)
 
-            def format_use_flag_name_plain(self, u):
-                return str(u)
-
-            def format_use_flag_name_enabled(self, u):
-                return str(u)
-
-            def format_use_flag_name_disabled(self, u):
-                return str(u)
-
-            def format_use_flag_name_forced(self, u):
-                return str(u)
-
-            def format_use_flag_name_masked(self, u):
-                return str(u)
-
-            def format_iuse_flag_plain(self, u):
-                return str(u)
-
-            def format_iuse_flag_enabled(self, u):
-                return str(u)
-
-            def format_iuse_flag_disabled(self, u):
-                return str(u)
-
-            def format_iuse_flag_forced(self, u):
-                return str(u)
-
-            def format_iuse_flag_masked(self, u):
-                return str(u)
-
-            def decorate_iuse_flag_added(self, u, s):
-                return str(u) + s
-
-            def decorate_iuse_flag_changed(self, u, s):
-                return str(u) + s
-
             def format_package_dep_spec_plain(self, pds):
                 return str(pds)
 
@@ -213,15 +133,11 @@ class TestCase_03_Formatters_suclassing(unittest.TestCase):
 
         test_plain_roles(f)
         test_acceptable_roles(f)
-        test_use_roles(f)
-        test_iuse_roles(f)
         test_package_roles(f)
         test_can_space(f)
 
         test_formatter_string(f)
         test_formmater_keyword_name(f)
-        test_formatter_use_flag_name(f)
-        test_formatter_iuse_flag(f)
         test_formatter_license_spec_tree(f)
         test_formatter_provide_spec_tree(f)
         test_formatter_dependency_spec_tree(f)

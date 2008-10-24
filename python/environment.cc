@@ -31,6 +31,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
@@ -55,34 +56,6 @@ class EnvironmentImplementationWrapper :
         EnvironmentImplementationWrapper() :
             _db(new PackageDatabase(this))
         {
-        }
-
-        virtual bool query_use(const UseFlagName & u, const PackageID & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("query_use"))
-                return f(boost::cref(u), boost::cref(p));
-            return EnvironmentImplementation::query_use(u, p);
-        }
-
-        bool default_query_use(const UseFlagName & u, const PackageID & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return EnvironmentImplementation::query_use(u, p);
-        }
-
-        virtual std::tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                const UseFlagName & u, const PackageID & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("known_use_expand_names"))
-                return f(boost::cref(u), boost::cref(p));
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "known_use_expand_names");
         }
 
         virtual bool accept_license(const std::string & s, const PackageID & p) const
@@ -435,6 +408,23 @@ class EnvironmentImplementationWrapper :
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "config_location_key");
         }
+
+        virtual const Tribool want_choice_enabled(
+                const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const Choice> &,
+                const UnprefixedChoiceName &
+                ) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "want_choice_enabled");
+        }
+
+        virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const Choice> &
+                ) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "known_choice_value_names");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :
@@ -522,11 +512,6 @@ void expose_environment()
                 "Fetch a named set."
             )
 
-        .def("query_use", &Environment::query_use,
-                "query_use(UseFlagName, PackageID) -> bool\n"
-                "Is a particular use flag enabled for a particular package?"
-            )
-
         .add_property("root", &Environment::root,
                 "[ro] string\n"
                 "Our root location for installs."
@@ -559,20 +544,6 @@ void expose_environment()
         )
         //FIXME - local_set is protected
         //.def("local_set", bp::pure_virtual(&EnvImp::local_set))
-
-        .def("query_use", &EnvImp::query_use, &EnvImpW::default_query_use,
-                "query_use(UseFlagName, PackageID) -> bool\n"
-                "Is a particular use flag enabled for a particular package?"
-            )
-
-        .def("known_use_expand_names", bp::pure_virtual(&EnvImp::known_use_expand_names),
-                "known_use_expand_names(UseFlagName, PackageID) -> UseFlagNameIterable\n"
-                "Return a collection of known use flag names for a particular package that start\n"
-                "with a particular use expand prefix.\n\n"
-                "It is up to subclasses to decide whether to return all known use flags with\n"
-                "the specified prefix or merely all enabled use flags. It is not safe to assume\n"
-                "that all flags in the returned value will be enabled for the specified package."
-            )
 
         .def("accept_license", bp::pure_virtual(&EnvImp::accept_license),
                 "accept_license(str, PackageID) -> bool\n"

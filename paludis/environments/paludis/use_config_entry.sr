@@ -1,41 +1,6 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-make_class_UseConfigEntry()
-{
-    key dep_spec "std::tr1::shared_ptr<const PackageDepSpec>"
-    key flag_name UseFlagName
-    key flag_state UseFlagState
-
-    doxygen_comment << "END"
-        /**
-         * Represents a PaludisConfig package use configuration entry.
-         *
-         * \see PaludisConfig
-         * \ingroup grppaludisconfig
-         * \nosubgrouping
-         */
-END
-}
-
-make_class_SetUseConfigEntry()
-{
-    key set_name "std::tr1::shared_ptr<const SetName>"
-    key dep_spec "std::tr1::shared_ptr<const DepSpec>"
-    key flag_name UseFlagName
-    key flag_state UseFlagState
-
-    doxygen_comment << "END"
-        /**
-         * Represents a PaludisConfig set use configuration entry.
-         *
-         * \see PaludisConfig
-         * \ingroup grppaludisconfig
-         * \nosubgrouping
-         */
-END
-}
-
 make_class_SetUseConfigMinusStarEntry()
 {
     key set_name "std::tr1::shared_ptr<const SetName>"

@@ -55,12 +55,9 @@ namespace
     }
 
     InstallActionOptions * make_install_action_options(
-            const InstallActionChecksOption & c, const InstallActionDebugOption & d,
             const std::tr1::shared_ptr<paludis::Repository> & r)
     {
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
-                    value_for<n::checks>(c),
-                    value_for<n::debug_build>(d),
                     value_for<n::destination>(r),
                     value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
                     ));
@@ -112,18 +109,6 @@ void expose_action()
          "Thrown if a configure fails.");
 
     /**
-     * Enums
-     */
-    enum_auto("InstallActionDebugOption", last_iado,
-            "Debug build mode for an InstallAction.\n\n"
-            "May be ignored by some repositories, and by packages where there\n"
-            "isn't a sensible concept of debugging.");
-
-    enum_auto("InstallActionChecksOption", last_iaco,
-            "Whether to run post-build checks (for example, 'make check' or 'src_test'),\n"
-            "if they are available.");
-
-    /**
      * InstallActionOptions
      */
     bp::class_<InstallActionOptions>
@@ -135,20 +120,8 @@ void expose_action()
 
         .def("__init__",
                 bp::make_constructor(&make_install_action_options),
-                "__init__(InstallActionChecksOption, InstallActionDebugOption, Repository)"
+                "__init__(Repository)"
             )
-
-        .add_property("debug_build",
-                &named_values_getter<InstallActionOptions, n::debug_build, InstallActionDebugOption, &InstallActionOptions::debug_build>,
-                &named_values_setter<InstallActionOptions, n::debug_build, InstallActionDebugOption, &InstallActionOptions::debug_build>,
-                "[rw] InstallActionDebugOption"
-                )
-
-        .add_property("checks",
-                &named_values_getter<InstallActionOptions, n::checks, InstallActionChecksOption, &InstallActionOptions::checks>,
-                &named_values_setter<InstallActionOptions, n::checks, InstallActionChecksOption, &InstallActionOptions::checks>,
-                "[rw] InstallActionChecksOption"
-                )
 
         .add_property("destination",
                 &named_values_getter<InstallActionOptions, n::destination, std::tr1::shared_ptr<Repository>, &InstallActionOptions::destination>,

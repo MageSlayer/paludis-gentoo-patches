@@ -180,10 +180,6 @@ RepositorySyncableInterface::~RepositorySyncableInterface()
 {
 }
 
-RepositoryUseInterface::~RepositoryUseInterface()
-{
-}
-
 RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
 {
 }

@@ -36,6 +36,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/action.hh>
 #include <list>
 #include <set>
 #include <ostream>
@@ -224,6 +225,17 @@ namespace
         annotations_go_here(spec);
     }
 
+    template <typename T_>
+    void plain_text_label_handler(
+            const typename ParseStackTypes<T_>::Stack & h,
+            const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
+            const std::string & s)
+    {
+        std::tr1::shared_ptr<PlainTextLabelDepSpec> spec(parse_plain_text_label(s));
+        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PlainTextLabelDepSpec>(spec)));
+        annotations_go_here(spec);
+    }
+
     template <typename T_, typename A_>
     void any_all_handler(typename ParseStackTypes<T_>::Stack & stack)
     {
@@ -246,7 +258,8 @@ namespace
             const std::tr1::shared_ptr<const PackageID> & id)
     {
         using namespace std::tr1::placeholders;
-        std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(u, env, id)));
+        std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(u, env, id,
+                        id->supports_action(SupportsActionTest<InstalledAction>()))));
         std::tr1::shared_ptr<ConstTreeSequence<T_, ConditionalDepSpec> > item(new ConstTreeSequence<T_, ConditionalDepSpec>(spec));
         (*stack.begin()).add_handler()(item);
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
@@ -565,6 +578,49 @@ paludis::erepository::parse_plain_text(const std::string & s,
     return (*stack.begin()).item();
 }
 
+std::tr1::shared_ptr<PlainTextSpecTree::ConstItem>
+paludis::erepository::parse_myoptions(const std::string & s,
+        const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
+{
+    using namespace std::tr1::placeholders;
+
+    ParseStackTypes<PlainTextSpecTree>::Stack stack;
+    std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
+    std::tr1::shared_ptr<ConstTreeSequence<PlainTextSpecTree, AllDepSpec> > top(
+            new ConstTreeSequence<PlainTextSpecTree, AllDepSpec>(spec));
+    stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
+                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<PlainTextSpecTree, AllDepSpec>::add, top.get(), _1)),
+                value_for<n::item>(top),
+                value_for<n::spec>(spec)
+            ));
+
+    ELikeDepParserCallbacks callbacks(
+            make_named_values<ELikeDepParserCallbacks>(
+                value_for<n::on_all>(std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack))),
+                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
+                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
+                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
+                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
+                value_for<n::on_label>(std::tr1::bind(&plain_text_label_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                        ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
+                value_for<n::on_pop>(std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                        ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
+                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s)),
+                value_for<n::on_string>(std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                        ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
+                value_for<n::on_use>(std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id)),
+                value_for<n::on_use_under_any>(&do_nothing)
+            ));
+
+    parse_elike_dependencies(s, callbacks);
+
+    return (*stack.begin()).item();
+}
+
 std::tr1::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
@@ -595,6 +651,21 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
         throw EDepParseError(s, "Label '" + s + "' maps to unknown class '" + c + "'");
 
     return l;
+}
+
+std::tr1::shared_ptr<PlainTextLabelDepSpec>
+paludis::erepository::parse_plain_text_label(const std::string & s)
+{
+    Context context("When parsing label string '" + s + "':");
+
+    if (s.empty())
+        throw EDepParseError(s, "Empty label");
+
+    std::string c(s.substr(0, s.length() - 1));
+    if (c.empty())
+        throw EDepParseError(s, "Unknown label");
+
+    return make_shared_ptr(new PlainTextLabelDepSpec(s));
 }
 
 std::tr1::shared_ptr<DependencyLabelsDepSpec>

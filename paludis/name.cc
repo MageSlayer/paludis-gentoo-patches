@@ -33,7 +33,6 @@
 using namespace paludis;
 
 #include <paludis/name-sr.cc>
-#include <paludis/name-se.cc>
 
 template struct Sequence<RepositoryName>;
 template struct WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
@@ -50,10 +49,6 @@ template struct Set<CategoryNamePart>;
 template struct WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
 template struct WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
 
-template struct Set<UseFlagName>;
-template struct WrappedForwardIterator<Set<UseFlagName>::ConstIteratorTag, const UseFlagName>;
-template struct WrappedOutputIterator<Set<UseFlagName>::InserterTag, UseFlagName>;
-
 template struct Set<QualifiedPackageName>;
 template struct WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
 template struct WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
@@ -65,10 +60,6 @@ template struct WrappedOutputIterator<Set<KeywordName>::InserterTag, KeywordName
 template struct Set<SetName>;
 template struct WrappedForwardIterator<Set<SetName>::ConstIteratorTag, const SetName>;
 template struct WrappedOutputIterator<Set<SetName>::InserterTag, SetName>;
-
-template struct Set<IUseFlag>;
-template struct WrappedForwardIterator<Set<IUseFlag>::ConstIteratorTag, const IUseFlag>;
-template struct WrappedOutputIterator<Set<IUseFlag>::InserterTag, IUseFlag>;
 
 template struct Set<std::string>;
 template struct WrappedForwardIterator<Set<std::string>::ConstIteratorTag, const std::string>;
@@ -84,61 +75,6 @@ paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
 {
     s << q.category << "/" << q.package;
     return s;
-}
-
-void
-UseFlagNameValidator::validate(const std::string & s)
-{
-    static const std::string allowed_chars(
-            "abcdefghijklmnopqrstuvwxyz"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_:@");
-
-    static const std::string alphanum_chars(
-            "abcdefghijklmnopqrstuvwxyz"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789");
-
-    static const std::string special_chars(
-            ":_");
-
-    do
-    {
-        if (s.empty())
-            break;
-
-        if (std::string::npos == alphanum_chars.find(s[0]))
-            break;
-
-        if (std::string::npos != s.find_first_not_of(allowed_chars))
-            break;
-
-        std::string::size_type t;
-        if (std::string::npos != ((t = s.find_first_of(special_chars))))
-        {
-            try
-            {
-                validate(s.substr(0, t));
-                validate(s.substr(t + 1));
-            }
-            catch (const UseFlagNameError &)
-            {
-                break;
-            }
-        }
-
-        return;
-
-    } while (false);
-
-    Context c("When validating use flag name '" + s + "':");
-
-    throw UseFlagNameError(s);
-}
-
-UseFlagNameError::UseFlagNameError(const std::string & name) throw () :
-    NameError(name, "use flag name")
-{
 }
 
 SlotNameError::SlotNameError(const std::string & name) throw () :
@@ -417,84 +353,6 @@ SetNameValidator::validate(const std::string & s)
 SetNameError::SetNameError(const std::string & name) throw () :
     NameError(name, "set")
 {
-}
-
-namespace
-{
-    UseFlagName get_flag(const std::string & s)
-    {
-        Context c("When extracting USE flag name from IUSE flag '" + s + "':");
-        if (s.empty() || ('-' != s[0] && '+' != s[0]))
-            return UseFlagName(s);
-        else
-            return UseFlagName(s.substr(1));
-    }
-
-    UseFlagState get_state(const std::string & s, const IUseFlagParseOptions & o)
-    {
-        Context c("When extracting USE flag state from IUSE flag '" + s + "':");
-
-        if (s.empty())
-            return use_unspecified;
-        if ('-' == s[0] || '+' == s[0])
-        {
-            if (! o[iufpo_allow_iuse_defaults])
-            {
-                if (o[iufpo_strict_parsing])
-                    throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
-                else
-                    Log::get_instance()->message("name.iuse.prefix_not_allowed", ll_warning, lc_context)
-                        << "+/- prefixed IUSE flag names not allowed in this EAPI";
-            }
-
-            return '-' == s[0] ? use_disabled : use_enabled;
-        }
-        return use_unspecified;
-    }
-}
-
-IUseFlag::IUseFlag(const std::string & s, const IUseFlagParseOptions & o, const std::string::size_type p) try:
-    flag(get_flag(s)),
-    state(get_state(s, o)),
-    prefix_delim_pos(p)
-{
-}
-catch (const UseFlagNameError &)
-{
-    throw IUseFlagNameError(s);
-}
-
-IUseFlagNameError::IUseFlagNameError(const std::string & s) throw () :
-    NameError(s, "IUse flag")
-{
-}
-
-IUseFlagNameError::IUseFlagNameError(const std::string & s, const std::string & m) throw () :
-    NameError(s, "IUse flag", m)
-{
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const IUseFlag & i)
-{
-    switch (i.state)
-    {
-        case use_enabled:
-            s << "+";
-            break;
-
-        case use_disabled:
-            s << "-";
-            break;
-
-        case use_unspecified:
-        case last_use:
-            break;
-    }
-
-    s << i.flag;
-
-    return s;
 }
 
 std::size_t

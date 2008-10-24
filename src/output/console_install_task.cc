@@ -50,6 +50,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -72,8 +73,6 @@ using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
-
-#include <src/output/console_install_task-sr.cc>
 
 namespace
 {
@@ -101,30 +100,6 @@ namespace
     }
 }
 
-bool
-UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescription & rhs) const
-{
-    if (lhs.flag < rhs.flag)
-        return true;
-    if (lhs.flag > rhs.flag)
-        return false;
-
-    if (lhs.package_id->name() < rhs.package_id->name())
-        return true;
-    if (lhs.package_id->name() > rhs.package_id->name())
-        return false;
-
-    if (lhs.package_id->version() < rhs.package_id->version())
-        return true;
-    if (lhs.package_id->version() < rhs.package_id->version())
-        return false;
-
-    if (lhs.package_id->repository()->name().data() < rhs.package_id->repository()->name().data())
-        return true;
-
-    return false;
-}
-
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
         const std::tr1::shared_ptr<const DestinationsSet> & d) :
@@ -132,8 +107,6 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
     _download_size(0),
     _download_size_overflow(false),
     _all_tags(new Set<DepTagEntry>),
-    _all_use_descriptions(new Set<UseDescription, UseDescriptionComparator>),
-    _all_expand_prefixes(new UseFlagNameSet),
     _already_downloaded(new Set<FSEntry>),
     _resolution_finished(false)
 {
@@ -302,11 +275,94 @@ ConsoleInstallTask::on_display_merge_list_post()
     output_endl();
     display_merge_list_post_counts();
     display_merge_list_post_tags();
+    display_merge_list_post_use_descriptions();
+}
 
-    display_merge_list_post_use_descriptions("");
-    for (UseFlagNameSet::ConstIterator f(_all_expand_prefixes->begin()),
-            f_end(_all_expand_prefixes->end()) ; f != f_end ; ++f)
-        display_merge_list_post_use_descriptions(stringify(*f));
+void
+ConsoleInstallTask::display_merge_list_post_use_descriptions()
+{
+    if (! want_use_summary())
+        return;
+
+    if (_choice_descriptions.empty())
+        return;
+
+    display_use_summary_start();
+    for (ChoiceDescriptions::const_iterator i(_choice_descriptions.begin()), i_end(_choice_descriptions.end()) ;
+            i != i_end ; ++i)
+    {
+        if (i->second.empty())
+            continue;
+
+        display_use_summary_start_choice(i);
+        for (ChoiceValueDescriptions::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
+                j != j_end ; ++j)
+            display_use_summary_entry(j);
+        display_use_summary_end_choice(i);
+    }
+    display_tag_summary_end();
+}
+
+void
+ConsoleInstallTask::display_use_summary_start()
+{
+}
+
+void
+ConsoleInstallTask::display_use_summary_start_choice(const ChoiceDescriptions::const_iterator & i)
+{
+    output_heading(i->first + ":");
+}
+
+void
+ConsoleInstallTask::display_use_summary_end_choice(const ChoiceDescriptions::const_iterator &)
+{
+}
+
+void
+ConsoleInstallTask::display_use_summary_entry(const ChoiceValueDescriptions::const_iterator & i)
+{
+    if (i->second.empty())
+        return;
+
+    bool all_same(true);
+    std::string description((*i->second.begin())->choices_key()->value()->find_by_name_with_prefix(
+                i->first)->description());
+    for (std::list<std::tr1::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
+            j != j_end ; ++j)
+        if ((*j)->choices_key()->value()->find_by_name_with_prefix(i->first)->description() != description)
+            all_same = false;
+
+    if (all_same)
+    {
+        std::stringstream desc;
+        desc << std::left << std::setw(30) << (render_as_tag(stringify((*i->second.begin())->choices_key()->value()->find_by_name_with_prefix(
+                        i->first)->unprefixed_name())) + ": ");
+        desc << description;
+        output_starred_item(desc.str());
+    }
+    else
+    {
+        {
+            std::stringstream desc;
+            desc << std::left << std::setw(30) << (render_as_tag(stringify((*i->second.begin())->choices_key()->value()->find_by_name_with_prefix(
+                            i->first)->unprefixed_name())) + ": ");
+            output_starred_item(desc.str());
+        }
+        for (std::list<std::tr1::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
+                j != j_end ; ++j)
+        {
+            std::stringstream desc;
+            desc << std::left << std::setw(30) << (render_as_package_name(stringify(**j)) + ": ");
+            desc << (*j)->choices_key()->value()->find_by_name_with_prefix(i->first)->description();
+            output_starred_item(desc.str(), 1);
+        }
+    }
+}
+
+void
+ConsoleInstallTask::display_use_summary_end()
+{
 }
 
 void
@@ -400,8 +456,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_non_package_tags(d, m);
     if (! want_compact())
         display_merge_list_entry_package_tags(d, m);
+    display_merge_list_entry_choices(d, m, existing_repo);
     display_merge_list_entry_description(d, existing_repo, existing_slot_repo, m);
-    display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_distsize(d, m);
     if (want_compact())
         display_merge_list_entry_package_tags(d, m);
@@ -705,143 +761,6 @@ ConsoleInstallTask::display_merge_list_post_tags()
 }
 
 void
-ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string & prefix)
-{
-    if (! want_use_summary())
-        return;
-
-    bool started(false);
-    UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
-
-    std::tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > group(
-            new Set<UseDescription, UseDescriptionComparator>);
-    for (Set<UseDescription, UseDescriptionComparator>::ConstIterator i(all_use_descriptions()->begin()),
-            i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
-    {
-        switch (i->state)
-        {
-            case uds_new:
-                if (! want_new_use_flags())
-                    continue;
-                break;
-
-            case uds_all:
-                if (! want_unchanged_use_flags())
-                    continue;
-                break;
-
-            case uds_changed:
-                if (! want_changed_use_flags())
-                    continue;
-                break;
-        }
-
-        if (prefix.empty())
-        {
-            bool prefixed(false);
-            for (UseFlagNameSet::ConstIterator f(_all_expand_prefixes->begin()),
-                    f_end(_all_expand_prefixes->end()) ; f != f_end && ! prefixed ; ++f)
-                if (stringify(*f).length() < stringify(i->flag).length())
-                    if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
-                        prefixed = true;
-
-            if (prefixed)
-                continue;
-        }
-        else
-        {
-            if (stringify(i->flag).length() <= prefix.length())
-                continue;
-
-            if (0 != stringify(i->flag).compare(0, prefix.length(), prefix))
-                continue;
-        }
-
-        if (! started)
-        {
-            display_use_summary_start(prefix);
-            started = true;
-        }
-
-        if (old_flag != i->flag)
-        {
-            if (! group->empty())
-                display_use_summary_flag(prefix, group->begin(), group->end());
-            old_flag = i->flag;
-            group.reset(new Set<UseDescription, UseDescriptionComparator>);
-        }
-
-        group->insert(*i);
-    }
-
-    if (! group->empty())
-        display_use_summary_flag(prefix, group->begin(), group->end());
-
-    if (started)
-        display_use_summary_end();
-}
-
-void
-ConsoleInstallTask::display_use_summary_start(const std::string & prefix)
-{
-    if (! prefix.empty())
-        output_heading(prefix + ":");
-    else
-        output_heading("Use flags:");
-}
-
-void
-ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
-        Set<UseDescription, UseDescriptionComparator>::ConstIterator i,
-        Set<UseDescription, UseDescriptionComparator>::ConstIterator i_end)
-{
-    Log::get_instance()->message("console_install_task.display_use_summary_flag.prefix", ll_debug, lc_context)
-        << "display_use_summary_flag: prefix is '" << prefix
-        << "', i->flag is '" << i->flag << "', i->package_id is '" << *i->package_id << "', i->state is '" << i->state
-        << "', i->description is '" << i->description << "'";
-
-    if (next(i) == i_end)
-    {
-        std::ostringstream s;
-        s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ": ");
-        s << i->description;
-        output_starred_item(s.str());
-    }
-    else
-    {
-        bool all_same(true);
-        for (Set<UseDescription, UseDescriptionComparator>::ConstIterator j(next(i)) ; all_same && j != i_end ; ++j)
-            if (j->description != i->description)
-                all_same = false;
-
-        if (all_same)
-        {
-            std::ostringstream s;
-            s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ": ");
-            s << i->description;
-            output_starred_item(s.str());
-        }
-        else
-        {
-            output_starred_item(render_as_tag(
-                        stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ":");
-
-            for ( ; i != i_end ; ++i)
-            {
-                std::ostringstream s;
-                s << i->description << " (for " << render_as_package_name(stringify(*i->package_id)) << ")";
-                output_starred_item(s.str(), 1);
-            }
-        }
-    }
-}
-
-void
-ConsoleInstallTask::display_use_summary_end()
-{
-}
-
-void
 ConsoleInstallTask::display_tag_summary_start()
 {
 }
@@ -1136,6 +1055,120 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 }
 
 void
+ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
+        const DisplayMode m,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo
+        )
+{
+    switch (m)
+    {
+        case unimportant_entry:
+        case error_entry:
+        case suggested_entry:
+            break;
+
+        case normal_entry:
+            {
+                if (! d.package_id->choices_key())
+                    break;
+
+                std::tr1::shared_ptr<const Choices> old_choices;
+                if (existing_repo && ! existing_repo->empty())
+                    if ((*existing_repo->last())->choices_key())
+                        old_choices = (*existing_repo->last())->choices_key()->value();
+
+                ColourFormatter formatter;
+                std::string s;
+                bool non_blank_prefix(false);
+                for (Choices::ConstIterator k(d.package_id->choices_key()->value()->begin()),
+                        k_end(d.package_id->choices_key()->value()->end()) ;
+                        k != k_end ; ++k)
+                {
+                    if ((*k)->hidden())
+                        continue;
+
+                    bool shown_prefix(false);
+                    for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                            i != i_end ; ++i)
+                    {
+                        if (! (*i)->explicitly_listed())
+                            continue;
+
+                        if (! shown_prefix)
+                        {
+                            if (non_blank_prefix || ! (*k)->show_with_no_prefix())
+                            {
+                                shown_prefix = true;
+                                if (! s.empty())
+                                    s.append(" ");
+                                s.append((*k)->raw_name() + ":");
+                            }
+                        }
+
+                        if (! s.empty())
+                            s.append(" ");
+
+                        std::string t;
+                        if ((*i)->enabled())
+                        {
+                            if ((*i)->locked())
+                                t = formatter.format(**i, format::Forced());
+                            else
+                                t = formatter.format(**i, format::Enabled());
+                        }
+                        else
+                        {
+                            if ((*i)->locked())
+                                t = formatter.format(**i, format::Masked());
+                            else
+                                t = formatter.format(**i, format::Disabled());
+                        }
+
+                        bool changed(false), added(false);
+                        if (old_choices && (*k)->consider_added_or_changed())
+                        {
+                            std::tr1::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                            if (! old_choice)
+                                added = true;
+                            else if (old_choice->enabled() != (*i)->enabled())
+                                changed = true;
+                        }
+
+                        if (changed)
+                        {
+                            t = formatter.decorate(**i, t, format::Changed());
+                            if (want_changed_use_flags())
+                                _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id);
+                        }
+                        else if (added)
+                        {
+                            t = formatter.decorate(**i, t, format::Added());
+                            if (want_new_use_flags())
+                                _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id);
+                        }
+                        else if (want_unchanged_use_flags())
+                            _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id);
+
+                        s.append(t);
+                    }
+                }
+
+                if (s.empty())
+                    break;
+
+                if (want_compact())
+                    output_no_endl(" " + s);
+                else
+                {
+                    output_endl();
+                    output_no_endl("    " + s);
+                }
+            }
+            break;
+    }
+}
+
+void
 ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
         const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
         const std::tr1::shared_ptr<const PackageIDSequence> &,
@@ -1172,78 +1205,6 @@ ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
             }
             break;
     }
-}
-
-void
-ConsoleInstallTask::_add_descriptions(const std::tr1::shared_ptr<const UseFlagNameSet> & c,
-        const std::tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
-{
-    for (UseFlagNameSet::ConstIterator f(c->begin()), f_end(c->end()) ;
-            f != f_end ; ++f)
-    {
-        std::string d;
-        const RepositoryUseInterface * const i((*p->repository()).use_interface());
-
-        if (i)
-            d = i->describe_use_flag(*f, *p);
-
-        UseDescription e(UseDescription::create()
-                .flag(*f)
-                .state(s)
-                .package_id(p)
-                .description(d));
-
-        Set<UseDescription, UseDescriptionComparator>::ConstIterator x(_all_use_descriptions->find(e));
-        if (_all_use_descriptions->end() == x)
-            _all_use_descriptions->insert(e);
-        else
-        {
-            if (x->state < e.state)
-            {
-                _all_use_descriptions->erase(e);
-                _all_use_descriptions->insert(e);
-            }
-        }
-    }
-}
-
-void
-ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
-        const DisplayMode m)
-{
-    if (normal_entry != m && suggested_entry != m)
-        return;
-
-    if ((! d.package_id->iuse_key()) || d.package_id->iuse_key()->value()->empty())
-        return;
-
-    if (want_compact())
-        output_no_endl(" ");
-    else
-    {
-        output_endl();
-        output_no_endl("    ");
-    }
-
-    std::tr1::shared_ptr<const PackageID> old_id;
-    if (! existing_slot_repo->empty())
-        old_id = *existing_slot_repo->last();
-    else if (! existing_repo->empty())
-        old_id = *existing_repo->last();
-
-    ColourFormatter formatter(old_id ? false : true);
-    if (old_id)
-        output_stream() << d.package_id->iuse_key()->pretty_print_flat_with_comparison(environment(), old_id, formatter);
-    else
-        output_stream() << d.package_id->iuse_key()->pretty_print_flat(formatter);
-
-    _add_descriptions(formatter.seen_new_use_flag_names(), d.package_id, uds_new);
-    _add_descriptions(formatter.seen_changed_use_flag_names(), d.package_id, uds_changed);
-    _add_descriptions(formatter.seen_use_flag_names(), d.package_id, uds_all);
-    std::copy(formatter.seen_use_expand_prefixes()->begin(), formatter.seen_use_expand_prefixes()->end(),
-            _all_expand_prefixes->inserter());
 }
 
 namespace

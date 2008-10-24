@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
+#include <paludis/repositories/e/e_choice_value.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -77,9 +78,13 @@ namespace paludis
         std::tr1::shared_ptr<const EAPI> eapi;
 
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
-        std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
-        std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
+        std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -181,15 +186,15 @@ EInstalledRepositoryID::need_keys_added() const
     if (! env->env_use().empty())
         if ((_imp->dir / env->env_use()).exists())
         {
-            _imp->use.reset(new EUseKey(_imp->environment, shared_from_this(), env->env_use(), env->description_use(),
+            _imp->raw_use.reset(new EStringSetKey(shared_from_this(), env->env_use(), env->description_use(),
                         file_contents(_imp->dir / env->env_use()), mkt_internal));
-            add_metadata_key(_imp->use);
+            add_metadata_key(_imp->raw_use);
         }
 
     if (! vars->inherited().name().empty())
         if ((_imp->dir / vars->inherited().name()).exists())
         {
-            _imp->inherited.reset(new EInheritedKey(shared_from_this(), vars->inherited().name(), vars->inherited().description(),
+            _imp->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited().name(), vars->inherited().description(),
                         file_contents(_imp->dir / vars->inherited().name()), mkt_internal));
             add_metadata_key(_imp->inherited);
         }
@@ -197,9 +202,33 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->iuse().name().empty())
         if ((_imp->dir / vars->iuse().name()).exists())
         {
-            _imp->iuse.reset(new EIUseKey(_imp->environment, shared_from_this(), vars->iuse().name(), vars->iuse().description(),
-                        file_contents(_imp->dir / vars->iuse().name()), mkt_normal));
-            add_metadata_key(_imp->iuse);
+            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse().name(), vars->iuse().description(),
+                        file_contents(_imp->dir / vars->iuse().name()), mkt_internal));
+            add_metadata_key(_imp->raw_iuse);
+        }
+
+    if (! vars->myoptions().name().empty())
+        if ((_imp->dir / vars->myoptions().name()).exists())
+        {
+            _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions().name(),
+                        vars->myoptions().description(), file_contents(_imp->dir / vars->myoptions().name()), mkt_internal));
+            add_metadata_key(_imp->raw_myoptions);
+        }
+
+    if (! vars->use_expand().name().empty())
+        if ((_imp->dir / vars->use_expand().name()).exists())
+        {
+            _imp->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand().name(), vars->use_expand().description(),
+                        file_contents(_imp->dir / vars->use_expand().name()), mkt_internal));
+            add_metadata_key(_imp->raw_use_expand);
+        }
+
+    if (! vars->use_expand_hidden().name().empty())
+        if ((_imp->dir / vars->use_expand_hidden().name()).exists())
+        {
+            _imp->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden().name(), vars->use_expand_hidden().description(),
+                        file_contents(_imp->dir / vars->use_expand_hidden().name()), mkt_internal));
+            add_metadata_key(_imp->raw_use_expand_hidden);
         }
 
     if (! vars->license().name().empty())
@@ -396,6 +425,16 @@ EInstalledRepositoryID::need_keys_added() const
                 _imp->dir / contents_filename(), mkt_normal));
     add_metadata_key(_imp->installed_time);
 
+    if (_imp->eapi->supported())
+        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
+                    _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
+                    mkt_normal, std::tr1::shared_ptr<const ERepository>()));
+    else
+        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
+                    std::tr1::shared_ptr<const ERepository>()));
+
+    add_metadata_key(_imp->choices);
+
     std::tr1::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
     if ((_imp->dir / "REPOSITORY").exists())
         from_repositories_value->insert(file_contents(_imp->dir / "REPOSITORY"));
@@ -577,18 +616,39 @@ EInstalledRepositoryID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
-EInstalledRepositoryID::use_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::raw_use_key() const
 {
     need_keys_added();
-    return _imp->use;
+    return _imp->raw_use;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-EInstalledRepositoryID::iuse_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::raw_iuse_key() const
 {
     need_keys_added();
-    return _imp->iuse;
+    return _imp->raw_iuse;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+EInstalledRepositoryID::raw_myoptions_key() const
+{
+    need_keys_added();
+    return _imp->raw_myoptions;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::raw_use_expand_key() const
+{
+    need_keys_added();
+    return _imp->raw_use_expand;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::raw_use_expand_hidden_key() const
+{
+    need_keys_added();
+    return _imp->raw_use_expand_hidden;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
@@ -657,6 +717,13 @@ EInstalledRepositoryID::properties_key() const
 {
     need_keys_added();
     return _imp->properties;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+EInstalledRepositoryID::choices_key() const
+{
+    need_keys_added();
+    return _imp->choices;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
@@ -871,4 +938,34 @@ EInstalledRepositoryID::contained_in_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
+std::tr1::shared_ptr<ChoiceValue>
+EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
+        const Tribool, const bool explicitly_listed) const
+{
+    if (! eapi()->supported())
+        throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
+
+    std::string name_with_prefix;
+    if (stringify(c->prefix()).empty())
+        name_with_prefix = stringify(v);
+    else
+    {
+        char use_expand_separator(eapi()->supported()->ebuild_options()->use_expand_separator());
+        if (! use_expand_separator)
+            throw InternalError(PALUDIS_HERE, "No use_expand_separator defined");
+        name_with_prefix = stringify(c->prefix()) + std::string(1, use_expand_separator) + stringify(v);
+    }
+
+    bool enabled(false);
+    if (raw_use_key())
+        enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
+
+    return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::tr1::shared_ptr<const UseDesc>(),
+                enabled, true, explicitly_listed));
+}
+
+void
+EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> &) const
+{
+}
 

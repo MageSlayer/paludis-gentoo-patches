@@ -31,16 +31,18 @@ namespace paludis
 {
     namespace n
     {
-        struct debug_build;
         struct debug_dir;
         struct image_dir;
+        struct split;
+        struct strip;
     }
 
     struct StripperOptions
     {
-        NamedValue<n::debug_build, InstallActionDebugOption> debug_build;
         NamedValue<n::debug_dir, FSEntry> debug_dir;
         NamedValue<n::image_dir, FSEntry> image_dir;
+        NamedValue<n::split, bool> split;
+        NamedValue<n::strip, bool> strip;
     };
 
     class PALUDIS_VISIBLE Stripper :

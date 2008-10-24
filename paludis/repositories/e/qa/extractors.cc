@@ -75,8 +75,8 @@ namespace
         ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AllDepSpec>,
         ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AnyDepSpec>
     {
-        std::map<QualifiedPackageName, std::set<UseFlagName> > relevant;
-        std::set<UseFlagName> current;
+        std::map<QualifiedPackageName, std::set<ChoiceNameWithPrefix> > relevant;
+        std::set<ChoiceNameWithPrefix> current;
         std::set<QualifiedPackageName> needed_packages;
 
         void visit_leaf(const FetchableURIDepSpec & u)
@@ -119,7 +119,7 @@ namespace
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
-            Save<std::set<UseFlagName> > save_current(&current);
+            Save<std::set<ChoiceNameWithPrefix> > save_current(&current);
             current.insert(elike_conditional_dep_spec_flag(u));
             std::for_each(cur, end, accept_visitor(*this));
         }
@@ -129,6 +129,10 @@ namespace
         }
 
         void visit_leaf(const SimpleURIDepSpec &)
+        {
+        }
+
+        void visit_leaf(const PlainTextLabelDepSpec &)
         {
         }
 
@@ -145,11 +149,11 @@ namespace
         ConstVisitor<GenericSpecTree>::VisitConstSequence<Requirements, AllDepSpec>
     {
         const QualifiedPackageName & name;
-        const std::set<UseFlagName> & relevant;
-        std::map<UseFlagName, bool> current;
-        std::set<std::map<UseFlagName, bool> > requirements;
+        const std::set<ChoiceNameWithPrefix> & relevant;
+        std::map<ChoiceNameWithPrefix, bool> current;
+        std::set<std::map<ChoiceNameWithPrefix, bool> > requirements;
 
-        Requirements(const QualifiedPackageName & n, const std::set<UseFlagName> & r) :
+        Requirements(const QualifiedPackageName & n, const std::set<ChoiceNameWithPrefix> & r) :
             name(n),
             relevant(r)
         {
@@ -157,19 +161,19 @@ namespace
 
         void add_requirements()
         {
-            std::set<std::map<UseFlagName, bool> > new_requirements;
+            std::set<std::map<ChoiceNameWithPrefix, bool> > new_requirements;
             new_requirements.insert(current);
-            for (std::set<UseFlagName>::const_iterator r(relevant.begin()), r_end(relevant.end()) ;
+            for (std::set<ChoiceNameWithPrefix>::const_iterator r(relevant.begin()), r_end(relevant.end()) ;
                     r != r_end ; ++r)
             {
                 if (! current.count(*r))
                 {
-                    std::set<std::map<UseFlagName, bool> > new_requirements_c;
-                    for (std::set<std::map<UseFlagName, bool> >::iterator i(new_requirements.begin()),
+                    std::set<std::map<ChoiceNameWithPrefix, bool> > new_requirements_c;
+                    for (std::set<std::map<ChoiceNameWithPrefix, bool> >::iterator i(new_requirements.begin()),
                             i_end(new_requirements.end()) ;
                             i != i_end ; ++i)
                     {
-                        std::map<UseFlagName, bool> n(*i);
+                        std::map<ChoiceNameWithPrefix, bool> n(*i);
                         n[*r] = true;
                         new_requirements_c.insert(n);
                         n[*r] = false;
@@ -206,6 +210,10 @@ namespace
             add_requirements();
         }
 
+        void visit_leaf(const PlainTextLabelDepSpec &)
+        {
+        }
+
         void visit_leaf(const URILabelsDepSpec &)
         {
         }
@@ -236,8 +244,8 @@ namespace
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
-            Save<std::map<UseFlagName, bool> > save_current(&current);
-            std::pair<std::map<UseFlagName, bool>::const_iterator, bool> p(current.insert(std::make_pair(
+            Save<std::map<ChoiceNameWithPrefix, bool> > save_current(&current);
+            std::pair<std::map<ChoiceNameWithPrefix, bool>::const_iterator, bool> p(current.insert(std::make_pair(
                             elike_conditional_dep_spec_flag(u), ! elike_conditional_dep_spec_is_inverse(u))));
             if (p.second || (p.first->second == ! elike_conditional_dep_spec_is_inverse(u)))
                 std::for_each(cur, end, accept_visitor(*this));
@@ -274,7 +282,7 @@ paludis::erepository::extractors_check(
             if (id->build_dependencies_key())
                 id->build_dependencies_key()->value()->accept(f);
 
-            for (std::map<QualifiedPackageName, std::set<UseFlagName> >::const_iterator
+            for (std::map<QualifiedPackageName, std::set<ChoiceNameWithPrefix> >::const_iterator
                     r(f.relevant.begin()), r_end(f.relevant.end()) ;
                     r != r_end ; ++r)
             {
@@ -297,7 +305,7 @@ paludis::erepository::extractors_check(
                     id->build_dependencies_key()->value()->accept(m);
 
                 /* Find the set of unmet requirements */
-                std::set<std::map<UseFlagName, bool> > unmet;
+                std::set<std::map<ChoiceNameWithPrefix, bool> > unmet;
                 std::set_difference(q.requirements.begin(), q.requirements.end(),
                         m.requirements.begin(), m.requirements.end(), std::inserter(unmet, unmet.begin()));
 
@@ -307,15 +315,15 @@ paludis::erepository::extractors_check(
                 while (changed)
                 {
                     changed = false;
-                    std::set<std::map<UseFlagName, bool> > new_unmet;
-                    for (std::set<std::map<UseFlagName, bool> >::const_iterator i(unmet.begin()), i_end(unmet.end()) ;
+                    std::set<std::map<ChoiceNameWithPrefix, bool> > new_unmet;
+                    for (std::set<std::map<ChoiceNameWithPrefix, bool> >::const_iterator i(unmet.begin()), i_end(unmet.end()) ;
                             i != i_end ; ++i)
                     {
-                        std::map<UseFlagName, bool>::const_iterator j_rem(i->end());
-                        for (std::map<UseFlagName, bool>::const_iterator j(i->begin()), j_end(i->end()) ;
+                        std::map<ChoiceNameWithPrefix, bool>::const_iterator j_rem(i->end());
+                        for (std::map<ChoiceNameWithPrefix, bool>::const_iterator j(i->begin()), j_end(i->end()) ;
                                 j != j_end ; ++j)
                         {
-                            std::map<UseFlagName, bool> n(*i);
+                            std::map<ChoiceNameWithPrefix, bool> n(*i);
                             n[j->first] = !n[j->first];
                             if (unmet.count(n))
                             {
@@ -327,7 +335,7 @@ paludis::erepository::extractors_check(
 
                         if (j_rem != i->end())
                         {
-                            std::map<UseFlagName, bool> n(*i);
+                            std::map<ChoiceNameWithPrefix, bool> n(*i);
                             n.erase(j_rem->first);
                             new_unmet.insert(n);
                         }
@@ -343,16 +351,16 @@ paludis::erepository::extractors_check(
                 while (changed)
                 {
                     changed = false;
-                    for (std::set<std::map<UseFlagName, bool> >::iterator i(unmet.begin()), i_end(unmet.end()) ;
+                    for (std::set<std::map<ChoiceNameWithPrefix, bool> >::iterator i(unmet.begin()), i_end(unmet.end()) ;
                             i != i_end && ! changed ; ++i)
                     {
-                        for (std::set<std::map<UseFlagName, bool> >::iterator j(unmet.begin()), j_end(unmet.end()) ;
+                        for (std::set<std::map<ChoiceNameWithPrefix, bool> >::iterator j(unmet.begin()), j_end(unmet.end()) ;
                                 j != j_end && ! changed ; ++j)
                         {
                             if (i == j)
                                 continue;
 
-                            std::map<UseFlagName, bool> delta;
+                            std::map<ChoiceNameWithPrefix, bool> delta;
                             std::set_difference(i->begin(), i->end(), j->begin(), j->end(), std::inserter(delta, delta.begin()));
                             if (delta.empty())
                             {
@@ -371,7 +379,7 @@ paludis::erepository::extractors_check(
                     {
                         cond.append(" for USE \"");
                         bool need_and(false);
-                        for (std::set<std::map<UseFlagName, bool> >::iterator j(unmet.begin()), j_end(unmet.end()) ;
+                        for (std::set<std::map<ChoiceNameWithPrefix, bool> >::iterator j(unmet.begin()), j_end(unmet.end()) ;
                                 j != j_end ; ++j)
                         {
                             if (need_and)
@@ -379,7 +387,7 @@ paludis::erepository::extractors_check(
                             need_and = true;
 
                             bool need_space(false);
-                            for (std::map<UseFlagName, bool>::const_iterator i(j->begin()), i_end(j->end()) ;
+                            for (std::map<ChoiceNameWithPrefix, bool>::const_iterator i(j->begin()), i_end(j->end()) ;
                                     i != i_end ; ++i)
                             {
                                 if (need_space)

@@ -23,6 +23,7 @@
 #include <paludis/formatter-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/choice-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
@@ -190,21 +191,10 @@ namespace paludis
          * particular class.
          *
          * \ingroup g_formatters
-         * \since 0.26
+         * \since 0.32
          * \nosubgrouping
          */
-        struct IUseRoles;
-
-        /**
-         * Used by CategorySelector<> to declare that format::Plain,
-         * format::Enabled, format::Disabled, format::Forced and format::Masked
-         * are the roles supported by a particular class.
-         *
-         * \ingroup g_formatters
-         * \since 0.26
-         * \nosubgrouping
-         */
-        struct UseRoles;
+        struct ChoiceRoles;
 
         /**
          * Used by CategorySelector<> to declare that format::Plain,
@@ -257,35 +247,21 @@ namespace paludis
         };
 
         /**
-         * IUseFlag supports IUseRoles.
+         * ChoiceValue supports ChoiceRoles.
          *
          * \ingroup g_formatters
-         * \since 0.26
+         * \since 0.32
          * \nosubgrouping
          */
         template <>
-        struct CategorySelector<IUseFlag>
+        struct CategorySelector<ChoiceValue>
         {
             /// The roles this type supports.
-            typedef IUseRoles Category;
+            typedef ChoiceRoles Category;
         };
 
         /**
-         * UseFlagName supports UseRoles.
-         *
-         * \ingroup g_formatters
-         * \since 0.26
-         * \nosubgrouping
-         */
-        template <>
-        struct CategorySelector<UseFlagName>
-        {
-            /// The roles this type supports.
-            typedef UseRoles Category;
-        };
-
-        /**
-         * ConditionalDepSpec supports UseRoles.
+         * ConditionalDepSpec supports ChoiceRoles.
          *
          * \ingroup g_formatters
          * \since 0.26
@@ -295,7 +271,7 @@ namespace paludis
         struct CategorySelector<ConditionalDepSpec>
         {
             /// The roles this type supports.
-            typedef UseRoles Category;
+            typedef ChoiceRoles Category;
         };
 
         /**
@@ -497,70 +473,14 @@ namespace paludis
 
     /**
      * Base class for anything that implements the format functions for
-     * format::UseRoles on type T_.
+     * format::ChoiceRoles on type T_.
      *
      * \ingroup g_formatters
      * \since 0.26
      * \nosubgrouping
      */
     template <typename T_>
-    class PALUDIS_VISIBLE CanFormatBase<T_, format::UseRoles>
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            CanFormatBase()
-            {
-            }
-
-            virtual ~CanFormatBase()
-            {
-            }
-
-            ///\}
-
-            /**
-             * Format this item as 'Plain'.
-             */
-            virtual std::string format(const T_ &, const format::Plain &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Format this item as 'Enabled'.
-             */
-            virtual std::string format(const T_ &, const format::Enabled &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Format this item as 'Disabled'.
-             */
-            virtual std::string format(const T_ &, const format::Disabled &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Format this item as 'Forced'.
-             */
-            virtual std::string format(const T_ &, const format::Forced &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Format this item as 'Masked'.
-             */
-            virtual std::string format(const T_ &, const format::Masked &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * Base class for anything that implements the format functions for
-     * format::IUseRoles on type T_.
-     *
-     * \ingroup g_formatters
-     * \since 0.26
-     * \nosubgrouping
-     */
-    template <typename T_>
-    class PALUDIS_VISIBLE CanFormatBase<T_, format::IUseRoles>
+    class PALUDIS_VISIBLE CanFormatBase<T_, format::ChoiceRoles>
     {
         public:
             ///\name Basic operations
@@ -825,62 +745,11 @@ namespace paludis
      * Used by Formatter to implement the CanFormat<T_> interface.
      *
      * \ingroup g_formatters
-     * \since 0.26
+     * \since 0.32
      * \nosubgrouping
      */
     template <typename T_, unsigned u_>
-    class PALUDIS_VISIBLE FormatFunctionsByProxy<T_, format::UseRoles, u_> :
-        public CanFormat<T_>
-    {
-        private:
-            const CanFormat<T_> * const _proxy;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            FormatFunctionsByProxy(const CanFormat<T_> * const p) :
-                _proxy(p)
-            {
-            }
-
-            ///\}
-
-            virtual std::string format(const T_ & s, const format::Plain & p) const
-            {
-                return _proxy->format(s, p);
-            }
-
-            virtual std::string format(const T_ & s, const format::Enabled & p) const
-            {
-                return _proxy->format(s, p);
-            }
-
-            virtual std::string format(const T_ & s, const format::Disabled & p) const
-            {
-                return _proxy->format(s, p);
-            }
-
-            virtual std::string format(const T_ & s, const format::Forced & p) const
-            {
-                return _proxy->format(s, p);
-            }
-
-            virtual std::string format(const T_ & s, const format::Masked & p) const
-            {
-                return _proxy->format(s, p);
-            }
-    };
-
-    /**
-     * Used by Formatter to implement the CanFormat<T_> interface.
-     *
-     * \ingroup g_formatters
-     * \since 0.26
-     * \nosubgrouping
-     */
-    template <typename T_, unsigned u_>
-    class PALUDIS_VISIBLE FormatFunctionsByProxy<T_, format::IUseRoles, u_> :
+    class PALUDIS_VISIBLE FormatFunctionsByProxy<T_, format::ChoiceRoles, u_> :
         public CanFormat<T_>
     {
         private:

@@ -26,6 +26,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
@@ -72,15 +73,6 @@ TestEnvironment::TestEnvironment(const FSEntry & r) :
 
 TestEnvironment::~TestEnvironment()
 {
-}
-
-bool
-TestEnvironment::query_use(const UseFlagName & u, const PackageID & p) const
-{
-    if (UseFlagName("pkgname") == u)
-        return PackageNamePart("enabled") == p.name().package;
-
-    return (std::string::npos != u.data().find("enabled"));
 }
 
 bool
@@ -205,12 +197,6 @@ TestEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-std::tr1::shared_ptr<const UseFlagNameSet>
-TestEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
-{
-    return make_shared_ptr(new UseFlagNameSet);
-}
-
 std::tr1::shared_ptr<SetSpecTree::ConstItem>
 TestEnvironment::world_set() const
 {
@@ -279,5 +265,39 @@ TestEnvironment::add_set(const SetName & s, const std::string & members_str)
     }
 
     _imp->sets[s] = top;
+}
+
+const Tribool
+TestEnvironment::want_choice_enabled(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> &,
+        const UnprefixedChoiceName & v
+        ) const
+{
+    if (stringify(v) == "pkgname")
+    {
+        if ("enabled" == stringify(id->name().package))
+            return Tribool(true);
+        else if ("disabled" == stringify(id->name().package))
+            return Tribool(false);
+        else
+            return Tribool(indeterminate);
+    }
+
+    if (std::string::npos != stringify(v).find("enabled"))
+        return Tribool(true);
+    else if (std::string::npos != stringify(v).find("disabled"))
+        return Tribool(false);
+    else
+        return Tribool(indeterminate);
+}
+
+std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+TestEnvironment::known_choice_value_names(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> &
+        ) const
+{
+    return make_shared_ptr(new Set<UnprefixedChoiceName>);
 }
 

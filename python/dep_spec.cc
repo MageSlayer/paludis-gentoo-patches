@@ -547,6 +547,16 @@ PythonURILabelsDepSpec::PythonURILabelsDepSpec(const URILabelsDepSpec &)
 {
 }
 
+PythonPlainTextLabelDepSpec::PythonPlainTextLabelDepSpec(const std::string & s) :
+    PythonStringDepSpec(s)
+{
+}
+
+PythonPlainTextLabelDepSpec::PythonPlainTextLabelDepSpec(const PlainTextLabelDepSpec & s) :
+    PythonStringDepSpec(s.text())
+{
+}
+
 PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const std::string &)
 {
 }
@@ -646,6 +656,12 @@ SpecTreeToPython::visit_leaf(const URILabelsDepSpec & d)
 }
 
 void
+SpecTreeToPython::visit_leaf(const PlainTextLabelDepSpec & d)
+{
+    _current_parent->add_child(make_shared_ptr(new PythonPlainTextLabelDepSpec(d)));
+}
+
+void
 SpecTreeToPython::visit_leaf(const DependencyLabelsDepSpec & d)
 {
     _current_parent->add_child(make_shared_ptr(new PythonDependencyLabelsDepSpec(d)));
@@ -700,6 +716,7 @@ struct AllowedTypes<PlainTextSpecTree>
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PlainTextDepSpec &) {};
+    AllowedTypes(const PlainTextLabelDepSpec &) {};
 };
 
 template<>
@@ -848,6 +865,13 @@ SpecTreeFromPython<H_>::visit(const PythonURILabelsDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonPlainTextLabelDepSpec & d)
+{
+    dispatch<H_, PlainTextLabelDepSpec>(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonDependencyLabelsDepSpec & d)
 {
     dispatch<H_, DependencyLabelsDepSpec>(this, d);
@@ -957,6 +981,13 @@ void
 SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
 {
     _add(make_shared_ptr(new TreeLeaf<H_, URILabelsDepSpec>(make_shared_ptr(new URILabelsDepSpec))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonPlainTextLabelDepSpec & s)
+{
+    _add(make_shared_ptr(new TreeLeaf<H_, PlainTextLabelDepSpec>(make_shared_ptr(new PlainTextLabelDepSpec(s.text())))));
 }
 
 template <typename H_>

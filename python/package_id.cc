@@ -123,12 +123,6 @@ void expose_package_id()
                 "to determine whether a package is unused."
             )
 
-        .def("iuse_key", &PackageID::iuse_key,
-                "The iuse_key, if not None, is used when displaying single-line\n"
-                "install-pretend output, and when resolving where DepList's\n"
-                "DepListReinstallOption is dl_reinstall_if_use_changed."
-            )
-
         .def("provide_key", &PackageID::provide_key,
                 "The provide_key, if not None, indicates that a package provides\n"
                 "certain old-style virtuals. This affects dependency resolution."

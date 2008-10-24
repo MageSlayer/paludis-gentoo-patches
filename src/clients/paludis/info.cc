@@ -184,18 +184,6 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
         }
 
-        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
-        {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
-        }
-
-        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
-        {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
-        }
-
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter f;
@@ -206,6 +194,11 @@ namespace
         {
             ColourFormatter f;
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
     };
 }

@@ -220,12 +220,6 @@ UnavailableID::keywords_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
-UnavailableID::iuse_key() const
-{
-    return std::tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
-}
-
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 UnavailableID::provide_key() const
 {
@@ -296,6 +290,12 @@ const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableID::from_repositories_key() const
 {
     return _imp->from_repositories_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+UnavailableID::choices_key() const
+{
+    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
 }
 
 template class PrivateImplementationPattern<UnavailableID>;

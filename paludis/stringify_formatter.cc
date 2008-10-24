@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/choice.hh>
 
 using namespace paludis;
 
@@ -42,102 +43,6 @@ StringifyFormatter::format(const std::string & s, const format::Plain & k) const
     if (_imp->f_str)
         return _imp->f_str->format(s, k);
     return s;
-}
-
-std::string
-StringifyFormatter::format(const UseFlagName & s, const format::Enabled & k) const
-{
-    if (_imp->f_use)
-        return _imp->f_use->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const UseFlagName & s, const format::Disabled & k) const
-{
-    if (_imp->f_use)
-        return _imp->f_use->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const UseFlagName & s, const format::Forced & k) const
-{
-    if (_imp->f_use)
-        return _imp->f_use->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const UseFlagName & s, const format::Masked & k) const
-{
-    if (_imp->f_use)
-        return _imp->f_use->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const UseFlagName & s, const format::Plain & k) const
-{
-    if (_imp->f_use)
-        return _imp->f_use->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const IUseFlag & s, const format::Enabled & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const IUseFlag & s, const format::Disabled & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const IUseFlag & s, const format::Forced & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const IUseFlag & s, const format::Masked & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::decorate(const IUseFlag & f, const std::string & s, const format::Changed & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->decorate(f, s, k);
-    return s;
-}
-
-std::string
-StringifyFormatter::decorate(const IUseFlag & f, const std::string & s, const format::Added & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->decorate(f, s, k);
-    return s;
-}
-
-std::string
-StringifyFormatter::format(const IUseFlag & s, const format::Plain & k) const
-{
-    if (_imp->f_iuse)
-        return _imp->f_iuse->format(s, k);
-    return stringify(s);
 }
 
 std::string
@@ -277,11 +182,75 @@ StringifyFormatter::format(const URILabelsDepSpec & s, const format::Plain & k) 
 }
 
 std::string
+StringifyFormatter::format(const PlainTextLabelDepSpec & s, const format::Plain & k) const
+{
+    if (_imp->f_plain_label)
+        return _imp->f_plain_label->format(s, k);
+    return stringify(s);
+}
+
+std::string
 StringifyFormatter::format(const PlainTextDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_plain)
         return _imp->f_plain->format(s, k);
     return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const ChoiceValue & s, const format::Enabled & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->format(s, k);
+    return stringify(s.name_with_prefix());
+}
+
+std::string
+StringifyFormatter::format(const ChoiceValue & s, const format::Disabled & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->format(s, k);
+    return stringify(s.name_with_prefix());
+}
+
+std::string
+StringifyFormatter::format(const ChoiceValue & s, const format::Forced & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->format(s, k);
+    return stringify(s.name_with_prefix());
+}
+
+std::string
+StringifyFormatter::format(const ChoiceValue & s, const format::Masked & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->format(s, k);
+    return stringify(s.name_with_prefix());
+}
+
+std::string
+StringifyFormatter::format(const ChoiceValue & s, const format::Plain & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->format(s, k);
+    return stringify(s.name_with_prefix());
+}
+
+std::string
+StringifyFormatter::decorate(const ChoiceValue & s, const std::string & t, const format::Changed & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->decorate(s, t, k);
+    return t;
+}
+
+std::string
+StringifyFormatter::decorate(const ChoiceValue & s, const std::string & t, const format::Added & k) const
+{
+    if (_imp->f_conf)
+        return _imp->f_conf->decorate(s, t, k);
+    return t;
 }
 
 std::string
@@ -317,18 +286,34 @@ StringifyFormatter::format(const ConditionalDepSpec & s, const format::Masked & 
 }
 
 std::string
-StringifyFormatter::format(const FSEntry & s, const format::Plain & k) const
-{
-    if (_imp->f_fsentry)
-        return _imp->f_fsentry->format(s, k);
-    return stringify(s);
-}
-
-std::string
 StringifyFormatter::format(const ConditionalDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::decorate(const ConditionalDepSpec & s, const std::string & t, const format::Changed & k) const
+{
+    if (_imp->f_use_dep)
+        return _imp->f_use_dep->decorate(s, t, k);
+    return t;
+}
+
+std::string
+StringifyFormatter::decorate(const ConditionalDepSpec & s, const std::string & t, const format::Added & k) const
+{
+    if (_imp->f_use_dep)
+        return _imp->f_use_dep->decorate(s, t, k);
+    return t;
+}
+
+std::string
+StringifyFormatter::format(const FSEntry & s, const format::Plain & k) const
+{
+    if (_imp->f_fsentry)
+        return _imp->f_fsentry->format(s, k);
     return stringify(s);
 }
 

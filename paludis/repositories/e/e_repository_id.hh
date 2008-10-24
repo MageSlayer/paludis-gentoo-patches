@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_ID_HH 1
 
 #include <paludis/package_id.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 
 namespace paludis
@@ -36,9 +37,20 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const = 0;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use_key() const = 0;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const = 0;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const = 0;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const = 0;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const = 0;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const = 0;
 
                 virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
+                        const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
+                        const bool)
+                    const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const = 0;
         };
     }
 }
