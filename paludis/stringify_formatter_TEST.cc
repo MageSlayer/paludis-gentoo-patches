@@ -100,7 +100,8 @@ namespace test_cases
         void run()
         {
             StringifyFormatter ff;
-            std::string s(format_two(KeywordName("one"), LicenseDepSpec("two"), ff));
+            LicenseDepSpec l("two");
+            std::string s(format_two(KeywordName("one"), l, ff));
             TEST_CHECK_EQUAL(s, "one two");
         }
     } test_stringify_formatter;
