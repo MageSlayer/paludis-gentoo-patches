@@ -58,15 +58,13 @@ optionv()
 
 optionq()
 {
-    if ! hasq "${1#!}" "${MYOPTIONS}" ; then
-        die "optionq ${1} called but ${1#!} not in \${MYOPTIONS}=${MYOPTIONS}"
-    fi
-
+    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     if [[ "${1:0:1}" == "!" ]] ; then
-        ! hasq "${1#!}" "${OPTIONS}"
+        local r=$(paludis_pipe_command OPTIONQ "$EAPI" "${1#!}" )
     else
-        hasq "${1}" "${OPTIONS}"
+        local r=$(paludis_pipe_command OPTIONQ "$EAPI" "$1" )
     fi
+    return ${r%%;*}
 }
 
 has()

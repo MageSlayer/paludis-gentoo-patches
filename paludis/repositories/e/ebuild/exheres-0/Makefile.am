@@ -57,7 +57,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_TMPDIR="`pwd`/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
-TESTS = conditional_functions_TEST.bash list_functions_TEST.bash
+TESTS = conditional_functions_TEST.bash
 check_SCRIPTS = $(TESTS)
 
 EXTRA_DIST = $(libexecprogexheres_SCRIPTS) $(check_SCRIPTS)

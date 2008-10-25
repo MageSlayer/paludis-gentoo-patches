@@ -42,6 +42,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/choice.hh>
 #include <vector>
 
 using namespace paludis;
@@ -220,6 +221,38 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! visitor_cast<const MetadataValueKey<FSEntry> >(**key))
                     return "Einstalled repository location key is not a MetadataValueKey<FSEntry> ";
                 return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSEntry> >(**key)->value());
+            }
+        }
+        else if (tokens[0] == "OPTIONQ")
+        {
+            if (tokens.size() != 3)
+            {
+                Log::get_instance()->message("e.pipe_commands.has_version.bad", ll_warning, lc_context) << "Got bad OPTIONQ pipe command";
+                return "Ebad OPTIONQ command";
+            }
+            else
+            {
+                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                if (! eapi->supported())
+                    return "EOPTIONQ EAPI " + tokens[1] + " unsupported";
+
+                if (! package_id->choices_key())
+                    return "EOPTIONQ ID " + stringify(*package_id) + " has no choices";
+
+                ChoiceNameWithPrefix name(tokens[2]);
+                std::tr1::shared_ptr<const ChoiceValue> value(package_id->choices_key()->value()->find_by_name_with_prefix(name));
+                if (! value)
+                {
+                    if (package_id->choices_key()->value()->has_matching_contains_every_value_prefix(name))
+                        return "O1;";
+
+                    return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
+                }
+
+                if (value->enabled())
+                    return "O0;";
+                else
+                    return "O1;";
             }
         }
         else if (tokens[0] == "REWRITE_VAR")
