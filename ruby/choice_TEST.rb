@@ -174,6 +174,12 @@ module Paludis
             assert ! linguas_en.enabled?
         end
 
+        def test_enabled_by_default
+            assert use_flag1.enabled_by_default?
+            assert ! use_flag2.enabled_by_default?
+            assert ! linguas_en.enabled_by_default?
+        end
+
         def test_locked
             assert ! use_flag1.locked?
             assert ! use_flag2.locked?

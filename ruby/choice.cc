@@ -285,6 +285,15 @@ namespace
 
     /*
      * call-seq:
+     *     enabled_by_default? -> true or false
+     *
+     * Would this flag be enabled by default (i.e. before considering
+     * any overrides from the Environment)?
+     */
+    FAKE_RDOC_METHOD(choice_value_enabled_by_default);
+
+    /*
+     * call-seq:
      *     locked? -> true or false
      *
      * Is this flag locked (forced or masked)?
@@ -370,6 +379,8 @@ namespace
                     (&ChoiceValueStringishMembers<ChoiceNameWithPrefix, &ChoiceValue::name_with_prefix>::fetch)), 0);
         rb_define_method(c_choice_value, "enabled?", RDOC_IS_STUPID(choice_value_enabled,
                     (&ChoiceValueBoolishMembers<bool, &ChoiceValue::enabled>::fetch)), 0);
+        rb_define_method(c_choice_value, "enabled_by_default?", RDOC_IS_STUPID(choice_value_enabled_by_default,
+                    (&ChoiceValueBoolishMembers<bool, &ChoiceValue::enabled_by_default>::fetch)), 0);
         rb_define_method(c_choice_value, "locked?", RDOC_IS_STUPID(choice_value_locked,
                     (&ChoiceValueBoolishMembers<bool, &ChoiceValue::locked>::fetch)), 0);
         rb_define_method(c_choice_value, "description", RDOC_IS_STUPID(choice_value_description,
