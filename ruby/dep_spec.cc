@@ -727,6 +727,98 @@ namespace
 
     /*
      * call-seq:
+     *     in_repository -> String or Nil
+     *
+     * Fetch the in-repository name.
+     */
+    VALUE
+    package_dep_spec_in_repository_ptr(VALUE self)
+    {
+        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
+        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr())
+            return Qnil;
+        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr())).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     from_repository -> String or Nil
+     *
+     * Fetch the from-repository name.
+     */
+    VALUE
+    package_dep_spec_from_repository_ptr(VALUE self)
+    {
+        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
+        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr())
+            return Qnil;
+        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr())).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     installable_to_repository -> Hash or Nil
+     *
+     * Fetch the installable-to-repository requirement.
+     */
+    VALUE
+    package_dep_spec_installable_to_repository(VALUE self)
+    {
+        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
+        std::tr1::shared_ptr<const InstallableToRepository> i2r(std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_ptr());
+        if (! i2r)
+            return Qnil;
+        VALUE result(rb_hash_new());
+        rb_hash_aset(result, ID2SYM(rb_intern("repository")),
+            rb_str_new2(stringify(i2r->repository()).c_str()));
+        rb_hash_aset(result, ID2SYM(rb_intern("include_masked?")),
+            i2r->include_masked() ? Qtrue : Qfalse);
+        return result;
+    }
+
+    /*
+     * call-seq:
+     *     installed_at_path -> String or Nil
+     *
+     * Fetch the installed-at-path requirement.
+     */
+    VALUE
+    package_dep_spec_installed_at_path(VALUE self)
+    {
+        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
+        if (0 == std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr())
+            return Qnil;
+        return rb_str_new2(stringify((*std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr())).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     installable_to_path -> Hash or Nil
+     *
+     * Fetch the installable-to-path requirement.
+     */
+    VALUE
+    package_dep_spec_installable_to_path(VALUE self)
+    {
+        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
+        std::tr1::shared_ptr<const InstallableToPath> i2p(std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_path_ptr());
+        if (! i2p)
+            return Qnil;
+        VALUE result(rb_hash_new());
+        rb_hash_aset(result, ID2SYM(rb_intern("path")),
+            rb_str_new2(stringify(i2p->path()).c_str()));
+        rb_hash_aset(result, ID2SYM(rb_intern("include_masked?")),
+            i2p->include_masked() ? Qtrue : Qfalse);
+        return result;
+    }
+
+    /*
+     * call-seq:
      *     version_requirements -> Array
      *
      * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
@@ -1137,6 +1229,11 @@ namespace
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
         rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
+        rb_define_method(c_package_dep_spec, "in_repository", RUBY_FUNC_CAST(&package_dep_spec_in_repository_ptr), 0);
+        rb_define_method(c_package_dep_spec, "from_repository", RUBY_FUNC_CAST(&package_dep_spec_from_repository_ptr), 0);
+        rb_define_method(c_package_dep_spec, "installable_to_repository", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository), 0);
+        rb_define_method(c_package_dep_spec, "installed_at_path", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path), 0);
+        rb_define_method(c_package_dep_spec, "installable_to_path", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
 #ifdef CIARANM_REMOVED_THIS

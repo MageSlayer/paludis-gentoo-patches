@@ -54,9 +54,24 @@ module Paludis
             Paludis::parse_user_package_dep_spec('*/bar', env, [:allow_wildcards])
         end
 
+        def pdc
+            Paludis::parse_user_package_dep_spec('foo/bar::installed?', env, [])
+        end
+
+        def pdd
+            Paludis::parse_user_package_dep_spec('foo/*::/??', env, [:allow_wildcards])
+        end
+
+        def pde
+            Paludis::parse_user_package_dep_spec('foo/bar::testrepo->/mychroot', env, [])
+        end
+
         def test_create
             pda
             pdb
+            pdc
+            pdd
+            pde
         end
 
         def test_create_error
@@ -86,11 +101,17 @@ module Paludis
         def test_to_s
             assert_equal ">=foo/bar-1:100::testrepo[-b][a]", pda.to_s
             assert_equal "*/bar", pdb.to_s
+            assert_equal "foo/bar::installed?", pdc.to_s
+            assert_equal "foo/*::/??", pdd.to_s
+            assert_equal "foo/bar::testrepo->/mychroot", pde.to_s
         end
 
         def test_text
             assert_equal ">=foo/bar-1:100::testrepo[-b][a]", pda.text
             assert_equal "*/bar", pdb.text
+            assert_equal "foo/bar::installed?", pdc.text
+            assert_equal "foo/*::/??", pdd.text
+            assert_equal "foo/bar::testrepo->/mychroot", pde.text
         end
 
         def test_disambiguate
@@ -113,31 +134,77 @@ module Paludis
             assert_equal ":100", pda.slot_requirement.to_s
             assert_equal "100", pda.slot_requirement.slot
             assert_nil pdb.slot_requirement
+            assert_nil pdc.slot_requirement
+            assert_nil pdd.slot_requirement
+            assert_nil pde.slot_requirement
         end
 
         def test_package
             assert_equal QualifiedPackageName.new("foo/bar"), pda.package
             assert_nil pdb.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package
+            assert_nil pdd.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pde.package
         end
 
-###        def test_from_repository
-###            assert_nil pda.from_repository
-###            assert_nil pdb.from_repository
-###        end
-###
-###        def test_in_repository
-###            assert_equal "testrepo", pda.in_repository
-###            assert_nil pdb.in_repository
-###        end
+        def test_from_repository
+            assert_nil pda.from_repository
+            assert_nil pdb.from_repository
+            assert_nil pdc.from_repository
+            assert_nil pdd.from_repository
+            assert_equal "testrepo", pde.from_repository
+        end
+
+        def test_in_repository
+            assert_equal "testrepo", pda.in_repository
+            assert_nil pdb.in_repository
+            assert_nil pdc.in_repository
+            assert_nil pdd.in_repository
+            assert_nil pde.in_repository
+        end
+
+        def test_installable_to_repository
+            assert_nil pda.installable_to_repository
+            assert_nil pdb.installable_to_repository
+            assert_kind_of Hash, pdc.installable_to_repository
+            assert_equal "installed", pdc.installable_to_repository[:repository]
+            assert ! pdc.installable_to_repository[:include_masked?]
+            assert_nil pdd.installable_to_repository
+            assert_nil pde.installable_to_repository
+        end
+
+        def test_installed_at_path
+            assert_nil pda.installed_at_path
+            assert_nil pdb.installed_at_path
+            assert_nil pdc.installed_at_path
+            assert_nil pdd.installed_at_path
+            assert_equal "/mychroot", pde.installed_at_path
+        end
+
+        def test_installable_to_path
+            assert_nil pda.installable_to_path
+            assert_nil pdb.installable_to_path
+            assert_nil pdc.installable_to_path
+            assert_kind_of Hash, pdd.installable_to_path
+            assert_equal "/", pdd.installable_to_path[:path]
+            assert pdd.installable_to_path[:include_masked?]
+            assert_nil pde.installable_to_path
+        end
 
         def test_package_name_part
             assert_nil pda.package_name_part
             assert_equal "bar", pdb.package_name_part
+            assert_nil pdc.package_name_part
+            assert_nil pdd.package_name_part
+            assert_nil pde.package_name_part
         end
 
         def test_category_name_part
             assert_nil pda.category_name_part
             assert_nil pdb.category_name_part
+            assert_nil pdc.category_name_part
+            assert_equal "foo", pdd.category_name_part
+            assert_nil pde.category_name_part
         end
 
         def test_version_requirements
@@ -145,6 +212,10 @@ module Paludis
             assert_equal 1, pda.version_requirements.size
             assert_equal VersionSpec.new('1'), pda.version_requirements.first[:spec]
             assert_equal ">=", pda.version_requirements.first[:operator]
+            assert_equal 0, pdb.version_requirements.size
+            assert_equal 0, pdc.version_requirements.size
+            assert_equal 0, pdd.version_requirements.size
+            assert_equal 0, pde.version_requirements.size
         end
 
         def test_version_requirements_mode
@@ -166,11 +237,17 @@ module Paludis
         def test_without_additional_requirements
             assert_equal ">=foo/bar-1:100::testrepo", pda.without_additional_requirements.to_s
             assert_equal "*/bar", pdb.without_additional_requirements.to_s
+            assert_equal "foo/bar::installed?", pdc.without_additional_requirements.to_s
+            assert_equal "foo/*::/??", pdd.without_additional_requirements.to_s
+            assert_equal "foo/bar::testrepo->/mychroot", pde.without_additional_requirements.to_s
         end
 
         def test_tag
             assert_nil pda.tag
             assert_nil pdb.tag
+            assert_nil pdc.tag
+            assert_nil pdd.tag
+            assert_nil pde.tag
 
             my_pda = pda
             my_pda.tag = TargetDepTag.new
