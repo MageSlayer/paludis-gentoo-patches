@@ -91,57 +91,68 @@ namespace
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            s << k.pretty_print_flat(StringifyFormatter());
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
         }
 
         void visit(const MetadataSectionKey &)
