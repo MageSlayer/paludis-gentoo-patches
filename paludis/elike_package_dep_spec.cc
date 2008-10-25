@@ -206,6 +206,8 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             euro += euro_allow_self_deps;
             if (options[epdso_allow_use_deps_portage])
                 euro += options[epdso_allow_use_deps] ? euro_both_syntaxes : euro_portage_syntax;
+            if (options[epdso_allow_use_dep_defaults])
+                euro += euro_allow_default_values;
             if (options[epdso_strict_parsing])
                 euro += euro_strict_parsing;
 

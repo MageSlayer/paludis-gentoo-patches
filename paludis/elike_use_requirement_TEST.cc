@@ -806,5 +806,43 @@ namespace test_cases
             TEST_CHECK(! req20->requirement_met(&env, *id2));
         }
     } test_complex_use_requirements_portage_syntax_nonstrict;
+
+    struct UseRequirementsWithDefaultsTest : TestCase
+    {
+        UseRequirementsWithDefaultsTest() : TestCase("use requirements with defaults") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
+            set_conditionals(id, "enabled disabled");
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("missing+", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_allow_default_values + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[missing+]");
+            TEST_CHECK_EQUAL(req1->as_human_string(), "Flag 'missing' enabled, assuming enabled if missing");
+            TEST_CHECK(req1->requirement_met(&env, *id));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("missing-", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_allow_default_values + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[missing-]");
+            TEST_CHECK_EQUAL(req2->as_human_string(), "Flag 'missing' enabled, assuming disabled if missing");
+            TEST_CHECK(! req2->requirement_met(&env, *id));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
+                parse_elike_use_requirement("-missing+", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_allow_default_values + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req3->as_raw_string(), "[-missing+]");
+            TEST_CHECK_EQUAL(req3->as_human_string(), "Flag 'missing' disabled, assuming enabled if missing");
+            TEST_CHECK(! req3->requirement_met(&env, *id));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
+                parse_elike_use_requirement("-missing-", std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions() + euro_allow_default_values + euro_strict_parsing));
+            TEST_CHECK_EQUAL(req4->as_raw_string(), "[-missing-]");
+            TEST_CHECK_EQUAL(req4->as_human_string(), "Flag 'missing' disabled, assuming disabled if missing");
+            TEST_CHECK(req4->requirement_met(&env, *id));
+        }
+    } test_use_requirements_with_defaults;
 }
 
