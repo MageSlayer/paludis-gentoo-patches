@@ -575,6 +575,15 @@ namespace test_cases
     {
         ERepositoryQueryUseTest() : TestCase("USE query") { }
 
+        void test_choice(const std::tr1::shared_ptr<const PackageID> & p, const std::string & n, bool enabled, bool enabled_by_default, bool locked)
+        {
+            TestMessageSuffix s(stringify(*p) + "[" + n + "]", true);
+            std::tr1::shared_ptr<const ChoiceValue> choice(p->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
+            TEST_CHECK_EQUAL(choice->enabled(), enabled);
+            TEST_CHECK_EQUAL(choice->enabled_by_default(), enabled_by_default);
+            TEST_CHECK_EQUAL(choice->locked(), locked);
+        }
+
         void run()
         {
             TestEnvironment env;
@@ -604,20 +613,34 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
                                         &env, UserPackageDepSpecOptions()))))]->begin());
 
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
-                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
-                TEST_CHECK(p2->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag5"))->enabled());
-                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag5"))->enabled());
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->enabled());
-                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2"))->enabled());
+                test_choice(p1, "flag1",     true,  true,  false);
+                test_choice(p1, "flag2",     false, false, true);
+                test_choice(p1, "flag3",     true,  true,  false);
+                test_choice(p1, "flag4",     true,  true,  true);
+                test_choice(p1, "flag5",     false, false, false);
+                test_choice(p1, "enabled",   true,  false, false);
+                test_choice(p1, "disabled",  false, true,  false);
+                test_choice(p1, "enabled2",  true,  false, false);
+                test_choice(p1, "disabled2", false, true,  false);
+                test_choice(p1, "enabled3",  false, false, true);
+                test_choice(p1, "disabled3", true,  true,  true);
 
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->locked());
-                TEST_CHECK(p2->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
-                TEST_CHECK(! p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
-                TEST_CHECK(p4->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->locked());
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->locked());
-                TEST_CHECK(p1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2"))->locked());
+                test_choice(p2, "flag1", true,  true,  false);
+                test_choice(p2, "flag2", false, false, true);
+                test_choice(p2, "flag3", false, false, true);
+                test_choice(p2, "flag4", true,  true,  true);
+                test_choice(p2, "flag5", true,  true,  true);
+                test_choice(p2, "flag6", true,  true,  false);
+
+                test_choice(p4, "flag1", true,  true,  false);
+                test_choice(p4, "flag2", false, false, true);
+                test_choice(p4, "flag3", false, false, true);
+                test_choice(p4, "flag4", true,  true,  true);
+                test_choice(p4, "flag5", true,  true,  false);
+                test_choice(p4, "flag6", false, false, false);
+
+                test_choice(p1, "test",  true,  true,  true);
+                test_choice(p1, "test2", false, false, true);
             }
         }
     } test_e_repository_query_use;

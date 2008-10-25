@@ -204,13 +204,15 @@ test2
 END
 cat <<END >profiles/profile/make.defaults || exit 1
 ARCH=test
-USE="flag1 flag2 flag3 -flag4 -flag5"
+USE="flag1 flag2 flag3 -flag4 -flag5 -enabled2 disabled2"
 END
 cat <<END >profiles/profile/use.mask || exit 1
 flag2
+enabled3
 END
 cat <<END >profiles/profile/use.force || exit 1
 flag4
+disabled3
 END
 cat <<END >profiles/profile/package.use.mask || exit 1
 cat-two/pkg-two flag3
@@ -220,15 +222,18 @@ cat <<END >profiles/profile/package.use.force || exit 1
 cat-two/pkg-two flag5
 END
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5"
+EAPI=1
+IUSE="flag1 flag2 flag3 flag4 flag5 enabled +disabled enabled2 disabled2 enabled3 disabled3"
 SLOT="0"
 END
 cat <<END > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5"
+EAPI=1
+IUSE="-flag1 flag2 flag3 flag4 +flag5 flag6"
 SLOT="0"
 END
 cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
-IUSE="flag1 flag2 flag3 flag4 flag5"
+EAPI=1
+IUSE="flag1 flag2 flag3 flag4 flag5 +flag6"
 SLOT="0"
 END
 cd ..
