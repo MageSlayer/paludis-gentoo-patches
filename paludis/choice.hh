@@ -320,6 +320,12 @@ namespace paludis
             virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * Would this flag be enabled by default (i.e. before
+             * considering any overrides from the Environment)?
+             */
+            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
              * Is this flag locked (forced or masked)?
              */
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;

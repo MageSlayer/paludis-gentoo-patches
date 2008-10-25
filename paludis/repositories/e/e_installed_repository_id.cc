@@ -961,7 +961,7 @@ EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choic
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
     return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::tr1::shared_ptr<const UseDesc>(),
-                enabled, true, explicitly_listed));
+                enabled, enabled, true, explicitly_listed));
 }
 
 void

@@ -43,6 +43,7 @@ namespace paludis
                 const QualifiedPackageName _package_name;
                 const std::tr1::shared_ptr<const UseDesc> _use_desc;
                 const bool _enabled;
+                const bool _enabled_by_default;
                 const bool _locked;
                 const bool _explicitly_listed;
 
@@ -52,12 +53,13 @@ namespace paludis
                         const ChoiceNameWithPrefix & np,
                         const QualifiedPackageName & p,
                         const std::tr1::shared_ptr<const UseDesc> & d,
-                        bool b,
+                        bool b, bool d,
                         bool l, bool x);
 
                 const UnprefixedChoiceName unprefixed_name() const;
                 const ChoiceNameWithPrefix name_with_prefix() const;
                 bool enabled() const;
+                bool enabled_by_default() const;
                 bool locked() const;
                 const std::string description() const;
                 bool explicitly_listed() const;

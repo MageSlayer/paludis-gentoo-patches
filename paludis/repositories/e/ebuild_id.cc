@@ -1115,51 +1115,50 @@ EbuildID::make_choice_value(
     }
     ChoiceNameWithPrefix name_with_prefix(name_with_prefix_s);
 
-    bool locked(false), enabled(false);
+    bool locked(false), enabled(false), enabled_by_default(false);
     if (raw_use_key())
     {
         locked = true;
-        enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix_s));
+        enabled = enabled_by_default = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix_s));
     }
     else
     {
         if (_imp->repository->profile()->use_masked(shared_from_this(), choice, value_name, name_with_prefix))
         {
             locked = true;
-            enabled = false;
+            enabled = enabled_by_default = false;
         }
         else if (_imp->repository->profile()->use_forced(shared_from_this(), choice, value_name, name_with_prefix))
         {
             locked = true;
-            enabled = true;
+            enabled = enabled_by_default = true;
         }
         else
         {
+            Tribool profile_want(_imp->repository->profile()->use_state_ignoring_masks(shared_from_this(), choice, value_name, name_with_prefix));
+            if (profile_want.is_true())
+                enabled_by_default = true;
+            else if (profile_want.is_false())
+                enabled_by_default = false;
+            else if (iuse_default.is_true())
+                enabled_by_default = true;
+            else if (iuse_default.is_false())
+                enabled_by_default = false;
+            else
+                enabled_by_default = false;
             Tribool env_want(_imp->environment->want_choice_enabled(shared_from_this(), choice, value_name));
             if (env_want.is_true())
                 enabled = true;
             else if (env_want.is_false())
                 enabled = false;
             else
-            {
-                Tribool profile_want(_imp->repository->profile()->use_state_ignoring_masks(shared_from_this(), choice, value_name, name_with_prefix));
-                if (profile_want.is_true())
-                    enabled = true;
-                else if (profile_want.is_false())
-                    enabled = false;
-                else if (iuse_default.is_true())
-                    enabled = true;
-                else if (iuse_default.is_false())
-                    enabled = false;
-                else
-                    enabled = false;
-            }
+                enabled = enabled_by_default;
         }
     }
 
     return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 _imp->repository->use_desc(),
-                enabled, locked, explicitly_listed));
+                enabled, enabled_by_default, locked, explicitly_listed));
 }
 
 void

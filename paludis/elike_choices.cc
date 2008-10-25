@@ -61,6 +61,12 @@ ELikeStripChoiceValue::enabled() const
 }
 
 bool
+ELikeStripChoiceValue::enabled_by_default() const
+{
+    return true;
+}
+
+bool
 ELikeStripChoiceValue::locked() const
 {
     return false;
@@ -112,6 +118,12 @@ bool
 ELikeSplitChoiceValue::enabled() const
 {
     return _enabled;
+}
+
+bool
+ELikeSplitChoiceValue::enabled_by_default() const
+{
+    return true;
 }
 
 bool
@@ -169,6 +181,12 @@ ELikeOptionalTestsChoiceValue::enabled() const
 }
 
 bool
+ELikeOptionalTestsChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
 ELikeOptionalTestsChoiceValue::locked() const
 {
     return false;
@@ -220,6 +238,12 @@ bool
 ELikeRecommendedTestsChoiceValue::enabled() const
 {
     return _enabled;
+}
+
+bool
+ELikeRecommendedTestsChoiceValue::enabled_by_default() const
+{
+    return true;
 }
 
 bool

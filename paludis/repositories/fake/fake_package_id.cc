@@ -344,6 +344,11 @@ namespace
             return env->want_choice_enabled(id, choice, value_name).is_true();
         }
 
+        virtual bool enabled_by_default() const
+        {
+            return false;
+        }
+
         virtual bool locked() const
         {
             return false;

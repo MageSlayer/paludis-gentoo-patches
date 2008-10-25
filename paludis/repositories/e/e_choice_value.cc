@@ -25,13 +25,14 @@ using namespace paludis::erepository;
 
 EChoiceValue::EChoiceValue(const ChoicePrefixName & r, const UnprefixedChoiceName & v, const ChoiceNameWithPrefix & np, const QualifiedPackageName & p,
         const std::tr1::shared_ptr<const UseDesc> & d,
-        bool b, bool l, bool x) :
+        bool b, bool def, bool l, bool x) :
     _prefix(r),
     _unprefixed_name(v),
     _name_with_prefix(np),
     _package_name(p),
     _use_desc(d),
     _enabled(b),
+    _enabled_by_default(def),
     _locked(l),
     _explicitly_listed(x)
 {
@@ -61,6 +62,12 @@ bool
 EChoiceValue::enabled() const
 {
     return _enabled;
+}
+
+bool
+EChoiceValue::enabled_by_default() const
+{
+    return _enabled_by_default;
 }
 
 bool
