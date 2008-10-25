@@ -89,8 +89,8 @@ module Paludis
         end
 
         def test_has_matching_contains_every_value_prefix
-            assert choices.has_matching_contains_every_value_prefix("linguas_de")
-            assert ! choices.has_matching_contains_every_value_prefix("giant_hamster")
+            assert choices.has_matching_contains_every_value_prefix?("linguas_de")
+            assert ! choices.has_matching_contains_every_value_prefix?("giant_hamster")
         end
     end
 

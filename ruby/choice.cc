@@ -57,7 +57,7 @@ namespace
 
     /*
      * call-seq:
-     *     has_matching_contains_every_value_prefix(prefix) -> true or false
+     *     has_matching_contains_every_value_prefix?(prefix) -> true or false
      *
      * Do we have a Choice subkey with contains_every_value true and a prefix matching
      * this name?
@@ -134,7 +134,7 @@ namespace
 
     /*
      * call-seq:
-     *     raw_name() -> String
+     *     raw_name -> String
      *
      * Our raw name, for example 'USE' or 'LINGUAS'.
      */
@@ -142,7 +142,7 @@ namespace
 
     /*
      * call-seq:
-     *     human_name() -> String
+     *     human_name -> String
      *
      * A human-readable name (often the same as raw_name).
      */
@@ -150,7 +150,7 @@ namespace
 
     /*
      * call-seq:
-     *     prefix() -> String
+     *     prefix -> String
      *
      * The prefix for our ChoiceValue children.
      *
@@ -177,7 +177,7 @@ namespace
 
     /*
      * call-seq:
-     *     contains_every_value() -> true or false
+     *     contains_every_value? -> true or false
      *
      * If true, pretend that we contain every possible value and that any value not listed
      * as a child exists and is not enabled.
@@ -189,7 +189,7 @@ namespace
 
     /*
      * call-seq:
-     *     hidden() -> true or false
+     *     hidden? -> true or false
      *
      * If true, this option should not usually be shown visually to a user.
      */
@@ -197,7 +197,7 @@ namespace
 
     /*
      * call-seq:
-     *     show_with_no_prefix() -> true or false
+     *     show_with_no_prefix? -> true or false
      *
      * If true, hint that we're better not displaying our prefix to the user.
      *
@@ -208,7 +208,7 @@ namespace
 
     /*
      * call-seq:
-     *     consider_added_or_changed() -> true or false
+     *     consider_added_or_changed? -> true or false
      *
      * If false, do not consider flags in this section for 'added' or 'changed'
      * detection.
@@ -236,7 +236,7 @@ namespace
 
     /*
      * call-seq:
-     *     unprefixed_name() -> String
+     *     unprefixed_name -> String
      *
      * Our name, without an prefix (for example, 'nls' or 'en').
      */
@@ -244,7 +244,7 @@ namespace
 
     /*
      * call-seq:
-     *     name_with_prefix() -> String
+     *     name_with_prefix -> String
      *
      * Our name, with prefix if there is one (for example, 'nls' or 'linguas_en').
      */
@@ -252,7 +252,7 @@ namespace
 
     /*
      * call-seq:
-     *     description() -> String
+     *     description -> String
      *
      * The flag's description, or an empty string.
      */
@@ -277,7 +277,7 @@ namespace
 
     /*
      * call-seq:
-     *     enabled() -> true or false
+     *     enabled? -> true or false
      *
      * Is this flag enabled?
      */
@@ -285,7 +285,7 @@ namespace
 
     /*
      * call-seq:
-     *     locked() -> true or false
+     *     locked? -> true or false
      *
      * Is this flag locked (forced or masked)?
      */
@@ -293,7 +293,7 @@ namespace
 
     /*
      * call-seq:
-     *     explicitly_listed() -> true or false
+     *     explicitly_listed? -> true or false
      *
      * Is this flag explicitly listed?
      *
@@ -331,7 +331,7 @@ namespace
         rb_define_method(c_choices, "each", RUBY_FUNC_CAST(&choices_each), 0);
         rb_include_module(c_choices, rb_mEnumerable);
         rb_define_method(c_choices, "find_by_name_with_prefix", RUBY_FUNC_CAST(&choices_find_by_name_with_prefix), 1);
-        rb_define_method(c_choices, "has_matching_contains_every_value_prefix", RUBY_FUNC_CAST(&choices_has_matching_contains_every_value_prefix), 1);
+        rb_define_method(c_choices, "has_matching_contains_every_value_prefix?", RUBY_FUNC_CAST(&choices_has_matching_contains_every_value_prefix), 1);
 
         /*
          * Document-class: Paludis::Choice
