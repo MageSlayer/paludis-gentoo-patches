@@ -711,7 +711,7 @@ namespace
 
     /*
      * call-seq:
-     *     slot_requirement_ptr -> SlotRequirement or Nil
+     *     slot_requirement -> SlotRequirement or Nil
      *
      * Fetch the slot requirement.
      */
