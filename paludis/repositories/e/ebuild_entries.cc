@@ -671,6 +671,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         {
             if (phase->option("optional_tests"))
             {
+                if (test_restrict)
+                    continue;
+
                 std::tr1::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
                             ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
@@ -678,6 +681,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             }
             else if (phase->option("recommended_tests"))
             {
+                if (test_restrict)
+                    continue;
+
                 std::tr1::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
                             ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
