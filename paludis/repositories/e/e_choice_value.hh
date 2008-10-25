@@ -53,7 +53,7 @@ namespace paludis
                         const ChoiceNameWithPrefix & np,
                         const QualifiedPackageName & p,
                         const std::tr1::shared_ptr<const UseDesc> & d,
-                        bool b, bool d,
+                        bool b, bool def,
                         bool l, bool x);
 
                 const UnprefixedChoiceName unprefixed_name() const;
