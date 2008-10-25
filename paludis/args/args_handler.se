@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ArgsHandlerOption()
+{
+    prefix dstpo
+    want_destringify
+    namespace paludis::args
+
+    key aho_stop_on_first_parameter      "Stop on the first parameter encountered"
+}
+

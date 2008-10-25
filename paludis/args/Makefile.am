@@ -1,6 +1,9 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
+DISTCLEANFILES = args_handler-se.hh args_handler-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+EXTRA_DIST = args_handler-se.hh args_handler-se.cc args_handler.se
+BUILT_SOURCES = args_handler-se.hh args_handler-se.cc
 
 TESTS = \
 	args_TEST
@@ -12,6 +15,7 @@ paludis_args_include_HEADERS = \
 	args_error.hh          \
 	args_group.hh          \
 	args_handler.hh        \
+	args_handler-se.hh     \
 	args_option.hh         \
 	bad_argument.hh        \
 	args_visitor.hh        \
@@ -78,4 +82,10 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
+args_handler-se.hh : args_handler.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/args_handler.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+args_handler-se.cc : args_handler.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/args_handler.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

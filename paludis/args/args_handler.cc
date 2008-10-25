@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <algorithm>
 #include <sstream>
 #include <list>
@@ -104,17 +106,12 @@ ArgsHandler::add(ArgsGroup * const g)
 }
 
 void
-ArgsHandler::run(const int argc, const char * const * const argv, const std::string & env_var,
-        const std::string & env_prefix)
-{
-    run(argc, argv, "", env_var, env_prefix);
-}
-
-void
-ArgsHandler::run(const int argc, const char * const * const argv,
+ArgsHandler::run(
+        const std::tr1::shared_ptr<const Sequence<std::string> > & argseq,
         const std::string & client,
         const std::string & env_var,
-        const std::string & env_prefix)
+        const std::string & env_prefix,
+        const ArgsHandlerOptions & options)
 {
     std::list<std::string> args;
     std::string env_options;
@@ -133,7 +130,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
             args.push_back(option);
     }
 
-    args.insert(args.end(), &argv[1], &argv[argc]);
+    args.insert(args.end(), argseq->begin(), argseq->end());
 
     ArgsVisitor::ArgsIterator argit(args.begin()), arge(args.end());
     ArgsVisitor visitor(&argit, arge, env_prefix);
@@ -181,7 +178,10 @@ ArgsHandler::run(const int argc, const char * const * const argv,
         }
         else
         {
-            _imp->parameters.push_back(arg);
+            if (options[aho_stop_on_first_parameter])
+                break;
+            else
+                _imp->parameters.push_back(arg);
         }
     }
 
@@ -190,6 +190,27 @@ ArgsHandler::run(const int argc, const char * const * const argv,
     if (! env_prefix.empty())
         setenv((env_prefix + "_PARAMS").c_str(), join(_imp->parameters.begin(),
                     _imp->parameters.end(), " ").c_str(), 1);
+
+    post_run();
+}
+
+void
+ArgsHandler::run(
+        const int argc,
+        const char * const * const argv,
+        const std::string & client,
+        const std::string & env_var,
+        const std::string & env_prefix,
+        const ArgsHandlerOptions & options)
+{
+    std::tr1::shared_ptr<Sequence<std::string> > s(new Sequence<std::string>);
+    std::copy(&argv[1], &argv[argc], create_inserter<std::string>(s->back_inserter()));
+    run(s, client, env_var, env_prefix, options);
+}
+
+void
+ArgsHandler::post_run()
+{
 }
 
 void

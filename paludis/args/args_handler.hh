@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,8 @@
 #include <paludis/args/args_group.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/sequence.hh>
 
 #include <iosfwd>
 #include <string>
@@ -41,6 +43,11 @@ namespace paludis
 {
     namespace args
     {
+
+#include <paludis/args/args_handler-se.hh>
+
+        typedef Options<ArgsHandlerOption> ArgsHandlerOptions;
+
         /**
          * Handles command line arguments.
          *
@@ -85,6 +92,11 @@ namespace paludis
                  */
                 void dump_to_stream(std::ostream & s) const;
 
+                /**
+                 * Called after run(), for convenience. Does nothing.
+                 */
+                virtual void post_run();
+
             public:
                 ///\name Basic operations
                 ///\{
@@ -94,23 +106,6 @@ namespace paludis
                 virtual ~ArgsHandler();
 
                 ///\}
-
-                /**
-                 * \deprecated Use the five arg form.
-                 */
-                void run(const int, const char * const * const, const std::string & env_var = "",
-                        const std::string & env_prefix = "") PALUDIS_ATTRIBUTE((deprecated));
-
-                /**
-                 * Parse command line arguments. The third argument is used to
-                 * set PALUDIS_CLIENT.  The fourth argument is the name of an
-                 * environment variable holding arguments which are prepended
-                 * to the command line arguments. The fifth argument is used as
-                 * a prefix to export our command line via the environment.
-                 */
-                virtual void run(const int, const char * const * const,
-                        const std::string & client, const std::string & env_var,
-                        const std::string & env_prefix);
 
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{
@@ -225,6 +220,35 @@ namespace paludis
                 NotesIterator end_notes() const;
 
                 ///\}
+
+                /**
+                 * Parse command line arguments. The third argument is used to
+                 * set PALUDIS_CLIENT.  The fourth argument is the name of an
+                 * environment variable holding arguments which are prepended
+                 * to the command line arguments. The fifth argument is used as
+                 * a prefix to export our command line via the environment.
+                 */
+                void run(
+                        const int argc,
+                        const char * const * const argv,
+                        const std::string & client,
+                        const std::string & env_var,
+                        const std::string & env_prefix,
+                        const ArgsHandlerOptions & options = ArgsHandlerOptions());
+
+                /**
+                 * Parse command line arguments. The third argument is used to
+                 * set PALUDIS_CLIENT.  The fourth argument is the name of an
+                 * environment variable holding arguments which are prepended
+                 * to the command line arguments. The fifth argument is used as
+                 * a prefix to export our command line via the environment.
+                 */
+                void run(
+                        const std::tr1::shared_ptr<const Sequence<std::string> > &,
+                        const std::string & client,
+                        const std::string & env_var,
+                        const std::string & env_prefix,
+                        const ArgsHandlerOptions & options = ArgsHandlerOptions());
         };
 
         /**

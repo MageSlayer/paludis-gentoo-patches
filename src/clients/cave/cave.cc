@@ -1,0 +1,75 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2008 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis/util/attributes.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/args/do_help.hh>
+#include <paludis/environment_factory.hh>
+#include <iostream>
+#include <cstdlib>
+#include <string>
+
+#include "command_factory.hh"
+#include "command_line.hh"
+
+using namespace paludis;
+using std::endl;
+using std::cout;
+using std::cerr;
+
+int main(int argc, char * argv[])
+{
+    Context context(std::string("In program ") + argv[0] + " " + join(argv + 1, argv + argc, " ") + ":");
+
+    try
+    {
+        cave::CaveCommandLine cmdline;
+        cmdline.run(argc, argv, "CAVE", "CAVE_OPTIONS", "CAVE_CMDLINE", args::ArgsHandlerOptions() + args::aho_stop_on_first_parameter);
+
+        if (cmdline.begin_parameters() == cmdline.end_parameters())
+            throw args::DoHelp();
+
+        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(cmdline.a_environment.argument()));
+
+        std::tr1::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+        std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), seq->back_inserter());
+
+        return cave::CommandFactory::get_instance()->create(*cmdline.begin_parameters())->run(env, seq);
+    }
+    catch (const args::DoHelp & h)
+    {
+        if (h.message.empty())
+            cout << "Usage: " << argv[0] << " COMMAND [ARGS]" << endl;
+        else
+            cerr << "Usage error: " << h.message << endl;
+
+        return EXIT_FAILURE;
+    }
+    catch (const Exception & e)
+    {
+        cerr << endl;
+        cerr << "Error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ") << e.message() << " (" << e.what() << ")" << endl;
+        cerr << endl;
+        return EXIT_FAILURE;
+    }
+}
+
