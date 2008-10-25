@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_LINE_HH 1
 
 #include <paludis/args/args_handler.hh>
+#include <paludis/args/log_level_arg.hh>
 
 namespace paludis
 {
@@ -46,6 +47,7 @@ namespace paludis
 
             args::ArgsGroup g_global_options;
             args::StringArg a_environment;
+            args::LogLevelArg a_log_level;
 
             CaveCommandLine();
         };
