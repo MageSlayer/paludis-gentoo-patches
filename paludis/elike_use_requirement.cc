@@ -476,37 +476,41 @@ namespace
         else
             factory = make_unconditional_requirement<EnabledUseRequirement>;
 
-        if ('+' == flag.at(flag.length() - 1))
+        if (')' == flag.at(flag.length() - 1))
         {
-            if (! options[euro_allow_default_values])
-            {
-                if (options[euro_strict_parsing])
-                    throw ELikeUseRequirementError(s, "[use+] not safe for use here");
-                else
-                    Log::get_instance()->message("e.use_requirement.flag_not_equal_not_allowed", ll_warning, lc_context)
-                        << "[use+] not safe for use here";
-            }
-
-            flag.erase(flag.length() - 1, 1);
-            if (flag.empty())
+            if (flag.length() < 4 || flag.at(flag.length() - 3) != '(')
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
-            return factory(ChoiceNameWithPrefix(flag), id, Tribool(true));
-        }
-        else if ('-' == flag.at(flag.length() - 1))
-        {
-            if (! options[euro_allow_default_values])
-            {
-                if (options[euro_strict_parsing])
-                    throw ELikeUseRequirementError(s, "[use-] not safe for use here");
-                else
-                    Log::get_instance()->message("e.use_requirement.flag_not_equal_not_allowed", ll_warning, lc_context)
-                        << "[use-] not safe for use here";
-            }
 
-            flag.erase(flag.length() - 1, 1);
-            if (flag.empty())
+            if ('+' == flag.at(flag.length() - 2))
+            {
+                if (! options[euro_allow_default_values])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[use(+)] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.flag_bracket_plus_not_allowed", ll_warning, lc_context)
+                            << "[use(+)] not safe for use here";
+                }
+
+                flag.erase(flag.length() - 3, 3);
+                return factory(ChoiceNameWithPrefix(flag), id, Tribool(true));
+            }
+            else if ('-' == flag.at(flag.length() - 2))
+            {
+                if (! options[euro_allow_default_values])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[use(-)] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.flag_bracket_minus_not_allowed", ll_warning, lc_context)
+                            << "[use(-)] not safe for use here";
+                }
+
+                flag.erase(flag.length() - 3, 3);
+                return factory(ChoiceNameWithPrefix(flag), id, Tribool(false));
+            }
+            else
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
-            return factory(ChoiceNameWithPrefix(flag), id, Tribool(false));
         }
         else
             return factory(ChoiceNameWithPrefix(flag), id, Tribool(indeterminate));
