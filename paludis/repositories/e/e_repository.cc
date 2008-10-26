@@ -708,7 +708,7 @@ ERepository::sets_list() const
 }
 
 bool
-ERepository::sync() const
+ERepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -730,6 +730,7 @@ ERepository::sync() const
         SyncOptions opts(make_named_values<SyncOptions>(
                     value_for<n::filter_file>(_imp->layout->sync_filter_file()),
                     value_for<n::options>(_imp->params.sync_options),
+                    value_for<n::output_deviant>(output_deviant),
                     value_for<n::output_prefix>("sync " + stringify(name()) + "> ")
                 ));
         try

@@ -1308,6 +1308,19 @@ AC_SUBST([ALL_CLIENTS])
 AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
 
+AC_MSG_CHECKING([whether threads must be enabled])
+if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
+	AC_MSG_RESULT([yes])
+	AC_MSG_CHECKING([whether threads are enabled])
+	if test x$ENABLE_THREADS = xyes ; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([cave requires --enable-threads])
+	fi
+else
+	AC_MSG_RESULT([no])
+fi
+
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
 	need_pcrepp_check=yes
 fi

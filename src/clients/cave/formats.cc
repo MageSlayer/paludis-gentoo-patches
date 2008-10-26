@@ -394,3 +394,57 @@ paludis::cave::f::colour_formatter_indent()
     return "%{column 30}%i%i%i%i";
 }
 
+const std::string
+paludis::cave::f::sync_heading()
+{
+    return c::bold_blue() + "%s" + c::normal() + "\\n\\n";
+}
+
+const std::string
+paludis::cave::f::sync_message_success()
+{
+    return "* " + c::bold_green() + "%k:" + c::normal() + "%{column 30}%v\\n";
+}
+
+const std::string
+paludis::cave::f::sync_message_failure()
+{
+    return "* " + c::bold_red() + "%k:" + c::normal() + "%{column 30}%v\\n";
+}
+
+const std::string
+paludis::cave::f::sync_message_failure_message()
+{
+    return "    %k:%{column 30}%v\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repos_title()
+{
+    return c::bold_normal() + "Repository%{column 30}Status%{column 52}Pending%{column 60}Active%{column 68}Done" + c::normal() + "\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_starting()
+{
+    return "-> " + c::bold_blue() + "%s" + c::normal() + "%{column 30}starting%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_done_success()
+{
+    return "-> " + c::bold_green() + "%s" + c::normal() + "%{column 30}success%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_done_no_syncing_required()
+{
+    return "-> " + c::bold_green() + "%s" + c::normal() + "%{column 30}no syncing required%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_done_failure()
+{
+    return "-> " + c::bold_red() + "%s" + c::normal() + "%{column 30}failed%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+

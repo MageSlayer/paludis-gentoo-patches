@@ -23,6 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/name-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -50,6 +51,15 @@ namespace paludis
                 BadIDForCommand(
                         const PackageDepSpec &,
                         const std::tr1::shared_ptr<const PackageID> &,
+                        const std::string & r) throw ();
+        };
+
+        class PALUDIS_VISIBLE BadRepositoryForCommand :
+            public Exception
+        {
+            public:
+                BadRepositoryForCommand(
+                        const RepositoryName &,
                         const std::string & r) throw ();
         };
     }

@@ -92,7 +92,7 @@ namespace paludis
                 virtual void invalidate();
                 virtual void invalidate_masks();
 
-                virtual bool sync() const;
+                virtual bool sync(const std::tr1::shared_ptr<const OutputDeviant> &) const;
 
                 ///\name RepositoryFactory functions
                 ///\{

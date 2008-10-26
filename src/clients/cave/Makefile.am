@@ -21,7 +21,8 @@ command_MANS = \
 	cave-print-id-contents.1 \
 	cave-print-id-metadata.1 \
 	cave-print-ids.1 \
-	cave-show.1
+	cave-show.1 \
+	cave-sync.1
 
 man_MANS = \
 	cave.1 \
@@ -68,6 +69,7 @@ libcave_a_SOURCES = \
 	cmd_print_id_metadata.cc cmd_print_id_metadata.hh \
 	cmd_print_ids.cc cmd_print_ids.hh \
 	cmd_show.cc cmd_show.hh \
+	cmd_sync.cc cmd_sync.hh \
 	exceptions.cc exceptions.hh \
 	format_general.cc format_general.hh \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
@@ -97,7 +99,6 @@ libcave_a_SOURCES = \
 #	cmd_regenerate_installable_cache.cc \
 #	cmd_regenerate_installed_cache.cc \
 #	cmd_report.cc \
-#	cmd_sync.cc \
 #	cmd_uninstall.cc \
 #	cmd_uninstall_unused.cc
 

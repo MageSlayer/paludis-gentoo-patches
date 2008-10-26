@@ -257,7 +257,7 @@ UnavailableRepository::some_ids_might_support_action(const SupportsActionTestBas
 }
 
 bool
-UnavailableRepository::sync() const
+UnavailableRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -279,6 +279,7 @@ UnavailableRepository::sync() const
         SyncOptions opts(make_named_values<SyncOptions>(
                     value_for<n::filter_file>(FSEntry("/dev/null")),
                     value_for<n::options>(_imp->params.sync_options()),
+                    value_for<n::output_deviant>(output_deviant),
                     value_for<n::output_prefix>("sync " + stringify(name()) + "> ")
                     ));
         try

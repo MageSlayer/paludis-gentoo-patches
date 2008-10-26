@@ -107,7 +107,7 @@ namespace paludis
 
             /* RepositorySyncableInterface */
 
-            virtual bool sync() const;
+            virtual bool sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const;
 
             /* Repository */
 

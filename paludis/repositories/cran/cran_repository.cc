@@ -45,6 +45,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_deviator.hh>
+#include <paludis/syncer.hh>
 #include <tr1/unordered_map>
 #include <tr1/functional>
 #include <functional>
@@ -368,7 +370,7 @@ CRANRepository::sets_list() const
 }
 
 bool
-CRANRepository::sync() const
+CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
@@ -376,26 +378,62 @@ CRANRepository::sync() const
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
                     _imp->params.sync + "/src/contrib/Descriptions/' ./");
 
-    if (0 != run_command(Command(cmd).with_chdir(_imp->params.location)))
-        return false;
+    Command command1(Command(cmd).with_chdir(_imp->params.location));
 
-    cmd = "rsync --progress '" + _imp->params.sync + "/src/contrib/PACKAGES' ./";
-
-    if (0 != run_command(Command(cmd)
-                .with_chdir(_imp->params.location)
-                .with_stdout_prefix("sync " + stringify(name()) + "> ")
-                .with_stderr_prefix("sync " + stringify(name()) + "> ")
-                ))
-        return false;
-
-    cmd = "rsync --progress '" + _imp->params.sync + "/CRAN_mirrors.csv' ./";
-
-    return 0 == run_command(Command(cmd)
-            .with_chdir(_imp->params.location)
+    if (output_deviant)
+        command1
+            .with_captured_stdout_stream(output_deviant->stdout_stream())
+            .with_captured_stderr_stream(output_deviant->stderr_stream())
+            ;
+    else
+        command1
             .with_stdout_prefix("sync " + stringify(name()) + "> ")
             .with_stderr_prefix("sync " + stringify(name()) + "> ")
             .with_prefix_blank_lines()
-            );
+            ;
+
+    if (0 != run_command(command1))
+        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+
+    cmd = "rsync --progress '" + _imp->params.sync + "/src/contrib/PACKAGES' ./";
+
+    Command command2(Command(cmd).with_chdir(_imp->params.location));
+
+    if (output_deviant)
+        command2
+            .with_captured_stdout_stream(output_deviant->stdout_stream())
+            .with_captured_stderr_stream(output_deviant->stderr_stream())
+            ;
+    else
+        command2
+            .with_stdout_prefix("sync " + stringify(name()) + "> ")
+            .with_stderr_prefix("sync " + stringify(name()) + "> ")
+            .with_prefix_blank_lines()
+            ;
+
+    if (0 != run_command(command2))
+        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+
+    cmd = "rsync --progress '" + _imp->params.sync + "/CRAN_mirrors.csv' ./";
+
+    Command command3(Command(cmd).with_chdir(_imp->params.location));
+
+    if (output_deviant)
+        command3
+            .with_captured_stdout_stream(output_deviant->stdout_stream())
+            .with_captured_stderr_stream(output_deviant->stderr_stream())
+            ;
+    else
+        command3
+            .with_stdout_prefix("sync " + stringify(name()) + "> ")
+            .with_stderr_prefix("sync " + stringify(name()) + "> ")
+            .with_prefix_blank_lines()
+            ;
+
+    if (0 != run_command(command3))
+        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+
+    return true;
 }
 
 std::tr1::shared_ptr<Repository>

@@ -115,6 +115,16 @@ namespace paludis
             const std::string colour_formatter_named_set_dep_spec_plain();
 
             const std::string colour_formatter_indent();
+
+            const std::string sync_heading();
+            const std::string sync_message_success();
+            const std::string sync_message_failure();
+            const std::string sync_message_failure_message();
+            const std::string sync_repos_title();
+            const std::string sync_repo_starting();
+            const std::string sync_repo_done_success();
+            const std::string sync_repo_done_no_syncing_required();
+            const std::string sync_repo_done_failure();
         }
     }
 }

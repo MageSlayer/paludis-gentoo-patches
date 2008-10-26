@@ -20,6 +20,7 @@
 #include "format_general.hh"
 #include "format_string.hh"
 #include <paludis/util/map.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 using namespace cave;
@@ -33,11 +34,31 @@ paludis::cave::format_general_s(const std::string & f, const std::string & s)
 }
 
 std::string
+paludis::cave::format_general_kv(const std::string & f, const std::string & k, const std::string & v)
+{
+    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    m->insert('k', k);
+    m->insert('v', v);
+    return format_string(f, m);
+}
+
+std::string
 paludis::cave::format_general_sr(const std::string & f, const std::string & s, const std::string & r)
 {
     std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
     m->insert('s', s);
     m->insert('r', r);
+    return format_string(f, m);
+}
+
+std::string
+paludis::cave::format_general_spad(const std::string & f, const std::string & s, const int p, const int a, const int d)
+{
+    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    m->insert('s', s);
+    m->insert('p', stringify(p));
+    m->insert('a', stringify(a));
+    m->insert('d', stringify(d));
     return format_string(f, m);
 }
 

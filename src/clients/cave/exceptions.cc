@@ -46,3 +46,8 @@ BadIDForCommand::BadIDForCommand(const PackageDepSpec & spec, const std::tr1::sh
 {
 }
 
+BadRepositoryForCommand::BadRepositoryForCommand(const RepositoryName & name, const std::string & r) throw () :
+    Exception("Repository '" + stringify(name) + "' unsuitable: " + r)
+{
+}
+

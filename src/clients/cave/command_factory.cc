@@ -33,6 +33,7 @@
 #include "cmd_print_id_metadata.hh"
 #include "cmd_print_ids.hh"
 #include "cmd_show.hh"
+#include "cmd_sync.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -67,6 +68,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-id-metadata", make_command<PrintIDMetadataCommand>));
     _imp->handlers.insert(std::make_pair("print-ids", make_command<PrintIDsCommand>));
     _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
+    _imp->handlers.insert(std::make_pair("sync", make_command<SyncCommand>));
 }
 
 CommandFactory::~CommandFactory()

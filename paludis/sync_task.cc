@@ -24,6 +24,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <tr1/functional>
@@ -112,7 +113,7 @@ namespace
                 }
 
                 std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
-                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync())
+                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync(make_null_shared_ptr()))
                 {
                     Lock l(mutex);
                     task->on_sync_succeed(r);

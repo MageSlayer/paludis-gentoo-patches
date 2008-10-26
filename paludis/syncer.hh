@@ -43,6 +43,7 @@ namespace paludis
         struct filter_file;
         struct local;
         struct options;
+        struct output_deviant;
         struct output_prefix;
         struct remote;
     }
@@ -58,6 +59,13 @@ namespace paludis
     {
         NamedValue<n::filter_file, FSEntry> filter_file;
         NamedValue<n::options, std::string> options;
+
+        /**
+         * May be a zero pointer.
+         * \since 0.32
+         */
+        NamedValue<n::output_deviant, std::tr1::shared_ptr<const OutputDeviant> > output_deviant;
+
         NamedValue<n::output_prefix, std::string> output_prefix;
     };
 

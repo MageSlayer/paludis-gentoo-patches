@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006 Ciaran McCreesh
+# Copyright (c) 2006, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,18 +18,22 @@
 
 mkdir -p "${ROOT}/var/log"
 
-X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
+if [[ -n ${X_OF_Y} ]] ; then
+    COUNTS=" (${X_OF_Y})}"
+else
+    COUNTS=" [${NUMBER_PENDING}p ${NUMBER_ACTIVE}a ${NUMBER_DONE}d]"
+fi
 
 (
     echo -n "$(date +%s ): "
 
     case "${HOOK}" in
         install_pre)
-            echo "starting install of package ${TARGET}${X_OF_Y}"
+            echo "starting install of package ${TARGET}${COUNTS}"
         ;;
 
         install_post)
-            echo "finished install of package ${TARGET}${X_OF_Y}"
+            echo "finished install of package ${TARGET}${COUNTS}"
         ;;
 
         install_all_pre)
@@ -41,11 +45,11 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
         ;;
 
         uninstall_pre)
-            echo "starting uninstall of package ${TARGET}${X_OF_Y}"
+            echo "starting uninstall of package ${TARGET}${COUNTS}"
         ;;
 
         uninstall_post)
-            echo "finished uninstall of package ${TARGET}${X_OF_Y}"
+            echo "finished uninstall of package ${TARGET}${COUNTS}"
         ;;
 
         uninstall_all_pre)
@@ -57,11 +61,11 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
         ;;
 
         clean_pre)
-            echo "starting clean of package ${TARGET}${X_OF_Y}"
+            echo "starting clean of package ${TARGET}${COUNTS}"
         ;;
 
         clean_post)
-            echo "finished clean of package ${TARGET}${X_OF_Y}"
+            echo "finished clean of package ${TARGET}${COUNTS}"
         ;;
 
         clean_all_pre)
@@ -73,11 +77,11 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
         ;;
 
         fetch_pre)
-            echo "starting fetch of package ${TARGET}${X_OF_Y}"
+            echo "starting fetch of package ${TARGET}${COUNTS}"
         ;;
 
         fetch_post)
-            echo "finished fetch of package ${TARGET}${X_OF_Y}"
+            echo "finished fetch of package ${TARGET}${COUNTS}"
         ;;
 
         fetch_all_pre)
@@ -89,11 +93,11 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
         ;;
 
         sync_pre)
-            echo "starting sync of repository ${TARGET}${X_OF_Y}"
+            echo "starting sync of repository ${TARGET}${COUNTS}"
         ;;
 
         sync_post)
-            echo "finished sync of repository ${TARGET}${X_OF_Y}"
+            echo "finished sync of repository ${TARGET}${COUNTS}"
         ;;
 
         *)

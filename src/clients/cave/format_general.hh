@@ -33,8 +33,15 @@ namespace paludis
         std::string format_general_sr(const std::string & f, const std::string & s, const std::string & r)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
+        std::string format_general_kv(const std::string & f, const std::string & k, const std::string & v)
+            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
         std::string format_general_rhvib(const std::string & f, const std::string & r,
                 const std::string & h, const std::string & v, const int i, const bool b)
+            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        std::string format_general_spad(const std::string & f, const std::string & s,
+                const int p, const int a, const int d)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
         std::string format_general_i(const std::string & f, const int i)
