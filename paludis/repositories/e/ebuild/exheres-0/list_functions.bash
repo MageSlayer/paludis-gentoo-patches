@@ -61,10 +61,11 @@ optionq()
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     if [[ "${1:0:1}" == "!" ]] ; then
         local r=$(paludis_pipe_command OPTIONQ "$EAPI" "${1#!}" )
+        return $((! ${r%%;*}))
     else
         local r=$(paludis_pipe_command OPTIONQ "$EAPI" "$1" )
+        return ${r%%;*}
     fi
-    return ${r%%;*}
 }
 
 has()
