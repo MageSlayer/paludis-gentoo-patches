@@ -1361,22 +1361,30 @@ if test "x$need_gem_check" = "xyes" ; then
 fi
 dnl }}}
 
-dnl {{{ check for eselect
-AC_MSG_CHECKING([for eselect])
-if eselect version >/dev/null 2>/dev/null ; then
-	AC_MSG_RESULT([yes])
+dnl {{{ eselect or eclectic
+AC_MSG_CHECKING([for config framework])
+AC_ARG_WITH([config-framework],
+	AS_HELP_STRING([--with-config-framework=@<:@eselect|eclectic@:>@], [Specify whether to use eselect or eclectic (default: eselect)]),
+	CONFIG_FRAMEWORK=`eval echo $withval`,
+	CONFIG_FRAMEWORK=eselect)
+
+if $CONFIG_FRAMEWORK version >/dev/null 2>/dev/null ; then
+	AC_MSG_RESULT([$CONFIG_FRAMEWORK])
 else
 	AC_MSG_RESULT([no])
-	AC_MSG_ERROR([eselect is required])
+	AC_MSG_ERROR([eselect or eclectic are required])
 fi
+AC_SUBST([CONFIG_FRAMEWORK])
+dnl }}}
 
+dnl {{{ check eselect/eclectic env and news
 for m in env news ; do
-	AC_MSG_CHECKING([for eselect $m])
-	if eselect $m version >/dev/null 2>/dev/null ; then
+	AC_MSG_CHECKING([for $CONFIG_FRAMEWORK $m])
+	if $CONFIG_FRAMEWORK $m version >/dev/null 2>/dev/null ; then
 		AC_MSG_RESULT([yes])
 	else
 		AC_MSG_RESULT([no])
-		AC_MSG_ERROR([eselect $m is required])
+		AC_MSG_ERROR([$CONFIG_FRAMEWORK $m is required])
 	fi
 done
 dnl }}}
@@ -1417,6 +1425,8 @@ AC_OUTPUT(
 	doc/faq/Makefile
 	doc/overview/Makefile
 	hooks/Makefile
+	hooks/eselect_env_update.bash
+	hooks/news.hook
 	hooks/demos/Makefile
 	misc/Makefile
 	paludis/Makefile

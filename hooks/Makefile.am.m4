@@ -298,3 +298,6 @@ TESTS_ENVIRONMENT = env \
 	TOP_SRCDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)`" \
 	bash $(top_srcdir)/hooks/run_test.bash
 
+all-local :
+	chmod +x $(builddir)/news.hook $(builddir)/eselect_env_update.bash
+

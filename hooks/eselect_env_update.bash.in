@@ -26,7 +26,7 @@ fi
 
 echo
 einfo_unhooked "Regenerating environment..."
-eselect env update || ewarn "Regeneration failed"
+@CONFIG_FRAMEWORK@ env update || ewarn "Regeneration failed"
 einfo_unhooked "Done regenerating environment"
 
 true

@@ -21,12 +21,12 @@ check_for_news()
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
     export ROOT="${ROOT}"
     source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
-    count="$(eselect news count )"
+    count="$(@CONFIG_FRAMEWORK@ news count )"
 
     done_echo=
     if [[ ${count} -gt 0 ]] ; then
         [[ -z "${done_echo}" ]] && echo ; done_echo=yes
-        ewarn "You have ${count} unread news items (use 'eselect news' to read)"
+        ewarn "You have ${count} unread news items (use '@CONFIG_FRAMEWORK@ news' to read)"
     elif [[ "${HOOK/pretend}" == "${HOOK}" ]] ; then
         [[ -z "${done_echo}" ]] && echo ; done_echo=yes
         einfo_unhooked "No unread news items found"
