@@ -106,7 +106,6 @@ TailOutputStreamBuf::tail(const bool clear)
 
     if (clear)
     {
-        Lock lock(_imp->mutex);
         _imp->tail.clear();
         _imp->n = 1;
         _imp->tail.push_back("");
