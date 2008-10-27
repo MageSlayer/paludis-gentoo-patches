@@ -6,10 +6,11 @@
 
 _paludis() {
     local actions action_args query_args general_args deplist_args install_uninstall_args list_args lists owner_args
-    actions=( --query --install -i --uninstall -u --sync -s --report --contents -k --owner -o --version -V --info -I --help -h 
-    --has-version  --best-version --environnement-variable --list-repositories --list-categories --list-packages --list-sets 
-    --list-sync-protocols --list-repository-formats --list-dep-tag-categories --regenerate-installed-cache  --update-news 
-    --regenerate-installable-cache --config)
+    actions=(
+        --query --install -i --uninstall -u --uninstall-unused --sync -s --report --contents -k --executables --owner -o --config
+        --version -V --info -I --help -h -has-version --best-version --environment-variable --list-repositories --list-categories --list-packages --list-sets 
+        --list-sync-protocols --list-repository-formats --list-dep-tag-categories --regenerate-installed-cache --regenerate-installable-cache
+    )
 
     query_args=(
         "(--show-deps -D)"{--show-deps,-D}"[Show dependencies]"
@@ -19,7 +20,6 @@ _paludis() {
     install_uninstall_args=(
         "(--pretend -p)"{--pretend,-p}"[Pretend only]"
         "(--preserve-world -1)"{--preserve-world,-1}"[Don t modify the world file]"
-        "--no-config-protection[Disable config file protection (dangerous)]"
         "--debug-build[What to do with debug information]:Debug Build:(( none\:Discard\ debug\ information split\:Split\ debug\ information internal\:Keep\ debug\ information\ with\ binaries ))"
         "(--fetch -f)"{--fetch,-f}"[Only fetch sources; don t install anything]"
         "--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))"
@@ -56,6 +56,7 @@ _paludis() {
     general_args=(
         "--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))" 
         "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
+        "--no-suggestions[Do not give suggestions if an unknown name is specified]"
         "(--environment -E)"{-E,--environment}"[Environment specification]"
         "--resume-command-template[Save the resume command to a file made using mkstemp(3)]:file:_files"
         "--compact[Display output using one line per entry]"
