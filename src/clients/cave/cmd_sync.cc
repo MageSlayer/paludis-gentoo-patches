@@ -177,6 +177,10 @@ namespace
                 }
                 catch (...)
                 {
+                    {
+                        Lock lock(mutex);
+                        finished = true;
+                    }
                     notifier_condition.acquire_then_signal(notifier_mutex);
                     throw;
                 }
@@ -239,6 +243,13 @@ namespace
                             )));
 
             cout << format_general_spad(f::sync_repo_done_failure(), stringify(r), np, na, nd);
+            std::tr1::shared_ptr<const Sequence<std::string> > tail(output_deviant->tail(true));
+            if (tail && tail->begin() != tail->end())
+            {
+                for (Sequence<std::string>::ConstIterator t(tail->begin()), t_end(tail->end()) ;
+                        t != t_end ; ++t)
+                    cout << format_general_s(f::sync_repo_tail(), *t);
+            }
 
             int PALUDIS_ATTRIBUTE((unused)) ignore(env->perform_hook(Hook("sync_fail")
                         ("TARGET", stringify(r))
