@@ -166,13 +166,20 @@ namespace
                             std::tr1::ref(np), std::tr1::ref(na), std::tr1::ref(nd),
                             std::tr1::ref(finished), std::tr1::ref(*output_deviant)));
 
-                result = repo->syncable_interface()->sync(output_deviant);
-
+                try
                 {
-                    Lock lock(mutex);
-                    finished = true;
-                }
+                    result = repo->syncable_interface()->sync(output_deviant);
 
+                    {
+                        Lock lock(mutex);
+                        finished = true;
+                    }
+                }
+                catch (...)
+                {
+                    notifier_condition.acquire_then_signal(notifier_mutex);
+                    throw;
+                }
                 notifier_condition.acquire_then_signal(notifier_mutex);
             }
 
