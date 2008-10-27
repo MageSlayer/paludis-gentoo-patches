@@ -23,6 +23,7 @@
 #include <paludis/util/output_deviator-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <tr1/memory>
 
 using namespace paludis;
@@ -36,7 +37,8 @@ namespace paludis
             OutputDeviator(const FSEntry & log_dir);
             ~OutputDeviator();
 
-            const std::tr1::shared_ptr<OutputDeviant> make_output_deviant(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<OutputDeviant> make_output_deviant(
+                    const std::string &, const unsigned int number_of_tail_lines) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE OutputDeviant :
@@ -45,7 +47,7 @@ namespace paludis
         friend class OutputDeviator;
 
         private:
-            OutputDeviant(const FSEntry &);
+            OutputDeviant(const FSEntry &, const unsigned int);
 
         public:
             ~OutputDeviant();
@@ -55,6 +57,9 @@ namespace paludis
 
             void discard_log();
             const FSEntry log_file_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const std::tr1::shared_ptr<const Sequence<std::string> > tail(const bool clear) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

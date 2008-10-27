@@ -125,6 +125,8 @@ namespace paludis
             const std::string sync_repo_done_success();
             const std::string sync_repo_done_no_syncing_required();
             const std::string sync_repo_done_failure();
+            const std::string sync_repo_active();
+            const std::string sync_repo_tail();
         }
     }
 }

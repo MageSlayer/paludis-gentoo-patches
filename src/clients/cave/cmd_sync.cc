@@ -28,6 +28,8 @@
 #include <paludis/util/output_deviator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/condition_variable.hh>
+#include <paludis/util/thread.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -88,6 +90,37 @@ namespace
 
     typedef std::map<std::string, Message> Messages;
 
+    void do_one_sync_notifier(const RepositoryName & r, Mutex & notifier_mutex,
+            Mutex & count_mutex, ConditionVariable & notifier_condition, int & np, int & na, int & nd,
+            bool & finished, OutputDeviant & output_deviant)
+    {
+        bool first(true);
+        while (true)
+        {
+            {
+                Lock lock(count_mutex);
+                if (finished)
+                    return;
+
+                if (! first)
+                {
+                    cout << format_general_spad(f::sync_repo_active(), stringify(r), np, na, nd);
+                    std::tr1::shared_ptr<const Sequence<std::string> > tail(output_deviant.tail(true));
+                    if (tail && tail->begin() != tail->end())
+                    {
+                        for (Sequence<std::string>::ConstIterator t(tail->begin()), t_end(tail->end()) ;
+                                t != t_end ; ++t)
+                            cout << format_general_s(f::sync_repo_tail(), *t);
+                    }
+                }
+            }
+
+            Lock lock(notifier_mutex);
+            notifier_condition.timed_wait(notifier_mutex, 10);
+            first = false;
+        }
+    }
+
     void do_one_sync(const std::tr1::shared_ptr<Environment> & env, const RepositoryName & r, Mutex & mutex,
             Messages & messages, int & retcode, int & np, int & na, int & nd,
             OutputDeviator & output_deviator)
@@ -96,7 +129,7 @@ namespace
 
         {
             Lock lock(mutex);
-            output_deviant = output_deviator.make_output_deviant("sync-" + stringify(r));
+            output_deviant = output_deviator.make_output_deviant("sync-" + stringify(r), 10);
         }
 
         bool done_decrement(false);
@@ -122,7 +155,26 @@ namespace
             if (! repo->syncable_interface())
                 throw BadRepositoryForCommand(r, "does not support syncing");
 
-            bool result(repo->syncable_interface()->sync(output_deviant));
+            bool result(false);
+            {
+                Mutex notifier_mutex;
+                ConditionVariable notifier_condition;
+                bool finished(false);
+                Thread notifier_thread(std::tr1::bind(&do_one_sync_notifier, r,
+                            std::tr1::ref(notifier_mutex), std::tr1::ref(mutex),
+                            std::tr1::ref(notifier_condition),
+                            std::tr1::ref(np), std::tr1::ref(na), std::tr1::ref(nd),
+                            std::tr1::ref(finished), std::tr1::ref(*output_deviant)));
+
+                result = repo->syncable_interface()->sync(output_deviant);
+
+                {
+                    Lock lock(mutex);
+                    finished = true;
+                }
+
+                notifier_condition.acquire_then_signal(notifier_mutex);
+            }
 
             {
                 Lock lock(mutex);
@@ -228,13 +280,14 @@ SyncCommand::run(
 
     {
         Mutex mutex;
-        ActionQueue actions(5);
         int active(0), done(0), pending(repos.size());
+
+        ActionQueue actions(5);
         for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
             actions.enqueue(std::tr1::bind(&do_one_sync, env, *r, std::tr1::ref(mutex),
-                        std::tr1::ref(messages), std::tr1::ref(retcode), std::tr1::ref(pending), std::tr1::ref(active), std::tr1::ref(done),
-                        std::tr1::ref(output_deviator)));
+                        std::tr1::ref(messages), std::tr1::ref(retcode), std::tr1::ref(pending),
+                        std::tr1::ref(active), std::tr1::ref(done), std::tr1::ref(output_deviator)));
     }
 
     if (0 != env->perform_hook(Hook("sync_all_post")

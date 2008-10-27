@@ -79,8 +79,8 @@ EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist seclea
 SUBDIRS = .
 
 libpaludisutil_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
-libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
-libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS)
+libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS) $(RT_LIBS)
+libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS) $(RT_LIBS)
 
 TESTS = testlist
 

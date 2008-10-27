@@ -448,3 +448,15 @@ paludis::cave::f::sync_repo_done_failure()
     return "-> " + c::bold_red() + "%s" + c::normal() + "%{column 30}failed%{column 52}%p%{column 60}%a%{column 68}%d\\n";
 }
 
+const std::string
+paludis::cave::f::sync_repo_active()
+{
+    return "-> %s%{column 30}active%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_tail()
+{
+    return "    ... %s\\n";
+}
+

@@ -23,13 +23,15 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/fd_output_stream.hh>
+#include <paludis/util/tee_output_stream.hh>
+#include <paludis/util/tail_output_stream.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <ctime>
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 
 namespace paludis
 {
@@ -48,18 +50,25 @@ namespace paludis
     struct Implementation<OutputDeviant>
     {
         const FSEntry file_name;
-        int descriptor;
-        std::tr1::shared_ptr<FDOutputStream> stream;
+        std::tr1::shared_ptr<TeeOutputStream> tee_stream;
+        std::tr1::shared_ptr<std::ofstream> f_stream;
+        std::tr1::shared_ptr<TailOutputStream> tail_stream;
 
-        Implementation(const FSEntry & f) :
+        Implementation(const FSEntry & f, const unsigned int number_of_tail_lines) :
             file_name(f),
-            descriptor(open(stringify(f).c_str(), O_CREAT | O_WRONLY, 0644))
+            f_stream(new std::ofstream(stringify(file_name).c_str()))
         {
-            if (-1 == descriptor)
+            if (! *f_stream)
+            {
                 Log::get_instance()->message("output_deviator.open_failed", ll_warning, lc_context) << "Cannot open '"
-                    << f << + "' for write, sending output to stdout and stderr instead";
+                    << file_name << + "' for write, sending output to stdout and stderr instead";
+                f_stream.reset();
+            }
             else
-                stream.reset(new FDOutputStream(descriptor));
+            {
+                tail_stream.reset(new TailOutputStream(number_of_tail_lines));
+                tee_stream.reset(new TeeOutputStream(f_stream.get(), tail_stream.get()));
+            }
         }
     };
 }
@@ -74,31 +83,25 @@ OutputDeviator::~OutputDeviator()
 }
 
 const std::tr1::shared_ptr<OutputDeviant>
-OutputDeviator::make_output_deviant(const std::string & n)
+OutputDeviator::make_output_deviant(const std::string & n, const unsigned number_of_tail_lines)
 {
-    return make_shared_ptr(new OutputDeviant(_imp->log_dir / (n + "." + stringify(std::time(0)) + ".log")));
+    return make_shared_ptr(new OutputDeviant(_imp->log_dir / (n + "." + stringify(std::time(0)) + ".log"), number_of_tail_lines));
 }
 
-OutputDeviant::OutputDeviant(const FSEntry & f) :
-    PrivateImplementationPattern<OutputDeviant>(new Implementation<OutputDeviant>(f))
+OutputDeviant::OutputDeviant(const FSEntry & f, const unsigned int n) :
+    PrivateImplementationPattern<OutputDeviant>(new Implementation<OutputDeviant>(f, n))
 {
 }
 
 OutputDeviant::~OutputDeviant()
 {
-    if (_imp->descriptor != 1)
-    {
-        if (0 != ::close(_imp->descriptor))
-            Log::get_instance()->message("output_deviant.close_failed", ll_warning, lc_context)
-                << "Cannot close '" << _imp->file_name << "'";
-    }
 }
 
 std::ostream *
 OutputDeviant::stdout_stream() const
 {
-    if (_imp->stream)
-        return _imp->stream.get();
+    if (_imp->tee_stream)
+        return _imp->tee_stream.get();
     else
         return &std::cout;
 }
@@ -106,8 +109,8 @@ OutputDeviant::stdout_stream() const
 std::ostream *
 OutputDeviant::stderr_stream() const
 {
-    if (_imp->stream)
-        return _imp->stream.get();
+    if (_imp->tee_stream)
+        return _imp->tee_stream.get();
     else
         return &std::cerr;
 }
@@ -115,7 +118,7 @@ OutputDeviant::stderr_stream() const
 void
 OutputDeviant::discard_log()
 {
-    if (-1 != _imp->descriptor)
+    if (_imp->f_stream)
         if (-1 == ::unlink(stringify(_imp->file_name).c_str()))
             Log::get_instance()->message("output_deviant.unlink_failed", ll_warning, lc_context)
                 << "Cannot unlink '" << _imp->file_name << "'";
@@ -125,6 +128,15 @@ const FSEntry
 OutputDeviant::log_file_name() const
 {
     return _imp->file_name;
+}
+
+const std::tr1::shared_ptr<const Sequence<std::string> >
+OutputDeviant::tail(const bool clear) const
+{
+    if (_imp->tail_stream)
+        return _imp->tail_stream->tail(clear);
+    else
+        return make_null_shared_ptr();
 }
 
 template class PrivateImplementationPattern<OutputDeviator>;

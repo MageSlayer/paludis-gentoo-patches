@@ -554,6 +554,7 @@ fi
 
 AC_MSG_CHECKING([whether to enable threads])
 PTHREAD_LIBS=""
+RT_LIBS=""
 AC_ARG_ENABLE([threads],
 			  AS_HELP_STRING([--enable-threads], [Enable threads (experimental)]),
 			  [ENABLE_THREADS=$enableval],
@@ -597,11 +598,46 @@ int main(int, char **)
 	PTHREAD_LIBS="-pthread -lpthread"
 	PALUDIS_PC_LIBS="${PALUDIS_PC_LIBS} -pthread -lpthread"
 	PALUDIS_ENABLE_THREADS=1
+
+	AC_MSG_CHECKING([how to get clock_gettime])
+	AC_LINK_IFELSE([
+#include <time.h>
+#include <sys/time.h>
+int main(int, char **)
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+}
+],
+		[AC_MSG_RESULT([already have it])],
+		[save_LDFLAGS=$LDFLAGS
+		LDFLAGS="-lrt $LDFLAGS"
+		AC_LINK_IFELSE([
+#include <time.h>
+#include <sys/time.h>
+int main(int, char **)
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+}
+],
+		[
+			AC_MSG_RESULT([-lrt])
+			RT_LIBS="-lrt"
+		],
+		[
+			AC_MSG_RESULT([don't know])
+			AC_MSG_ERROR([enable-threads needs clock_gettime])
+		])
+		LDFLAGS=$save_LDFLAGS
+		])
+
 else
 	PALUDIS_ENABLE_THREADS=0
 fi
 AC_SUBST([PALUDIS_ENABLE_THREADS])
 AC_SUBST([PTHREAD_LIBS])
+AC_SUBST([RT_LIBS])
 
 PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
