@@ -24,11 +24,11 @@ _paludis() {
         "(--fetch -f)"{--fetch,-f}"[Only fetch sources; don t install anything]"
         "--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))"
         "--show-use-descriptions[Show descriptions of USE flags]:case to show:((none\:Don\ t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))"
-	"--show-package-descriptions[Show package descriptions]:When:((none\:Don\ t\ show\ any\ descriptions new\:Show\ descriptions\ for\ new\ packages all\:Show\ descriptions\ for\ all\ packages))"
+        "--show-package-descriptions[Show package descriptions]:When:((none\:Don\ t\ show\ any\ descriptions new\:Show\ descriptions\ for\ new\ packages all\:Show\ descriptions\ for\ all\ packages))"
         "--add-to-world-spec[Use this atom, rather than all targets, for updating world (for resume commands)]"
         "--no-safe-resume[Do not allow interrupted downloads to be resumed]"
-	"--continue-on-failure[Whether to continue after a fetch or install error]:When:((if-fetch-only\:If\ fetching\ only never\:Never if-satisfied\:If\ remaining\ packages\ dependencies\ are\ satisfied if-independent\:If\ independent\ of\ failed\ and\ skipped\ packages always\:Always))"
-	"--checks[Whether to run post-build checks]:When:((none\:Don\ t\ run\ checks,\ even\ if\ they\ should\ be\ run default\:Run\ checks\ if\ they\ should\ be\ run\ by\ default always\:Always\ run\ checks))"
+        "--continue-on-failure[Whether to continue after a fetch or install error]:When:((if-fetch-only\:If\ fetching\ only never\:Never if-satisfied\:If\ remaining\ packages\ dependencies\ are\ satisfied if-independent\:If\ independent\ of\ failed\ and\ skipped\ packages always\:Always))"
+        "--checks[Whether to run post-build checks]:When:((none\:Don\ t\ run\ checks,\ even\ if\ they\ should\ be\ run default\:Run\ checks\ if\ they\ should\ be\ run\ by\ default always\:Always\ run\ checks))"
         "(--destinations -d)"{--destinations,-d}"[Use specified destinations instead of defaults]:destinations:_paludis_packages repositories"
     )
     list_args=(
@@ -58,7 +58,7 @@ _paludis() {
         "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
         "(--environment -E)"{-E,--environment}"[Environment specification]"
         "--resume-command-template[Save the resume command to a file made using mkstemp(3)]:file:_files"
-	"--compact[Display output using one line per entry]"
+        "--compact[Display output using one line per entry]"
     )
     
     action_args=(
@@ -100,7 +100,7 @@ _paludis() {
         "--dl-uninstalled-deps-pre[How to handle pre dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
         "--dl-uninstalled-deps-post[How to handle post dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
         "--dl-uninstalled-deps-runtime[How to handle runtime dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
-	"--dl-uninstalled-deps-suggested[How to handle suggested dependencies for uninstalled packages]:How(pre pre-or-post post try-post discard)"
+        "--dl-uninstalled-deps-suggested[How to handle suggested dependencies for uninstalled packages]:How(pre pre-or-post post try-post discard)"
         "--dl-circular[How to handle circular dependencies]:How:(error discard)"
         "--dl-fall-back[When to fall back to installed packages]:When:(as-needed-except-targets as-needed never)"
         "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:(always as-needed)"
