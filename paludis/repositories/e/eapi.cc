@@ -210,6 +210,13 @@ namespace
                         )));
     }
 
+    std::tr1::shared_ptr<const EAPIAnnotations> make_annotations(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIAnnotations(make_named_values<EAPIAnnotations>(
+                        value_for<n::myoptions_description>(k.get("annotations_myoptions_description"))
+                        )));
+    }
+
     std::tr1::shared_ptr<const SupportedEAPI> make_supported_eapi(const KeyValueConfigFile & k)
     {
         ELikePackageDepSpecOptions package_dep_spec_parse_options;
@@ -253,6 +260,7 @@ namespace
         }
 
         return make_shared_ptr(new SupportedEAPI(make_named_values<SupportedEAPI>(
+                        value_for<n::annotations>(make_annotations(k)),
                         value_for<n::breaks_portage>(destringify_key<bool>(k, "breaks_portage")),
                         value_for<n::can_be_pbin>(destringify_key<bool>(k, "can_be_pbin")),
                         value_for<n::dependency_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "dependency_labels")))),

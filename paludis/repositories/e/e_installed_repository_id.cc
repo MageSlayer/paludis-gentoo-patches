@@ -940,7 +940,7 @@ EInstalledRepositoryID::contained_in_key() const
 
 std::tr1::shared_ptr<ChoiceValue>
 EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
-        const Tribool, const bool explicitly_listed) const
+        const Tribool, const bool explicitly_listed, const std::string & override_description) const
 {
     if (! eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
@@ -961,7 +961,7 @@ EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choic
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
     return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::tr1::shared_ptr<const UseDesc>(),
-                enabled, enabled, true, explicitly_listed));
+                enabled, enabled, true, explicitly_listed, override_description));
 }
 
 void

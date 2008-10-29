@@ -46,6 +46,7 @@ namespace paludis
                 const bool _enabled_by_default;
                 const bool _locked;
                 const bool _explicitly_listed;
+                const std::string _override_description;
 
             public:
                 EChoiceValue(const ChoicePrefixName & r,
@@ -54,7 +55,8 @@ namespace paludis
                         const QualifiedPackageName & p,
                         const std::tr1::shared_ptr<const UseDesc> & d,
                         bool b, bool def,
-                        bool l, bool x);
+                        bool l, bool x,
+                        const std::string & o);
 
                 const UnprefixedChoiceName unprefixed_name() const;
                 const ChoiceNameWithPrefix name_with_prefix() const;

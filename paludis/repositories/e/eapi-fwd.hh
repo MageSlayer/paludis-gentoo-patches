@@ -30,6 +30,7 @@ namespace paludis
 {
     namespace erepository
     {
+        class EAPIAnnotations;
         class EAPIData;
         class EAPIConfigurationError;
         class EAPIEbuildPhases;

@@ -38,6 +38,7 @@ namespace paludis
 {
     namespace n
     {
+        struct annotations;
         struct binary_from_env_variables;
         struct bracket_merged_variables;
         struct breaks_portage;
@@ -107,6 +108,7 @@ namespace paludis
         struct metadata_key;
         struct minimum_flat_list_size;
         struct myoptions;
+        struct myoptions_description;
         struct must_not_change_variables;
         struct name;
         struct no_slot_or_repo;
@@ -219,6 +221,7 @@ namespace paludis
 
         struct SupportedEAPI
         {
+            NamedValue<n::annotations, std::tr1::shared_ptr<const EAPIAnnotations> > annotations;
             NamedValue<n::breaks_portage, bool> breaks_portage;
             NamedValue<n::can_be_pbin, bool> can_be_pbin;
             NamedValue<n::dependency_labels, std::tr1::shared_ptr<const EAPILabels> > dependency_labels;
@@ -357,6 +360,11 @@ namespace paludis
         {
             NamedValue<n::no_slot_or_repo, bool> no_slot_or_repo;
             NamedValue<n::rewrite_virtuals, bool> rewrite_virtuals;
+        };
+
+        struct EAPIAnnotations
+        {
+            NamedValue<n::myoptions_description, std::string> myoptions_description;
         };
     }
 #endif

@@ -36,6 +36,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
@@ -928,7 +929,8 @@ namespace
     struct MyOptionsFinder :
         ConstVisitor<PlainTextSpecTree>
     {
-        typedef std::list<std::tr1::shared_ptr<const PlainTextDepSpec> > Values;
+        typedef std::map<std::string, std::string> Annotations;
+        typedef std::map<UnprefixedChoiceName, Annotations> Values;
         typedef std::map<ChoicePrefixName, Values> Prefixes;
 
         Prefixes prefixes;
@@ -941,7 +943,40 @@ namespace
 
         void visit_leaf(const PlainTextDepSpec & s)
         {
-            prefixes[*current_prefix_stack.begin()].push_back(std::tr1::static_pointer_cast<const PlainTextDepSpec>(s.clone()));
+            Context context("When handling item '" + stringify(s) + "':");
+
+            Prefixes::iterator p(prefixes.find(*current_prefix_stack.begin()));
+            if (p == prefixes.end())
+                p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
+
+            UnprefixedChoiceName n(s.text());
+            Values::iterator v(p->second.find(n));
+            if (v == p->second.end())
+                v = p->second.insert(std::make_pair(n, Annotations())).first;
+
+            if (s.annotations_key())
+            {
+                for (MetadataSectionKey::MetadataConstIterator m(s.annotations_key()->begin_metadata()),
+                        m_end(s.annotations_key()->end_metadata()) ;
+                        m != m_end ; ++m)
+                {
+                    const MetadataValueKey<std::string> * mm(visitor_cast<const MetadataValueKey<std::string> >(**m));
+                    if (! mm)
+                    {
+                        Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
+                            << "Don't know how to handle annotation '" << (*m)->raw_name() << "'";
+                        continue;
+                    }
+
+                    Annotations::iterator a(v->second.find(mm->raw_name()));
+                    if ((a != v->second.end()) && a->second != mm->value())
+                        Log::get_instance()->message("e_key.myoptions.duplicate", ll_qa, lc_context)
+                            << "Annotation '" << mm->raw_name() << "' set to both '" << a->second << "' and '"
+                            << mm->value() << "'";
+                    else
+                        v->second.insert(make_pair(mm->raw_name(), mm->value()));
+                }
+            }
         }
 
         void visit_leaf(const PlainTextLabelDepSpec & s)
@@ -966,6 +1001,26 @@ namespace
             current_prefix_stack.pop_front();
         }
     };
+
+    std::tr1::shared_ptr<ChoiceValue> make_myoption(
+            const std::tr1::shared_ptr<const ERepositoryID> & id,
+            std::tr1::shared_ptr<Choice> & choice,
+            MyOptionsFinder::Values::const_iterator & v,
+            const Tribool s,
+            const bool b)
+    {
+        std::string description;
+        for (MyOptionsFinder::Annotations::const_iterator a(v->second.begin()), a_end(v->second.end()) ;
+                a != a_end ; ++a)
+        {
+            if (a->first == id->eapi()->supported()->annotations()->myoptions_description())
+                description = a->second;
+            else
+                Log::get_instance()->message("e_key.myoptions.unknown", ll_qa, lc_context)
+                    << "Unknown annotation '" << a->first << "' = '" << a->second << "'";
+        }
+        return id->make_choice_value(choice, v->first, s, b, description);
+    }
 }
 
 #include <iostream>
@@ -1024,7 +1079,7 @@ EChoicesKey::value() const
             {
                 for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                         v != v_end ; ++v)
-                    exp->add(_imp->id->make_choice_value(exp, UnprefixedChoiceName((*v)->text()), indeterminate, true));
+                    exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
                 myoptions.prefixes.erase(p);
             }
         }
@@ -1035,7 +1090,7 @@ EChoicesKey::value() const
             Context local_local_context("When using empty prefix to populate choices:");
             for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                     v != v_end ; ++v)
-                use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName((*v)->text()), indeterminate, true));
+                use->add(make_myoption(_imp->id, use, v, indeterminate, true));
             myoptions.prefixes.erase(p);
         }
 
@@ -1067,7 +1122,7 @@ EChoicesKey::value() const
                             IsExpand(flag.first, delim)))
                     i_values.insert(flag);
                 else
-                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true));
+                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, ""));
             }
 
             /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
@@ -1095,7 +1150,7 @@ EChoicesKey::value() const
                         /* don't need to worry */
                     }
                     else
-                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false));
+                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false, ""));
                 }
             }
         }
@@ -1108,7 +1163,7 @@ EChoicesKey::value() const
 
             for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
                     a != a_end ; ++a)
-                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false));
+                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false, ""));
         }
 
         if (_imp->id->raw_use_expand_key())
@@ -1151,9 +1206,9 @@ EChoicesKey::value() const
                 {
                     std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
                     if (i_values.end() != i)
-                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true));
+                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true, ""));
                     else
-                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false));
+                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, ""));
                 }
             }
         }

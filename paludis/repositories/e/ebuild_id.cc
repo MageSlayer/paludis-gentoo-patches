@@ -1097,7 +1097,8 @@ EbuildID::make_choice_value(
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_name,
         const Tribool iuse_default,
-        const bool explicitly_listed
+        const bool explicitly_listed,
+        const std::string & override_description
         ) const
 {
     if (! eapi()->supported())
@@ -1158,7 +1159,7 @@ EbuildID::make_choice_value(
 
     return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 _imp->repository->use_desc(),
-                enabled, enabled_by_default, locked, explicitly_listed));
+                enabled, enabled_by_default, locked, explicitly_listed, override_description));
 }
 
 void
