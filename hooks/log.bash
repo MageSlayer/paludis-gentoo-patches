@@ -19,7 +19,7 @@
 mkdir -p "${ROOT}/var/log"
 
 if [[ -n ${X_OF_Y} ]] ; then
-    COUNTS=" (${X_OF_Y})}"
+    COUNTS=" (${X_OF_Y})"
 else
     COUNTS=" [${NUMBER_PENDING}p ${NUMBER_ACTIVE}a ${NUMBER_DONE}d]"
 fi
