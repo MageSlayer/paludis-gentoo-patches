@@ -1062,27 +1062,28 @@ EChoicesKey::value() const
         MyOptionsFinder myoptions;
         _imp->id->raw_myoptions_key()->value()->accept(myoptions);
 
-        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
-                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
-                u != u_end ; ++u)
-        {
-            Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
-
-            std::string lower_u;
-            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-            std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
-                        false, hidden ? hidden->end() != hidden->find(*u) : false, false, true));
-            _imp->value->add(exp);
-
-            MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
-            if (myoptions.prefixes.end() != p)
+        if (_imp->id->raw_use_expand_key())
+            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
+                    u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+                    u != u_end ; ++u)
             {
-                for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
-                        v != v_end ; ++v)
-                    exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
-                myoptions.prefixes.erase(p);
+                Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
+
+                std::string lower_u;
+                std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+                std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
+                            false, hidden ? hidden->end() != hidden->find(*u) : false, false, true));
+                _imp->value->add(exp);
+
+                MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
+                if (myoptions.prefixes.end() != p)
+                {
+                    for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                            v != v_end ; ++v)
+                        exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
+                    myoptions.prefixes.erase(p);
+                }
             }
-        }
 
         MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName("")));
         if (myoptions.prefixes.end() != p)
