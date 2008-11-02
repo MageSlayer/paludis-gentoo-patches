@@ -64,7 +64,7 @@ namespace
     template <typename T_>
     T_ destringify_key(const KeyValueConfigFile & k, const std::string & key)
     {
-        Context context("When getting key '" + key + ":");
+        Context context("When getting key '" + key + "':");
         return destringify<T_>(check_get(k, key));
     }
 
