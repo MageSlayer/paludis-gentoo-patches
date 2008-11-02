@@ -31,8 +31,6 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
-#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
-
 template class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>;
 
 namespace paludis

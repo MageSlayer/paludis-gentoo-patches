@@ -27,8 +27,6 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
-#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
-
 namespace
 {
     static VALUE c_package_database;

@@ -24,8 +24,6 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
-#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
-
 namespace
 {
     void do_register_names()

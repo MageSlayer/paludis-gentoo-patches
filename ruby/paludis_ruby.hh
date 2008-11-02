@@ -49,6 +49,10 @@
 
 #include <ruby.h>
 
+#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
+#define RDOC_IS_STUPID(x, y) RUBY_FUNC_CAST((y))
+#define FAKE_RDOC_METHOD(x) //
+
 namespace paludis
 {
 
