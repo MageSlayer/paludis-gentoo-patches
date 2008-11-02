@@ -142,6 +142,22 @@ namespace
         return value_to_version_spec(self).has_try_part() ? Qtrue : Qfalse;
     }
 
+    /*
+     *  call-seq:
+     *      to_s -> String
+     *
+     * Return as String
+     */
+    FAKE_RDOC_METHOD(version_spec_to_s);
+
+    /*
+     *  call-seq:
+     *      <=>(VersionSpec) -> -1, 0, +1
+     *
+     * Comparison—Returns -1, 0, or +1 depending on whether provided VersionSpec is less than, equal to, or greater than this VersionSpec. This is the basis for the tests in Comparable.
+     */
+    FAKE_RDOC_METHOD(version_spec_compare);
+
     void do_register_version_spec()
     {
         /*
@@ -153,15 +169,15 @@ namespace
         c_version_spec = rb_define_class_under(paludis_module(), "VersionSpec", rb_cObject);
         rb_define_singleton_method(c_version_spec, "new", RUBY_FUNC_CAST(&version_spec_new), 1);
         rb_define_method(c_version_spec, "initialize", RUBY_FUNC_CAST(&version_spec_init), 1);
-        rb_define_method(c_version_spec, "<=>", RUBY_FUNC_CAST(&Common<VersionSpec>::compare), 1);
+        rb_define_method(c_version_spec, "<=>", RDOC_IS_STUPID(version_spec_compare,(&Common<VersionSpec>::compare)), 1);
         rb_include_module(c_version_spec, rb_mComparable);
-        rb_define_method(c_version_spec, "to_s", RUBY_FUNC_CAST(&Common<VersionSpec>::to_s), 0);
-        rb_define_method(c_version_spec, "remove_revision", RUBY_FUNC_CAST(&version_spec_remove_revision), 0);
-        rb_define_method(c_version_spec, "revision_only", RUBY_FUNC_CAST(&version_spec_revision_only), 0);
         rb_define_method(c_version_spec, "bump", RUBY_FUNC_CAST(&version_spec_bump), 0);
         rb_define_method(c_version_spec, "is_scm?", RUBY_FUNC_CAST(&version_spec_is_scm), 0);
-        rb_define_method(c_version_spec, "has_try_part?", RUBY_FUNC_CAST(&version_spec_has_try_part), 0);
         rb_define_method(c_version_spec, "has_scm_part?", RUBY_FUNC_CAST(&version_spec_has_scm_part), 0);
+        rb_define_method(c_version_spec, "has_try_part?", RUBY_FUNC_CAST(&version_spec_has_try_part), 0);
+        rb_define_method(c_version_spec, "remove_revision", RUBY_FUNC_CAST(&version_spec_remove_revision), 0);
+        rb_define_method(c_version_spec, "revision_only", RUBY_FUNC_CAST(&version_spec_revision_only), 0);
+        rb_define_method(c_version_spec, "to_s", RDOC_IS_STUPID(version_spec_to_s,(&Common<VersionSpec>::to_s)), 0);
     }
 }
 

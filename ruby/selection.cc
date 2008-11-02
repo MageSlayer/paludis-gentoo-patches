@@ -63,6 +63,70 @@ namespace
         }
     };
 
+    /*
+     *  call-seq:
+     *      to_s -> String
+     *
+     * Return as String
+     */
+    FAKE_RDOC_METHOD(selection_to_s);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> SomeArbitraryVersion
+     *
+     * Create new SomeArbitrartyVersion Selection
+     */
+    FAKE_RDOC_METHOD(some_arbitrary_version_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> BestVersionOnly
+     *
+     * Create new BestVersionOnly Selection
+     */
+    FAKE_RDOC_METHOD(best_version_only_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> BestVersionInEachSlot
+     *
+     * Create new BestVersionOnly Selection
+     */
+    FAKE_RDOC_METHOD(best_version_in_each_slot_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> AllVersionsSorted
+     *
+     * Create new AllVersionsSorted Selection
+     */
+    FAKE_RDOC_METHOD(all_versions_sorted_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> AllVersionsGroupedBySlot
+     *
+     * Create new AllVersionsGroupedBySlot Selection
+     */
+    FAKE_RDOC_METHOD(all_versions_sorted_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> AllVersionsUnsorted
+     *
+     * Create new AllVersionsUnsorted Selection
+     */
+    FAKE_RDOC_METHOD(all_versions_sorted_new);
+
+    /*
+     * call-seq:
+     *     new(FilteredGenerator) -> RequireExactlyOne
+     *
+     * Create new RequireExactlyOne Selection
+     */
+    FAKE_RDOC_METHOD(all_versions_sorted_new);
+
     void do_register_selection()
     {
         /*
@@ -81,7 +145,7 @@ namespace
         c_selection = rb_define_class_under(c_selection_module, "Selection", rb_cObject);
         rb_funcall(c_selection, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_selection, "initialize", RUBY_FUNC_CAST(&selection_init), -1);
-        rb_define_method(c_selection, "to_s", RUBY_FUNC_CAST(&Common<Selection>::to_s), 0);
+        rb_define_method(c_selection, "to_s", RDOC_IS_STUPID(selection_to_s,&Common<Selection>::to_s), 0);
 
         /*
          * Document-class: Paludis::Selection::SomeArbitraryVersion
@@ -90,7 +154,7 @@ namespace
          */
         c_selection_some_arbitrary_version = rb_define_class_under(c_selection_module, "SomeArbitraryVersion", c_selection);
         rb_define_singleton_method(c_selection_some_arbitrary_version, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::SomeArbitraryVersion>::selection_new), 1);
+                RDOC_IS_STUPID(some_arbitrary_version_new, &SelectionNew<selection::SomeArbitraryVersion>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::BestVersionOnly
@@ -99,7 +163,7 @@ namespace
          */
         c_selection_best_version_only = rb_define_class_under(c_selection_module, "BestVersionOnly", c_selection);
         rb_define_singleton_method(c_selection_best_version_only, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::BestVersionOnly>::selection_new), 1);
+                RDOC_IS_STUPID(best_version_only_new, &SelectionNew<selection::BestVersionOnly>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::BestVersionInEachSlot
@@ -108,7 +172,7 @@ namespace
          */
         c_selection_best_version_in_each_slot = rb_define_class_under(c_selection_module, "BestVersionInEachSlot", c_selection);
         rb_define_singleton_method(c_selection_best_version_in_each_slot, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::BestVersionInEachSlot>::selection_new), 1);
+                RDOC_IS_STUPID(best_version_in_each_slot_new, &SelectionNew<selection::BestVersionInEachSlot>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::AllVersionsSorted
@@ -117,7 +181,7 @@ namespace
          */
         c_selection_all_versions_sorted = rb_define_class_under(c_selection_module, "AllVersionsSorted", c_selection);
         rb_define_singleton_method(c_selection_all_versions_sorted, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsSorted>::selection_new), 1);
+                RDOC_IS_STUPID(all_versions_sorted_new, &SelectionNew<selection::AllVersionsSorted>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::AllVersionsGroupedBySlot
@@ -126,7 +190,7 @@ namespace
          */
         c_selection_all_versions_grouped_by_slot = rb_define_class_under(c_selection_module, "AllVersionsGroupedBySlot", c_selection);
         rb_define_singleton_method(c_selection_all_versions_grouped_by_slot, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsGroupedBySlot>::selection_new), 1);
+                RDOC_IS_STUPID(all_versions_grouped_by_slot, &SelectionNew<selection::AllVersionsGroupedBySlot>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::AllVersionsUnsorted
@@ -135,7 +199,7 @@ namespace
          */
         c_selection_all_versions_unsorted = rb_define_class_under(c_selection_module, "AllVersionsUnsorted", c_selection);
         rb_define_singleton_method(c_selection_all_versions_unsorted, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::AllVersionsUnsorted>::selection_new), 1);
+                RDOC_IS_STUPID(all_versions_unsorted_new, &SelectionNew<selection::AllVersionsUnsorted>::selection_new), 1);
 
         /*
          * Document-class: Paludis::Selection::RequireExactlyOne
@@ -144,7 +208,7 @@ namespace
          */
         c_selection_require_exactly_one = rb_define_class_under(c_selection_module, "RequireExactlyOne", c_selection);
         rb_define_singleton_method(c_selection_require_exactly_one, "new",
-                RUBY_FUNC_CAST(&SelectionNew<selection::RequireExactlyOne>::selection_new), 1);
+                RDOC_IS_STUPID(require_exactly_one_new, &SelectionNew<selection::RequireExactlyOne>::selection_new), 1);
     }
 }
 
