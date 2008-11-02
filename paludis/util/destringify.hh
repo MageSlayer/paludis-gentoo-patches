@@ -114,18 +114,15 @@ namespace paludis
              */
             static bool do_destringify(const std::string & s)
             {
-                std::istringstream ss(s);
-                if ((s[0] >= 'a' && s[0] <= 'z') || (s[0] >= 'A' && s[0] <= 'Z'))
-                {
-                    bool b;
-                    ss >> std::boolalpha >> b;
-                    if (ss.eof() && ! ss.bad())
-                        return b;
-                    else
-                        throw Exception_(s);
-                }
+                /* Don't use boolalpha on std::istringstream here, since it's way too difficult
+                 * to test for errors and eof. See gcc bug 37958. */
+                if (s == "true")
+                    return true;
+                else if (s == "false")
+                    return false;
                 else
                 {
+                    std::istringstream ss(s);
                     int i;
                     ss >> i;
                     if (ss.eof() && ! ss.bad())
