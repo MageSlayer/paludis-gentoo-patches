@@ -30,6 +30,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/unchoices_key.hh>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
@@ -50,6 +51,7 @@ namespace paludis
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key;
         const std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > bug_ids_key;
         const std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > remote_ids_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key;
         const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
@@ -64,6 +66,7 @@ namespace paludis
             homepage_key(e.homepage()),
             bug_ids_key(e.bug_ids()),
             remote_ids_key(e.remote_ids()),
+            choices_key(unchoices_key()),
             mask(e.mask())
         {
         }
@@ -294,7 +297,7 @@ UnwrittenID::from_repositories_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
 UnwrittenID::choices_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
+    return _imp->choices_key;
 }
 
 template class PrivateImplementationPattern<UnwrittenID>;

@@ -30,6 +30,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/unchoices_key.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -47,6 +48,7 @@ namespace paludis
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > repository_homepage_key, repository_description_key;
         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key;
         const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
@@ -59,6 +61,7 @@ namespace paludis
             repository_homepage_key(e.repository_homepage()),
             repository_description_key(e.repository_description()),
             from_repositories_key(e.from_repositories()),
+            choices_key(unchoices_key()),
             mask(e.mask())
         {
         }
@@ -295,7 +298,7 @@ UnavailableID::from_repositories_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
 UnavailableID::choices_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
+    return _imp->choices_key;
 }
 
 template class PrivateImplementationPattern<UnavailableID>;

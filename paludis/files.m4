@@ -78,6 +78,7 @@ add(`stripper',                          `hh', `cc', `fwd', `test', `testscript'
 add(`syncer',                            `hh', `cc')
 add(`sync_task',                         `hh', `cc')
 add(`tasks_exceptions',                  `hh', `cc')
+add(`unchoices_key',                     `hh', `cc', `fwd')
 add(`uninstall_list',                    `hh', `cc', `se', `sr', `test')
 add(`uninstall_task',                    `hh', `cc')
 add(`unmerger',                          `hh', `cc')
