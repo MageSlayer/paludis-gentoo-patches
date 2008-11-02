@@ -43,8 +43,14 @@ check_PROGRAMS =
 
 EXTRA_DIST = \
 	Makefile.am.m4 \
-	$(installhookcommonprog_SCRIPTS) \
-	$(installhookautoprog_SCRIPTS) \
+	gnu_info_index.bash \
+	eselect_env_update.bash.in \
+	log.bash \
+	installable_cache_regen.bash \
+	installed_cache_regen.bash \
+	write_cache_clean.bash \
+	news.hook.in \
+	find_config_updates.hook \
 	$(installhookinstallpost_SCRIPTS) \
 	$(check_SCRIPTS)
 
