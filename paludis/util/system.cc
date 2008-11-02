@@ -130,6 +130,11 @@ namespace
             throw InternalError(PALUDIS_HERE, "uname call failed");
         return u.release;
     }
+
+    std::map<std::string, std::string> make_me_a_frickin_map_because_gcc_sucks()
+    {
+        return std::map<std::string, std::string>();
+    }
 }
 
 std::string
@@ -159,7 +164,7 @@ namespace paludis
         std::ostream * captured_stderr_stream;
 
         Implementation(const std::string & c,
-                const std::map<std::string, std::string> & s = std::map<std::string, std::string>(),
+                const std::map<std::string, std::string> & s = make_me_a_frickin_map_because_gcc_sucks(),
                 const std::string & d = "", bool e = false,
                 std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
                 std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
