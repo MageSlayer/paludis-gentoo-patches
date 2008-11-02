@@ -37,7 +37,7 @@ namespace paludis
             virtual int_type
             overflow(int_type c)
             {
-                if (c != EOF)
+                if (c != traits_type::eof())
                 {
                     s1->put(c);
                     s2->put(c);

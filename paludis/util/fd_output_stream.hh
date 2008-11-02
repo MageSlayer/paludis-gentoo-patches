@@ -55,11 +55,11 @@ namespace paludis
             virtual int_type
             overflow(int_type c)
             {
-                if (c != EOF)
+                if (c != traits_type::eof())
                 {
                     char z = c;
                     if (1 != write(fd, &z, 1))
-                        return EOF;
+                        return traits_type::eof();
                 }
                 return c;
             }

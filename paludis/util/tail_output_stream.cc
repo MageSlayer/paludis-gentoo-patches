@@ -59,7 +59,7 @@ TailOutputStreamBuf::~TailOutputStreamBuf()
 TailOutputStreamBuf::int_type
 TailOutputStreamBuf::overflow(int_type c)
 {
-    if (c != EOF)
+    if (c != traits_type::eof())
         _append(std::string(1, c));
     return c;
 }
