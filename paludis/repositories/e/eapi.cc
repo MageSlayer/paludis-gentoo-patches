@@ -217,6 +217,15 @@ namespace
                         )));
     }
 
+    std::tr1::shared_ptr<const EAPIChoicesOptions> make_choices_options(const KeyValueConfigFile & k)
+    {
+        return make_shared_ptr(new EAPIChoicesOptions(make_named_values<EAPIChoicesOptions>(
+                        value_for<n::fancy_test_flag>(check_get(k, "fancy_test_flag")),
+                        value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
+                        value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests"))
+                        )));
+    }
+
     std::tr1::shared_ptr<const SupportedEAPI> make_supported_eapi(const KeyValueConfigFile & k)
     {
         ELikePackageDepSpecOptions package_dep_spec_parse_options;
@@ -263,14 +272,13 @@ namespace
                         value_for<n::annotations>(make_annotations(k)),
                         value_for<n::breaks_portage>(destringify_key<bool>(k, "breaks_portage")),
                         value_for<n::can_be_pbin>(destringify_key<bool>(k, "can_be_pbin")),
+                        value_for<n::choices_options>(make_choices_options(k)),
                         value_for<n::dependency_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "dependency_labels")))),
                         value_for<n::dependency_spec_tree_parse_options>(dependency_spec_tree_parse_options),
                         value_for<n::ebuild_environment_variables>(make_ebuild_environment_variables(k)),
                         value_for<n::ebuild_metadata_variables>(make_ebuild_metadata_variables(k)),
                         value_for<n::ebuild_options>(make_ebuild_options(k)),
                         value_for<n::ebuild_phases>(make_ebuild_phases(k)),
-                        value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
-                        value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests")),
                         value_for<n::iuse_flag_parse_options>(iuse_flag_parse_options),
                         value_for<n::merger_options>(merger_options),
                         value_for<n::package_dep_spec_parse_options>(package_dep_spec_parse_options),

@@ -1098,7 +1098,8 @@ EbuildID::make_choice_value(
         const UnprefixedChoiceName & value_name,
         const Tribool iuse_default,
         const bool explicitly_listed,
-        const std::string & override_description
+        const std::string & override_description,
+        const bool force_locked
         ) const
 {
     if (! eapi()->supported())
@@ -1159,7 +1160,7 @@ EbuildID::make_choice_value(
 
     return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 _imp->repository->use_desc(),
-                enabled, enabled_by_default, locked, explicitly_listed, override_description));
+                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description));
 }
 
 void
@@ -1170,9 +1171,9 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
         std::tr1::shared_ptr<Choice> build_options(new Choice(canonical_build_options_raw_name(), canonical_build_options_human_name(),
                     canonical_build_options_prefix(), false, false, false, false));
         choices->add(build_options);
-        if (eapi()->supported()->has_optional_tests())
+        if (eapi()->supported()->choices_options()->has_optional_tests())
             build_options->add(make_shared_ptr(new ELikeOptionalTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
-        if (eapi()->supported()->has_recommended_tests())
+        if (eapi()->supported()->choices_options()->has_recommended_tests())
             build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
         build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
         build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));

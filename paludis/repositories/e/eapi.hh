@@ -45,6 +45,7 @@ namespace paludis
         struct bugs_to;
         struct build_depend;
         struct can_be_pbin;
+        struct choices_options;
         struct dependencies;
         struct dependency_labels;
         struct dependency_spec_tree_parse_options;
@@ -91,6 +92,7 @@ namespace paludis
         struct exported_name;
         struct f_function_prefix;
         struct failure_is_fatal;
+        struct fancy_test_flag;
         struct flat_list_index;
         struct has_optional_tests;
         struct has_recommended_tests;
@@ -224,14 +226,13 @@ namespace paludis
             NamedValue<n::annotations, std::tr1::shared_ptr<const EAPIAnnotations> > annotations;
             NamedValue<n::breaks_portage, bool> breaks_portage;
             NamedValue<n::can_be_pbin, bool> can_be_pbin;
+            NamedValue<n::choices_options, std::tr1::shared_ptr<const EAPIChoicesOptions> > choices_options;
             NamedValue<n::dependency_labels, std::tr1::shared_ptr<const EAPILabels> > dependency_labels;
             NamedValue<n::dependency_spec_tree_parse_options, erepository::DependencySpecTreeParseOptions> dependency_spec_tree_parse_options;
             NamedValue<n::ebuild_environment_variables, std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> > ebuild_environment_variables;
             NamedValue<n::ebuild_metadata_variables, std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
             NamedValue<n::ebuild_options, std::tr1::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
             NamedValue<n::ebuild_phases, std::tr1::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
-            NamedValue<n::has_optional_tests, bool> has_optional_tests;
-            NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
@@ -239,6 +240,13 @@ namespace paludis
             NamedValue<n::tools_options, std::tr1::shared_ptr<const EAPIToolsOptions> > tools_options;
             NamedValue<n::uri_labels, std::tr1::shared_ptr<const EAPILabels> > uri_labels;
             NamedValue<n::userpriv_cannot_use_root, bool> userpriv_cannot_use_root;
+        };
+
+        struct EAPIChoicesOptions
+        {
+            NamedValue<n::fancy_test_flag, std::string> fancy_test_flag;
+            NamedValue<n::has_optional_tests, bool> has_optional_tests;
+            NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
         };
 
         struct EAPIEbuildEnvironmentVariables

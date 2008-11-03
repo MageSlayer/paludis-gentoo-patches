@@ -48,6 +48,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/choice.hh>
+#include <paludis/elike_choices.hh>
 
 #include <tr1/functional>
 #include <list>
@@ -1019,7 +1020,7 @@ namespace
                 Log::get_instance()->message("e_key.myoptions.unknown", ll_qa, lc_context)
                     << "Unknown annotation '" << a->first << "' = '" << a->second << "'";
         }
-        return id->make_choice_value(choice, v->first, s, b, description);
+        return id->make_choice_value(choice, v->first, s, b, description, false);
     }
 }
 
@@ -1049,6 +1050,8 @@ EChoicesKey::value() const
                 true,
                 true));
     _imp->value->add(use);
+
+    bool has_fancy_test_flag(false);
 
     std::tr1::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
@@ -1122,8 +1125,13 @@ EChoicesKey::value() const
                             _imp->id->raw_use_expand_key()->value()->end(),
                             IsExpand(flag.first, delim)))
                     i_values.insert(flag);
+                else if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
+                {
+                    /* have to add this right at the end, after build_options is there */
+                    has_fancy_test_flag = true;
+                }
                 else
-                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, ""));
+                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, "", false));
             }
 
             /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
@@ -1151,7 +1159,7 @@ EChoicesKey::value() const
                         /* don't need to worry */
                     }
                     else
-                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false, ""));
+                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false, "", false));
                 }
             }
         }
@@ -1164,7 +1172,7 @@ EChoicesKey::value() const
 
             for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
                     a != a_end ; ++a)
-                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false, ""));
+                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false, "", false));
         }
 
         if (_imp->id->raw_use_expand_key())
@@ -1207,15 +1215,28 @@ EChoicesKey::value() const
                 {
                     std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
                     if (i_values.end() != i)
-                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true, ""));
+                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true, "", false));
                     else
-                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, ""));
+                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, "", false));
                 }
             }
         }
     }
 
     _imp->id->add_build_options(_imp->value);
+
+    if (has_fancy_test_flag)
+    {
+        std::tr1::shared_ptr<const ChoiceValue> choice;
+
+        choice = _imp->value->find_by_name_with_prefix(ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix());
+        if (! choice)
+            choice = _imp->value->find_by_name_with_prefix(ELikeOptionalTestsChoiceValue::canonical_name_with_prefix());
+        if (choice)
+            use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(_imp->id->eapi()->supported()->choices_options()->fancy_test_flag()),
+                        choice->enabled(), true, "", true));
+    }
+
     return _imp->value;
 }
 

@@ -47,7 +47,7 @@ namespace paludis
 
                 virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
                         const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
-                        const bool, const std::string &)
+                        const bool, const std::string &, const bool)
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const = 0;
