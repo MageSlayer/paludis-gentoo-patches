@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007 Ciaran McCreesh
+# Copyright (c) 2007, 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@ eselect_env_update_TEST()
     mkdir -p eselect_env_update_TEST_dir/{etc,lib,var/run}
     touch eselect_env_update_TEST_dir/etc/ld.so.conf
 
-    ${TOP_SRCDIR}/hooks/eselect_env_update.bash >/dev/null ; test_return_code
+    ${TOP_BUILDDIR}/hooks/eselect_env_update.bash >/dev/null ; test_return_code
 
     [[ -f eselect_env_update_TEST_dir/etc/ld.so.cache ]] \
         || [[ -f eselect_env_update_TEST/var/run/ld-elf.so.hints ]] ; test_return_code
