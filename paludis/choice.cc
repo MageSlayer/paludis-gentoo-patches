@@ -47,6 +47,15 @@ ChoicePrefixNameValidator::validate(const std::string & s)
                 break;
         };
 
+        switch (s.at(0))
+        {
+            case ':':
+            case '_':
+            case '-':
+                throw ChoicePrefixNameError(s);
+                break;
+        };
+
         if (s[0] >= 'A' && s[0] <= 'Z')
             throw ChoicePrefixNameError(s);
 
@@ -74,6 +83,15 @@ ChoiceNameWithPrefixValidator::validate(const std::string & s)
             break;
     };
 
+    switch (s.at(0))
+    {
+        case ':':
+        case '_':
+        case '-':
+            throw ChoiceNameWithPrefixError(s);
+            break;
+    };
+
     if (std::string::npos != s.find(" \t\r\n"))
         throw ChoiceNameWithPrefixError(s);
 }
@@ -93,6 +111,15 @@ UnprefixedChoiceNameValidator::validate(const std::string & s)
     {
         case ':':
         case '_':
+            throw ChoiceNameWithPrefixError(s);
+            break;
+    };
+
+    switch (s.at(0))
+    {
+        case ':':
+        case '_':
+        case '-':
             throw ChoiceNameWithPrefixError(s);
             break;
     };

@@ -25,6 +25,7 @@ libexecprogexheres_SCRIPTS = \
 	exlib_functions.bash \
 	list_functions.bash \
 	output_functions.bash \
+	pkg_bad_options.bash \
 	pkg_config.bash \
 	pkg_info.bash \
 	pkg_nofetch.bash \

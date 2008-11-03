@@ -950,7 +950,7 @@ EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choic
         name_with_prefix = stringify(v);
     else
     {
-        char use_expand_separator(eapi()->supported()->ebuild_options()->use_expand_separator());
+        char use_expand_separator(eapi()->supported()->choices_options()->use_expand_separator());
         if (! use_expand_separator)
             throw InternalError(PALUDIS_HERE, "No use_expand_separator defined");
         name_with_prefix = stringify(c->prefix()) + std::string(1, use_expand_separator) + stringify(v);

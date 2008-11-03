@@ -74,6 +74,7 @@ namespace paludis
         struct sandbox;
         struct slot;
         struct unmerge_only;
+        struct unmet_requirements;
         struct use;
         struct use_ebuild_file;
         struct use_expand;
@@ -164,6 +165,24 @@ namespace paludis
             NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::root, std::string> root;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
+        };
+
+        /**
+         * Parameters for an EbuildBadOptionsCommand.
+         *
+         * \see EbuildBadOptionsCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        struct EbuildBadOptionsCommandParams
+        {
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::unmet_requirements, std::tr1::shared_ptr<const Sequence<std::string> > > unmet_requirements;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
@@ -508,6 +527,32 @@ namespace paludis
                  * Constructor.
                  */
                 EbuildPretendCommand(const EbuildCommandParams &, const EbuildPretendCommandParams &);
+        };
+
+        /**
+         * An EbuildBadOptionsCommand is used to handle unmet MYOPTIONS requirements for
+         * a package in ERepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildBadOptionsCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for config.
+                const EbuildBadOptionsCommandParams bad_options_params;
+
+                virtual std::string commands() const;
+
+                virtual bool failure();
+
+                virtual Command extend_command(const Command &);
+
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildBadOptionsCommand(const EbuildCommandParams &, const EbuildBadOptionsCommandParams &);
         };
 
         /**

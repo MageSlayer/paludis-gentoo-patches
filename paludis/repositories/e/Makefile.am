@@ -82,6 +82,7 @@ paludis_repositories_e_include_HEADERS = \
 	layout.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
+	myoptions_requirements_verifier.hh \
 	pipe_command_handler.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
@@ -134,6 +135,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	glsa.cc \
 	layout.cc \
 	manifest2_reader.cc \
+	myoptions_requirements_verifier.cc \
 	pipe_command_handler.cc \
 	registration.cc \
 	source_uri_finder.cc \

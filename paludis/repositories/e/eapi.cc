@@ -168,7 +168,6 @@ namespace
                         value_for<n::source_merged_variables>(check_get(k, "source_merged_variables")),
                         value_for<n::support_eclasses>(destringify_key<bool>(k, "support_eclasses")),
                         value_for<n::support_exlibs>(destringify_key<bool>(k, "support_exlibs")),
-                        value_for<n::use_expand_separator>(destringify_key<char>(k, "use_expand_separator")),
                         value_for<n::utility_path_suffixes>(check_get(k, "utility_path_suffixes")),
                         value_for<n::vdb_from_env_unless_empty_variables>(check_get(k, "vdb_from_env_unless_empty_variables")),
                         value_for<n::vdb_from_env_variables>(check_get(k, "vdb_from_env_variables")),
@@ -179,6 +178,7 @@ namespace
     std::tr1::shared_ptr<const EAPIEbuildPhases> make_ebuild_phases(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildPhases(make_named_values<EAPIEbuildPhases>(
+                        value_for<n::ebuild_bad_options>(check_get(k, "ebuild_bad_options")),
                         value_for<n::ebuild_config>(check_get(k, "ebuild_config")),
                         value_for<n::ebuild_info>(check_get(k, "ebuild_info")),
                         value_for<n::ebuild_install>(check_get(k, "ebuild_install")),
@@ -213,7 +213,8 @@ namespace
     std::tr1::shared_ptr<const EAPIAnnotations> make_annotations(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIAnnotations(make_named_values<EAPIAnnotations>(
-                        value_for<n::myoptions_description>(k.get("annotations_myoptions_description"))
+                        value_for<n::myoptions_description>(k.get("annotations_myoptions_description")),
+                        value_for<n::myoptions_requires>(k.get("annotations_myoptions_requires"))
                         )));
     }
 
@@ -222,7 +223,8 @@ namespace
         return make_shared_ptr(new EAPIChoicesOptions(make_named_values<EAPIChoicesOptions>(
                         value_for<n::fancy_test_flag>(check_get(k, "fancy_test_flag")),
                         value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
-                        value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests"))
+                        value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests")),
+                        value_for<n::use_expand_separator>(destringify_key<char>(k, "use_expand_separator"))
                         )));
     }
 

@@ -1053,3 +1053,55 @@ WriteBinaryEbuildCommand::operator() ()
         throw InstallActionError("Write binary command failed");
 }
 
+std::string
+EbuildBadOptionsCommand::commands() const
+{
+    return params.commands();
+}
+
+bool
+EbuildBadOptionsCommand::failure()
+{
+    return false;
+}
+
+Command
+EbuildBadOptionsCommand::extend_command(const Command & cmd)
+{
+    Command result(Command(cmd)
+            .with_setenv("ROOT", bad_options_params.root())
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*bad_options_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(bad_options_params.profiles()->begin(),
+                    bad_options_params.profiles()->end(), " "))
+            .with_setenv("EX_UNMET_REQUIREMENTS", join(bad_options_params.unmet_requirements()->begin(),
+                    bad_options_params.unmet_requirements()->end(), "\n"))
+            );
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                bad_options_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                bad_options_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                bad_options_params.use_expand_hidden());
+
+    for (Map<std::string, std::string>::ConstIterator
+            i(bad_options_params.expand_vars()->begin()),
+            j(bad_options_params.expand_vars()->end()) ; i != j ; ++i)
+        result.with_setenv(i->first, i->second);
+
+    result.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
+
+    return result;
+}
+
+EbuildBadOptionsCommand::EbuildBadOptionsCommand(const EbuildCommandParams & p,
+        const EbuildBadOptionsCommandParams & f) :
+    EbuildCommand(p),
+    bad_options_params(f)
+{
+}
+
+

@@ -944,13 +944,16 @@ namespace
 
         void visit_leaf(const PlainTextDepSpec & s)
         {
+            if (s.text().empty())
+                return;
+
             Context context("When handling item '" + stringify(s) + "':");
 
             Prefixes::iterator p(prefixes.find(*current_prefix_stack.begin()));
             if (p == prefixes.end())
                 p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
 
-            UnprefixedChoiceName n(s.text());
+            UnprefixedChoiceName n('-' == s.text().at(0) ? s.text().substr(1) : s.text());
             Values::iterator v(p->second.find(n));
             if (v == p->second.end())
                 v = p->second.insert(std::make_pair(n, Annotations())).first;
@@ -970,12 +973,7 @@ namespace
                     }
 
                     Annotations::iterator a(v->second.find(mm->raw_name()));
-                    if ((a != v->second.end()) && a->second != mm->value())
-                        Log::get_instance()->message("e_key.myoptions.duplicate", ll_qa, lc_context)
-                            << "Annotation '" << mm->raw_name() << "' set to both '" << a->second << "' and '"
-                            << mm->value() << "'";
-                    else
-                        v->second.insert(make_pair(mm->raw_name(), mm->value()));
+                    v->second.insert(make_pair(mm->raw_name(), mm->value()));
                 }
             }
         }
@@ -989,8 +987,9 @@ namespace
                 PlainTextSpecTree::ConstSequenceIterator cur,
                 PlainTextSpecTree::ConstSequenceIterator end)
         {
-            if (cur != end)
-                throw InternalError(PALUDIS_HERE, "Don't know how to handle conditionals here yet");
+            current_prefix_stack.push_front(*current_prefix_stack.begin());
+            std::for_each(cur, end, accept_visitor(*this));
+            current_prefix_stack.pop_front();
         }
 
         void visit_sequence(const AllDepSpec &,
@@ -1016,9 +1015,6 @@ namespace
         {
             if (a->first == id->eapi()->supported()->annotations()->myoptions_description())
                 description = a->second;
-            else
-                Log::get_instance()->message("e_key.myoptions.unknown", ll_qa, lc_context)
-                    << "Unknown annotation '" << a->first << "' = '" << a->second << "'";
         }
         return id->make_choice_value(choice, v->first, s, b, description, false);
     }
@@ -1111,7 +1107,7 @@ EChoicesKey::value() const
         Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
         std::map<ChoiceNameWithPrefix, Tribool> i_values;
-        std::string delim(1, _imp->id->eapi()->supported()->ebuild_options()->use_expand_separator());
+        std::string delim(1, _imp->id->eapi()->supported()->choices_options()->use_expand_separator());
 
         if (_imp->id->raw_iuse_key())
         {

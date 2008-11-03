@@ -146,7 +146,7 @@ done
     builtin_killoldmisc builtin_saveenv builtin_tidyup builtin_tidyuprm
     builtin_tidyupmisc builtin_variable
     pkg_config pkg_info pkg_nofetch pkg_postinst pkg_postrm
-    pkg_preinst pkg_prerm pkg_pretend pkg_setup
+    pkg_preinst pkg_prerm pkg_pretend pkg_setup pkg_bad_options
     src_compile src_configure src_install src_prepare src_test src_unpack"
 
 check_paludis_pipe_command()
@@ -443,7 +443,8 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && [[ ${1} != pretend ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && \
+            [[ ${1} != pretend ]] && [[ ${1} != bad_options ]] ; then
         ebuild_section "Running ebuild phase $@ as $(id -un ):$(id -gn )..."
     fi
 
@@ -451,7 +452,8 @@ ebuild_main()
         ebuild_load_module $(paludis_phase_to_function_name "${action}")
     done
 
-    if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] ; then
+    if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] || \
+            [[ $1 == bad_options ]] ; then
         export EBUILD_PHASE="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 != variable ]] || [[ -n "${EBUILD}" ]] ; then
@@ -484,7 +486,8 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Completed ebuild phases $@"
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && [[ ${1} != pretend ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && \
+            [[ ${1} != pretend ]] && [[ ${1} != bad_options ]] ; then
         ebuild_section "Completed ebuild phase $@"
     fi
 }

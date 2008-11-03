@@ -1110,7 +1110,7 @@ EbuildID::make_choice_value(
         name_with_prefix_s = stringify(value_name);
     else
     {
-        char use_expand_separator(eapi()->supported()->ebuild_options()->use_expand_separator());
+        char use_expand_separator(eapi()->supported()->choices_options()->use_expand_separator());
         if (! use_expand_separator)
             throw InternalError(PALUDIS_HERE, "No use_expand_separator defined");
         name_with_prefix_s = stringify(choice->prefix()) + std::string(1, use_expand_separator) + stringify(value_name);

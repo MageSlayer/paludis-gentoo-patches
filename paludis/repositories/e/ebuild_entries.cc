@@ -30,6 +30,7 @@
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/repositories/e/e_stripper.hh>
+#include <paludis/repositories/e/myoptions_requirements_verifier.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -937,9 +938,13 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
     Context context("When running pretend for '" + stringify(*id) + "':");
 
     if (! id->eapi()->supported())
-        return true;
-    if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
-        return true;
+        return false;
+
+    bool result(true);
+
+    if (! id->raw_myoptions_key())
+        if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
+            return result;
 
     bool userpriv_restrict;
     {
@@ -961,6 +966,60 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 _imp->params.environment, *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+
+    if (id->raw_myoptions_key())
+    {
+        MyOptionsRequirementsVerifier verifier(id);
+        id->raw_myoptions_key()->value()->accept(verifier);
+
+        if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
+        {
+            EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_bad_options());
+            if (phases.begin_phases() == phases.end_phases())
+                throw InternalError(PALUDIS_HERE, "using myoptions but no ebuild_bad_options phase");
+
+            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
+                            value_for<n::builddir>(_imp->params.builddir),
+                            value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
+                            value_for<n::distdir>(_imp->params.distdir),
+                            value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
+                            value_for<n::ebuild_file>(id->fs_location_key()->value()),
+                            value_for<n::eclassdirs>(_imp->params.eclassdirs),
+                            value_for<n::environment>(_imp->params.environment),
+                            value_for<n::exlibsdirs>(exlibsdirs),
+                            value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                            value_for<n::package_id>(id),
+                            value_for<n::portdir>(
+                                (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
+                                (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                            value_for<n::sandbox>(phase->option("sandbox")),
+                            value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                            ));
+
+                EbuildBadOptionsCommand bad_options_cmd(command_params,
+                        make_named_values<EbuildBadOptionsCommandParams>(
+                            value_for<n::expand_vars>(expand_vars),
+                            value_for<n::profiles>(_imp->params.profiles),
+                            value_for<n::root>(stringify(_imp->params.environment->root())),
+                            value_for<n::unmet_requirements>(verifier.unmet_requirements()),
+                            value_for<n::use>(use),
+                            value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                            value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
+                            ));
+
+                if (! bad_options_cmd())
+                    throw ActionError("Bad options phase died");
+            }
+
+            result = false;
+        }
+    }
+
+    if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
+        return result;
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_pretend());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -998,7 +1057,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
             return false;
     }
 
-    return true;
+    return result;
 }
 
 std::string

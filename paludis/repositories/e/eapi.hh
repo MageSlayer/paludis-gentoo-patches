@@ -57,6 +57,7 @@ namespace paludis
         struct doman_lang_filenames;
         struct dosym_mkdir;
         struct eapi;
+        struct ebuild_bad_options;
         struct ebuild_config;
         struct ebuild_environment_variables;
         struct ebuild_functions;
@@ -111,6 +112,7 @@ namespace paludis
         struct minimum_flat_list_size;
         struct myoptions;
         struct myoptions_description;
+        struct myoptions_requires;
         struct must_not_change_variables;
         struct name;
         struct no_slot_or_repo;
@@ -247,6 +249,7 @@ namespace paludis
             NamedValue<n::fancy_test_flag, std::string> fancy_test_flag;
             NamedValue<n::has_optional_tests, bool> has_optional_tests;
             NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
+            NamedValue<n::use_expand_separator, char> use_expand_separator;
         };
 
         struct EAPIEbuildEnvironmentVariables
@@ -335,7 +338,6 @@ namespace paludis
             NamedValue<n::source_merged_variables, std::string> source_merged_variables;
             NamedValue<n::support_eclasses, bool> support_eclasses;
             NamedValue<n::support_exlibs, bool> support_exlibs;
-            NamedValue<n::use_expand_separator, char> use_expand_separator;
             NamedValue<n::utility_path_suffixes, std::string> utility_path_suffixes;
             NamedValue<n::vdb_from_env_unless_empty_variables, std::string> vdb_from_env_unless_empty_variables;
             NamedValue<n::vdb_from_env_variables, std::string> vdb_from_env_variables;
@@ -344,6 +346,7 @@ namespace paludis
 
         struct EAPIEbuildPhases
         {
+            NamedValue<n::ebuild_bad_options, std::string> ebuild_bad_options;
             NamedValue<n::ebuild_config, std::string> ebuild_config;
             NamedValue<n::ebuild_info, std::string> ebuild_info;
             NamedValue<n::ebuild_install, std::string> ebuild_install;
@@ -373,6 +376,7 @@ namespace paludis
         struct EAPIAnnotations
         {
             NamedValue<n::myoptions_description, std::string> myoptions_description;
+            NamedValue<n::myoptions_requires, std::string> myoptions_requires;
         };
     }
 #endif
