@@ -214,6 +214,10 @@ namespace
     {
         return make_shared_ptr(new EAPIAnnotations(make_named_values<EAPIAnnotations>(
                         value_for<n::myoptions_description>(k.get("annotations_myoptions_description")),
+                        value_for<n::myoptions_number_selected>(k.get("annotations_myoptions_number_selected")),
+                        value_for<n::myoptions_number_selected_at_least_one>(k.get("annotations_myoptions_number_selected_at_least_one")),
+                        value_for<n::myoptions_number_selected_at_most_one>(k.get("annotations_myoptions_number_selected_at_most_one")),
+                        value_for<n::myoptions_number_selected_exactly_one>(k.get("annotations_myoptions_number_selected_exactly_one")),
                         value_for<n::myoptions_requires>(k.get("annotations_myoptions_requires"))
                         )));
     }

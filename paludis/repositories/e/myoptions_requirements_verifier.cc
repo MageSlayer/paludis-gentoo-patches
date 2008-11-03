@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/myoptions_requirements_verifier.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/myoption.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -27,6 +28,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
 #include <algorithm>
@@ -47,6 +49,7 @@ namespace paludis
         std::tr1::shared_ptr<Sequence<std::string> > unmet_requirements;
         std::list<ChoicePrefixName> current_prefix_stack;
         std::list<ChildrenList> current_children_stack;
+        std::list<int> number_enabled_stack;
 
         Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i) :
             id(i),
@@ -54,6 +57,7 @@ namespace paludis
         {
             current_prefix_stack.push_front(ChoicePrefixName(""));
             current_children_stack.push_front(ChildrenList());
+            number_enabled_stack.push_front(0);
         }
     };
 }
@@ -79,35 +83,47 @@ MyOptionsRequirementsVerifier::visit_leaf(const PlainTextLabelDepSpec & s)
     *_imp->current_prefix_stack.begin() = ChoicePrefixName(s.label());
 }
 
+namespace
+{
+    const std::tr1::shared_ptr<const ChoiceValue> find_choice_value(
+            const std::tr1::shared_ptr<const ERepositoryID> & id,
+            const ChoicePrefixName & prefix,
+            const ChoiceNameWithPrefix & name_with_prefix)
+    {
+        if (id->choices_key())
+            for (Choices::ConstIterator k(id->choices_key()->value()->begin()),
+                    k_end(id->choices_key()->value()->end()) ;
+                    k != k_end ; ++k)
+            {
+                if ((*k)->prefix() != prefix)
+                    continue;
+
+                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                        i != i_end ; ++i)
+                    if ((*i)->name_with_prefix() == name_with_prefix)
+                        return *i;
+            }
+
+        return make_null_shared_ptr();
+    }
+}
+
 void
 MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
         const std::string & spec_text, const std::tr1::shared_ptr<const MetadataSectionKey> & annotations_key)
 {
-    bool active_flag_state(spec_text.at(0) != '-');
+    std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(spec_text));
     ChoiceNameWithPrefix active_flag((
                 ! stringify(spec_prefix).empty() ? stringify(spec_prefix) +
                 stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()) : "") +
-            stringify(spec_text.substr(active_flag_state ? 0 : 1)));
+            stringify(active_myoption.first));
 
     {
-        std::tr1::shared_ptr<const ChoiceValue> choice_value;
-        if (_imp->id->choices_key())
-            for (Choices::ConstIterator k(_imp->id->choices_key()->value()->begin()),
-                    k_end(_imp->id->choices_key()->value()->end()) ;
-                    k != k_end && ! choice_value ; ++k)
-            {
-                if ((*k)->prefix() != spec_prefix)
-                    continue;
-
-                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                        i != i_end && ! choice_value ; ++i)
-                    if ((*i)->name_with_prefix() == active_flag)
-                        choice_value = *i;
-            }
+        std::tr1::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, spec_prefix, active_flag));
 
         if (choice_value)
         {
-            if (choice_value->enabled() != active_flag_state)
+            if (choice_value->enabled() != active_myoption.second)
                 return;
         }
         else
@@ -132,6 +148,9 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
         std::string a_key(mm->raw_name()), a_value(mm->value());
 
         if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_description())
+        {
+        }
+        else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
         {
         }
         else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_requires())
@@ -180,7 +199,7 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
                 {
                     if (choice_value->enabled() != req_state)
                     {
-                        _imp->unmet_requirements->push_back(stringify(active_flag_state ? "Enabling" : "Disabling") +
+                        _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
                                 " option '" + stringify(active_flag) + "' requires option '" +
                                 stringify(choice_value->name_with_prefix()) + "' to be " +
                                 (req_state ? "enabled" : "disabled"));
@@ -191,7 +210,7 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
                     /* ick */
                     ChoiceNameWithPrefix qualified_flag_name((stringify(prefix).empty() ? "" : stringify(prefix) +
                                 stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator())) + stringify(suffix));
-                    _imp->unmet_requirements->push_back(stringify(active_flag_state ? "Enabling" : "Disabling") +
+                    _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
                             " option '" + stringify(active_flag) + "' requires option '" + stringify(qualified_flag_name) + "' to be " +
                             (req_state ? "enabled" : "disabled") + ", but no such option exists");
                 }
@@ -212,6 +231,22 @@ MyOptionsRequirementsVerifier::visit_leaf(const PlainTextDepSpec & s)
             l != l_end ; ++l)
         l->push_back(std::make_pair(*_imp->current_prefix_stack.begin(), s.text()));
 
+    {
+        Context local_context("When finding associated choice:");
+
+        std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(s.text()));
+        ChoiceNameWithPrefix active_flag((
+                    ! stringify(*_imp->current_prefix_stack.begin()).empty() ? stringify(*_imp->current_prefix_stack.begin()) +
+                    stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()) : "") +
+                stringify(active_myoption.first));
+        std::tr1::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, *_imp->current_prefix_stack.begin(), active_flag));
+
+        if (choice_value && choice_value->enabled() == active_myoption.second)
+            for (std::list<int>::iterator l(_imp->number_enabled_stack.begin()), l_end(_imp->number_enabled_stack.end()) ;
+                    l != l_end ; ++l)
+                ++*l;
+    }
+
     if ((! s.annotations_key()) || (s.annotations_key()->begin_metadata() == s.annotations_key()->end_metadata()))
         return;
 
@@ -227,7 +262,11 @@ MyOptionsRequirementsVerifier::visit_sequence(const ConditionalDepSpec & spec,
     {
         _imp->current_prefix_stack.push_front(*_imp->current_prefix_stack.begin());
         _imp->current_children_stack.push_front(ChildrenList());
+        _imp->number_enabled_stack.push_front(0);
+
         std::for_each(cur, end, accept_visitor(*this));
+
+        _imp->number_enabled_stack.pop_front();
         _imp->current_children_stack.pop_front();
         _imp->current_prefix_stack.pop_front();
     }
@@ -240,6 +279,8 @@ MyOptionsRequirementsVerifier::visit_sequence(const AllDepSpec & s,
 {
     _imp->current_prefix_stack.push_front(*_imp->current_prefix_stack.begin());
     _imp->current_children_stack.push_front(ChildrenList());
+    _imp->number_enabled_stack.push_front(0);
+
     std::for_each(cur, end, accept_visitor(*this));
     if (s.annotations_key() && (s.annotations_key()->begin_metadata() != s.annotations_key()->end_metadata()))
     {
@@ -247,7 +288,61 @@ MyOptionsRequirementsVerifier::visit_sequence(const AllDepSpec & s,
                 i_end(_imp->current_children_stack.begin()->end()) ;
                 i != i_end ; ++i)
             verify_one(i->first, i->second, s.annotations_key());
+
+        for (MetadataSectionKey::MetadataConstIterator m(s.annotations_key()->begin_metadata()), m_end(s.annotations_key()->end_metadata()) ;
+                m != m_end ; ++m)
+        {
+            const MetadataValueKey<std::string> * mm(visitor_cast<const MetadataValueKey<std::string> >(**m));
+            if (! mm)
+            {
+                Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
+                    << "Don't know how to handle annotation '" << (*m)->raw_name() << "'";
+                continue;
+            }
+
+            std::string a_key(mm->raw_name()), a_value(mm->value());
+
+            if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
+            {
+                std::string children_s;
+                for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
+                        i_end(_imp->current_children_stack.begin()->end()) ;
+                        i != i_end ; ++i)
+                {
+                    if (! children_s.empty())
+                        children_s.append(", ");
+
+                    if (! stringify(i->first).empty())
+                    {
+                        children_s.append(stringify(i->first));
+                        children_s.append(stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()));
+                    }
+                    children_s.append(stringify(i->second));
+                }
+
+                children_s = "( " + children_s + " )";
+
+                if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_at_least_one())
+                {
+                    if (*_imp->number_enabled_stack.begin() < 1)
+                        _imp->unmet_requirements->push_back("At least one of options " + children_s + " must be met");
+                }
+                else if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_at_most_one())
+                {
+                    if (*_imp->number_enabled_stack.begin() > 1)
+                        _imp->unmet_requirements->push_back("At most one of options " + children_s + " must be met");
+                }
+                else if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_exactly_one())
+                {
+                    if (*_imp->number_enabled_stack.begin() != 1)
+                        _imp->unmet_requirements->push_back("Exactly one of options " + children_s + " must be met");
+                }
+                else
+                    _imp->unmet_requirements->push_back("Don't know what '" + stringify(a_value) + "' means");
+            }
+        }
     }
+    _imp->number_enabled_stack.pop_front();
     _imp->current_children_stack.pop_front();
     _imp->current_prefix_stack.pop_front();
 }

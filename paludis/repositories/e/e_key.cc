@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/myoption.hh>
 
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -953,7 +954,7 @@ namespace
             if (p == prefixes.end())
                 p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
 
-            UnprefixedChoiceName n('-' == s.text().at(0) ? s.text().substr(1) : s.text());
+            UnprefixedChoiceName n(parse_myoption(s.text()).first);
             Values::iterator v(p->second.find(n));
             if (v == p->second.end())
                 v = p->second.insert(std::make_pair(n, Annotations())).first;

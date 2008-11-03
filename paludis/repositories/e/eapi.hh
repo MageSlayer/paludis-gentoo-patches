@@ -112,6 +112,10 @@ namespace paludis
         struct minimum_flat_list_size;
         struct myoptions;
         struct myoptions_description;
+        struct myoptions_number_selected;
+        struct myoptions_number_selected_at_least_one;
+        struct myoptions_number_selected_at_most_one;
+        struct myoptions_number_selected_exactly_one;
         struct myoptions_requires;
         struct must_not_change_variables;
         struct name;
@@ -376,6 +380,10 @@ namespace paludis
         struct EAPIAnnotations
         {
             NamedValue<n::myoptions_description, std::string> myoptions_description;
+            NamedValue<n::myoptions_number_selected, std::string> myoptions_number_selected;
+            NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;
+            NamedValue<n::myoptions_number_selected_at_most_one, std::string> myoptions_number_selected_at_most_one;
+            NamedValue<n::myoptions_number_selected_exactly_one, std::string> myoptions_number_selected_exactly_one;
             NamedValue<n::myoptions_requires, std::string> myoptions_requires;
         };
     }
