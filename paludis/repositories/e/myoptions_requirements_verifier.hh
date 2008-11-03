@@ -37,6 +37,10 @@ namespace paludis
             private PrivateImplementationPattern<MyOptionsRequirementsVerifier>,
             public ConstVisitor<PlainTextSpecTree>
         {
+            private:
+                void verify_one(const ChoicePrefixName &, const std::string &,
+                        const std::tr1::shared_ptr<const MetadataSectionKey> &);
+
             public:
                 MyOptionsRequirementsVerifier(const std::tr1::shared_ptr<const ERepositoryID> &);
                 ~MyOptionsRequirementsVerifier();

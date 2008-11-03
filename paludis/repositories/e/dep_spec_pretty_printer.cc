@@ -188,7 +188,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
-    bool need_parens(_imp->all_needs_parens ||
+    bool need_parens(_imp->all_needs_parens || a.annotations_key() ||
             (! _imp->outer_block && end != std::find_if(cur, end, is_label)));
     Save<bool> old_outer(&_imp->outer_block, false);
     Save<bool> old_needs_parens(&_imp->all_needs_parens, false);
