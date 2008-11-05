@@ -32,7 +32,8 @@ Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
 version = "0.1.6"
-laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/layman-global.txt')
+$laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/layman-global.txt')
+$proxy_url = URI.parse(ENV['http_proxy']) if ENV['http_proxy']
 
 opts = GetoptLong.new(
     [ '--help',          '-h', GetoptLong::NO_ARGUMENT ],
@@ -43,7 +44,9 @@ opts = GetoptLong.new(
     [ '--list',          '-l', GetoptLong::NO_ARGUMENT ],
     [ '--add',           '-a', GetoptLong::NO_ARGUMENT ],
     [ '--no-names-cache',      GetoptLong::NO_ARGUMENT ],
-    [ '--no-write-cache',      GetoptLong::NO_ARGUMENT ])
+    [ '--no-write-cache',      GetoptLong::NO_ARGUMENT ],
+    [ '--layman-url',          GetoptLong::REQUIRED_ARGUMENT],
+    [ '--http-proxy',          GetoptLong::REQUIRED_ARGUMENT])
 
 $envspec = ""
 $mode = ""
@@ -69,6 +72,11 @@ Options:
 
   --no-names-cache       Disable the names cache for the added repos.
   --no-write-cache       Disable the write cache for the added repos.
+
+  --http-proxy           The url of the http proxy to use.
+
+  --layman-url           The url to receive the global layman list from
+                         (defaults to the Gentoo one).
 
 Manages paludis configuration for layman overlays. Can add new overlays, and
 list the currently available overlays from the global layman list.
@@ -111,6 +119,12 @@ HELP
         $names_cache = false
     when '--no-write-cache'
         $write_cache = false
+
+    when '--http-proxy'
+        $proxy_url = URI.parse(arg)
+
+    when '--layman-url'
+        $laymanglobal_url = URI.parse(arg)
     end
 end
 
@@ -135,8 +149,13 @@ end
 repositories = $env.package_database.repositories
 
 begin
-    req = Net::HTTP::Get.new(laymanglobal_url.path)
-    res = Net::HTTP.start(laymanglobal_url.host, laymanglobal_url.port) {|http|
+    req = Net::HTTP::Get.new($laymanglobal_url.path)
+    proxy_host = $proxy_url.host if $proxy_url and $proxy_url.host
+    proxy_port = $proxy_url.port if $proxy_url and $proxy_url.port
+    proxy_user, proxy_pass = $proxy_url.userinfo.split(/:/) if $proxy_url and $proxy_url.userinfo
+    res = Net::HTTP::Proxy(proxy_host,proxy_port,
+                           proxy_user,proxy_pass).start($laymanglobal_url.host,
+                           $laymanglobal_url.port) {|http|
         http.request(req)
     }
     laymanxml = REXML::Document.new res.body
