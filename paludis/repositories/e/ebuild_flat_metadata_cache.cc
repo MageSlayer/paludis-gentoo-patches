@@ -80,7 +80,7 @@ namespace
 
         if (lines.size() < 15)
         {
-            Log::get_instance()->message("e.cache.flat_list.truncated", ll_warning, lc_no_context)
+            Log::get_instance()->message("e.cache.flat_list.truncated", ll_warning, lc_context)
                 << "cache file has " << lines.size() << " lines, but expected at least 15";
             return false;
         }
