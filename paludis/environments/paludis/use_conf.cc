@@ -321,7 +321,7 @@ UseConf::known_choice_value_names(
         const std::tr1::shared_ptr<const Choice> & choice
         ) const
 {
-    Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + ":");
+    Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + "':");
 
     std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
 
