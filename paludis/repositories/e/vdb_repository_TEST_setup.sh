@@ -18,8 +18,9 @@ for i in DEPEND RDEPEND LICENSE INHERITED IUSE PDEPEND PROVIDE; do
     touch repo1/cat-one/pkg-one-1/${i}
 done
 
-echo "flag1 flag2" >>repo1/cat-one/pkg-one-1/USE
+echo "test flag1 flag2 kernel_linux" >>repo1/cat-one/pkg-one-1/USE
 echo "flag1 flag2 flag3" >>repo1/cat-one/pkg-one-1/IUSE
+echo "KERNEL" >repo1/cat-one/pkg-one-1/USE_EXPAND
 
 cat <<END >repo1/cat-one/pkg-one-1/CONTENTS
 dir /directory

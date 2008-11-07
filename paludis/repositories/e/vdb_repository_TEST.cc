@@ -141,6 +141,10 @@ namespace test_cases
             TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
             TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
             TEST_CHECK(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
+            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->enabled());
+            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_linux"))->enabled());
+            TEST_CHECK(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2")));
+            TEST_CHECK(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_freebsd")));
         }
     } test_vdb_repository_query_use;
 

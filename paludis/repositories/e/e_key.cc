@@ -1189,17 +1189,26 @@ EChoicesKey::value() const
 
                 if (! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
                 {
-                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
-                        e_values(_imp->env->known_choice_value_names(_imp->id, exp)),
-                        r_values;
+                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > e_values(_imp->env->known_choice_value_names(_imp->id, exp));
+                    std::copy(e_values->begin(), e_values->end(), std::inserter(values, values.begin()));
 
                     if (_imp->maybe_e_repository)
-                        r_values = _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp);
-                    else
-                        r_values = make_shared_ptr(new Set<UnprefixedChoiceName>);
+                    {
+                        std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > r_values(
+                            _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp));
+                        std::copy(r_values->begin(), r_values->end(), std::inserter(values, values.begin()));
+                    }
 
-                    std::set_union(e_values->begin(), e_values->end(), r_values->begin(), r_values->end(),
-                            std::inserter(values, values.begin()));
+                    if (_imp->id->raw_use_key())
+                    {
+                        for (Set<std::string>::ConstIterator it(_imp->id->raw_use_key()->value()->begin()),
+                                 it_end(_imp->id->raw_use_key()->value()->end()); it_end != it; ++it)
+                        {
+                            std::string flag(0 == it->compare(0, 1, "-", 0, 1) ? it->substr(1) : *it);
+                            if (IsExpand(ChoiceNameWithPrefix(flag), delim)(*u))
+                                values.insert(UnprefixedChoiceName(flag.substr(u->length() + delim.length())));
+                        }
+                    }
                 }
 
                 for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
