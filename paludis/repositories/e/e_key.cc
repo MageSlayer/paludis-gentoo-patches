@@ -1049,6 +1049,7 @@ EChoicesKey::value() const
     _imp->value->add(use);
 
     bool has_fancy_test_flag(false);
+    std::tr1::shared_ptr<const ChoiceValue> unfancy_test_choice;
 
     std::tr1::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
@@ -1122,13 +1123,18 @@ EChoicesKey::value() const
                             _imp->id->raw_use_expand_key()->value()->end(),
                             IsExpand(flag.first, delim)))
                     i_values.insert(flag);
-                else if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
-                {
-                    /* have to add this right at the end, after build_options is there */
-                    has_fancy_test_flag = true;
-                }
                 else
-                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, "", false));
+                {
+                    std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, "", false));
+                    if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
+                    {
+                        /* have to add this right at the end, after build_options is there */
+                        has_fancy_test_flag = true;
+                        unfancy_test_choice = choice;
+                    }
+                    else
+                        use->add(choice);
+                }
             }
 
             /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
@@ -1241,6 +1247,8 @@ EChoicesKey::value() const
         if (choice)
             use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(_imp->id->eapi()->supported()->choices_options()->fancy_test_flag()),
                         choice->enabled(), true, "", true));
+        else if (unfancy_test_choice)
+            use->add(unfancy_test_choice);
     }
 
     return _imp->value;
