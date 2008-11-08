@@ -1,0 +1,183 @@
+#compdef cave
+
+# vim: set et sw=2 sts=2 ts=2 ft=zsh :
+# ZSH completion for `cave`
+# Written by Ingmar Vanhassel <ingmar@exherbo.org>
+
+_cave()
+{
+  local -a _cave_arguments _cave_commands
+  _cave_arguments=(
+    '(-E --environment)'{-E,--environment}'[Environment specification]:environment specification: '
+    '--log-level[Specify the log level]:log level:((debug\:"Show debug output (noisy)"
+                                                    qa\:"Show QA messages and warnings only (default)"
+                                                    warning\:"Show warnings only"
+                                                    silent\:"Suppress all log messages (UNSAFE)"))'
+  )
+
+  _cave_commands=(
+    'help:Display help information for a particular command'
+    'print-categories:Prints a list of known categories'
+    'print-commands:Prints a list of known cave commands'
+    'print-environment-metadata:Prints environment metadata'
+    'print-id-contents:Prints the contents of a package ID'
+    'print-id-metadata:Prints ID metadata'
+    'print-ids:Prints a list of known IDs'
+    'print-owners:Prints a list of package IDs owning a given file'
+    'print-packages:Prints a list of package names'
+    'print-repositories:Prints a list of repositories'
+    'print-sets:Prints a list of sets'
+    'print-sync-protocols:Prints a list of sync protocols'
+    'show:Displays a formatted summary of a given object'
+    'sync:Sync all or specified repositories'
+  )
+
+  for (( i=1; i <= ${CURRENT}; i++ )); do
+    cmd=${_cave_commands[(r)${words[${i}]}:*]%%:*}
+    (( ${#cmd} )) && break
+  done
+
+  if (( ${#cmd} )); then
+    local curcontext="${curcontext%:*:*}:cave-${cmd}:"
+
+    while [[ ${words[1]} != ${cmd} ]]; do
+      (( CURRENT-- ))
+      shift words
+    done
+
+    _call_function ret _cave_cmd_${cmd}
+    return ret
+  else
+    if [[ ${words[CURRENT-1]} == --* ]]; then
+      _arguments -s : \
+        ${_cave_arguments}
+    else
+      _describe -t commands 'cave command' _cave_commands
+      _arguments -s : \
+        ${_cave_arguments}
+    fi
+  fi
+
+}
+
+(( ${+functions[_cave_cmd_help]} )) ||
+_cave_cmd_help()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*::arg:->cave_commands' && return
+
+  case ${state} in
+    (cave_commands)
+      _describe -t commands 'cave command' _cave_commands
+      ;;
+  esac
+}
+
+(( ${+functions[_cave_cmd_print-categories]} )) ||
+_cave_cmd_print-categories()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--containing[Show only categories containing this package name]:package name: ' \
+    '--repository[Show only categories in this repository]:repository name: '
+}
+
+(( ${+functions[_cave_cmd_print-commands]} )) ||
+_cave_cmd_print-commands()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_print-environment-metadata]} )) ||
+_cave_cmd_print-environment-metadata()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--raw-name[Show only keys with this raw name]:raw name: ' \
+    '--human-name[Show only keys with this human name]:human name: ' \
+    '--format[Select the output format]:format: '
+}
+
+(( ${+functions[_cave_cmd_print-id-contents]} )) ||
+_cave_cmd_print-id-contents()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '--nobest[If the spec matches multiple IDs, give an error]' \
+    '--format[Select the output format]:format: '
+}
+
+(( ${+functions[_cave_cmd_print-id-metadata]} )) ||
+_cave_cmd_print-id-metadata()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '--nobest[If the spec matches multiple IDs, give an error]' \
+    '--raw-name[Show only keys with this raw name]:raw name: ' \
+    '--human-name[Show only keys with this human name]:human name: ' \
+    '--format[Select the output format]:output format: '
+}
+
+(( ${+functions[_cave_cmd_print-ids]} )) ||
+_cave_cmd_print-ids()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--matching[Show only IDs matching this spec]:package spec: ' \
+    '--supporting[Show only IDs supporting this action]:supporting action:((install installed uninstall pretend config fetch pretend-fetch info))' \
+    '--with-mask[Show only IDs with this kind of mask]:with mask:((none any user unaccepted repository unsupported association))'
+}
+
+(( ${+functions[_cave_cmd_print-owners]} )) ||
+_cave_cmd_print-owners()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename (default)"
+                                                                                basename\:"Basename match"
+                                                                                full\:"Full match"
+                                                                                partial\:"Partial match"))' \
+    '*:file:_files'
+}
+
+(( ${+functions[_cave_cmd_print-packages]} )) ||
+_cave_cmd_print-packages()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+
+(( ${+functions[_cave_cmd_print-repositories]} )) ||
+_cave_cmd_print-repositories()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--format[Show only repositories of a specific format]:repository format: '
+}
+
+(( ${+functions[_cave_cmd_show]} )) ||
+_cave_cmd_show()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--type[Specify the type of the specified objects]:object type:((auto repository set wildcard package))' \
+    '(--complex-keys -c)'{--complex-keys,-c}'[Show complex keys]' \
+    '(--internal-keys -i)'{--internal-keys,-i}'[Show keys regardless of importance, including internal-only values]' \
+    '(--flat -f)'{--flat,-f}'[Do not spread key values over multiple lines]'
+}
+
+(( ${+functions[_cave_cmd_sync]} )) ||
+_cave_cmd_sync()
+{
+  # TODO: Complete repository names
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+_cave "${@}"
+
