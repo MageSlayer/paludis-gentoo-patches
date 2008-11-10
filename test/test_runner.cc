@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <exception>
 #include <signal.h>
 #if defined(__GLIBC__)
 #include <execinfo.h>
@@ -98,26 +99,34 @@ void segfault_handler(int)
 int
 main(int, char * argv[])
 {
+    try
     {
-        std::ifstream ppid(("/proc/" + paludis::stringify(getppid()) + "/cmdline").c_str());
-        if (ppid)
         {
-            std::string cmd;
-            std::getline(ppid, cmd, '\0');
-            std::string::size_type slash_pos(cmd.rfind('/'));
-            if (std::string::npos != slash_pos)
-                cmd.erase(0, slash_pos);
-            if (cmd != "gdb")
+            std::ifstream ppid(("/proc/" + paludis::stringify(getppid()) + "/cmdline").c_str());
+            if (ppid)
             {
-                signal(SIGALRM, &timeout_handler);
-                signal(SIGSEGV, &segfault_handler);
+                std::string cmd;
+                std::getline(ppid, cmd, '\0');
+                std::string::size_type slash_pos(cmd.rfind('/'));
+                if (std::string::npos != slash_pos)
+                    cmd.erase(0, slash_pos);
+                if (cmd != "gdb")
+                {
+                    signal(SIGALRM, &timeout_handler);
+                    signal(SIGSEGV, &segfault_handler);
+                }
+                else
+                    TestCaseList::use_alarm = false;
             }
-            else
-                TestCaseList::use_alarm = false;
         }
-    }
 
-    std::cout << "Test program " << argv[0] << ":" << std::endl;
-    return TestCaseList::run_tests() ? EXIT_SUCCESS : EXIT_FAILURE;
+        std::cout << "Test program " << argv[0] << ":" << std::endl;
+        return TestCaseList::run_tests() ? EXIT_SUCCESS : EXIT_FAILURE;
+    }
+    catch (const std::exception & e)
+    {
+        std::cout << "Uncaught exception " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 }
 
