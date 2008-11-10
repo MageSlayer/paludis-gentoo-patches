@@ -23,6 +23,7 @@
 #include <tr1/memory>
 #include <list>
 #include <cstdlib>
+#include <iostream>
 
 #include "config.h"
 
@@ -128,11 +129,7 @@ NotAvailableError::NotAvailableError(const std::string & msg) throw () :
 InternalError::InternalError(const std::string & location, const std::string & our_message) throw () :
     Exception("Eek! Internal error at " + location + ": " + our_message)
 {
-}
-
-InternalError::InternalError(const std::string & location) throw () :
-    Exception("Eek! Internal error at " + location)
-{
+    std::cerr << "Internal error at " << location << ": " << our_message << std::endl;
 }
 
 NameError::NameError(const std::string & name, const std::string & role) throw () :

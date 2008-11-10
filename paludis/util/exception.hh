@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -140,16 +140,6 @@ namespace paludis
              * \param message A short message.
              */
             InternalError(const std::string & location, const std::string & message) throw ();
-
-            /**
-             * Constructor, with no message (deprecated).
-             *
-             * \param location Should be set to the PALUDIS_HERE macro.
-             *
-             * \deprecated Use paludis::InternalError::InternalError(const char * const,
-             * const std::string &) instead.
-             */
-            InternalError(const std::string & location) throw () PALUDIS_ATTRIBUTE((deprecated));
     };
 
     /**
