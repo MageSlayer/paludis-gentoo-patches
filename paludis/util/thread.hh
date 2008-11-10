@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <tr1/functional>
+#include <string>
 
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <pthread.h>
@@ -55,6 +56,7 @@ namespace paludis
 #ifdef PALUDIS_ENABLE_THREADS
             pthread_t * const _thread;
             const std::tr1::function<void () throw ()> _func;
+            std::string _exception;
 
             static void * thread_func(void *);
 #endif

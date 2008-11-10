@@ -49,7 +49,14 @@ Thread::Thread(const std::tr1::function<void () throw ()> & f) :
 void *
 Thread::thread_func(void * r)
 {
-    static_cast<Thread *>(r)->_func();
+    try
+    {
+        static_cast<Thread *>(r)->_func();
+    }
+    catch (const std::exception & e)
+    {
+        static_cast<Thread *>(r)->_exception = e.what();
+    }
     return 0;
 }
 
@@ -57,6 +64,9 @@ Thread::~Thread()
 {
     pthread_join(*_thread, 0);
     delete _thread;
+
+    if (! _exception.empty())
+        throw InternalError(PALUDIS_HERE, "Exception '" + _exception + "' uncaught in child thread");
 }
 
 void
