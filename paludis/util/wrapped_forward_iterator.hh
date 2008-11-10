@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_WRAPPED_FORWARD_ITERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_WRAPPED_FORWARD_ITERATOR_HH 1
 
-#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/attributes.hh>
 #include <tr1/functional>
