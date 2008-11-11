@@ -17,8 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
+#include <string>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -27,5 +29,11 @@ std::size_t
 Hash<std::string>::operator() (const std::string & s) const
 {
     return std::tr1::hash<std::string>()(s);
+}
+
+std::size_t
+Hash<FSEntry>::operator() (const FSEntry & s) const
+{
+    return std::tr1::hash<std::string>()(stringify(s));
 }
 

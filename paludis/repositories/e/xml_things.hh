@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,10 +21,23 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_XML_THINGS_HH 1
 
 #include <paludis/repositories/e/glsa.hh>
+#include <paludis/repositories/e/metadata_xml.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include "config.h"
 
 extern "C"
 {
-    GLSA::Pointer PALUDIS_VISIBLE create_glsa_from_xml_file(const std::string &);
+    void paludis_xml_things_init() PALUDIS_VISIBLE;
+    void paludis_xml_things_cleanup() PALUDIS_VISIBLE;
+
+#if ENABLE_GLSA
+    std::tr1::shared_ptr<paludis::GLSA> PALUDIS_VISIBLE paludis_xml_things_create_glsa_from_xml_file(const std::string &);
+#endif
+
+#if ENABLE_METADATA_XML
+    std::tr1::shared_ptr<paludis::erepository::MetadataXML> PALUDIS_VISIBLE paludis_xml_things_create_metadata_xml_from_xml_file(
+            const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
+#endif
 }
 
 #endif

@@ -35,6 +35,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -880,12 +881,15 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::tr1::shared_ptr<const ERepository> maybe_e_repository;
+        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_descriptions;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
-                const std::tr1::shared_ptr<const ERepository> & p) :
+                const std::tr1::shared_ptr<const ERepository> & p,
+                const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
             env(e),
             id(i),
-            maybe_e_repository(p)
+            maybe_e_repository(p),
+            maybe_descriptions(d)
         {
         }
     };
@@ -895,9 +899,10 @@ EChoicesKey::EChoicesKey(
         const Environment * const e,
         const std::tr1::shared_ptr<const ERepositoryID> & i,
         const std::string & r, const std::string & h, const MetadataKeyType t,
-        const std::tr1::shared_ptr<const ERepository> & p) :
+        const std::tr1::shared_ptr<const ERepository> & p,
+        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
     MetadataValueKey<std::tr1::shared_ptr<const Choices> > (r, h, t),
-    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p)),
+    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p, d)),
     _imp(PrivateImplementationPattern<EChoicesKey>::_imp)
 {
 }
@@ -1019,11 +1024,19 @@ namespace
         }
         return id->make_choice_value(choice, v->first, s, b, description, false);
     }
-}
 
-#include <iostream>
-#include <paludis/util/join.hh>
-#include <paludis/util/member_iterator-impl.hh>
+    std::string get_maybe_description(const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & m,
+            const ChoiceNameWithPrefix & k)
+    {
+        if (m)
+        {
+            Map<ChoiceNameWithPrefix, std::string>::ConstIterator i(m->find(k));
+            if (i != m->end())
+                return i->second;
+        }
+        return "";
+    }
+}
 
 const std::tr1::shared_ptr<const Choices>
 EChoicesKey::value() const
@@ -1125,7 +1138,9 @@ EChoicesKey::value() const
                     i_values.insert(flag);
                 else
                 {
-                    std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true, "", false));
+                    std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
+                                use, UnprefixedChoiceName(stringify(flag.first)), flag.second, true,
+                                get_maybe_description(_imp->maybe_descriptions, flag.first), false));
                     if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
                     {
                         /* have to add this right at the end, after build_options is there */
@@ -1162,7 +1177,8 @@ EChoicesKey::value() const
                         /* don't need to worry */
                     }
                     else
-                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false, "", false));
+                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false,
+                                    get_maybe_description(_imp->maybe_descriptions, flag.first), false));
                 }
             }
         }
@@ -1227,7 +1243,8 @@ EChoicesKey::value() const
                 {
                     std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
                     if (i_values.end() != i)
-                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true, "", false));
+                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true,
+                                    get_maybe_description(_imp->maybe_descriptions, i->first), false));
                     else
                         exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, "", false));
                 }

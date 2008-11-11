@@ -17,43 +17,128 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/repositories/e/xml_things.hh>
+#include <paludis/util/config_file.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/validated.hh>
+#include <paludis/choice.hh>
+#include <set>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
-#include <paludis/repositories/e/glsa.hh>
-#include <paludis/util/tokeniser.hh>
-#include <paludis/util/join.hh>
-#include <paludis/util/config_file.hh>
-#include <set>
-#include <list>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 using namespace paludis;
 
-extern "C"
-{
-    std::tr1::shared_ptr<GLSA> PALUDIS_VISIBLE create_glsa_from_xml_file(const std::string &);
-}
-
 namespace
 {
-    std::string retarded_libxml_string_to_string(const xmlChar * const s)
+    class PALUDIS_VISIBLE XMLError :
+        public Exception
     {
-        return s ? stringify(reinterpret_cast<const char *>(s)) : "";
+        public:
+            XMLError(const std::string & w) throw () :
+                Exception("XML error: " + w)
+            {
+            }
+    };
+
+    const xmlChar * stupid_libxml_string(const char * const s)
+    {
+        return reinterpret_cast<const xmlChar *>(s);
     }
 
-    std::string normalise(const std::string & s)
+    std::string unstupid_libxml_string(const xmlChar * const s)
     {
-        std::list<std::string> words;
-        tokenise_whitespace(s, std::back_inserter(words));
-        return join(words.begin(), words.end(), " ");
+        return s ? std::string(reinterpret_cast<const char *>(s)) : "";
     }
 
-    class Handler
+    bool is_space(const char c)
+    {
+        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+    }
+
+    std::string fix_whitespace(const std::string & s)
+    {
+        std::string t;
+        t.reserve(s.length());
+
+        std::string::size_type p(0), p_end(s.length());
+
+        while (p != p_end && is_space(s[p]))
+            ++p;
+
+        while (p_end > p && is_space(s[p_end - 1]))
+            --p_end;
+
+        while (p != p_end)
+        {
+            while (p != p_end && ! is_space(s[p]))
+                t.append(1, s[p++]);
+
+            if (p != p_end)
+                t.append(1, ' ');
+
+            while (p != p_end && is_space(s[p]))
+                ++p;
+        }
+
+        return t;
+    }
+
+    std::string extract_child_text(const xmlNode * const node)
+    {
+        switch (node->type)
+        {
+            case XML_TEXT_NODE:
+            case XML_CDATA_SECTION_NODE:
+                return fix_whitespace(unstupid_libxml_string(node->content));
+
+            default:
+                throw XMLError("Node not an XML_TEXT_NODE or XML_CDATA_SECTION_NODE");
+        };
+    }
+
+    std::string extract_children_text(const std::tr1::shared_ptr<const xmlXPathObject> & object)
+    {
+        std::string result;
+        bool need_space(false);
+
+        for (int j = 0 ; j != object->nodesetval->nodeNr ; ++j)
+        {
+            std::string item(extract_child_text(object->nodesetval->nodeTab[j]));
+            if (! item.empty())
+            {
+                if (need_space)
+                    result.append(" ");
+                result.append(item);
+                need_space = true;
+            }
+        }
+
+        return result;
+    }
+
+    template <typename T_>
+    std::tr1::shared_ptr<T_> manage_libxml_ptr(T_ * const p, void (* d) (T_ * const))
+    {
+        if (! p)
+            throw XMLError("libxml2 returned null for " + std::string(__PRETTY_FUNCTION__));
+        return std::tr1::shared_ptr<T_>(p, d);
+    }
+
+#ifdef ENABLE_GLSA
+    class GLSAHandler
     {
         private:
             std::tr1::shared_ptr<GLSA> _glsa;
 
         public:
-            Handler() :
+            GLSAHandler() :
                 _glsa(new GLSA)
             {
             }
@@ -64,10 +149,9 @@ namespace
                 {
                     if (a->type == XML_ATTRIBUTE_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(a->name));
+                        std::string name(unstupid_libxml_string(a->name));
                         if (name == "id")
-                            _glsa->set_id(normalise(retarded_libxml_string_to_string(xmlNodeListGetString(doc,
-                                                a->xmlChildrenNode, 1))));
+                            _glsa->set_id(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1))));
                     }
                 }
             }
@@ -78,9 +162,9 @@ namespace
                 {
                     if (a->type == XML_ATTRIBUTE_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(a->name));
+                        std::string name(unstupid_libxml_string(a->name));
                         if (name == "name")
-                            str = normalise(retarded_libxml_string_to_string(xmlNodeListGetString(doc,
+                            str = fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc,
                                             a->xmlChildrenNode, 1)));
                     }
                 }
@@ -92,11 +176,11 @@ namespace
                 {
                     if (a->type == XML_ATTRIBUTE_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(a->name));
+                        std::string name(unstupid_libxml_string(a->name));
                         if (name == "arch")
                         {
                             std::set<std::string> archs;
-                            tokenise_whitespace(retarded_libxml_string_to_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
+                            tokenise_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
                                     std::inserter(archs, archs.end()));
                             archs.erase("*");
                             for (std::set<std::string>::const_iterator r(archs.begin()), r_end(archs.end()) ;
@@ -113,10 +197,9 @@ namespace
                 {
                     if (a->type == XML_ATTRIBUTE_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(a->name));
+                        std::string name(unstupid_libxml_string(a->name));
                         if (name == "range")
-                            op = normalise(retarded_libxml_string_to_string(xmlNodeListGetString(doc,
-                                            a->xmlChildrenNode, 1)));
+                            op = fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)));
                     }
                 }
             }
@@ -127,13 +210,12 @@ namespace
                 {
                     if (n->type == XML_ELEMENT_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(n->name));
+                        std::string name(unstupid_libxml_string(n->name));
                         if (name == "unaffected" || name == "vulnerable")
                         {
                             std::string op;
                             handle_range_range(doc, n->properties, op);
-                            std::string version(normalise(retarded_libxml_string_to_string(
-                                            xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
+                            std::string version(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
                             ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))
                                 (GLSARange::create().op(op).version(version));
                         }
@@ -152,15 +234,14 @@ namespace
                 {
                     if (n->type == XML_ELEMENT_NODE)
                     {
-                        std::string name(retarded_libxml_string_to_string(n->name));
+                        std::string name(unstupid_libxml_string(n->name));
                         if (name == "glsa")
                         {
                             handle_glsa_attrs(doc, n->properties);
                             handle_node(doc, n->children);
                         }
                         else if (name == "title")
-                            _glsa->set_title(normalise(retarded_libxml_string_to_string(xmlNodeListGetString(doc,
-                                                n->xmlChildrenNode, 1))));
+                            _glsa->set_title(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
                         else if (name == "package")
                         {
                             std::string m;
@@ -184,21 +265,179 @@ namespace
                 return _glsa;
             }
     };
+#endif
+
 }
+
+#ifdef ENABLE_GLSA
 
 std::tr1::shared_ptr<GLSA>
-create_glsa_from_xml_file(const std::string & filename)
+paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
 {
-    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(filename.c_str(), 0, 0), &xmlFreeDoc);
-    if (! xml_doc)
-        throw GLSAError("Could not parse GLSA", filename);
+    try
+    {
+        std::tr1::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(filename.c_str()), &xmlFreeDoc));
 
-    Handler h;
-    h.handle_node(xml_doc.get(), xmlDocGetRootElement(xml_doc.get()));
-    return h.glsa();
+        GLSAHandler h;
+        h.handle_node(doc.get(), xmlDocGetRootElement(doc.get()));
+        return h.glsa();
+    }
+    catch (const XMLError & e)
+    {
+        throw GLSAError(e.message(), filename);
+    }
 }
 
-#ifndef MONOLITHIC
+#endif
+
+#ifdef ENABLE_METADATA_XML
+
+std::tr1::shared_ptr<erepository::MetadataXML>
+paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
+{
+    std::tr1::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
+                make_named_values<erepository::MetadataXML>(
+                    value_for<n::herds>(make_shared_ptr(new Sequence<std::string>)),
+                    value_for<n::long_description>(""),
+                    value_for<n::maintainers>(make_shared_ptr(new Sequence<std::string>)),
+                    value_for<n::uses>(make_shared_ptr(new Map<ChoiceNameWithPrefix, std::string>))
+                    )));
+
+    std::tr1::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));
+
+    std::tr1::shared_ptr<xmlXPathContext>
+        doc_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
+        sub_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
+        text_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext));
+
+    std::tr1::shared_ptr<xmlXPathObject>
+        herd_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
+                            "//pkgmetadata/herd"), doc_context.get()), xmlXPathFreeObject)),
+        maintainer_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
+                            "//pkgmetadata/maintainer"), doc_context.get()), xmlXPathFreeObject)),
+        use_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
+                            "//pkgmetadata/use"), doc_context.get()), xmlXPathFreeObject));
+
+    for (int i = 0 ; i != herd_object->nodesetval->nodeNr ; ++i)
+    {
+        text_context->node = herd_object->nodesetval->nodeTab[i];
+        std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                    xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                        text_context.get()), xmlXPathFreeObject));
+
+        result->herds()->push_back(extract_children_text(text_object));
+    }
+
+    for (int i = 0 ; i != maintainer_object->nodesetval->nodeNr ; ++i)
+    {
+        std::string name, email;
+
+        sub_context->node = maintainer_object->nodesetval->nodeTab[i];
+        std::tr1::shared_ptr<xmlXPathObject>
+            name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./name[position()=1]"),
+                        sub_context.get()), xmlXPathFreeObject)),
+            email_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./email[position()=1]"),
+                        sub_context.get()), xmlXPathFreeObject));
+
+        if (name_object->nodesetval->nodeNr)
+        {
+            text_context->node = name_object->nodesetval->nodeTab[0];
+            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                        xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                            text_context.get()), xmlXPathFreeObject));
+            name = extract_children_text(text_object);
+        }
+
+        if (email_object->nodesetval->nodeNr)
+        {
+            text_context->node = email_object->nodesetval->nodeTab[0];
+            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                        xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                            text_context.get()), xmlXPathFreeObject));
+            email = extract_children_text(text_object);
+        }
+
+        if ((! name.empty()) || (! email.empty()))
+        {
+            std::string p;
+            if (! name.empty())
+            {
+                p = name;
+                if (! email.empty())
+                    p = p + " <" + email + ">";
+            }
+            else
+                p = email;
+
+            result->maintainers()->push_back(email);
+        }
+    }
+
+    for (int i = 0 ; i != use_object->nodesetval->nodeNr ; ++i)
+    {
+        sub_context->node = use_object->nodesetval->nodeTab[i];
+        std::tr1::shared_ptr<xmlXPathObject> flag_object(
+                manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./flag[@name]"),
+                        sub_context.get()), xmlXPathFreeObject));
+
+        for (int k = 0 ; k != flag_object->nodesetval->nodeNr ; ++k)
+        {
+            text_context->node = flag_object->nodesetval->nodeTab[k];
+            std::tr1::shared_ptr<xmlXPathObject>
+                text_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                            text_context.get()), xmlXPathFreeObject)),
+                name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("@name"),
+                                text_context.get()), xmlXPathFreeObject));
+
+            std::string desc(extract_children_text(text_object));
+            std::string name;
+
+            if (! name_object->nodesetval->nodeNr)
+                throw XMLError("no name attribute");
+
+            if (name_object->nodesetval->nodeTab[0]->type != XML_ATTRIBUTE_NODE)
+                throw XMLError("Node not an XML_ATTRIBUTE_NODE");
+
+            name.append(unstupid_libxml_string(xmlNodeListGetString(doc.get(),
+                            name_object->nodesetval->nodeTab[0]->xmlChildrenNode, 1)));
+
+            result->uses()->insert(ChoiceNameWithPrefix(name), desc);
+        }
+    }
+
+    std::tr1::shared_ptr<xmlXPathObject> longdesc_object;
+    longdesc_object = manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
+                    "//pkgmetadata/longdescription[@lang=\"en\"]"), doc_context.get()), xmlXPathFreeObject);
+    if (0 == longdesc_object->nodesetval->nodeNr)
+        longdesc_object = manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
+                        "//pkgmetadata/longdescription[not(@lang)]"), doc_context.get()), xmlXPathFreeObject);
+
+    for (int i = 0 ; i != longdesc_object->nodesetval->nodeNr ; ++i)
+    {
+        text_context->node = longdesc_object->nodesetval->nodeTab[i];
+        std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                    xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                        text_context.get()), xmlXPathFreeObject));
+
+        result->long_description() = extract_children_text(text_object);
+    }
+
+    return result;
+}
+
+#endif
+
+void
+paludis_xml_things_init()
+{
+    xmlInitParser();
+}
+
+void
+paludis_xml_things_cleanup()
+{
+    xmlCleanupParser();
+}
 
 namespace paludis
 {
@@ -208,6 +447,4 @@ namespace paludis
 extern "C" void PALUDIS_VISIBLE paludis_initialise_repository_so(paludis::RepositoryFactory * const)
 {
 }
-
-#endif
 

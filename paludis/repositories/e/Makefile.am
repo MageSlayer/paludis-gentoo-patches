@@ -23,9 +23,11 @@ paludis_repositories_libdir = $(libdir)/paludis/repositories
 paludis_repositories_lib_LTLIBRARIES = libpaludiserepository_@PALUDIS_PC_SLOT@.la
 
 if ENABLE_GLSA
-
 lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
-
+else
+if ENABLE_METADATA_XML
+lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
+endif
 endif
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
@@ -82,12 +84,14 @@ paludis_repositories_e_include_HEADERS = \
 	layout.hh \
 	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
+	metadata_xml.hh \
 	myoption.hh \
 	myoptions_requirements_verifier.hh \
 	pipe_command_handler.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
+	xml_things_handle.hh \
 	vdb_contents_tokeniser.hh \
 	vdb_id.hh \
 	vdb_merger.hh \
@@ -136,6 +140,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	glsa.cc \
 	layout.cc \
 	manifest2_reader.cc \
+	metadata_xml.cc \
 	myoption.cc \
 	myoptions_requirements_verifier.cc \
 	pipe_command_handler.cc \
@@ -143,6 +148,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	source_uri_finder.cc \
 	traditional_layout.cc \
 	use_desc.cc \
+	xml_things_handle.cc \
 	vdb_id.cc \
 	vdb_merger.cc \
 	vdb_repository.cc \

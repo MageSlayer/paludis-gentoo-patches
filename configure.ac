@@ -865,14 +865,13 @@ AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
-			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++, libxml2)]),
+			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++)]),
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
 if test x"$ENABLE_QA" = "xyes" ; then
 	need_pcrepp_check=yes
-	need_xml_check=yes
 	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
 	AC_DEFINE([ENABLE_QA], [1], [Build QA things])
 fi
@@ -894,6 +893,22 @@ if test x"$ENABLE_GLSA" = "xyes" ; then
 fi
 AC_SUBST([ENABLE_GLSA])
 AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_GLSA" = "xyes")
+dnl }}}
+
+dnl {{{ check for whether to build metadata.xml stuff
+AC_MSG_CHECKING([whether to build metadata.xml support])
+AC_ARG_ENABLE([metadata-xml],
+			  AS_HELP_STRING([--enable-metadata-xml], [Build metadata.xml things (needs libxml2)]),
+			  [ENABLE_METADATA_XML=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_METADATA_XML=no
+			   AC_MSG_RESULT([no])])
+if test x"$ENABLE_METADATA_XML" = "xyes" ; then
+	need_xml_check=yes
+	AC_DEFINE([ENABLE_METADATA_XML], [1], [Build metadata.xml support])
+fi
+AC_SUBST([ENABLE_METADATA_XML])
+AM_CONDITIONAL([ENABLE_METADATA_XML], test "x$ENABLE_METADATA_XML" = "xyes")
 dnl }}}
 
 dnl {{{ colourschemes
@@ -1366,7 +1381,7 @@ dnl {{{ libxml2 check
 NEED_XML=$need_xml_check
 if test "x$need_xml_check" = "xyes" ; then
 	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
-		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa or --enable-glsa is used])])
+		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-metadata-xml or --enable-glsa is used])])
 	AC_SUBST(LIBXML2DEPS_CFLAGS)
 	AC_SUBST(LIBXML2DEPS_LIBS)
 fi

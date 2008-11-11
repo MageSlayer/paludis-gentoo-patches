@@ -428,10 +428,10 @@ EInstalledRepositoryID::need_keys_added() const
     if (_imp->eapi->supported())
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, std::tr1::shared_ptr<const ERepository>()));
+                    mkt_normal, make_null_shared_ptr(), make_null_shared_ptr()));
     else
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    std::tr1::shared_ptr<const ERepository>()));
+                    make_null_shared_ptr(), make_null_shared_ptr()));
 
     add_metadata_key(_imp->choices);
 

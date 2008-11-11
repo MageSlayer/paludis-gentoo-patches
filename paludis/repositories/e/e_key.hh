@@ -23,6 +23,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map-fwd.hh>
+#include <paludis/choice-fwd.hh>
 
 namespace paludis
 {
@@ -307,7 +309,8 @@ namespace paludis
                         const std::string &,
                         const std::string &,
                         const MetadataKeyType,
-                        const std::tr1::shared_ptr<const ERepository> & maybe_profile);
+                        const std::tr1::shared_ptr<const ERepository> & maybe_profile,
+                        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & maybe_descriptions);
 
                 ~EChoicesKey();
 

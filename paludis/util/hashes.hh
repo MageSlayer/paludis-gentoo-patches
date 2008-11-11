@@ -22,8 +22,10 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/validated-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <cstddef>
 #include <utility>
+#include <string>
 #include <tr1/type_traits>
 #include <tr1/memory>
 
@@ -64,6 +66,12 @@ namespace paludis
     struct PALUDIS_VISIBLE Hash<std::string>
     {
         std::size_t operator() (const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    template <>
+    struct PALUDIS_VISIBLE Hash<FSEntry>
+    {
+        std::size_t operator() (const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <typename T_, typename U_>

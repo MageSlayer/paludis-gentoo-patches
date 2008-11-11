@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "glsa.hh"
+#include <paludis/repositories/e/glsa.hh>
+#include <paludis/repositories/e/xml_things_handle.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -29,8 +30,6 @@
 #include <stdint.h>
 #include "config.h"
 
-#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
-
 using namespace paludis;
 
 template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
@@ -38,10 +37,6 @@ template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const
 template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
 
 #include "glsa-sr.cc"
-
-#ifdef MONOLITHIC
-#  include <paludis/repositories/e/xml_things.hh>
-#endif
 
 namespace paludis
 {
@@ -188,73 +183,19 @@ GLSA::title() const
     return _imp->title;
 }
 
-#ifndef MONOLITHIC
-
-namespace
-{
-    struct LibXMLHandle
-    {
-        Mutex mutex;
-        void * handle;
-        std::tr1::shared_ptr<GLSA> (* create_glsa_from_xml_file_handle)(const std::string &);
-
-        LibXMLHandle() :
-            handle(0),
-            create_glsa_from_xml_file_handle(0)
-        {
-        }
-
-        ~LibXMLHandle()
-        {
-            if (0 != handle)
-                dlclose(handle);
-        }
-
-    } libxmlhandle;
-}
-
-#endif
-
 std::tr1::shared_ptr<GLSA>
 GLSA::create_from_xml_file(const std::string & filename)
 {
-#if ENABLE_GLSA
-#  ifdef MONOLITHIC
-
-#  else
+    if (! erepository::XMLThingsHandle::get_instance()->available())
     {
-        Lock lock(libxmlhandle.mutex);
-
-        if (0 == libxmlhandle.handle)
-            libxmlhandle.handle = dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(),
-                    RTLD_NOW | RTLD_GLOBAL);
-        if (0 == libxmlhandle.handle)
-            throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                    + stringify(dlerror()) + "' when dlopen(libpaludiserepositoryxmlthings.so)");
-
-        if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
-            libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(std::tr1::shared_ptr<GLSA> (*)(const std::string &),
-                    dlsym(libxmlhandle.handle, "create_glsa_from_xml_file"));
-        if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
-            throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                    + stringify(dlerror()) + "' when dlsym(libpaludisgentoorepositoryxmlthings.so, create_glsa_from_xml_file)");
+#ifdef ENABLE_GLSA
+        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because your XML libraries are unusable");
+#else
+        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because GLSA support was not enabled at compile time");
+#endif
     }
 
-#  endif
-#else
-#  ifndef MONOLITHIC
-    /* avoid noreturn warning */
-    if (0 == libxmlhandle.handle)
-        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because Paludis was built "
-                "without GLSA support");
-#  endif
-#endif
-
-#ifdef MONOLITHIC
-    return create_glsa_from_xml_file(filename);
-#else
-    return (*libxmlhandle.create_glsa_from_xml_file_handle)(filename);
-#endif
+    return erepository::XMLThingsHandle::get_instance()->create_glsa_from_xml_file()(filename);
 }
 
 GLSAError::GLSAError(const std::string & msg, const std::string & filename) throw () :

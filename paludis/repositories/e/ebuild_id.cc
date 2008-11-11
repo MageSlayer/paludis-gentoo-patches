@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
+#include <paludis/repositories/e/metadata_xml.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -280,6 +281,7 @@ EbuildID::need_keys_added() const
         std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
     add_metadata_key(_imp->profile_mask);
 
+    std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
     if (_imp->eapi->supported())
     {
         _imp->raw_use_expand = make_shared_ptr(new LiteralMetadataStringSetKey(
@@ -292,15 +294,30 @@ EbuildID::need_keys_added() const
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden().description(),
                     mkt_internal,
                     std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand_hidden()));
+
+        std::tr1::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
+                    _imp->fs_location->value().dirname() / "metadata.xml"));
+        if (m)
+        {
+            if (! m->long_description().empty())
+                add_metadata_key(_imp->long_description = make_shared_ptr(new LiteralMetadataValueKey<std::string>("long_description",
+                                "Long Description", mkt_normal, m->long_description())));
+            if (! m->herds()->empty())
+                add_metadata_key(make_shared_ptr(new LiteralMetadataStringSequenceKey("herds", "Herds", mkt_normal, m->herds())));
+            if (! m->maintainers()->empty())
+                add_metadata_key(make_shared_ptr(new LiteralMetadataStringSequenceKey("maintainers", "Maintainers", mkt_normal, m->maintainers())));
+            maybe_use_descriptions = m->uses();
+        }
     }
 
     if (_imp->eapi->supported())
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, std::tr1::static_pointer_cast<const ERepository>(repository())));
+                    mkt_normal, std::tr1::static_pointer_cast<const ERepository>(repository()),
+                    maybe_use_descriptions));
     else
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    std::tr1::static_pointer_cast<const ERepository>(repository())));
+                    std::tr1::static_pointer_cast<const ERepository>(repository()), maybe_use_descriptions));
     add_metadata_key(_imp->choices);
 }
 
