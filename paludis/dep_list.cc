@@ -1501,7 +1501,8 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 
                 for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                         i != i_end ; ++i)
-                    i_common.insert((*i)->name_with_prefix());
+                    if ((*i)->explicitly_listed())
+                        i_common.insert((*i)->name_with_prefix());
             }
 
             for (Choices::ConstIterator k(uninstalled.choices_key()->value()->begin()),
@@ -1513,7 +1514,8 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 
                 for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                         i != i_end ; ++i)
-                    u_common.insert((*i)->name_with_prefix());
+                    if ((*i)->explicitly_listed())
+                        u_common.insert((*i)->name_with_prefix());
             }
 
             std::set_intersection(
