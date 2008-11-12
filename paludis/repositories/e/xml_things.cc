@@ -96,7 +96,7 @@ namespace
         {
             case XML_TEXT_NODE:
             case XML_CDATA_SECTION_NODE:
-                return fix_whitespace(unstupid_libxml_string(node->content));
+                return unstupid_libxml_string(node->content);
 
             default:
                 throw XMLError("Node not an XML_TEXT_NODE or XML_CDATA_SECTION_NODE");
@@ -106,21 +106,9 @@ namespace
     std::string extract_children_text(const std::tr1::shared_ptr<const xmlXPathObject> & object)
     {
         std::string result;
-        bool need_space(false);
-
         for (int j = 0 ; j != object->nodesetval->nodeNr ; ++j)
-        {
-            std::string item(extract_child_text(object->nodesetval->nodeTab[j]));
-            if (! item.empty())
-            {
-                if (need_space)
-                    result.append(" ");
-                result.append(item);
-                need_space = true;
-            }
-        }
-
-        return result;
+            result.append(extract_child_text(object->nodesetval->nodeTab[j]));
+        return fix_whitespace(result);
     }
 
     template <typename T_>
