@@ -23,11 +23,13 @@
 #include <paludis/generator-fwd.hh>
 #include <paludis/generator_handler-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/options.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/match_package-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -82,7 +84,7 @@ namespace paludis
             public Generator
         {
             public:
-                Matches(const PackageDepSpec &);
+                Matches(const PackageDepSpec &, const MatchPackageOptions &);
         };
 
         class PALUDIS_VISIBLE Package :

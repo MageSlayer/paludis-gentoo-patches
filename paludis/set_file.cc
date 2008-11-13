@@ -277,7 +277,8 @@ namespace
                     else if (! (*params.environment)[selection::SomeArbitraryVersion(generator::Matches(
                                     make_package_dep_spec()
                                     .package(*spec->package_ptr())
-                                    .slot_requirement(spec->slot_requirement_ptr())) |
+                                    .slot_requirement(spec->slot_requirement_ptr()),
+                                    MatchPackageOptions()) |
                                 filter::InstalledAtRoot(params.environment->root()))]->empty())
                         result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));

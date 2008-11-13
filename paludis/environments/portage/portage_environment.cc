@@ -572,7 +572,7 @@ PortageEnvironment::want_choice_enabled(
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id))
+        if (! match_package(*this, *i->first, *id, MatchPackageOptions()))
             continue;
 
         if (i->second == stringify(f))
@@ -616,7 +616,7 @@ PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNam
         for (PackageKeywords::const_iterator i(_imp->package_keywords.begin()), i_end(_imp->package_keywords.end()) ;
                 i != i_end ; ++i)
         {
-            if (! match_package(*this, *i->first, d))
+            if (! match_package(*this, *i->first, d, MatchPackageOptions()))
                 continue;
 
             if (i->second == stringify(*k))
@@ -649,7 +649,7 @@ PortageEnvironment::unmasked_by_user(const PackageID & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, e))
+        if (match_package(*this, **i, e, MatchPackageOptions()))
             return true;
 
     return false;
@@ -672,7 +672,7 @@ PortageEnvironment::known_choice_value_names(const std::tr1::shared_ptr<const Pa
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id))
+        if (! match_package(*this, *i->first, *id, MatchPackageOptions()))
             continue;
 
         if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
@@ -827,7 +827,7 @@ PortageEnvironment::mask_for_user(const PackageID & d) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, d))
+        if (match_package(*this, **i, d, MatchPackageOptions()))
             return make_shared_ptr(new UserConfigMask);
 
     return std::tr1::shared_ptr<const Mask>();

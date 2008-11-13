@@ -187,6 +187,7 @@ void expose_fs_entry() PALUDIS_VISIBLE;
 void expose_generator() PALUDIS_VISIBLE;
 void expose_log() PALUDIS_VISIBLE;
 void expose_mask() PALUDIS_VISIBLE;
+void expose_match_package() PALUDIS_VISIBLE;
 void expose_metadata_key() PALUDIS_VISIBLE;
 void expose_name() PALUDIS_VISIBLE;
 void expose_package_database() PALUDIS_VISIBLE;

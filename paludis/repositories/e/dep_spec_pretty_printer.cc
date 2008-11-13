@@ -28,6 +28,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/options.hh>
 #include <paludis/environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -322,10 +323,10 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 
     if (_imp->env && _imp->check_conditions)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
             _imp->s << _imp->formatter.format(p, format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p) |
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             _imp->s << _imp->formatter.format(p, format::Installable());
         else

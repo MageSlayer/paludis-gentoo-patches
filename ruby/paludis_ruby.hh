@@ -105,6 +105,7 @@ namespace paludis
         VALUE choices_to_value(const std::tr1::shared_ptr<const Choices> & c);
         VALUE choice_to_value(const std::tr1::shared_ptr<const Choice> & c);
         VALUE choice_value_to_value(const std::tr1::shared_ptr<const ChoiceValue> & c);
+        VALUE match_package_options_to_value(const MatchPackageOptions & c);
         VALUE bool_to_value(bool b);
 
         VersionSpec value_to_version_spec(VALUE v);
@@ -122,6 +123,7 @@ namespace paludis
         std::tr1::shared_ptr<const Choices> value_to_choices(VALUE v);
         std::tr1::shared_ptr<const Choice> value_to_choice(VALUE v);
         std::tr1::shared_ptr<const ChoiceValue> value_to_choice_value(VALUE v);
+        MatchPackageOptions value_to_match_package_options(VALUE v);
         bool value_to_bool(VALUE v);
 
         Filter value_to_filter(VALUE v);

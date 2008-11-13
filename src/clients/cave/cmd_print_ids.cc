@@ -253,7 +253,7 @@ PrintIDsCommand::run(
                 m != m_end ; ++m)
         {
             PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
-            g = g & generator::Matches(s);
+            g = g & generator::Matches(s, MatchPackageOptions());
         }
     }
 

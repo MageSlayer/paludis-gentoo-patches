@@ -278,9 +278,11 @@ namespace
         AllGeneratorHandlerBase
     {
         const PackageDepSpec spec;
+        const MatchPackageOptions options;
 
-        MatchesGeneratorHandler(const PackageDepSpec & s) :
-            spec(s)
+        MatchesGeneratorHandler(const PackageDepSpec & s, const MatchPackageOptions & o) :
+            spec(s),
+            options(o)
         {
         }
 
@@ -431,7 +433,7 @@ namespace
                             env->package_database()->fetch_repository(*r)->package_ids(*q));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
-                        if (match_package(*env, spec, **i))
+                        if (match_package(*env, spec, **i, options))
                             result->insert(*i);
                 }
             }
@@ -441,7 +443,10 @@ namespace
 
         virtual std::string as_string() const
         {
-            return "packages matching " + stringify(spec);
+            std::string suffix;
+            if (options[mpo_ignore_additional_requirements])
+                suffix = " (ignoring additional requirements)";
+            return "packages matching " + stringify(spec) + suffix;
         }
     };
 
@@ -603,8 +608,8 @@ generator::Package::Package(const QualifiedPackageName & n) :
 {
 }
 
-generator::Matches::Matches(const PackageDepSpec & spec) :
-    Generator(make_shared_ptr(new MatchesGeneratorHandler(spec)))
+generator::Matches::Matches(const PackageDepSpec & spec, const MatchPackageOptions & o) :
+    Generator(make_shared_ptr(new MatchesGeneratorHandler(spec, o)))
 {
 }
 

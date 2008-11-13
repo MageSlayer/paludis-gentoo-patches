@@ -69,6 +69,7 @@ IF_PYTHON_SOURCES = \
 	fs_entry.cc \
 	generator.cc \
 	mask.cc \
+	match_package.cc \
 	metadata_key.cc \
 	mutex.hh mutex.cc \
 	name.cc \

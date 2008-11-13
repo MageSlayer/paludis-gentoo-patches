@@ -131,7 +131,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -144,7 +144,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -157,7 +157,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -167,7 +167,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 exndbam_repo->invalidate();
 
@@ -180,7 +180,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -194,7 +194,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -207,7 +207,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -220,7 +220,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-2::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -234,7 +234,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 exndbam_repo->invalidate();
 
@@ -244,7 +244,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 exndbam_repo->invalidate();
 

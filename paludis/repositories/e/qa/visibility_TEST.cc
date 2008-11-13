@@ -95,7 +95,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/visible-1", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/visible-1", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r1;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r1, &env, repo, id1, "visibility"));
                 TEST_CHECK_EQUAL(r1.count, 0u);
@@ -103,7 +103,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/visible-2", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/visible-2", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r2;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r2, &env, repo, id2, "visibility"));
                 TEST_CHECK_EQUAL(r2.count, 0u);
@@ -111,7 +111,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/masked-1", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/masked-1", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r3;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r3, &env, repo, id3, "visibility"));
                 TEST_CHECK_EQUAL(r3.count, 0u);
@@ -119,7 +119,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id4(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/needs-masked-1", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/needs-masked-1", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r4;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r4, &env, repo, id4, "visibility"));
                 TestMessageSuffix s4(r4.messages);
@@ -128,7 +128,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id5(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-1", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-1", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r5;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r5, &env, repo, id5, "visibility"));
                 TestMessageSuffix s5(r5.messages);
@@ -137,7 +137,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id6(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-2", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-2", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r6;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r6, &env, repo, id6, "visibility"));
                 TestMessageSuffix s6(r6.messages);
@@ -146,7 +146,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id7(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-3", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-3", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r7;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r7, &env, repo, id7, "visibility"));
                 TEST_CHECK_EQUAL(r7.count, 0u);
@@ -154,7 +154,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id8(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-4", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-4", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r8;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r8, &env, repo, id8, "visibility"));
                 TEST_CHECK_EQUAL(r8.count, 0u);
@@ -162,7 +162,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id9(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-5", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-5", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r9;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r9, &env, repo, id9, "visibility"));
                 TEST_CHECK_EQUAL(r9.count, 0u);
@@ -170,7 +170,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const PackageID> id10(*env[selection::RequireExactlyOne(generator::Matches(parse_user_package_dep_spec(
-                                    "=cat-one/use-masking-6", &env, UserPackageDepSpecOptions())))]->begin());
+                                    "=cat-one/use-masking-6", &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
                 TestReporter r10;
                 TEST_CHECK(visibility_check(FSEntry("/var/empty"), r10, &env, repo, id10, "visibility"));
                 TEST_CHECK_EQUAL(r10.count, 0u);

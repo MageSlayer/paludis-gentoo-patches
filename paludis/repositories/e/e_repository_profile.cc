@@ -746,7 +746,7 @@ ERepositoryProfile::use_masked(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id))
+            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -782,7 +782,7 @@ ERepositoryProfile::use_forced(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id))
+            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -811,7 +811,7 @@ ERepositoryProfile::use_state_ignoring_masks(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id))
+            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -881,7 +881,7 @@ ERepositoryProfile::profile_masked(const PackageID & id) const
     {
         for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id))
+            if (match_package(*_imp->env, *k->first, id, MatchPackageOptions()))
                 return k->second;
     }
 

@@ -88,7 +88,8 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
 
     // TODO: check destinations
     std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
-                generator::Matches(a) | filter::InstalledAtRoot(_imp->environment->root()))]);
+                generator::Matches(a, _imp->dep_list->options()->match_package_options) |
+                filter::InstalledAtRoot(_imp->environment->root()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
                 std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))

@@ -102,7 +102,7 @@ PackageMaskConf::query(const PackageID & e) const
     if (indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            std::tr1::bind(&match_package, std::tr1::ref(*_imp->env), _1, std::tr1::cref(e))))
+            std::tr1::bind(&match_package, std::tr1::ref(*_imp->env), _1, std::tr1::cref(e), MatchPackageOptions())))
         return true;
 
     {
@@ -123,7 +123,7 @@ PackageMaskConf::query(const PackageID & e) const
                 }
             }
 
-            if (match_package_in_set(*_imp->env, *it->second, e))
+            if (match_package_in_set(*_imp->env, *it->second, e, MatchPackageOptions()))
                 return true;
         }
     }

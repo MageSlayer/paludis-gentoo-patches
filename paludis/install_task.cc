@@ -186,7 +186,7 @@ namespace
                 return make_shared_ptr(new DepListEntryHandledSkippedDependent(
                             *(*env)[selection::RequireExactlyOne(generator::Matches(
                                     parse_user_package_dep_spec(s.substr(1), env,
-                                        UserPackageDepSpecOptions())))]->begin()));
+                                        UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin()));
 
             case 'F':
                 if (s.length() != 1)
@@ -233,7 +233,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
         const std::tr1::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
                     generator::Matches(parse_user_package_dep_spec(*tokens.begin(),
-                            _imp->env, UserPackageDepSpecOptions())))]->begin());
+                            _imp->env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
@@ -410,7 +410,7 @@ InstallTask::_add_target(const std::string & target)
         else
         {
             std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*spec) | filter::SupportsAction<InstallAction>())]);
+                        generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>())]);
 
             if (names->empty())
             {
@@ -755,8 +755,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 generator::Matches(make_package_dep_spec()
                     .package(dep->package_id->name())
                     .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .in_repository(dep->destination->name())
-                    ) |
+                    .in_repository(dep->destination->name()),
+                    MatchPackageOptions()) |
                 filter::SupportsAction<UninstallAction>())];
 
     // don't clean the thing we just installed
@@ -1296,7 +1296,8 @@ namespace
         void visit_leaf(const PackageDepSpec & a)
         {
             if (! failure)
-                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(a) | filter::SupportsAction<InstalledAction>())]->empty())
+                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(a, MatchPackageOptions())
+                            | filter::SupportsAction<InstalledAction>())]->empty())
                     failure.reset(new PackageDepSpec(a));
         }
 
@@ -1472,7 +1473,7 @@ namespace
                 if (! d->handled)
                     continue;
 
-                if (! match_package(*env, a, *d->package_id))
+                if (! match_package(*env, a, *d->package_id, MatchPackageOptions()))
                     continue;
 
                 CheckHandledVisitor v;
@@ -1487,7 +1488,7 @@ namespace
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
             std::tr1::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(a) |
+                        generator::Matches(a, MatchPackageOptions()) |
                         filter::SupportsAction<InstalledAction>())]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;

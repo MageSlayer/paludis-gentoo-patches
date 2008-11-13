@@ -167,7 +167,8 @@ namespace
     void
     ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(generator::Matches(a))]);
+        std::tr1::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
+                    generator::Matches(a, MatchPackageOptions()))]);
         std::tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
         bool header_written = false;
@@ -308,7 +309,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 5;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(*spec))]);
+    std::tr1::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(
+                    *spec, MatchPackageOptions()))]);
     int ret(0);
 
     if (entries->empty())

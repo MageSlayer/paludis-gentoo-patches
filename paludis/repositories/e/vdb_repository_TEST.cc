@@ -133,7 +133,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, UserPackageDepSpecOptions()))))]->begin());
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(e1->choices_key());
             TEST_CHECK(e1->choices_key()->value());
@@ -219,7 +219,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, UserPackageDepSpecOptions()))))]->begin());
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             ContentsGatherer gatherer;
             std::for_each(indirect_iterator(e1->contents_key()->value()->begin()),
                           indirect_iterator(e1->contents_key()->value()->end()),
@@ -274,7 +274,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
-                                    &env, UserPackageDepSpecOptions()))))]->begin());
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             StringifyFormatter ff;
 
@@ -362,7 +362,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(install_action);
             }
@@ -373,7 +373,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(install_action);
             }
@@ -384,7 +384,7 @@ namespace test_cases
                 TestMessageSuffix suffix("info", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(info_action);
             }
@@ -393,7 +393,7 @@ namespace test_cases
                 TestMessageSuffix suffix("config", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(config_action);
             }
@@ -402,7 +402,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(uninstall_action);
             }
@@ -477,7 +477,7 @@ namespace test_cases
                 TestMessageSuffix suffix("vars", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(install_action);
             }
@@ -488,7 +488,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(install_action);
             }
@@ -499,7 +499,7 @@ namespace test_cases
                 TestMessageSuffix suffix("info", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(info_action);
             }
@@ -508,7 +508,7 @@ namespace test_cases
                 TestMessageSuffix suffix("config", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(config_action);
             }
@@ -517,7 +517,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
                 id->perform_action(uninstall_action);
             }
@@ -595,7 +595,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -610,7 +610,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -625,12 +625,12 @@ namespace test_cases
                 TestMessageSuffix suffix("upgrade", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -645,12 +645,12 @@ namespace test_cases
                 TestMessageSuffix suffix("downgrade", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -665,7 +665,7 @@ namespace test_cases
                 TestMessageSuffix suffix("new slot", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -680,7 +680,7 @@ namespace test_cases
                 TestMessageSuffix suffix("remove other slot", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -695,7 +695,7 @@ namespace test_cases
                 TestMessageSuffix suffix("new package", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -712,7 +712,7 @@ namespace test_cases
                 TestMessageSuffix suffix("remove other package", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -727,7 +727,7 @@ namespace test_cases
                 TestMessageSuffix suffix("new category", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -742,7 +742,7 @@ namespace test_cases
                 TestMessageSuffix suffix("remove other category", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -757,7 +757,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -770,7 +770,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install paludis-1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat3/pkg1-1::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -785,7 +785,7 @@ namespace test_cases
                 TestMessageSuffix suffix("upgrade paludis-1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat3/pkg1-2::namesincrtest_src",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -981,7 +981,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -992,7 +992,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1003,12 +1003,12 @@ namespace test_cases
                 TestMessageSuffix suffix("upgrade", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1019,7 +1019,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall equivalent", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::providesincrtest_src2",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1030,12 +1030,12 @@ namespace test_cases
                 TestMessageSuffix suffix("downgrade", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1.1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1046,7 +1046,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall different PROVIDE", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::providesincrtest_src2",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1057,7 +1057,7 @@ namespace test_cases
                 TestMessageSuffix suffix("new slot", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1068,7 +1068,7 @@ namespace test_cases
                 TestMessageSuffix suffix("remove other slot", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1079,7 +1079,7 @@ namespace test_cases
                 TestMessageSuffix suffix("new package", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1090,7 +1090,7 @@ namespace test_cases
                 TestMessageSuffix suffix("remove other package", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1101,7 +1101,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall", true);
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1112,7 +1112,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install paludis-1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1123,7 +1123,7 @@ namespace test_cases
                 TestMessageSuffix suffix("upgrade paludis-1", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-2::providesincrtest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1213,7 +1213,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1225,7 +1225,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1237,7 +1237,7 @@ namespace test_cases
                 TestMessageSuffix suffix("reinstall equivalent", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src2",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1308,7 +1308,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1321,7 +1321,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1334,7 +1334,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1344,7 +1344,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 
@@ -1357,7 +1357,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1371,7 +1371,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1384,7 +1384,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1397,7 +1397,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-2::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1411,7 +1411,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
@@ -1421,7 +1421,7 @@ namespace test_cases
 
                 const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::installed",
-                                        &env, UserPackageDepSpecOptions()))))]->begin());
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
                 vdb_repo->invalidate();
 

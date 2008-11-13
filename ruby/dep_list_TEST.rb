@@ -47,7 +47,8 @@ module Paludis
                 DepListUseOption::Standard,
                 DepListBlocksOption::Accumulate,
                 DepListOverrideMasksFunctions.new,
-                false
+                false,
+                []
             )
         end
 
@@ -72,7 +73,8 @@ module Paludis
                 :use => DepListUseOption::Standard,
                 :blocks => DepListBlocksOption::Accumulate,
                 :override_masks => DepListOverrideMasksFunctions.new,
-                :dependency_tags => false
+                :dependency_tags => false,
+                :match_package_options => []
             }
         end
 
@@ -101,7 +103,8 @@ module Paludis
                 :use => DepListUseOption::TakeAll,
                 :blocks => DepListBlocksOption::Error,
                 :override_masks => DepListOverrideMasksFunctions.new,
-                :dependency_tags => true
+                :dependency_tags => true,
+                :match_package_options => []
             }
         end
 
@@ -202,7 +205,8 @@ module Paludis
 
         def test_add_bad_tree
             assert_raise TypeError do
-                dl.add(env[Selection::BestVersionOnly.new(Generator::Matches.new(pda))].last.build_dependencies_key.value, dd)
+                dl.add(env[Selection::BestVersionOnly.new(Generator::Matches.new(
+                    pda, []))].last.build_dependencies_key.value, dd)
             end
         end
 

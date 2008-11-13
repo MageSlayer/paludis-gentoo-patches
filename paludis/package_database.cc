@@ -245,7 +245,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
     std::tr1::shared_ptr<const PackageIDSequence> pkgs((*_imp->environment)[selection::AllVersionsUnsorted(
-                generator::Matches(make_package_dep_spec().package_name_part(p)) | f)]);
+                generator::Matches(make_package_dep_spec().package_name_part(p), MatchPackageOptions()) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)

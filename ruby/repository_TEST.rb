@@ -55,7 +55,7 @@ module Paludis
 
         def p
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', env, [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', env, []), []))].first
         end
 
         def installed_pid
@@ -184,7 +184,7 @@ module Paludis
 
         def test_get_environment_variable
             pid = env[Selection::BestVersionOnly.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec(
-                '=foo/bar-1.0', env, [])))].first;
+                '=foo/bar-1.0', env, []), []))].first;
             assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
             assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end

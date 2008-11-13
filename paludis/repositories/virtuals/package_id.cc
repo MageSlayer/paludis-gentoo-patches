@@ -103,10 +103,10 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
             return f.format(*_imp->value->item(), format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item()) |
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item(), MatchPackageOptions()) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             return f.format(*_imp->value->item(), format::Installable());
         else

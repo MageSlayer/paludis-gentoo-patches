@@ -301,7 +301,8 @@ ERepositorySets::security_set(bool insecurity) const
                                 (*_imp->environment)[selection::AllVersionsSorted(
                                     generator::Matches(make_package_dep_spec()
                                         .package(glsa_pkg->name())
-                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false)))) |
+                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false))),
+                                        MatchPackageOptions()) |
                                     filter::SupportsAction<InstallAction>() |
                                     filter::NotMasked())]);
 

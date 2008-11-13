@@ -142,7 +142,7 @@ namespace
                     break;
 
                 std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(s) | filter::InstalledAtRoot(FSEntry("/")))]);
+                            generator::Matches(s, MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]);
                 if (matches->empty())
                     break;
 

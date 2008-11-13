@@ -430,7 +430,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(
                 generator::Matches(repo ?
                     make_package_dep_spec().package(d.package_id->name()).in_repository(*repo) :
-                    make_package_dep_spec().package(d.package_id->name())))]);
+                    make_package_dep_spec().package(d.package_id->name()),
+                    MatchPackageOptions()))]);
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted(
                 generator::Matches(repo ?
@@ -440,8 +441,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                     .in_repository(*repo) :
                     make_package_dep_spec()
                     .package(d.package_id->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))
-                    ))]);
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot()))),
+                    MatchPackageOptions()))]);
 
     display_merge_list_entry_start(d, m);
     display_merge_list_entry_package_name(d, m);
@@ -911,7 +912,8 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
     std::tr1::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
                 generator::Matches(make_package_dep_spec()
                     .package(d.package_id->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot())))) |
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id->slot()))),
+                    MatchPackageOptions()) |
                 filter::InstalledAtRoot(environment()->root()))]);
     bool changed(normal_entry == m &&
             ! inst->empty() && (*inst->begin())->from_repositories_key() &&
@@ -1362,7 +1364,7 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
         std::tr1::shared_ptr<const PackageDepSpec> spec(
             std::tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
         if (d.kind != dlk_masked && d.kind != dlk_block && (*environment())[selection::SomeArbitraryVersion(
-                generator::Matches(*spec) |
+                generator::Matches(*spec, MatchPackageOptions()) |
                 filter::SupportsAction<InstalledAction>())]->empty())
             unsatisfied_dependents.insert(tag->tag->short_text());
         else
@@ -1598,7 +1600,8 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
     {
         std::tr1::shared_ptr<const PackageIDSequence> p(
                 (*environment())[selection::AllVersionsSorted(
-                    generator::Matches(e.query()) | filter::SupportsAction<InstallAction>())]);
+                    generator::Matches(e.query(), MatchPackageOptions())
+                    | filter::SupportsAction<InstallAction>())]);
         if (p->empty())
         {
             output_stream() << endl;

@@ -604,7 +604,7 @@ ERepository::repository_masked(const PackageID & id) const
     else
         for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment, *k->first, id))
+            if (match_package(*_imp->params.environment, *k->first, id, MatchPackageOptions()))
                 return k->second;
 
     return std::tr1::shared_ptr<const RepositoryMaskInfo>();

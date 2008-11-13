@@ -154,7 +154,7 @@ namespace
 
     /*
      * call-seq:
-     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, uninstalled_deps_suggested, suggested, circular, blocks, override_masks, dependency_tags) -> DepListOptions
+     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, uninstalled_deps_suggested, suggested, circular, blocks, override_masks, dependency_tags, MatchPackageOptions) -> DepListOptions
      *     DepListOptions.new(Hash) -> DepListOptions
      *     DepListOptions.new -> DepListOptions
      *
@@ -182,7 +182,8 @@ namespace
      *           :use => DepListUseOption::Standard,
      *           :blocks => DepListBlocksOption::Accumulate,
      *           :override_masks => DepListOverrideMasksFunctions.new
-     *           :dependency_tags => false
+     *           :dependency_tags => false,
+     *           :match_package_options => MatchPackageOptions.new
      *       }
      */
     VALUE
@@ -228,6 +229,7 @@ namespace
                 int value_for_blocks;
                 bool value_for_dependency_tags;
                 std::tr1::shared_ptr<DepListOverrideMasksFunctions> value_for_override_masks_functions;
+                MatchPackageOptions value_for_match_package_options;
 
                 if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
                 {
@@ -269,6 +271,8 @@ namespace
                         rb_raise(rb_eArgError, "Missing Parameter: blocks");
                     if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags"))))
                         rb_raise(rb_eArgError, "Missing Parameter: dependency_tags");
+                    if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("match_package_options"))))
+                        rb_raise(rb_eArgError, "Missing Parameter: match_package_options");
                     value_for_reinstall =
                         NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("reinstall"))));
                     value_for_reinstall_scm =
@@ -309,8 +313,10 @@ namespace
                         value_to_dep_list_override_masks_functions(rb_hash_aref(argv[0], ID2SYM(rb_intern("override_masks"))));
                     value_for_dependency_tags =
                         Qtrue == (rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags")))) ? true : false;
+                    value_for_match_package_options = value_to_match_package_options(
+                            rb_hash_aref(argv[0], ID2SYM(rb_intern("match_package_options"))));
                 }
-                else if (20 == argc)
+                else if (21 == argc)
                 {
                     value_for_reinstall                     = NUM2INT(argv[0]);
                     value_for_reinstall_scm                 = NUM2INT(argv[1]);
@@ -332,10 +338,11 @@ namespace
                     value_for_blocks                        = NUM2INT(argv[17]);
                     value_for_override_masks_functions = value_to_dep_list_override_masks_functions(argv[18]);
                     value_for_dependency_tags = Qtrue == argv[19] ? true : false;
+                    value_for_match_package_options = value_to_match_package_options(argv[20]);
                 }
                 else
                 {
-                    rb_raise(rb_eArgError, "DepListOptions expects twenty or zero arguments, but got %d",argc);
+                    rb_raise(rb_eArgError, "DepListOptions expects twenty one or zero arguments, but got %d",argc);
                 }
 
                 if (value_for_reinstall < 0 ||  value_for_reinstall >= last_dl_reinstall)
@@ -396,7 +403,8 @@ namespace
                             static_cast<DepListUseOption>(value_for_use),
                             static_cast<DepListBlocksOption>(value_for_blocks),
                             value_for_override_masks_functions,
-                            value_for_dependency_tags
+                            value_for_dependency_tags,
+                            value_for_match_package_options
                             )
                         );
 
@@ -811,6 +819,42 @@ namespace
         try
         {
             (*p)->override_masks = value_to_dep_list_override_masks_functions(omf);
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     match_package_options -> MatchPackageOptions
+     *
+     * Our match_package options.
+     */
+    VALUE
+    dep_list_options_match_package_options(VALUE self)
+    {
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        return match_package_options_to_value((*p)->match_package_options);
+    }
+
+    /*
+     * call-seq:
+     *     match_package_options=(MatchPackageOptions) -> Qnil
+     *
+     * Set our override masks.
+     */
+    VALUE
+    dep_list_options_match_package_options_set(VALUE self, VALUE omf)
+    {
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        try
+        {
+            (*p)->match_package_options = value_to_match_package_options(omf);
             return Qnil;
         }
         catch (const std::exception & e)
@@ -1382,6 +1426,9 @@ namespace
 
         rb_define_method(c_dep_list_options, "override_masks", RUBY_FUNC_CAST(&dep_list_options_override_masks),0);
         rb_define_method(c_dep_list_options, "override_masks=", RUBY_FUNC_CAST(&dep_list_options_override_masks_set),1);
+
+        rb_define_method(c_dep_list_options, "match_package_options", RUBY_FUNC_CAST(&dep_list_options_match_package_options), 0);
+        rb_define_method(c_dep_list_options, "match_package_options=", RUBY_FUNC_CAST(&dep_list_options_match_package_options_set), 1);
 
         /*
          * Document-class: Paludis::DepList

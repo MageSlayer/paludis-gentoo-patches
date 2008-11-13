@@ -87,7 +87,8 @@ namespace
 
             void visit_leaf(const PackageDepSpec & a)
             {
-                std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(generator::Matches(a))]);
+                std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
+                            generator::Matches(a, MatchPackageOptions()))]);
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a.tag())

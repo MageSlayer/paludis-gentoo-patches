@@ -109,15 +109,16 @@ namespace
     }
 
     VALUE
-    generator_matches_new(VALUE self, VALUE spec_v)
+    generator_matches_new(VALUE self, VALUE spec_v, VALUE options_v)
     {
         Generator * ptr(0);
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> spec(value_to_package_dep_spec(spec_v));
-            ptr = new generator::Matches(*spec);
+            MatchPackageOptions options(value_to_match_package_options(options_v));
+            ptr = new generator::Matches(*spec, options);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
-            rb_obj_call_init(data, 1, &spec_v);
+            rb_obj_call_init(data, 2, &spec_v);
             return data;
         }
         catch (const std::exception & e)
@@ -259,7 +260,7 @@ namespace
          * Generate matching packages.
          */
         c_generator_matches = rb_define_class_under(c_generator_module, "Matches", c_generator);
-        rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 1);
+        rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 2);
 
         /*
          * Document-class: Paludis::Generator::Intersection

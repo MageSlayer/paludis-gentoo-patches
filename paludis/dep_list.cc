@@ -94,7 +94,8 @@ DepListOptions::DepListOptions() :
     circular(dl_circular_error),
     use(dl_use_deps_standard),
     blocks(dl_blocks_accumulate),
-    dependency_tags(false)
+    dependency_tags(false),
+    match_package_options()
 {
     /* when changing the above, also see src/paludis/command_line.cc. */
 }
@@ -244,11 +245,13 @@ namespace
     {
         const Environment * const env;
         const PackageDepSpec & a;
+        const MatchPackageOptions & o;
 
         MatchDepListEntryAgainstPackageDepSpec(const Environment * const ee,
-                const PackageDepSpec & aa) :
+                const PackageDepSpec & aa, const MatchPackageOptions & oo) :
             env(ee),
-            a(aa)
+            a(aa),
+            o(oo)
         {
         }
 
@@ -261,7 +264,7 @@ namespace
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
-                    return match_package(*env, a, *e.second->package_id);
+                    return match_package(*env, a, *e.second->package_id, o);
 
                 case dlk_block:
                 case dlk_masked:
@@ -388,7 +391,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find already installed things */
     // TODO: check destinations
     std::tr1::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
-                generator::Matches(a) | filter::SupportsAction<InstalledAction>())]);
+                generator::Matches(a, d->_imp->opts->match_package_options) | filter::SupportsAction<InstalledAction>())]);
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -398,7 +401,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         q = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
 
     MergeListIndex::iterator qq(std::find_if(q.first, q.second,
-                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)));
+                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a, d->_imp->opts->match_package_options)));
 
     MergeList::iterator existing_merge_list_entry(qq == q.second ? d->_imp->merge_list.end() : qq->second);
     if (existing_merge_list_entry != d->_imp->merge_list.end())
@@ -444,7 +447,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find installable candidates, and find the best visible candidate */
     std::tr1::shared_ptr<const PackageID> best_visible_candidate;
     std::tr1::shared_ptr<const PackageIDSequence> installable_candidates(
-            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a) &
+            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a, d->_imp->opts->match_package_options) &
                 generator::SomeIDsMightSupportAction<InstallAction>())]);
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
@@ -544,7 +547,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 throw AllMaskedError(a);
 
             std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(*a.without_additional_requirements()))]);
+                        generator::Matches(*a.without_additional_requirements(), d->_imp->opts->match_package_options))]);
 
             for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
@@ -621,8 +624,8 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                         (*d->_imp->env)[selection::AllVersionsSorted(
                             generator::Matches(make_package_dep_spec()
                                 .package(best_visible_candidate->name())
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot())))
-                                ) |
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot()))),
+                                d->_imp->opts->match_package_options) |
                             filter::SupportsAction<InstalledAction>())]);
 
                 if (are_we_downgrading->empty())
@@ -829,10 +832,10 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     {
         PackageDepSpec just_package(make_package_dep_spec().package(*a.blocked_spec()->package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(just_package) |
+                generator::Matches(just_package, d->_imp->opts->match_package_options) |
                 filter::SupportsAction<InstalledAction>())];
 
-        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package);
+        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options);
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
                     d->_imp->merge_list_index.equal_range(*a.blocked_spec()->package_ptr())) ;
                 p.first != p.second ; ++p.first)
@@ -864,7 +867,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa, d->_imp->opts->match_package_options))
             continue;
 
         bool replaced(false);
@@ -927,7 +930,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id, d->_imp->opts->match_package_options))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -957,7 +960,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id))
+            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id, d->_imp->opts->match_package_options))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -1128,7 +1131,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
                 z = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
-                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp)));
+                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp, _imp->opts->match_package_options)));
 
             if (zz != z.second)
                 continue;
@@ -1573,7 +1576,7 @@ DepList::is_top_level_target(const PackageID & e) const
     if (! _imp->current_top_level_target)
         throw InternalError(PALUDIS_HERE, "current_top_level_target not set?");
 
-    return match_package_in_set(*_imp->env, *_imp->current_top_level_target, e);
+    return match_package_in_set(*_imp->env, *_imp->current_top_level_target, e, _imp->opts->match_package_options);
 }
 
 namespace
@@ -1632,7 +1635,7 @@ DepList::replaced(const PackageID & m) const
 
     PackageDepSpec spec(make_package_dep_spec().package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
-                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec)))))
+                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options)))))
     {
         if (p.first->second->package_id->slot() != m.slot())
             p.first = next(p.first);
@@ -1653,7 +1656,7 @@ DepList::match_on_list(const PackageDepSpec & a) const
         p = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
     return p.second != std::find_if(p.first, p.second,
-            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a));
+            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a, _imp->opts->match_package_options));
 }
 
 DepList::Iterator

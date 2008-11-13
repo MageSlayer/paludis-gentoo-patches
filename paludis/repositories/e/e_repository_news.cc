@@ -143,7 +143,7 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             erepository::EAPIData::get_instance()->eapi_from_string(
                                                 _imp->e_repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
-                                            std::tr1::shared_ptr<const PackageID>()))) |
+                                            std::tr1::shared_ptr<const PackageID>())), MatchPackageOptions()) |
                                 filter::SupportsAction<InstalledAction>())]->empty())
                         local_show = true;
                 show &= local_show;

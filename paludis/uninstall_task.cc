@@ -170,7 +170,7 @@ UninstallTask::add_target(const std::string & target)
         {
             /* blech. wildcards. */
             std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*pds) | filter::SupportsAction<UninstallAction>())]);
+                        generator::Matches(*pds, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
@@ -244,7 +244,7 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             std::tr1::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
-                        generator::Matches(**t) |
+                        generator::Matches(**t, MatchPackageOptions()) |
                         filter::SupportsAction<UninstallAction>())]);
             if (r->empty())
             {
@@ -309,7 +309,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::tr1::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(make_package_dep_spec().package(i->first)) |
+                        generator::Matches(make_package_dep_spec().package(i->first), MatchPackageOptions()) |
                         filter::SupportsAction<InstalledAction>()
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;

@@ -148,7 +148,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
             for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, e))
+                if (! match_package(*_imp->env, *j->first, e, MatchPackageOptions()))
                     continue;
 
                 for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -188,7 +188,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, e))
+            if (! match_package_in_set(*_imp->env, *i->second.first, e, MatchPackageOptions()))
                 continue;
 
             for (LicensesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
@@ -214,7 +214,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
     for (PDSToLicensesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, e))
+        if (! match_package(*_imp->env, *j->first, e, MatchPackageOptions()))
             continue;
 
         for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

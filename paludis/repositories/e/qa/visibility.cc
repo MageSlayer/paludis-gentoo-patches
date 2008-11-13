@@ -143,7 +143,8 @@ namespace
             }
 
             const std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                        generator::Matches(*p) | filter::SupportsAction<InstallAction>())]);
+                        generator::Matches(*p, MatchPackageOptions() + mpo_ignore_additional_requirements)
+                        | filter::SupportsAction<InstallAction>())]);
             if (matches->empty())
             {
                 if (reporter)

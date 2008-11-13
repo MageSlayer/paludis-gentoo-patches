@@ -128,7 +128,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1"));
             TEST_CHECK_EQUAL(id1->slot(), SlotName("0"));
@@ -146,7 +146,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2"));
             TEST_CHECK_EQUAL(id2->slot(), SlotName("1"));
@@ -182,13 +182,13 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(! id1->masked());
 
             const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(! id2->masked());
         }
@@ -219,7 +219,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(! id1->supports_action(SupportsActionTest<InstallAction>()));
             TEST_CHECK(! id1->supports_action(SupportsActionTest<ConfigAction>()));
@@ -308,7 +308,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
-                                &env, UserPackageDepSpecOptions())))]->begin());
+                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>("")
@@ -550,7 +550,7 @@ namespace test_cases
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
-                            &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
+                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -592,7 +592,7 @@ namespace test_cases
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",
-                            &env, UserPackageDepSpecOptions())))]->begin())->perform_action(action);
+                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin())->perform_action(action);
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
 

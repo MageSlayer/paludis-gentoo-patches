@@ -64,10 +64,10 @@ namespace test_cases
             std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
             const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));
@@ -98,7 +98,7 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             std::tr1::shared_ptr<const Choice> foo_cards;
             for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
                     c != c_end ; ++c)
@@ -124,10 +124,10 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));
@@ -157,10 +157,10 @@ namespace test_cases
 
             const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), UserPackageDepSpecOptions()))))]->begin());
+                                    env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));

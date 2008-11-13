@@ -291,8 +291,8 @@ namespace
 
             std::tr1::shared_ptr<const PackageIDSequence> m(
                     best_only ?
-                    (*env)[selection::BestVersionOnly(generator::Matches(a) | filter::InstalledAtRoot(env->root()))] :
-                    (*env)[selection::AllVersionsSorted(generator::Matches(a) | filter::InstalledAtRoot(env->root()))]);
+                    (*env)[selection::BestVersionOnly(generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(DepTagEntry(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)), 0));
@@ -440,7 +440,7 @@ UninstallList::add_unused_dependencies()
         for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
-            if (match_package_in_set(*_imp->env, *world, **i))
+            if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -517,7 +517,7 @@ UninstallList::collect_world() const
     for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
-        if (match_package_in_set(*_imp->env, *world, **i))
+        if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
             result->insert(*i);
     }
 

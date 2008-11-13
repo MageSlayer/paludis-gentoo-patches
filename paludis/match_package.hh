@@ -30,6 +30,7 @@
  * - \ref example_match_package.cc "example_match_package.cc"
  */
 
+#include <paludis/match_package-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tree.hh>
@@ -48,7 +49,8 @@ namespace paludis
     bool match_package(
             const Environment & env,
             const PackageDepSpec & spec,
-            const PackageID & target)
+            const PackageID & target,
+            const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**
@@ -62,7 +64,8 @@ namespace paludis
     bool match_package_in_set(
             const Environment & env,
             const SetSpecTree::ConstItem & spec,
-            const PackageID & target)
+            const PackageID & target,
+            const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 

@@ -62,7 +62,7 @@ void expose_generator()
     bp::class_<generator::Matches, bp::bases<Generator> > generator_matches(
             "Matches",
             "Generate matching packages.",
-            bp::init<const PackageDepSpec &>("__init__(spec)")
+            bp::init<const PackageDepSpec &, const MatchPackageOptions &>("__init__(spec, MatchPackageOptions)")
             );
 
     bp::class_<generator::Intersection, bp::bases<Generator> > generator_intersection(

@@ -162,7 +162,7 @@ namespace
     {
         cout << format_general_s(f::show_wildcard_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s))]);
+        const std::tr1::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, MatchPackageOptions()))]);
         if (names->empty())
             throw NothingMatching(s);
 
@@ -573,7 +573,8 @@ namespace
     {
         cout << format_general_s(f::show_package_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s))]);
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
+                    generator::Matches(s, MatchPackageOptions()))]);
         if (ids->empty())
             throw NothingMatching(s);
 
@@ -657,7 +658,8 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const PackageDepSpec & s)
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s))]);
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
+                        MatchPackageOptions()))]);
         if (ids->empty())
             throw NothingMatching(s);
 

@@ -42,10 +42,10 @@ module Paludis
             spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
 
-            assert Paludis::match_package(env, spec_good, pid)
-            assert !Paludis::match_package(env, spec_bad, pid)
+            assert Paludis::match_package(env, spec_good, pid, [])
+            assert !Paludis::match_package(env, spec_bad, pid, [])
 
         end
 
@@ -53,23 +53,23 @@ module Paludis
             env = EnvironmentFactory.instance.create("")
             world = env.set('world')
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
 
-            assert Paludis::match_package_in_set(env, world, pid)
+            assert Paludis::match_package_in_set(env, world, pid, [])
         end
 
         def test_type_errors
             env = EnvironmentFactory.instance.create("")
             spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, [])))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
 
             assert_raise TypeError do
-                Paludis::match_package(spec,spec,pid)
+                Paludis::match_package(spec,spec,pid, [])
             end
 
             assert_raise TypeError do
-                Paludis::match_package(env,spec,spec)
+                Paludis::match_package(env,spec,spec, [])
             end
         end
 

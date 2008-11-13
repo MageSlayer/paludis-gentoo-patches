@@ -139,7 +139,7 @@ PrintIDMetadataCommand::run(
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

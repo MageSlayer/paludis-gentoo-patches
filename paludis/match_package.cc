@@ -29,13 +29,18 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
+#include <istream>
+#include <ostream>
 
 using namespace paludis;
+
+#include <paludis/match_package-se.cc>
 
 namespace
 {
@@ -72,7 +77,8 @@ bool
 paludis::match_package(
         const Environment & env,
         const PackageDepSpec & spec,
-        const PackageID & entry)
+        const PackageID & entry,
+        const MatchPackageOptions & options)
 {
     if (spec.package_ptr() && *spec.package_ptr() != entry.name())
         return false;
@@ -190,12 +196,15 @@ paludis::match_package(
             return false;
     }
 
-    if (spec.additional_requirements_ptr())
+    if (! options[mpo_ignore_additional_requirements])
     {
-        for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-            if (! (*u)->requirement_met(&env, entry))
-                return false;
+        if (spec.additional_requirements_ptr())
+        {
+            for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
+                    u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                if (! (*u)->requirement_met(&env, entry))
+                    return false;
+        }
     }
 
     return true;
@@ -205,7 +214,8 @@ bool
 paludis::match_package_in_set(
         const Environment & env,
         const SetSpecTree::ConstItem & target,
-        const PackageID & entry)
+        const PackageID & entry,
+        const MatchPackageOptions & options)
 {
     using namespace std::tr1::placeholders;
 
@@ -213,6 +223,6 @@ paludis::match_package_in_set(
     target.accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            std::tr1::bind(&match_package, std::tr1::cref(env), _1, std::tr1::cref(entry)));
+            std::tr1::bind(&match_package, std::tr1::cref(env), _1, std::tr1::cref(entry), std::tr1::cref(options)));
 }
 

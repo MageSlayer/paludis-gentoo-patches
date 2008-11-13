@@ -213,11 +213,11 @@ int do_one_info(
             new PackageDepSpec(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
 
     std::tr1::shared_ptr<const PackageIDSequence>
-        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec))]),
+        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()))]),
         installed_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]),
+                    generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]),
         installable_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                    generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
     std::tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
 

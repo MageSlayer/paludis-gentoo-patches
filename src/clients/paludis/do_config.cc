@@ -75,7 +75,7 @@ namespace
                         filter::InstalledAtRoot(env->root()))));
 
         std::tr1::shared_ptr<const PackageIDSequence> entries(
-                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec) | filter::InstalledAtRoot(env->root()))]);
+                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
         if (entries->empty())
             throw NoSuchPackageError(target);

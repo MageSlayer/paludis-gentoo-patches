@@ -46,6 +46,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_environment();
     expose_metadata_key();
     expose_mask();
+    expose_match_package();
     expose_package_id();
     expose_action();
     expose_package_database();

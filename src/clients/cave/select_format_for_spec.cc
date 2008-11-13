@@ -38,9 +38,9 @@ paludis::cave::select_format_for_spec(
         const std::string & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
         return if_installed;
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec) | filter::SupportsAction<InstallAction>()
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())
         return if_installable;
     return if_unavailable;

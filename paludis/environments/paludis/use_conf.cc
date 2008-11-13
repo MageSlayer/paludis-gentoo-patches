@@ -219,7 +219,7 @@ UseConf::want_choice_enabled(
     {
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
         {
-            if (! match_package(*_imp->env, *p->first, *id))
+            if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
                 continue;
 
             FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
@@ -261,7 +261,7 @@ UseConf::want_choice_enabled(
             }
         }
 
-        if (! match_package_in_set(*_imp->env, *r->second.first, *id))
+        if (! match_package_in_set(*_imp->env, *r->second.first, *id, MatchPackageOptions()))
             continue;
 
         FlagNamePairWithStateMap::const_iterator i(r->second.second.first.find(std::make_pair(choice->prefix(), f)));
@@ -290,7 +290,7 @@ UseConf::want_choice_enabled(
 
     for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)
     {
-        if (! match_package(*_imp->env, *p->first, *id))
+        if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
             continue;
 
         FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
@@ -329,7 +329,7 @@ UseConf::known_choice_value_names(
     if (_imp->qualified.end() != q)
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
         {
-            if (! match_package(*_imp->env, *p->first, *id))
+            if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
                 continue;
 
             for (FlagNamePairWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
@@ -354,7 +354,7 @@ UseConf::known_choice_value_names(
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *r->second.first, *id))
+            if (! match_package_in_set(*_imp->env, *r->second.first, *id, MatchPackageOptions()))
                 continue;
 
             for (FlagNamePairWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
@@ -366,7 +366,7 @@ UseConf::known_choice_value_names(
 
     for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)
     {
-        if (! match_package(*_imp->env, *p->first, *id))
+        if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
             continue;
 
         for (FlagNamePairWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;

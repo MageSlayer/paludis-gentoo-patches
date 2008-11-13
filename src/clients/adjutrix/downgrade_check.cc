@@ -142,7 +142,8 @@ namespace
             {
                 if (! env[selection::SomeArbitraryVersion(generator::Matches(make_package_dep_spec()
                                 .package(b->first.name)
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot)))))]->empty())
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot))),
+                                MatchPackageOptions()))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
                     exit_status |= 2;

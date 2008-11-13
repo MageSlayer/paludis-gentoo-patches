@@ -51,13 +51,16 @@ module Paludis
 
         def test_create
             assert_nothing_raised do
-                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []))
+                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), [])
             end
         end
 
         def test_to_s
-            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, [])).to_s,
+            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), []).to_s,
                 "packages matching a/b"
+            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []),
+                                               [:ignore_additional_requirements]).to_s,
+                "packages matching a/b (ignoring additional requirements)"
         end
     end
 

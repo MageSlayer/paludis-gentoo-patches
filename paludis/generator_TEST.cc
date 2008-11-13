@@ -111,7 +111,7 @@ namespace test_cases
     {
         MatchesGeneratorTestCase() :
             GeneratorTestCaseBase("matches", generator::Matches(parse_user_package_dep_spec("cat/a",
-                            &env, UserPackageDepSpecOptions())))
+                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))
         {
         }
 
@@ -129,7 +129,7 @@ namespace test_cases
     {
         MatchesCatWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches cat wildcard", generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards)))
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
         {
         }
 
@@ -147,7 +147,7 @@ namespace test_cases
     {
         MatchesPkgWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches pkg wildcard", generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards)))
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
         {
         }
 
@@ -168,7 +168,7 @@ namespace test_cases
         MatchesAllWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches all wildcard", generator::Matches(
                         parse_user_package_dep_spec(">=*/*-2",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards)))
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
         {
         }
 
@@ -276,9 +276,9 @@ namespace test_cases
         IntersectionGeneratorTestCase() :
             GeneratorTestCaseBase("intersection", generator::Intersection(
                     generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards)),
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()),
                     generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards))
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions())
                     ))
         {
         }

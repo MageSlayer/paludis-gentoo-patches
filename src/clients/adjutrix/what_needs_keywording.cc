@@ -78,6 +78,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     d_options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
     d_options.override_masks->push_back(std::tr1::bind(&override_unkeyworded, &env, _1, _2));
     d_options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
+    d_options.match_package_options += mpo_ignore_additional_requirements;
 
     DepList d(&env, d_options);
 

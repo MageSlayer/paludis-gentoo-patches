@@ -30,6 +30,8 @@ make_class_DepListOptions()
 
     key dependency_tags bool
 
+    key match_package_options MatchPackageOptions
+
     extra_constructors <<END
             DepListOptions();
 END

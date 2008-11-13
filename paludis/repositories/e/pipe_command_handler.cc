@@ -110,7 +110,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
@@ -149,7 +149,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
-                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (entries->empty())
                     return "O1;";
                 else
@@ -171,7 +171,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
                 {
                     std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);

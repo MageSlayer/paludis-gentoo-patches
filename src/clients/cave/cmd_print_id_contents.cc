@@ -105,7 +105,7 @@ PrintIDContentsCommand::run(
                 UserPackageDepSpecOptions(), filter::InstalledAtRoot(env->root())));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

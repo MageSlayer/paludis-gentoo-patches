@@ -35,7 +35,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
     def test_01_user_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/user-1.0", self.e, [])))
+            parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -47,7 +47,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
     def test_02_unaccepted_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, [])))
+            parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -60,7 +60,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
     def test_03_repository_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/repo-1.0", self.e, [])))
+            parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -77,7 +77,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
     def test_04_unsupported_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, [])))
+            parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []))
         pid = iter(self.e[q]).next()
         m = iter(pid.masks).next()
 
@@ -91,7 +91,7 @@ class TestCase_01_Masks(unittest.TestCase):
     def test_05_association_mask(self):
         if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
             q = Selection.RequireExactlyOne(Generator.Matches(
-                parse_user_package_dep_spec("=virtual/association-1.0", self.e, [])))
+                parse_user_package_dep_spec("=virtual/association-1.0", self.e, []), []))
             pid = iter(self.e[q]).next()
             m = iter(pid.masks).next()
 
@@ -165,7 +165,7 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
             def associated_package(self):
                 e = EnvironmentFactory.instance.create("")
                 q = Selection.RequireExactlyOne(Generator.Matches(
-                    parse_user_package_dep_spec("=masked/user-1.0", e, [])))
+                    parse_user_package_dep_spec("=masked/user-1.0", e, []), []))
                 pid = iter(e[q]).next()
                 return pid
 

@@ -78,19 +78,20 @@ namespace
      * Document-method: match_package
      *
      * call-seq:
-     *     match_package(environment, package_dep_spec, package_id) -> true or false
+     *     match_package(environment, package_dep_spec, package_id, options) -> true or false
      *
      * Return whether the specified PackageID matches the specified PackageDepSpec.
      *
      */
-    VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t)
+    VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t, VALUE o)
     {
         try
         {
             std::tr1::shared_ptr<Environment> env = value_to_environment(en);
             std::tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
             std::tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
-            return match_package(*env, *spec, *target) ? Qtrue : Qfalse;
+            MatchPackageOptions options(value_to_match_package_options(o));
+            return match_package(*env, *spec, *target, options) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -103,19 +104,20 @@ namespace
      * Document-method: match_package_in_set
      *
      * call-seq:
-     *     match_package_in_set(environment, set_spec_tree, package_id) -> true or false
+     *     match_package_in_set(environment, set_spec_tree, package_id, options) -> true or false
      *
      * Return whether the specified PackageID matches the specified set.
      *
      */
-    VALUE paludis_match_package_in_set(VALUE, VALUE en, VALUE a, VALUE t)
+    VALUE paludis_match_package_in_set(VALUE, VALUE en, VALUE a, VALUE t, VALUE o)
     {
         try
         {
             std::tr1::shared_ptr<Environment> env = value_to_environment(en);
             std::tr1::shared_ptr<const SetSpecTree::ConstItem> spec = value_to_dep_tree<SetSpecTree>(a);
             std::tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
-            return match_package_in_set(*env, *spec, *target) ? Qtrue : Qfalse;
+            MatchPackageOptions options(value_to_match_package_options(o));
+            return match_package_in_set(*env, *spec, *target, options) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -487,8 +489,8 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      */
     c_bad_version_operator_error = rb_define_class_under(c_paludis_module, "BadVersionOperatorError", rb_eRuntimeError);
 
-    rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
-    rb_define_module_function(c_paludis_module, "match_package_in_set", RUBY_FUNC_CAST(&paludis_match_package_in_set), 3);
+    rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 4);
+    rb_define_module_function(c_paludis_module, "match_package_in_set", RUBY_FUNC_CAST(&paludis_match_package_in_set), 4);
     rb_define_module_function(c_paludis_module, "version_spec_comparator", RUBY_FUNC_CAST(&paludis_version_spec_comparator), 3);
 
     rb_define_const(c_paludis_module, "Version", INT2FIX(PALUDIS_VERSION));
@@ -516,8 +518,34 @@ paludis::ruby::bool_to_value(bool b)
     return b ? Qtrue : Qfalse;
 }
 
+MatchPackageOptions
+paludis::ruby::value_to_match_package_options(VALUE v)
+{
+    MatchPackageOptions o;
+    for (int i(0) ; i < RARRAY(v)->len ; ++i)
+    {
+        VALUE entry(rb_ary_entry(v, i));
+        Check_Type(entry, T_SYMBOL);
+        if (SYM2ID(entry) == rb_intern("ignore_additional_requirements"))
+            o += mpo_ignore_additional_requirements;
+        else
+            rb_raise(rb_eArgError, "Unknown MatchPackageOptions option '%s'", rb_obj_as_string(entry));
+    }
+    return o;
+}
+
+VALUE
+paludis::ruby::match_package_options_to_value(const MatchPackageOptions & o)
+{
+    VALUE a(rb_ary_new());
+    if (o[mpo_ignore_additional_requirements])
+        rb_ary_push(a, ID2SYM(rb_intern("ignore_additional_requirements")));
+    return a;
+}
+
 #ifdef ENABLE_RUBY_QA
-paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter) {
+paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter)
+{
     this->reporter = ruby_reporter;
 }
 
