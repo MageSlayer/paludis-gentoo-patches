@@ -176,11 +176,12 @@ namespace
                                     e_end(repo->params().master_repositories->end()) ; e != e_end ; ++e)
                             {
                                 if ((*i)->repository()->name() == (*e)->name())
+                                {
                                     if ((*e)->repository_masked(**i))
-                                    {
                                         repo_masked = true;
-                                        break;
-                                    }
+                                    found_repo = true;
+                                    break;
+                                }
                             }
                         }
 
