@@ -31,6 +31,7 @@
 #include "cmd_print_environment_metadata.hh"
 #include "cmd_print_id_contents.hh"
 #include "cmd_print_id_metadata.hh"
+#include "cmd_print_repositories.hh"
 #include "cmd_print_ids.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
@@ -67,6 +68,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-id-contents", make_command<PrintIDContentsCommand>));
     _imp->handlers.insert(std::make_pair("print-id-metadata", make_command<PrintIDMetadataCommand>));
     _imp->handlers.insert(std::make_pair("print-ids", make_command<PrintIDsCommand>));
+    _imp->handlers.insert(std::make_pair("print-repositories", make_command<PrintRepositoriesCommand>));
     _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
     _imp->handlers.insert(std::make_pair("sync", make_command<SyncCommand>));
 }
