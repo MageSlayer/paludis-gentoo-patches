@@ -186,7 +186,7 @@ GLSA::title() const
 std::tr1::shared_ptr<GLSA>
 GLSA::create_from_xml_file(const std::string & filename)
 {
-    if (! erepository::XMLThingsHandle::get_instance()->available())
+    if (! erepository::XMLThingsHandle::get_instance()->create_glsa_from_xml_file())
     {
 #ifdef ENABLE_GLSA
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because your XML libraries are unusable");

@@ -41,10 +41,13 @@ namespace paludis
                 ~XMLThingsHandle();
 
             public:
-                bool available() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                typedef std::tr1::shared_ptr<GLSA> (* CreateGLSAFromXMLFilePtr) (const std::string &);
+                typedef std::tr1::shared_ptr<MetadataXML> (* CreateMetadataXMLFromXMLFilePtr) (const FSEntry &);
 
-                std::tr1::shared_ptr<GLSA> (* create_glsa_from_xml_file() const) (const std::string &);
-                std::tr1::shared_ptr<MetadataXML> (* create_metadata_xml_from_xml_file() const) (const FSEntry &);
+                CreateGLSAFromXMLFilePtr create_glsa_from_xml_file() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                CreateMetadataXMLFromXMLFilePtr create_metadata_xml_from_xml_file() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

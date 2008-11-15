@@ -73,7 +73,7 @@ MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
         {
             try
             {
-                if (XMLThingsHandle::get_instance()->available())
+                if (XMLThingsHandle::get_instance()->create_metadata_xml_from_xml_file())
                     metadata_xml = XMLThingsHandle::get_instance()->create_metadata_xml_from_xml_file()(f);
             }
             catch (const Exception & e)
