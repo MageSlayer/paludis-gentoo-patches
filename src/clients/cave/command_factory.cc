@@ -34,6 +34,7 @@
 #include "cmd_print_ids.hh"
 #include "cmd_print_repositories.hh"
 #include "cmd_print_sets.hh"
+#include "cmd_print_sync_protocols.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
 
@@ -63,6 +64,7 @@ namespace
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
+    _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
     _imp->handlers.insert(std::make_pair("print-categories", make_command<PrintCategoriesCommand>));
     _imp->handlers.insert(std::make_pair("print-commands", make_command<PrintCommandsCommand>));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", make_command<PrintEnvironmentMetadataCommand>));
