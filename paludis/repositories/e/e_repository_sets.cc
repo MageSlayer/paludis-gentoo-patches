@@ -176,6 +176,19 @@ namespace
     bool
     match_range(const PackageID & e, const GLSARange & r)
     {
+        if (r.slot != "*")
+        {
+            try
+            {
+                if (e.slot() != SlotName(r.slot))
+                    return false;
+            }
+            catch (const SlotNameError &)
+            {
+                throw GLSAError("Got bad slot '" + r.slot + "'");
+            }
+        }
+
         VersionOperatorValue our_op(static_cast<VersionOperatorValue>(-1));
         std::string ver(r.version);
         if (r.op == "le")
@@ -203,7 +216,7 @@ namespace
         if (0 == r.op.compare(0, 1, "r"))
         {
             return e.version().remove_revision() == VersionSpec(ver).remove_revision() &&
-                match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version));
+                match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version).slot(r.slot));
         }
 
         throw GLSAError("Got bad op '" + r.op + "'");

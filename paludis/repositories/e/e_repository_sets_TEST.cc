@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
@@ -125,7 +126,7 @@ namespace test_cases
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             insecurity->accept(pretty);
-            TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
+            TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.1::test-repo-1 =cat-four/xyzzy-2.0.2::test-repo-1 =cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
                                        "=cat-three/baz-1.1-r2::test-repo-1 =cat-three/baz-1.2::test-repo-1");
         }
@@ -157,13 +158,15 @@ namespace test_cases
             installed->add_version("cat-one", "foo", "2.1");
             installed->add_version("cat-two", "bar", "1.5");
             installed->add_version("cat-three", "baz", "1.0");
+            installed->add_version("cat-four", "xyzzy", "1.1.0")->set_slot(SlotName("1"));
+            installed->add_version("cat-four", "xyzzy", "2.0.1")->set_slot(SlotName("2"));
             env.package_database()->add_repository(0, installed);
 
             std::tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface()->package_set(SetName("security")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             security->accept(pretty);
-            TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
+            TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.3::test-repo-1 =cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }
     } test_e_repository_sets_security_set;
 #endif

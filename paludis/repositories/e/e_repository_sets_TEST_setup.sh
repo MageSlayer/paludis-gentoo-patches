@@ -12,6 +12,7 @@ cat <<END > profiles/categories || exit 1
 cat-one
 cat-two
 cat-three
+cat-four
 END
 cat <<END > profiles/profile/make.defaults
 ARCH=test
@@ -23,7 +24,7 @@ cat <<END > sets/set1.conf
 ? <cat-three/baz-1.2
 END
 
-mkdir -p cat-one/foo cat-two/bar cat-three/baz
+mkdir -p cat-one/foo cat-two/bar cat-three/baz cat-four/xyzzy
 cat <<END > cat-one/foo/foo-1.ebuild
 SLOT="0"
 KEYWORDS="test"
@@ -44,6 +45,15 @@ cat <<END > cat-three/baz/baz-1.3.1.ebuild
 SLOT="0"
 KEYWORDS="~test"
 END
+cat <<END > cat-four/xyzzy/xyzzy-1.1.0.ebuild
+SLOT="\${PV:0:1}"
+KEYWORDS="test"
+END
+cp cat-four/xyzzy/xyzzy-1.1.0.ebuild cat-four/xyzzy/xyzzy-1.1.1.ebuild
+cp cat-four/xyzzy/xyzzy-1.1.0.ebuild cat-four/xyzzy/xyzzy-2.0.1.ebuild
+cp cat-four/xyzzy/xyzzy-1.1.0.ebuild cat-four/xyzzy/xyzzy-2.0.1-r1.ebuild
+cp cat-four/xyzzy/xyzzy-1.1.0.ebuild cat-four/xyzzy/xyzzy-2.0.2.ebuild
+cp cat-four/xyzzy/xyzzy-1.1.0.ebuild cat-four/xyzzy/xyzzy-2.0.3.ebuild
 
 cat <<END > metadata/glsa/glsa-123456-78.xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -203,6 +213,62 @@ cat <<END > metadata/glsa/glsa-987654-32.xml
   <resolution>
     <p>
     All Bar users should upgrade to the latest version.
+    </p>
+  </resolution>
+  <references>
+  </references>
+</glsa>
+END
+
+cat <<END > metadata/glsa/glsa-112358-42.xml
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="/xsl/glsa.xsl" type="text/xsl"?>
+<?xml-stylesheet href="/xsl/guide.xsl" type="text/xsl"?>
+<!DOCTYPE glsa SYSTEM "http://www.gentoo.org/dtd/glsa.dtd">
+
+<glsa id="112358-42">
+  <title>
+   Xyzzy: SQL injection
+  </title>
+  <synopsis>
+    Xyzzy is vulnerable to SQL injection attacks.
+  </synopsis>
+  <product type="ebuild">xyzzy</product>
+  <announced>Nov 16, 2008</announced>
+  <revised>Nov 16, 2008: 01</revised>
+  <bug>112358</bug>
+  <access>local</access>
+  <affected>
+    <package name="cat-four/xyzzy" auto="yes" arch="*">
+      <unaffected range="ge" slot="2">2.0.3</unaffected>
+      <vulnerable range="lt" slot="2">2.0.3</vulnerable>
+      <unaffected range="eq" slot="*">2.0.1-r1</unaffected>
+    </package>
+  </affected>
+  <background>
+    <p>
+    Xyzzy is a magic word with an SQL backend.
+    </p>
+  </background>
+  <description>
+    <p>
+    Passing magic SQL characters to Xyzzy allows an attacker to
+    execute arbitrary queries.
+    </p>
+  </description>
+  <impact type="high">
+    <p>
+    Arbitrary SQL queries can be executed.
+    </p>
+  </impact>
+  <workaround>
+    <p>
+    There is no known workaround at this time.
+    </p>
+  </workaround>
+  <resolution>
+    <p>
+    All Xyzzy users should upgrade to the latest version.
     </p>
   </resolution>
   <references>

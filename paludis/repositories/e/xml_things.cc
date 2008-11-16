@@ -179,7 +179,7 @@ namespace
                 }
             }
 
-            void handle_range_range(xmlDocPtr doc, xmlAttr * const attr, std::string & op)
+            void handle_range_range(xmlDocPtr doc, xmlAttr * const attr, std::string & op, std::string & slot)
             {
                 for (xmlAttr * a(attr) ; a ; a = a->next)
                 {
@@ -188,6 +188,8 @@ namespace
                         std::string name(unstupid_libxml_string(a->name));
                         if (name == "range")
                             op = fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)));
+                        else if (name == "slot")
+                            slot = fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)));
                     }
                 }
             }
@@ -201,11 +203,11 @@ namespace
                         std::string name(unstupid_libxml_string(n->name));
                         if (name == "unaffected" || name == "vulnerable")
                         {
-                            std::string op;
-                            handle_range_range(doc, n->properties, op);
+                            std::string op, slot("*");
+                            handle_range_range(doc, n->properties, op, slot);
                             std::string version(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
                             ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))
-                                (GLSARange::create().op(op).version(version));
+                                (GLSARange::create().op(op).version(version).slot(slot));
                         }
                         else
                             handle_node(doc, n->children);
