@@ -26,3 +26,9 @@ Command::~Command()
 {
 }
 
+bool
+Command::important() const
+{
+    return false;
+}
+

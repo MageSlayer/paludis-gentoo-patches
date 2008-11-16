@@ -26,6 +26,7 @@
 #include <tr1/functional>
 #include <map>
 
+#include "cmd_help.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
 #include "cmd_print_environment_metadata.hh"
@@ -64,6 +65,7 @@ namespace
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
+    _imp->handlers.insert(std::make_pair("help", make_command<HelpCommand>));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
     _imp->handlers.insert(std::make_pair("print-categories", make_command<PrintCategoriesCommand>));
     _imp->handlers.insert(std::make_pair("print-commands", make_command<PrintCommandsCommand>));

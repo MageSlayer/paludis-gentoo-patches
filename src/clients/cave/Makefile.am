@@ -16,6 +16,7 @@ bin_PROGRAMS = cave
 noinst_PROGRAMS = man-cave
 
 command_MANS = \
+	cave-help.1 \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
@@ -66,6 +67,7 @@ libcave_a_SOURCES = \
 	command.cc command.hh \
 	command_line.cc command_line.hh \
 	command_factory.cc command_factory.hh \
+	cmd_help.cc cmd_help.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \

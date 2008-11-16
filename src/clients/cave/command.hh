@@ -34,6 +34,8 @@ namespace paludis
             public:
                 virtual ~Command() = 0;
 
+                virtual bool important() const;
+
                 virtual int run(
                         const std::tr1::shared_ptr<Environment> &,
                         const std::tr1::shared_ptr<const Sequence<std::string > > & args
