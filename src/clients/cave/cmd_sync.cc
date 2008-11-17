@@ -39,6 +39,8 @@
 #include <map>
 #include <set>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -57,7 +59,7 @@ namespace paludis
 namespace
 {
     struct SyncCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -269,6 +271,12 @@ SyncCommand::run(
 {
     SyncCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_SYNC_OPTIONS", "CAVE_SYNC_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     int retcode(0);
     Messages messages;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008 Saleem Abdulrasool
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,33 +17,31 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_COMMAND_LINE_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_COMMAND_LINE_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <paludis/args/man.hh>
-#include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <iosfwd>
+#include <paludis/args/args.hh>
 
 namespace paludis
 {
     namespace cave
     {
-        class PALUDIS_VISIBLE Command
+        struct CaveCommandCommandLine :
+            args::ArgsHandler
         {
-            public:
-                virtual ~Command() = 0;
+            friend std::ostream & operator<< (std::ostream &, const CaveCommandCommandLine &);
 
-                virtual bool important() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            args::ArgsGroup g_global_options;
+            args::SwitchArg a_help;
 
-                virtual int run(
-                        const std::tr1::shared_ptr<Environment> &,
-                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
-                        ) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-                virtual std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline() = 0;
+            CaveCommandCommandLine();
         };
+
+        std::ostream &
+        operator<< (std::ostream &, const CaveCommandCommandLine &) PALUDIS_VISIBLE;
     }
 }
 
 #endif
+

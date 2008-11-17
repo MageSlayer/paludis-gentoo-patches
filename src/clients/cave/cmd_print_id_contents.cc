@@ -41,6 +41,8 @@
 #include <algorithm>
 #include <set>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -49,7 +51,7 @@ using std::endl;
 namespace
 {
     struct PrintContentsCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -97,6 +99,12 @@ PrintIDContentsCommand::run(
 {
     PrintContentsCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_ID_CONTENTS_OPTIONS", "CAVE_PRINT_ID_CONTENTS_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-id-contents takes exactly one parameter");

@@ -42,6 +42,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -50,7 +52,7 @@ using std::endl;
 namespace
 {
     struct PrintIDsCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -241,6 +243,12 @@ PrintIDsCommand::run(
 {
     PrintIDsCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_IDS_OPTIONS", "CAVE_PRINT_IDS_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-ids takes no parameters");

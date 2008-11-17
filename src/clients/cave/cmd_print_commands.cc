@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <set>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -35,7 +37,7 @@ using std::endl;
 namespace
 {
     struct PrintCommandsCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -68,6 +70,12 @@ PrintCommandsCommand::run(
 {
     PrintCommandsCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_COMMANDS_OPTIONS", "CAVE_PRINT_COMMANDS_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-commands takes no parameters");

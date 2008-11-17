@@ -39,6 +39,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -47,7 +49,7 @@ using std::endl;
 namespace
 {
     struct PrintIDMetadataCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -132,6 +134,12 @@ PrintIDMetadataCommand::run(
 {
     PrintIDMetadataCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_ID_METADATA_OPTIONS", "CAVE_PRINT_ID_METADATA_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-id-metadata takes exactly one parameter");

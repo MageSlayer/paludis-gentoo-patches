@@ -28,6 +28,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 
 #include "command_factory.hh"
+#include "command_command_line.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -37,7 +38,7 @@ using std::cout;
 namespace
 {
     struct HelpCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         args::ArgsGroup g_general;
         args::SwitchArg a_all;

@@ -32,6 +32,8 @@
 #include <iostream>
 #include <set>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -40,7 +42,7 @@ using std::endl;
 namespace
 {
     struct PrintSyncProtocolsCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -68,6 +70,12 @@ PrintSyncProtocolsCommand::run(
 {
     PrintSyncProtocolsCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_SYNC_PROTOCOLS_OPTIONS", "CAVE_PRINT_SYNC_PROTOCOLS_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-sync-protocols takes no parameters");

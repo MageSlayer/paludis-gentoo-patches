@@ -66,6 +66,7 @@ libcave_a_SOURCES = \
 	colour_formatter.cc colour_formatter.hh \
 	command.cc command.hh \
 	command_line.cc command_line.hh \
+	command_command_line.cc command_command_line.hh \
 	command_factory.cc command_factory.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \

@@ -49,6 +49,8 @@
 #include <algorithm>
 #include <set>
 
+#include "command_command_line.hh"
+
 using namespace paludis;
 using namespace cave;
 using std::cout;
@@ -57,7 +59,7 @@ using std::endl;
 namespace
 {
     struct ShowCommandLine :
-        args::ArgsHandler
+        CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
@@ -677,6 +679,12 @@ ShowCommand::run(
 {
     ShowCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_SHOW_OPTIONS", "CAVE_SHOW_CMDLINE");
+
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("show requires at least one parameter");
