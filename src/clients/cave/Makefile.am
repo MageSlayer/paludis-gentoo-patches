@@ -23,6 +23,7 @@ command_MANS = \
 	cave-print-id-contents.1 \
 	cave-print-id-metadata.1 \
 	cave-print-ids.1 \
+	cave-print-owners.1 \
 	cave-print-repositories.1 \
 	cave-print-sets.1 \
 	cave-print-sync-protocols.1 \
@@ -75,6 +76,7 @@ libcave_a_SOURCES = \
 	cmd_print_id_contents.cc cmd_print_id_contents.hh \
 	cmd_print_id_metadata.cc cmd_print_id_metadata.hh \
 	cmd_print_ids.cc cmd_print_ids.hh \
+	cmd_print_owners.cc cmd_print_owners.hh \
 	cmd_print_repositories.cc cmd_print_repositories.hh \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \
@@ -97,7 +99,6 @@ libcave_a_SOURCES = \
 #	cmd_print_executables.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \
-#	cmd_print_owners.cc \
 #	cmd_print_packages.cc \
 #	cmd_print_repository_formats.cc \
 #	cmd_print_repository_metadata.cc \
