@@ -95,6 +95,10 @@ PrintSetsCommand::run(
         std::copy(set_names->begin(), set_names->end(), std::inserter(sets, sets.begin()));
     }
 
+    std::tr1::shared_ptr<const SetNameSet> user_sets(env->set_names());
+    if (user_sets)
+        std::copy(user_sets->begin(), user_sets->end(), std::inserter(sets, sets.begin()));
+
     std::copy(sets.begin(), sets.end(), std::ostream_iterator<SetName>(cout, "\n"));
 
     return EXIT_SUCCESS;
