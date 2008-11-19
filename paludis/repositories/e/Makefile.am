@@ -22,12 +22,8 @@ DEFS= \
 paludis_repositories_libdir = $(libdir)/paludis/repositories
 paludis_repositories_lib_LTLIBRARIES = libpaludiserepository_@PALUDIS_PC_SLOT@.la
 
-if ENABLE_GLSA
+if ENABLE_XML
 lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
-else
-if ENABLE_METADATA_XML
-lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
-endif
 endif
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
@@ -506,7 +502,7 @@ libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_LIBADD = \
 
 libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-if ENABLE_GLSA
+if ENABLE_XML
 
 GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc

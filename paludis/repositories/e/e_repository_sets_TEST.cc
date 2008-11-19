@@ -100,7 +100,7 @@ namespace test_cases
         }
     } test_e_repository_sets_maintainer_defined_sets_list;
 
-#if ENABLE_GLSA
+#if ENABLE_XML
     struct ERepositorySetsInsecuritySetTest : TestCase
     {
         ERepositorySetsInsecuritySetTest() : TestCase("insecurity set") { }

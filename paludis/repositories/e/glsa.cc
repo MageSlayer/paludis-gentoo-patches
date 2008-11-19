@@ -188,7 +188,7 @@ GLSA::create_from_xml_file(const std::string & filename)
 {
     if (! erepository::XMLThingsHandle::get_instance()->create_glsa_from_xml_file())
     {
-#ifdef ENABLE_GLSA
+#ifdef ENABLE_XML
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because your XML libraries are unusable");
 #else
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because GLSA support was not enabled at compile time");

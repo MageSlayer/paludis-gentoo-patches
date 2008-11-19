@@ -30,11 +30,9 @@ extern "C"
     void paludis_xml_things_init() PALUDIS_VISIBLE;
     void paludis_xml_things_cleanup() PALUDIS_VISIBLE;
 
-#if ENABLE_GLSA
+#if ENABLE_XML
     std::tr1::shared_ptr<paludis::GLSA> PALUDIS_VISIBLE paludis_xml_things_create_glsa_from_xml_file(const std::string &);
-#endif
 
-#if ENABLE_METADATA_XML
     std::tr1::shared_ptr<paludis::erepository::MetadataXML> PALUDIS_VISIBLE paludis_xml_things_create_metadata_xml_from_xml_file(
             const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
 #endif

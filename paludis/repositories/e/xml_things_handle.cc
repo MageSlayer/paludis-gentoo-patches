@@ -54,7 +54,7 @@ namespace paludis
             init(0),
             cleanup(0)
         {
-#if defined(ENABLE_GLSA) || defined(ENABLE_METADATA_XML)
+#if ENABLE_XML
             handle = ::dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
             {
@@ -79,7 +79,6 @@ namespace paludis
                 return;
             }
 
-#  ifdef ENABLE_GLSA
             XMLThingsHandle::CreateGLSAFromXMLFilePtr g(STUPID_CAST(XMLThingsHandle::CreateGLSAFromXMLFilePtr,
                     ::dlsym(handle, "paludis_xml_things_create_glsa_from_xml_file")));
             if (! g)
@@ -88,9 +87,7 @@ namespace paludis
                     << ::dlerror() << "' from dlsym for GLSA things";
                 return;
             }
-#  endif
 
-#  ifdef ENABLE_METADATA_XML
             XMLThingsHandle::CreateMetadataXMLFromXMLFilePtr x(STUPID_CAST(XMLThingsHandle::CreateMetadataXMLFromXMLFilePtr,
                         ::dlsym(handle, "paludis_xml_things_create_metadata_xml_from_xml_file")));
             if (! x)
@@ -99,16 +96,11 @@ namespace paludis
                     << ::dlerror() << "' from dlsym for metadata.xml things";
                 return;
             }
-#  endif
 
             init = i;
             cleanup = c;
-#  ifdef ENABLE_GLSA
             create_glsa_from_xml_file = g;
-#  endif
-#  ifdef ENABLE_METADATA_XML
             create_metadata_xml_from_xml_file = x;
-#  endif
 
             init();
 #endif

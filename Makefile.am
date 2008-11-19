@@ -6,8 +6,8 @@ AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options foreign
 EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp
 SUBDIRS = misc test paludis python ruby src doc hooks vim bash-completion zsh-completion pkg-config
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-ruby-doc --enable-glsa --enable-vim \
-	--enable-python --enable-python-doc --enable-metadata-xml \
+DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-ruby-doc --enable-vim \
+	--enable-python --enable-python-doc --enable-xml \
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
 	--with-repositories=default \
 	--with-environments=default,portage \

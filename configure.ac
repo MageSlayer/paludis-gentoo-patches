@@ -879,36 +879,20 @@ AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
 
-dnl {{{ check for whether to build glsa stuff
-AC_MSG_CHECKING([whether to build GLSA support])
-AC_ARG_ENABLE([glsa],
-			  AS_HELP_STRING([--enable-glsa], [Build GLSA things (needs libxml2)]),
-			  [ENABLE_GLSA=$enableval
+dnl {{{ check for whether to build xml stuff
+AC_MSG_CHECKING([whether to build xml things for metadata.xml and GLSA support])
+AC_ARG_ENABLE([xml],
+			  AS_HELP_STRING([--enable-xml], [Build xml things for metadata.xml and GLSA support (needs libxml2)]),
+			  [ENABLE_XML=$enableval
 			   AC_MSG_RESULT([$enableval])],
-			  [ENABLE_GLSA=no
+			  [ENABLE_XML=no
 			   AC_MSG_RESULT([no])])
-if test x"$ENABLE_GLSA" = "xyes" ; then
+if test x"$ENABLE_XML" = "xyes" ; then
 	need_xml_check=yes
-	AC_DEFINE([ENABLE_GLSA], [1], [Build GLSA support])
+	AC_DEFINE([ENABLE_XML], [1], [Build xml support])
 fi
-AC_SUBST([ENABLE_GLSA])
-AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_GLSA" = "xyes")
-dnl }}}
-
-dnl {{{ check for whether to build metadata.xml stuff
-AC_MSG_CHECKING([whether to build metadata.xml support])
-AC_ARG_ENABLE([metadata-xml],
-			  AS_HELP_STRING([--enable-metadata-xml], [Build metadata.xml things (needs libxml2)]),
-			  [ENABLE_METADATA_XML=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [ENABLE_METADATA_XML=no
-			   AC_MSG_RESULT([no])])
-if test x"$ENABLE_METADATA_XML" = "xyes" ; then
-	need_xml_check=yes
-	AC_DEFINE([ENABLE_METADATA_XML], [1], [Build metadata.xml support])
-fi
-AC_SUBST([ENABLE_METADATA_XML])
-AM_CONDITIONAL([ENABLE_METADATA_XML], test "x$ENABLE_METADATA_XML" = "xyes")
+AC_SUBST([ENABLE_XML])
+AM_CONDITIONAL([ENABLE_XML], test "x$ENABLE_XML" = "xyes")
 dnl }}}
 
 dnl {{{ colourschemes
@@ -1381,7 +1365,7 @@ dnl {{{ libxml2 check
 NEED_XML=$need_xml_check
 if test "x$need_xml_check" = "xyes" ; then
 	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
-		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-metadata-xml or --enable-glsa is used])])
+		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-xml is used])])
 	AC_SUBST(LIBXML2DEPS_CFLAGS)
 	AC_SUBST(LIBXML2DEPS_LIBS)
 fi

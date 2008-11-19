@@ -119,7 +119,7 @@ namespace
         return std::tr1::shared_ptr<T_>(p, d);
     }
 
-#ifdef ENABLE_GLSA
+#ifdef ENABLE_XML
     class GLSAHandler
     {
         private:
@@ -259,7 +259,7 @@ namespace
 
 }
 
-#ifdef ENABLE_GLSA
+#ifdef ENABLE_XML
 
 std::tr1::shared_ptr<GLSA>
 paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
@@ -277,10 +277,6 @@ paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
         throw GLSAError(e.message(), filename);
     }
 }
-
-#endif
-
-#ifdef ENABLE_METADATA_XML
 
 std::tr1::shared_ptr<erepository::MetadataXML>
 paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
