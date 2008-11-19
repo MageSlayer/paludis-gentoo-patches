@@ -45,7 +45,7 @@ namespace
 
         HelpCommandLine() :
             g_general(this, "General Options", "General Options"),
-            a_all(&g_general, "all", 'a', "Print all available commands to standard output.")
+            a_all(&g_general, "all", 'a', "Print all available commands to standard output.", false)
         {
             add_usage_line("[-a|--all] [COMMAND]");
         }
