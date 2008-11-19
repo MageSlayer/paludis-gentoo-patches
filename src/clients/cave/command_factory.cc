@@ -34,6 +34,7 @@
 #include "cmd_print_id_metadata.hh"
 #include "cmd_print_ids.hh"
 #include "cmd_print_owners.hh"
+#include "cmd_print_packages.hh"
 #include "cmd_print_repositories.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
@@ -74,6 +75,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-id-metadata", make_command<PrintIDMetadataCommand>));
     _imp->handlers.insert(std::make_pair("print-ids", make_command<PrintIDsCommand>));
     _imp->handlers.insert(std::make_pair("print-owners", make_command<PrintOwnersCommand>));
+    _imp->handlers.insert(std::make_pair("print-packages", make_command<PrintPackagesCommand>));
     _imp->handlers.insert(std::make_pair("print-repositories", make_command<PrintRepositoriesCommand>));
     _imp->handlers.insert(std::make_pair("print-sets", make_command<PrintSetsCommand>));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
