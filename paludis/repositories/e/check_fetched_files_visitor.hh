@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/output_deviator-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
@@ -51,7 +52,8 @@ namespace paludis
                         const bool check_unneeded,
                         const bool fetch_restrict,
                         const FSEntry & m2,
-                        const UseManifest um);
+                        const UseManifest um,
+                        const std::tr1::shared_ptr<OutputDeviant> & maybe_output_deviant);
 
                 ~CheckFetchedFilesVisitor();
 

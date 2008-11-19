@@ -30,6 +30,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/output_deviator-fwd.hh>
 #include <tr1/functional>
 
 /** \file
@@ -51,6 +52,7 @@ namespace paludis
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
+        struct maybe_output_deviant;
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
@@ -67,6 +69,13 @@ namespace paludis
     struct FetchActionOptions
     {
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
+
+        /**
+         * May be an empty pointer, for no deviation.
+         * \since 0.32
+         */
+        NamedValue<n::maybe_output_deviant, std::tr1::shared_ptr<OutputDeviant> > maybe_output_deviant;
+
         NamedValue<n::safe_resume, bool> safe_resume;
     };
 

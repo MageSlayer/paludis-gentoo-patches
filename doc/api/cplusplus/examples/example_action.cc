@@ -62,6 +62,7 @@ int main(int argc, char * argv[])
                  * files should still be fetched. */
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
                             value_for<n::fetch_unneeded>(false),
+                            value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                             value_for<n::safe_resume>(true)
                             ));
                 try

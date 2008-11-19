@@ -62,7 +62,8 @@ namespace test_cases
                         generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
-                    false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);
+                    false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false,
+                    make_null_shared_ptr());
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());

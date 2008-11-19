@@ -255,6 +255,7 @@ namespace
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
+                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                         value_for<n::safe_resume>(v_safe_resume)
                     ));
 

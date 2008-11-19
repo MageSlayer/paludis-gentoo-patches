@@ -917,6 +917,7 @@ namespace test_cases
 
             FetchAction action(make_named_values<FetchActionOptions>(
                         value_for<n::fetch_unneeded>(false),
+                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                         value_for<n::safe_resume>(true)
                     ));
 
@@ -1020,6 +1021,7 @@ namespace test_cases
 
             FetchAction action(make_named_values<FetchActionOptions>(
                         value_for<n::fetch_unneeded>(false),
+                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                         value_for<n::safe_resume>(true)
                     ));
 

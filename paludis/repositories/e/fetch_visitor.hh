@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/output_deviator-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
@@ -49,7 +50,8 @@ namespace paludis
                         const bool userpriv,
                         const std::string & mirrors_name,
                         const std::tr1::shared_ptr<const URILabel> & initial_label,
-                        const bool safe_resume);
+                        const bool safe_resume,
+                        const std::tr1::shared_ptr<OutputDeviant> & maybe_output_deviant);
 
                 ~FetchVisitor();
 

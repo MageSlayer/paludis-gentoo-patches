@@ -23,6 +23,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repository.hh>
 #include <tr1/memory>
 
@@ -78,6 +79,7 @@ namespace
     {
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
                     value_for<n::fetch_unneeded>(fetch_unneeded),
+                    value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                     value_for<n::safe_resume>(safe_resume)
                     ));
     }

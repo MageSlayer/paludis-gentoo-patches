@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -136,6 +137,7 @@ main(int argc, char *argv[])
                 {
                     FetchAction a(make_named_values<FetchActionOptions>(
                                 value_for<n::fetch_unneeded>(true),
+                                value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                                 value_for<n::safe_resume>(true)
                             ));
                     if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
