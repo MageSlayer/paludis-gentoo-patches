@@ -71,6 +71,12 @@ PrintPackagesCommand::run(
     PrintPackagesCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_PRINT_PACKAGES_OPTIONS", "CAVE_PRINT_PACKAGES_CMDLINE");
 
+    if (cmdline.a_help.specified())
+    {
+        cout << cmdline;
+        return EXIT_SUCCESS;
+    }
+
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-packages takes no parameters");
 
