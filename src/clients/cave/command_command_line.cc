@@ -24,7 +24,7 @@ using namespace cave;
 
 CaveCommandCommandLine::CaveCommandCommandLine() :
     g_global_options(this, "Global Options", "Global options, used by every subcommand."),
-    a_help(&g_global_options, "help", 'h', "display help message")
+    a_help(&g_global_options, "help", 'h', "display help message", false)
 {
 }
 
