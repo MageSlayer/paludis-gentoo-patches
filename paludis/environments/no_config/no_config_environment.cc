@@ -168,6 +168,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
     if (! is_vdb)
     {
+        bool ignored_one(false);
         for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs->begin()), d_end(params.extra_repository_dirs->end()) ;
                 d != d_end ; ++d)
         {
@@ -175,6 +176,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             {
                 Log::get_instance()->message("no_config_environment.extra_repository.ignoring", ll_warning, lc_context)
                     << "Ignoring extra_repository_dir '" << *d << "' because it is the same as repository_dir";
+                ignored_one = true;
                 continue;
             }
 
@@ -200,7 +202,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             package_database->add_repository(1, repo);
         }
 
-        if ((! params.master_repository_name.empty()) && (! master_repo))
+        if ((! params.master_repository_name.empty()) && (! master_repo) && (! ignored_one))
             throw ConfigurationError("Can't find repository '" + params.master_repository_name + "'");
 
         std::tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
@@ -219,7 +221,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if (params.disable_metadata_cache)
             keys->insert("cache", "/var/empty");
 
-        if (! params.master_repository_name.empty())
+        if (master_repo)
             keys->insert("master_repository", params.master_repository_name);
 
         if ((params.repository_dir / "metadata" / "profiles_desc.conf").exists())
@@ -228,6 +230,9 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         package_database->add_repository(2, ((main_repo =
                         RepositoryFactory::get_instance()->create(env,
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
+
+        if ((! params.master_repository_name.empty()) && (! master_repo) && (params.master_repository_name != stringify(main_repo->name())))
+            throw ConfigurationError("Can't find repository '" + params.master_repository_name + "'");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
