@@ -25,15 +25,39 @@ any of:</p>
 <ul>
     <li><code>flag</code>, which enables that flag.</li>
     <li><code>-flag</code>, which disables that flag.</li>
-    <li><code>LABEL:</code>, which marks any subsequent flags on that line as applying to a particular use expand label.
+    <li><code>label:</code>, which marks any subsequent flags on that line as applying to a particular use expand label.
     Common examples of use expand labels are <code>VIDEO_CARDS</code>, <code>LINGUAS</code> and
-    <code>INPUT_DEVICES</code>.</li>
+    <code>INPUT_DEVICES</code>, as well as the special <code>BUILD_OPTIONS</code> label described below. Labels
+    are <em>not</em> case sensitive.</li>
     <li><code>-*</code>, which disables all flags for the current label, or all flags that are not a label if there is
     no current label.</li>
 </ul>
 
 <p>Use flag settings are cumulative. This applies to expanded use flags too, so if you do not wish to inherit, say,
 default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*/* VIDEO_CARDS: -* radeon</code>.</p>
+
+<h2>Special Flags</h2>
+
+<p>Paludis automatically adds special flags controlling how packages are built. These flags are all in the
+<code>BUILD_OPTIONS</code> group. Packages may have any of the following special flags:</p>
+
+<dl>
+    <dt>split</dt>
+    <dd>If enabled, Paludis will split debugging information into <code>/usr/lib/debug</code> before merging
+    binaries and libraries.</dd>
+
+    <dt>strip</dt>
+    <dd>If enabled, Paludis will strip debugging information before merging binaries and libraries.</dd>
+
+    <dt>recommended_tests</dt>
+    <dd>If set, Paludis will run any 'recommended' tests provided by a package.</dd>
+
+    <dt>optional_tests</dt>
+    <dd>If set, Paludis will run any 'optional' tests provided by a package.</dd>
+</dl>
+
+<p>Note that these special flags are <em>not</em> use flags from an ebuild perspective. They are used only by Paludis
+internals, and are not exported to ebuilds.</p>
 
 <h2>Example</h2>
 
@@ -56,5 +80,11 @@ media-sound/lame       -gtk
 
 # And some wildcarding
 dev-cpp/*              doc
+
+# We like tests, and don't want debug symbols
+*/*                    BUILD_OPTIONS: optional_tests -split strip
+
+# But we do want split debug symbols for a few packages
+dev-cpp/*              BUILD_OPTIONS: split strip
 </pre>
 
