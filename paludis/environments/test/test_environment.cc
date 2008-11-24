@@ -27,6 +27,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/system.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
@@ -138,13 +140,13 @@ TestEnvironment::local_set(const SetName & s) const
 uid_t
 TestEnvironment::reduced_uid() const
 {
-    return getuid();
+    return destringify<int>(getenv_with_default("PALUDIS_REDUCED_UID", stringify(getuid())));
 }
 
 gid_t
 TestEnvironment::reduced_gid() const
 {
-    return getgid();
+    return destringify<int>(getenv_with_default("PALUDIS_REDUCED_GID", stringify(getgid())));
 }
 
 const FSEntry
