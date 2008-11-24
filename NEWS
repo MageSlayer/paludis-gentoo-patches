@@ -4,8 +4,30 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-master:
+0.32.1_alpha1:
     * Support for packages that haven't been written yet.
+
+    * --debug-build and --checks are gone, replaced by the special
+      build_options: choice that can be configured in a similar way to use
+      flags.
+
+    * Clients using NoConfigEnvironment now use --extra-repository-dir (possibly
+      multiple times) and --master-repository-name rather than
+      --master-repository-dir.
+
+    * The contrarius client has been removed.
+
+    * metadata.xml support.
+
+0.30.3:
+    * 0.30.2 would fail tests on some systems due to relative path issues.
+      This is now fixed.
+
+0.30.2:
+    * Work around ebuilds that treat cwd as secure.
+
+0.30.1:
+    * EAPI 2 support.
 
 0.30.0:
     * Paludis no longer includes wrappers for GNU awk, make, patch, and sed.
