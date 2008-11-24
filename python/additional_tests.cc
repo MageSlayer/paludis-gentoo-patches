@@ -176,6 +176,12 @@ namespace metadata_key
         m.value();
     }
 
+    void test_metadata_choices_key(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & m)
+    {
+        test_metadata_key(m);
+        m.value();
+    }
+
     void test_metadata_repository_mask_info_key(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & m)
     {
         test_metadata_key(m);
@@ -306,6 +312,7 @@ void expose_additional_tests()
     bp::def("test_metadata_string_key", &metadata_key::test_metadata_string_key);
     bp::def("test_metadata_time_key", &metadata_key::test_metadata_time_key);
     bp::def("test_metadata_contents_key", &metadata_key::test_metadata_contents_key);
+    bp::def("test_metadata_choices_key", &metadata_key::test_metadata_choices_key);
     bp::def("test_metadata_repository_mask_info_key", &metadata_key::test_metadata_repository_mask_info_key);
     bp::def("test_metadata_keyword_name_set_key", &metadata_key::test_metadata_set_key<KeywordNameSet>);
     bp::def("test_metadata_string_set_key", &metadata_key::test_metadata_set_key<Set<std::string> >);

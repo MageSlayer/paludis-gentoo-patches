@@ -305,6 +305,27 @@ struct MetadataContentsKeyWrapper :
     }
 };
 
+struct MetadataChoicesKeyWrapper :
+    MetadataValueKey<std::tr1::shared_ptr<const Choices> > ,
+    bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+{
+    MetadataChoicesKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataValueKey<std::tr1::shared_ptr<const Choices> > (r, h, t)
+    {
+    }
+
+    virtual const std::tr1::shared_ptr<const Choices> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataChoicesKey", "value");
+    }
+};
+
 struct MetadataFSEntryKeyWrapper :
     MetadataValueKey<FSEntry> ,
     bp::wrapper<MetadataValueKey<FSEntry> >
@@ -926,6 +947,48 @@ void expose_metadata_key()
                 "Fetch our key type."
                 )
         ;
+
+    /**
+     * MetadataChoicesKey
+     */
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataChoicesKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataChoicesKeyWrapper, std::tr1::shared_ptr<MetadataChoicesKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
+        (
+         "MetadataChoicesKey",
+         "A MetadataChoicesKey is a MetadataKey that holds a Choices heirarchy.\n\n"
+
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
+        )
+        .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const Choices> > ::value),
+                "value() -> Choices\n"
+                "Fetch our value."
+                )
+
+        //Work around epydoc bug
+        .def("raw_name", bp::pure_virtual(&MetadataKey::raw_name),
+                "raw_name() -> string\n"
+                "Fetch our raw name."
+                )
+
+        //Work around epydoc bug
+        .def("human_name", bp::pure_virtual(&MetadataKey::human_name),
+                "human_name() -> string\n"
+                "Fetch our human name."
+                )
+
+        //Work around epydoc bug
+        .def("type", bp::pure_virtual(&MetadataKey::type),
+                "type() -> MetadataKeyType\n"
+                "Fetch our key type."
+                )
+        ;
+
 
     /**
      * MetadataRepositoryMaskInfoKey

@@ -25,6 +25,7 @@ MAINTAINERCLEANFILES = Makefile.in
 IF_PYTHON_TESTS = \
 	action_TEST.py \
 	contents_TEST.py \
+	choices_TEST.py \
 	dep_label_TEST.py \
 	dep_list_TEST.py \
 	dep_spec_TEST.py \
@@ -56,6 +57,7 @@ IF_PYTHON_SOURCES = \
 	validated.hh \
 	about.cc \
 	action.cc \
+	choices.cc \
 	contents.cc \
 	dep_label.cc \
 	dep_list.cc \
@@ -93,6 +95,7 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
 	paludis_python_so.cc \
 	additional_tests_so.cc \
+	choices_TEST_setup.sh choices_TEST_cleanup.sh \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	mask_TEST_setup.sh mask_TEST_cleanup.sh \

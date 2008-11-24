@@ -61,6 +61,10 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
         self.assertEquals(self.ipid.find_metadata("DEPEND"), None)
 
+    def test_011_choices(self):
+        self.assert_(isinstance(self.pid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey))
+        self.assert_(isinstance(self.ipid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey))
+
 class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_01_package_id(self):
         class TestKey(MetadataPackageIDKey):
@@ -277,6 +281,15 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_section_key(TestKey())
 
+    def test_17_choices(self):
+        class TestKey(MetadataChoicesKey):
+            def __init__(self):
+                MetadataChoicesKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+
+            def value(self):
+                return Choices()
+
+        test_metadata_choices_key(TestKey())
 
 
 if __name__ == "__main__":
