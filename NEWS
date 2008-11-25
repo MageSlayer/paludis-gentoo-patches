@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-0.32.1_alpha1:
+0.32.0_alpha1:
     * Support for packages that haven't been written yet.
 
     * --debug-build and --checks are gone, replaced by the special
