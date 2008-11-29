@@ -449,6 +449,8 @@ InstallTask::_add_target(const std::string & target)
         _imp->had_set_targets = true;
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type = dl_target_set;
+
+        _imp->raw_targets.push_back(stringify(target));
     }
 }
 
