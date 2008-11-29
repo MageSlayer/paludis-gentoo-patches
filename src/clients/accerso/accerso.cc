@@ -150,28 +150,33 @@ main(int argc, char *argv[])
                 }
                 catch (const FetchActionError & e)
                 {
-                    for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
+                    if (e.failures())
                     {
-                        std::string r;
-                        if ((*f).requires_manual_fetching())
-                            r = "manual";
-
-                        if ((*f).failed_automatic_fetching())
+                        for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
                         {
-                            if (! r.empty())
-                                r.append(", ");
-                            r.append("could not fetch");
-                        }
+                            std::string r;
+                            if ((*f).requires_manual_fetching())
+                                r = "manual";
 
-                        if (! (*f).failed_integrity_checks().empty())
-                        {
-                            if (! r.empty())
-                                r.append(", ");
-                            r.append((*f).failed_integrity_checks());
-                        }
+                            if ((*f).failed_automatic_fetching())
+                            {
+                                if (! r.empty())
+                                    r.append(", ");
+                                r.append("could not fetch");
+                            }
 
-                        results.insert(std::make_pair(*i, (*f).target_file() + ": " + r));
+                            if (! (*f).failed_integrity_checks().empty())
+                            {
+                                if (! r.empty())
+                                    r.append(", ");
+                                r.append((*f).failed_integrity_checks());
+                            }
+
+                            results.insert(std::make_pair(*i, (*f).target_file() + ": " + r));
+                        }
                     }
+                    else
+                        results.insert(std::make_pair(*i, "Unknown fetch error"));
                 }
                 catch (const InternalError &)
                 {
