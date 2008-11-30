@@ -217,7 +217,7 @@ namespace
 
     /*
      * call-seq:
-     *     FetchActionOptions.new(fetch_unneeded, safe_resume) -> FetchActionOptions
+     *     FetchActionOptions.new(exclude_unmirrorable, fetch_unneeded, safe_resume) -> FetchActionOptions
      *     FetchActionOptions.new(Hash) -> FetchActionOptions
      *
      * FetchActionOptions.new can either be called with all parameters in order, or with one hash
@@ -229,6 +229,7 @@ namespace
         FetchActionOptions * ptr(0);
         try
         {
+            bool v_exclude_unmirrorable;
             bool v_fetch_unneeded;
             bool v_safe_resume;
 
@@ -238,22 +239,23 @@ namespace
                     rb_raise(rb_eArgError, "Missing Parameter: fetch_unneeded");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("safe_resume"))))
                     rb_raise(rb_eArgError, "Missing Parameter: safe_resume");
-                v_fetch_unneeded =
-                    rb_hash_aref(argv[0], ID2SYM(rb_intern("fetch_unneeded"))) != Qfalse;
-                v_safe_resume =
-                    rb_hash_aref(argv[0], ID2SYM(rb_intern("safe_resume"))) != Qfalse;
+                v_fetch_unneeded = rb_hash_aref(argv[0], ID2SYM(rb_intern("fetch_unneeded"))) != Qfalse;
+                v_safe_resume = rb_hash_aref(argv[0], ID2SYM(rb_intern("safe_resume"))) != Qfalse;
+                v_exclude_unmirrorable = rb_hash_aref(argv[0], ID2SYM(rb_intern("exclude_unmirrorable"))) != Qfalse;
             }
-            else if (2 == argc)
+            else if (3 == argc)
             {
+                v_exclude_unmirrorable    = argv[0] != Qfalse;
                 v_fetch_unneeded          = argv[0] != Qfalse;
                 v_safe_resume             = argv[1] != Qfalse;
             }
             else
             {
-                rb_raise(rb_eArgError, "FetchActionOptions expects one or two arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "FetchActionOptions expects one or three arguments, but got %d",argc);
             }
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
+                        value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
                         value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                         value_for<n::safe_resume>(v_safe_resume)
@@ -724,6 +726,9 @@ namespace
         rb_define_method(c_fetch_action_options, "safe_resume?",
                 RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::safe_resume, bool,
                         &FetchActionOptions::safe_resume>::fetch)), 0);
+        rb_define_method(c_fetch_action_options, "exclude_unmirrorable?",
+                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::exclude_unmirrorable, bool,
+                        &FetchActionOptions::exclude_unmirrorable>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FetchActionFailure

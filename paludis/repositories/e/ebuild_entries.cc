@@ -443,7 +443,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 o.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest,
-                o.maybe_output_deviant());
+                o.maybe_output_deviant(), o.exclude_unmirrorable());
         id->fetches_key()->value()->accept(c);
 
         if (c.need_nofetch())

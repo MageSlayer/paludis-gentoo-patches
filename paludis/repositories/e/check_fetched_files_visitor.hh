@@ -53,7 +53,8 @@ namespace paludis
                         const bool fetch_restrict,
                         const FSEntry & m2,
                         const UseManifest um,
-                        const std::tr1::shared_ptr<OutputDeviant> & maybe_output_deviant);
+                        const std::tr1::shared_ptr<OutputDeviant> & maybe_output_deviant,
+                        const bool exclude_unmirrorable);
 
                 ~CheckFetchedFilesVisitor();
 

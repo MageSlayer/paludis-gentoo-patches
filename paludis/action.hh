@@ -49,6 +49,7 @@ namespace paludis
     {
         struct config_protect;
         struct destination;
+        struct exclude_unmirrorable;
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
@@ -68,6 +69,11 @@ namespace paludis
      */
     struct FetchActionOptions
     {
+        /**
+         * \since 0.32
+         */
+        NamedValue<n::exclude_unmirrorable, bool> exclude_unmirrorable;
+
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
 
         /**

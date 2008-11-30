@@ -58,9 +58,10 @@ int main(int argc, char * argv[])
 
                 /* Carry out a FetchAction. We need to specify various options when
                  * creating a FetchAction, controlling whether safe resume is used
-                 * and whether unneeded (e.g. due to disabled USE flags) source
-                 * files should still be fetched. */
+                 * and whether unneeded (e.g. due to disabled USE flags) and
+                 * unmirrorable source files should still be fetched. */
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
+                            value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(false),
                             value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                             value_for<n::safe_resume>(true)

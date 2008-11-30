@@ -73,11 +73,13 @@ namespace
     }
 
     FetchActionOptions * make_fetch_action_options(
+            const bool exclude_unmirrorable,
             const bool fetch_unneeded,
             const bool safe_resume
             )
     {
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
+                    value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
                     value_for<n::fetch_unneeded>(fetch_unneeded),
                     value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                     value_for<n::safe_resume>(safe_resume)
@@ -166,8 +168,14 @@ void expose_action()
 
         .def("__init__",
                 bp::make_constructor(&make_fetch_action_options),
-                "__init__(fetch_uneeded, safe_resume)"
+                "__init__(exclude_unmirrorable, fetch_uneeded, safe_resume)"
             )
+
+        .add_property("exclude_unmirrorable",
+                &named_values_getter<FetchActionOptions, n::exclude_unmirrorable, bool, &FetchActionOptions::exclude_unmirrorable>,
+                &named_values_setter<FetchActionOptions, n::exclude_unmirrorable, bool, &FetchActionOptions::exclude_unmirrorable>,
+                "[rw] bool"
+                )
 
         .add_property("fetch_unneeded",
                 &named_values_getter<FetchActionOptions, n::fetch_unneeded, bool, &FetchActionOptions::fetch_unneeded>,

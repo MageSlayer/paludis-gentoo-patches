@@ -61,6 +61,7 @@ namespace paludis
         const std::tr1::shared_ptr<const PackageID> id;
         const FSEntry distdir;
         const bool check_unneeded;
+        const bool exclude_unmirrorable;
 
         std::set<std::string> done;
         const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
@@ -80,11 +81,13 @@ namespace paludis
                 const bool n,
                 const FSEntry & m2,
                 const UseManifest um,
-                const std::tr1::shared_ptr<OutputDeviant> & md) :
+                const std::tr1::shared_ptr<OutputDeviant> & md,
+                const bool x) :
             env(e),
             id(i),
             distdir(d),
             check_unneeded(c),
+            exclude_unmirrorable(x),
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
             in_nofetch(n),
@@ -105,8 +108,9 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const bool n,
         const FSEntry & m2,
         const UseManifest um,
-        const std::tr1::shared_ptr<OutputDeviant> & md) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md))
+        const std::tr1::shared_ptr<OutputDeviant> & md,
+        const bool x) :
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x))
 {
 }
 
@@ -369,16 +373,19 @@ CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
     {
         if (_imp->in_nofetch)
         {
-            Log::get_instance()->message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
-                << "Manual fetch required for '" << u.filename() << "'";
-            *_imp->out << "requires manual fetch";
-            _imp->need_nofetch = true;
-            _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                    value_for<n::failed_automatic_fetching>(false),
-                    value_for<n::failed_integrity_checks>(""),
-                    value_for<n::requires_manual_fetching>(true),
-                    value_for<n::target_file>(u.filename())
-                    ));
+            if (! _imp->exclude_unmirrorable)
+            {
+                Log::get_instance()->message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
+                    << "Manual fetch required for '" << u.filename() << "'";
+                *_imp->out << "requires manual fetch";
+                _imp->need_nofetch = true;
+                _imp->failures->push_back(make_named_values<FetchActionFailure>(
+                        value_for<n::failed_automatic_fetching>(false),
+                        value_for<n::failed_integrity_checks>(""),
+                        value_for<n::requires_manual_fetching>(true),
+                        value_for<n::target_file>(u.filename())
+                        ));
+            }
         }
         else
         {

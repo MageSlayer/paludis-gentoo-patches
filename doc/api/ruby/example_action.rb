@@ -32,8 +32,9 @@ ids.each do | id |
 
         # Carry out a FetchAction. We need to specify various options when creating a FetchAction,
         # controlling whether safe resume is used and whether unneeded (e.g. due to disabled USE
-        # flags) source files should still be fetched.
+        # flags) and unmirrorable source files should still be fetched.
         fetch_action = FetchAction.new(FetchActionOptions.new({
+            :exclude_unmirrorable => false,
             :fetch_unneeded => false,
             :safe_resume => true
         }))

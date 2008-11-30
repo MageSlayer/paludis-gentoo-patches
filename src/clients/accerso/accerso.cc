@@ -136,6 +136,7 @@ main(int argc, char *argv[])
                 try
                 {
                     FetchAction a(make_named_values<FetchActionOptions>(
+                                value_for<n::exclude_unmirrorable>(true),
                                 value_for<n::fetch_unneeded>(true),
                                 value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
                                 value_for<n::safe_resume>(true)
