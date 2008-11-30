@@ -215,7 +215,7 @@ namespace
                 id->load_iuse(m.iuse().name(), m.iuse().description(), lines.at(m.iuse().flat_list_index()));
 
             if (-1 != m.myoptions().flat_list_index() && ! m.myoptions().name().empty())
-                id->load_myoptions(m.iuse().name(), m.myoptions().description(), lines.at(m.myoptions().flat_list_index()));
+                id->load_myoptions(m.myoptions().name(), m.myoptions().description(), lines.at(m.myoptions().flat_list_index()));
 
             if (-1 != m.pdepend().flat_list_index() && ! m.pdepend().name().empty())
                 id->load_post_depend(m.pdepend().name(), m.pdepend().description(), lines.at(m.pdepend().flat_list_index()));
