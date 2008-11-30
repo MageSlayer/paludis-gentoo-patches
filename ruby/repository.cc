@@ -29,6 +29,14 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <ruby.h>
+#include <list>
+#include <tr1/functional>
+
+#ifdef PALUDIS_ENABLE_THREADS
+#  include <paludis/util/mutex.hh>
+#  include <paludis/util/thread.hh>
+#  include <paludis/util/condition_variable.hh>
+#endif
 
 using namespace paludis;
 using namespace paludis::ruby;
@@ -553,6 +561,57 @@ namespace
         }
     };
 
+#ifdef PALUDIS_ENABLE_THREADS
+    struct HackyReporter :
+        QAReporter
+    {
+        RubyQAReporter * const qar;
+        std::list<std::tr1::function<void ()> > & pending;
+        Mutex & mutex;
+        ConditionVariable & cond;
+
+        void message(const QAMessage & m)
+        {
+            Lock lock(mutex);
+            pending.push_back(std::tr1::bind(&RubyQAReporter::message, qar, m));
+            cond.signal();
+        }
+
+        void status(const std::string & s)
+        {
+            Lock lock(mutex);
+            pending.push_back(std::tr1::bind(&RubyQAReporter::status, qar, s));
+            cond.signal();
+        }
+
+        HackyReporter(RubyQAReporter * const q,
+                std::list<std::tr1::function<void ()> > & p,
+                Mutex & m, ConditionVariable & c) :
+            qar(q),
+            pending(p),
+            mutex(m),
+            cond(c)
+        {
+        }
+    };
+
+    void repository_check_qa_thread(RubyQAReporter * const qar, bool & done,
+            std::list<std::tr1::function<void ()> > & pending,
+            Mutex & mutex, ConditionVariable & cond,
+            const QACheckProperties & ignore_if,
+            const QACheckProperties & ignore_unless,
+            const QAMessageLevel minimum_level,
+            const FSEntry & base_dir,
+            Repository * repo)
+    {
+        HackyReporter tr(qar, pending, mutex, cond);
+        repo->qa_interface()->check_qa(tr, ignore_if, ignore_unless, minimum_level, base_dir);
+        Lock lock(mutex);
+        done = true;
+        cond.signal();
+    }
+#endif
+
     /*
      * call-seq:
      *     check_qa(qa_reporter, qa_check_properties_ignore_if, qa_check_properties_ignore_unless, qa_message_minimum_level, dir) -> Qnil
@@ -570,12 +629,44 @@ namespace
 #ifdef ENABLE_RUBY_QA
             if ((**self_ptr).qa_interface())
             {
-                RubyQAReporter* qar = new RubyQAReporter(&reporter);
-                (**self_ptr).qa_interface()->check_qa(*qar,
+                RubyQAReporter qar(&reporter);
+#ifdef PALUDIS_ENABLE_THREADS
+                /* have to call ruby code in the original thread. icky. */
+                bool done(false);
+                std::list<std::tr1::function<void ()> > pending;
+                Mutex mutex;
+                ConditionVariable cond;
+                {
+                    Thread t(std::tr1::bind(&repository_check_qa_thread, &qar, std::tr1::ref(done),
+                                std::tr1::ref(pending), std::tr1::ref(mutex), std::tr1::ref(cond),
+                                value_to_qa_check_properties(ignore_if),
+                                value_to_qa_check_properties(ignore_unless),
+                                static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
+                                FSEntry(StringValuePtr(dir)),
+                                self_ptr->get()));
+
+                    while (true)
+                    {
+                        Lock lock(mutex);
+                        while (! pending.empty())
+                        {
+                            (*pending.begin())();
+                            pending.pop_front();
+                        }
+
+                        if (done)
+                            break;
+
+                        cond.wait(mutex);
+                    }
+                }
+#else
+                (**self_ptr).qa_interface()->check_qa(qar,
                         value_to_qa_check_properties((ignore_if)),
                         value_to_qa_check_properties((ignore_unless)),
                         static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
                         FSEntry(StringValuePtr(dir)));
+#endif
             }
 #endif
             return Qnil;
