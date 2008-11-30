@@ -243,7 +243,7 @@ namespace
         /*
          * Document-classs: Paludis::QAReporter
          *
-         * Base class for QAReporter, create a new sublclass that implements a message function.
+         * Base class for QAReporter, create a new subclass that implements a message function.
          */
         c_qa_reporter = rb_define_class_under(paludis_module(), "QAReporter", rb_cObject);
         rb_define_method(c_qa_reporter, "message", RUBY_FUNC_CAST(&ruby_qa_reporter_message), 1);
