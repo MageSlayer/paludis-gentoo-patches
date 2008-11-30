@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.32.1:
+    * VDB entries not containing an IUSE file would give incorrect behaviour.
+    This is now fixed.
+
 0.32.0:
     * accerso now handles unmirrorable files sensibly.
 
