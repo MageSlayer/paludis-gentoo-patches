@@ -200,12 +200,19 @@ EInstalledRepositoryID::need_keys_added() const
         }
 
     if (! vars->iuse().name().empty())
+    {
         if ((_imp->dir / vars->iuse().name()).exists())
-        {
             _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse().name(), vars->iuse().description(),
                         file_contents(_imp->dir / vars->iuse().name()), mkt_internal));
-            add_metadata_key(_imp->raw_iuse);
+        else
+        {
+            /* hack: if IUSE doesn't exist, we still need an iuse_key to make the choices
+             * code behave sanely. */
+            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse().name(), vars->iuse().description(),
+                        "", mkt_internal));
         }
+        add_metadata_key(_imp->raw_iuse);
+    }
 
     if (! vars->myoptions().name().empty())
         if ((_imp->dir / vars->myoptions().name()).exists())
