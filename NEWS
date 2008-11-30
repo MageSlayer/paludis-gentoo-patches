@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.32.0:
+    * accerso now handles unmirrorable files sensibly.
+
+    * sets would sometimes not end up being added to world. This is now fixed.
+
 0.32.0_alpha1:
     * Support for packages that haven't been written yet.
 
