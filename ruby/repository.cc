@@ -562,6 +562,7 @@ namespace
     };
 
 #ifdef PALUDIS_ENABLE_THREADS
+#  ifdef ENABLE_RUBY_QA
     struct HackyReporter :
         QAReporter
     {
@@ -610,6 +611,7 @@ namespace
         done = true;
         cond.signal();
     }
+#  endif
 #endif
 
     /*
