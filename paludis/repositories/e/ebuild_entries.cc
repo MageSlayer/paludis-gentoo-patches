@@ -321,7 +321,7 @@ namespace
         Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
         if (! getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
-            return;
+            return false;
 
         if (f.exists())
         {
