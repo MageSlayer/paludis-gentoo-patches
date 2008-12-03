@@ -1813,7 +1813,7 @@ ConsoleInstallTask::show_resume_command(const std::string & resume_command_templ
             std::string file_name(resume_command_template);
             int fd;
             if (std::string::npos == file_name.find("XXXXXX"))
-                fd = open(file_name.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+                fd = open(file_name.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
             else
             {
                 char * resume_template = strdup(file_name.c_str());
