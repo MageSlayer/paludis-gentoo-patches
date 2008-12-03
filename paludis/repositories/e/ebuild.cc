@@ -109,7 +109,9 @@ EbuildCommand::operator() ()
         if (params.package_id()->eapi()->supported()->userpriv_cannot_use_root())
         {
             if (0 == params.environment()->reduced_uid() || 0 == params.environment()->reduced_gid())
-                throw ActionError("Need to be able to use non-0 user and group for userpriv for '" + stringify(*params.package_id()) + "'");
+                if (getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
+                    throw ActionError("Need to be able to use non-0 user and group for userpriv for '" +
+                            stringify(*params.package_id()) + "'");
         }
         cmd.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
     }

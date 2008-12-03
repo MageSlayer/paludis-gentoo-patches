@@ -432,6 +432,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_CHOWN="yes" \
 	PALUDIS_TESTS_KEEP_STDERR="yes" \
 	PALDUIS_TMPDIR="`pwd`" \
+	PALUDIS_BYPASS_USERPRIV_CHECKS="yes" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
