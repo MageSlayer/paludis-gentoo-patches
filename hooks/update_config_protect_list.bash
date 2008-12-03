@@ -31,14 +31,20 @@ cfg_protect_mask_list="${vdb_loc}/.cache/all_CONFIG_PROTECT_MASK"
 if [[ ! -f "${cfg_protect_list}" || ! -f "${cfg_protect_mask_list}" ]] ; then
     # Generate this list for the first time. *slow*
     ewarn "Creating the CONFIG_PROTECT and CONFIG_PROTECT_MASK lists."
-    ewarn "This will take a while."
+    ewarn "This will take a while, but we only have to do it once."
     [[ -d "${vdb_loc}/.cache" ]] || mkdir ${vdb_loc}/.cache || return 1
     > "${cfg_protect_list}"
     > "${cfg_protect_mask_list}"
 
     installed_pkgs=$(${PALUDIS_COMMAND} --log-level silent --list-packages --repository installed |grep "^*" |cut -d" " -f2)
 
+    n=0
+    n_end=$(wc -w <<<$installed_pkgs)
     for p in ${installed_pkgs} ; do
+        n=$(( $n + 1 ))
+        if [[ 0 == $(( n % 20 )) ]] ; then
+            ewarn "    ${n} of ${n_end}"
+        fi
         cfg_protect=$(${PALUDIS_COMMAND} --log-level silent --environment-variable ${p} CONFIG_PROTECT)
         for x in ${cfg_protect} ; do
             echo "${x}" >> "${cfg_protect_list}"
@@ -49,9 +55,9 @@ if [[ ! -f "${cfg_protect_list}" || ! -f "${cfg_protect_mask_list}" ]] ; then
             echo "${x}" >> "${cfg_protect_mask_list}"
         done
     done
-else
-    einfo "Updating CONFIG_PROTECT and CONFIG_PROTECT_MASK caches."
 fi
+einfo "Updating CONFIG_PROTECT and CONFIG_PROTECT_MASK caches."
+
 # Now, update the lists with our current values.
 for x in ${CONFIG_PROTECT} ; do
     echo "${x}" >> "${cfg_protect_list}"
