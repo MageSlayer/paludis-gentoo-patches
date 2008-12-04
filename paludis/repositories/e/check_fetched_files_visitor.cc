@@ -218,14 +218,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
     for (Manifest2Reader::ConstIterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
         m != m_end ; ++m)
     {
-        if (distfile.basename() != m->name)
+        if (distfile.basename() != m->name())
             continue;
         found = true;
 
         Log::get_instance()->message("e.manifest.size", ll_debug, lc_context)
             << "Actual size = " << distfile.file_size()
-            << "; Manifest file size = " << m->size;
-        if (distfile.file_size() != m->size)
+            << "; Manifest file size = " << m->size();
+        if (distfile.file_size() != m->size())
         {
             Log::get_instance()->message("e.manifest.no_size", ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
@@ -252,10 +252,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             return false;
         }
 
-        if (! m->rmd160.empty())
+        if (! m->rmd160().empty())
         {
             RMD160 rmd160sum(file_stream);
-            if (rmd160sum.hexsum() != m->rmd160)
+            if (rmd160sum.hexsum() != m->rmd160())
             {
                 Log::get_instance()->message("e.manifest.rmd160.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed RMD160 checksum";
@@ -274,10 +274,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             file_stream.seekg(0, std::ios::beg);
         }
 
-        if (! m->sha1.empty())
+        if (! m->sha1().empty())
         {
             SHA1 sha1sum(file_stream);
-            if (sha1sum.hexsum() != m->sha1)
+            if (sha1sum.hexsum() != m->sha1())
             {
                 Log::get_instance()->message("e.manifest.sha1.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA1 checksum";
@@ -296,10 +296,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             file_stream.seekg(0, std::ios::beg);
         }
 
-        if (! m->sha256.empty())
+        if (! m->sha256().empty())
         {
             SHA256 sha256sum(file_stream);
-            if (sha256sum.hexsum() != m->sha256)
+            if (sha256sum.hexsum() != m->sha256())
             {
                 Log::get_instance()->message("e.manifest.sha256.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA256 checksum";
@@ -318,10 +318,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             file_stream.seekg(0, std::ios::beg);
         }
 
-        if (! m->md5.empty())
+        if (! m->md5().empty())
         {
             MD5 md5sum(file_stream);
-            if (md5sum.hexsum() != m->md5)
+            if (md5sum.hexsum() != m->md5())
             {
                 Log::get_instance()->message("e.manifest.md5.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed MD5 checksum";

@@ -25,9 +25,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-
-#include <paludis/repositories/e/manifest2_entry-sr.hh>
-
 #include <string>
 
 /** \file
@@ -38,9 +35,30 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct md5;
+        struct name;
+        struct rmd160;
+        struct sha1;
+        struct sha256;
+        struct size;
+        struct type;
+    }
 
     namespace erepository
     {
+        struct Manifest2Entry
+        {
+            NamedValue<n::md5, std::string> md5;
+            NamedValue<n::name, std::string> name;
+            NamedValue<n::rmd160, std::string> rmd160;
+            NamedValue<n::sha1, std::string> sha1;
+            NamedValue<n::sha256, std::string> sha256;
+            NamedValue<n::size, off_t> size;
+            NamedValue<n::type, std::string> type;
+        };
+
         /**
          * Thrown if a Manifest2 file cannot be read properly.
          *

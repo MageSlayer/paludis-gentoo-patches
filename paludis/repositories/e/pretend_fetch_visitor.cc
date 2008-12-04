@@ -137,6 +137,6 @@ PretendFetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
     if (_imp->manifest.end() == m)
         return;
 
-    _imp->action.will_fetch(destination, m->size);
+    _imp->action.will_fetch(destination, m->size());
 }
 

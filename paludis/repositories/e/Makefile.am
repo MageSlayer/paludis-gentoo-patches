@@ -6,8 +6,7 @@ DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
-	iuse-se.hh iuse-se.cc \
-	manifest2_entry-sr.hh manifest2_entry-sr.cc
+	iuse-se.hh iuse-se.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -76,7 +75,6 @@ paludis_repositories_e_include_HEADERS = \
 	fix_locked_dependencies.hh \
 	glsa.hh \
 	layout.hh \
-	manifest2_entry-sr.hh \
 	manifest2_reader.hh \
 	metadata_xml.hh \
 	myoption.hh \
@@ -361,9 +359,6 @@ EXTRA_DIST = \
 	iuse.se \
 	iuse-se.hh \
 	iuse-se.cc \
-	manifest2_entry.sr \
-	manifest2_entry-sr.hh \
-	manifest2_entry-sr.cc \
 	source_uri_finder_TEST.cc \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
@@ -395,9 +390,7 @@ BUILT_SOURCES = \
 	exndbam_repository-sr.hh \
 	exndbam_repository-sr.cc \
 	vdb_repository-sr.hh \
-	vdb_repository-sr.cc \
-	manifest2_entry-sr.hh \
-	manifest2_entry-sr.cc
+	vdb_repository-sr.cc
 
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
@@ -442,12 +435,6 @@ e_repository_params-sr.hh : e_repository_params.sr $(top_srcdir)/misc/make_sr.ba
 
 e_repository_params-sr.cc : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_repository_params.sr > $@
-
-manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/manifest2_entry.sr > $@
-
-manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
 
 exndbam_repository-sr.hh : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/exndbam_repository.sr > $@

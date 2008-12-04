@@ -113,11 +113,11 @@ namespace
 
         void check_file(const Manifest2Entry & entry)
         {
-            if ("DIST" == entry.type)
+            if ("DIST" == entry.type())
             {
-                if (distfiles.end() == distfiles.find(entry.name))
+                if (distfiles.end() == distfiles.find(entry.name()))
                 {
-                    QAMessage m(manifest, qaml_minor, name, "DIST file '" + entry.name + "' is not used by any package");
+                    QAMessage m(manifest, qaml_minor, name, "DIST file '" + entry.name() + "' is not used by any package");
                     for (PackageIDSequence::ConstIterator it(packages->begin()),
                              it_end(packages->end()); it_end != it; ++it)
                     {
@@ -128,11 +128,11 @@ namespace
                     reporter.message(m);
                 }
 
-                accounted_distfiles.insert(entry.name);
+                accounted_distfiles.insert(entry.name());
                 return;
             }
 
-            FSEntry file("AUX" == entry.type ? dir / "files" / entry.name : dir / entry.name);
+            FSEntry file("AUX" == entry.type() ? dir / "files" / entry.name() : dir / entry.name());
             Map<FSEntry, std::string>::ConstIterator it(files->find(file));
             if (files->end() == it)
             {
@@ -140,44 +140,44 @@ namespace
                 return;
             }
 
-            if (entry.type != it->second)
-                reporter.message(QAMessage(file, qaml_normal, name, "File is of type '" + it->second + "', but Manifest lists '" + entry.type + "'"));
-            if (entry.size != file.file_size())
-                reporter.message(QAMessage(file, qaml_normal, name, "File size is '" + stringify(file.file_size()) + "', but Manifest lists '" + stringify(entry.size) + "'"));
+            if (entry.type() != it->second)
+                reporter.message(QAMessage(file, qaml_normal, name, "File is of type '" + it->second + "', but Manifest lists '" + entry.type() + "'"));
+            if (entry.size() != file.file_size())
+                reporter.message(QAMessage(file, qaml_normal, name, "File size is '" + stringify(file.file_size()) + "', but Manifest lists '" + stringify(entry.size()) + "'"));
 
-            if (! entry.sha1.empty())
+            if (! entry.sha1().empty())
             {
                 std::ifstream s(stringify(file).c_str());
                 SHA1 sha1(s);
-                if (entry.sha1 != sha1.hexsum())
-                    reporter.message(QAMessage(file, qaml_normal, name, "File SHA1 is '" + sha1.hexsum() + "', but Manifest lists '" + entry.sha1 + "'"));
+                if (entry.sha1() != sha1.hexsum())
+                    reporter.message(QAMessage(file, qaml_normal, name, "File SHA1 is '" + sha1.hexsum() + "', but Manifest lists '" + entry.sha1() + "'"));
 
             }
 
-            if (! entry.sha256.empty())
+            if (! entry.sha256().empty())
             {
                 std::ifstream s(stringify(file).c_str());
                 SHA256 sha256(s);
-                if (entry.sha256 != sha256.hexsum())
-                    reporter.message(QAMessage(file, qaml_normal, name, "File SHA256 is '" + sha256.hexsum() + "', but Manifest lists '" + entry.sha256 + "'"));
+                if (entry.sha256() != sha256.hexsum())
+                    reporter.message(QAMessage(file, qaml_normal, name, "File SHA256 is '" + sha256.hexsum() + "', but Manifest lists '" + entry.sha256() + "'"));
 
             }
 
-            if (! entry.rmd160.empty())
+            if (! entry.rmd160().empty())
             {
                 std::ifstream s(stringify(file).c_str());
                 RMD160 rmd160(s);
-                if (entry.rmd160 != rmd160.hexsum())
-                    reporter.message(QAMessage(file, qaml_normal, name, "File RMD160 is '" + rmd160.hexsum() + "', but Manifest lists '" + entry.rmd160 + "'"));
+                if (entry.rmd160() != rmd160.hexsum())
+                    reporter.message(QAMessage(file, qaml_normal, name, "File RMD160 is '" + rmd160.hexsum() + "', but Manifest lists '" + entry.rmd160() + "'"));
 
             }
 
-            if (! entry.md5.empty())
+            if (! entry.md5().empty())
             {
                 std::ifstream s(stringify(file).c_str());
                 MD5 md5(s);
-                if (entry.md5 != md5.hexsum())
-                    reporter.message(QAMessage(file, qaml_normal, name, "File MD5 is '" + md5.hexsum() + "', but Manifest lists '" + entry.md5 + "'"));
+                if (entry.md5() != md5.hexsum())
+                    reporter.message(QAMessage(file, qaml_normal, name, "File MD5 is '" + md5.hexsum() + "', but Manifest lists '" + entry.md5() + "'"));
 
             }
 
