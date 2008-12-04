@@ -762,11 +762,11 @@ namespace test_cases
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
-            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile/subprofile"));
+            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile/subprofile"));
             TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
-            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile"));
+            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile"));
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
@@ -814,7 +814,7 @@ namespace test_cases
             TEST_CHECK(has_two);
             TEST_CHECK_EQUAL(count, 2);
 
-            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile/subprofile"));
+            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile/subprofile"));
 
             has_one = has_two = false;
             count = 0;

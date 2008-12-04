@@ -1,10 +1,7 @@
 SUBDIRS = eapis ebuild . qa
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
-	e_installed_repository-sr.hh e_installed_repository-sr.cc \
-	e_repository_params-sr.hh e_repository_params-sr.cc \
 	e_repository_params-se.hh e_repository_params-se.cc \
-	vdb_repository-sr.hh vdb_repository-sr.cc \
 	dep_parser-se.hh dep_parser-se.cc \
 	iuse-se.hh iuse-se.cc
 
@@ -37,7 +34,6 @@ paludis_repositories_e_include_HEADERS = \
 	dependencies_rewriter.hh \
 	e_choice_value.hh \
 	e_installed_repository.hh \
-	e_installed_repository-sr.hh \
 	e_installed_repository_id.hh \
 	e_key.hh \
 	e_mask.hh \
@@ -47,7 +43,6 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_id.hh \
 	e_repository_mask_file.hh \
 	e_repository_news.hh \
-	e_repository_params-sr.hh \
 	e_repository_params-se.hh \
 	e_repository_params.hh \
 	e_repository_profile.hh \
@@ -65,7 +60,6 @@ paludis_repositories_e_include_HEADERS = \
 	exheres_layout.hh \
 	exndbam_id.hh \
 	exndbam_repository.hh \
-	exndbam_repository-sr.hh \
 	extra_distribution_data.hh \
 	fetch_visitor.hh \
 	info_metadata_key.hh \
@@ -87,7 +81,6 @@ paludis_repositories_e_include_HEADERS = \
 	vdb_contents_tokeniser.hh \
 	vdb_id.hh \
 	vdb_merger.hh \
-	vdb_repository-sr.hh \
 	vdb_repository.hh \
 	vdb_unmerger.hh
 
@@ -331,12 +324,6 @@ EXTRA_DIST = \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
-	e_installed_repository-sr.hh \
-	e_installed_repository-sr.cc \
-	e_installed_repository.sr \
-	e_repository_params-sr.hh \
-	e_repository_params-sr.cc \
-	e_repository_params.sr \
 	e_repository_params-se.hh \
 	e_repository_params-se.cc \
 	e_repository_params.se \
@@ -349,9 +336,6 @@ EXTRA_DIST = \
 	exndbam_repository_TEST.cc \
 	exndbam_repository_TEST_setup.sh \
 	exndbam_repository_TEST_cleanup.sh \
-	exndbam_repository-sr.hh \
-	exndbam_repository-sr.cc \
-	exndbam_repository.sr \
 	fetch_visitor_TEST.cc \
 	fetch_visitor_TEST_setup.sh \
 	fetch_visitor_TEST_cleanup.sh \
@@ -366,9 +350,6 @@ EXTRA_DIST = \
 	vdb_repository_TEST.cc \
 	vdb_repository_TEST_setup.sh \
 	vdb_repository_TEST_cleanup.sh \
-	vdb_repository-sr.hh \
-	vdb_repository-sr.cc \
-	vdb_repository.sr \
 	vdb_merger_TEST.cc \
 	vdb_merger_TEST_setup.sh \
 	vdb_merger_TEST_cleanup.sh \
@@ -379,18 +360,10 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	dep_parser-se.hh \
 	dep_parser-se.cc \
-	e_installed_repository-sr.hh \
-	e_installed_repository-sr.cc \
-	e_repository_params-sr.hh \
-	e_repository_params-sr.cc \
 	e_repository_params-se.hh \
 	e_repository_params-se.cc \
 	iuse-se.hh \
-	iuse-se.cc \
-	exndbam_repository-sr.hh \
-	exndbam_repository-sr.cc \
-	vdb_repository-sr.hh \
-	vdb_repository-sr.cc
+	iuse-se.cc
 
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
@@ -424,30 +397,6 @@ TESTS_ENVIRONMENT = env \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
-e_installed_repository-sr.hh : e_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/e_installed_repository.sr > $@
-
-e_installed_repository-sr.cc : e_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_installed_repository.sr > $@
-
-e_repository_params-sr.hh : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/e_repository_params.sr > $@
-
-e_repository_params-sr.cc : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_repository_params.sr > $@
-
-exndbam_repository-sr.hh : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/exndbam_repository.sr > $@
-
-exndbam_repository-sr.cc : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/exndbam_repository.sr > $@
-
-vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_repository.sr > $@
-
-vdb_repository-sr.cc : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_repository.sr > $@
-
 dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
@@ -465,7 +414,6 @@ e_repository_params-se.hh : e_repository_params.se $(top_srcdir)/misc/make_se.ba
 
 e_repository_params-se.cc : e_repository_params.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/e_repository_params.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
 
 libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_SOURCES = xml_things.cc xml_things.hh
 libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@

@@ -84,8 +84,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-#include <paludis/repositories/e/vdb_repository-sr.cc>
-
 typedef std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<QualifiedPackageNameSet>, Hash<CategoryNamePart> > CategoryMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const Sequence<QualifiedPackageName> > > ProvidesMap;
@@ -126,19 +124,19 @@ namespace paludis
         has_category_names(false),
         tried_provides_cache(false),
         used_provides_cache(false),
-        names_cache(new RepositoryNameCache(p.names_cache, r)),
+        names_cache(new RepositoryNameCache(p.names_cache(), r)),
         location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                    mkt_significant, params.location)),
+                    mkt_significant, params.location())),
         root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
-                    mkt_normal, params.root)),
+                    mkt_normal, params.root())),
         format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                     mkt_significant, "vdb")),
         provides_cache_key(new LiteralMetadataValueKey<FSEntry> ("provides_cache", "provides_cache",
-                    mkt_normal, params.provides_cache)),
+                    mkt_normal, params.provides_cache())),
         names_cache_key(new LiteralMetadataValueKey<FSEntry> ("names_cache", "names_cache",
-                    mkt_normal, params.names_cache)),
+                    mkt_normal, params.names_cache())),
         builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                    mkt_normal, params.builddir))
+                    mkt_normal, params.builddir()))
     {
     }
 
@@ -149,12 +147,13 @@ namespace paludis
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     EInstalledRepository(
-            EInstalledRepositoryParams::create()
-            .environment(p.environment)
-            .root(p.root)
-            .builddir(p.builddir)
-            .deprecated_world(p.deprecated_world),
-            p.name,
+            make_named_values<EInstalledRepositoryParams>(
+                value_for<n::builddir>(p.builddir()),
+                value_for<n::deprecated_world>(p.deprecated_world()),
+                value_for<n::environment>(p.environment()),
+                value_for<n::root>(p.root())
+                ),
+            p.name(),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
@@ -346,15 +345,16 @@ VDBRepository::repository_factory_create(
     if (name.empty())
         name = "installed";
 
-    return std::tr1::shared_ptr<Repository>(new VDBRepository(VDBRepositoryParams::create()
-                .environment(env)
-                .location(location)
-                .root(root)
-                .deprecated_world(deprecated_world)
-                .builddir(builddir)
-                .provides_cache(provides_cache)
-                .name(RepositoryName(name))
-                .names_cache(names_cache)));
+    return std::tr1::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
+                value_for<n::builddir>(builddir),
+                value_for<n::deprecated_world>(deprecated_world),
+                value_for<n::environment>(env),
+                value_for<n::location>(location),
+                value_for<n::name>(RepositoryName(name)),
+                value_for<n::names_cache>(names_cache),
+                value_for<n::provides_cache>(provides_cache),
+                value_for<n::root>(root)
+                )));
 }
 
 RepositoryName
@@ -395,17 +395,17 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
-    if (! _imp->params.root.is_directory())
+    if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
+                "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
-    eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
+    eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category) /
                 (reinstalling_str + stringify(id->name().package) + "-" + stringify(id->version()))));
 
-    FSEntry pkg_dir(_imp->params.location / stringify(id->name().category) / (reinstalling_str +
+    FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category) / (reinstalling_str +
                 stringify(id->name().package) + "-" + stringify(id->version())));
 
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
@@ -437,7 +437,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                         value_for<n::config_protect_mask>(config_protect_mask),
                         value_for<n::contents_file>(pkg_dir / "CONTENTS"),
 
-                        value_for<n::environment>(_imp->params.environment),
+                        value_for<n::environment>(_imp->params.environment()),
                         value_for<n::package_id>(id),
                         value_for<n::root>(installed_root_key()->value())
                     ));
@@ -447,17 +447,17 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
         else
         {
             EbuildCommandParams params(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::builddir>(_imp->params.builddir()),
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                     value_for<n::distdir>(pkg_dir),
                     value_for<n::ebuild_dir>(pkg_dir),
                     value_for<n::ebuild_file>(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
                     value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(pkg_dir),
                     value_for<n::package_id>(id),
-                    value_for<n::portdir>(_imp->params.location),
+                    value_for<n::portdir>(_imp->params.location()),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
                     ));
@@ -465,7 +465,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
             EbuildUninstallCommandParams uninstall_params(make_named_values<EbuildUninstallCommandParams>(
                         value_for<n::load_environment>(load_env.get()),
                         value_for<n::loadsaveenv_dir>(pkg_dir),
-                        value_for<n::root>(stringify(_imp->params.root)),
+                        value_for<n::root>(stringify(_imp->params.root())),
                         value_for<n::unmerge_only>(false)
                     ));
 
@@ -560,20 +560,20 @@ VDBRepository::load_provided_using_cache() const
     Lock l(*_imp->big_nasty_mutex);
     _imp->tried_provides_cache = true;
 
-    if (_imp->params.provides_cache == FSEntry("/var/empty"))
+    if (_imp->params.provides_cache() == FSEntry("/var/empty"))
         return false;
 
-    Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache) + "':");
+    Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache()) + "':");
 
-    if (! _imp->params.provides_cache.is_regular_file())
+    if (! _imp->params.provides_cache().is_regular_file())
     {
         Log::get_instance()->message("e.vdb.provides_cache.not_regular_file", ll_warning, lc_no_context)
-            << "Provides cache at '" << _imp->params.provides_cache << "' is not a regular file. Perhaps you need to regenerate "
+            << "Provides cache at '" << _imp->params.provides_cache() << "' is not a regular file. Perhaps you need to regenerate "
             "the cache using 'paludis --regenerate-installed-cache'?";
         return false;
     }
 
-    std::ifstream provides_cache(stringify(_imp->params.provides_cache).c_str());
+    std::ifstream provides_cache(stringify(_imp->params.provides_cache()).c_str());
 
     std::string version;
     std::getline(provides_cache, version);
@@ -581,7 +581,7 @@ VDBRepository::load_provided_using_cache() const
     if (version != "paludis-3")
     {
         Log::get_instance()->message("e.vdb.provides_cache.unsupported", ll_warning, lc_no_context) << "Can't use provides cache at '"
-            << _imp->params.provides_cache << "' because format '" << version << "' is not 'paludis-3'. Perhaps you need to regenerate "
+            << _imp->params.provides_cache() << "' because format '" << version << "' is not 'paludis-3'. Perhaps you need to regenerate "
             "the cache using 'paludis --regenerate-installed-cache'?";
         return false;
     }
@@ -591,7 +591,7 @@ VDBRepository::load_provided_using_cache() const
     if (for_name != stringify(name()))
     {
         Log::get_instance()->message("e.vdb.provides_cache.unusable", ll_warning, lc_no_context)
-            << "Can't use provides cache at '" << _imp->params.provides_cache << "' because it was generated for repository '"
+            << "Can't use provides cache at '" << _imp->params.provides_cache() << "' because it was generated for repository '"
             << for_name << "'. You must not have multiple provides caches at the same location.";
         return false;
     }
@@ -650,7 +650,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
             return;
 
         std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide(id.provide_key()->value());
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment);
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
         provide->accept(f);
 
         std::tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
@@ -723,13 +723,13 @@ VDBRepository::load_provided_the_slow_way() const
 void
 VDBRepository::write_provides_cache() const
 {
-    Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache) + "':");
+    Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache()) + "':");
 
-    std::ofstream f(stringify(_imp->params.provides_cache).c_str());
+    std::ofstream f(stringify(_imp->params.provides_cache()).c_str());
     if (! f)
     {
         Log::get_instance()->message("e.vdb.provides.write_failed", ll_warning, lc_context) << "Cannot write to '" <<
-                _imp->params.provides_cache << "': " << std::strerror(errno);
+                _imp->params.provides_cache() << "': " << std::strerror(errno);
         return;
     }
 
@@ -763,14 +763,14 @@ VDBRepository::regenerate_provides_cache() const
 
     using namespace std::tr1::placeholders;
 
-    if (_imp->params.provides_cache == FSEntry("/var/empty"))
+    if (_imp->params.provides_cache() == FSEntry("/var/empty"))
         return;
 
     Context context("When generating VDB repository provides cache at '"
-            + stringify(_imp->params.provides_cache) + "':");
+            + stringify(_imp->params.provides_cache()) + "':");
 
-    FSEntry(_imp->params.provides_cache).unlink();
-    _imp->params.provides_cache.dirname().mkdir();
+    FSEntry(_imp->params.provides_cache()).unlink();
+    _imp->params.provides_cache().dirname().mkdir();
 
     load_provided_the_slow_way();
     write_provides_cache();
@@ -801,7 +801,7 @@ VDBRepository::merge(const MergeParams & m)
 
     std::tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
-    FSEntry tmp_vdb_dir(_imp->params.location);
+    FSEntry tmp_vdb_dir(_imp->params.location());
     if (! tmp_vdb_dir.exists())
         tmp_vdb_dir.mkdir();
     tmp_vdb_dir /= stringify(m.package_id()->name().category);
@@ -812,7 +812,7 @@ VDBRepository::merge(const MergeParams & m)
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
-                value_for<n::environment>(_imp->params.environment),
+                value_for<n::environment>(_imp->params.environment()),
                 value_for<n::environment_file>(m.environment_file()),
                 value_for<n::output_directory>(tmp_vdb_dir),
                 value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
@@ -830,7 +830,7 @@ VDBRepository::merge(const MergeParams & m)
         config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
     }
 
-    FSEntry vdb_dir(_imp->params.location);
+    FSEntry vdb_dir(_imp->params.location());
     vdb_dir /= stringify(m.package_id()->name().category);
     vdb_dir /= (stringify(m.package_id()->name().package) + "-" + stringify(m.package_id()->version()));
 
@@ -839,7 +839,7 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::config_protect>(config_protect),
                 value_for<n::config_protect_mask>(config_protect_mask),
                 value_for<n::contents_file>(vdb_dir / "CONTENTS"),
-                value_for<n::environment>(_imp->params.environment),
+                value_for<n::environment>(_imp->params.environment()),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::options>(m.options()),
                 value_for<n::package_id>(m.package_id()),
@@ -858,7 +858,7 @@ VDBRepository::merge(const MergeParams & m)
 
     if (is_replace)
     {
-        FSEntry old_vdb_dir(_imp->params.location);
+        FSEntry old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category);
         old_vdb_dir /= (stringify(is_replace->name().package) + "-" + stringify(is_replace->version()));
 
@@ -913,9 +913,9 @@ VDBRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    Context context("When loading category names from '" + stringify(_imp->params.location) + "':");
+    Context context("When loading category names from '" + stringify(_imp->params.location()) + "':");
 
-    for (DirIterator d(_imp->params.location, DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location(), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())
@@ -943,12 +943,12 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     if (_imp->categories[c])
         return;
 
-    Context context("When loading package names from '" + stringify(_imp->params.location) +
+    Context context("When loading package names from '" + stringify(_imp->params.location()) +
             "' in category '" + stringify(c) + "':");
 
     std::tr1::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
 
-    for (DirIterator d(_imp->params.location / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location() / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())
@@ -958,7 +958,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                     continue;
 
                 PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
-                            _imp->params.environment, UserPackageDepSpecOptions()));
+                            _imp->params.environment(), UserPackageDepSpecOptions()));
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)
@@ -986,7 +986,7 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment, shared_from_this(), f));
+    std::tr1::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment(), shared_from_this(), f));
     return result;
 }
 

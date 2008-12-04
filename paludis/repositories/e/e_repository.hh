@@ -77,7 +77,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            ERepository(const ERepositoryParams &);
+            ERepository(const erepository::ERepositoryParams &);
 
             /**
              * Destructor.
@@ -174,7 +174,7 @@ namespace paludis
             virtual std::string accept_keywords_variable() const;
             virtual std::string arch_variable() const;
 
-            const ERepositoryParams & params() const;
+            const erepository::ERepositoryParams & params() const;
 
             ///\}
 

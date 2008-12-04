@@ -170,10 +170,10 @@ namespace
                     else
                     {
                         bool found_repo(false), repo_masked(false);
-                        if (repo->params().master_repositories)
+                        if (repo->params().master_repositories())
                         {
-                            for (ERepositorySequence::ConstIterator e(repo->params().master_repositories->begin()),
-                                    e_end(repo->params().master_repositories->end()) ; e != e_end ; ++e)
+                            for (ERepositorySequence::ConstIterator e(repo->params().master_repositories()->begin()),
+                                    e_end(repo->params().master_repositories()->end()) ; e != e_end ; ++e)
                             {
                                 if ((*i)->repository()->name() == (*e)->name())
                                 {

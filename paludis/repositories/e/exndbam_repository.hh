@@ -29,12 +29,28 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct builddir;
+        struct deprecated_world;
+        struct environment;
+        struct location;
+        struct root;
+    }
+
     namespace erepository
     {
         class ERepositoryID;
-    }
 
-#include <paludis/repositories/e/exndbam_repository-sr.hh>
+        struct ExndbamRepositoryParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::deprecated_world, FSEntry> deprecated_world;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::root, FSEntry> root;
+        };
+    }
 
     class PALUDIS_VISIBLE ExndbamRepository :
         public erepository::EInstalledRepository,
@@ -52,7 +68,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            ExndbamRepository(const RepositoryName & n, const ExndbamRepositoryParams &);
+            ExndbamRepository(const RepositoryName & n, const erepository::ExndbamRepositoryParams &);
 
             /**
              * Destructor.

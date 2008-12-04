@@ -198,7 +198,7 @@ namespace paludis
                 {
                     Context subcontext("When using directory '" + stringify(*d) + "':");
 
-                    if (! p->params().ignore_deprecated_profiles)
+                    if (! p->params().ignore_deprecated_profiles())
                         if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
                             Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
                                 << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
@@ -345,7 +345,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     }
 
     std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand());
+                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
         use_expand->clear();
@@ -367,7 +367,7 @@ void
 Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 {
     std::string use_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use());
+                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use());
     try
     {
         use.clear();
@@ -391,7 +391,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     }
 
     std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand());
+                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
         use_expand->clear();
@@ -409,7 +409,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
     }
 
     std::string use_expand_hidden_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi)->supported()->ebuild_environment_variables()->env_use_expand_hidden());
+                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand_hidden());
     try
     {
         use_expand_hidden->clear();
@@ -431,7 +431,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 bool
 Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
-    std::tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
+    std::tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi()));
 
     Context c("When checking whether '" + s + "' is incremental:");
 
@@ -449,7 +449,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
-        if (! repository->params().master_repositories)
+        if (! repository->params().master_repositories())
             for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
                     i_end(packages_file.end()) ; i != i_end ; ++i)
             {
@@ -460,7 +460,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                             parse_elike_package_dep_spec(i->substr(1),
                                 erepository::EAPIData::get_instance()->eapi_from_string(
-                                    repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
+                                    repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
@@ -493,7 +493,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 virtuals.erase(v);
                 virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     parse_elike_package_dep_spec(tokens[1], erepository::EAPIData::get_instance()->eapi_from_string(
-                                            repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
+                                            repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
                                         std::tr1::shared_ptr<const PackageID>())))));
             }
         }
@@ -517,7 +517,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
         {
             std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
                         parse_elike_package_dep_spec(line->first, erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
+                                repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
                             std::tr1::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
@@ -600,7 +600,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
         {
             std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
                         parse_elike_package_dep_spec(*tokens.begin(), erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
+                                repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
                             std::tr1::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 

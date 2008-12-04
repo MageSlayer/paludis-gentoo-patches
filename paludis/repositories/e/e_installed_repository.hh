@@ -25,10 +25,23 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct builddir;
+        struct deprecated_world;
+        struct environment;
+        struct root;
+    }
+
     namespace erepository
     {
-
-#include <paludis/repositories/e/e_installed_repository-sr.hh>
+        struct EInstalledRepositoryParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::deprecated_world, FSEntry> deprecated_world;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::root, FSEntry> root;
+        };
 
         class EInstalledRepository :
             public Repository,

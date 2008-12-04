@@ -72,10 +72,10 @@ namespace paludis
     {
         const Environment * const environment;
         const ERepository * const e_repository;
-        const ERepositoryParams params;
+        const erepository::ERepositoryParams params;
 
         Implementation(const Environment * const e, const ERepository * const p,
-                const ERepositoryParams & k) :
+                const erepository::ERepositoryParams & k) :
             environment(e),
             e_repository(p),
             params(k)
@@ -85,7 +85,7 @@ namespace paludis
 }
 
 ERepositorySets::ERepositorySets(const Environment * const e, const ERepository * const p,
-        const ERepositoryParams & k) :
+        const erepository::ERepositoryParams & k) :
     PrivateImplementationPattern<ERepositorySets>(new Implementation<ERepositorySets>(e, p, k))
 {
 }
@@ -108,11 +108,11 @@ ERepositorySets::package_set(const SetName & ss) const
 
     std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
-    if ((_imp->params.setsdir / (stringify(s.first) + ".conf")).exists())
+    if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).exists())
     {
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
 
-        FSEntry ff(_imp->params.setsdir / (stringify(s.first) + ".conf"));
+        FSEntry ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
         SetFile f(SetFileParams::create()
@@ -146,7 +146,7 @@ ERepositorySets::sets_list() const
 
         std::list<FSEntry> repo_sets;
         std::remove_copy_if(
-                DirIterator(_imp->params.setsdir),
+                DirIterator(_imp->params.setsdir()),
                 DirIterator(),
                 std::back_inserter(repo_sets),
                 std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
@@ -256,12 +256,12 @@ ERepositorySets::security_set(bool insecurity) const
     std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(
             new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
-    if (!_imp->params.securitydir.is_directory_or_symlink_to_directory())
+    if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
         return security_packages;
 
     std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;
 
-    for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
+    for (DirIterator f(_imp->params.securitydir()), f_end ; f != f_end; ++f)
     {
         if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", IsFileWithOptions()))
             continue;

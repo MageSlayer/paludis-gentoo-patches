@@ -60,13 +60,13 @@ namespace paludis
     {
         const Environment * const environment;
         const ERepository * const e_repository;
-        const ERepositoryParams params;
+        const erepository::ERepositoryParams params;
 
         const FSEntry skip_file;
         const FSEntry unread_file;
 
         Implementation(const Environment * const e, const ERepository * const p,
-                const ERepositoryParams & k) :
+                const erepository::ERepositoryParams & k) :
             environment(e),
             e_repository(p),
             params(k),
@@ -80,7 +80,7 @@ namespace paludis
 }
 
 ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository * const p,
-        const ERepositoryParams & k) :
+        const erepository::ERepositoryParams & k) :
     PrivateImplementationPattern<ERepositoryNews>(new Implementation<ERepositoryNews>(e, p, k))
 {
 }
@@ -93,10 +93,10 @@ void
 ERepositoryNews::update_news() const
 {
     Context context("When updating news at location '" +
-            stringify(_imp->params.newsdir) + "' for repository '" +
+            stringify(_imp->params.newsdir()) + "' for repository '" +
             stringify(_imp->e_repository->name()) + "':");
 
-    if (! _imp->params.newsdir.is_directory_or_symlink_to_directory())
+    if (! _imp->params.newsdir().is_directory_or_symlink_to_directory())
         return;
 
     std::set<std::string> skip;
@@ -109,7 +109,7 @@ ERepositoryNews::update_news() const
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
-    for (DirIterator d(_imp->params.newsdir), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.newsdir()), d_end ; d != d_end ; ++d)
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
@@ -142,7 +142,7 @@ ERepositoryNews::update_news() const
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             erepository::EAPIData::get_instance()->eapi_from_string(
-                                                _imp->e_repository->params().profile_eapi)->supported()->package_dep_spec_parse_options(),
+                                                _imp->e_repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
                                             std::tr1::shared_ptr<const PackageID>())), MatchPackageOptions()) |
                                 filter::SupportsAction<InstalledAction>())]->empty())
                         local_show = true;
@@ -162,7 +162,7 @@ ERepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles);
+                std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
                 for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

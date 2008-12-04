@@ -50,8 +50,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-#include <paludis/repositories/e/exndbam_repository-sr.cc>
-
 namespace
 {
     bool supported_exndbam(const std::string & s)
@@ -75,15 +73,15 @@ namespace paludis
 
         Implementation(const ExndbamRepositoryParams & p) :
             params(p),
-            ndbam(params.location, &supported_exndbam, "exndbam-1"),
+            ndbam(params.location(), &supported_exndbam, "exndbam-1"),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params.location)),
+                        mkt_significant, params.location())),
             root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
-                        mkt_normal, params.root)),
+                        mkt_normal, params.root())),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "vdb")),
             builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                        mkt_normal, params.builddir))
+                        mkt_normal, params.builddir()))
         {
         }
     };
@@ -91,11 +89,12 @@ namespace paludis
 
 ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepositoryParams & p) :
     EInstalledRepository(
-            EInstalledRepositoryParams::create()
-            .deprecated_world(p.deprecated_world)
-            .environment(p.environment)
-            .builddir(p.builddir)
-            .root(p.root),
+            make_named_values<EInstalledRepositoryParams>(
+                value_for<n::builddir>(p.builddir()),
+                value_for<n::deprecated_world>(p.deprecated_world()),
+                value_for<n::environment>(p.environment()),
+                value_for<n::root>(p.root())
+                ),
             n,
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
@@ -173,12 +172,14 @@ ExndbamRepository::repository_factory_create(
 
     return std::tr1::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
-                ExndbamRepositoryParams::create()
-                .environment(env)
-                .location(location)
-                .root(root)
-                .deprecated_world(deprecated_world)
-                .builddir(builddir)));
+                make_named_values<ExndbamRepositoryParams>(
+                    value_for<n::builddir>(builddir),
+                    value_for<n::deprecated_world>(deprecated_world),
+                    value_for<n::environment>(env),
+                    value_for<n::location>(location),
+                    value_for<n::root>(root)
+                    )
+                ));
 }
 
 RepositoryName
@@ -224,7 +225,7 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
     {
         Lock l(*(*e).mutex());
         if (! (*e).package_id())
-            (*e).package_id().reset(new ExndbamID((*e).name(), (*e).version(), _imp->params.environment,
+            (*e).package_id().reset(new ExndbamID((*e).name(), (*e).version(), _imp->params.environment(),
                         shared_from_this(), (*e).fs_location(), &_imp->ndbam));
         result->push_back((*e).package_id());
     }
@@ -328,7 +329,7 @@ ExndbamRepository::merge(const MergeParams & m)
         }
     }
 
-    FSEntry uid_dir(_imp->params.location);
+    FSEntry uid_dir(_imp->params.location());
     if (if_same_name_id)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
@@ -350,7 +351,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
-            value_for<n::environment>(_imp->params.environment),
+            value_for<n::environment>(_imp->params.environment()),
             value_for<n::environment_file>(m.environment_file()),
             value_for<n::output_directory>(target_ver_dir),
             value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
@@ -373,8 +374,8 @@ ExndbamRepository::merge(const MergeParams & m)
             value_for<n::config_protect>(config_protect),
             value_for<n::config_protect_mask>(config_protect_mask),
             value_for<n::contents_file>(target_ver_dir / "contents"),
-            value_for<n::environment>(_imp->params.environment),
-            value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment, std::tr1::placeholders::_1)),
+            value_for<n::environment>(_imp->params.environment()),
+            value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::tr1::placeholders::_1)),
             value_for<n::image>(m.image_dir()),
             value_for<n::install_under>(FSEntry("/")),
             value_for<n::options>(m.options()),
@@ -428,9 +429,9 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
 
-    if (! _imp->params.root.is_directory())
+    if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
+                "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     FSEntry ver_dir(id->fs_location_key()->value());
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
@@ -464,7 +465,7 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
                     value_for<n::config_protect>(final_config_protect),
                     value_for<n::config_protect_mask>(config_protect_mask),
                     value_for<n::contents_file>(ver_dir / "contents"),
-                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::environment>(_imp->params.environment()),
                     value_for<n::ndbam>(&_imp->ndbam),
                     value_for<n::package_id>(id),
                     value_for<n::root>(installed_root_key()->value())
@@ -476,17 +477,17 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
         {
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
-                        value_for<n::builddir>(_imp->params.builddir),
+                        value_for<n::builddir>(_imp->params.builddir()),
                         value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                         value_for<n::distdir>(ver_dir),
                         value_for<n::ebuild_dir>(ver_dir),
                         value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
                         value_for<n::eclassdirs>(eclassdirs),
-                        value_for<n::environment>(_imp->params.environment),
+                        value_for<n::environment>(_imp->params.environment()),
                         value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                         value_for<n::files_dir>(ver_dir),
                         value_for<n::package_id>(id),
-                        value_for<n::portdir>(_imp->params.location),
+                        value_for<n::portdir>(_imp->params.location()),
                         value_for<n::sandbox>(phase->option("sandbox")),
                         value_for<n::userpriv>(phase->option("userpriv"))
                     ));
@@ -495,7 +496,7 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
                     make_named_values<EbuildUninstallCommandParams>(
                         value_for<n::load_environment>(load_env.get()),
                         value_for<n::loadsaveenv_dir>(ver_dir),
-                        value_for<n::root>(stringify(_imp->params.root)),
+                        value_for<n::root>(stringify(_imp->params.root())),
                         value_for<n::unmerge_only>(false)
                     ));
 

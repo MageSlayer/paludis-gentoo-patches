@@ -38,8 +38,32 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct builddir;
+        struct deprecated_world;
+        struct environment;
+        struct location;
+        struct name;
+        struct names_cache;
+        struct provides_cache;
+        struct root;
+    }
 
-#include <paludis/repositories/e/vdb_repository-sr.hh>
+    namespace erepository
+    {
+        struct VDBRepositoryParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::deprecated_world, FSEntry> deprecated_world;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::name, RepositoryName> name;
+            NamedValue<n::names_cache, FSEntry> names_cache;
+            NamedValue<n::provides_cache, FSEntry> provides_cache;
+            NamedValue<n::root, FSEntry> root;
+        };
+    }
 
     /**
      * A VDBRepository represents the /var/db/pkg database used for
@@ -84,7 +108,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            VDBRepository(const VDBRepositoryParams &);
+            VDBRepository(const erepository::VDBRepositoryParams &);
 
             /**
              * Destructor.

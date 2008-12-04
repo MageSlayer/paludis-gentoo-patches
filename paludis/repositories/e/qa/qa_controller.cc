@@ -397,24 +397,24 @@ QAController::run()
 
     try
     {
-        if (_under_base_dir(_imp->repo->params().location))
+        if (_under_base_dir(_imp->repo->params().location()))
             if (_imp->qa_checks.tree_checks_group()->end() !=
                     std::find_if(
                         _imp->qa_checks.tree_checks_group()->begin(),
                         _imp->qa_checks.tree_checks_group()->end(),
                         std::tr1::bind(std::equal_to<bool>(), false,
                             std::tr1::bind<bool>(std::tr1::mem_fn(&TreeCheckFunction::operator() ),
-                                _1, _imp->repo->params().location, std::tr1::ref(_imp->reporter),
+                                _1, _imp->repo->params().location(), std::tr1::ref(_imp->reporter),
                                 _imp->env, _imp->repo))))
             {
-                QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
+                QAMessage(_imp->repo->params().location(), qaml_severe, "tree_checks_group",
                         "Tree checks failed. Not continuing.");
                 return;
             }
-        _imp->reporter.flush(_imp->repo->params().location);
+        _imp->reporter.flush(_imp->repo->params().location());
 
-        std::for_each(_imp->repo->params().eclassdirs->begin(),
-                      _imp->repo->params().eclassdirs->end(),
+        std::for_each(_imp->repo->params().eclassdirs()->begin(),
+                      _imp->repo->params().eclassdirs()->end(),
                       std::tr1::bind(&QAController::_check_eclasses, this, _1, ".eclass"));
 
         std::tr1::shared_ptr<const FSEntrySequence> exlibs(_imp->repo->layout()->exlibsdirs_global());
@@ -441,7 +441,7 @@ QAController::run()
     catch (const Exception & e)
     {
         _imp->reporter.message(
-                QAMessage(_imp->repo->params().location, qaml_severe, "run",
+                QAMessage(_imp->repo->params().location(), qaml_severe, "run",
                     "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
 }

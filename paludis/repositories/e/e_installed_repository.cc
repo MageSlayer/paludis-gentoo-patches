@@ -49,8 +49,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-#include <paludis/repositories/e/e_installed_repository-sr.cc>
-
 namespace paludis
 {
     template <>
@@ -68,7 +66,7 @@ namespace paludis
 
 EInstalledRepository::EInstalledRepository(const EInstalledRepositoryParams & p,
         const RepositoryName & n, const RepositoryCapabilities & c) :
-    Repository(p.environment, n, c),
+    Repository(p.environment(), n, c),
     PrivateImplementationPattern<EInstalledRepository>(new Implementation<EInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<EInstalledRepository>::_imp)
 {
@@ -145,7 +143,7 @@ EInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 bool
 EInstalledRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == installed_root_key()->value();
+    return _imp->params.environment()->root() == installed_root_key()->value();
 }
 
 bool
@@ -195,18 +193,18 @@ EInstalledRepository::package_set(const SetName & s) const
     }
     else if ("world" == s.data())
     {
-        if (_imp->params.deprecated_world.exists())
+        if (_imp->params.deprecated_world().exists())
         {
             std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
             SetFile world(SetFileParams::create()
-                    .file_name(_imp->params.deprecated_world)
+                    .file_name(_imp->params.deprecated_world())
                     .type(sft_simple)
                     .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
-                            _imp->params.environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()))
+                            _imp->params.environment(), UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()))
                     .tag(tag)
                     .set_operator_mode(sfsmo_natural)
-                    .environment(_imp->params.environment));
+                    .environment(_imp->params.environment()));
             return world.contents();
         }
 
@@ -224,7 +222,7 @@ EInstalledRepository::sets_list() const
 
     std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
-    if (_imp->params.deprecated_world.exists())
+    if (_imp->params.deprecated_world().exists())
         result->insert(SetName("world"));
     return result;
 }
@@ -280,9 +278,9 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
-    if (! _imp->params.root.is_directory())
+    if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't configure '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
+                "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
@@ -296,13 +294,13 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
             phase != phase_end ; ++phase)
     {
         EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::builddir>(_imp->params.builddir()),
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                     value_for<n::distdir>(ver_dir),
                     value_for<n::ebuild_dir>(ver_dir),
                     value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
                     value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(ver_dir),
                     value_for<n::package_id>(id),
@@ -313,7 +311,7 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
 
                 make_named_values<EbuildConfigCommandParams>(
                     value_for<n::load_environment>(load_env.get()),
-                    value_for<n::root>(stringify(_imp->params.root))
+                    value_for<n::root>(stringify(_imp->params.root()))
                 ));
 
         config_cmd();
@@ -325,9 +323,9 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
 {
     Context context("When infoing '" + stringify(*id) + "':");
 
-    if (! _imp->params.root.is_directory())
+    if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't info '" + stringify(*id) +
-                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
+                "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
@@ -353,10 +351,10 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
                     o != o_end ; ++o)
             {
                 RepositoryName rn(*o);
-                if (_imp->params.environment->package_database()->has_repository_named(rn))
+                if (_imp->params.environment()->package_database()->has_repository_named(rn))
                 {
                     const std::tr1::shared_ptr<const Repository> r(
-                            _imp->params.environment->package_database()->fetch_repository(rn));
+                            _imp->params.environment()->package_database()->fetch_repository(rn));
                     Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
                     if (r->end_metadata() != m)
                     {
@@ -376,8 +374,8 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
         if (! i)
         {
             for (PackageDatabase::RepositoryConstIterator
-                    r(_imp->params.environment->package_database()->begin_repositories()),
-                    r_end(_imp->params.environment->package_database()->end_repositories()) ;
+                    r(_imp->params.environment()->package_database()->begin_repositories()),
+                    r_end(_imp->params.environment()->package_database()->end_repositories()) ;
                     r != r_end ; ++r)
             {
                 Repository::MetadataConstIterator m((*r)->find_metadata("info_vars"));
@@ -395,13 +393,13 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
         }
 
         EbuildInfoCommand info_cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::builddir>(_imp->params.builddir()),
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                     value_for<n::distdir>(ver_dir),
                     value_for<n::ebuild_dir>(ver_dir),
                     value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
                     value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(ver_dir),
                     value_for<n::package_id>(id),
@@ -415,7 +413,7 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
                     value_for<n::info_vars>(i ? i : make_shared_ptr(new const Set<std::string>)),
                     value_for<n::load_environment>(load_env.get()),
                     value_for<n::profiles>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::root>(stringify(_imp->params.root)),
+                    value_for<n::root>(stringify(_imp->params.root())),
                     value_for<n::use>(""),
                     value_for<n::use_ebuild_file>(false),
                     value_for<n::use_expand>(""),

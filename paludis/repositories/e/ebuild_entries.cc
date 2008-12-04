@@ -127,10 +127,10 @@ namespace paludis
             environment(e),
             e_repository(p),
             params(k),
-            eclass_mtimes(new EclassMtimes(p, k.eclassdirs)),
+            eclass_mtimes(new EclassMtimes(p, k.eclassdirs())),
             master_mtime(0)
         {
-            FSEntry m(k.location / "metadata" / "timestamp");
+            FSEntry m(k.location() / "metadata" / "timestamp");
             if (m.exists())
                 master_mtime = m.mtime();
         }
@@ -152,7 +152,7 @@ EbuildEntries::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 {
     Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f), _imp->params.environment,
+    std::tr1::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f), _imp->params.environment(),
                 _imp->e_repository->shared_from_this(), f, _guess_eapi(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
@@ -361,7 +361,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool fetch_restrict(false), userpriv_restrict(false);
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -378,14 +378,14 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     }
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid() &&
-            check_userpriv(FSEntry(_imp->params.distdir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSEntry(_imp->params.distdir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string archives, all_archives;
     {
         std::set<std::string> already_in_archives;
 
         /* make A */
-        AFinder f(_imp->params.environment, id);
+        AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
             id->fetches_key()->value()->accept(f);
 
@@ -435,28 +435,28 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         /* always use mirror://gentoo/, where gentoo is the name of our first master repository,
          * or our name if there's no master. */
         std::string mirrors_name(
-                (_imp->e_repository->params().master_repositories && ! _imp->e_repository->params().master_repositories->empty()) ?
-                stringify((*_imp->e_repository->params().master_repositories->begin())->name()) :
+                (_imp->e_repository->params().master_repositories() && ! _imp->e_repository->params().master_repositories()->empty()) ?
+                stringify((*_imp->e_repository->params().master_repositories()->begin())->name()) :
                 stringify(_imp->e_repository->name()));
-        FetchVisitor f(_imp->params.environment, id, *id->eapi(),
-                _imp->e_repository->params().distdir, o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
+        FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
+                _imp->e_repository->params().distdir(), o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
                 id->fetches_key()->initial_label(), o.safe_resume(), o.maybe_output_deviant());
         id->fetches_key()->value()->accept(f);
-        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir,
+        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
                 o.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
-                _imp->e_repository->params().use_manifest,
+                _imp->e_repository->params().use_manifest(),
                 o.maybe_output_deviant(), o.exclude_unmirrorable());
         id->fetches_key()->value()->accept(c);
 
         if (c.need_nofetch())
         {
             bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-                    check_userpriv(FSEntry(_imp->params.builddir), _imp->environment,
+                    check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment,
                         id->eapi()->supported()->userpriv_cannot_use_root()));
-            std::string use(make_use(_imp->params.environment, *id, p));
+            std::string use(make_use(_imp->params.environment(), *id, p));
             std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                        _imp->params.environment, *id, p));
+                        _imp->params.environment(), *id, p));
 
             std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -465,19 +465,19 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     phase != phase_end ; ++phase)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                        value_for<n::builddir>(_imp->params.builddir),
+                        value_for<n::builddir>(_imp->params.builddir()),
                         value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                        value_for<n::distdir>(_imp->params.distdir),
+                        value_for<n::distdir>(_imp->params.distdir()),
                         value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
                         value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                        value_for<n::eclassdirs>(_imp->params.eclassdirs),
-                        value_for<n::environment>(_imp->params.environment),
+                        value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                        value_for<n::environment>(_imp->params.environment()),
                         value_for<n::exlibsdirs>(exlibsdirs),
                         value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(
-                            (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                            (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                            (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                         value_for<n::sandbox>(phase->option("sandbox")),
                         value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                         ));
@@ -488,7 +488,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
                         value_for<n::maybe_output_deviant>(o.maybe_output_deviant()),
-                        value_for<n::profiles>(_imp->params.profiles),
+                        value_for<n::profiles>(_imp->params.profiles()),
                         value_for<n::root>("/"),
                         value_for<n::use>(use),
                         value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
@@ -515,8 +515,8 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
 
     if (id->fetches_key())
     {
-        PretendFetchVisitor f(_imp->params.environment, id, *id->eapi(),
-                _imp->e_repository->params().distdir, a.options.fetch_unneeded(),
+        PretendFetchVisitor f(_imp->params.environment(), id, *id->eapi(),
+                _imp->e_repository->params().distdir(), a.options.fetch_unneeded(),
                 id->fetches_key()->initial_label(), a);
         id->fetches_key()->value()->accept(f);
     }
@@ -532,7 +532,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict, test_restrict, strip_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -558,7 +558,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         std::set<std::string> already_in_archives;
 
         /* make A */
-        AFinder f(_imp->params.environment, id);
+        AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
             id->fetches_key()->value()->accept(f);
 
@@ -604,18 +604,18 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     all_archives = strip_trailing(all_archives, " ");
 
     /* make use */
-    std::string use(make_use(_imp->params.environment, *id, p));
+    std::string use(make_use(_imp->params.environment(), *id, p));
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p));
+                _imp->params.environment(), *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.distdir),  _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSEntry(_imp->params.distdir()),  _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()) &&
+            check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -630,9 +630,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
                 (*o.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
-                            value_for<n::environment_file>(_imp->params.builddir / (stringify(id->name().category) + "-" +
+                            value_for<n::environment_file>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
                                     stringify(id->name().package) + "-" + stringify(id->version())) / "temp" / "loadsaveenv"),
-                            value_for<n::image_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
+                            value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
                                     stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::package_id>(id),
@@ -661,9 +661,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             ELikeSplitChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        value_for<n::debug_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
+                        value_for<n::debug_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
                                 stringify(id->name().package) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
-                        value_for<n::image_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" +
+                        value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
                                 stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
                         value_for<n::package_id>(id),
                         value_for<n::split>(split_choice && split_choice->enabled()),
@@ -698,19 +698,19 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             }
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir),
+                    value_for<n::builddir>(_imp->params.builddir()),
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                    value_for<n::distdir>(_imp->params.distdir),
+                    value_for<n::distdir>(_imp->params.distdir()),
                     value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
                     value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                    value_for<n::eclassdirs>(_imp->params.eclassdirs),
-                    value_for<n::environment>(_imp->params.environment),
+                    value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                    value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(exlibsdirs),
                     value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(
-                        (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                        (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                        (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                        (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                     ));
@@ -722,8 +722,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::config_protect>(_imp->e_repository->profile_variable("CONFIG_PROTECT")),
                             value_for<n::config_protect_mask>(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK")),
                             value_for<n::expand_vars>(expand_vars),
-                            value_for<n::loadsaveenv_dir>(_imp->params.builddir / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-" + stringify(id->version())) / "temp"),
-                            value_for<n::profiles>(_imp->params.profiles),
+                            value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-" + stringify(id->version())) / "temp"),
+                            value_for<n::profiles>(_imp->params.profiles()),
                             value_for<n::root>(o.destination()->installed_root_key() ?  stringify(o.destination()->installed_root_key()->value()) : "/"),
                             value_for<n::slot>(SlotName(id->slot())),
                             value_for<n::use>(use),
@@ -747,7 +747,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -758,15 +758,15 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     /* make use */
-    std::string use(make_use(_imp->params.environment, *id, p));
+    std::string use(make_use(_imp->params.environment(), *id, p));
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p));
+                _imp->params.environment(), *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -778,19 +778,19 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
             continue;
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                value_for<n::builddir>(_imp->params.builddir),
+                value_for<n::builddir>(_imp->params.builddir()),
                 value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                value_for<n::distdir>(_imp->params.distdir),
+                value_for<n::distdir>(_imp->params.distdir()),
                 value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
                 value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                value_for<n::eclassdirs>(_imp->params.eclassdirs),
-                value_for<n::environment>(_imp->params.environment),
+                value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                value_for<n::environment>(_imp->params.environment()),
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
-                    (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                    (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                    (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));
@@ -801,8 +801,8 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::info_vars>(_imp->e_repository->info_vars_key() ?
                     _imp->e_repository->info_vars_key()->value() : make_shared_ptr(new const Set<std::string>)),
                 value_for<n::load_environment>(static_cast<const FSEntry *>(0)),
-                value_for<n::profiles>(_imp->params.profiles),
-                value_for<n::root>(stringify(_imp->params.environment->root())),
+                value_for<n::profiles>(_imp->params.profiles()),
+                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::use>(use),
                 value_for<n::use_ebuild_file>(true),
                 value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
@@ -829,7 +829,7 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
     {
         using namespace std::tr1::placeholders;
 
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -840,24 +840,24 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
-            value_for<n::builddir>(_imp->params.builddir),
+            value_for<n::builddir>(_imp->params.builddir()),
             value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
-            value_for<n::distdir>(_imp->params.distdir),
+            value_for<n::distdir>(_imp->params.distdir()),
             value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
             value_for<n::ebuild_file>(id->fs_location_key()->value()),
-            value_for<n::eclassdirs>(_imp->params.eclassdirs),
-            value_for<n::environment>(_imp->params.environment),
+            value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+            value_for<n::environment>(_imp->params.environment()),
             value_for<n::exlibsdirs>(exlibsdirs),
             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
             value_for<n::package_id>(id),
             value_for<n::portdir>(
-                (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
             value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
             value_for<n::userpriv>(phases.begin_phases()->option("userpriv") && userpriv_ok)
             ),
@@ -895,11 +895,11 @@ EbuildEntries::merge(const MergeParams & m)
 
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             make_named_values<WriteBinaryEbuildCommandParams>(
-            value_for<n::binary_distdir>(_imp->params.binary_distdir),
+            value_for<n::binary_distdir>(_imp->params.binary_distdir()),
             value_for<n::binary_ebuild_location>(binary_ebuild_location),
-            value_for<n::builddir>(_imp->params.builddir),
+            value_for<n::builddir>(_imp->params.builddir()),
             value_for<n::destination_repository>(_imp->e_repository),
-            value_for<n::environment>(_imp->params.environment),
+            value_for<n::environment>(_imp->params.environment()),
             value_for<n::environment_file>(m.environment_file()),
             value_for<n::image>(m.image_dir()),
             value_for<n::merger_options>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options()),
@@ -954,7 +954,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -965,11 +965,11 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    std::string use(make_use(_imp->params.environment, *id, p));
+    std::string use(make_use(_imp->params.environment(), *id, p));
     std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p));
+                _imp->params.environment(), *id, p));
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -988,19 +988,19 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     phase != phase_end ; ++phase)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                            value_for<n::builddir>(_imp->params.builddir),
+                            value_for<n::builddir>(_imp->params.builddir()),
                             value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                            value_for<n::distdir>(_imp->params.distdir),
+                            value_for<n::distdir>(_imp->params.distdir()),
                             value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
                             value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                            value_for<n::eclassdirs>(_imp->params.eclassdirs),
-                            value_for<n::environment>(_imp->params.environment),
+                            value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                            value_for<n::environment>(_imp->params.environment()),
                             value_for<n::exlibsdirs>(exlibsdirs),
                             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                             value_for<n::package_id>(id),
                             value_for<n::portdir>(
-                                (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                                (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                                (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                             value_for<n::sandbox>(phase->option("sandbox")),
                             value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                             ));
@@ -1008,8 +1008,8 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
                             value_for<n::expand_vars>(expand_vars),
-                            value_for<n::profiles>(_imp->params.profiles),
-                            value_for<n::root>(stringify(_imp->params.environment->root())),
+                            value_for<n::profiles>(_imp->params.profiles()),
+                            value_for<n::root>(stringify(_imp->params.environment()->root())),
                             value_for<n::unmet_requirements>(verifier.unmet_requirements()),
                             value_for<n::use>(use),
                             value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
@@ -1032,19 +1032,19 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
             phase != phase_end ; ++phase)
     {
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                value_for<n::builddir>(_imp->params.builddir),
+                value_for<n::builddir>(_imp->params.builddir()),
                 value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                value_for<n::distdir>(_imp->params.distdir),
+                value_for<n::distdir>(_imp->params.distdir()),
                 value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
                 value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                value_for<n::eclassdirs>(_imp->params.eclassdirs),
-                value_for<n::environment>(_imp->params.environment),
+                value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                value_for<n::environment>(_imp->params.environment()),
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
-                    (_imp->params.master_repositories && ! _imp->params.master_repositories->empty()) ?
-                    (*_imp->params.master_repositories->begin())->params().location : _imp->params.location),
+                    (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));
@@ -1052,8 +1052,8 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
         EbuildPretendCommand pretend_cmd(command_params,
                 make_named_values<EbuildPretendCommandParams>(
                 value_for<n::expand_vars>(expand_vars),
-                value_for<n::profiles>(_imp->params.profiles),
-                value_for<n::root>(stringify(_imp->params.environment->root())),
+                value_for<n::profiles>(_imp->params.profiles()),
+                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::use>(use),
                 value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
                 value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))

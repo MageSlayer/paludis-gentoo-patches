@@ -413,7 +413,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! ((s = get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi().name()))).empty())
         id->set_eapi(s);
     else
-        id->set_eapi(id->e_repository()->params().eapi_when_unspecified);
+        id->set_eapi(id->e_repository()->params().eapi_when_unspecified());
 
     if (! id->eapi()->supported())
     {
@@ -1046,8 +1046,8 @@ WriteBinaryEbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_functions())
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
-            .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository()->params().binary_uri_prefix)
-            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository()->params().binary_keywords)
+            .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository()->params().binary_uri_prefix())
+            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository()->params().binary_keywords())
             .with_setenv("PALUDIS_BINARY_KEYWORDS_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords().name())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"

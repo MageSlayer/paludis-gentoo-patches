@@ -170,25 +170,25 @@ EbuildID::need_keys_added() const
 
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
-    FSEntry cache_file(_imp->repository->params().cache);
+    FSEntry cache_file(_imp->repository->params().cache());
     cache_file /= stringify(name().category);
     cache_file /= stringify(name().package) + "-" + stringify(version());
 
-    FSEntry write_cache_file(_imp->repository->params().write_cache);
-    if (_imp->repository->params().append_repository_name_to_write_cache)
+    FSEntry write_cache_file(_imp->repository->params().write_cache());
+    if (_imp->repository->params().append_repository_name_to_write_cache())
         write_cache_file /= stringify(repository()->name());
     write_cache_file /= stringify(name().category);
     write_cache_file /= stringify(name().package) + "-" + stringify(version());
 
     bool ok(false);
-    if (_imp->repository->params().cache.basename() != "empty")
+    if (_imp->repository->params().cache().basename() != "empty")
     {
         EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
         if (metadata_cache.load(shared_from_this()))
             ok = true;
     }
 
-    if ((! ok) && _imp->repository->params().write_cache.basename() != "empty")
+    if ((! ok) && _imp->repository->params().write_cache().basename() != "empty")
     {
         EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
                 write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
@@ -210,13 +210,13 @@ EbuildID::need_keys_added() const
 
     if (! ok)
     {
-        if (_imp->repository->params().cache.basename() != "empty")
+        if (_imp->repository->params().cache().basename() != "empty")
             Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
                 << "No usable cache entry for '" + canonical_form(idcf_full);
 
         std::string eapi_str(_imp->guessed_eapi);
         if (eapi_str.empty())
-            eapi_str = _imp->repository->params().eapi_when_unknown;
+            eapi_str = _imp->repository->params().eapi_when_unknown();
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(eapi_str);
 
         if (_imp->eapi->supported())
@@ -232,19 +232,19 @@ EbuildID::need_keys_added() const
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->repository->params().builddir),
+                    value_for<n::builddir>(_imp->repository->params().builddir()),
                     value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
-                    value_for<n::distdir>(_imp->repository->params().distdir),
+                    value_for<n::distdir>(_imp->repository->params().distdir()),
                     value_for<n::ebuild_dir>(_imp->repository->layout()->package_directory(name())),
                     value_for<n::ebuild_file>(_imp->ebuild),
-                    value_for<n::eclassdirs>(_imp->repository->params().eclassdirs),
+                    value_for<n::eclassdirs>(_imp->repository->params().eclassdirs()),
                     value_for<n::environment>(_imp->environment),
                     value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
                     value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
                     value_for<n::package_id>(shared_from_this()),
                     value_for<n::portdir>(
-                        (_imp->repository->params().master_repositories && ! _imp->repository->params().master_repositories->empty()) ?
-                        (*_imp->repository->params().master_repositories->begin())->params().location : _imp->repository->params().location),
+                        (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
+                        (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location()),
                     value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
                     value_for<n::userpriv>(phases.begin_phases()->option("userpriv"))
                     ));
@@ -258,7 +258,7 @@ EbuildID::need_keys_added() const
             Log::get_instance()->message("e.ebuild.metadata.generated_eapi", ll_debug, lc_context) << "Generated metadata for '"
                 << canonical_form(idcf_full) << "' has EAPI '" << _imp->eapi->name() << "'";
 
-            if (_imp->repository->params().write_cache.basename() != "empty" && _imp->eapi->supported())
+            if (_imp->repository->params().write_cache().basename() != "empty" && _imp->eapi->supported())
             {
                 EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->ebuild, _imp->master_mtime,
                         _imp->eclass_mtimes, false);

@@ -50,7 +50,7 @@ namespace paludis
             ///\{
 
             ERepositorySets(const Environment * const env, const ERepository * const,
-                    const ERepositoryParams &);
+                    const erepository::ERepositoryParams &);
             ~ERepositorySets();
 
             ///\}

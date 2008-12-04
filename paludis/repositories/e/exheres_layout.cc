@@ -184,9 +184,9 @@ ExheresLayout::need_category_names() const
     bool found_one(false);
 
     std::list<FSEntry> cats_list;
-    if (_imp->repository->params().master_repositories)
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories->begin()),
-                e_end(_imp->repository->params().master_repositories->end()) ; e != e_end ; ++e)
+    if (_imp->repository->params().master_repositories())
+        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
+                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         cats_list.push_back((*e)->layout()->categories_file());
     cats_list.push_back(categories_file());
 
@@ -502,10 +502,10 @@ ExheresLayout::exlibsdirs_global() const
 {
     std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
-    if (_imp->repository->params().master_repositories)
+    if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories->begin()),
-                e_end(_imp->repository->params().master_repositories->end()) ; e != e_end ; ++e)
+        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
+                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
             std::tr1::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_global());
             std::copy(master->begin(), master->end(), result->back_inserter());
@@ -521,10 +521,10 @@ ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
 {
     std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
-    if (_imp->repository->params().master_repositories)
+    if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories->begin()),
-                e_end(_imp->repository->params().master_repositories->end()) ; e != e_end ; ++e)
+        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
+                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
             std::tr1::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_category(c));
             std::copy(master->begin(), master->end(), result->back_inserter());
@@ -540,10 +540,10 @@ ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 {
     std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
-    if (_imp->repository->params().master_repositories)
+    if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories->begin()),
-                e_end(_imp->repository->params().master_repositories->end()) ; e != e_end ; ++e)
+        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
+                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
             std::tr1::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_package(q));
             std::copy(master->begin(), master->end(), result->back_inserter());
@@ -559,10 +559,10 @@ ExheresLayout::licenses_dirs() const
 {
     std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
-    if (_imp->repository->params().master_repositories)
+    if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories->begin()),
-                e_end(_imp->repository->params().master_repositories->end()) ; e != e_end ; ++e)
+        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
+                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
             std::tr1::shared_ptr<const FSEntrySequence> master((*e)->layout()->licenses_dirs());
             std::copy(master->begin(), master->end(), result->back_inserter());

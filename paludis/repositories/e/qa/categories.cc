@@ -48,7 +48,7 @@ paludis::erepository::categories_check(
         if (! cats.is_regular_file_or_symlink_to_regular_file())
         {
             /* if the categories file exists but is not regular, or if we don't have a master */
-            if (cats.exists() || ! (repo->params().master_repositories && ! repo->params().master_repositories->empty()))
+            if (cats.exists() || ! (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()))
                 reporter.message(QAMessage(cats, qaml_severe, name, "Categories file is not a regular file"));
         }
         else
