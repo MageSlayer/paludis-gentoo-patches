@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_GLSA_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <tr1/memory>
@@ -30,8 +30,22 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct op;
+        struct slot;
+        struct version;
+    }
 
-#include <paludis/repositories/e/glsa-sr.hh>
+    namespace erepository
+    {
+        struct GLSARange
+        {
+            NamedValue<n::op, std::string> op;
+            NamedValue<n::slot, std::string> slot;
+            NamedValue<n::version, std::string> version;
+        };
+    }
 
     /**
      * Thrown if a bad GLSA is found.
@@ -90,7 +104,7 @@ namespace paludis
             ///\{
 
             struct RangesConstIteratorTag;
-            typedef WrappedForwardIterator<RangesConstIteratorTag, const GLSARange> RangesConstIterator;
+            typedef WrappedForwardIterator<RangesConstIteratorTag, const erepository::GLSARange> RangesConstIterator;
             RangesConstIterator begin_unaffected() const;
             RangesConstIterator end_unaffected() const;
             RangesConstIterator begin_vulnerable() const;
@@ -101,12 +115,12 @@ namespace paludis
             /**
              * Add an unaffected package.
              */
-            void add_unaffected(const GLSARange &);
+            void add_unaffected(const erepository::GLSARange &);
 
             /**
              * Add a vulnerable package.
              */
-            void add_vulnerable(const GLSARange &);
+            void add_vulnerable(const erepository::GLSARange &);
 
             /**
              * Our package's name.

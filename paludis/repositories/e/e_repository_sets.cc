@@ -42,6 +42,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/selection.hh>
@@ -174,28 +175,28 @@ ERepositorySets::sets_list() const
 namespace
 {
     bool
-    match_range(const PackageID & e, const GLSARange & r)
+    match_range(const PackageID & e, const erepository::GLSARange & r)
     {
-        if (r.slot != "*")
+        if (r.slot() != "*")
         {
             try
             {
-                if (e.slot() != SlotName(r.slot))
+                if (e.slot() != SlotName(r.slot()))
                     return false;
             }
             catch (const SlotNameError &)
             {
-                throw GLSAError("Got bad slot '" + r.slot + "'");
+                throw GLSAError("Got bad slot '" + r.slot() + "'");
             }
         }
 
         VersionOperatorValue our_op(static_cast<VersionOperatorValue>(-1));
-        std::string ver(r.version);
-        if (r.op == "le")
+        std::string ver(r.version());
+        if (r.op() == "le")
             our_op = vo_less_equal;
-        if (r.op == "lt")
+        if (r.op() == "lt")
             our_op = vo_less;
-        if (r.op == "eq")
+        if (r.op() == "eq")
         {
             if (! ver.empty() && '*' == ver.at(ver.length() - 1))
             {
@@ -205,21 +206,24 @@ namespace
             else
                 our_op = vo_equal;
         }
-        if (r.op == "gt")
+        if (r.op() == "gt")
             our_op = vo_greater;
-        if (r.op == "ge")
+        if (r.op() == "ge")
             our_op = vo_greater_equal;
 
         if (-1 != our_op)
             return (VersionOperator(our_op).as_version_spec_comparator()(e.version(), VersionSpec(ver)));
 
-        if (0 == r.op.compare(0, 1, "r"))
+        if (0 == r.op().compare(0, 1, "r"))
         {
             return e.version().remove_revision() == VersionSpec(ver).remove_revision() &&
-                match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version).slot(r.slot));
+                match_range(e, make_named_values<erepository::GLSARange>(
+                            value_for<n::op>(r.op().substr(1)),
+                            value_for<n::slot>(r.slot()),
+                            value_for<n::version>(r.version())));
         }
 
-        throw GLSAError("Got bad op '" + r.op + "'");
+        throw GLSAError("Got bad op '" + r.op() + "'");
     }
 
     bool

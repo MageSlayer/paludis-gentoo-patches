@@ -206,8 +206,12 @@ namespace
                             std::string op, slot("*");
                             handle_range_range(doc, n->properties, op, slot);
                             std::string version(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
-                            ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))
-                                (GLSARange::create().op(op).version(version).slot(slot));
+                            ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))(
+                            make_named_values<erepository::GLSARange>(
+                                value_for<n::op>(op),
+                                value_for<n::slot>(slot),
+                                value_for<n::version>(version)
+                                ));
                         }
                         else
                             handle_node(doc, n->children);

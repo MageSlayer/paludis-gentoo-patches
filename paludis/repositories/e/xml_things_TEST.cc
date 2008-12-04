@@ -47,14 +47,14 @@ namespace test_cases
 
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_unaffected(),
                         glsa->begin_packages()->end_unaffected()));
-            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op);
-            TEST_CHECK_STRINGIFY_EQUAL("1.23", glsa->begin_packages()->begin_unaffected()->version);
+            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op());
+            TEST_CHECK_STRINGIFY_EQUAL("1.23", glsa->begin_packages()->begin_unaffected()->version());
 
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_vulnerable(),
                         glsa->begin_packages()->end_vulnerable()));
-            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op);
-            TEST_CHECK_STRINGIFY_EQUAL("1.22", glsa->begin_packages()->begin_vulnerable()->version);
+            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op());
+            TEST_CHECK_STRINGIFY_EQUAL("1.22", glsa->begin_packages()->begin_vulnerable()->version());
         }
     } glsa_test_123456_78;
 
@@ -79,14 +79,14 @@ namespace test_cases
 
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_unaffected(),
                         glsa->begin_packages()->end_unaffected()));
-            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op);
-            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_unaffected()->version);
+            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op());
+            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_unaffected()->version());
 
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
             TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_vulnerable(),
                         glsa->begin_packages()->end_vulnerable()));
-            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op);
-            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_vulnerable()->version);
+            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op());
+            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_vulnerable()->version());
         }
     } glsa_test_987654_32;
 }

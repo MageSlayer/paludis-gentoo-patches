@@ -33,10 +33,8 @@
 using namespace paludis;
 
 template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const GLSARange>;
+template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
 template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
-
-#include "glsa-sr.cc"
 
 namespace paludis
 {
@@ -45,8 +43,8 @@ namespace paludis
     {
         QualifiedPackageName name;
         std::list<std::string> archs;
-        std::list<GLSARange> unaffected;
-        std::list<GLSARange> vulnerable;
+        std::list<erepository::GLSARange> unaffected;
+        std::list<erepository::GLSARange> vulnerable;
 
         Implementation(const QualifiedPackageName & n) :
             name(n)
@@ -115,13 +113,13 @@ GLSAPackage::end_vulnerable() const
 }
 
 void
-GLSAPackage::add_unaffected(const GLSARange & r)
+GLSAPackage::add_unaffected(const erepository::GLSARange & r)
 {
     _imp->unaffected.push_back(r);
 }
 
 void
-GLSAPackage::add_vulnerable(const GLSARange & r)
+GLSAPackage::add_vulnerable(const erepository::GLSARange & r)
 {
     _imp->vulnerable.push_back(r);
 }

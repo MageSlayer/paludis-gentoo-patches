@@ -1,7 +1,6 @@
 SUBDIRS = eapis ebuild . qa
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
-	glsa-sr.hh glsa-sr.cc \
 	e_installed_repository-sr.hh e_installed_repository-sr.cc \
 	e_repository_params-sr.hh e_repository_params-sr.cc \
 	e_repository_params-se.hh e_repository_params-se.cc \
@@ -75,7 +74,6 @@ paludis_repositories_e_include_HEADERS = \
 	iuse-se.hh \
 	pretend_fetch_visitor.hh \
 	fix_locked_dependencies.hh \
-	glsa-sr.hh \
 	glsa.hh \
 	layout.hh \
 	manifest2_entry-sr.hh \
@@ -332,9 +330,6 @@ EXTRA_DIST = \
 	dep_parser-se.cc \
 	dep_parser_TEST.cc \
 	dep_spec_pretty_printer_TEST.cc \
-	glsa.sr \
-	glsa-sr.hh \
-	glsa-sr.cc \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
@@ -395,8 +390,6 @@ BUILT_SOURCES = \
 	e_repository_params-sr.cc \
 	e_repository_params-se.hh \
 	e_repository_params-se.cc \
-	glsa-sr.hh \
-	glsa-sr.cc \
 	iuse-se.hh \
 	iuse-se.cc \
 	exndbam_repository-sr.hh \
@@ -455,12 +448,6 @@ manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 
 manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
-
-glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/glsa.sr > $@
-
-glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
 
 exndbam_repository-sr.hh : exndbam_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/exndbam_repository.sr > $@
