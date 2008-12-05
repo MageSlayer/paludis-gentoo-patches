@@ -92,6 +92,7 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
@@ -134,6 +135,7 @@ namespace paludis
                 void load_upstream_release_notes(const std::string &, const std::string &, const std::string &) const;
                 void load_bugs_to(const std::string &, const std::string &, const std::string &) const;
                 void load_remote_ids(const std::string &, const std::string &, const std::string &) const;
+                void load_defined_phases(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

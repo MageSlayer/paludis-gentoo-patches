@@ -85,6 +85,7 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;

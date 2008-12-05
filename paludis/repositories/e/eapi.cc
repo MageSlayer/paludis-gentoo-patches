@@ -105,6 +105,7 @@ namespace
         return make_shared_ptr(new EAPIEbuildMetadataVariables(make_named_values<EAPIEbuildMetadataVariables>(
             value_for<n::bugs_to>(make_metadata_variable(k, "bugs_to")),
             value_for<n::build_depend>(make_metadata_variable(k, "build_depend")),
+            value_for<n::defined_phases>(make_metadata_variable(k, "defined_phases")),
             value_for<n::dependencies>(make_metadata_variable(k, "dependencies")),
             value_for<n::eapi>(make_metadata_variable(k, "eapi")),
             value_for<n::homepage>(make_metadata_variable(k, "homepage")),

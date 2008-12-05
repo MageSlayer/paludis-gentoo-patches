@@ -104,6 +104,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases;
 
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > asflags;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > cbuild;
@@ -197,6 +198,18 @@ EInstalledRepositoryID::need_keys_added() const
             _imp->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited().name(), vars->inherited().description(),
                         file_contents(_imp->dir / vars->inherited().name()), mkt_internal));
             add_metadata_key(_imp->inherited);
+        }
+
+    if (! vars->defined_phases().name().empty())
+        if ((_imp->dir / vars->defined_phases().name()).exists())
+        {
+            std::string d(file_contents(_imp->dir / vars->defined_phases().name()));
+            if (! d.empty())
+            {
+                _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases().name(), vars->defined_phases().description(),
+                            d, mkt_internal));
+                add_metadata_key(_imp->defined_phases);
+            }
         }
 
     if (! vars->iuse().name().empty())
@@ -676,6 +689,13 @@ EInstalledRepositoryID::inherited_key() const
 {
     need_keys_added();
     return _imp->inherited;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::defined_phases_key() const
+{
+    need_keys_added();
+    return _imp->defined_phases;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >

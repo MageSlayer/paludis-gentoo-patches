@@ -211,6 +211,10 @@ namespace
             if (-1 != m.inherited().flat_list_index() && ! m.inherited().name().empty())
                 id->load_inherited(m.inherited().name(), m.inherited().description(), lines.at(m.inherited().flat_list_index()));
 
+            if (-1 != m.defined_phases().flat_list_index() && ! m.defined_phases().name().empty())
+                if (! lines.at(m.defined_phases().flat_list_index()).empty())
+                    id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(), lines.at(m.defined_phases().flat_list_index()));
+
             if (-1 != m.iuse().flat_list_index() && ! m.iuse().name().empty())
                 id->load_iuse(m.iuse().name(), m.iuse().description(), lines.at(m.iuse().flat_list_index()));
 
@@ -535,6 +539,10 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     id->load_inherited(m.inherited().name(), m.inherited().description(), join(brief.begin(), brief.end(), " "));
                 }
 
+                if (! m.defined_phases().name().empty())
+                    if (! keys[m.defined_phases().name()].empty())
+                        id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(), keys[m.defined_phases().name()]);
+
                 if (! m.iuse().name().empty())
                     id->load_iuse(m.iuse().name(), m.iuse().description(), keys[m.iuse().name()]);
 
@@ -782,6 +790,10 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
         if (! m.upstream_release_notes().name().empty() && id->upstream_release_notes_key())
             write_kv(cache, m.upstream_release_notes().name(), flatten(id->upstream_release_notes_key()->value()));
+
+        if (! m.defined_phases().name().empty() && id->defined_phases_key())
+            write_kv(cache, m.defined_phases().name(), join(id->defined_phases_key()->value()->begin(),
+                        id->defined_phases_key()->value()->end(), " "));
     }
     catch (const InternalError &)
     {

@@ -46,6 +46,7 @@ namespace paludis
         struct build_depend;
         struct can_be_pbin;
         struct choices_options;
+        struct defined_phases;
         struct dependencies;
         struct dependency_labels;
         struct dependency_spec_tree_parse_options;
@@ -288,6 +289,7 @@ namespace paludis
         {
             NamedValue<n::bugs_to, EAPIMetadataVariable> bugs_to;
             NamedValue<n::build_depend, EAPIMetadataVariable> build_depend;
+            NamedValue<n::defined_phases, EAPIMetadataVariable> defined_phases;
             NamedValue<n::dependencies, EAPIMetadataVariable> dependencies;
             NamedValue<n::eapi, EAPIMetadataVariable> eapi;
             NamedValue<n::homepage, EAPIMetadataVariable> homepage;

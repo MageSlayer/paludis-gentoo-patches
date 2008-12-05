@@ -57,6 +57,7 @@
 #include <time.h>
 #include <tr1/functional>
 #include <list>
+#include <set>
 
 #include "config.h"
 
@@ -557,6 +558,41 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         if (! value.empty())
             id->load_remote_ids(m.remote_ids().name(), m.remote_ids().description(), value);
     }
+
+    if (! m.defined_phases().name().empty())
+    {
+        std::set<std::string> defined_phases, raw_values, ebuild_functions;
+        std::string raw_value(get(keys, "PALUDIS_DECLARED_FUNCTIONS"));
+        tokenise_whitespace(raw_value, std::inserter(raw_values, raw_values.begin()));
+        tokenise_whitespace(id->eapi()->supported()->ebuild_options()->ebuild_functions(),
+                std::inserter(ebuild_functions, ebuild_functions.end()));
+
+        for (std::set<std::string>::const_iterator f(ebuild_functions.begin()), f_end(ebuild_functions.end()) ;
+                f != f_end ; ++f)
+        {
+            if (0 == f->compare(0, 8, "builtin_"))
+                continue;
+
+            if (raw_values.end() == raw_values.find(*f))
+                continue;
+
+            std::string p(*f);
+            if (0 == p.compare(0, 4, "src_"))
+                p.erase(0, 4);
+            else if (0 == p.compare(0, 4, "pkg_"))
+                p.erase(0, 4);
+            else
+                throw InternalError(PALUDIS_HERE, "Got strange phase function '" + p + "'");
+
+            defined_phases.insert(p);
+        }
+
+        if (defined_phases.empty())
+            id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(), "-");
+        else
+            id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(),
+                    join(defined_phases.begin(), defined_phases.end(), " "));
+    }
 }
 
 EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,
@@ -845,6 +881,12 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
+
+    std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases().name());
+    if (! defined_phases.empty())
+        if (params.package_id()->defined_phases_key())
+            cmd.with_setenv(defined_phases, join(params.package_id()->defined_phases_key()->value()->begin(),
+                        params.package_id()->defined_phases_key()->value()->end(), " "));
 
     if (0 != (run_command(cmd)))
         throw InstallActionError("Write VDB Entry command failed");

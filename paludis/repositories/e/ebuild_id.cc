@@ -104,6 +104,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_documentation;
         mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_release_notes;
         mutable std::tr1::shared_ptr<const EChoicesKey> choices;
+        mutable std::tr1::shared_ptr<const EStringSetKey> defined_phases;
 
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
@@ -687,6 +688,12 @@ EbuildID::inherited_key() const
     return _imp->inherited;
 }
 
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::defined_phases_key() const
+{
+    return _imp->defined_phases;
+}
+
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EbuildID::fs_location_key() const
 {
@@ -871,6 +878,17 @@ EbuildID::load_inherited(const std::string & r, const std::string & h, const std
     Lock l(_imp->mutex);
     _imp->inherited.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->inherited);
+}
+
+void
+EbuildID::load_defined_phases(const std::string & r, const std::string & h, const std::string & v) const
+{
+    if (v.empty())
+        throw InternalError(PALUDIS_HERE, "v should not be empty");
+
+    Lock l(_imp->mutex);
+    _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    add_metadata_key(_imp->defined_phases);
 }
 
 void
