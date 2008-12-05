@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -80,11 +80,7 @@ CommandLine::CommandLine() :
     a_compact(&output_args, "compact", '\0', "Display output using one line per entry", true),
     a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies", true),
     a_show_authors(&output_args, "show-authors", 'A', "Show author information", true),
-    a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata", true),
-
-    deprecated_args(this, "Deprecated options", "Deprecated options."),
-    a_config_suffix(&deprecated_args, "config-suffix", 'c',
-            "Replaced by --environment")
+    a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata", true)
 {
     add_usage_line("[ --search ] [search options] pattern ...");
     add_usage_line("--help");

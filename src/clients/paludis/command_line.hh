@@ -254,22 +254,6 @@ class CommandLine :
         paludis::args::SwitchArg a_full_match;
 
         /// }
-
-
-        /// \name Deprecated arguments
-        ///\{
-
-        paludis::args::ArgsGroup deprecated_args;
-        paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
-        paludis::args::SwitchArg a_dl_drop_all;
-        paludis::args::SwitchArg a_dl_ignore_installed;
-        paludis::args::StringArg a_show_install_reasons;
-        paludis::args::StringArg a_add_to_world_atom;
-        paludis::args::StringArg a_config_suffix;
-        paludis::args::SwitchArg a_update_news;
-        paludis::args::SwitchArg a_safe_resume;
-
-        ///\}
 };
 
 #endif

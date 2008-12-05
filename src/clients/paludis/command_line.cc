@@ -118,25 +118,7 @@ CommandLine::CommandLine() :
 
     owner_args(this, "Owner options",
             "Options relevant for the --owner actions."),
-    a_full_match(&owner_args, "full-match", '\0', "Match whole filename", true),
-
-    deprecated_args(this, "Deprecated options", "Deprecated options."),
-    a_dl_no_unnecessary_upgrades(&deprecated_args, "dl-no-unnecessary-upgrades", 'U',
-            "Replaced by --dl-upgrade as-needed", false),
-    a_dl_drop_all(&deprecated_args, "dl-drop-all", '0',
-            "Replaced by --dl-deps-default discard", false),
-    a_dl_ignore_installed(&deprecated_args, "dl-ignore-installed", 'e',
-            "Replaced by --dl-reinstall always", false),
-    a_show_install_reasons(&deprecated_args, "show-install-reasons",
-            '\0', "Replaced by --show-reasons", false),
-    a_add_to_world_atom(&deprecated_args, "add-to-world-atom", '\0',
-            "Replaced by --add-to-world-spec", false),
-    a_config_suffix(&deprecated_args, "config-suffix", 'c',
-            "Replaced by --environment", false),
-    a_update_news(&deprecated_args, "update-news", '\0',
-            "No longer useful, does nothing", false),
-    a_safe_resume(&deprecated_args, "safe-resume", '\0',
-            "Now default behaviour, use --no-safe-resume to disable", false)
+    a_full_match(&owner_args, "full-match", '\0', "Match whole filename", true)
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");

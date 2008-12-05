@@ -88,19 +88,10 @@ main(int argc, char *argv[])
             throw args::DoHelp("you should specify exactly one action");
 
         std::string paludis_command(argv[0]), env_spec;
-        if (CommandLine::get_instance()->a_config_suffix.specified())
-        {
-            Log::get_instance()->message("inquisitio.command_line.deprecated", ll_warning, lc_no_context)
-                << "--config-suffix is deprecated, use --environment ':" <<
-                CommandLine::get_instance()->a_config_suffix.argument() << "'";
-            env_spec = ":" + CommandLine::get_instance()->a_config_suffix.argument();
-            paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
-                    CommandLine::get_instance()->a_config_suffix.argument());
-        }
-        else if (CommandLine::get_instance()->a_environment.specified())
+        if (CommandLine::get_instance()->a_environment.specified())
         {
             paludis_command.append(" --" + CommandLine::get_instance()->a_environment.long_name() + " " +
-                    CommandLine::get_instance()->a_config_suffix.argument());
+                    CommandLine::get_instance()->a_environment.argument());
             env_spec = CommandLine::get_instance()->a_environment.argument();
         }
 
