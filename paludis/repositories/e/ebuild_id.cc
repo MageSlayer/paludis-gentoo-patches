@@ -690,11 +690,11 @@ EbuildID::inherited_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EbuildID::fs_location_key() const
 {
+    Lock l(_imp->mutex);
+
     // Avoid loading whole metadata
     if (! _imp->fs_location)
     {
-        Lock l(_imp->mutex);
-
         _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> ("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild));
         add_metadata_key(_imp->fs_location);
     }
