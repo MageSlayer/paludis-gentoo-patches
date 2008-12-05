@@ -418,7 +418,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
     {
         if (can_skip_phase(id, *phase))
         {
-            std::cout << "No need to do anything for " << phase->equal_option("skipifno") << " phase" << std::endl;
+            std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
