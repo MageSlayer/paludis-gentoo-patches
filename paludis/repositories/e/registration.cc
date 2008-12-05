@@ -30,19 +30,6 @@ using namespace paludis;
 
 namespace
 {
-    std::tr1::shared_ptr<Repository>
-    make_portage_repository(
-            Environment * const env,
-            const std::tr1::function<std::string (const std::string &)> & f)
-    {
-        Context context("When creating repository using '" + f("repo_file") + "':");
-
-        Log::get_instance()->message("e.portage.configuration.deprecated", ll_warning, lc_context)
-            << "Format 'portage' is deprecated, use 'ebuild' instead";
-
-        return ERepository::repository_factory_create(env, f);
-    }
-
     int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
@@ -67,17 +54,6 @@ void paludis_initialise_repository_so(RepositoryFactory * const factory)
             &ERepository::repository_factory_name,
             &generic_importance,
             &ERepository::repository_factory_create,
-            &ERepository::repository_factory_dependencies
-            );
-
-    std::tr1::shared_ptr<Set<std::string> > deprecated_ebuild_formats(new Set<std::string>);
-    deprecated_ebuild_formats->insert("portage");
-
-    factory->add_repository_format(
-            deprecated_ebuild_formats,
-            &ERepository::repository_factory_name,
-            &generic_importance,
-            make_portage_repository,
             &ERepository::repository_factory_dependencies
             );
 

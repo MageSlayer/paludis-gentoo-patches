@@ -148,15 +148,8 @@ ExndbamRepository::repository_factory_create(
 
     std::string builddir(f("builddir"));
     if (builddir.empty())
-    {
-        builddir = f("buildroot");
-        if (builddir.empty())
-            builddir = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
-                        env->distribution()))->default_buildroot();
-        else
-            Log::get_instance()->message("e.exndbam.configuration.deprecated", ll_warning, lc_context)
-                << "Key 'buildroot' is deprecated, use 'builddir' instead";
-    }
+        builddir = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_buildroot();
 
     std::string name(f("name"));
     if (name.empty())

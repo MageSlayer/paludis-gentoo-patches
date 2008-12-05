@@ -104,13 +104,6 @@ UseConf::add(const FSEntry & filename)
         if (tokens.size() < 2)
             continue;
 
-        if ("*" == tokens.at(0))
-        {
-            Log::get_instance()->message("paludis_environment.use_conf.deprecated", ll_warning, lc_context)
-                << "Use of token '*' is deprecated, use '*/*' instead";
-            tokens.at(0) = "*/*";
-        }
-
         try
         {
             std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(

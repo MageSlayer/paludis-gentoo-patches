@@ -465,14 +465,7 @@ CRANRepository::repository_factory_create(
 
     std::string builddir(f("builddir"));
     if (builddir.empty())
-    {
-        builddir = f("buildroot");
-        if (builddir.empty())
-            builddir = "/var/tmp/paludis";
-        else
-            Log::get_instance()->message("cran.configuration.deprecated", ll_warning, lc_context)
-                << "Key 'buildroot' is deprecated, use 'builddir' instead";
-    }
+        builddir = "/var/tmp/paludis";
 
     return std::tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)

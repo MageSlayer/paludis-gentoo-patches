@@ -291,24 +291,17 @@ namespace paludis
         if (! kv->get("reduced_username").empty())
             reduced_username = kv->get("reduced_username");
 
-        if (! kv->get("portage_compatible").empty())
-            Log::get_instance()->message("paludis_environment.portage_compatible.deprecated", ll_warning, lc_context)
-                << "The 'portage_compatible' variable in environment.conf is deprecated,"
-                << " set 'accept_breaks_portage' to empty instead.";
-        else
-        {
-            std::list<std::string> breakages;
-            tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
-            for (std::list<std::string>::const_iterator it(breakages.begin()),
-                     it_end(breakages.end()); it_end != it; ++it)
-                if ("*" == *it)
-                {
-                    accept_all_breaks_portage = true;
-                    break;
-                }
-                else
-                    accept_breaks_portage.insert(*it);
-        }
+        std::list<std::string> breakages;
+        tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
+        for (std::list<std::string>::const_iterator it(breakages.begin()),
+                 it_end(breakages.end()); it_end != it; ++it)
+            if ("*" == *it)
+            {
+                accept_all_breaks_portage = true;
+                break;
+            }
+            else
+                accept_breaks_portage.insert(*it);
 
         distribution = kv->get("distribution");
 
@@ -399,17 +392,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             KeyValueConfigFileOptions(),
             def_predefined,
             &KeyValueConfigFile::no_transformation));
-    }
-    else if ((local_config_dir / "specpath").exists())
-    {
-        specpath.reset(new KeyValueConfigFile(
-            local_config_dir / "specpath",
-            KeyValueConfigFileOptions(),
-            def_predefined,
-            &KeyValueConfigFile::no_transformation));
-
-        Log::get_instance()->message("paludis_environment.paludis_config.specpath.deprecated", ll_warning, lc_no_context)
-            << "Using specpath is deprecated, use specpath.conf instead";
     }
     else if (_imp->commandline_environment->end() != _imp->commandline_environment->find("root"))
     {

@@ -1499,31 +1499,15 @@ ERepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    if (! f("sync_exclude").empty())
-    {
-        Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_no_context)
-            << "The sync_exclude key in '" << f("repo_file") << "' is deprecated in favour of sync_options = --exclude-from=";
-        if (! sync_options.empty())
-            sync_options += " ";
-        sync_options += "--exclude-from='" + f("sync_exclude") + "'";
-    }
-
     std::string builddir(f("builddir"));
     if (builddir.empty())
     {
-        builddir = f("buildroot");
-        if (builddir.empty())
-        {
-            if (master_repositories)
-                builddir = stringify((*master_repositories->begin())->params().builddir());
-            else
-                builddir = EExtraDistributionData::get_instance()->data_from_distribution(
-                        *DistributionData::get_instance()->distribution_from_string(
-                            env->distribution()))->default_buildroot();
-        }
+        if (master_repositories)
+            builddir = stringify((*master_repositories->begin())->params().builddir());
         else
-            Log::get_instance()->message("e.ebuild.configuration.deprecated", ll_warning, lc_context)
-                << "Key 'buildroot' is deprecated, use 'builddir' instead";
+            builddir = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_buildroot();
     }
 
     std::string layout(f("layout"));
