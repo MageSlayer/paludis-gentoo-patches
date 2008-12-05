@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.32.2:
+    * Fixed various compiler issues.
+
+    * ERepository::package_names (and by extension, paludis --list-packages) are
+      now quite a bit faster, but may list package names whose package
+      directories include no versions.
+
+    * DEFINED_PHASES is now used and supported (but not used for 0-based EAPIs
+      with pre-generated cache, since a cache line has yet to be standardised).
+      As a result, ebuild hooks for phases that aren't used will not necessarily
+      be triggered.
+
 0.32.1:
     * VDB entries not containing an IUSE file would give incorrect behaviour.
     This is now fixed.
