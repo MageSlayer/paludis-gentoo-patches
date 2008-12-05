@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
+#include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
@@ -45,6 +46,7 @@
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
+#include <iostream>
 #include <fstream>
 
 using namespace paludis;
@@ -443,6 +445,12 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        if (can_skip_phase(id, *phase))
+        {
+            std::cout << "No need to do anything for " << phase->equal_option("skipifno") << " phase" << std::endl;
+            continue;
+        }
+
         if (phase->option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */

@@ -26,6 +26,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_
 
 paludis_repositories_e_include_HEADERS = \
 	aa_visitor.hh \
+	can_skip_phase.hh \
 	check_fetched_files_visitor.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
@@ -86,6 +87,7 @@ paludis_repositories_e_include_HEADERS = \
 
 libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	aa_visitor.cc \
+	can_skip_phase.cc \
 	check_fetched_files_visitor.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \

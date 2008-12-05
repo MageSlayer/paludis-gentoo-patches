@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
+#include <paludis/repositories/e/can_skip_phase.hh>
 
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
@@ -73,6 +74,7 @@
 #include <tr1/unordered_map>
 #include <tr1/functional>
 #include <fstream>
+#include <iostream>
 #include <functional>
 #include <algorithm>
 #include <vector>
@@ -414,6 +416,12 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        if (can_skip_phase(id, *phase))
+        {
+            std::cout << "No need to do anything for " << phase->equal_option("skipifno") << " phase" << std::endl;
+            continue;
+        }
+
         if (phase->option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */

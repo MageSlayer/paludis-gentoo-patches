@@ -31,6 +31,7 @@
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/repositories/e/myoptions_requirements_verifier.hh>
+#include <paludis/repositories/e/can_skip_phase.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -57,6 +58,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <tr1/functional>
+#include <iostream>
 #include <fstream>
 #include <list>
 #include <set>
@@ -621,6 +623,12 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        if (can_skip_phase(id, *phase))
+        {
+            std::cout << "No need to do anything for " << phase->equal_option("skipifno") << " phase" << std::endl;
+            continue;
+        }
+
         if (phase->option("merge"))
         {
             if (! (*o.destination()).destination_interface())
@@ -1031,6 +1039,9 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        if (can_skip_phase(id, *phase))
+            continue;
+
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 value_for<n::builddir>(_imp->params.builddir()),
                 value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),

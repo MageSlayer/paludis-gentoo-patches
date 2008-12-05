@@ -1094,6 +1094,7 @@ DESCRIPTION=A nice package
 KEYWORDS=test
 IUSE=bar
 EAPI=0
+DEFINED_PHASES=-
 END
 
 cat <<END > cache/expected/cat/write-eclasses-1
@@ -1108,6 +1109,7 @@ DESCRIPTION=A nice package
 KEYWORDS=test
 IUSE=bar quux
 EAPI=0
+DEFINED_PHASES=-
 END
 
 cat <<END > cache/expected/cat/write-exlibs-1
@@ -1121,5 +1123,6 @@ SUMMARY=A nice package
 PLATFORMS=test
 MYOPTIONS=bar quux
 EAPI=exheres-0
+DEFINED_PHASES=-
 END
 
