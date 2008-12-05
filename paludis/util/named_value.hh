@@ -31,6 +31,9 @@ namespace paludis
             V_ _value;
 
         public:
+            typedef K_ KeyType;
+            typedef V_ ValueType;
+
             template <typename T_>
             NamedValue(const NamedValue<K_, T_> & v) :
                 _value(v())
