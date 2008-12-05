@@ -28,15 +28,12 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/thread.hh>
+#include <paludis/util/condition_variable.hh>
 #include <ruby.h>
 #include <list>
 #include <tr1/functional>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <paludis/util/mutex.hh>
-#  include <paludis/util/thread.hh>
-#  include <paludis/util/condition_variable.hh>
-#endif
 
 using namespace paludis;
 using namespace paludis::ruby;
@@ -561,8 +558,7 @@ namespace
         }
     };
 
-#ifdef PALUDIS_ENABLE_THREADS
-#  ifdef ENABLE_RUBY_QA
+#ifdef ENABLE_RUBY_QA
     struct HackyReporter :
         QAReporter
     {
@@ -611,7 +607,6 @@ namespace
         done = true;
         cond.signal();
     }
-#  endif
 #endif
 
     /*
@@ -632,7 +627,6 @@ namespace
             if ((**self_ptr).qa_interface())
             {
                 RubyQAReporter qar(&reporter);
-#ifdef PALUDIS_ENABLE_THREADS
                 /* have to call ruby code in the original thread. icky. */
                 bool done(false);
                 std::list<std::tr1::function<void ()> > pending;
@@ -662,13 +656,6 @@ namespace
                         cond.wait(mutex);
                     }
                 }
-#else
-                (**self_ptr).qa_interface()->check_qa(qar,
-                        value_to_qa_check_properties((ignore_if)),
-                        value_to_qa_check_properties((ignore_unless)),
-                        static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
-                        FSEntry(StringValuePtr(dir)));
-#endif
             }
 #endif
             return Qnil;

@@ -28,8 +28,6 @@
 
 using namespace paludis;
 
-#ifdef PALUDIS_ENABLE_THREADS
-
 ConditionVariable::ConditionVariable() :
     _cond(new pthread_cond_t)
 {
@@ -85,42 +83,4 @@ ConditionVariable::timed_wait(Mutex & m, const unsigned n)
         return false;
     }
 }
-
-#else
-
-ConditionVariable::ConditionVariable()
-{
-}
-
-ConditionVariable::~ConditionVariable()
-{
-}
-
-void
-ConditionVariable::broadcast()
-{
-}
-
-void
-ConditionVariable::signal()
-{
-}
-
-void
-ConditionVariable::acquire_then_signal(Mutex &)
-{
-}
-
-void
-ConditionVariable::wait(Mutex &)
-{
-}
-
-bool
-ConditionVariable::timed_wait(Mutex &, const unsigned)
-{
-    return true;
-}
-
-#endif
 

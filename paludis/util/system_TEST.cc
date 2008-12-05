@@ -26,41 +26,26 @@
 #include <tr1/functional>
 
 #include <cctype>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <sched.h>
-#endif
+#include <sched.h>
 
 using namespace test;
 using namespace paludis;
 
 namespace
 {
-#ifdef PALUDIS_ENABLE_THREADS
     void repeatedly_log(bool & b)
-#else
-    void repeatedly_log(bool &)
-#endif
     {
-#ifdef PALUDIS_ENABLE_THREADS
         while (! b)
             sched_yield();
-#endif
 
         for (int i(0) ; i < 1000 ; ++i)
             Log::get_instance()->message("test.system", ll_debug, lc_context) << "logging stuff";
     }
 
-#ifdef PALUDIS_ENABLE_THREADS
     void repeatedly_run_command(bool & b)
-#else
-    void repeatedly_run_command(bool &)
-#endif
     {
-#ifdef PALUDIS_ENABLE_THREADS
         while (! b)
             sched_yield();
-#endif
 
         for (int i(0) ; i < 100 ; ++i)
             if (0 != run_command("/usr/bin/env true"))

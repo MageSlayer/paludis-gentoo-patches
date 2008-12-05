@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,8 +23,6 @@
 #include <cstring>
 
 using namespace paludis;
-
-#ifdef PALUDIS_ENABLE_THREADS
 
 Mutex::Mutex() :
     _attr(new pthread_mutexattr_t),
@@ -98,43 +96,4 @@ TryLock::operator() () const
 {
     return _mutex;
 }
-
-#else
-
-Mutex::Mutex()
-{
-}
-
-Mutex::~Mutex()
-{
-}
-
-Lock::Lock(Mutex &)
-{
-}
-
-void
-Lock::acquire_then_release_old(Mutex &)
-{
-}
-
-Lock::~Lock()
-{
-}
-
-TryLock::TryLock(Mutex &)
-{
-}
-
-TryLock::~TryLock()
-{
-}
-
-bool
-TryLock::operator() () const
-{
-    return true;
-}
-
-#endif
 

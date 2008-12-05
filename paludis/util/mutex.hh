@@ -22,10 +22,7 @@
 
 #include <paludis/util/mutex-fwd.hh>
 #include <paludis/util/attributes.hh>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <pthread.h>
-#endif
+#include <pthread.h>
 
 /**
  * Declarations for Mutex, Lock and TryLock.
@@ -51,10 +48,8 @@ namespace paludis
             Mutex(const Mutex &);
             Mutex & operator= (const Mutex &);
 
-#ifdef PALUDIS_ENABLE_THREADS
             pthread_mutexattr_t * const _attr;
             pthread_mutex_t * const _mutex;
-#endif
 
         public:
             ///\name Basic operations
@@ -65,9 +60,7 @@ namespace paludis
 
             ///\}
 
-#ifdef PALUDIS_ENABLE_THREADS
             pthread_mutex_t * posix_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
-#endif
     };
 
     /**
@@ -85,9 +78,7 @@ namespace paludis
             Lock(const Lock &);
             Lock & operator= (const Lock &);
 
-#ifdef PALUDIS_ENABLE_THREADS
             Mutex * _mutex;
-#endif
 
         public:
             ///\name Basic operations
@@ -122,9 +113,7 @@ namespace paludis
             TryLock(const TryLock &);
             TryLock & operator= (const TryLock &);
 
-#ifdef PALUDIS_ENABLE_THREADS
             Mutex * _mutex;
-#endif
 
         public:
             ///\name Basic operations

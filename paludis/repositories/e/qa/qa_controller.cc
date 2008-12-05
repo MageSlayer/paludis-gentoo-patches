@@ -303,10 +303,6 @@ QAController::_check_category(const CategoryNamePart c, const std::tr1::shared_p
 
         if (work_item)
         {
-#ifndef PALUDIS_ENABLE_THREADS
-            _imp->reporter.status("Pending: " + stringify(_imp->cats_pool.size()) + " full categories, "
-                    + stringify(_imp->pkgs_pool.size()) + " packages in '" + stringify(_imp->repo->name()) + "'");
-#endif
             work_item();
         }
         else
@@ -425,14 +421,10 @@ QAController::run()
          * start taking packages from another worker's category. */
         std::tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
         std::copy(cats->begin(), cats->end(), std::inserter(_imp->cats_pool, _imp->cats_pool.begin()));
-#ifdef PALUDIS_ENABLE_THREADS
         ThreadPool workers;
         for (int x(0) ; x < 5 ; ++x)
             workers.create_thread(std::tr1::bind(&QAController::_worker, this));
         workers.create_thread(std::tr1::bind(&QAController::_status_worker, this));
-#else
-        _worker();
-#endif
     }
     catch (const InternalError &)
     {

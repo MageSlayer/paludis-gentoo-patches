@@ -123,9 +123,7 @@ int do_sync(const std::tr1::shared_ptr<Environment> & env)
     Context context("When performing sync action from command line:");
 
     bool parallel(false);
-#ifdef PALUDIS_ENABLE_THREADS
     parallel = CommandLine::get_instance()->a_multitask.specified();
-#endif
 
     OurSyncTask task(env, parallel);
 

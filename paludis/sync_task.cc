@@ -174,7 +174,6 @@ SyncTask::execute()
     ItemSyncer s(std::distance(_imp->targets.begin(), _imp->targets.end()), _imp->env, this);
 
     using namespace std::tr1::placeholders;
-#ifdef PALUDIS_ENABLE_THREADS
     if (_imp->parallel)
     {
         ActionQueue actions(5);
@@ -184,9 +183,6 @@ SyncTask::execute()
     }
     else
         std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
-#else
-    std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
-#endif
 
     on_sync_all_post();
     if (0 !=

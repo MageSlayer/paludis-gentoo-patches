@@ -33,9 +33,6 @@
 
 using namespace paludis;
 
-#ifdef PALUDIS_ENABLE_THREADS
-
-
 Thread::Thread(const std::tr1::function<void () throw ()> & f) :
     _thread(new pthread_t),
     _func(f)
@@ -80,23 +77,4 @@ Thread::idle_adapter(const std::tr1::function<void () throw ()> & f)
 #endif
     f();
 }
-
-#else
-
-Thread::Thread(const std::tr1::function<void () throw ()> & f)
-{
-    f();
-}
-
-Thread::~Thread()
-{
-}
-
-void
-Thread::idle_adapter(const std::tr1::function<void () throw ()> & f)
-{
-    f();
-}
-
-#endif
 

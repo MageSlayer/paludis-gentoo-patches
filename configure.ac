@@ -552,34 +552,26 @@ then
 	AC_MSG_RESULT([no])
 fi
 
-AC_MSG_CHECKING([whether to enable threads])
 PTHREAD_LIBS=""
 RT_LIBS=""
-AC_ARG_ENABLE([threads],
-			  AS_HELP_STRING([--enable-threads], [Enable threads (experimental)]),
-			  [ENABLE_THREADS=$enableval],
-			  [ENABLE_THREADS=no])
-AC_MSG_RESULT([$ENABLE_THREADS])
-AC_SUBST([ENABLE_THREADS])
-if test "x$ENABLE_THREADS" = "xyes" ; then
-	AC_MSG_CHECKING([for compiler __thread support])
-	AC_COMPILE_IFELSE([
+AC_MSG_CHECKING([for compiler __thread support])
+AC_COMPILE_IFELSE([
 int main(int, char **)
 {
 	static __thread int x(0);
 	return x;
 }
 ],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([--enable-threads requires compiler __thread support])])
+[AC_MSG_RESULT([yes])],
+[AC_MSG_RESULT([no])
+AC_MSG_ERROR([Your compiler doesn't support __thread])])
 
-	AC_MSG_CHECKING([whether -pthread -lpthread gets us posix threads])
-	save_CXXFLAGS=$CXXFLAGS
-	save_LDFLAGS=$LDFLAGS
-	CXXFLAGS="$CXXFLAGS -pthread"
-	LDFLAGS="$LDFLAGS -pthread -lpthread"
-	AC_LINK_IFELSE([
+AC_MSG_CHECKING([whether -pthread -lpthread gets us posix threads])
+save_CXXFLAGS=$CXXFLAGS
+save_LDFLAGS=$LDFLAGS
+CXXFLAGS="$CXXFLAGS -pthread"
+LDFLAGS="$LDFLAGS -pthread -lpthread"
+AC_LINK_IFELSE([
 #include <pthread.h>
 int main(int, char **)
 {
@@ -588,18 +580,29 @@ int main(int, char **)
 	return 0;
 }
 ],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	AC_MSG_ERROR([don't know how to enable pthreads for your compiler])])
-	CXXFLAGS=$save_CXXFLAGS
-	LDFLAGS=$save_LDFLAGS
-	PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS -DPALUDIS_ENABLE_THREADS=1 -pthread"
-	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_ENABLE_THREADS=1 -pthread"
-	PTHREAD_LIBS="-pthread -lpthread"
-	PALUDIS_PC_LIBS="${PALUDIS_PC_LIBS} -pthread -lpthread"
-	PALUDIS_ENABLE_THREADS=1
+[AC_MSG_RESULT([yes])],
+[AC_MSG_RESULT([no])
+AC_MSG_ERROR([don't know how to enable pthreads for your compiler])])
+CXXFLAGS=$save_CXXFLAGS
+LDFLAGS=$save_LDFLAGS
+PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS -pthread"
+PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -pthread"
+PTHREAD_LIBS="-pthread -lpthread"
+PALUDIS_PC_LIBS="${PALUDIS_PC_LIBS} -pthread -lpthread"
 
-	AC_MSG_CHECKING([how to get clock_gettime])
+AC_MSG_CHECKING([how to get clock_gettime])
+AC_LINK_IFELSE([
+#include <time.h>
+#include <sys/time.h>
+int main(int, char **)
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+}
+],
+	[AC_MSG_RESULT([already have it])],
+	[save_LDFLAGS=$LDFLAGS
+	LDFLAGS="-lrt $LDFLAGS"
 	AC_LINK_IFELSE([
 #include <time.h>
 #include <sys/time.h>
@@ -609,33 +612,17 @@ int main(int, char **)
 	clock_gettime(CLOCK_REALTIME, &t);
 }
 ],
-		[AC_MSG_RESULT([already have it])],
-		[save_LDFLAGS=$LDFLAGS
-		LDFLAGS="-lrt $LDFLAGS"
-		AC_LINK_IFELSE([
-#include <time.h>
-#include <sys/time.h>
-int main(int, char **)
-{
-	struct timespec t;
-	clock_gettime(CLOCK_REALTIME, &t);
-}
-],
-		[
-			AC_MSG_RESULT([-lrt])
-			RT_LIBS="-lrt"
-		],
-		[
-			AC_MSG_RESULT([don't know])
-			AC_MSG_ERROR([enable-threads needs clock_gettime])
-		])
-		LDFLAGS=$save_LDFLAGS
-		])
+	[
+		AC_MSG_RESULT([-lrt])
+		RT_LIBS="-lrt"
+	],
+	[
+		AC_MSG_RESULT([don't know])
+		AC_MSG_ERROR([don't know how to get clock_gettime])
+	])
+	LDFLAGS=$save_LDFLAGS
+	])
 
-else
-	PALUDIS_ENABLE_THREADS=0
-fi
-AC_SUBST([PALUDIS_ENABLE_THREADS])
 AC_SUBST([PTHREAD_LIBS])
 AC_SUBST([RT_LIBS])
 
@@ -1342,19 +1329,6 @@ BUILD_CLIENTS="$clients"
 AC_SUBST([ALL_CLIENTS])
 AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
-
-AC_MSG_CHECKING([whether threads must be enabled])
-if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
-	AC_MSG_RESULT([yes])
-	AC_MSG_CHECKING([whether threads are enabled])
-	if test x$ENABLE_THREADS = xyes ; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([cave requires --enable-threads])
-	fi
-else
-	AC_MSG_RESULT([no])
-fi
 
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
 	need_pcrepp_check=yes

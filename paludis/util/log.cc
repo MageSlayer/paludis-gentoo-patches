@@ -26,13 +26,11 @@
 #include <paludis/util/action_queue.hh>
 #include "config.h"
 
-#ifdef PALUDIS_ENABLE_THREADS
-#  ifdef __linux__
-#    include <sys/time.h>
-#    include <sys/resource.h>
-#    include <unistd.h>
-#    include <sys/syscall.h>
-#  endif
+#ifdef __linux__
+#  include <sys/time.h>
+#  include <sys/resource.h>
+#  include <unistd.h>
+#  include <sys/syscall.h>
 #endif
 
 using namespace paludis;
@@ -157,12 +155,10 @@ Log::_message(const std::string & id, const LogLevel l, const LogContext c, cons
 {
     if (lc_context == c)
         _imp->action_queue.enqueue(std::tr1::bind(std::tr1::mem_fn(&Implementation<Log>::message), _imp.get(), id, l, c,
-#ifdef PALUDIS_ENABLE_THREADS
-#  ifdef __linux__
+#ifdef __linux__
                     "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
-#  else
-#    warning "Don't know how to get a thread ID on your platform"
-#  endif
+#else
+#  warning "Don't know how to get a thread ID on your platform"
 #endif
                     Context::backtrace("\n  ... "), s));
     else

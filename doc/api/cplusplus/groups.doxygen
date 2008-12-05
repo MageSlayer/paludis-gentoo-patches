@@ -367,8 +367,7 @@ using namespace paludis;
  *
  * \ingroup g_utils
  *
- * Paludis includes some basic thread classes. Most users will not have threads
- * enabled at the moment.
+ * Paludis includes some basic thread classes.
  *
  * \section Examples
  *

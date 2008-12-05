@@ -19,14 +19,11 @@
 
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <paludis/util/mutex.hh>
-#  include <paludis/util/condition_variable.hh>
-#  include <paludis/util/thread_pool.hh>
-#  include <paludis/util/thread.hh>
-#  include <deque>
-#endif
+#include <paludis/util/mutex.hh>
+#include <paludis/util/condition_variable.hh>
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/thread.hh>
+#include <deque>
 
 using namespace paludis;
 
@@ -37,7 +34,6 @@ namespace paludis
     template <>
     struct Implementation<ActionQueue>
     {
-#ifdef PALUDIS_ENABLE_THREADS
         Mutex mutex;
         ConditionVariable condition;
         std::deque<std::tr1::function<void () throw ()> > queue;
@@ -89,33 +85,22 @@ namespace paludis
                 else
                     threads.create_thread(std::tr1::bind(std::tr1::mem_fn(&Implementation::thread_func), this));
         }
-#endif
     };
 }
 
-#ifdef PALUDIS_ENABLE_THREADS
 ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool limit_size) :
     PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads, nice, limit_size))
 {
 }
-#else
-ActionQueue::ActionQueue(const unsigned, const bool, const bool) :
-    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
-{
-}
-#endif
 
 ActionQueue::~ActionQueue()
 {
-#ifdef PALUDIS_ENABLE_THREADS
     enqueue(std::tr1::bind(std::tr1::mem_fn(&Implementation<ActionQueue>::finish), _imp.get()));
-#endif
 }
 
 void
 ActionQueue::enqueue(const std::tr1::function<void () throw ()> & f)
 {
-#ifdef PALUDIS_ENABLE_THREADS
     Lock l(_imp->mutex);
     if ((! _imp->limit_size) || (_imp->queue.size() < 1000))
     {
@@ -124,40 +109,29 @@ ActionQueue::enqueue(const std::tr1::function<void () throw ()> & f)
     }
     else
         f();
-#else
-    f();
-#endif
 }
 
 void
 ActionQueue::complete_pending()
 {
-#ifdef PALUDIS_ENABLE_THREADS
     ConditionVariable c;
     Mutex m;
     Lock l(m);
 
     enqueue(std::tr1::bind(std::tr1::mem_fn(&ConditionVariable::acquire_then_signal), &c, std::tr1::ref(m)));
     c.wait(m);
-#endif
 }
 
 void
 ActionQueue::forget_pending()
 {
-#ifdef PALUDIS_ENABLE_THREADS
     Lock l(_imp->mutex);
     _imp->queue.clear();
-#endif
 }
 
 unsigned
 ActionQueue::number_of_threads() const
 {
-#ifdef PALUDIS_ENABLE_THREADS
     return _imp->threads.number_of_threads();
-#else
-    return 0;
-#endif
 }
 

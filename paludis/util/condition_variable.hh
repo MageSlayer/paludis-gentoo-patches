@@ -22,10 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/mutex.hh>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <pthread.h>
-#endif
+#include <pthread.h>
 
 /** \file
  * Declarations for the ConditionVariable class.
@@ -54,9 +51,7 @@ namespace paludis
             ConditionVariable(const ConditionVariable &);
             ConditionVariable & operator= (const ConditionVariable &);
 
-#ifdef PALUDIS_ENABLE_THREADS
             pthread_cond_t * const _cond;
-#endif
 
         public:
             ///\name Basic operations

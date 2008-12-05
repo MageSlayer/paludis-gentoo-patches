@@ -23,10 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <tr1/functional>
 #include <string>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <pthread.h>
-#endif
+#include <pthread.h>
 
 /** \file
  * Declarations for the Thread class.
@@ -53,13 +50,11 @@ namespace paludis
     class PALUDIS_VISIBLE Thread
     {
         private:
-#ifdef PALUDIS_ENABLE_THREADS
             pthread_t * const _thread;
             const std::tr1::function<void () throw ()> _func;
             std::string _exception;
 
             static void * thread_func(void *);
-#endif
 
         public:
             ///\name Basic operations
