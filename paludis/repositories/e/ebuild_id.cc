@@ -51,6 +51,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
 
+#include <set>
 #include <iterator>
 #include <fstream>
 
@@ -1199,6 +1200,38 @@ EbuildID::make_choice_value(
                 enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description));
 }
 
+namespace
+{
+    struct UnconditionalRestrictFinder :
+        ConstVisitor<PlainTextSpecTree>
+    {
+        std::set<std::string> s;
+
+        void visit_leaf(const PlainTextDepSpec & p)
+        {
+            s.insert(p.text());
+        }
+
+        void visit_leaf(const PlainTextLabelDepSpec & p)
+        {
+            s.insert(p.text());
+        }
+
+        void visit_sequence(const ConditionalDepSpec &,
+                PlainTextSpecTree::ConstSequenceIterator,
+                PlainTextSpecTree::ConstSequenceIterator)
+        {
+        }
+
+        void visit_sequence(const AllDepSpec &,
+                PlainTextSpecTree::ConstSequenceIterator cur,
+                PlainTextSpecTree::ConstSequenceIterator end)
+        {
+            std::for_each(cur, end, accept_visitor(*this));
+        }
+    };
+}
+
 void
 EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
 {
@@ -1207,12 +1240,36 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
         std::tr1::shared_ptr<Choice> build_options(new Choice(canonical_build_options_raw_name(), canonical_build_options_human_name(),
                     canonical_build_options_prefix(), false, false, false, false));
         choices->add(build_options);
+
+        bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);
+
+        /* if we unconditionally restrict an action, don't add a build option
+         * for it. but if we conditionally restrict it, do, to avoid weirdness
+         * in cases like RESTRICT="test? ( test )." */
+        if (restrict_key())
+        {
+            UnconditionalRestrictFinder f;
+            restrict_key()->value()->accept(f);
+            may_be_unrestricted_test = f.s.end() == f.s.find("test");
+            may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
+        }
+
+        /* optional_tests */
         if (eapi()->supported()->choices_options()->has_optional_tests())
-            build_options->add(make_shared_ptr(new ELikeOptionalTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+            if (may_be_unrestricted_test)
+                build_options->add(make_shared_ptr(new ELikeOptionalTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+
+        /* recommended_tests */
         if (eapi()->supported()->choices_options()->has_recommended_tests())
-            build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
-        build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
-        build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+            if (may_be_unrestricted_test)
+                build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+
+        /* split, strip */
+        if (may_be_unrestricted_strip)
+        {
+            build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
+            build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        }
     }
 }
 
