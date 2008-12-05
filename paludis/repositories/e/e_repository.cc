@@ -985,7 +985,7 @@ ERepository::perform_hook(const Hook & hook) const
             || hook.name() == "uninstall_all_post")
         update_news();
 
-    return HookResult(0, "");
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>

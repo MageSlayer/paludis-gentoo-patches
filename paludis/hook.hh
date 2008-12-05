@@ -26,9 +26,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/operators.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <tr1/memory>
 #include <string>
 
@@ -44,8 +44,24 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct max_exit_status;
+        struct output;
+    }
 
-#include <paludis/hook-sr.hh>
+    /**
+     * Result of a Hook.
+     *
+     * \see Hook
+     * \ingroup g_hooks
+     * \nosubgrouping
+     */
+    struct HookResult
+    {
+        NamedValue<n::max_exit_status, int> max_exit_status;
+        NamedValue<n::output, std::string> output;
+    };
 
     /**
      * Represents the data for a hook call.

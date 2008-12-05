@@ -149,7 +149,7 @@ namespace
                             ("NUMBER_DONE", stringify(nd))
                             ("NUMBER_ACTIVE", stringify(na))
                             ("NUMBER_PENDING", stringify(np))
-                            ).max_exit_status)
+                            ).max_exit_status())
                     throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
             }
 
@@ -201,7 +201,7 @@ namespace
                             ("NUMBER_DONE", stringify(nd))
                             ("NUMBER_ACTIVE", stringify(na))
                             ("NUMBER_PENDING", stringify(np))
-                            ).max_exit_status)
+                            ).max_exit_status())
                     throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
             }
 
@@ -258,7 +258,7 @@ namespace
                         ("NUMBER_DONE", stringify(nd))
                         ("NUMBER_ACTIVE", stringify(na))
                         ("NUMBER_PENDING", stringify(np))
-                        ).max_exit_status);
+                        ).max_exit_status());
         }
     }
 }
@@ -299,7 +299,7 @@ SyncCommand::run(
 
     if (0 != env->perform_hook(Hook("sync_all_pre")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")
-                )).max_exit_status)
+                )).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     cout << format_general_s(f::sync_repos_title(), "");
@@ -318,7 +318,7 @@ SyncCommand::run(
 
     if (0 != env->perform_hook(Hook("sync_all_post")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")
-                )).max_exit_status)
+                )).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     cout << endl << format_general_s(f::sync_heading(), "Sync results");

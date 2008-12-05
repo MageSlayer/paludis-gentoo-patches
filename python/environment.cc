@@ -33,6 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -299,7 +300,7 @@ class EnvironmentImplementationWrapper :
         virtual HookResult perform_hook(const Hook & h) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            return HookResult(0, "");
+            return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
         }
 
         virtual std::string distribution() const

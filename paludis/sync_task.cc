@@ -104,7 +104,7 @@ namespace
                 if (0 !=
                         env->perform_hook(Hook("sync_pre")("TARGET", stringify(r))
                             ("X_OF_Y", stringify(x) + " of " + stringify(y) + " (" + stringify(a) + " active)")
-                            ).max_exit_status)
+                            ).max_exit_status())
                     throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
 
                 {
@@ -132,7 +132,7 @@ namespace
                 if (0 !=
                         env->perform_hook(Hook("sync_post")("TARGET", stringify(r))
                             ("X_OF_Y", stringify(x) + " of " + stringify(y) + " (" + stringify(a) + " active)")
-                            ).max_exit_status)
+                            ).max_exit_status())
                     throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
 
                 {
@@ -167,7 +167,7 @@ SyncTask::execute()
 
     if (0 !=
         _imp->env->perform_hook(Hook("sync_all_pre")("TARGETS", join(_imp->targets.begin(),
-                         _imp->targets.end(), " "))).max_exit_status)
+                         _imp->targets.end(), " "))).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
     on_sync_all_pre();
 
@@ -187,7 +187,7 @@ SyncTask::execute()
     on_sync_all_post();
     if (0 !=
         _imp->env->perform_hook(Hook("sync_all_post")("TARGETS", join(_imp->targets.begin(),
-                         _imp->targets.end(), " "))).max_exit_status)
+                         _imp->targets.end(), " "))).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 }
 

@@ -242,7 +242,7 @@ InstalledVirtualsRepository::perform_hook(const Hook & hook) const
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
 
-    return HookResult(0, "");
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 bool

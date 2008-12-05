@@ -22,6 +22,7 @@
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <iostream>
 #include <fstream>
 
@@ -32,13 +33,13 @@ namespace
     HookResult
     so_hook_run(const Environment *, const Hook &)
     {
-        return HookResult(6, "");
+        return make_named_values<HookResult>(value_for<n::max_exit_status>(6), value_for<n::output>(""));
     }
 
     HookResult
     so_hook_output_run(const Environment *, const Hook &)
     {
-        return HookResult(0, "foo");
+        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>("foo"));
     }
 
     HookResult
@@ -46,7 +47,7 @@ namespace
     {
         std::ofstream f("hooker_TEST_dir/ordering.out", std::ios_base::app);
         f << "sohook" << std::endl;
-        return HookResult(0, "");
+        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
     }
 
     void
@@ -67,7 +68,7 @@ paludis_hook_run(const Environment * env, const Hook & hook)
     if ("ordering" == hook.name())
         return ordering_run(env, hook);
 
-    return HookResult(0, "");
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 void

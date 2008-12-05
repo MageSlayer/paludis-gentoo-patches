@@ -29,6 +29,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
@@ -172,7 +173,7 @@ TestEnvironment::mirrors(const std::string & s) const
 HookResult
 TestEnvironment::perform_hook(const Hook &) const
 {
-    return HookResult(0, "");
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 std::tr1::shared_ptr<const FSEntrySequence>

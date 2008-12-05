@@ -36,6 +36,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <iterator>
@@ -192,7 +193,9 @@ BashHookFile::run(const Hook & hook) const
         Log::get_instance()->message("hook.bash.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
             << "' returned failure '" << exit_status << "'";
 
-    return HookResult(exit_status, output);
+    return make_named_values<HookResult>(
+            value_for<n::max_exit_status>(exit_status),
+            value_for<n::output>(output));
 }
 
 HookResult
@@ -243,7 +246,10 @@ FancyHookFile::run(const Hook & hook) const
         Log::get_instance()->message("hook.fancy.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
             << "' returned failure '" << exit_status << "'";
 
-    return HookResult(exit_status, output);
+    return make_named_values<HookResult>(
+            value_for<n::max_exit_status>(exit_status),
+            value_for<n::output>(output)
+            );
 }
 
 const std::tr1::shared_ptr<const Sequence<std::string > >
@@ -402,7 +408,7 @@ SoHookFile::run(const Hook & hook) const
     Context c("When running .so hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
     if (! _run)
-        return HookResult(0, "");
+        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 
     Log::get_instance()->message("hook.so.starting", ll_debug, lc_no_context) << "Starting .so hook '" <<
         file_name() << "' for '" << hook.name() << "'";
@@ -691,7 +697,7 @@ Hooker::_find_hooks(const Hook & hook) const
 HookResult
 Hooker::perform_hook(const Hook & hook) const
 {
-    HookResult result(0, "");
+    HookResult result(make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>("")));
 
     Context context("When triggering hook '" + hook.name() + "':");
     Log::get_instance()->message("hook.starting", ll_debug, lc_no_context) << "Starting hook '" << hook.name() << "'";
@@ -706,8 +712,8 @@ Hooker::perform_hook(const Hook & hook) const
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
                     if ((**r).hook_interface())
-                        result.max_exit_status = std::max(result.max_exit_status,
-                                ((**r).hook_interface()->perform_hook(hook)).max_exit_status);
+                        result.max_exit_status() = std::max(result.max_exit_status(),
+                                ((**r).hook_interface()->perform_hook(hook)).max_exit_status());
                 continue;
 
             case hod_grab:
@@ -716,18 +722,18 @@ Hooker::perform_hook(const Hook & hook) const
                     if ((**r).hook_interface())
                     {
                         HookResult tmp((**r).hook_interface()->perform_hook(hook));
-                        if (tmp > result)
+                        if (tmp.max_exit_status() > result.max_exit_status())
                             result = tmp;
-                        else if (! tmp.output.empty())
+                        else if (! tmp.output().empty())
                         {
-                            if (hook.validate_value(tmp.output))
+                            if (hook.validate_value(tmp.output()))
                             {
-                                if (result.max_exit_status == 0)
+                                if (result.max_exit_status() == 0)
                                     return tmp;
                             }
                             else
                                 Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
-                                    << "Hook returned invalid output: '" << tmp.output << "'";
+                                    << "Hook returned invalid output: '" << tmp.output() << "'";
                         }
                     }
                 continue;
@@ -757,7 +763,7 @@ Hooker::perform_hook(const Hook & hook) const
                     for (Sequence<std::tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                         if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
-                            result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
+                            result.max_exit_status() = std::max(result.max_exit_status(), (*f)->run(hook).max_exit_status());
                         else
                             Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
                                 (*f)->file_name() << "' is not a regular file or has been removed";
@@ -775,18 +781,18 @@ Hooker::perform_hook(const Hook & hook) const
                         }
 
                         HookResult tmp((*f)->run(hook));
-                        if (tmp > result)
+                        if (tmp.max_exit_status() > result.max_exit_status())
                             result = tmp;
-                        else if (! tmp.output.empty())
+                        else if (! tmp.output().empty())
                         {
-                            if (hook.validate_value(tmp.output))
+                            if (hook.validate_value(tmp.output()))
                             {
-                                if (result.max_exit_status == 0)
+                                if (result.max_exit_status() == 0)
                                     return tmp;
                             }
                             else
                                 Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
-                                    << "Hook returned invalid output: '" << tmp.output << "'";
+                                    << "Hook returned invalid output: '" << tmp.output() << "'";
                         }
                     }
                     continue;

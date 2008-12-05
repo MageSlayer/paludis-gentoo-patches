@@ -31,6 +31,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -512,7 +513,7 @@ NoConfigEnvironment::root() const
 HookResult
 NoConfigEnvironment::perform_hook(const Hook &) const
 {
-    return HookResult(0, "");
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 std::tr1::shared_ptr<const FSEntrySequence>
