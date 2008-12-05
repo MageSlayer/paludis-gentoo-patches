@@ -191,26 +191,6 @@ EInstalledRepository::package_set(const SetName & s) const
 
         return result;
     }
-    else if ("world" == s.data())
-    {
-        if (_imp->params.deprecated_world().exists())
-        {
-            std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
-
-            SetFile world(SetFileParams::create()
-                    .file_name(_imp->params.deprecated_world())
-                    .type(sft_simple)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
-                            _imp->params.environment(), UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()))
-                    .tag(tag)
-                    .set_operator_mode(sfsmo_natural)
-                    .environment(_imp->params.environment()));
-            return world.contents();
-        }
-
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-    }
     else
         return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
@@ -222,8 +202,6 @@ EInstalledRepository::sets_list() const
 
     std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
-    if (_imp->params.deprecated_world().exists())
-        result->insert(SetName("world"));
     return result;
 }
 

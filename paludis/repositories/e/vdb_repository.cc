@@ -151,7 +151,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     EInstalledRepository(
             make_named_values<EInstalledRepositoryParams>(
                 value_for<n::builddir>(p.builddir()),
-                value_for<n::deprecated_world>(p.deprecated_world()),
                 value_for<n::environment>(p.environment()),
                 value_for<n::root>(p.root())
                 ),
@@ -294,15 +293,6 @@ VDBRepository::repository_factory_create(
     if (root.empty())
         root = "/";
 
-    std::string deprecated_world(f("world"));
-    if (deprecated_world.empty())
-        deprecated_world = "/DOESNOTEXIST";
-    else
-        Log::get_instance()->message("e.vdb.configuration.deprecated", ll_warning, lc_context) << "Specifying world location " <<
-            "in repository configuration files is deprecated. File '" << deprecated_world << "' will be "
-            "read but not updated. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
-            "the FAQ Upgrades section.";
-
     std::string provides_cache(f("provides_cache"));
     if (provides_cache.empty())
     {
@@ -349,7 +339,6 @@ VDBRepository::repository_factory_create(
 
     return std::tr1::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
                 value_for<n::builddir>(builddir),
-                value_for<n::deprecated_world>(deprecated_world),
                 value_for<n::environment>(env),
                 value_for<n::location>(location),
                 value_for<n::name>(RepositoryName(name)),

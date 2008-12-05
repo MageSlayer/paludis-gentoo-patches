@@ -32,7 +32,6 @@ namespace paludis
     namespace n
     {
         struct builddir;
-        struct deprecated_world;
         struct environment;
         struct location;
         struct root;
@@ -45,7 +44,6 @@ namespace paludis
         struct ExndbamRepositoryParams
         {
             NamedValue<n::builddir, FSEntry> builddir;
-            NamedValue<n::deprecated_world, FSEntry> deprecated_world;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::location, FSEntry> location;
             NamedValue<n::root, FSEntry> root;
