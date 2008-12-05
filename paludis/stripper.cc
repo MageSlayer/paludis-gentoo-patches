@@ -103,9 +103,13 @@ Stripper::do_dir_recursive(const FSEntry & f)
                 std::string t(file_type(*d));
                 if (std::string::npos != t.find("SB executable") || std::string::npos != t.find("SB shared object"))
                 {
-                    FSEntry target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
-                    target = target.dirname() / (target.basename() + ".debug");
-                    do_split(*d, target);
+                    if (_imp->options.split())
+                    {
+                        FSEntry target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
+                        target = target.dirname() / (target.basename() + ".debug");
+                        do_split(*d, target);
+                    }
+                    do_strip(*d, "");
                 }
                 else if (std::string::npos != t.find("current ar archive"))
                 {
@@ -147,13 +151,6 @@ void
 Stripper::do_split(const FSEntry & f, const FSEntry & g)
 {
     Context context("When splitting '" + stringify(f) + "' to '" + stringify(g) + "':");
-
-    if (_imp->options.strip())
-        do_strip(f, "");
-
-    if (! _imp->options.split())
-        return;
-
     on_split(f, g);
 
     {
@@ -170,9 +167,6 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
     else if (0 != run_command(Command("objcopy --add-gnu-debuglink='" + stringify(g) + "' '" + stringify(f) + "'")))
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't add debug link for '" << f << "'";
     else
-    {
         FSEntry(g).chmod(g.permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
-        do_strip(f, "");
-    }
 }
 
