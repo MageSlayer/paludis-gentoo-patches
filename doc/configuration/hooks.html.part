@@ -215,6 +215,9 @@ hooks.</p>
 variable will contain the name of the hook being called. The
 <code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
 
+<p>Ebuild hooks will <em>not</em> necessarily be called if an ebuild does not
+define the function in question.</p>
+
 <h3 id="ebuild-message-hooks">Ebuild Message Hooks</h3>
 
 <p>The following ebuild message hooks are available:</p>
