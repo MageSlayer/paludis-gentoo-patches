@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/e_choices_key.hh>
 #include <paludis/repositories/e/e_mask.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>

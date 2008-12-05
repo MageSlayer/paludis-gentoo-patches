@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/e_installed_repository_id.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/e_choices_key.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>

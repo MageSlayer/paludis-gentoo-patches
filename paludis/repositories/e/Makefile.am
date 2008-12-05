@@ -36,6 +36,7 @@ paludis_repositories_e_include_HEADERS = \
 	e_choice_value.hh \
 	e_installed_repository.hh \
 	e_installed_repository_id.hh \
+	e_choices_key.hh \
 	e_key.hh \
 	e_mask.hh \
 	e_repository.hh \
@@ -95,6 +96,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	e_choice_value.cc \
 	e_installed_repository.cc \
 	e_installed_repository_id.cc \
+	e_choices_key.cc \
 	e_key.cc \
 	e_mask.cc \
 	e_repository.cc \

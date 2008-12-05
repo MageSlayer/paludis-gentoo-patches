@@ -24,7 +24,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/choice-fwd.hh>
 
 namespace paludis
 {
@@ -293,28 +292,6 @@ namespace paludis
 
                 time_t value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class EChoicesKey :
-            public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
-            private PrivateImplementationPattern<EChoicesKey>
-        {
-            private:
-                PrivateImplementationPattern<EChoicesKey>::ImpPtr & _imp;
-
-            public:
-                EChoicesKey(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &,
-                        const std::string &,
-                        const MetadataKeyType,
-                        const std::tr1::shared_ptr<const ERepository> & maybe_profile,
-                        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & maybe_descriptions);
-
-                ~EChoicesKey();
-
-                const std::tr1::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
