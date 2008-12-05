@@ -384,10 +384,8 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
                 if (! d->is_directory_or_symlink_to_directory())
                     continue;
 
-                if (DirIterator() == std::find_if(DirIterator(*d, DirIteratorOptions() + dio_inode_sort), DirIterator(),
-                            std::tr1::bind(&ERepositoryEntries::is_package_file, _imp->entries.get(),
-                                c + PackageNamePart(d->basename()), _1)))
-                    continue;
+                if (d->basename() == "CVS")
+                   continue;
 
                 _imp->package_names.insert(std::make_pair(c + PackageNamePart(d->basename()), false));
             }
