@@ -234,7 +234,7 @@ namespace paludis
     {
         /**
          * A formatter that can handle any formattable type found in a
-         * RestrictSpecTree.
+         * PlainTextSpecTree.
          *
          * \ingroup g_dep_spec
          * \since 0.26
