@@ -142,7 +142,6 @@ DepListArgsGroup::DepListArgsGroup(ArgsHandler * h) :
             ("tilde-keyword",           "Keyword masks where accepting ~ would work")
             ("unkeyworded",             "Keyword masks where a package is unkeyworded")
             ("repository",              "Repository masks")
-            ("profile",                 "Deprecated synonym for repository")
             ("license",                 "License masks")),
 
     dl_fall_back(this, "dl-fall-back", '\0', "When to fall back to installed packages",
@@ -254,12 +253,6 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
                 options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
             else if (*a == "license")
                 options.override_masks->push_back(std::tr1::bind(&override_license, _2));
-            else if (*a == "profile")
-            {
-                Log::get_instance()->message("paludis.args.deprecated", ll_warning, lc_no_context) <<
-                    "--dl-override-masks profile is deprecated, use --dl-override-masks repository";
-                options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
-            }
             else if (*a == "none")
             {
             }
