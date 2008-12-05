@@ -20,7 +20,9 @@
 #include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/metadata_key.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -36,8 +38,13 @@ paludis::erepository::can_skip_phase(const std::tr1::shared_ptr<const ERepositor
     if (skipifno.empty())
         return false;
 
-    if (id->defined_phases_key()->value()->end() != id->defined_phases_key()->value()->find(skipifno))
-        return false;
+    std::set<std::string> skip_if_no_values;
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(skipifno, ",", "", inserter(skip_if_no_values, skip_if_no_values.begin()));
+
+    for (std::set<std::string>::const_iterator i(skip_if_no_values.begin()), i_end(skip_if_no_values.end()) ;
+            i != i_end ; ++i)
+        if (id->defined_phases_key()->value()->end() != id->defined_phases_key()->value()->find(*i))
+            return false;
 
     return true;
 }
