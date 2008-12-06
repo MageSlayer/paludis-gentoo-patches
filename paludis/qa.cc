@@ -25,7 +25,6 @@
 using namespace paludis;
 
 #include <paludis/qa-se.cc>
-#include <paludis/qa-sr.cc>
 
 template class Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
 template class Sequence<std::tr1::shared_ptr<const MetadataKey> >;
@@ -49,7 +48,7 @@ QAMessage::default_associated_keys()
 QAMessage &
 QAMessage::with_associated_id(const std::tr1::shared_ptr<const PackageID> & id)
 {
-    associated_ids->insert(id);
+    associated_ids()->insert(id);
     return *this;
 }
 
@@ -57,7 +56,18 @@ QAMessage &
 QAMessage::with_associated_key(const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const MetadataKey> & k)
 {
-    associated_keys->push_back(std::make_pair(id, k));
+    associated_keys()->push_back(std::make_pair(id, k));
     return *this;
+}
+
+QAMessage::QAMessage(const FSEntry & f, const QAMessageLevel & l,
+        const std::string & n, const std::string & m) :
+    associated_ids(default_associated_ids()),
+    associated_keys(default_associated_keys()),
+    entry(f),
+    level(l),
+    message(m),
+    name(n)
+{
 }
 

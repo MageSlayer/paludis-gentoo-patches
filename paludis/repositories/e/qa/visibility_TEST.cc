@@ -56,7 +56,7 @@ namespace
             ++count;
             if (! messages.empty())
                 messages.append(", ");
-            messages.append(m.message);
+            messages.append(m.message());
         }
 
         void status(const std::string &)

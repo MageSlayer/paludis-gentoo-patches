@@ -91,7 +91,7 @@ namespace
         void message(const QAMessage & msg)
         {
             Lock lock(mutex);
-            message_buf.insert(std::make_pair(msg.entry, msg));
+            message_buf.insert(std::make_pair(msg.entry(), msg));
         }
 
         void status(const std::string & s)

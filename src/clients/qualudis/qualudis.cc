@@ -205,19 +205,19 @@ namespace
 
         void message(const QAMessage & msg)
         {
-            if (previous_entry != msg.entry)
+            if (previous_entry != msg.entry())
             {
                 if (FSEntry("/NONE") != previous_entry)
                     std::cout << std::endl;
 
-                std::string filename(strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"));
+                std::string filename(strip_leading_string(stringify(msg.entry().strip_leading(FSEntry::cwd())), "/"));
                 std::cout << colour(cl_package_name, filename.length() > 0 ? filename : ".")
                     << ":" << std::endl;
-                previous_entry = msg.entry;
+                previous_entry = msg.entry();
             }
 
             std::cout << "  [";
-            switch (msg.level)
+            switch (msg.level())
             {
                 case qaml_maybe:
                     std::cout << "?";
@@ -243,20 +243,20 @@ namespace
                     break;
             }
 
-            std::cout << "] " + msg.name + ": " << msg.message << std::endl;
+            std::cout << "] " + msg.name() + ": " << msg.message() << std::endl;
 
-            if (! msg.associated_ids->empty())
+            if (! msg.associated_ids()->empty())
             {
-                for (PackageIDSet::ConstIterator i(msg.associated_ids->begin()),
-                        i_end(msg.associated_ids->end()) ; i != i_end ; ++i)
-                    if (! (*i)->fs_location_key() || (*i)->fs_location_key()->value() != msg.entry)
+                for (PackageIDSet::ConstIterator i(msg.associated_ids()->begin()),
+                        i_end(msg.associated_ids()->end()) ; i != i_end ; ++i)
+                    if (! (*i)->fs_location_key() || (*i)->fs_location_key()->value() != msg.entry())
                         std::cout << "    " << stringify(**i) << std::endl;
             }
 
-            if (show_keys && ! msg.associated_keys->empty())
+            if (show_keys && ! msg.associated_keys()->empty())
             {
-                for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys->begin()),
-                        i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
+                for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys()->begin()),
+                        i_end(msg.associated_keys()->end()) ; i != i_end ; ++i)
                 {
                     if (show_keys_once && ! printed_keys[i->first].insert(i->second->raw_name()).second)
                         continue;

@@ -47,7 +47,7 @@ namespace
         void message(const QAMessage & m)
         {
             ++count;
-            last_message = m.message;
+            last_message = m.message();
         }
 
         void status(const std::string &)

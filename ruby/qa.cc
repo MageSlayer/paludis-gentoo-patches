@@ -182,7 +182,7 @@ namespace
     {
         QAMessage * m_ptr;
         Data_Get_Struct(self, QAMessage, m_ptr);
-        return INT2FIX(m_ptr->level);
+        return INT2FIX(m_ptr->level());
     }
 
     /*
@@ -201,7 +201,7 @@ namespace
             int ml = NUM2INT(qa_message_level);
             if (ml < 0 || ml >= last_qaml)
                 rb_raise(rb_eArgError, "QAMessageLevel out of range");
-            m_ptr->level = static_cast<QAMessageLevel>(ml);
+            m_ptr->level() = static_cast<QAMessageLevel>(ml);
             return Qnil;
         }
         catch (const std::exception & e)
@@ -218,7 +218,7 @@ namespace
         {
             T_ * p;
             Data_Get_Struct(self, T_, p);
-            return rb_str_new2(stringify(p->*m_).c_str());
+            return rb_str_new2(stringify((p->*m_)()).c_str());
         }
 
         static VALUE
@@ -228,7 +228,7 @@ namespace
             {
                 T_ * p;
                 Data_Get_Struct(self, T_, p);
-                p->*m_ = M_ ((StringValuePtr(str)));
+                (p->*m_)() = typename M_::ValueType(stringify((StringValuePtr(str))));
                 return Qnil;
             }
             catch (const std::exception & e)
@@ -296,19 +296,19 @@ namespace
         rb_define_singleton_method(c_qa_message, "new", RUBY_FUNC_CAST(&qa_message_new), -1);
         rb_define_method(c_qa_message, "initialize", RUBY_FUNC_CAST(&qa_message_init), -1);
         rb_define_method(c_qa_message, "entry",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, FSEntry, &QAMessage::entry>::fetch)), 0);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::entry, FSEntry>, &QAMessage::entry>::fetch)), 0);
         rb_define_method(c_qa_message, "entry=",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, FSEntry, &QAMessage::entry>::set)), 1);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::entry, FSEntry>, &QAMessage::entry>::set)), 1);
         rb_define_method(c_qa_message, "level", RUBY_FUNC_CAST(&qa_message_level), 0);
         rb_define_method(c_qa_message, "level=", RUBY_FUNC_CAST(&qa_message_level_set), 1);
         rb_define_method(c_qa_message, "name",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::name>::fetch)), 0);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::name, std::string>, &QAMessage::name>::fetch)), 0);
         rb_define_method(c_qa_message, "name=",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::name>::set)), 1);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::name, std::string>, &QAMessage::name>::set)), 1);
         rb_define_method(c_qa_message, "message",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::message>::fetch)), 0);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::message, std::string>, &QAMessage::message>::fetch)), 0);
         rb_define_method(c_qa_message, "message=",
-                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::message>::set)), 1);
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, NamedValue<n::message, std::string>, &QAMessage::message>::set)), 1);
     }
 }
 

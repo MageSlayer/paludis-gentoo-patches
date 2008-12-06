@@ -78,13 +78,27 @@ void expose_qa()
          "NEED_DOC",
          bp::init<const FSEntry &, const QAMessageLevel, const std::string &, const std::string &>()
         )
-        .add_property("entry", bp::make_getter(&QAMessage::entry, bp::return_value_policy<bp::return_by_value>()))
 
-        .def_readonly("level", &QAMessage::level)
+        .add_property("entry",
+                &named_values_getter<QAMessage, n::entry, FSEntry, &QAMessage::entry>,
+                &named_values_setter<QAMessage, n::entry, FSEntry, &QAMessage::entry>,
+                "[rw] FSEntry"
+                )
 
-        .def_readonly("name", &QAMessage::name)
+        .add_property("level",
+                &named_values_getter<QAMessage, n::level, QAMessageLevel, &QAMessage::level>,
+                "[ro] QAMessageLevel"
+                )
 
-        .def_readonly("message", &QAMessage::message)
+        .add_property("name",
+                &named_values_getter<QAMessage, n::name, std::string, &QAMessage::name>,
+                "[ro] String"
+                )
+
+        .add_property("message",
+                &named_values_getter<QAMessage, n::message, std::string, &QAMessage::message>,
+                "[ro] String"
+                )
         ;
 
     /**
