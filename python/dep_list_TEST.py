@@ -180,7 +180,6 @@ class TestCase_03_DepListEntry(unittest.TestCase):
 
         self.assertEquals(dle.kind, DepListEntryKind.PACKAGE)
         self.assertEquals(dle.package_id.name, "foo/bar")
-        self.assertEquals(dle.associated_entry, None)
         self.assertEquals(list(dle.tags), [])
         self.assertEquals(str(dle.destination.name), "installed")
         self.assertEquals(dle.state, DepListEntryState.HAS_ALL_DEPS)

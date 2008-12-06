@@ -2250,7 +2250,7 @@ namespace test_cases
 
             // tags for cat/three
             DepList::Iterator it(d1.begin());
-            std::tr1::shared_ptr<DepListEntryTags> tags(it->tags);
+            std::tr1::shared_ptr<DepListEntryTags> tags(it->tags());
             TEST_CHECK_EQUAL(tags->size(), 3U);
             bool cat_three_has_tag_from_cat_one(false);
             bool cat_three_has_first_tag_from_cat_two(false);
@@ -2259,10 +2259,10 @@ namespace test_cases
             for (DepListEntryTags::ConstIterator tag_it(tags->begin()),
                      tag_it_end(tags->end()); tag_it_end != tag_it; ++tag_it)
             {
-                if ("dependency" != tag_it->tag->category())
+                if ("dependency" != tag_it->tag()->category())
                     continue;
                 std::tr1::shared_ptr<const DependencyDepTag> tag(
-                    std::tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag));
+                    std::tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag()));
 
                 if ("cat/one-1:0::repo" == tag->short_text())
                 {
@@ -2301,17 +2301,17 @@ namespace test_cases
 
             // tags for cat/one
             ++it;
-            tags = it->tags;
+            tags = it->tags();
             TEST_CHECK_EQUAL(tags->size(), 1U);
-            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "target");
+            TEST_CHECK_EQUAL(tags->begin()->tag()->category(), "target");
 
             // tags for cat/four
             ++it;
-            tags = it->tags;
+            tags = it->tags();
             TEST_CHECK_EQUAL(tags->size(), 1U);
-            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "dependency");
+            TEST_CHECK_EQUAL(tags->begin()->tag()->category(), "dependency");
             std::tr1::shared_ptr<const DependencyDepTag> deptag(
-                std::tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag));
+                std::tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag()));
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
             StringifyFormatter ff;
@@ -2321,10 +2321,10 @@ namespace test_cases
 
             // tags for cat/two
             ++it;
-            tags = it->tags;
+            tags = it->tags();
             TEST_CHECK_EQUAL(tags->size(), 1U);
-            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "general");
-            TEST_CHECK_EQUAL(tags->begin()->tag->short_text(), "set");
+            TEST_CHECK_EQUAL(tags->begin()->tag()->category(), "general");
+            TEST_CHECK_EQUAL(tags->begin()->tag()->short_text(), "set");
         }
     } test_dep_list_dependency_tags;
 }

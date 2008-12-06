@@ -203,31 +203,28 @@ void expose_dep_list()
          "An entry in a DepList.",
          bp::no_init
         )
-        .def_readonly("kind", &DepListEntry::kind,
+        .add_property("kind",
+                &named_values_getter<DepListEntry, n::kind, DepListEntryKind, &DepListEntry::kind>,
                 "[ro] DepListEntryKind"
                 )
 
-        .add_property("package_id", bp::make_getter(&DepListEntry::package_id,
-                    bp::return_value_policy<bp::return_by_value>()),
+        .add_property("package_id",
+                &named_values_getter<DepListEntry, n::package_id, std::tr1::shared_ptr<const PackageID>, &DepListEntry::package_id>,
                 "[ro] PackageID"
                 )
 
-        .add_property("associated_entry", bp::make_getter(&DepListEntry::associated_entry,
-                    bp::return_value_policy<bp::reference_existing_object>()),
-                "[ro] DepListEntry"
-                )
-
-        .add_property("tags", bp::make_getter(&DepListEntry::tags,
-                    bp::return_value_policy<bp::return_by_value>()),
+        .add_property("tags",
+                &named_values_getter<DepListEntry, n::tags, std::tr1::shared_ptr<DepListEntryTags>, &DepListEntry::tags>,
                 "[ro] DepListEntryTags"
                 )
 
-        .add_property("destination", bp::make_getter(&DepListEntry::destination,
-                    bp::return_value_policy<bp::return_by_value>()),
+        .add_property("destination",
+                &named_values_getter<DepListEntry, n::destination, std::tr1::shared_ptr<Repository>, &DepListEntry::destination>,
                 "[ro] Repository"
                 )
 
-        .def_readonly("state", &DepListEntry::state,
+        .add_property("state",
+                &named_values_getter<DepListEntry, n::state, DepListEntryState, &DepListEntry::state>,
                 "[ro] DepListEntryState"
                 )
         ;
@@ -272,3 +269,4 @@ void expose_dep_list()
         .def("__iter__", bp::range<bp::return_internal_reference<> >(dl_begin_ptr, dl_end_ptr))
         ;
 }
+

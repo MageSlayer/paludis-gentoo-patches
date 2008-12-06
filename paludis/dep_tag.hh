@@ -41,7 +41,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/sr.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/operators.hh>
 
@@ -50,6 +50,12 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct generation;
+        struct tag;
+    }
+
     /**
      * Visitor class for visiting the different DepTag subclasses.
      *
@@ -341,7 +347,33 @@ namespace paludis
             virtual std::string category() const;
     };
 
-#include <paludis/dep_tag-sr.hh>
+    /**
+     * Tags associated with a DepListEntry.
+     *
+     * The generation key is used internally by DepList. Its value is of no interest
+     * to outside clients.
+     *
+     * \see DepListEntry
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
+    struct DepTagEntry
+    {
+        NamedValue<n::generation, long> generation;
+        NamedValue<n::tag, std::tr1::shared_ptr<const DepTag> > tag;
+    };
+
+    /**
+     * Compare two DepListEntry structs by tag only.
+     *
+     * \see DepTagEntry
+     * \ingroup g_dep_list
+     * \since 0.34
+     */
+    struct PALUDIS_VISIBLE DepTagEntryComparator
+    {
+        bool operator() (const DepTagEntry &, const DepTagEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class ConstAcceptInterface<DepTagVisitorTypes>;

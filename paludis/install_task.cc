@@ -258,16 +258,16 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
         if (! tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too long");
 
-        _imp->dep_list.push_back(DepListEntry::create()
-                .kind(kind)
-                .package_id(package_id)
-                .associated_entry(static_cast<DepListEntry *>(0))
-                .tags(make_shared_ptr(new DepListEntryTags))
-                .destination(destination)
-                .generation(0)
-                .state(state)
-                .handled(handled)
-                );
+        _imp->dep_list.push_back(make_named_values<DepListEntry>(
+                value_for<n::associated_entry>(static_cast<DepListEntry *>(0)),
+                value_for<n::destination>(destination),
+                value_for<n::generation>(0),
+                value_for<n::handled>(handled),
+                value_for<n::kind>(kind),
+                value_for<n::package_id>(package_id),
+                value_for<n::state>(state),
+                value_for<n::tags>(make_shared_ptr(new DepListEntryTags))
+                ));
     }
 }
 
@@ -339,7 +339,7 @@ InstallTask::serialise(const bool undo_failures) const
     for (DepList::ConstIterator d(_imp->dep_list.begin()), d_end(_imp->dep_list.end()) ;
             d != d_end ; ++d)
     {
-        switch (d->kind)
+        switch (d->kind())
         {
             case dlk_already_installed:
             case dlk_virtual:
@@ -362,19 +362,19 @@ InstallTask::serialise(const bool undo_failures) const
 
         result << "'";
 
-        result << d->kind << ";";
+        result << d->kind() << ";";
 
-        result << "=" << *d->package_id << ";";
+        result << "=" << *d->package_id() << ";";
 
-        if (d->destination)
-            result << d->destination->name() << ";";
+        if (d->destination())
+            result << d->destination()->name() << ";";
         else
             result << "0" << ";";
 
-        result << d->state << ";";
+        result << d->state() << ";";
 
         HandledDisplayer h(undo_failures);
-        d->handled->accept(h);
+        d->handled()->accept(h);
         result << h.result;
 
         result << "'";
@@ -516,16 +516,16 @@ InstallTask::_display_task_list()
     {
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_pre")
-                    ("TARGET", stringify(*dep->package_id))
-                    ("KIND", stringify(dep->kind))).max_exit_status())
+                    ("TARGET", stringify(*dep->package_id()))
+                    ("KIND", stringify(dep->kind()))).max_exit_status())
             throw InstallActionError("Pretend install aborted by hook");
 
         on_display_merge_list_entry(*dep);
 
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_post")
-                    ("TARGET", stringify(*dep->package_id))
-                    ("KIND", stringify(dep->kind))).max_exit_status())
+                    ("TARGET", stringify(*dep->package_id()))
+                    ("KIND", stringify(dep->kind()))).max_exit_status())
             throw InstallActionError("Pretend install aborted by hook");
     }
 
@@ -609,7 +609,7 @@ InstallTask::_display_failure_summary()
             dep != dep_end ; ++dep)
     {
         s.entry = &*dep;
-        dep->handled->accept(s);
+        dep->handled()->accept(s);
     }
 
     /* we're done displaying our task list */
@@ -630,19 +630,19 @@ InstallTask::_pretend()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        if ((dlk_package != dep->kind) || already_done(*dep))
+        if ((dlk_package != dep->kind()) || already_done(*dep))
             continue;
 
-        if (dep->package_id->supports_action(pretend_action_query))
+        if (dep->package_id()->supports_action(pretend_action_query))
         {
             on_pretend_pre(*dep);
 
             PretendAction pretend_action;
-            dep->package_id->perform_action(pretend_action);
+            dep->package_id()->perform_action(pretend_action);
             if (pretend_action.failed())
             {
                 pretend_failed = true;
-                dep->handled.reset(new DepListEntryHandledFailed);
+                dep->handled().reset(new DepListEntryHandledFailed);
             }
 
             on_pretend_post(*dep);
@@ -667,11 +667,11 @@ InstallTask::_pretend()
 void
 InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f)
 {
-    std::string cpvr(stringify(*dep->package_id));
+    std::string cpvr(stringify(*dep->package_id()));
 
     bool live_destination(false);
-    if (dep->destination)
-        if ((*dep->destination).destination_interface() && (*dep->destination).destination_interface()->want_pre_post_phases())
+    if (dep->destination())
+        if ((*dep->destination()).destination_interface() && (*dep->destination()).destination_interface()->want_pre_post_phases())
             live_destination = true;
 
     if (already_done(*dep))
@@ -703,17 +703,17 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     try
     {
         SupportsActionTest<FetchAction> test_fetch;
-        if (dep->package_id->supports_action(test_fetch))
+        if (dep->package_id()->supports_action(test_fetch))
         {
             FetchAction fetch_action(_imp->fetch_options);
-            dep->package_id->perform_action(fetch_action);
+            dep->package_id()->perform_action(fetch_action);
         }
 
         if (! _imp->fetch_only)
         {
-            _imp->install_options.destination() = dep->destination;
+            _imp->install_options.destination() = dep->destination();
             InstallAction install_action(_imp->install_options);
-            dep->package_id->perform_action(install_action);
+            dep->package_id()->perform_action(install_action);
         }
     }
     catch (const InstallActionError & e)
@@ -756,12 +756,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     // look for packages with the same name in the same slot in the destination repos
     std::tr1::shared_ptr<const PackageIDSequence> collision_list;
 
-    if (dep->destination)
+    if (dep->destination())
         collision_list = (*_imp->env)[selection::AllVersionsSorted(
                 generator::Matches(make_package_dep_spec()
-                    .package(dep->package_id->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id->slot())))
-                    .in_repository(dep->destination->name()),
+                    .package(dep->package_id()->name())
+                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id()->slot())))
+                    .in_repository(dep->destination()->name()),
                     MatchPackageOptions()) |
                 filter::SupportsAction<UninstallAction>())];
 
@@ -770,7 +770,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     if (collision_list)
         for (PackageIDSequence::ConstIterator c(collision_list->begin()),
                 c_end(collision_list->end()) ; c != c_end ; ++c)
-            if (dep->package_id->version() != (*c)->version())
+            if (dep->package_id()->version() != (*c)->version())
                 clean_list.push_back(*c);
     /* no need to sort clean_list here, although if the above is
      * changed then check that this still holds... */
@@ -825,10 +825,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         on_clean_all_post(*dep, clean_list);
     }
 
-    dep->handled.reset(new DepListEntryHandledSuccess);
+    dep->handled().reset(new DepListEntryHandledSuccess);
 
     /* if we installed paludis and a re-exec is available, use it. */
-    if (_imp->env->is_paludis_package(dep->package_id->name()))
+    if (_imp->env->is_paludis_package(dep->package_id()->name()))
     {
         DepList::Iterator d(dep);
         do
@@ -837,7 +837,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             if (d == _imp->dep_list.end())
                 break;
         }
-        while (dlk_package != d->kind);
+        while (dlk_package != d->kind());
 
         if (d != _imp->dep_list.end())
             on_installed_paludis();
@@ -862,8 +862,8 @@ InstallTask::_main_actions()
         bool any_live_destination(false);
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
-            if (dlk_package == dep->kind && dep->destination)
-                if ((*dep->destination).destination_interface() && (*dep->destination).destination_interface()->want_pre_post_phases())
+            if (dlk_package == dep->kind() && dep->destination())
+                if ((*dep->destination()).destination_interface() && (*dep->destination()).destination_interface()->want_pre_post_phases())
                     any_live_destination = true;
 
         if (0 != perform_hook(Hook("install_all_pre")
@@ -874,14 +874,16 @@ InstallTask::_main_actions()
     }
 
     /* fetch / install our entire list */
-    int x(0), y(std::count_if(_imp->dep_list.begin(), _imp->dep_list.end(),
-                std::tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, std::tr1::bind<DepListEntryKind>(std::tr1::mem_fn(&DepListEntry::kind), _1)))),
-        s(0), f(0);
+    int x(0), y(0), s(0), f(0);
+    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+        if (dep->kind() == dlk_package)
+            ++y;
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        if (dlk_package != dep->kind)
+        if (dlk_package != dep->kind())
             continue;
 
         ++x;
@@ -905,7 +907,7 @@ InstallTask::_main_actions()
                         std::tr1::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
                         if (! d)
                             break;
-                        dep->handled.reset(new DepListEntryHandledSkippedUnsatisfied(*d));
+                        dep->handled().reset(new DepListEntryHandledSkippedUnsatisfied(*d));
                         on_skip_unsatisfied(*dep, *d, x, y, s, f);
                         ++s;
                         continue;
@@ -916,7 +918,7 @@ InstallTask::_main_actions()
                         std::tr1::shared_ptr<const PackageID> d(_dependent(*dep));
                         if (! d)
                             break;
-                        dep->handled.reset(new DepListEntryHandledSkippedDependent(d));
+                        dep->handled().reset(new DepListEntryHandledSkippedDependent(d));
                         on_skip_dependent(*dep, d, x, y, s, f);
                         ++s;
                         continue;
@@ -936,13 +938,13 @@ InstallTask::_main_actions()
         }
         catch (const InstallActionError & e)
         {
-            dep->handled.reset(new DepListEntryHandledFailed);
+            dep->handled().reset(new DepListEntryHandledFailed);
             on_install_action_error(e);
             ++f;
         }
         catch (const FetchActionError & e)
         {
-            dep->handled.reset(new DepListEntryHandledFailed);
+            dep->handled().reset(new DepListEntryHandledFailed);
             on_fetch_action_error(e);
             ++f;
         }
@@ -1359,30 +1361,30 @@ namespace
 std::tr1::shared_ptr<const PackageDepSpec>
 InstallTask::_unsatisfied(const DepListEntry & e) const
 {
-    Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are satisfied:");
+    Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are satisfied:");
 
-    CheckSatisfiedVisitor v(environment(), *e.package_id);
+    CheckSatisfiedVisitor v(environment(), *e.package_id());
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
-        if (e.package_id->build_dependencies_key())
-            e.package_id->build_dependencies_key()->value()->accept(v);
+        if (e.package_id()->build_dependencies_key())
+            e.package_id()->build_dependencies_key()->value()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
-        if (e.package_id->run_dependencies_key())
-            e.package_id->run_dependencies_key()->value()->accept(v);
+        if (e.package_id()->run_dependencies_key())
+            e.package_id()->run_dependencies_key()->value()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
-        if (e.package_id->post_dependencies_key())
-            e.package_id->post_dependencies_key()->value()->accept(v);
+        if (e.package_id()->post_dependencies_key())
+            e.package_id()->post_dependencies_key()->value()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
             && dl_suggested_install == _imp->dep_list.options()->suggested)
-        if (e.package_id->suggested_dependencies_key())
-            e.package_id->suggested_dependencies_key()->value()->accept(v);
+        if (e.package_id()->suggested_dependencies_key())
+            e.package_id()->suggested_dependencies_key()->value()->accept(v);
 
     return v.failure;
 }
@@ -1476,17 +1478,17 @@ namespace
             for (DepList::ConstIterator d(dep_list.begin()), d_end(dep_list.end()) ;
                     d != d_end ; ++d)
             {
-                if (! d->handled)
+                if (! d->handled())
                     continue;
 
-                if (! match_package(*env, a, *d->package_id, MatchPackageOptions()))
+                if (! match_package(*env, a, *d->package_id(), MatchPackageOptions()))
                     continue;
 
                 CheckHandledVisitor v;
-                d->handled->accept(v);
+                d->handled()->accept(v);
 
                 if (v.failure || v.skipped)
-                    failure = d->package_id;
+                    failure = d->package_id();
                 else if (v.success)
                     return;
             }
@@ -1574,7 +1576,7 @@ InstallTask::had_action_failures() const
             dep != dep_end ; ++dep)
     {
         CheckHandledVisitor v;
-        dep->handled->accept(v);
+        dep->handled()->accept(v);
         if (v.failure)
             return true;
     }
@@ -1585,32 +1587,32 @@ InstallTask::had_action_failures() const
 std::tr1::shared_ptr<const PackageID>
 InstallTask::_dependent(const DepListEntry & e) const
 {
-    Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are independent of failed packages:");
+    Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are independent of failed packages:");
 
     std::tr1::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
-    CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id, already_checked);
-    already_checked->insert(e.package_id);
+    CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id(), already_checked);
+    already_checked->insert(e.package_id());
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
-        if (e.package_id->build_dependencies_key())
-            e.package_id->build_dependencies_key()->value()->accept(v);
+        if (e.package_id()->build_dependencies_key())
+            e.package_id()->build_dependencies_key()->value()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
-        if (e.package_id->run_dependencies_key())
-            e.package_id->run_dependencies_key()->value()->accept(v);
+        if (e.package_id()->run_dependencies_key())
+            e.package_id()->run_dependencies_key()->value()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
-        if (e.package_id->post_dependencies_key())
-            e.package_id->post_dependencies_key()->value()->accept(v);
+        if (e.package_id()->post_dependencies_key())
+            e.package_id()->post_dependencies_key()->value()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
             && dl_suggested_install == _imp->dep_list.options()->suggested)
-        if (e.package_id->suggested_dependencies_key())
-            e.package_id->suggested_dependencies_key()->value()->accept(v);
+        if (e.package_id()->suggested_dependencies_key())
+            e.package_id()->suggested_dependencies_key()->value()->accept(v);
 
     return v.failure;
 }
@@ -1658,7 +1660,7 @@ bool
 InstallTask::already_done(const DepListEntry & e) const
 {
     AlreadyDoneVisitor v;
-    e.handled->accept(v);
+    e.handled()->accept(v);
     return v.result;
 }
 

@@ -44,13 +44,14 @@ namespace paludis
     class DepTagVisitorTypes;
 
     class DepTagEntry;
+    class DepTagEntryComparator;
 
     /**
      * Tags attached to a DepListEntry.
      *
      * \ingroup g_dep_spec
      */
-    typedef Set<DepTagEntry> DepListEntryTags;
+    typedef Set<DepTagEntry, DepTagEntryComparator> DepListEntryTags;
 }
 
 #endif

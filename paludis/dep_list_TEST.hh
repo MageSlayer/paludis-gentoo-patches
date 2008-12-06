@@ -48,9 +48,9 @@ namespace paludis
     std::ostream &
     operator<< (std::ostream & s, const DepListEntry & e)
     {
-        s << *e.package_id;
+        s << *e.package_id();
 
-        switch (e.kind)
+        switch (e.kind())
         {
             case dlk_virtual:
             case dlk_package:

@@ -106,7 +106,7 @@ namespace paludis
             int _counts[last_count];
             unsigned long _download_size;
             bool _download_size_overflow;
-            std::tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
+            std::tr1::shared_ptr<Set<DepTagEntry, DepTagEntryComparator> > _all_tags;
             std::tr1::shared_ptr<Set<FSEntry> > _already_downloaded;
             ChoiceDescriptions _choice_descriptions;
 
@@ -272,7 +272,7 @@ namespace paludis
                 return _download_size;
             }
 
-            std::tr1::shared_ptr<Set<DepTagEntry> > all_tags()
+            std::tr1::shared_ptr<Set<DepTagEntry, DepTagEntryComparator> > all_tags()
             {
                 return _all_tags;
             }

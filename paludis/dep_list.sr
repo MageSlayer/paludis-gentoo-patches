@@ -49,32 +49,3 @@ END
 END
 }
 
-make_class_DepListEntry()
-{
-    visible
-
-    key kind DepListEntryKind
-
-    key package_id "std::tr1::shared_ptr<const PackageID>"
-    key associated_entry "const DepListEntry *"
-    key tags "std::tr1::shared_ptr<DepListEntryTags>"
-    key destination "std::tr1::shared_ptr<Repository>"
-
-    key generation long
-    key state DepListEntryState
-
-    key handled "std::tr1::shared_ptr<const DepListEntryHandled>"
-
-    allow_named_args
-
-    doxygen_comment << "END"
-        /**
-         * An entry in a DepList.
-         *
-         * \see DepList
-         * \ingroup g_dep_list
-         * \nosubgrouping
-         */
-END
-}
-

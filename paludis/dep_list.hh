@@ -48,6 +48,18 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct associated_entry;
+        struct destination;
+        struct generation;
+        struct handled;
+        struct kind;
+        struct package_id;
+        struct state;
+        struct tags;
+    }
+
     /**
      * A sequence of functions to try, in order, when overriding masks.
      *
@@ -56,6 +68,25 @@ namespace paludis
     typedef Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> > DepListOverrideMasksFunctions;
 
 #include <paludis/dep_list-sr.hh>
+
+    /**
+     * An entry in a DepList.
+     *
+     * \see DepList
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
+    struct DepListEntry
+    {
+        NamedValue<n::associated_entry, const DepListEntry *> associated_entry;
+        NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
+        NamedValue<n::generation, long> generation;
+        NamedValue<n::handled, std::tr1::shared_ptr<const DepListEntryHandled> > handled;
+        NamedValue<n::kind, DepListEntryKind> kind;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::state, DepListEntryState> state;
+        NamedValue<n::tags, std::tr1::shared_ptr<DepListEntryTags> > tags;
+    };
 
     /**
      * Holds a list of dependencies in merge order.

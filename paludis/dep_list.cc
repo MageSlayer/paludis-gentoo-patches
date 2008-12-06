@@ -128,7 +128,7 @@ namespace paludis
         const std::tr1::shared_ptr<const PackageID> current_package_id() const
         {
             if (current_merge_list_entry != merge_list.end())
-                return current_merge_list_entry->package_id;
+                return current_merge_list_entry->package_id();
             return std::tr1::shared_ptr<const PackageID>();
         }
 
@@ -160,7 +160,7 @@ namespace
         template <typename T_>
         bool operator() (const T_ & e) const
         {
-            return e.generation > g;
+            return e.generation() > g;
         }
     };
 
@@ -176,15 +176,15 @@ namespace
         void operator() (DepListEntry & e) const
         {
             /* see EffSTL 9 for why this is so painful */
-            if (e.tags->empty())
+            if (e.tags()->empty())
                 return;
             std::tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags);
             GenerationGreaterThan pred(g);
-            for (DepListEntryTags::ConstIterator i(e.tags->begin()), i_end(e.tags->end()) ;
+            for (DepListEntryTags::ConstIterator i(e.tags()->begin()), i_end(e.tags()->end()) ;
                     i != i_end ; ++i)
                 if (! pred(*i))
                     t->insert(*i);
-            std::swap(e.tags, t);
+            std::swap(e.tags(), t);
         }
     };
 
@@ -227,7 +227,7 @@ namespace
                     else
                     {
                         for (std::pair<MergeListIndex::iterator, MergeListIndex::iterator> p(
-                                    _index.equal_range(i->package_id->name())) ; p.first != p.second ; )
+                                    _index.equal_range(i->package_id()->name())) ; p.first != p.second ; )
                             if (p.first->second == i)
                                 _index.erase(p.first++);
                             else
@@ -258,14 +258,14 @@ namespace
 
         bool operator() (const std::pair<const QualifiedPackageName, MergeList::const_iterator> & e)
         {
-            switch (e.second->kind)
+            switch (e.second->kind())
             {
                 case dlk_virtual:
                 case dlk_package:
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
-                    return match_package(*env, a, *e.second->package_id, o);
+                    return match_package(*env, a, *e.second->package_id(), o);
 
                 case dlk_block:
                 case dlk_masked:
@@ -409,20 +409,22 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     {
         /* tag it */
         if (a.tag())
-            existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(a.tag())
-                    .generation(d->_imp->merge_list_generation));
+            existing_merge_list_entry->tags()->insert(make_named_values<DepTagEntry>(
+                    value_for<n::generation>(d->_imp->merge_list_generation),
+                    value_for<n::tag>(a.tag())
+                    ));
 
         if (d->_imp->opts->dependency_tags && d->_imp->current_package_id())
-            existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
-                    .generation(d->_imp->merge_list_generation));
+            existing_merge_list_entry->tags()->insert(make_named_values<DepTagEntry>(
+                    value_for<n::generation>(d->_imp->merge_list_generation),
+                    value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
+                    ));
 
         /* add an appropriate destination */
         // TODO
 
         /* have our deps been merged already, or is this a circular dep? */
-        if (dle_no_deps == existing_merge_list_entry->state)
+        if (dle_no_deps == existing_merge_list_entry->state())
         {
             /* is a sufficiently good version installed? */
             if (! already_installed->empty())
@@ -431,14 +433,14 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (d->_imp->opts->circular == dl_circular_discard)
             {
                 Log::get_instance()->message("dep_list.dropping_circular", ll_qa, lc_context)
-                    << "Dropping circular dependency on '" << *existing_merge_list_entry->package_id << "'";
+                    << "Dropping circular dependency on '" << *existing_merge_list_entry->package_id() << "'";
                 return;
             }
             else if (d->_imp->opts->circular == dl_circular_discard_silently)
                 return;
 
             throw CircularDependencyError("Atom '" + stringify(a) + "' matched by merge list entry '" +
-                    stringify(*existing_merge_list_entry->package_id) + "', which does not yet have its "
+                    stringify(*existing_merge_list_entry->package_id()) + "', which does not yet have its "
                     "dependencies installed");
         }
         else
@@ -846,7 +848,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 if (d->_imp->current_merge_list_entry == p.first->second)
                     continue;
 
-                if (d->_imp->current_merge_list_entry->associated_entry == &*p.first->second)
+                if (d->_imp->current_merge_list_entry->associated_entry() == &*p.first->second)
                     continue;
             }
 
@@ -874,12 +876,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         bool replaced(false);
         for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
                 r_end(will_be_installed.end()) ; r != r_end && ! replaced ; ++r)
-            if ((*r)->package_id->slot() == (*aa)->slot())
+            if ((*r)->package_id()->slot() == (*aa)->slot())
             {
                 /* if it's a virtual, it only replaces if it's the same package. */
-                if ((*r)->package_id->virtual_for_key())
+                if ((*r)->package_id()->virtual_for_key())
                 {
-                    if ((*r)->package_id->virtual_for_key()->value()->name() == (*aa)->name())
+                    if ((*r)->package_id()->virtual_for_key()->value()->name() == (*aa)->name())
                         replaced = true;
                 }
                 else
@@ -931,7 +933,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id, d->_imp->opts->match_package_options))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id(), d->_imp->opts->match_package_options))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -945,10 +947,10 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                     || a.blocked_spec()->installable_to_path_ptr())
                 && d->_imp->current_package_id())
         {
-            if ((*r)->package_id->name() == d->_imp->current_package_id()->name())
+            if ((*r)->package_id()->name() == d->_imp->current_package_id()->name())
                 continue;
 
-            if ((*r)->package_id->virtual_for_key() && (*r)->package_id->virtual_for_key()->value()->name() ==
+            if ((*r)->package_id()->virtual_for_key() && (*r)->package_id()->virtual_for_key()->value()->name() ==
                     d->_imp->current_package_id()->name())
                 continue;
         }
@@ -961,7 +963,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id, d->_imp->opts->match_package_options))
+            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id(), d->_imp->opts->match_package_options))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -975,11 +977,11 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                         || a.blocked_spec()->installable_to_path_ptr())
                     && d->_imp->current_package_id())
             {
-                if (r->package_id->name() == d->_imp->current_package_id()->name())
+                if (r->package_id()->name() == d->_imp->current_package_id()->name())
                     continue;
 
-                if (r->package_id->virtual_for_key() &&
-                        r->package_id->virtual_for_key()->value()->name() == d->_imp->current_package_id()->name())
+                if (r->package_id()->virtual_for_key() &&
+                        r->package_id()->virtual_for_key()->value()->name() == d->_imp->current_package_id()->name())
                     continue;
             }
 
@@ -1078,30 +1080,33 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
-                DepListEntry::create()
-                .package_id(p)
-                .generation(_imp->merge_list_generation)
-                .state(dle_no_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .destination(p->virtual_for_key() ? std::tr1::shared_ptr<Repository>() : find_destination(*p, destinations))
-                .associated_entry(0)
-                .handled(p->virtual_for_key() ?
-                    std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryNoHandlingRequired) :
-                    std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryUnhandled))
-                .kind(p->virtual_for_key() ? dlk_virtual : dlk_package))),
+                make_named_values<DepListEntry>(
+                    value_for<n::associated_entry>(static_cast<DepListEntry *>(0)),
+                    value_for<n::destination>(p->virtual_for_key() ? std::tr1::shared_ptr<Repository>() : find_destination(*p, destinations)),
+                    value_for<n::generation>(_imp->merge_list_generation),
+                    value_for<n::handled>(p->virtual_for_key() ?
+                        std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryNoHandlingRequired) :
+                        std::tr1::shared_ptr<DepListEntryHandled>(new DepListEntryUnhandled)),
+                    value_for<n::kind>(p->virtual_for_key() ? dlk_virtual : dlk_package),
+                    value_for<n::package_id>(p),
+                    value_for<n::state>(dle_no_deps),
+                    value_for<n::tags>(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                    ))),
         our_merge_entry_post_position(our_merge_entry_position);
 
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 
     if (tag)
-        our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .generation(_imp->merge_list_generation)
-                .tag(tag));
+        our_merge_entry_position->tags()->insert(make_named_values<DepTagEntry>(
+                value_for<n::generation>(_imp->merge_list_generation),
+                value_for<n::tag>(tag)
+                ));
 
     if (_imp->opts->dependency_tags && _imp->current_package_id())
-        our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
-                .generation(_imp->merge_list_generation));
+        our_merge_entry_position->tags()->insert(make_named_values<DepTagEntry>(
+                value_for<n::generation>(_imp->merge_list_generation),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                ));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry_position);
@@ -1141,17 +1146,18 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
                 continue;
 
             our_merge_entry_post_position = _imp->merge_list.insert(next(our_merge_entry_post_position),
-                    DepListEntry(DepListEntry::create()
-                        .package_id((*_imp->env->package_database()->fetch_repository(
+                    DepListEntry(make_named_values<DepListEntry>(
+                        value_for<n::associated_entry>(&*_imp->current_merge_list_entry),
+                        value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
+                        value_for<n::generation>(_imp->merge_list_generation),
+                        value_for<n::handled>(make_shared_ptr(new DepListEntryNoHandlingRequired)),
+                        value_for<n::kind>(dlk_provided),
+                        value_for<n::package_id>((*_imp->env->package_database()->fetch_repository(
                                     RepositoryName("virtuals"))).make_virtuals_interface()->make_virtual_package_id(
-                                QualifiedPackageName((*i)->text()), p))
-                        .generation(_imp->merge_list_generation)
-                        .state(dle_has_all_deps)
-                        .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                        .destination(std::tr1::shared_ptr<Repository>())
-                        .associated_entry(&*_imp->current_merge_list_entry)
-                        .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
-                        .kind(dlk_provided)));
+                                QualifiedPackageName((*i)->text()), p)),
+                        value_for<n::state>(dle_has_all_deps),
+                        value_for<n::tags>(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                        )));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
         }
     }
@@ -1187,7 +1193,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
     if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
         add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
 
-    our_merge_entry_position->state = dle_has_pre_deps;
+    our_merge_entry_position->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
     /* add post dependencies */
@@ -1202,7 +1208,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
     if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
         add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
 
-    our_merge_entry_position->state = dle_has_all_deps;
+    our_merge_entry_position->state() = dle_has_all_deps;
 }
 
 void
@@ -1214,32 +1220,35 @@ DepList::add_error_package(const std::tr1::shared_ptr<const PackageID> & p, cons
 
     for ( ; pp.second != pp.first ; ++pp.first)
     {
-        if (pp.first->second->kind == kind && *pp.first->second->package_id == *p)
+        if (pp.first->second->kind() == kind && *pp.first->second->package_id() == *p)
         {
             if (_imp->current_package_id())
-                pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
-                        .generation(_imp->merge_list_generation));
+                pp.first->second->tags()->insert(make_named_values<DepTagEntry>(
+                        value_for<n::generation>(_imp->merge_list_generation),
+                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                        ));
             return;
         }
     }
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list.begin(),
-                DepListEntry::create()
-                .package_id(p)
-                .generation(_imp->merge_list_generation)
-                .state(dle_has_all_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .destination(std::tr1::shared_ptr<Repository>())
-                .associated_entry(&*_imp->current_merge_list_entry)
-                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
-                .kind(kind)));
+                make_named_values<DepListEntry>(
+                    value_for<n::associated_entry>(&*_imp->current_merge_list_entry),
+                    value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
+                    value_for<n::generation>(_imp->merge_list_generation),
+                    value_for<n::handled>(make_shared_ptr(new DepListEntryNoHandlingRequired)),
+                    value_for<n::kind>(kind),
+                    value_for<n::package_id>(p),
+                    value_for<n::state>(dle_has_all_deps),
+                    value_for<n::tags>(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                )));
 
     if (_imp->current_package_id())
-        our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
-                .generation(_imp->merge_list_generation));
+        our_merge_entry_position->tags()->insert(make_named_values<DepTagEntry>(
+                value_for<n::generation>(_imp->merge_list_generation),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                ));
 
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 }
@@ -1254,28 +1263,30 @@ DepList::add_suggested_package(const std::tr1::shared_ptr<const PackageID> & p,
 
     for ( ; pp.second != pp.first ; ++pp.first)
     {
-        if ((pp.first->second->kind == dlk_suggested || pp.first->second->kind == dlk_already_installed
-                    || pp.first->second->kind == dlk_package || pp.first->second->kind == dlk_provided
-                    || pp.first->second->kind == dlk_subpackage) && *pp.first->second->package_id == *p)
+        if ((pp.first->second->kind() == dlk_suggested || pp.first->second->kind() == dlk_already_installed
+                    || pp.first->second->kind() == dlk_package || pp.first->second->kind() == dlk_provided
+                    || pp.first->second->kind() == dlk_subpackage) && *pp.first->second->package_id() == *p)
             return;
     }
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
-                DepListEntry::create()
-                .package_id(p)
-                .generation(_imp->merge_list_generation)
-                .state(dle_has_all_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .destination(find_destination(*p, destinations))
-                .associated_entry(&*_imp->current_merge_list_entry)
-                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
-                .kind(dlk_suggested)));
+                make_named_values<DepListEntry>(
+                    value_for<n::associated_entry>(&*_imp->current_merge_list_entry),
+                    value_for<n::destination>(find_destination(*p, destinations)),
+                    value_for<n::generation>(_imp->merge_list_generation),
+                    value_for<n::handled>(make_shared_ptr(new DepListEntryNoHandlingRequired)),
+                    value_for<n::kind>(dlk_suggested),
+                    value_for<n::package_id>(p),
+                    value_for<n::state>(dle_has_all_deps),
+                    value_for<n::tags>(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                )));
 
     if (_imp->current_package_id())
-        our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
-                .generation(_imp->merge_list_generation));
+        our_merge_entry_position->tags()->insert(make_named_values<DepTagEntry>(
+                value_for<n::generation>(_imp->merge_list_generation),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                ));
 
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 }
@@ -1345,26 +1356,29 @@ DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageI
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
 
     MergeList::iterator our_merge_entry(_imp->merge_list.insert(_imp->merge_list_insert_position,
-                DepListEntry::create()
-                .package_id(p)
-                .generation(_imp->merge_list_generation)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
-                .state(dle_has_pre_deps)
-                .destination(std::tr1::shared_ptr<Repository>())
-                .associated_entry(0)
-                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
-                .kind(dlk_already_installed)));
+                make_named_values<DepListEntry>(
+                    value_for<n::associated_entry>(static_cast<DepListEntry *>(0)),
+                    value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
+                    value_for<n::generation>(_imp->merge_list_generation),
+                    value_for<n::handled>(make_shared_ptr(new DepListEntryNoHandlingRequired)),
+                    value_for<n::kind>(dlk_already_installed),
+                    value_for<n::package_id>(p),
+                    value_for<n::state>(dle_has_pre_deps),
+                    value_for<n::tags>(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
+                )));
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry));
 
     if (tag)
-        our_merge_entry->tags->insert(DepTagEntry::create()
-                .generation(_imp->merge_list_generation)
-                .tag(tag));
+        our_merge_entry->tags()->insert(make_named_values<DepTagEntry>(
+                value_for<n::generation>(_imp->merge_list_generation),
+                value_for<n::tag>(tag)
+                ));
 
     if (_imp->opts->dependency_tags && _imp->current_package_id())
-        our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
-                .generation(_imp->merge_list_generation));
+        our_merge_entry->tags()->insert(make_named_values<DepTagEntry>(
+                    value_for<n::generation>(_imp->merge_list_generation),
+                    value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
+                    ));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry);
@@ -1376,7 +1390,7 @@ DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageI
     if (p->post_dependencies_key())
         add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations, true);
 
-    our_merge_entry->state = dle_has_pre_deps;
+    our_merge_entry->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
     if (p->build_dependencies_key())
@@ -1589,7 +1603,7 @@ namespace
     {
         bool operator() (const DepListEntry & e) const
         {
-            switch (e.kind)
+            switch (e.kind())
             {
                 case dlk_virtual:
                 case dlk_package:
@@ -1641,7 +1655,7 @@ DepList::replaced(const PackageID & m) const
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options)))))
     {
-        if (p.first->second->package_id->slot() != m.slot())
+        if (p.first->second->package_id()->slot() != m.slot())
             p.first = next(p.first);
         else
             return true;
@@ -1667,7 +1681,7 @@ DepList::Iterator
 DepList::push_back(const DepListEntry & e)
 {
     MergeList::iterator our_merge_entry_position(_imp->merge_list.insert(_imp->merge_list.end(), e));
-    _imp->merge_list_index.insert(std::make_pair(e.package_id->name(), our_merge_entry_position));
+    _imp->merge_list_index.insert(std::make_pair(e.package_id()->name(), our_merge_entry_position));
     return Iterator(our_merge_entry_position);
 }
 

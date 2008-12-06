@@ -44,14 +44,12 @@ template class Visits<const TargetDepTag>;
 
 template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
 
-template class Set<DepTagEntry>;
-template class WrappedForwardIterator<Set<DepTagEntry>::ConstIteratorTag, const DepTagEntry>;
-template class WrappedOutputIterator<Set<DepTagEntry>::InserterTag, DepTagEntry>;
+template class Set<DepTagEntry, DepTagEntryComparator>;
+template class WrappedForwardIterator<Set<DepTagEntry, DepTagEntryComparator>::ConstIteratorTag, const DepTagEntry>;
+template class WrappedOutputIterator<Set<DepTagEntry, DepTagEntryComparator>::InserterTag, DepTagEntry>;
 
 template class PrivateImplementationPattern<GeneralSetDepTag>;
 template class PrivateImplementationPattern<DependencyDepTag>;
-
-#include <paludis/dep_tag-sr.cc>
 
 namespace
 {
@@ -440,5 +438,11 @@ DepTagCategoryFactory::create(const std::string & s) const
     if (s == "target")
         return make_target_dep_tag();
     throw ConfigurationError("No dep tag category named '" + s + "'");
+}
+
+bool
+DepTagEntryComparator::operator() (const DepTagEntry & l, const DepTagEntry & r) const
+{
+    return *l.tag() < *r.tag();
 }
 

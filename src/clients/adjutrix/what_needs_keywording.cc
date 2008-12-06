@@ -128,17 +128,17 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     bool none(true);
     for (DepList::ConstIterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
-        if (dlk_masked == p->kind)
+        if (dlk_masked == p->kind())
         {
             none = false;
-            cout << std::setw(30) << std::left << stringify(p->package_id->name());
-            cout << std::setw(20) << std::left << stringify(p->package_id->canonical_form(idcf_version));
+            cout << std::setw(30) << std::left << stringify(p->package_id()->name());
+            cout << std::setw(20) << std::left << stringify(p->package_id()->canonical_form(idcf_version));
 
             std::string current;
 
-            if (p->package_id->keywords_key())
+            if (p->package_id()->keywords_key())
             {
-                std::tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id->keywords_key()->value());
+                std::tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id()->keywords_key()->value());
                 for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")
@@ -151,7 +151,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string masks;
 
-            for (PackageID::MasksConstIterator m(p->package_id->begin_masks()), m_end(p->package_id->end_masks()) ;
+            for (PackageID::MasksConstIterator m(p->package_id()->begin_masks()), m_end(p->package_id()->end_masks()) ;
                     m != m_end ; ++m)
                 masks.append(stringify((*m)->key()));
 

@@ -1021,7 +1021,7 @@ namespace
         {
             DepListEntry * p;
             Data_Get_Struct(self, DepListEntry, p);
-            return INT2FIX(p->kind);
+            return INT2FIX(p->kind());
         }
         catch (const std::exception & e)
         {
@@ -1043,7 +1043,7 @@ namespace
         {
             DepListEntry * p;
             Data_Get_Struct(self, DepListEntry, p);
-            return(package_id_to_value(p->package_id));
+            return(package_id_to_value(p->package_id()));
         }
         catch (const std::exception & e)
         {
@@ -1066,9 +1066,9 @@ namespace
             Data_Get_Struct(self, DepListEntry, p);
 
             VALUE result(rb_ary_new());
-            for (DepListEntryTags::ConstIterator r(p->tags->begin()),
-                    r_end(p->tags->end()) ; r != r_end ; ++r)
-                rb_ary_push(result, dep_tag_to_value((*r).tag));
+            for (DepListEntryTags::ConstIterator r(p->tags()->begin()),
+                    r_end(p->tags()->end()) ; r != r_end ; ++r)
+                rb_ary_push(result, dep_tag_to_value((*r).tag()));
 
             return result;
         }
@@ -1091,7 +1091,7 @@ namespace
         {
             DepListEntry * p;
             Data_Get_Struct(self, DepListEntry, p);
-            return INT2FIX(p->state);
+            return INT2FIX(p->state());
         }
         catch (const std::exception & e)
         {

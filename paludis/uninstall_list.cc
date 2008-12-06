@@ -289,7 +289,10 @@ namespace
                     (*env)[selection::AllVersionsSorted(generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
-                matches->insert(DepTagEntry(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)), 0));
+                matches->insert(make_named_values<DepTagEntry>(
+                            value_for<n::generation>(0),
+                            value_for<n::tag>(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)))
+                            ));
         }
 
         void visit_sequence(const AnyDepSpec & a,
@@ -380,7 +383,7 @@ UninstallList::collect_depped_upon(std::tr1::shared_ptr<const PackageIDSet> targ
 
         for (DepListEntryTags::ConstIterator it(cache->second->begin()), it_end(cache->second->end());
              it_end != it; ++it)
-            result->insert(std::tr1::static_pointer_cast<const DependencyDepTag>(it->tag)->package_id());
+            result->insert(std::tr1::static_pointer_cast<const DependencyDepTag>(it->tag())->package_id());
     }
 
     return result;
@@ -482,7 +485,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
         for (DepListEntryTags::ConstIterator it(cache->second->begin()), it_end(cache->second->end());
              it_end != it; ++it)
         {
-            std::tr1::shared_ptr<const DependencyDepTag> tag(std::tr1::static_pointer_cast<const DependencyDepTag>(it->tag));
+            std::tr1::shared_ptr<const DependencyDepTag> tag(std::tr1::static_pointer_cast<const DependencyDepTag>(it->tag()));
             if (*tag->package_id() == e)
             {
                 if (! logged)
