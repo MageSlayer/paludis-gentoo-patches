@@ -24,6 +24,24 @@
 
 namespace paludis
 {
+    /**
+     * A NamedValue is used to hold a member of type V_ for a class.
+     *
+     * NamedValue is used to simplify 'plain old data' style classes, and to
+     * provide compiler-time-checked named parameters for functions. Use
+     * thestruct.themember() and thestruct.themember() = to access the real
+     * underlying values.
+     *
+     * Usually a struct containing NamedValue objects will be constructed using
+     * the make_named_values() function. For each NamedValue object,
+     * make_named_values() takes a parameter in the form
+     * value_for<n::whatever_K_is>(the_value).
+     *
+     * In all cases, NamedValue members are listed in name-sorted order, and
+     * the same name is used for K_ and the member name.
+     *
+     * \ingroup g_oo
+     */
     template <typename K_, typename V_>
     class NamedValue
     {
