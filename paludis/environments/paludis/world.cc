@@ -23,6 +23,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_tag.hh>
@@ -111,14 +112,14 @@ World::_add_string_to_world(const std::string & n) const
         }
     }
 
-    SetFile world(SetFileParams::create()
-            .file_name(*_imp->maybe_world_file)
-            .type(sft_simple)
-            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
-                    filter::All()))
-            .tag(std::tr1::shared_ptr<DepTag>())
-            .set_operator_mode(sfsmo_natural)
-            .environment(_imp->env));
+    SetFile world(make_named_values<SetFileParams>(
+                value_for<n::environment>(_imp->env),
+                value_for<n::file_name>(*_imp->maybe_world_file),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                value_for<n::set_operator_mode>(sfsmo_natural),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                value_for<n::type>(sft_simple)
+                ));
     world.add(n);
     world.rewrite();
 }
@@ -141,14 +142,14 @@ World::_remove_string_from_world(const std::string & n) const
 
     if (_imp->maybe_world_file->exists())
     {
-        SetFile world(SetFileParams::create()
-                .file_name(*_imp->maybe_world_file)
-                .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
-                        filter::All()))
-                .tag(std::tr1::shared_ptr<DepTag>())
-                .set_operator_mode(sfsmo_natural)
-                .environment(_imp->env));
+        SetFile world(make_named_values<SetFileParams>(
+                value_for<n::environment>(_imp->env),
+                value_for<n::file_name>(*_imp->maybe_world_file),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                value_for<n::set_operator_mode>(sfsmo_natural),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                value_for<n::type>(sft_simple)
+                ));
 
         world.remove(n);
         world.rewrite();
@@ -166,14 +167,14 @@ World::world_set() const
     {
         if (_imp->maybe_world_file->exists())
         {
-            SetFile world(SetFileParams::create()
-                    .file_name(*_imp->maybe_world_file)
-                    .type(sft_simple)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set,
-                            filter::All()))
-                    .tag(tag)
-                    .set_operator_mode(sfsmo_natural)
-                    .environment(_imp->env));
+            SetFile world(make_named_values<SetFileParams>(
+                    value_for<n::environment>(_imp->env),
+                    value_for<n::file_name>(*_imp->maybe_world_file),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                    value_for<n::set_operator_mode>(sfsmo_natural),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(sft_simple)
+                    ));
             return world.contents();
         }
         else

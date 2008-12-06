@@ -115,14 +115,14 @@ ERepositorySets::package_set(const SetName & ss) const
         FSEntry ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
-        SetFile f(SetFileParams::create()
-                .file_name(ff)
-                .environment(_imp->environment)
-                .type(sft_paludis_conf)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
-                        _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()))
-                .set_operator_mode(s.second)
-                .tag(tag));
+        SetFile f(make_named_values<SetFileParams>(
+                    value_for<n::environment>(_imp->environment),
+                    value_for<n::file_name>(ff),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                    value_for<n::set_operator_mode>(s.second),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(sft_paludis_conf)
+                    ));
 
         return f.contents();
     }

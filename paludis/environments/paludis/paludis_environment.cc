@@ -55,6 +55,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <tr1/functional>
 #include <functional>
@@ -291,28 +292,29 @@ PaludisEnvironment::local_set(const SetName & ss) const
 
     if ((dir / (stringify(s.first) + ".bash")).exists())
     {
-        SetFile f(SetFileParams::create()
-                .file_name(dir / (stringify(s.first) + ".bash"))
-                .type(sft_paludis_bash)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                        UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set, filter::All()))
-                .tag(tag)
-                .set_operator_mode(s.second)
-                .environment(this));
+        SetFile f(make_named_values<SetFileParams>(
+                    value_for<n::environment>(this),
+                    value_for<n::file_name>(dir / (stringify(s.first) + ".bash")),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                    value_for<n::set_operator_mode>(s.second),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(sft_paludis_bash)
+                    ));
 
         _imp->sets.insert(std::make_pair(ss, f.contents()));
         return f.contents();
     }
     else if ((dir / (stringify(s.first) + ".conf")).exists())
     {
-        SetFile f(SetFileParams::create()
-                .file_name(dir / (stringify(s.first) + ".conf"))
-                .type(sft_paludis_conf)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1,
-                        this, UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All()))
-                .tag(tag)
-                .set_operator_mode(s.second)
-                .environment(this));
+        SetFile f(make_named_values<SetFileParams>(
+                value_for<n::environment>(this),
+                value_for<n::file_name>(dir / (stringify(s.first) + ".conf")),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
+                        UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All())),
+                value_for<n::set_operator_mode>(s.second),
+                value_for<n::tag>(tag),
+                value_for<n::type>(sft_paludis_conf)
+                ));
 
         _imp->sets.insert(std::make_pair(ss, f.contents()));
         return f.contents();

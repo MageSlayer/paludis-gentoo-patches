@@ -22,6 +22,7 @@
 #include <test/test_framework.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -73,14 +74,14 @@ namespace test_cases
 
             TestEnvironment env;
 
-            SetFile f(SetFileParams::create()
-                    .file_name(FSEntry("set_file_TEST_dir/simple1"))
-                    .type(sft_simple)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(),
-                            filter::All()))
-                    .tag(std::tr1::shared_ptr<DepTag>())
-                    .set_operator_mode(sfsmo_natural)
-                    .environment(0));
+            SetFile f(make_named_values<SetFileParams>(
+                        value_for<n::environment>(static_cast<Environment *>(0)),
+                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/simple1")),
+                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
+                        value_for<n::set_operator_mode>(sfsmo_natural),
+                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                        value_for<n::type>(sft_simple)
+                        ));
 
             {
                 SetSpecStringifier p;
@@ -140,14 +141,14 @@ namespace test_cases
 
             TestEnvironment env;
 
-            SetFile f(SetFileParams::create()
-                    .file_name(FSEntry("set_file_TEST_dir/paludisconf1"))
-                    .type(sft_paludis_conf)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(),
-                            filter::All()))
-                    .tag(std::tr1::shared_ptr<DepTag>())
-                    .set_operator_mode(sfsmo_natural)
-                    .environment(0));
+            SetFile f(make_named_values<SetFileParams>(
+                        value_for<n::environment>(static_cast<Environment *>(0)),
+                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/paludisconf1")),
+                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
+                        value_for<n::set_operator_mode>(sfsmo_natural),
+                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                        value_for<n::type>(sft_paludis_conf)
+                        ));
 
             {
                 SetSpecStringifier p;
@@ -210,14 +211,14 @@ namespace test_cases
 
             TestEnvironment env;
 
-            SetFile f(SetFileParams::create()
-                    .file_name(FSEntry("set_file_TEST_dir/override"))
-                    .type(sft_paludis_conf)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(),
-                            filter::All()))
-                    .tag(std::tr1::shared_ptr<DepTag>())
-                    .set_operator_mode(sfsmo_natural)
-                    .environment(0));
+            SetFile f(make_named_values<SetFileParams>(
+                        value_for<n::environment>(static_cast<Environment *>(0)),
+                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/override")),
+                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
+                        value_for<n::set_operator_mode>(sfsmo_natural),
+                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                        value_for<n::type>(sft_paludis_conf)
+                        ));
 
             {
                 SetSpecStringifier p;
@@ -225,14 +226,14 @@ namespace test_cases
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/bar-1.23 set set2* ) ");
             }
 
-            SetFile fstar(SetFileParams::create()
-                    .file_name(FSEntry("set_file_TEST_dir/override"))
-                    .type(sft_paludis_conf)
-                    .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(),
-                            filter::All()))
-                    .tag(std::tr1::shared_ptr<DepTag>())
-                    .set_operator_mode(sfsmo_star)
-                    .environment(0));
+            SetFile fstar(make_named_values<SetFileParams>(
+                        value_for<n::environment>(static_cast<Environment *>(0)),
+                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/override")),
+                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
+                        value_for<n::set_operator_mode>(sfsmo_star),
+                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                        value_for<n::type>(sft_paludis_conf)
+                        ));
 
             {
                 SetSpecStringifier p;

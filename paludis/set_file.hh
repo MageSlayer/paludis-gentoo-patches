@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -49,7 +50,32 @@ namespace paludis
     class Environment;
 
 #include <paludis/set_file-se.hh>
-#include <paludis/set_file-sr.hh>
+
+    namespace n
+    {
+        struct environment;
+        struct file_name;
+        struct parser;
+        struct set_operator_mode;
+        struct tag;
+        struct type;
+    }
+
+    /**
+     * Parameters for a SetFile.
+     *
+     * \ingroup g_environment
+     * \ingroup g_repository
+     */
+    struct SetFileParams
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::file_name, FSEntry> file_name;
+        NamedValue<n::parser, std::tr1::function<PackageDepSpec (const std::string &)> > parser;
+        NamedValue<n::set_operator_mode, SetFileSetOperatorMode> set_operator_mode;
+        NamedValue<n::tag, std::tr1::shared_ptr<const DepTag> > tag;
+        NamedValue<n::type, SetFileType> type;
+    };
 
     /**
      * Thrown if there is a problem reading or writing a SetFile.

@@ -37,6 +37,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>
@@ -889,13 +890,14 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
         }
     }
 
-    SetFile world(SetFileParams::create()
-            .file_name(_imp->world_file)
-            .type(sft_simple)
-            .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All()))
-            .tag(std::tr1::shared_ptr<DepTag>())
-            .set_operator_mode(sfsmo_natural)
-            .environment(this));
+    SetFile world(make_named_values<SetFileParams>(
+                value_for<n::environment>(this),
+                value_for<n::file_name>(_imp->world_file),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
+                value_for<n::set_operator_mode>(sfsmo_natural),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                value_for<n::type>(sft_simple)
+            ));
     world.add(s);
     world.rewrite();
 }
@@ -911,14 +913,15 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
 
     if (_imp->world_file.exists())
     {
-        SetFile world(SetFileParams::create()
-                .file_name(_imp->world_file)
-                .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation,
-                        filter::All()))
-                .tag(std::tr1::shared_ptr<DepTag>())
-                .set_operator_mode(sfsmo_natural)
-                .environment(this));
+        SetFile world(make_named_values<SetFileParams>(
+                value_for<n::environment>(this),
+                value_for<n::file_name>(_imp->world_file),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
+                        UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
+                value_for<n::set_operator_mode>(sfsmo_natural),
+                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
+                value_for<n::type>(sft_simple)
+                ));
 
         world.remove(s);
         world.rewrite();
@@ -938,14 +941,15 @@ PortageEnvironment::world_set() const
 
     if (_imp->world_file.exists())
     {
-        SetFile world(SetFileParams::create()
-                .file_name(_imp->world_file)
-                .type(sft_simple)
-                .parser(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation,
-                        filter::All()))
-                .tag(tag)
-                .set_operator_mode(sfsmo_natural)
-                .environment(this));
+        SetFile world(make_named_values<SetFileParams>(
+                    value_for<n::environment>(this),
+                    value_for<n::file_name>(_imp->world_file),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
+                            UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
+                    value_for<n::set_operator_mode>(sfsmo_natural),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(sft_simple)
+                ));
         return world.contents();
     }
     else
