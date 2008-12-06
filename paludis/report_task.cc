@@ -166,13 +166,17 @@ ReportTask::execute()
         }
     }
 
-    UninstallList unused_list(e, UninstallListOptions());
+    UninstallList unused_list(e, make_named_values<UninstallListOptions>(
+                value_for<n::with_dependencies_as_errors>(false),
+                value_for<n::with_dependencies_included>(false),
+                value_for<n::with_unused_dependencies>(false)
+                ));
     unused_list.add_unused();
     std::set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
     for (UninstallList::ConstIterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
-        if (i->kind != ulk_virtual)
-            unused.insert(i->package_id);
+        if (i->kind() != ulk_virtual)
+            unused.insert(i->package_id());
 
     for (PackageDatabase::RepositoryConstIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)

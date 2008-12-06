@@ -22,8 +22,8 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
 
@@ -39,9 +39,45 @@
 
 namespace paludis
 {
-
 #include <paludis/uninstall_list-se.hh>
-#include <paludis/uninstall_list-sr.hh>
+
+    namespace n
+    {
+        struct kind;
+        struct package_id;
+        struct tags;
+        struct with_dependencies_as_errors;
+        struct with_dependencies_included;
+        struct with_unused_dependencies;
+    }
+
+    /**
+     * Parameters for an UninstallList.
+     *
+     * \see UninstallList
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
+    struct UninstallListOptions
+    {
+        NamedValue<n::with_dependencies_as_errors, bool> with_dependencies_as_errors;
+        NamedValue<n::with_dependencies_included, bool> with_dependencies_included;
+        NamedValue<n::with_unused_dependencies, bool> with_unused_dependencies;
+    };
+
+    /**
+     * An entry in an UninstallList.
+     *
+     * \see UninstallList
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
+    struct UninstallListEntry
+    {
+        NamedValue<n::kind, UninstallListEntryKind> kind;
+        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::tags, std::tr1::shared_ptr<Set<std::tr1::shared_ptr<DepTag> > > > tags;
+    };
 
     class Environment;
 

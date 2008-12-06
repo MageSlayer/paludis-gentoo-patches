@@ -95,23 +95,23 @@ namespace
 
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
-                if (d.kind == ulk_virtual)
+                if (d.kind() == ulk_virtual)
                     if (CommandLine::get_instance()->install_args.a_show_reasons.argument() != "full")
                         return;
 
-                switch (d.kind)
+                switch (d.kind())
                 {
                     case ulk_package:
-                        cout << "* " << colour(cl_package_name, stringify(*d.package_id));
+                        cout << "* " << colour(cl_package_name, stringify(*d.package_id()));
                         ++_count;
                         break;
 
                     case ulk_virtual:
-                        cout << "* " << colour(cl_unimportant, stringify(*d.package_id));
+                        cout << "* " << colour(cl_unimportant, stringify(*d.package_id()));
                         break;
 
                     case ulk_required:
-                        cout << "* " << colour(cl_error, stringify(*d.package_id));
+                        cout << "* " << colour(cl_error, stringify(*d.package_id()));
                         ++_error_count;
                         break;
 
@@ -121,7 +121,7 @@ namespace
 
                 if ((CommandLine::get_instance()->install_args.a_show_reasons.argument() == "summary") ||
                         (CommandLine::get_instance()->install_args.a_show_reasons.argument() == "full") ||
-                        ulk_required == d.kind)
+                        ulk_required == d.kind())
                 {
                     std::string deps;
                     unsigned count(0), max_count;
@@ -131,8 +131,8 @@ namespace
                         max_count = std::numeric_limits<long>::max();
 
                     for (Set<std::tr1::shared_ptr<DepTag> >::ConstIterator
-                            tag(d.tags->begin()),
-                            tag_end(d.tags->end()) ;
+                            tag(d.tags()->begin()),
+                            tag_end(d.tags()->end()) ;
                             tag != tag_end ; ++tag)
                     {
                         if ((*tag)->category() != "dependency")
@@ -150,9 +150,9 @@ namespace
                             deps.append(stringify(count - max_count + 1) + " more, ");
 
                         deps.erase(deps.length() - 2);
-                        if (d.kind == ulk_required)
+                        if (d.kind() == ulk_required)
                             cout << " requires";
-                        cout << " " << colour(d.kind == ulk_virtual ? cl_unimportant : cl_tag,
+                        cout << " " << colour(d.kind() == ulk_virtual ? cl_unimportant : cl_tag,
                                 "<" + deps + ">");
                     }
                 }
@@ -167,7 +167,7 @@ namespace
             virtual void on_uninstall_pre(const UninstallListEntry & d)
             {
                 std::string msg("(" + stringify(++_current_count) + " of " +
-                        stringify(_count) + ") Uninstalling " + stringify(*d.package_id));
+                        stringify(_count) + ") Uninstalling " + stringify(*d.package_id()));
 
                 cout << endl << colour(cl_heading, msg) << endl << endl;
 

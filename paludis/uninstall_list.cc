@@ -33,6 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -51,7 +52,6 @@
 using namespace paludis;
 
 #include <paludis/uninstall_list-se.cc>
-#include <paludis/uninstall_list-sr.cc>
 
 typedef std::tr1::unordered_map<
     std::tr1::shared_ptr<const PackageID>,
@@ -95,7 +95,7 @@ namespace
 
         bool operator() (const UninstallListEntry & f) const
         {
-            return *f.package_id == *e;
+            return *f.package_id() == *e;
         }
     };
 }
@@ -125,7 +125,7 @@ UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, const s
                         _imp->uninstall_list.end(), MatchUninstallListEntry(e)))))
     {
         if (t)
-            i->tags->insert(t);
+            i->tags()->insert(t);
 
         return;
     }
@@ -138,15 +138,15 @@ UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, const s
     if (! error)
     {
         /* don't recurse errors, it gets horrid */
-        if (_imp->options.with_dependencies_included)
+        if (_imp->options.with_dependencies_included())
             add_dependencies(*e, false);
-        else if (_imp->options.with_dependencies_as_errors)
+        else if (_imp->options.with_dependencies_as_errors())
             add_dependencies(*e, true);
     }
 
     move_package_to_end(e);
 
-    if (_imp->options.with_unused_dependencies)
+    if (_imp->options.with_unused_dependencies())
         add_unused_dependencies();
 }
 
@@ -192,13 +192,6 @@ UninstallList::end() const
     return ConstIterator(_imp->uninstall_list.end());
 }
 
-UninstallListOptions::UninstallListOptions() :
-    with_unused_dependencies(false),
-    with_dependencies_included(false),
-    with_dependencies_as_errors(false)
-{
-}
-
 void
 UninstallList::add_package(const std::tr1::shared_ptr<const PackageID> & e, const std::tr1::shared_ptr<DepTag> & t,
         const UninstallListEntryKind k)
@@ -206,13 +199,14 @@ UninstallList::add_package(const std::tr1::shared_ptr<const PackageID> & e, cons
     Context context("When adding package '" + stringify(*e) + "' to the uninstall list:");
 
     std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
-                _imp->uninstall_list.end(), UninstallListEntry(UninstallListEntry::create()
-                    .package_id(e)
-                    .tags(make_shared_ptr(new Set<std::tr1::shared_ptr<DepTag> >))
-                    .kind(k))));
+                _imp->uninstall_list.end(), make_named_values<UninstallListEntry>(
+                    value_for<n::kind>(k),
+                    value_for<n::package_id>(e),
+                    value_for<n::tags>(make_shared_ptr(new Set<std::tr1::shared_ptr<DepTag> >))
+                    )));
 
     if (t)
-        i->tags->insert(t);
+        i->tags()->insert(t);
 }
 
 void
@@ -408,8 +402,8 @@ UninstallList::add_unused_dependencies()
         std::tr1::shared_ptr<PackageIDSet> uninstall_list_targets(new PackageIDSet);
         for (std::list<UninstallListEntry>::const_iterator i(_imp->uninstall_list.begin()),
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
-            if (i->kind == ulk_package || i->kind == ulk_virtual)
-                uninstall_list_targets->insert(i->package_id);
+            if (i->kind() == ulk_package || i->kind() == ulk_virtual)
+                uninstall_list_targets->insert(i->package_id());
 
         std::tr1::shared_ptr<const PackageIDSet> depped_upon_list(collect_depped_upon(uninstall_list_targets));
 
@@ -530,7 +524,7 @@ namespace
     {
         bool operator() (const UninstallListEntry & e) const
         {
-            switch (e.kind)
+            switch (e.kind())
             {
                 case ulk_virtual:
                 case ulk_package:

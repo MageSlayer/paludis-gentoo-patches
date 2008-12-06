@@ -230,10 +230,11 @@ UninstallTask::execute()
 
     on_build_unmergelist_pre();
 
-    UninstallList list(_imp->env, UninstallListOptions::create()
-            .with_unused_dependencies(_imp->with_unused_dependencies)
-            .with_dependencies_included(_imp->with_dependencies)
-            .with_dependencies_as_errors(_imp->check_safety));
+    UninstallList list(_imp->env, make_named_values<UninstallListOptions>(
+            value_for<n::with_dependencies_as_errors>(_imp->check_safety),
+            value_for<n::with_dependencies_included>(_imp->with_dependencies),
+            value_for<n::with_unused_dependencies>(_imp->with_unused_dependencies)
+            ));
 
     if (_imp->unused)
         list.add_unused();
@@ -301,8 +302,8 @@ UninstallTask::execute()
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
-            if (i->kind != ulk_virtual)
-                being_removed[i->package_id->name()].insert(i->package_id->version());
+            if (i->kind() != ulk_virtual)
+                being_removed[i->package_id()->name()].insert(i->package_id()->version());
 
         for (std::map<QualifiedPackageName, std::set<VersionSpec> >::const_iterator
                 i(being_removed.begin()), i_end(being_removed.end()) ; i != i_end ; ++i)
@@ -340,16 +341,16 @@ UninstallTask::execute()
 
     int x(0), y(0);
     for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
-        if (i->kind != ulk_virtual)
+        if (i->kind() != ulk_virtual)
             ++y;
 
     for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
-        if (i->kind == ulk_virtual)
+        if (i->kind() == ulk_virtual)
             continue;
         ++x;
 
-        std::string cpvr(stringify(*i->package_id));
+        std::string cpvr(stringify(*i->package_id()));
 
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
@@ -363,7 +364,7 @@ UninstallTask::execute()
                     make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>("")
                         ));
-            i->package_id->perform_action(uninstall_action);
+            i->package_id()->perform_action(uninstall_action);
         }
         catch (const UninstallActionError & e)
         {
