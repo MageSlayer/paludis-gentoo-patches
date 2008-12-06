@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "report_task.hh"
+#include <paludis/report_task.hh>
 #include <paludis/util/log.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/environment.hh>
@@ -32,6 +32,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <paludis/version_requirements.hh>
 #include <set>
@@ -210,7 +211,9 @@ ReportTask::execute()
                                             (generator::InRepository(RepositoryName(*o)) &
                                              generator::Matches(make_package_dep_spec()
                                                  .package((*v)->name())
-                                                 .version_requirement(VersionRequirement(vo_equal, (*v)->version())),
+                                                 .version_requirement(make_named_values<VersionRequirement>(
+                                                         value_for<n::version_operator>(vo_equal),
+                                                         value_for<n::version_spec>((*v)->version()))),
                                                  MatchPackageOptions())) |
                                             filter::SupportsAction<InstallAction>()))]);
 

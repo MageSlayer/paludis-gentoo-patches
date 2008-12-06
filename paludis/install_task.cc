@@ -472,7 +472,9 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
 
     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                 .package(target->name())
-                .version_requirement(VersionRequirement(vo_equal, target->version()))
+                .version_requirement(make_named_values<VersionRequirement>(
+                                value_for<n::version_operator>(vo_equal),
+                                value_for<n::version_spec>(target->version())))
                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
                 .in_repository(target->repository()->name())));
 

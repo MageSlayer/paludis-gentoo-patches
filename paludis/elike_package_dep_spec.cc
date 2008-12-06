@@ -172,7 +172,9 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                     }
 
                     VersionSpec vs(ver);
-                    result.version_requirement(VersionRequirement(vop, vs));
+                    result.version_requirement(make_named_values<VersionRequirement>(
+                                value_for<n::version_operator>(vop),
+                                value_for<n::version_spec>(vs)));
                     had_bracket_version_requirements = true;
                 }
             }
@@ -398,7 +400,9 @@ paludis::elike_get_remove_trailing_version(std::string & s)
 void
 paludis::elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
 {
-    result.version_requirement(VersionRequirement(op, spec));
+    result.version_requirement(make_named_values<VersionRequirement>(
+                value_for<n::version_operator>(op),
+                value_for<n::version_spec>(spec)));
 }
 
 void

@@ -29,6 +29,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
@@ -99,7 +100,9 @@ do_fix_linkage(const std::tr1::shared_ptr<Environment> & env)
         if (CommandLine::get_instance()->a_exact.specified())
             targets->push_back(stringify(make_package_dep_spec()
                         .package((*pkg_it)->name())
-                        .version_requirement(VersionRequirement(vo_equal, (*pkg_it)->version()))
+                        .version_requirement(make_named_values<VersionRequirement>(
+                                value_for<n::version_operator>(vo_equal),
+                                value_for<n::version_spec>((*pkg_it)->version())))
                         .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
         else
             targets->push_back(stringify(make_package_dep_spec()

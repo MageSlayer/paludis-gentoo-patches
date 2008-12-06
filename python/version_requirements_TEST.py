@@ -34,13 +34,5 @@ class TestCase_VersionRequirements(unittest.TestCase):
         self.assertEquals(str(v1.version_operator), ">")
         self.assertEquals(str(v1.version_spec), "1")
 
-    def test_03_compare(self):
-        v1 = VersionRequirement("<", "0")
-        v2 = VersionRequirement("<", "0")
-
-        self.assert_(v1 == v2)
-        v1.version_operator = ">"
-        self.assert_(v1 != v2)
-
 if __name__ == "__main__":
     unittest.main()

@@ -54,6 +54,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <algorithm>
 #include <functional>
@@ -1122,7 +1123,10 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
         {
             std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec()
                         .package(*(*i)->package_ptr())
-                        .version_requirement(VersionRequirement(vo_equal, p->version()))));
+                        .version_requirement(make_named_values<VersionRequirement>(
+                                value_for<n::version_operator>(vo_equal),
+                                value_for<n::version_spec>(p->version())))
+                        ));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z;
             if (pp->package_ptr())

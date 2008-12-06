@@ -74,14 +74,14 @@ namespace
                         } while (false);
                     }
 
-                    if (r->version_operator == vo_equal_star)
+                    if (r->version_operator() == vo_equal_star)
                         s << "=";
                     else
-                        s << r->version_operator;
+                        s << r->version_operator();
 
-                    s << r->version_spec;
+                    s << r->version_spec();
 
-                    if (r->version_operator == vo_equal_star)
+                    if (r->version_operator() == vo_equal_star)
                         s << "*";
 
                     need_op = true;

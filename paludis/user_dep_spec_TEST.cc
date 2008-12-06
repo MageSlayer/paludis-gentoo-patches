@@ -42,7 +42,7 @@ namespace
 {
     std::string dump_version_requirement(const VersionRequirement & v)
     {
-        return stringify(v.version_operator) + stringify(v.version_spec);
+        return stringify(v.version_operator()) + stringify(v.version_spec());
     }
 
     struct UserDepSpecTestCase : TestCase

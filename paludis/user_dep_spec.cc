@@ -164,7 +164,9 @@ namespace
                         }
 
                         VersionSpec vs(ver);
-                        result.version_requirement(VersionRequirement(vop, vs));
+                        result.version_requirement(make_named_values<VersionRequirement>(
+                                    value_for<n::version_operator>(vop),
+                                    value_for<n::version_spec>(vs)));
                         had_bracket_version_requirements = true;
                     }
                 }

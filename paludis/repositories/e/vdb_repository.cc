@@ -953,7 +953,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)
                     i = _imp->ids.insert(std::make_pair(*p.package_ptr(), make_shared_ptr(new PackageIDSequence))).first;
-                i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec, *d));
+                i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
             }
         }
         catch (const InternalError &)

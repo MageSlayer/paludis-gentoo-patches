@@ -886,10 +886,10 @@ namespace
                 }
                 else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end())
                 {
-                    if (version_requirements_ptr()->begin()->version_operator == vo_equal_star)
+                    if (version_requirements_ptr()->begin()->version_operator() == vo_equal_star)
                         s << "=";
                     else
-                        s << version_requirements_ptr()->begin()->version_operator;
+                        s << version_requirements_ptr()->begin()->version_operator();
                 }
             }
 
@@ -917,8 +917,8 @@ namespace
                 }
                 else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end())
                 {
-                    s << "-" << version_requirements_ptr()->begin()->version_spec;
-                    if (version_requirements_ptr()->begin()->version_operator == vo_equal_star)
+                    s << "-" << version_requirements_ptr()->begin()->version_spec();
+                    if (version_requirements_ptr()->begin()->version_operator() == vo_equal_star)
                         s << "*";
                 }
             }
@@ -1014,14 +1014,14 @@ namespace
                             } while (false);
                         }
 
-                        if (r->version_operator == vo_equal_star)
+                        if (r->version_operator() == vo_equal_star)
                             s << "=";
                         else
-                            s << r->version_operator;
+                            s << r->version_operator();
 
-                        s << r->version_spec;
+                        s << r->version_spec();
 
-                        if (r->version_operator == vo_equal_star)
+                        if (r->version_operator() == vo_equal_star)
                             s << "*";
 
                         need_op = true;

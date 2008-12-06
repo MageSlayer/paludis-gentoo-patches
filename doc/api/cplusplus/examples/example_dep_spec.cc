@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
                         }
                     }
 
-                    cout << r->version_operator << r->version_spec;
+                    cout << r->version_operator() << r->version_spec();
                     need_join = true;
                 }
                 cout << endl;

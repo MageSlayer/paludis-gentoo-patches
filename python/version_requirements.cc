@@ -22,10 +22,22 @@
 
 #include <paludis/version_requirements.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    VersionRequirement * make_version_requirement(const VersionOperator & op, const VersionSpec & spec)
+    {
+        return new VersionRequirement(make_named_values<VersionRequirement>(
+                    value_for<n::version_operator>(op),
+                    value_for<n::version_spec>(spec)
+                    ));
+    }
+}
 
 void expose_version_requirements()
 {
@@ -41,21 +53,25 @@ void expose_version_requirements()
     bp::class_<VersionRequirement>
         (
          "VersionRequirement",
-         bp::init<const VersionOperator &, const VersionSpec &>(
-             "__init__(VersionOperator, VersionSpec)"
-             )
+         bp::no_init
         )
-        .def_readwrite("version_operator", &VersionRequirement::version_operator,
+
+        .def("__init__",
+                bp::make_constructor(&make_version_requirement),
+                "__init__(VersionOperator, VersionSpec)"
+            )
+
+        .add_property("version_operator",
+                &named_values_getter<VersionRequirement, n::version_operator, VersionOperator, &VersionRequirement::version_operator>,
+                &named_values_setter<VersionRequirement, n::version_operator, VersionOperator, &VersionRequirement::version_operator>,
                 "[rw] VersionOperator"
                 )
 
-        .def_readwrite("version_spec", &VersionRequirement::version_spec,
+        .add_property("version_spec",
+                &named_values_getter<VersionRequirement, n::version_spec, VersionSpec, &VersionRequirement::version_spec>,
+                &named_values_setter<VersionRequirement, n::version_spec, VersionSpec, &VersionRequirement::version_spec>,
                 "[rw] VersionSpec"
                 )
-
-        .def("__eq__", &VersionRequirement::operator==)
-
-        .def("__ne__", &py_ne<VersionRequirement>)
         ;
 
     /**

@@ -24,6 +24,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -56,9 +57,9 @@ namespace
                     if (! first)
                         result.append(", ");
                     first = false;
-                    result.append(stringify(r->version_operator));
+                    result.append(stringify(r->version_operator()));
                     result.append(" ");
-                    result.append(stringify(r->version_spec));
+                    result.append(stringify(r->version_spec()));
                 }
                 result.append(")");
             }
@@ -193,9 +194,9 @@ paludis::cranrepository::parse_cran_package_dep_spec(const std::string & ss)
 
             if (subtokens.size() != 2)
                 throw PackageDepSpecError("Invalid () entry '" + *t + "' in '" + ss + "'");
-            data->version_requirement(VersionRequirement(
-                        VersionOperator(subtokens[0]),
-                        VersionSpec(cran_version_to_internal(subtokens[1]))));
+            data->version_requirement(make_named_values<VersionRequirement>(
+                        value_for<n::version_operator>(VersionOperator(subtokens[0])),
+                        value_for<n::version_spec>(VersionSpec(cran_version_to_internal(subtokens[1])))));
         }
     }
 

@@ -300,7 +300,9 @@ ERepositorySets::security_set(bool insecurity) const
                         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                     make_package_dep_spec()
                                     .package((*c)->name())
-                                    .version_requirement(VersionRequirement(vo_equal, (*c)->version()))
+                                    .version_requirement(make_named_values<VersionRequirement>(
+                                            value_for<n::version_operator>(vo_equal),
+                                            value_for<n::version_spec>((*c)->version())))
                                     .in_repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
@@ -334,7 +336,9 @@ ERepositorySets::security_set(bool insecurity) const
 
                             std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                                         .package((*r)->name())
-                                        .version_requirement(VersionRequirement(vo_equal, (*r)->version()))
+                                        .version_requirement(make_named_values<VersionRequirement>(
+                                                value_for<n::version_operator>(vo_equal),
+                                                value_for<n::version_spec>((*r)->version())))
                                         .in_repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(

@@ -26,6 +26,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -63,7 +64,9 @@ namespace paludis
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
                                 make_package_dep_spec()
                                 .package(v->name())
-                                .version_requirement(VersionRequirement(vo_equal, v->version()))
+                                .version_requirement(make_named_values<VersionRequirement>(
+                                        value_for<n::version_operator>(vo_equal),
+                                        value_for<n::version_spec>(v->version())))
                                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
                                 .in_repository(v->repository()->name()))))
                     :

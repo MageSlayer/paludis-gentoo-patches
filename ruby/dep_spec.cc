@@ -836,9 +836,9 @@ namespace
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
-                    rb_str_new2(stringify(i->version_operator).c_str()));
+                    rb_str_new2(stringify(i->version_operator()).c_str()));
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("spec")),
-                    version_spec_to_value(i->version_spec));
+                    version_spec_to_value(i->version_spec()));
                 rb_ary_push(result, result_hash);
             }
         return result;
