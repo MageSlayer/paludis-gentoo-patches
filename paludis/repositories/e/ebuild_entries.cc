@@ -638,10 +638,10 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
                 (*o.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
-                            value_for<n::environment_file>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
-                                    stringify(id->name().package) + "-" + stringify(id->version())) / "temp" / "loadsaveenv"),
-                            value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
-                                    stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
+                            value_for<n::environment_file>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                                    stringify(id->name().package()) + "-" + stringify(id->version())) / "temp" / "loadsaveenv"),
+                            value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                                    stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::package_id>(id),
                             value_for<n::used_this_for_config_protect>(o.used_this_for_config_protect())
@@ -669,10 +669,10 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             ELikeSplitChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        value_for<n::debug_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
-                                stringify(id->name().package) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
-                        value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" +
-                                stringify(id->name().package) + "-" + stringify(id->version())) / "image"),
+                        value_for<n::debug_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                                stringify(id->name().package()) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
+                        value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                                stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
                         value_for<n::package_id>(id),
                         value_for<n::split>(split_choice && split_choice->enabled()),
                         value_for<n::strip>(strip_choice && strip_choice->enabled())
@@ -730,7 +730,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::config_protect>(_imp->e_repository->profile_variable("CONFIG_PROTECT")),
                             value_for<n::config_protect_mask>(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK")),
                             value_for<n::expand_vars>(expand_vars),
-                            value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category) + "-" + stringify(id->name().package) + "-" + stringify(id->version())) / "temp"),
+                            value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version())) / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
                             value_for<n::root>(o.destination()->installed_root_key() ?  stringify(o.destination()->installed_root_key()->value()) : "/"),
                             value_for<n::slot>(SlotName(id->slot())),
@@ -922,7 +922,7 @@ EbuildEntries::is_package_file(const QualifiedPackageName & n, const FSEntry & e
 {
     Context context("When working out whether '" + stringify(e) + "' is a package file for '" + stringify(n) + "':");
 
-    if (0 != e.basename().compare(0, stringify(n.package).length() + 1, stringify(n.package) + "-"))
+    if (0 != e.basename().compare(0, stringify(n.package()).length() + 1, stringify(n.package()) + "-"))
         return false;
 
     std::string::size_type p(e.basename().rfind('.'));
@@ -940,7 +940,7 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
     std::string::size_type p(e.basename().rfind('.'));
     if (std::string::npos == p)
         throw InternalError(PALUDIS_HERE, "got npos");
-    return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package) + "-"));
+    return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package()) + "-"));
 }
 
 bool
@@ -1094,7 +1094,7 @@ EbuildEntries::get_package_file_manifest_key(const FSEntry & e, const QualifiedP
 std::string
 EbuildEntries::binary_ebuild_name(const QualifiedPackageName & q, const VersionSpec & v, const std::string & e) const
 {
-    return stringify(q.package) + "-" + stringify(v) + "." + e;
+    return stringify(q.package()) + "-" + stringify(v) + "." + e;
 }
 
 std::string

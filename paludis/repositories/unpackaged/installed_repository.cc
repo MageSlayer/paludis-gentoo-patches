@@ -301,7 +301,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
-        std::string uid(stringify(m.package_id()->name().category) + "---" + stringify(m.package_id()->name().package));
+        std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
         uid_dir /= "data";
         uid_dir.mkdir();
         uid_dir /= uid;

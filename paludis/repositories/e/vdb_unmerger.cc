@@ -142,8 +142,8 @@ VDBUnmerger::extend_hook(const Hook & h) const
 
     if (_imp->options.package_id())
     {
-        std::string cat(stringify(_imp->options.package_id()->name().category));
-        std::string pn(stringify(_imp->options.package_id()->name().package));
+        std::string cat(stringify(_imp->options.package_id()->name().category()));
+        std::string pn(stringify(_imp->options.package_id()->name().package()));
         std::string pvr(stringify(_imp->options.package_id()->version()));
         std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
 

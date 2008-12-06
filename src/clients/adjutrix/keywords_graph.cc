@@ -233,7 +233,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
                     if (CommandLine::get_instance()->a_package.end_args() == std::find(
                                 CommandLine::get_instance()->a_package.begin_args(),
                                 CommandLine::get_instance()->a_package.end_args(),
-                                stringify(p->package)))
+                                stringify(p->package())))
                         continue;
 
                 write_keywords_graph(env, *r, *p);

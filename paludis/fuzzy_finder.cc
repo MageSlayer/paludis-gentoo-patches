@@ -101,8 +101,8 @@ namespace
 
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()); p_end != p; ++p)
-            if (tolower(p->package.data()[0]) == _first_char &&
-                _distance_calculator.distance_with(tolower_0_cost(p->package.data())) <= _threshold)
+            if (tolower(p->package().data()[0]) == _first_char &&
+                _distance_calculator.distance_with(tolower_0_cost(p->package().data())) <= _threshold)
                 result->insert(*p);
 
         return result;
@@ -140,8 +140,8 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
         if (pds.package_ptr())
         {
-            g = g & generator::Category(pds.package_ptr()->category);
-            package = stringify(pds.package_ptr()->package);
+            g = g & generator::Category(pds.package_ptr()->category());
+            package = stringify(pds.package_ptr()->package());
         }
 
         if (pds.in_repository_ptr())

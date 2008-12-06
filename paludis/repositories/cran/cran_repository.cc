@@ -155,7 +155,7 @@ CRANRepository::has_package_named(const QualifiedPackageName & q) const
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! has_category_named(q.category))
+    if (! has_category_named(q.category()))
         return false;
 
     need_ids();

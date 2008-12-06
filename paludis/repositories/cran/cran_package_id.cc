@@ -228,7 +228,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::tr1::shar
             for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                     t != t_end ; ++t)
             {
-                if (*t != stringify(name().package))
+                if (*t != stringify(name().package()))
                     _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(_imp->env, _imp->cran_repository, this, *t)));
                 else
                 {

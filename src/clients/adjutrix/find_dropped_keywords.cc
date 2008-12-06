@@ -88,13 +88,13 @@ namespace
             const VersionSpec & best_keyworded, const VersionSpec & best_anywhere)
     {
         static CategoryNamePart previous_category("not-on-a-boat");
-        if (package.category != previous_category)
+        if (package.category() != previous_category)
         {
-            cout << std::setw(col_width_package) << (stringify(package.category) + "/") << endl;
-            previous_category = package.category;
+            cout << std::setw(col_width_package) << (stringify(package.category()) + "/") << endl;
+            previous_category = package.category();
         }
 
-        std::string p(stringify(package.package));
+        std::string p(stringify(package.package()));
         if (SlotName("0") != slot)
             p += ":" + stringify(slot);
         cout << "  " << std::setw(col_width_package - 2) << p;
@@ -202,7 +202,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
                     if (CommandLine::get_instance()->a_package.end_args() == std::find(
                                 CommandLine::get_instance()->a_package.begin_args(),
                                 CommandLine::get_instance()->a_package.end_args(),
-                                stringify(p->package)))
+                                stringify(p->package())))
                         continue;
 
                 check_one_package(env, keyword, *r, *p);

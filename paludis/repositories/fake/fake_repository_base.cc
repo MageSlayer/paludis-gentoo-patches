@@ -82,9 +82,9 @@ FakeRepositoryBase::has_category_named(const CategoryNamePart & c) const
 bool
 FakeRepositoryBase::has_package_named(const QualifiedPackageName & q) const
 {
-    return has_category_named(q.category) &&
-        (_imp->package_names.find(q.category)->second->end() !=
-         _imp->package_names.find(q.category)->second->find(q.package));
+    return has_category_named(q.category()) &&
+        (_imp->package_names.find(q.category())->second->end() !=
+         _imp->package_names.find(q.category())->second->find(q.package()));
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>
@@ -110,7 +110,7 @@ FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 std::tr1::shared_ptr<const PackageIDSequence>
 FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
-    if (! has_category_named(n.category))
+    if (! has_category_named(n.category()))
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
     if (! has_package_named(n))
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
@@ -127,8 +127,8 @@ FakeRepositoryBase::add_category(const CategoryNamePart & c)
 void
 FakeRepositoryBase::add_package(const QualifiedPackageName & q)
 {
-    add_category(q.category);
-    _imp->package_names.find(q.category)->second->insert(q.package);
+    add_category(q.category());
+    _imp->package_names.find(q.category())->second->insert(q.package());
     _imp->ids.insert(std::make_pair(q, new PackageIDSequence));
 }
 

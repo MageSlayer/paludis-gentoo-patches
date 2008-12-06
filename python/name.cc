@@ -191,9 +191,17 @@ void expose_name()
         )
         .def(bp::init<const CategoryNamePart &, const PackageNamePart &>())
 
-        .def_readwrite("category", &QualifiedPackageName::category)
+        .add_property("category",
+                &named_values_getter<QualifiedPackageName, n::category, CategoryNamePart, &QualifiedPackageName::category>,
+                &named_values_setter<QualifiedPackageName, n::category, CategoryNamePart, &QualifiedPackageName::category>,
+                "[rw] CategoryNamePart"
+                )
 
-        .def_readwrite("package", &QualifiedPackageName::package)
+        .add_property("package",
+                &named_values_getter<QualifiedPackageName, n::package, PackageNamePart, &QualifiedPackageName::package>,
+                &named_values_setter<QualifiedPackageName, n::package, PackageNamePart, &QualifiedPackageName::package>,
+                "[rw] PackageNamePart"
+                )
 
         .def("__cmp__", &py_cmp<QualifiedPackageName>)
 

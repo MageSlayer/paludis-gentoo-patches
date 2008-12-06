@@ -318,7 +318,7 @@ ExndbamRepository::merge(const MergeParams & m)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
-        std::string uid(stringify(m.package_id()->name().category) + "---" + stringify(m.package_id()->name().package));
+        std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
         uid_dir /= "data";
         uid_dir.mkdir();
         uid_dir /= uid;
@@ -471,7 +471,7 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
                         value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                         value_for<n::distdir>(ver_dir),
                         value_for<n::ebuild_dir>(ver_dir),
-                        value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
+                        value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
                         value_for<n::eclassdirs>(eclassdirs),
                         value_for<n::environment>(_imp->params.environment()),
                         value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),

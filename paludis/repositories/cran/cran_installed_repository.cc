@@ -204,7 +204,7 @@ CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
 
-    if (! has_category_named(q.category))
+    if (! has_category_named(q.category()))
         return false;
 
     need_ids();
@@ -270,7 +270,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
     if (! has_version(q, v))
         return result;
 
-    std::string pn = stringify(q.package);
+    std::string pn = stringify(q.package());
     CRANDescription::normalise_name(pn);
     FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
     if (! f.is_regular_file())
@@ -353,7 +353,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
     {
         if (0 == r->installed_time)
         {
-            std::string pn(stringify(q.package));
+            std::string pn(stringify(q.package()));
             CRANDescription::normalise_name(pn);
             FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
             try
@@ -435,7 +435,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
     std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash unmerge")
-            .with_setenv("PN", vm->cran_interface->package)
+            .with_setenv("PN", vm->cran_interface->package())
             .with_setenv("PV", stringify(v))
             .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
             .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
@@ -464,7 +464,7 @@ CRANInstalledRepository::package_set(const SetName & s) const
         {
             std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
                     new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(
-                            new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package))))));
+                            new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package()))))));
             result->add(spec);
         }
 

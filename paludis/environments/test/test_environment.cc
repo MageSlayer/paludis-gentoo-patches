@@ -279,9 +279,9 @@ TestEnvironment::want_choice_enabled(
 {
     if (stringify(v) == "pkgname")
     {
-        if ("enabled" == stringify(id->name().package))
+        if ("enabled" == stringify(id->name().package()))
             return Tribool(true);
-        else if ("disabled" == stringify(id->name().package))
+        else if ("disabled" == stringify(id->name().package()))
             return Tribool(false);
         else
             return Tribool(indeterminate);

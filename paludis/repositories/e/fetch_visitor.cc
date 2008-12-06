@@ -205,19 +205,19 @@ FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
                 std::tr1::shared_ptr<const FSEntrySequence> hook_dirs(_imp->env->hook_dirs());
 
                 cmd
-                    .with_setenv("P", stringify(_imp->id->name().package) + "-" +
+                    .with_setenv("P", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version().remove_revision()))
-                    .with_setenv("PNV", stringify(_imp->id->name().package) + "-" +
+                    .with_setenv("PNV", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version().remove_revision()))
                     .with_setenv("PV", stringify(_imp->id->version().remove_revision()))
                     .with_setenv("PR", stringify(_imp->id->version().revision_only()))
-                    .with_setenv("PN", stringify(_imp->id->name().package))
+                    .with_setenv("PN", stringify(_imp->id->name().package()))
                     .with_setenv("PVR", stringify(_imp->id->version()))
-                    .with_setenv("PF", stringify(_imp->id->name().package) + "-" +
+                    .with_setenv("PF", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version()))
-                    .with_setenv("PNVR", stringify(_imp->id->name().package) + "-" +
+                    .with_setenv("PNVR", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version()))
-                    .with_setenv("CATEGORY", stringify(_imp->id->name().category))
+                    .with_setenv("CATEGORY", stringify(_imp->id->name().category()))
                     .with_setenv("REPOSITORY", stringify(_imp->id->repository()->name()))
                     .with_setenv("EAPI", stringify(_imp->eapi.name()))
                     .with_setenv("SLOT", "")

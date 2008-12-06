@@ -152,11 +152,11 @@ InstalledGemsRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! has_category_named(q.category))
+    if (! has_category_named(q.category()))
         return false;
 
     need_ids();
-    return _imp->package_names.find(q.category)->second->end() != _imp->package_names.find(q.category)->second->find(q);
+    return _imp->package_names.find(q.category())->second->end() != _imp->package_names.find(q.category())->second->find(q);
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>
@@ -292,7 +292,7 @@ InstalledGemsRepository::do_uninstall(const std::tr1::shared_ptr<const PackageID
         const UninstallOptions &) const
 {
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
-            "/gems/gems.bash uninstall '" + stringify(id->name().package) + "' '" + stringify(id->version()) + "'");
+            "/gems/gems.bash uninstall '" + stringify(id->name().package()) + "' '" + stringify(id->version()) + "'");
     cmd.with_stderr_prefix(stringify(*id) + "> ");
     cmd.with_setenv("GEM_HOME", stringify(_imp->params.install_dir));
 

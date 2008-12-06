@@ -352,7 +352,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                     if (CommandLine::get_instance()->a_package.end_args() == std::find(
                                 CommandLine::get_instance()->a_package.begin_args(),
                                 CommandLine::get_instance()->a_package.end_args(),
-                                stringify(p->package)))
+                                stringify(p->package())))
                         continue;
 
                 ret |= check_one_package(env, *entries, *p);

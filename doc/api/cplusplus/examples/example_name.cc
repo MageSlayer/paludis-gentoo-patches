@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
 
         QualifiedPackageName q1("cat/pkg"), q2(CategoryNamePart("cat") + PackageNamePart("pkg"));
         cout << q1 << " " << (q1 == q2 ? "==" : "!=") << " " << q2 << endl;
-        cout << q1 << " has category '" << q1.category << "' and package part '" << q1.package << "'" << endl;
+        cout << q1 << " has category '" << q1.category() << "' and package part '" << q1.package() << "'" << endl;
     }
     catch (const Exception & e)
     {

@@ -213,11 +213,11 @@ VDBRepository::has_package_named(const QualifiedPackageName & q) const
 
     need_category_names();
 
-    CategoryMap::iterator cat_iter(_imp->categories.find(q.category));
+    CategoryMap::iterator cat_iter(_imp->categories.find(q.category()));
     if (_imp->categories.end() == cat_iter)
         return false;
 
-    need_package_ids(q.category);
+    need_package_ids(q.category());
 
     return cat_iter->second->end() != cat_iter->second->find(q);
 }
@@ -268,10 +268,10 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
 
 
     need_category_names();
-    if (! has_category_named(n.category))
+    if (! has_category_named(n.category()))
         return make_shared_ptr(new PackageIDSequence);
 
-    need_package_ids(n.category);
+    need_package_ids(n.category());
     if (! has_package_named(n))
         return make_shared_ptr(new PackageIDSequence);
 
@@ -386,11 +386,11 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
     std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
-    eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category) /
-                (reinstalling_str + stringify(id->name().package) + "-" + stringify(id->version()))));
+    eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category()) /
+                (reinstalling_str + stringify(id->name().package()) + "-" + stringify(id->version()))));
 
-    FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category) / (reinstalling_str +
-                stringify(id->name().package) + "-" + stringify(id->version())));
+    FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category()) / (reinstalling_str +
+                stringify(id->name().package()) + "-" + stringify(id->version())));
 
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
@@ -441,7 +441,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                     value_for<n::distdir>(pkg_dir),
                     value_for<n::ebuild_dir>(pkg_dir),
-                    value_for<n::ebuild_file>(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild")),
+                    value_for<n::ebuild_file>(pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
                     value_for<n::eclassdirs>(eclassdirs),
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
@@ -650,7 +650,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         {
             QualifiedPackageName pp((*p)->text());
 
-            if (pp.category != CategoryNamePart("virtual"))
+            if (pp.category() != CategoryNamePart("virtual"))
                 Log::get_instance()->message("e.vdb.provide.non_virtual", ll_warning, lc_no_context)
                     << "PROVIDE of non-virtual '" << pp << "' from '" << id << "' will not work as expected";
 
@@ -794,10 +794,10 @@ VDBRepository::merge(const MergeParams & m)
     FSEntry tmp_vdb_dir(_imp->params.location());
     if (! tmp_vdb_dir.exists())
         tmp_vdb_dir.mkdir();
-    tmp_vdb_dir /= stringify(m.package_id()->name().category);
+    tmp_vdb_dir /= stringify(m.package_id()->name().category());
     if (! tmp_vdb_dir.exists())
         tmp_vdb_dir.mkdir();
-    tmp_vdb_dir /= ("-checking-" + stringify(m.package_id()->name().package) + "-" + stringify(m.package_id()->version()));
+    tmp_vdb_dir /= ("-checking-" + stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
     tmp_vdb_dir.mkdir();
 
     WriteVDBEntryCommand write_vdb_entry_command(
@@ -821,8 +821,8 @@ VDBRepository::merge(const MergeParams & m)
     }
 
     FSEntry vdb_dir(_imp->params.location());
-    vdb_dir /= stringify(m.package_id()->name().category);
-    vdb_dir /= (stringify(m.package_id()->name().package) + "-" + stringify(m.package_id()->version()));
+    vdb_dir /= stringify(m.package_id()->name().category());
+    vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
     VDBMerger merger(
             make_named_values<VDBMergerParams>(
@@ -849,8 +849,8 @@ VDBRepository::merge(const MergeParams & m)
     if (is_replace)
     {
         FSEntry old_vdb_dir(_imp->params.location());
-        old_vdb_dir /= stringify(is_replace->name().category);
-        old_vdb_dir /= (stringify(is_replace->name().package) + "-" + stringify(is_replace->version()));
+        old_vdb_dir /= stringify(is_replace->name().category());
+        old_vdb_dir /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
 
         if ((old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename())).exists())
             throw InstallActionError("Directory '" + stringify(old_vdb_dir.dirname() /
@@ -988,7 +988,7 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
     if (! has_package_named(q))
         return std::tr1::shared_ptr<const ERepositoryID>();
 
-    need_package_ids(q.category);
+    need_package_ids(q.category());
 
     using namespace std::tr1::placeholders;
 

@@ -23,8 +23,8 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/validated.hh>
+#include <paludis/util/named_value.hh>
 
 #include <string>
 #include <iosfwd>
@@ -41,6 +41,12 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct category;
+        struct package;
+    }
+
     /**
      * A PackageNamePartError is thrown if an invalid value is assigned to
      * a PackageNamePart.
@@ -107,7 +113,26 @@ namespace paludis
         static void validate(const std::string &);
     };
 
-#include <paludis/name-sr.hh>
+    /**
+     * Represents a category plus package name.
+     *
+     * \ingroup g_names
+     * \nosubgrouping
+     */
+    struct PALUDIS_VISIBLE QualifiedPackageName :
+        relational_operators::HasRelationalOperators
+    {
+        NamedValue<n::category, CategoryNamePart> category;
+        NamedValue<n::package, PackageNamePart> package;
+
+        QualifiedPackageName(const CategoryNamePart &, const PackageNamePart &);
+        explicit QualifiedPackageName(const std::string &);
+
+        std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool operator< (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+        bool operator== (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 
     /**
      * A QualifiedPackageNameError may be thrown if an invalid name is

@@ -1387,7 +1387,7 @@ namespace
 {
     bool is_scm(const QualifiedPackageName & n)
     {
-        std::string pkg(stringify(n.package));
+        std::string pkg(stringify(n.package()));
         switch (pkg.length())
         {
             case 0:

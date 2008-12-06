@@ -173,7 +173,7 @@ InstalledVirtualsRepository::need_ids() const
 std::tr1::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
-    if (q.category.data() != "virtual")
+    if (q.category().data() != "virtual")
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
@@ -211,7 +211,7 @@ InstalledVirtualsRepository::category_names() const
 bool
 InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q) const
 {
-    if (q.category.data() != "virtual")
+    if (q.category().data() != "virtual")
         return false;
 
     need_ids();

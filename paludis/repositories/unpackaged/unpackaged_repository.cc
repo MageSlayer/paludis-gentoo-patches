@@ -85,7 +85,7 @@ namespace paludis
         {
             ids->push_back(id);
             package_names->insert(id->name());
-            category_names->insert(id->name().category);
+            category_names->insert(id->name().category());
         }
     };
 }
@@ -140,7 +140,7 @@ UnpackagedRepository::package_ids(const QualifiedPackageName & n) const
 std::tr1::shared_ptr<const QualifiedPackageNameSet>
 UnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
-    return c == _imp->id->name().category ? _imp->package_names : make_shared_ptr(new QualifiedPackageNameSet);
+    return c == _imp->id->name().category() ? _imp->package_names : make_shared_ptr(new QualifiedPackageNameSet);
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>
@@ -152,7 +152,7 @@ UnpackagedRepository::category_names() const
 std::tr1::shared_ptr<const CategoryNamePartSet>
 UnpackagedRepository::category_names_containing_package(const PackageNamePart & p) const
 {
-    return p == _imp->id->name().package ? _imp->category_names : make_shared_ptr(new CategoryNamePartSet);
+    return p == _imp->id->name().package() ? _imp->category_names : make_shared_ptr(new CategoryNamePartSet);
 }
 
 bool
@@ -164,7 +164,7 @@ UnpackagedRepository::has_package_named(const QualifiedPackageName & q) const
 bool
 UnpackagedRepository::has_category_named(const CategoryNamePart & c) const
 {
-    return c == _imp->id->name().category;
+    return c == _imp->id->name().category();
 }
 
 bool

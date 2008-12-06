@@ -240,13 +240,13 @@ NDBAM::has_category_named(const CategoryNamePart & c)
 bool
 NDBAM::has_package_named(const QualifiedPackageName & q)
 {
-    if (! has_category_named(q.category))
+    if (! has_category_named(q.category()))
         return false;
 
     Lock l(_imp->category_names_mutex);
-    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category));
+    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
-        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(q.category) + ") but got category_contents_map end or zero pointer");
+        throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(q.category()) + ") but got category_contents_map end or zero pointer");
 
     CategoryContents & cc(*cc_i->second);
     l.acquire_then_release_old(cc.mutex);
@@ -257,7 +257,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
 
     if (! cc.package_names)
     {
-        if (FSEntry(_imp->location / "indices" / "categories" / stringify(q.category) / stringify(q.package)).is_directory_or_symlink_to_directory())
+        if (FSEntry(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package())).is_directory_or_symlink_to_directory())
         {
             cc.package_contents_map.insert(std::make_pair(q, new PackageContents));
             return true;
@@ -286,7 +286,7 @@ NDBAM::entries(const QualifiedPackageName & q)
         return make_shared_ptr(new NDBAMEntrySequence);
 
     Lock l(_imp->category_names_mutex);
-    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category));
+    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got category_contents_map end or zero pointer");
     CategoryContents & cc(*cc_i->second);
@@ -303,7 +303,7 @@ NDBAM::entries(const QualifiedPackageName & q)
         pc.entries.reset(new NDBAMEntrySequence);
         Context context("When loading versions in '" + stringify(q) + "' for NDBAM at '" + stringify(_imp->location) + "':");
         pc.entries.reset(new NDBAMEntrySequence);
-        for (DirIterator d(_imp->location / "indices" / "categories" / stringify(q.category) / stringify(q.package)), d_end ;
+        for (DirIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package())), d_end ;
                 d != d_end ; ++d)
         {
             if (! d->is_directory_or_symlink_to_directory())
@@ -558,10 +558,10 @@ NDBAM::deindex(const QualifiedPackageName & q) const
 {
     Context context("When deindexing '" + stringify(q) + "' in NDBAM at '" + stringify(_imp->location) + "':");
 
-    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category) / stringify(q.package));
+    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()));
     cp_index_sym.unlink();
 
-    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package) / stringify(q.category));
+    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()) / stringify(q.category()));
     pc_index_sym.unlink();
 }
 
@@ -571,15 +571,15 @@ NDBAM::index(const QualifiedPackageName & q, const std::string & d) const
     Context context("When indexing '" + stringify(q) + "' to '" + stringify(d) +
             "' in NDBAM at '" + stringify(_imp->location) + "':");
 
-    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category));
+    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()));
     cp_index_sym.mkdir();
-    cp_index_sym /= stringify(q.package);
+    cp_index_sym /= stringify(q.package());
     if (! cp_index_sym.exists())
         cp_index_sym.symlink("../../../data/" + d);
 
-    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package));
+    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()));
     pc_index_sym.mkdir();
-    pc_index_sym /= stringify(q.category);
+    pc_index_sym /= stringify(q.category());
     if (! pc_index_sym.exists())
         pc_index_sym.symlink("../../../data/" + d);
 }

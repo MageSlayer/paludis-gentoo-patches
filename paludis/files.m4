@@ -51,7 +51,7 @@ add(`merger',                            `hh', `cc', `fwd', `se', `test', `tests
 add(`merger_entry_type',                 `hh', `cc', `se')
 add(`metadata_key',                      `hh', `cc', `se', `fwd')
 add(`metadata_key_holder',               `hh', `cc', `fwd')
-add(`name',                              `hh', `cc', `fwd', `test', `sr')
+add(`name',                              `hh', `cc', `fwd', `test')
 add(`ndbam',                             `hh', `cc', `fwd')
 add(`ndbam_merger',                      `hh', `cc')
 add(`ndbam_unmerger',                    `hh', `cc')

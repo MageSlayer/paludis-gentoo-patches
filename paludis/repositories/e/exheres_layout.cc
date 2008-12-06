@@ -238,7 +238,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 
     std::tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence);
 
-    FSEntry path(_imp->tree_root / "packages" / stringify(n.category) / stringify(n.package));
+    FSEntry path(_imp->tree_root / "packages" / stringify(n.category()) / stringify(n.package()));
 
     for (DirIterator e(path), e_end ; e != e_end ; ++e)
     {
@@ -293,7 +293,7 @@ ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 
     need_category_names();
 
-    CategoryMap::iterator cat_iter(_imp->category_names.find(q.category));
+    CategoryMap::iterator cat_iter(_imp->category_names.find(q.category()));
 
     if (_imp->category_names.end() == cat_iter)
         return false;
@@ -311,8 +311,8 @@ ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 
         FSEntry fs(_imp->tree_root);
         fs /= "packages";
-        fs /= stringify(q.category);
-        fs /= stringify(q.package);
+        fs /= stringify(q.category());
+        fs /= stringify(q.package());
         if (! fs.is_directory_or_symlink_to_directory())
             return false;
         _imp->package_names.insert(std::make_pair(q, false));
@@ -393,7 +393,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 
     for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
             p != p_end ; ++p)
-        if (p->first.category == c)
+        if (p->first.category() == c)
             result->insert(p->first);
 
     return result;
@@ -430,7 +430,7 @@ ExheresLayout::info_variables_files() const
 FSEntry
 ExheresLayout::package_directory(const QualifiedPackageName & qpn) const
 {
-    return _imp->tree_root / "packages" / stringify(qpn.category) / stringify(qpn.package);
+    return _imp->tree_root / "packages" / stringify(qpn.category()) / stringify(qpn.package());
 }
 
 FSEntry
@@ -486,7 +486,7 @@ ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
     std::tr1::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
     std::copy(global->begin(), global->end(), result->back_inserter());
 
-    std::tr1::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category));
+    std::tr1::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category()));
     std::copy(category->begin(), category->end(), result->back_inserter());
 
     std::tr1::shared_ptr<const FSEntrySequence> package(exlibsdirs_package(q));
@@ -595,7 +595,7 @@ namespace
                 if (! f->is_regular_file())
                     continue;
                 if (is_file_with_prefix_extension((*f),
-                            ("digest-"+stringify(qpn.package)), "",
+                            ("digest-"+stringify(qpn.package())), "",
                             IsFileWithOptions()))
                     continue;
                 m->insert((*f), "AUX");

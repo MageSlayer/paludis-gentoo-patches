@@ -174,14 +174,14 @@ EbuildID::need_keys_added() const
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
     FSEntry cache_file(_imp->repository->params().cache());
-    cache_file /= stringify(name().category);
-    cache_file /= stringify(name().package) + "-" + stringify(version());
+    cache_file /= stringify(name().category());
+    cache_file /= stringify(name().package()) + "-" + stringify(version());
 
     FSEntry write_cache_file(_imp->repository->params().write_cache());
     if (_imp->repository->params().append_repository_name_to_write_cache())
         write_cache_file /= stringify(repository()->name());
-    write_cache_file /= stringify(name().category);
-    write_cache_file /= stringify(name().package) + "-" + stringify(version());
+    write_cache_file /= stringify(name().category());
+    write_cache_file /= stringify(name().package()) + "-" + stringify(version());
 
     bool ok(false);
     if (_imp->repository->params().cache().basename() != "empty")

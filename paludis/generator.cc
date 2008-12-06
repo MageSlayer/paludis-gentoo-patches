@@ -243,9 +243,9 @@ namespace
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
-                if (env->package_database()->fetch_repository(*r)->has_category_named(name.category))
+                if (env->package_database()->fetch_repository(*r)->has_category_named(name.category()))
                 {
-                    result->insert(name.category);
+                    result->insert(name.category());
                     break;
                 }
 
@@ -370,9 +370,9 @@ namespace
                 std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category))
+                    if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category()))
                     {
-                        result->insert(spec.package_ptr()->category);
+                        result->insert(spec.package_ptr()->category());
                         break;
                     }
 

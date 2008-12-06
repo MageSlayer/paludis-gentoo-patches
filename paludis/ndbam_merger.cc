@@ -89,8 +89,8 @@ NDBAMMerger::extend_hook(const Hook & h)
 
     if (_imp->params.package_id())
     {
-        std::string cat(stringify(_imp->params.package_id()->name().category));
-        std::string pn(stringify(_imp->params.package_id()->name().package));
+        std::string cat(stringify(_imp->params.package_id()->name().category()));
+        std::string pn(stringify(_imp->params.package_id()->name().package()));
         std::string pvr(stringify(_imp->params.package_id()->version()));
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
         std::string slot(stringify(_imp->params.package_id()->slot()));

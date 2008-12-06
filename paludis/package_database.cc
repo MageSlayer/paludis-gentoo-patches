@@ -250,14 +250,14 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)
     {
-        Context local_context("When checking category '" + stringify(it->name().category) + "' in repository '" +
+        Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
                 stringify(it->repository()->name()) + "':");
 
-        if (! checked.insert(std::make_pair(it->name().category, it->repository()->name())).second)
+        if (! checked.insert(std::make_pair(it->name().category(), it->repository()->name())).second)
             continue;
 
         std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
-        bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category));
+        bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
         if (is_important)
             result->erase(it->name());
         result->insert(it->name(), is_important);

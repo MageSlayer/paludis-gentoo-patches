@@ -236,7 +236,7 @@ RepositoryNameCache::regenerate_cache() const
         std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
-            m[stringify(p->package)].append(stringify(*c) + "\n");
+            m[stringify(p->package())].append(stringify(*c) + "\n");
     }
 
     for (std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
@@ -274,12 +274,12 @@ RepositoryNameCache::add(const QualifiedPackageName & q)
     Context context("When adding '" + stringify(q) + "' to name cache at '" + stringify(_imp->location) + "':");
 
     std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
-    NameCacheMap::iterator r(_imp->find(q.package));
+    NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;
 
-    r->second.insert(q.category);
-    _imp->update(q.package, r);
+    r->second.insert(q.category());
+    _imp->update(q.package(), r);
 }
 
 void
@@ -293,12 +293,12 @@ RepositoryNameCache::remove(const QualifiedPackageName & q)
     Context context("When removing '" + stringify(q) + "' from name cache at '" + stringify(_imp->location) + "':");
 
     std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
-    NameCacheMap::iterator r(_imp->find(q.package));
+    NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;
 
-    r->second.erase(q.category);
-    _imp->update(q.package, r);
+    r->second.erase(q.category());
+    _imp->update(q.package(), r);
 }
 
 bool

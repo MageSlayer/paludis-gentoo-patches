@@ -112,12 +112,12 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const, const FSEntry
     for (UnwrittenRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
             i != i_end ; ++i)
     {
-        if (old_name.category != (*i).name().category)
+        if (old_name.category() != (*i).name().category())
         {
-            _imp->categories->insert((*i).name().category);
-            PackageNames::iterator p(_imp->package_names.find((*i).name().category));
+            _imp->categories->insert((*i).name().category());
+            PackageNames::iterator p(_imp->package_names.find((*i).name().category()));
             if (_imp->package_names.end() == p)
-                p = _imp->package_names.insert(std::make_pair((*i).name().category,
+                p = _imp->package_names.insert(std::make_pair((*i).name().category(),
                             make_shared_ptr(new QualifiedPackageNameSet))).first;
             pkgs = p->second;
         }

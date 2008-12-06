@@ -83,10 +83,10 @@ paludis::match_package(
     if (spec.package_ptr() && *spec.package_ptr() != entry.name())
         return false;
 
-    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != entry.name().package)
+    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != entry.name().package())
         return false;
 
-    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != entry.name().category)
+    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != entry.name().category())
         return false;
 
     if (spec.version_requirements_ptr())

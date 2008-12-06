@@ -128,9 +128,9 @@ EbuildCommand::operator() ()
     cmd = extend_command(cmd
             .with_setenv("PV", stringify(params.package_id()->version().remove_revision()))
             .with_setenv("PR", stringify(params.package_id()->version().revision_only()))
-            .with_setenv("PN", stringify(params.package_id()->name().package))
+            .with_setenv("PN", stringify(params.package_id()->name().package()))
             .with_setenv("PVR", stringify(params.package_id()->version()))
-            .with_setenv("CATEGORY", stringify(params.package_id()->name().category))
+            .with_setenv("CATEGORY", stringify(params.package_id()->name().category()))
             .with_setenv("REPOSITORY", stringify(params.package_id()->repository()->name()))
             .with_setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -223,11 +223,11 @@ EbuildCommand::operator() ()
                         stringify(params.distdir()));
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_p().empty())
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_p(),
-                        stringify(params.package_id()->name().package) + "-" +
+                        stringify(params.package_id()->name().package()) + "-" +
                                 stringify(params.package_id()->version().remove_revision()));
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf().empty())
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf(),
-                        stringify(params.package_id()->name().package) + "-" +
+                        stringify(params.package_id()->name().package()) + "-" +
                                 stringify(params.package_id()->version()));
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_filesdir().empty())
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_filesdir(),
@@ -266,8 +266,8 @@ EbuildCommand::add_portage_vars(const Command & cmd) const
         .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params.distdir()))
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
         .with_setenv("PORTAGE_BUILDDIR", stringify(params.builddir()) + "/" +
-             stringify(params.package_id()->name().category) + "-" +
-             stringify(params.package_id()->name().package) + "-" +
+             stringify(params.package_id()->name().category()) + "-" +
+             stringify(params.package_id()->name().package()) + "-" +
              stringify(params.package_id()->version()))
         .with_setenv("PORTAGE_CALLER", params.environment()->paludis_command())
         .with_setenv("PORTAGE_GID", "0")
@@ -926,9 +926,9 @@ Command
 EbuildPretendCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_stdout_prefix(stringify(params.package_id()->name().package) + "-" +
+            .with_stdout_prefix(stringify(params.package_id()->name().package()) + "-" +
                 stringify(params.package_id()->version()) + "> ")
-            .with_stderr_prefix(stringify(params.package_id()->name().package) + "-" +
+            .with_stderr_prefix(stringify(params.package_id()->name().package()) + "-" +
                 stringify(params.package_id()->version()) + "> ")
             .with_prefix_discard_blank_output()
             .with_prefix_blank_lines()
@@ -1048,8 +1048,8 @@ WriteBinaryEbuildCommand::operator() ()
         throw InstallActionError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
                 params.package_id()->eapi()->exported_name());
 
-    std::string bindistfile(stringify(params.destination_repository()->name()) + "--" + stringify(params.package_id()->name().category)
-            + "--" + stringify(params.package_id()->name().package) + "-" + stringify(params.package_id()->version())
+    std::string bindistfile(stringify(params.destination_repository()->name()) + "--" + stringify(params.package_id()->name().category())
+            + "--" + stringify(params.package_id()->name().package()) + "-" + stringify(params.package_id()->version())
             + "--" + cookie());
 
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +

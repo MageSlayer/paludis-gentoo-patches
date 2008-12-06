@@ -32,8 +32,6 @@
 
 using namespace paludis;
 
-#include <paludis/name-sr.cc>
-
 template struct Sequence<RepositoryName>;
 template struct WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
 
@@ -73,7 +71,7 @@ QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) thro
 std::ostream &
 paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
 {
-    s << q.category << "/" << q.package;
+    s << q.category() << "/" << q.package();
     return s;
 }
 
@@ -314,6 +312,29 @@ QualifiedPackageName::QualifiedPackageName(const std::string & s) :
     category(get_category_name_part(s)),
     package(get_package_name_part(s))
 {
+}
+
+QualifiedPackageName::QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
+    category(c),
+    package(p)
+{
+}
+
+bool
+QualifiedPackageName::operator< (const QualifiedPackageName & other) const
+{
+    if (category() < other.category())
+        return true;
+    if (category() > other.category())
+        return false;
+
+    return package() < other.package();
+}
+
+bool
+QualifiedPackageName::operator== (const QualifiedPackageName & other) const
+{
+    return category() == other.category() && package() == other.package();
 }
 
 void

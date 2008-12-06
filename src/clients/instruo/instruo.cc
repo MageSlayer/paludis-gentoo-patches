@@ -250,10 +250,10 @@ main(int argc, char *argv[])
         {
             Context i_context("When fetching ID '" + stringify(**i) + "':");
 
-            if ((*i)->name().category != old_cat)
+            if ((*i)->name().category() != old_cat)
             {
-                cout << "Processing " << colour(cl_package_name, stringify((*i)->name().category)) << "..." << endl;
-                old_cat = (*i)->name().category;
+                cout << "Processing " << colour(cl_package_name, stringify((*i)->name().category())) << "..." << endl;
+                old_cat = (*i)->name().category();
             }
 
             ++total;

@@ -174,7 +174,7 @@ do_list_packages(const std::tr1::shared_ptr<Environment> & env)
             if (CommandLine::get_instance()->a_package.end_args() == std::find(
                         CommandLine::get_instance()->a_package.begin_args(),
                         CommandLine::get_instance()->a_package.end_args(),
-                        stringify(p->first.package)))
+                        stringify(p->first.package())))
                 continue;
 
         ret_code = 0;
