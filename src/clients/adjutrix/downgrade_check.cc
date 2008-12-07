@@ -20,12 +20,13 @@
 #include "downgrade_check.hh"
 #include "command_line.hh"
 #include <paludis/package_database.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -38,13 +39,6 @@
 #include <map>
 
 using namespace paludis;
-
-namespace paludis
-{
-#include <src/clients/adjutrix/downgrade_check-sr.hh>
-}
-
-#include <src/clients/adjutrix/downgrade_check-sr.cc>
 
 namespace
 {
@@ -107,7 +101,7 @@ namespace
     }
 
     void
-    load_list(std::map<QPNS, VersionSpec> & map, std::istream & f)
+    load_list(std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec> & map, std::istream & f)
     {
         std::string s;
         while (std::getline(f, s))
@@ -117,32 +111,34 @@ namespace
             if (tokens.size() != 3)
                 throw ConfigurationError("Bad line '" + s + "'");
 
-            map.insert(std::make_pair(QPNS(QualifiedPackageName(tokens.at(0)),
+            map.insert(std::make_pair(make_pair(QualifiedPackageName(tokens.at(0)),
                             SlotName(tokens.at(1))), VersionSpec(tokens.at(2))));
         }
     }
 
     int
     check_one_list(NoConfigEnvironment & env, std::istream & f1,
-            std::istream & f2, std::multimap<QPNS, std::string> & results,
+            std::istream & f2, std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string> & results,
             const std::string & desc)
     {
         int exit_status(0);
 
-        std::map<QPNS, VersionSpec> before, after;
+        std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec> before, after;
 
         load_list(before, f1);
         load_list(after, f2);
 
-        for (std::map<QPNS, VersionSpec>::const_iterator b(before.begin()), b_end(before.end()) ;
+        for (std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec>::const_iterator
+                b(before.begin()), b_end(before.end()) ;
                 b != b_end ; ++b)
         {
-            std::map<QPNS, VersionSpec>::const_iterator a(after.find(b->first));
+            std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec>::const_iterator
+                a(after.find(b->first));
             if (after.end() == a)
             {
                 if (! env[selection::SomeArbitraryVersion(generator::Matches(make_package_dep_spec()
-                                .package(b->first.name)
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.slot))),
+                                .package(b->first.first)
+                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.second))),
                                 MatchPackageOptions()))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
@@ -201,7 +197,7 @@ do_downgrade_check(NoConfigEnvironment & env)
     if (! after_dir.is_directory())
         throw ConfigurationError("Second input directory is not a directory");
 
-    std::multimap<QPNS, std::string> results;
+    std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string> results;
 
     for (RepositoryEInterface::ProfilesConstIterator
             p((*env.main_repository()).e_interface()->begin_profiles()),
@@ -227,13 +223,15 @@ do_downgrade_check(NoConfigEnvironment & env)
         }
     }
 
-    QPNS old_qpns(QualifiedPackageName("dummy/dummmy"), SlotName("dummy"));
-    for (std::multimap<QPNS, std::string>::const_iterator r(results.begin()), r_end(results.end()) ;
+    std::pair<QualifiedPackageName, SlotName> old_qpns(QualifiedPackageName("dummy/dummmy"),
+            SlotName("dummy"));
+    for (std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string>::const_iterator
+            r(results.begin()), r_end(results.end()) ;
             r != r_end ; ++r)
     {
         if (old_qpns != r->first)
         {
-            std::cout << r->first.name << " :" << r->first.slot << std::endl;
+            std::cout << r->first.first << " :" << r->first.second << std::endl;
             old_qpns = r->first;
         }
 

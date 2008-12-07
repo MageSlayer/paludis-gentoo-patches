@@ -25,6 +25,8 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -42,11 +44,22 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+namespace paludis
+{
+    namespace n
+    {
+        struct best_anywhere;
+        struct best_keyworded;
+    }
+}
+
 namespace
 {
-
-#include "find_dropped_keywords-sr.hh"
-#include "find_dropped_keywords-sr.cc"
+    struct VersionsEntry
+    {
+        NamedValue<n::best_anywhere, VersionSpec> best_anywhere;
+        NamedValue<n::best_keyworded, VersionSpec> best_keyworded;
+    };
 
     static const int col_width_package      = 30;
     static const int col_width_best_keyworded  = 20;
@@ -129,23 +142,24 @@ namespace
 
             /* ensure that there's an entry for this SLOT */
             versions_in_slots.insert(std::make_pair((*v)->slot(), VersionsEntry(
-                            VersionsEntry::create()
-                            .best_keyworded(VersionSpec("0"))
-                            .best_anywhere(VersionSpec("0")))));
+                            make_named_values<VersionsEntry>(
+                                value_for<n::best_anywhere>(VersionSpec("0")),
+                                value_for<n::best_keyworded>(VersionSpec("0"))
+                                ))));
 
             if ((*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(keyword) ||
                     (*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(KeywordName("~" + stringify(keyword))))
             {
                 is_interesting = true;
-                versions_in_slots.find((*v)->slot())->second.best_keyworded =
-                    std::max(versions_in_slots.find((*v)->slot())->second.best_keyworded, (*v)->version());
+                versions_in_slots.find((*v)->slot())->second.best_keyworded() =
+                    std::max(versions_in_slots.find((*v)->slot())->second.best_keyworded(), (*v)->version());
                 worst_keyworded = std::min(worst_keyworded, (*v)->version());
             }
 
             if ((*v)->keywords_key()->value()->end() != std::find_if((*v)->keywords_key()->value()->begin(),
                         (*v)->keywords_key()->value()->end(), IsStableOrUnstableKeyword()))
-                versions_in_slots.find((*v)->slot())->second.best_anywhere =
-                    std::max(versions_in_slots.find((*v)->slot())->second.best_anywhere, (*v)->version());
+                versions_in_slots.find((*v)->slot())->second.best_anywhere() =
+                    std::max(versions_in_slots.find((*v)->slot())->second.best_anywhere(), (*v)->version());
         }
 
         if (! is_interesting)
@@ -155,13 +169,13 @@ namespace
         for (VersionsInSlots::const_iterator s(versions_in_slots.begin()),
                 s_end(versions_in_slots.end()) ; s != s_end ; ++s)
         {
-            if (s->second.best_keyworded >= s->second.best_anywhere)
+            if (s->second.best_keyworded() >= s->second.best_anywhere())
                 continue;
 
-            if (s->second.best_anywhere < worst_keyworded)
+            if (s->second.best_anywhere() < worst_keyworded)
                 continue;
 
-            write_package(package, s->first, s->second.best_keyworded, s->second.best_anywhere);
+            write_package(package, s->first, s->second.best_keyworded(), s->second.best_anywhere());
         }
     }
 }

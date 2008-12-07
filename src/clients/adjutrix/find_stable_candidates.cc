@@ -25,6 +25,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -42,11 +44,22 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+namespace paludis
+{
+    namespace n
+    {
+        struct best_version;
+        struct our_version;
+    }
+}
+
 namespace
 {
-
-#include "find_stable_candidates-sr.hh"
-#include "find_stable_candidates-sr.cc"
+    struct SlotsEntry
+    {
+        NamedValue<n::best_version, VersionSpec> best_version;
+        NamedValue<n::our_version, VersionSpec> our_version;
+    };
 
     static const int col_width_package      = 30;
     static const int col_width_our_version  = 20;
@@ -133,9 +146,10 @@ namespace
                 /* replace the entry */
                 slots_to_versions.erase((*v)->slot());
                 slots_to_versions.insert(std::make_pair((*v)->slot(),
-                            SlotsEntry(SlotsEntry::create()
-                                .our_version((*v)->version())
-                                .best_version(VersionSpec("0")))));
+                            make_named_values<SlotsEntry>(
+                                value_for<n::best_version>(VersionSpec("0")),
+                                value_for<n::our_version>((*v)->version())
+                                )));
             }
 
             if ((*v)->keywords_key()->value()->end() != std::find_if((*v)->keywords_key()->value()->begin(),
@@ -143,14 +157,15 @@ namespace
             {
                 /* ensure that an entry exists */
                 slots_to_versions.insert(std::make_pair((*v)->slot(),
-                            SlotsEntry(SlotsEntry::create()
-                                .our_version(VersionSpec("0"))
-                                .best_version((*v)->version()))));
+                            make_named_values<SlotsEntry>(
+                                value_for<n::best_version>((*v)->version()),
+                                value_for<n::our_version>(VersionSpec("0"))
+                                )));
 
                 /* update the entry to mark our current version as the best
                  * version */
-                if (slots_to_versions.find((*v)->slot())->second.best_version <= (*v)->version())
-                    slots_to_versions.find((*v)->slot())->second.best_version = (*v)->version();
+                if (slots_to_versions.find((*v)->slot())->second.best_version() <= (*v)->version())
+                    slots_to_versions.find((*v)->slot())->second.best_version() = (*v)->version();
             }
         }
 
@@ -161,10 +176,10 @@ namespace
         for (SlotsToVersions::const_iterator s(slots_to_versions.begin()),
                 s_end(slots_to_versions.end()) ; s != s_end ; ++s)
         {
-            if (s->second.our_version >= s->second.best_version)
+            if (s->second.our_version() >= s->second.best_version())
                 continue;
 
-            write_package(package, s->first, s->second.our_version, s->second.best_version);
+            write_package(package, s->first, s->second.our_version(), s->second.best_version());
         }
     }
 }
