@@ -71,14 +71,14 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     env.set_accept_unstable('~' == stringify(target_keyword).at(0));
 
     DepListOptions d_options;
-    d_options.circular = dl_circular_discard_silently;
-    d_options.use = dl_use_deps_take_all;
-    d_options.blocks = dl_blocks_discard_completely;
-    d_options.override_masks.reset(new DepListOverrideMasksFunctions);
-    d_options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
-    d_options.override_masks->push_back(std::tr1::bind(&override_unkeyworded, &env, _1, _2));
-    d_options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
-    d_options.match_package_options += mpo_ignore_additional_requirements;
+    d_options.circular() = dl_circular_discard_silently;
+    d_options.use() = dl_use_deps_take_all;
+    d_options.blocks() = dl_blocks_discard_completely;
+    d_options.override_masks().reset(new DepListOverrideMasksFunctions);
+    d_options.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+    d_options.override_masks()->push_back(std::tr1::bind(&override_unkeyworded, &env, _1, _2));
+    d_options.override_masks()->push_back(std::tr1::bind(&override_repository_masks, _2));
+    d_options.match_package_options() += mpo_ignore_additional_requirements;
 
     DepList d(&env, d_options);
 

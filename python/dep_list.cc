@@ -116,79 +116,117 @@ void expose_dep_list()
          "Parameters for a DepList.",
          bp::init<>("__init__()")
         )
-        .def_readwrite("reinstall", &DepListOptions::reinstall,
+        .add_property("reinstall",
+                &named_values_getter<DepListOptions, n::reinstall, DepListReinstallOption, &DepListOptions::reinstall>,
+                &named_values_setter<DepListOptions, n::reinstall, DepListReinstallOption, &DepListOptions::reinstall>,
                 "[rw] DepListReinstallOption"
                 )
 
-        .def_readwrite("reinstall_scm", &DepListOptions::reinstall_scm,
+        .add_property("reinstall_scm",
+                &named_values_getter<DepListOptions, n::reinstall_scm, DepListReinstallScmOption, &DepListOptions::reinstall_scm>,
+                &named_values_setter<DepListOptions, n::reinstall_scm, DepListReinstallScmOption, &DepListOptions::reinstall_scm>,
                 "[rw] DepListReinstallScmOption"
                 )
 
-        .def_readwrite("target_type", &DepListOptions::target_type,
+        .add_property("target_type",
+                &named_values_getter<DepListOptions, n::target_type, DepListTargetType, &DepListOptions::target_type>,
+                &named_values_setter<DepListOptions, n::target_type, DepListTargetType, &DepListOptions::target_type>,
                 "[rw] DepListTargetType"
                 )
 
-        .def_readwrite("upgrade", &DepListOptions::upgrade,
+        .add_property("upgrade",
+                &named_values_getter<DepListOptions, n::upgrade, DepListUpgradeOption, &DepListOptions::upgrade>,
+                &named_values_setter<DepListOptions, n::upgrade, DepListUpgradeOption, &DepListOptions::upgrade>,
                 "[rw] DepListUpgradeOption"
                 )
 
-        .def_readwrite("downgrade", &DepListOptions::downgrade,
+        .add_property("downgrade",
+                &named_values_getter<DepListOptions, n::downgrade, DepListDowngradeOption, &DepListOptions::downgrade>,
+                &named_values_setter<DepListOptions, n::downgrade, DepListDowngradeOption, &DepListOptions::downgrade>,
                 "[rw] DepListDowngradeOption"
                 )
 
-        .def_readwrite("new_slots", &DepListOptions::new_slots,
+        .add_property("new_slots",
+                &named_values_getter<DepListOptions, n::new_slots, DepListNewSlotsOption, &DepListOptions::new_slots>,
+                &named_values_setter<DepListOptions, n::new_slots, DepListNewSlotsOption, &DepListOptions::new_slots>,
                 "[rw] DepListNewSlotsOption"
                 )
 
-        .def_readwrite("fall_back", &DepListOptions::fall_back,
+        .add_property("fall_back",
+                &named_values_getter<DepListOptions, n::fall_back, DepListFallBackOption, &DepListOptions::fall_back>,
+                &named_values_setter<DepListOptions, n::fall_back, DepListFallBackOption, &DepListOptions::fall_back>,
                 "[rw] DepListFallBackOption"
                 )
 
-        .def_readwrite("installed_deps_pre", &DepListOptions::installed_deps_pre,
+        .add_property("installed_deps_pre",
+                &named_values_getter<DepListOptions, n::installed_deps_pre, DepListDepsOption, &DepListOptions::installed_deps_pre>,
+                &named_values_setter<DepListOptions, n::installed_deps_pre, DepListDepsOption, &DepListOptions::installed_deps_pre>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("installed_deps_runtime", &DepListOptions::installed_deps_runtime,
+        .add_property("installed_deps_runtime",
+                &named_values_getter<DepListOptions, n::installed_deps_runtime, DepListDepsOption, &DepListOptions::installed_deps_runtime>,
+                &named_values_setter<DepListOptions, n::installed_deps_runtime, DepListDepsOption, &DepListOptions::installed_deps_runtime>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("installed_deps_post", &DepListOptions::installed_deps_post,
+        .add_property("installed_deps_post",
+                &named_values_getter<DepListOptions, n::installed_deps_post, DepListDepsOption, &DepListOptions::installed_deps_post>,
+                &named_values_setter<DepListOptions, n::installed_deps_post, DepListDepsOption, &DepListOptions::installed_deps_post>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("uninstalled_deps_pre", &DepListOptions::uninstalled_deps_pre,
+        .add_property("uninstalled_deps_pre",
+                &named_values_getter<DepListOptions, n::uninstalled_deps_pre, DepListDepsOption, &DepListOptions::uninstalled_deps_pre>,
+                &named_values_setter<DepListOptions, n::uninstalled_deps_pre, DepListDepsOption, &DepListOptions::uninstalled_deps_pre>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("uninstalled_deps_runtime", &DepListOptions::uninstalled_deps_runtime,
+        .add_property("uninstalled_deps_runtime",
+                &named_values_getter<DepListOptions, n::uninstalled_deps_runtime, DepListDepsOption, &DepListOptions::uninstalled_deps_runtime>,
+                &named_values_setter<DepListOptions, n::uninstalled_deps_runtime, DepListDepsOption, &DepListOptions::uninstalled_deps_runtime>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("uninstalled_deps_post", &DepListOptions::uninstalled_deps_post,
+        .add_property("uninstalled_deps_post",
+                &named_values_getter<DepListOptions, n::uninstalled_deps_post, DepListDepsOption, &DepListOptions::uninstalled_deps_post>,
+                &named_values_setter<DepListOptions, n::uninstalled_deps_post, DepListDepsOption, &DepListOptions::uninstalled_deps_post>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("uninstalled_deps_suggested", &DepListOptions::uninstalled_deps_suggested,
+        .add_property("uninstalled_deps_suggested",
+                &named_values_getter<DepListOptions, n::uninstalled_deps_suggested, DepListDepsOption, &DepListOptions::uninstalled_deps_suggested>,
+                &named_values_setter<DepListOptions, n::uninstalled_deps_suggested, DepListDepsOption, &DepListOptions::uninstalled_deps_suggested>,
                 "[rw] DepListDepsOption"
                 )
 
-        .def_readwrite("suggested", &DepListOptions::suggested,
+        .add_property("suggested",
+                &named_values_getter<DepListOptions, n::suggested, DepListSuggestedOption, &DepListOptions::suggested>,
+                &named_values_setter<DepListOptions, n::suggested, DepListSuggestedOption, &DepListOptions::suggested>,
                 "[rw] DepListSuggestedOption"
                 )
 
-        .def_readwrite("circular", &DepListOptions::circular,
-                "[rw] DepListCircularOption"
+        .add_property("circular",
+                &named_values_getter<DepListOptions, n::circular, DepListCircularOption, &DepListOptions::circular>,
+                &named_values_setter<DepListOptions, n::circular, DepListCircularOption, &DepListOptions::circular>,
+                "[rw] DepListSuggestedOption"
                 )
 
-        .def_readwrite("use", &DepListOptions::use,
+        .add_property("use",
+                &named_values_getter<DepListOptions, n::use, DepListUseOption, &DepListOptions::use>,
+                &named_values_setter<DepListOptions, n::use, DepListUseOption, &DepListOptions::use>,
                 "[rw] DepListUseOption"
                 )
 
-        .def_readwrite("blocks", &DepListOptions::blocks,
+        .add_property("blocks",
+                &named_values_getter<DepListOptions, n::blocks, DepListBlocksOption, &DepListOptions::blocks>,
+                &named_values_setter<DepListOptions, n::blocks, DepListBlocksOption, &DepListOptions::blocks>,
                 "[rw] DepListBlocksOption"
                 )
 
-        .def_readwrite("dependency_tags", &DepListOptions::dependency_tags,
+        .add_property("dependency_tags",
+                &named_values_getter<DepListOptions, n::dependency_tags, bool, &DepListOptions::dependency_tags>,
+                &named_values_setter<DepListOptions, n::dependency_tags, bool, &DepListOptions::dependency_tags>,
                 "[rw] bool"
                 )
         ;

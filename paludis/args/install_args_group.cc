@@ -76,7 +76,7 @@ InstallArgsGroup::~InstallArgsGroup()
 void
 InstallArgsGroup::populate_dep_list_options(const Environment *, DepListOptions & options) const
 {
-    options.dependency_tags = a_show_reasons.argument() == "summary" || a_show_reasons.argument() == "full";
+    options.dependency_tags() = a_show_reasons.argument() == "summary" || a_show_reasons.argument() == "full";
 }
 
 std::tr1::shared_ptr<const DestinationsSet>

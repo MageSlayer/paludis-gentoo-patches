@@ -1351,8 +1351,8 @@ namespace test_cases
         void set_options(DepListOptions & opts)
         {
             using namespace std::tr1::placeholders;
-            opts.override_masks.reset(new DepListOverrideMasksFunctions);
-            opts.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks().reset(new DepListOverrideMasksFunctions);
+            opts.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1423,8 +1423,8 @@ namespace test_cases
         void set_options(DepListOptions & opts)
         {
             using namespace std::tr1::placeholders;
-            opts.override_masks.reset(new DepListOverrideMasksFunctions);
-            opts.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks().reset(new DepListOverrideMasksFunctions);
+            opts.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -2027,7 +2027,7 @@ namespace test_cases
             installed_repo->add_version("cat", "two", "2");
 
             DepList d(&env, DepListOptions());
-            d.options()->fall_back = dl_fall_back_never;
+            d.options()->fall_back() = dl_fall_back_never;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
                                 &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
@@ -2055,7 +2055,7 @@ namespace test_cases
             installed_repo->add_version("cat", "two", "2");
 
             DepList d(&env, DepListOptions());
-            d.options()->fall_back = dl_fall_back_as_needed;
+            d.options()->fall_back() = dl_fall_back_as_needed;
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
                             &env, UserPackageDepSpecOptions())), env.default_destinations());
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/two",
@@ -2086,7 +2086,7 @@ namespace test_cases
             installed_repo->add_version("cat", "three", "3");
 
             DepList d1(&env, DepListOptions());
-            d1.options()->fall_back = dl_fall_back_as_needed_except_targets;
+            d1.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
                             &env, UserPackageDepSpecOptions())), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
@@ -2095,13 +2095,13 @@ namespace test_cases
                         env.default_destinations()), DepListError);
 
             DepList d2(&env, DepListOptions());
-            d2.options()->fall_back = dl_fall_back_as_needed_except_targets;
+            d2.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             TEST_CHECK_THROWS(d2.add(PackageDepSpec(parse_user_package_dep_spec("cat/two",
                                 &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
 
             DepList d3(&env, DepListOptions());
-            d3.options()->fall_back = dl_fall_back_as_needed_except_targets;
+            d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t3(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                         std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             t3->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
@@ -2147,13 +2147,13 @@ namespace test_cases
             installed_repo->add_version("cat", "two", "0");
 
             DepList d1(&env, DepListOptions());
-            d1.options()->upgrade = dl_upgrade_as_needed;
+            d1.options()->upgrade() = dl_upgrade_as_needed;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
                             &env, UserPackageDepSpecOptions())), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-0:0::installed_repo cat/one-1:0::repo");
 
             DepList d2(&env, DepListOptions());
-            d2.options()->upgrade = dl_upgrade_as_needed;
+            d2.options()->upgrade() = dl_upgrade_as_needed;
 
             std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t2(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                         std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
@@ -2201,7 +2201,7 @@ namespace test_cases
             installed_repo->add_version("cat", "six-darcs", "0");
 
             DepList d1(&env, DepListOptions());
-            d1.options()->reinstall_scm = dl_reinstall_scm_always;
+            d1.options()->reinstall_scm() = dl_reinstall_scm_always;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/zero",
                             &env, UserPackageDepSpecOptions())), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
@@ -2235,7 +2235,7 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
 
             DepList d1(&env, DepListOptions());
-            d1.options()->dependency_tags = true;
+            d1.options()->dependency_tags() = true;
             PackageDepSpec with_target_tag(parse_user_package_dep_spec("cat/one",
                         &env, UserPackageDepSpecOptions()));
             with_target_tag.set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));

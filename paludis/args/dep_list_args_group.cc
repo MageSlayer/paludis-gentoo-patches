@@ -163,96 +163,96 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
     using namespace std::tr1::placeholders;
 
     if (dl_reinstall.argument() == "never")
-        options.reinstall = dl_reinstall_never;
+        options.reinstall() = dl_reinstall_never;
     else if (dl_reinstall.argument() == "always")
-        options.reinstall = dl_reinstall_always;
+        options.reinstall() = dl_reinstall_always;
     else if (dl_reinstall.argument() == "if-use-changed")
-        options.reinstall = dl_reinstall_if_use_changed;
+        options.reinstall() = dl_reinstall_if_use_changed;
     else
         throw args::DoHelp("bad value for --dl-reinstall");
 
     if (dl_reinstall_scm.argument() == "never")
-        options.reinstall_scm = dl_reinstall_scm_never;
+        options.reinstall_scm() = dl_reinstall_scm_never;
     else if (dl_reinstall_scm.argument() == "always")
-        options.reinstall_scm = dl_reinstall_scm_always;
+        options.reinstall_scm() = dl_reinstall_scm_always;
     else if (dl_reinstall_scm.argument() == "daily")
-        options.reinstall_scm = dl_reinstall_scm_daily;
+        options.reinstall_scm() = dl_reinstall_scm_daily;
     else if (dl_reinstall_scm.argument() == "weekly")
-        options.reinstall_scm = dl_reinstall_scm_weekly;
+        options.reinstall_scm() = dl_reinstall_scm_weekly;
     else
         throw args::DoHelp("bad value for --dl-reinstall-scm");
 
     if (dl_upgrade.argument() == "as-needed")
-        options.upgrade = dl_upgrade_as_needed;
+        options.upgrade() = dl_upgrade_as_needed;
     else if (dl_upgrade.argument() == "always")
-        options.upgrade = dl_upgrade_always;
+        options.upgrade() = dl_upgrade_always;
     else
         throw args::DoHelp("bad value for --dl-upgrade");
 
     if (dl_new_slots.argument() == "as-needed")
-        options.new_slots = dl_new_slots_as_needed;
+        options.new_slots() = dl_new_slots_as_needed;
     else if (dl_new_slots.argument() == "always")
-        options.new_slots = dl_new_slots_always;
+        options.new_slots() = dl_new_slots_always;
     else
         throw args::DoHelp("bad value for --dl-new-slots");
 
     if (dl_downgrade.argument() == "as-needed")
-        options.downgrade = dl_downgrade_as_needed;
+        options.downgrade() = dl_downgrade_as_needed;
     else if (dl_downgrade.argument() == "warning")
-        options.downgrade = dl_downgrade_warning;
+        options.downgrade() = dl_downgrade_warning;
     else if (dl_downgrade.argument() == "error")
-        options.downgrade = dl_downgrade_error;
+        options.downgrade() = dl_downgrade_error;
     else
         throw args::DoHelp("bad value for --dl-downgrade");
 
     if (dl_circular.argument() == "discard")
-        options.circular = dl_circular_discard;
+        options.circular() = dl_circular_discard;
     else if (dl_circular.argument() == "error")
-        options.circular = dl_circular_error;
+        options.circular() = dl_circular_error;
     else
         throw args::DoHelp("bad value for --dl-circular");
 
     if (dl_suggested.argument() == "show")
-        options.suggested = dl_suggested_show;
+        options.suggested() = dl_suggested_show;
     else if (dl_suggested.argument() == "discard")
-        options.suggested = dl_suggested_discard;
+        options.suggested() = dl_suggested_discard;
     else if (dl_suggested.argument() == "install")
-        options.suggested = dl_suggested_install;
+        options.suggested() = dl_suggested_install;
     else
         throw args::DoHelp("bad value for --dl-suggested");
 
     if (dl_blocks.argument() == "discard")
-        options.blocks = dl_blocks_discard;
+        options.blocks() = dl_blocks_discard;
     else if (dl_blocks.argument() == "error")
-        options.blocks = dl_blocks_error;
+        options.blocks() = dl_blocks_error;
     else if (dl_blocks.argument() == "accumulate")
-        options.blocks = dl_blocks_accumulate;
+        options.blocks() = dl_blocks_accumulate;
     else
         throw args::DoHelp("bad value for --dl-blocks");
 
-    if (! options.override_masks)
-        options.override_masks.reset(new DepListOverrideMasksFunctions);
-    options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
-    options.override_masks->push_back(std::tr1::bind(&override_license, _2));
+    if (! options.override_masks())
+        options.override_masks().reset(new DepListOverrideMasksFunctions);
+    options.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
+    options.override_masks()->push_back(std::tr1::bind(&override_license, _2));
 
     if (dl_override_masks.specified())
     {
         for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
             if (*a == "none")
-                options.override_masks.reset(new DepListOverrideMasksFunctions);
+                options.override_masks().reset(new DepListOverrideMasksFunctions);
 
         for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
             if (*a == "tilde-keyword")
-                options.override_masks->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
+                options.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, env, _1, _2));
             else if (*a == "unkeyworded")
-                options.override_masks->push_back(std::tr1::bind(&override_unkeyworded, env, _1, _2));
+                options.override_masks()->push_back(std::tr1::bind(&override_unkeyworded, env, _1, _2));
             else if (*a == "repository")
-                options.override_masks->push_back(std::tr1::bind(&override_repository_masks, _2));
+                options.override_masks()->push_back(std::tr1::bind(&override_repository_masks, _2));
             else if (*a == "license")
-                options.override_masks->push_back(std::tr1::bind(&override_license, _2));
+                options.override_masks()->push_back(std::tr1::bind(&override_license, _2));
             else if (*a == "none")
             {
             }
@@ -262,41 +262,41 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
     }
 
     if (dl_fall_back.argument() == "as-needed-except-targets")
-        options.fall_back = dl_fall_back_as_needed_except_targets;
+        options.fall_back() = dl_fall_back_as_needed_except_targets;
     else if (dl_fall_back.argument() == "as-needed")
-        options.fall_back = dl_fall_back_as_needed;
+        options.fall_back() = dl_fall_back_as_needed;
     else if (dl_fall_back.argument() == "never")
-        options.fall_back = dl_fall_back_never;
+        options.fall_back() = dl_fall_back_never;
     else
         throw args::DoHelp("bad value for --dl-fall-back");
 
     if (dl_deps_default.specified())
     {
         DepListDepsOption x(dl_deps_default.option());
-        options.installed_deps_pre = x;
-        options.installed_deps_post = x;
-        options.installed_deps_runtime = x;
-        options.uninstalled_deps_pre = x;
-        options.uninstalled_deps_post = x;
-        options.uninstalled_deps_runtime = x;
-        options.uninstalled_deps_suggested = x;
+        options.installed_deps_pre() = x;
+        options.installed_deps_post() = x;
+        options.installed_deps_runtime() = x;
+        options.uninstalled_deps_pre() = x;
+        options.uninstalled_deps_post() = x;
+        options.uninstalled_deps_runtime() = x;
+        options.uninstalled_deps_suggested() = x;
     }
 
     if (dl_installed_deps_pre.specified() || ! dl_deps_default.specified())
-        options.installed_deps_pre = enum_arg_to_dep_list_deps_option(dl_installed_deps_pre);
+        options.installed_deps_pre() = enum_arg_to_dep_list_deps_option(dl_installed_deps_pre);
     if (dl_installed_deps_runtime.specified() || ! dl_deps_default.specified())
-        options.installed_deps_runtime = enum_arg_to_dep_list_deps_option(dl_installed_deps_runtime);
+        options.installed_deps_runtime() = enum_arg_to_dep_list_deps_option(dl_installed_deps_runtime);
     if (dl_installed_deps_post.specified() || ! dl_deps_default.specified())
-        options.installed_deps_post = enum_arg_to_dep_list_deps_option(dl_installed_deps_post);
+        options.installed_deps_post() = enum_arg_to_dep_list_deps_option(dl_installed_deps_post);
 
     if (dl_uninstalled_deps_pre.specified() || ! dl_deps_default.specified())
-        options.uninstalled_deps_pre = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_pre);
+        options.uninstalled_deps_pre() = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_pre);
     if (dl_uninstalled_deps_runtime.specified() || ! dl_deps_default.specified())
-        options.uninstalled_deps_runtime = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_runtime);
+        options.uninstalled_deps_runtime() = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_runtime);
     if (dl_uninstalled_deps_post.specified() || ! dl_deps_default.specified())
-        options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_post);
+        options.uninstalled_deps_post() = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_post);
     if (dl_uninstalled_deps_suggested.specified() || ! dl_deps_default.specified())
-        options.uninstalled_deps_suggested = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_suggested);
+        options.uninstalled_deps_suggested() = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_suggested);
 }
 
 void

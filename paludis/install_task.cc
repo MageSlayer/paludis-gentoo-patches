@@ -400,7 +400,7 @@ InstallTask::_add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_package_targets = true;
         if (! _imp->override_target_type)
-            _imp->dep_list.options()->target_type = dl_target_package;
+            _imp->dep_list.options()->target_type() = dl_target_package;
 
         if (spec->package_ptr())
         {
@@ -449,7 +449,7 @@ InstallTask::_add_target(const std::string & target)
                             new NamedSetDepSpec(SetName(target))))));
         _imp->had_set_targets = true;
         if (! _imp->override_target_type)
-            _imp->dep_list.options()->target_type = dl_target_set;
+            _imp->dep_list.options()->target_type() = dl_target_set;
 
         _imp->raw_targets.push_back(stringify(target));
     }
@@ -468,7 +468,7 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
 
     _imp->had_package_targets = true;
     if (! _imp->override_target_type)
-        _imp->dep_list.options()->target_type = dl_target_package;
+        _imp->dep_list.options()->target_type() = dl_target_package;
 
     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
                 .package(target->name())
@@ -1199,7 +1199,7 @@ void
 InstallTask::override_target_type(const DepListTargetType t)
 {
     _imp->override_target_type = true;
-    _imp->dep_list.options()->target_type = t;
+    _imp->dep_list.options()->target_type() = t;
 }
 
 void
@@ -1365,24 +1365,24 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
 
     CheckSatisfiedVisitor v(environment(), *e.package_id());
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
             e.package_id()->build_dependencies_key()->value()->accept(v);
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
             e.package_id()->run_dependencies_key()->value()->accept(v);
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
             e.package_id()->post_dependencies_key()->value()->accept(v);
 
-    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
-                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
-            && dl_suggested_install == _imp->dep_list.options()->suggested)
+    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
+                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
+            && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
             e.package_id()->suggested_dependencies_key()->value()->accept(v);
 
@@ -1508,24 +1508,24 @@ namespace
 
                 CheckIndependentVisitor v(env, dep_list, *i, already_checked);
 
-                if (dl_deps_pre == dep_list.options()->uninstalled_deps_pre ||
-                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_pre)
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_pre() ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_pre())
                     if ((*i)->build_dependencies_key())
                         (*i)->build_dependencies_key()->value()->accept(v);
 
-                if (dl_deps_pre == dep_list.options()->uninstalled_deps_runtime ||
-                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_runtime)
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_runtime() ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_runtime())
                     if ((*i)->run_dependencies_key())
                         (*i)->run_dependencies_key()->value()->accept(v);
 
-                if (dl_deps_pre == dep_list.options()->uninstalled_deps_post ||
-                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_post)
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_post() ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_post())
                     if ((*i)->post_dependencies_key())
                         (*i)->post_dependencies_key()->value()->accept(v);
 
-                if ((dl_deps_pre == dep_list.options()->uninstalled_deps_suggested ||
-                            dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_suggested)
-                        && dl_suggested_install == dep_list.options()->suggested)
+                if ((dl_deps_pre == dep_list.options()->uninstalled_deps_suggested() ||
+                            dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_suggested())
+                        && dl_suggested_install == dep_list.options()->suggested())
                     if ((*i)->suggested_dependencies_key())
                         (*i)->suggested_dependencies_key()->value()->accept(v);
 
@@ -1593,24 +1593,24 @@ InstallTask::_dependent(const DepListEntry & e) const
     CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id(), already_checked);
     already_checked->insert(e.package_id());
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
             e.package_id()->build_dependencies_key()->value()->accept(v);
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
             e.package_id()->run_dependencies_key()->value()->accept(v);
 
-    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
-            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
             e.package_id()->post_dependencies_key()->value()->accept(v);
 
-    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
-                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
-            && dl_suggested_install == _imp->dep_list.options()->suggested)
+    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
+                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
+            && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
             e.package_id()->suggested_dependencies_key()->value()->accept(v);
 

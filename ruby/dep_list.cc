@@ -382,31 +382,28 @@ namespace
                 if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
                     rb_raise(rb_eArgError, "blocks out of range");
 
-                ptr = new std::tr1::shared_ptr<DepListOptions>(
-                         new DepListOptions(
-                            static_cast<DepListReinstallOption>(value_for_reinstall),
-                            static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
-                            static_cast<DepListTargetType>(value_for_target_type),
-                            static_cast<DepListUpgradeOption>(value_for_upgrade),
-                            static_cast<DepListDowngradeOption>(value_for_downgrade),
-                            static_cast<DepListNewSlotsOption>(value_for_new_slots),
-                            static_cast<DepListFallBackOption>(value_for_fall_back),
-                            static_cast<DepListDepsOption>(value_for_installed_deps_pre),
-                            static_cast<DepListDepsOption>(value_for_installed_deps_runtime),
-                            static_cast<DepListDepsOption>(value_for_installed_deps_post),
-                            static_cast<DepListDepsOption>(value_for_uninstalled_deps_pre),
-                            static_cast<DepListDepsOption>(value_for_uninstalled_deps_runtime),
-                            static_cast<DepListDepsOption>(value_for_uninstalled_deps_post),
-                            static_cast<DepListDepsOption>(value_for_uninstalled_deps_suggested),
-                            static_cast<DepListSuggestedOption>(value_for_suggested),
-                            static_cast<DepListCircularOption>(value_for_circular),
-                            static_cast<DepListUseOption>(value_for_use),
-                            static_cast<DepListBlocksOption>(value_for_blocks),
-                            value_for_override_masks_functions,
-                            value_for_dependency_tags,
-                            value_for_match_package_options
-                            )
-                        );
+                ptr = new std::tr1::shared_ptr<DepListOptions>(new DepListOptions);
+                (*ptr)->blocks() = static_cast<DepListBlocksOption>(value_for_blocks);
+                (*ptr)->circular() = static_cast<DepListCircularOption>(value_for_circular);
+                (*ptr)->dependency_tags() = value_for_dependency_tags;
+                (*ptr)->downgrade() = static_cast<DepListDowngradeOption>(value_for_downgrade);
+                (*ptr)->fall_back() = static_cast<DepListFallBackOption>(value_for_fall_back);
+                (*ptr)->installed_deps_post() = static_cast<DepListDepsOption>(value_for_installed_deps_post);
+                (*ptr)->installed_deps_pre() = static_cast<DepListDepsOption>(value_for_installed_deps_pre);
+                (*ptr)->installed_deps_runtime() = static_cast<DepListDepsOption>(value_for_installed_deps_runtime);
+                (*ptr)->match_package_options() = value_for_match_package_options;
+                (*ptr)->new_slots() = static_cast<DepListNewSlotsOption>(value_for_new_slots);
+                (*ptr)->override_masks() = value_for_override_masks_functions;
+                (*ptr)->reinstall() = static_cast<DepListReinstallOption>(value_for_reinstall);
+                (*ptr)->reinstall_scm() = static_cast<DepListReinstallScmOption>(value_for_reinstall_scm);
+                (*ptr)->suggested() = static_cast<DepListSuggestedOption>(value_for_suggested);
+                (*ptr)->target_type() = static_cast<DepListTargetType>(value_for_target_type);
+                (*ptr)->uninstalled_deps_post() = static_cast<DepListDepsOption>(value_for_uninstalled_deps_post);
+                (*ptr)->uninstalled_deps_pre() = static_cast<DepListDepsOption>(value_for_uninstalled_deps_pre);
+                (*ptr)->uninstalled_deps_runtime() = static_cast<DepListDepsOption>(value_for_uninstalled_deps_runtime);
+                (*ptr)->uninstalled_deps_suggested() = static_cast<DepListDepsOption>(value_for_uninstalled_deps_suggested);
+                (*ptr)->upgrade() = static_cast<DepListUpgradeOption>(value_for_upgrade);
+                (*ptr)->use() = static_cast<DepListUseOption>(value_for_use);
 
                 VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
@@ -716,7 +713,7 @@ namespace
      *
      * Set our DepListBlockOption
      */
-    template <typename T_, T_ DepListOptions::* m_>
+    template <typename T_, typename K_, NamedValue<K_, T_> DepListOptions::* m_>
     struct OptionsMember
     {
         static VALUE
@@ -724,7 +721,7 @@ namespace
         {
             std::tr1::shared_ptr<DepListOptions> * p;
             Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
-            return INT2FIX((**p).*m_);
+            return INT2FIX(((**p).*m_)());
         }
 
         static VALUE
@@ -734,7 +731,7 @@ namespace
             Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
             try
             {
-                ((**p).*m_) = static_cast<T_>(NUM2INT(val));
+                ((**p).*m_)() = static_cast<T_>(NUM2INT(val));
                 return Qnil;
             }
             catch (const std::exception & e)
@@ -755,7 +752,7 @@ namespace
     {
         std::tr1::shared_ptr<DepListOptions> * p;
         Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
-        return (*p)->dependency_tags ? Qtrue : Qfalse;
+        return (*p)->dependency_tags() ? Qtrue : Qfalse;
     }
 
     /*
@@ -773,11 +770,11 @@ namespace
         {
             if (Qtrue == tags)
             {
-                (*p)->dependency_tags = true;
+                (*p)->dependency_tags() = true;
             }
             else if (Qfalse == tags)
             {
-                (*p)->dependency_tags = false;
+                (*p)->dependency_tags() = false;
             }
             else
             {
@@ -802,7 +799,7 @@ namespace
     {
         std::tr1::shared_ptr<DepListOptions> * p;
         Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
-        return (*p)->override_masks ? dep_list_override_masks_functions_to_value((*p)->override_masks) : Qnil;
+        return (*p)->override_masks() ? dep_list_override_masks_functions_to_value((*p)->override_masks()) : Qnil;
     }
 
     /*
@@ -818,7 +815,7 @@ namespace
         Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         try
         {
-            (*p)->override_masks = value_to_dep_list_override_masks_functions(omf);
+            (*p)->override_masks() = value_to_dep_list_override_masks_functions(omf);
             return Qnil;
         }
         catch (const std::exception & e)
@@ -838,7 +835,7 @@ namespace
     {
         std::tr1::shared_ptr<DepListOptions> * p;
         Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
-        return match_package_options_to_value((*p)->match_package_options);
+        return match_package_options_to_value((*p)->match_package_options());
     }
 
     /*
@@ -854,7 +851,7 @@ namespace
         Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         try
         {
-            (*p)->match_package_options = value_to_match_package_options(omf);
+            (*p)->match_package_options() = value_to_match_package_options(omf);
             return Qnil;
         }
         catch (const std::exception & e)
@@ -1347,78 +1344,78 @@ namespace
         rb_define_singleton_method(c_dep_list_options, "new", RUBY_FUNC_CAST(&dep_list_options_new), -1);
         rb_define_method(c_dep_list_options, "initialize", RUBY_FUNC_CAST(&dep_list_options_init), -1);
         rb_define_method(c_dep_list_options, "reinstall",
-                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, &DepListOptions::reinstall>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, n::reinstall, &DepListOptions::reinstall>::fetch)),0);
         rb_define_method(c_dep_list_options, "reinstall_scm",
-                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallScmOption, &DepListOptions::reinstall_scm>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallScmOption, n::reinstall_scm, &DepListOptions::reinstall_scm>::fetch)),0);
         rb_define_method(c_dep_list_options, "target_type",
-                RUBY_FUNC_CAST((&OptionsMember<DepListTargetType, &DepListOptions::target_type>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListTargetType, n::target_type, &DepListOptions::target_type>::fetch)),0);
         rb_define_method(c_dep_list_options, "downgrade",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDowngradeOption, &DepListOptions::downgrade>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDowngradeOption, n::downgrade, &DepListOptions::downgrade>::fetch)),0);
         rb_define_method(c_dep_list_options, "upgrade",
-                RUBY_FUNC_CAST((&OptionsMember<DepListUpgradeOption, &DepListOptions::upgrade>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListUpgradeOption, n::upgrade, &DepListOptions::upgrade>::fetch)),0);
         rb_define_method(c_dep_list_options, "new_slots",
-                RUBY_FUNC_CAST((&OptionsMember<DepListNewSlotsOption, &DepListOptions::new_slots>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListNewSlotsOption, n::new_slots, &DepListOptions::new_slots>::fetch)),0);
         rb_define_method(c_dep_list_options, "fall_back",
-                RUBY_FUNC_CAST((&OptionsMember<DepListFallBackOption, &DepListOptions::fall_back>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListFallBackOption, n::fall_back, &DepListOptions::fall_back>::fetch)),0);
         rb_define_method(c_dep_list_options, "installed_deps_pre",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_pre>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_pre, &DepListOptions::installed_deps_pre>::fetch)),0);
         rb_define_method(c_dep_list_options, "installed_deps_runtime",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_runtime>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_runtime, &DepListOptions::installed_deps_runtime>::fetch)),0);
         rb_define_method(c_dep_list_options, "installed_deps_post",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_post>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_post, &DepListOptions::installed_deps_post>::fetch)),0);
         rb_define_method(c_dep_list_options, "uninstalled_deps_pre",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_pre>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_pre, &DepListOptions::uninstalled_deps_pre>::fetch)),0);
         rb_define_method(c_dep_list_options, "uninstalled_deps_runtime",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_runtime>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_runtime, &DepListOptions::uninstalled_deps_runtime>::fetch)),0);
         rb_define_method(c_dep_list_options, "uninstalled_deps_post",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_post>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_post, &DepListOptions::uninstalled_deps_post>::fetch)),0);
         rb_define_method(c_dep_list_options, "uninstalled_deps_suggested",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_suggested>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_suggested, &DepListOptions::uninstalled_deps_suggested>::fetch)),0);
         rb_define_method(c_dep_list_options, "suggested",
-                RUBY_FUNC_CAST((&OptionsMember<DepListSuggestedOption, &DepListOptions::suggested>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListSuggestedOption, n::suggested, &DepListOptions::suggested>::fetch)),0);
         rb_define_method(c_dep_list_options, "circular",
-                RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, &DepListOptions::circular>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, n::circular, &DepListOptions::circular>::fetch)),0);
         rb_define_method(c_dep_list_options, "use",
-                RUBY_FUNC_CAST((&OptionsMember<DepListUseOption, &DepListOptions::use>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListUseOption, n::use, &DepListOptions::use>::fetch)),0);
         rb_define_method(c_dep_list_options, "blocks",
-                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::fetch)),0);
+                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, n::blocks, &DepListOptions::blocks>::fetch)),0);
 
         rb_define_method(c_dep_list_options, "reinstall=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, &DepListOptions::reinstall>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, n::reinstall, &DepListOptions::reinstall>::set)),1);
         rb_define_method(c_dep_list_options, "reinstall_scm=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallScmOption, &DepListOptions::reinstall_scm>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListReinstallScmOption, n::reinstall_scm, &DepListOptions::reinstall_scm>::set)),1);
         rb_define_method(c_dep_list_options, "target_type=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListTargetType, &DepListOptions::target_type>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListTargetType, n::target_type, &DepListOptions::target_type>::set)),1);
         rb_define_method(c_dep_list_options, "upgrade=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListUpgradeOption, &DepListOptions::upgrade>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListUpgradeOption, n::upgrade, &DepListOptions::upgrade>::set)),1);
         rb_define_method(c_dep_list_options, "downgrade=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDowngradeOption, &DepListOptions::downgrade>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDowngradeOption, n::downgrade, &DepListOptions::downgrade>::set)),1);
         rb_define_method(c_dep_list_options, "new_slots=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListNewSlotsOption, &DepListOptions::new_slots>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListNewSlotsOption, n::new_slots, &DepListOptions::new_slots>::set)),1);
         rb_define_method(c_dep_list_options, "fall_back=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListFallBackOption, &DepListOptions::fall_back>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListFallBackOption, n::fall_back, &DepListOptions::fall_back>::set)),1);
         rb_define_method(c_dep_list_options, "installed_deps_pre=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_pre>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_pre, &DepListOptions::installed_deps_pre>::set)),1);
         rb_define_method(c_dep_list_options, "installed_deps_runtime=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_runtime>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_runtime, &DepListOptions::installed_deps_runtime>::set)),1);
         rb_define_method(c_dep_list_options, "installed_deps_post=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_post>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::installed_deps_post, &DepListOptions::installed_deps_post>::set)),1);
         rb_define_method(c_dep_list_options, "uninstalled_deps_pre=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_pre>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_pre, &DepListOptions::uninstalled_deps_pre>::set)),1);
         rb_define_method(c_dep_list_options, "uninstalled_deps_runtime=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_runtime>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_runtime, &DepListOptions::uninstalled_deps_runtime>::set)),1);
         rb_define_method(c_dep_list_options, "uninstalled_deps_post=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_post>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_post, &DepListOptions::uninstalled_deps_post>::set)),1);
         rb_define_method(c_dep_list_options, "uninstalled_deps_suggested=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::uninstalled_deps_suggested>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, n::uninstalled_deps_suggested, &DepListOptions::uninstalled_deps_suggested>::set)),1);
         rb_define_method(c_dep_list_options, "suggested=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListSuggestedOption, &DepListOptions::suggested>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListSuggestedOption, n::suggested, &DepListOptions::suggested>::set)),1);
         rb_define_method(c_dep_list_options, "circular=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, &DepListOptions::circular>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, n::circular, &DepListOptions::circular>::set)),1);
         rb_define_method(c_dep_list_options, "use=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListUseOption, &DepListOptions::use>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListUseOption, n::use, &DepListOptions::use>::set)),1);
         rb_define_method(c_dep_list_options, "blocks=",
-                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::set)),1);
+                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, n::blocks, &DepListOptions::blocks>::set)),1);
 
 
         rb_define_method(c_dep_list_options, "dependency_tags", RUBY_FUNC_CAST(&dep_list_options_dependency_tags),0);

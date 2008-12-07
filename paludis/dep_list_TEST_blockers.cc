@@ -46,12 +46,12 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions()),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
-            d.options()->blocks = dl_blocks_accumulate;
+            d.options()->blocks() = dl_blocks_accumulate;
             d.add(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions()), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 2);
             TEST_CHECK_EQUAL(d.begin()->kind(), dlk_block);
@@ -123,12 +123,12 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
-            d.options()->blocks = dl_blocks_accumulate;
+            d.options()->blocks() = dl_blocks_accumulate;
             d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 4);
             TEST_CHECK_EQUAL(d.begin()->kind(), dlk_block);
@@ -163,7 +163,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
@@ -258,7 +258,7 @@ namespace test_cases
 
         virtual void set_options(DepListOptions & p)
         {
-            p.reinstall = dl_reinstall_always;
+            p.reinstall() = dl_reinstall_always;
         }
     } test_dep_list_no_block_on_no_reinstall_via_provided;
 
@@ -305,7 +305,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
@@ -335,7 +335,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
@@ -364,7 +364,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            d.options()->blocks = dl_blocks_error;
+            d.options()->blocks() = dl_blocks_error;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target, &env, UserPackageDepSpecOptions())),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());

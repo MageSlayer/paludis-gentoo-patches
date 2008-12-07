@@ -51,13 +51,34 @@ namespace paludis
     namespace n
     {
         struct associated_entry;
+        struct blocks;
+        struct circular;
+        struct dependency_tags;
         struct destination;
+        struct downgrade;
+        struct fall_back;
         struct generation;
         struct handled;
+        struct installed_deps_post;
+        struct installed_deps_pre;
+        struct installed_deps_runtime;
         struct kind;
+        struct match_package_options;
+        struct new_slots;
+        struct override_masks;
         struct package_id;
+        struct reinstall;
+        struct reinstall_scm;
         struct state;
+        struct suggested;
         struct tags;
+        struct target_type;
+        struct uninstalled_deps_post;
+        struct uninstalled_deps_pre;
+        struct uninstalled_deps_runtime;
+        struct uninstalled_deps_suggested;
+        struct upgrade;
+        struct use;
     }
 
     /**
@@ -66,8 +87,6 @@ namespace paludis
      * \ingroup g_dep_list
      */
     typedef Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> > DepListOverrideMasksFunctions;
-
-#include <paludis/dep_list-sr.hh>
 
     /**
      * An entry in a DepList.
@@ -86,6 +105,40 @@ namespace paludis
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::state, DepListEntryState> state;
         NamedValue<n::tags, std::tr1::shared_ptr<DepListEntryTags> > tags;
+    };
+
+    /**
+     * Parameters for a DepList.
+     *
+     * \see DepList
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
+    struct PALUDIS_VISIBLE DepListOptions
+    {
+        DepListOptions();
+
+        NamedValue<n::blocks, DepListBlocksOption> blocks;
+        NamedValue<n::circular, DepListCircularOption> circular;
+        NamedValue<n::dependency_tags, bool> dependency_tags;
+        NamedValue<n::downgrade, DepListDowngradeOption> downgrade;
+        NamedValue<n::fall_back, DepListFallBackOption> fall_back;
+        NamedValue<n::installed_deps_post, DepListDepsOption> installed_deps_post;
+        NamedValue<n::installed_deps_pre, DepListDepsOption> installed_deps_pre;
+        NamedValue<n::installed_deps_runtime, DepListDepsOption> installed_deps_runtime;
+        NamedValue<n::match_package_options, MatchPackageOptions> match_package_options;
+        NamedValue<n::new_slots, DepListNewSlotsOption> new_slots;
+        NamedValue<n::override_masks, std::tr1::shared_ptr<DepListOverrideMasksFunctions> > override_masks;
+        NamedValue<n::reinstall, DepListReinstallOption> reinstall;
+        NamedValue<n::reinstall_scm, DepListReinstallScmOption> reinstall_scm;
+        NamedValue<n::suggested, DepListSuggestedOption> suggested;
+        NamedValue<n::target_type, DepListTargetType> target_type;
+        NamedValue<n::uninstalled_deps_post, DepListDepsOption> uninstalled_deps_post;
+        NamedValue<n::uninstalled_deps_pre, DepListDepsOption> uninstalled_deps_pre;
+        NamedValue<n::uninstalled_deps_runtime, DepListDepsOption> uninstalled_deps_runtime;
+        NamedValue<n::uninstalled_deps_suggested, DepListDepsOption> uninstalled_deps_suggested;
+        NamedValue<n::upgrade, DepListUpgradeOption> upgrade;
+        NamedValue<n::use, DepListUseOption> use;
     };
 
     /**

@@ -188,7 +188,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     std::tr1::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
-                generator::Matches(a, _imp->dep_list->options()->match_package_options)
+                generator::Matches(a, _imp->dep_list->options()->match_package_options())
                 | filter::SupportsAction<InstalledAction>())]);
     if (! installed_matches->empty())
     {
@@ -200,7 +200,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsSorted(
-                generator::Matches(a, _imp->dep_list->options()->match_package_options)
+                generator::Matches(a, _imp->dep_list->options()->match_package_options())
                 | filter::SupportsAction<InstallAction>())]);
     if (matches->empty())
     {

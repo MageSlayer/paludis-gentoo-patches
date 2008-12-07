@@ -74,29 +74,28 @@ template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEn
 
 template class PrivateImplementationPattern<DepList>;
 
-#include <paludis/dep_list-sr.cc>
-
 DepListOptions::DepListOptions() :
-    reinstall(dl_reinstall_never),
-    reinstall_scm(dl_reinstall_scm_never),
-    target_type(dl_target_package),
-    upgrade(dl_upgrade_always),
+    blocks(dl_blocks_accumulate),
+    circular(dl_circular_error),
+    dependency_tags(false),
     downgrade(dl_downgrade_as_needed),
-    new_slots(dl_new_slots_always),
     fall_back(dl_fall_back_as_needed_except_targets),
+    installed_deps_post(dl_deps_try_post),
     installed_deps_pre(dl_deps_discard),
     installed_deps_runtime(dl_deps_try_post),
-    installed_deps_post(dl_deps_try_post),
+    match_package_options(MatchPackageOptions()),
+    new_slots(dl_new_slots_always),
+    override_masks(make_null_shared_ptr()),
+    reinstall(dl_reinstall_never),
+    reinstall_scm(dl_reinstall_scm_never),
+    suggested(dl_suggested_show),
+    target_type(dl_target_package),
+    uninstalled_deps_post(dl_deps_post),
     uninstalled_deps_pre(dl_deps_pre),
     uninstalled_deps_runtime(dl_deps_pre_or_post),
-    uninstalled_deps_post(dl_deps_post),
     uninstalled_deps_suggested(dl_deps_try_post),
-    suggested(dl_suggested_show),
-    circular(dl_circular_error),
-    use(dl_use_deps_standard),
-    blocks(dl_blocks_accumulate),
-    dependency_tags(false),
-    match_package_options()
+    upgrade(dl_upgrade_always),
+    use(dl_use_deps_standard)
 {
     /* when changing the above, also see src/paludis/command_line.cc. */
 }
@@ -139,7 +138,7 @@ namespace paludis
             merge_list_insert_position(merge_list.end()),
             merge_list_generation(0),
             current_top_level_target(0),
-            throw_on_blocker(o.blocks == dl_blocks_error)
+            throw_on_blocker(o.blocks() == dl_blocks_error)
         {
             labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
         }
@@ -387,12 +386,12 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
+        &conditions, d->_imp->opts->dependency_tags() ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* find already installed things */
     // TODO: check destinations
     std::tr1::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
-                generator::Matches(a, d->_imp->opts->match_package_options) | filter::SupportsAction<InstalledAction>())]);
+                generator::Matches(a, d->_imp->opts->match_package_options()) | filter::SupportsAction<InstalledAction>())]);
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -402,7 +401,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         q = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
 
     MergeListIndex::iterator qq(std::find_if(q.first, q.second,
-                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a, d->_imp->opts->match_package_options)));
+                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a, d->_imp->opts->match_package_options())));
 
     MergeList::iterator existing_merge_list_entry(qq == q.second ? d->_imp->merge_list.end() : qq->second);
     if (existing_merge_list_entry != d->_imp->merge_list.end())
@@ -414,7 +413,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     value_for<n::tag>(a.tag())
                     ));
 
-        if (d->_imp->opts->dependency_tags && d->_imp->current_package_id())
+        if (d->_imp->opts->dependency_tags() && d->_imp->current_package_id())
             existing_merge_list_entry->tags()->insert(make_named_values<DepTagEntry>(
                     value_for<n::generation>(d->_imp->merge_list_generation),
                     value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
@@ -430,13 +429,13 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (! already_installed->empty())
                 return;
 
-            if (d->_imp->opts->circular == dl_circular_discard)
+            if (d->_imp->opts->circular() == dl_circular_discard)
             {
                 Log::get_instance()->message("dep_list.dropping_circular", ll_qa, lc_context)
                     << "Dropping circular dependency on '" << *existing_merge_list_entry->package_id() << "'";
                 return;
             }
-            else if (d->_imp->opts->circular == dl_circular_discard_silently)
+            else if (d->_imp->opts->circular() == dl_circular_discard_silently)
                 return;
 
             throw CircularDependencyError("Atom '" + stringify(a) + "' matched by merge list entry '" +
@@ -450,7 +449,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find installable candidates, and find the best visible candidate */
     std::tr1::shared_ptr<const PackageID> best_visible_candidate;
     std::tr1::shared_ptr<const PackageIDSequence> installable_candidates(
-            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a, d->_imp->opts->match_package_options) &
+            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(a, d->_imp->opts->match_package_options()) &
                 generator::SomeIDsMightSupportAction<InstallAction>())]);
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
@@ -463,7 +462,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
     if (! best_visible_candidate && ! already_installed->empty() &&
         (*already_installed->last())->transient_key() && (*already_installed->last())->transient_key()->value() &&
-        (dl_target_package != d->_imp->opts->target_type || ! d->is_top_level_target(**already_installed->last())))
+        (dl_target_package != d->_imp->opts->target_type() || ! d->is_top_level_target(**already_installed->last())))
     {
             Log::get_instance()->message("dep_list.no_visible.transient", ll_debug, lc_context) << "No visible packages matching '"
                 << a << "', silently falling back to installed package '" << **already_installed->last() << "' as it is transient";
@@ -472,10 +471,10 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     /* are we allowed to override mask reasons? */
-    if (! best_visible_candidate && d->_imp->opts->override_masks)
+    if (! best_visible_candidate && d->_imp->opts->override_masks())
     {
-        for (DepListOverrideMasksFunctions::ConstIterator of(d->_imp->opts->override_masks->begin()),
-                of_end(d->_imp->opts->override_masks->end()) ; of != of_end ; ++of)
+        for (DepListOverrideMasksFunctions::ConstIterator of(d->_imp->opts->override_masks()->begin()),
+                of_end(d->_imp->opts->override_masks()->end()) ; of != of_end ; ++of)
         {
             if (best_visible_candidate)
                 break;
@@ -491,7 +490,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                         m != m_end ; ++m)
                 {
                     bool local_success(false);
-                    for (DepListOverrideMasksFunctions::ConstIterator o(d->_imp->opts->override_masks->begin()),
+                    for (DepListOverrideMasksFunctions::ConstIterator o(d->_imp->opts->override_masks()->begin()),
                             o_end(next(of)) ; o != o_end ; ++o)
                         if ((*o)(**p, **m))
                             local_success = true;
@@ -517,7 +516,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         bool can_fall_back;
         do
         {
-            switch (d->_imp->opts->fall_back)
+            switch (d->_imp->opts->fall_back())
             {
                 case dl_fall_back_never:
                     can_fall_back = false;
@@ -541,7 +540,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     ;
             }
 
-            throw InternalError(PALUDIS_HERE, "Bad fall_back value '" + stringify(d->_imp->opts->fall_back) + "'");
+            throw InternalError(PALUDIS_HERE, "Bad fall_back value '" + stringify(d->_imp->opts->fall_back()) + "'");
         } while (false);
 
         if (already_installed->empty() || ! can_fall_back)
@@ -550,7 +549,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 throw AllMaskedError(a);
 
             std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(*a.without_additional_requirements(), d->_imp->opts->match_package_options))]);
+                        generator::Matches(*a.without_additional_requirements(), d->_imp->opts->match_package_options()))]);
 
             for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
@@ -592,7 +591,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 << "Not taking installed package '" << **already_installed_in_same_slot->last() << "' over '"
                 << *best_visible_candidate << "'";
     }
-    else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts->new_slots))
+    else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts->new_slots()))
     {
         /* we have an already installed, but not in the same slot, and our options
          * allow us to take this. */
@@ -615,7 +614,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             << *best_visible_candidate << "'";
 
     /* if this is a downgrade, make sure that that's ok */
-    switch (d->_imp->opts->downgrade)
+    switch (d->_imp->opts->downgrade())
     {
         case dl_downgrade_as_needed:
             break;
@@ -628,7 +627,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                             generator::Matches(make_package_dep_spec()
                                 .package(best_visible_candidate->name())
                                 .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot()))),
-                                d->_imp->opts->match_package_options) |
+                                d->_imp->opts->match_package_options()) |
                             filter::SupportsAction<InstalledAction>())]);
 
                 if (are_we_downgrading->empty())
@@ -637,7 +636,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 if ((*are_we_downgrading->last())->version() <= best_visible_candidate->version())
                     break;
 
-                if (d->_imp->opts->downgrade == dl_downgrade_error)
+                if (d->_imp->opts->downgrade() == dl_downgrade_error)
                     throw DowngradeNotAllowedError(stringify(*best_visible_candidate),
                             stringify(**are_we_downgrading->last()));
 
@@ -691,9 +690,9 @@ DepList::AddVisitor::visit_sequence(const ConditionalDepSpec & a,
         DependencySpecTree::ConstSequenceIterator end)
 {
     Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
+        &conditions, d->_imp->opts->dependency_tags() ? ConditionTracker(conditions).add_condition(a) : conditions);
 
-    if (d->_imp->opts->use == dl_use_deps_standard)
+    if (d->_imp->opts->use() == dl_use_deps_standard)
     {
         d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
         RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
@@ -735,7 +734,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
     }
 
     Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
+        &conditions, d->_imp->opts->dependency_tags() ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */
@@ -766,8 +765,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
             Context context("When using already installed package to resolve dependencies:");
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
-                    dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    dl_blocks_discard_completely != d->_imp->opts->blocks());
+            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks(),
                     std::tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
@@ -788,8 +787,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
             Context context("When using new group to resolve dependencies:");
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
-                    dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    dl_blocks_discard_completely != d->_imp->opts->blocks());
+            Save<std::tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks(),
                     std::tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(only_if_not_suggested_label, *c, destinations, conditions);
             return;
@@ -817,7 +816,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 void
 DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 {
-    if (dl_blocks_discard_completely == d->_imp->opts->blocks)
+    if (dl_blocks_discard_completely == d->_imp->opts->blocks())
         return;
 
     // TODO: check destinations
@@ -825,7 +824,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     Context context("When checking BlockDepSpec '" + stringify(a) + "':");
 
     Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
+        &conditions, d->_imp->opts->dependency_tags() ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
@@ -835,10 +834,10 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     {
         PackageDepSpec just_package(make_package_dep_spec().package(*a.blocked_spec()->package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(just_package, d->_imp->opts->match_package_options) |
+                generator::Matches(just_package, d->_imp->opts->match_package_options()) |
                 filter::SupportsAction<InstalledAction>())];
 
-        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options);
+        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options());
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
                     d->_imp->merge_list_index.equal_range(*a.blocked_spec()->package_ptr())) ;
                 p.first != p.second ; ++p.first)
@@ -870,7 +869,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa, d->_imp->opts->match_package_options))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa, d->_imp->opts->match_package_options()))
             continue;
 
         bool replaced(false);
@@ -909,7 +908,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 continue;
         }
 
-        switch (d->_imp->throw_on_blocker ? dl_blocks_error : d->_imp->opts->blocks)
+        switch (d->_imp->throw_on_blocker ? dl_blocks_error : d->_imp->opts->blocks())
         {
             case dl_blocks_error:
                 throw BlockError(stringify(*a.blocked_spec()));
@@ -933,7 +932,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id(), d->_imp->opts->match_package_options))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id(), d->_imp->opts->match_package_options()))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -963,7 +962,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id(), d->_imp->opts->match_package_options))
+            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id(), d->_imp->opts->match_package_options()))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -1102,7 +1101,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
                 value_for<n::tag>(tag)
                 ));
 
-    if (_imp->opts->dependency_tags && _imp->current_package_id())
+    if (_imp->opts->dependency_tags() && _imp->current_package_id())
         our_merge_entry_position->tags()->insert(make_named_values<DepTagEntry>(
                 value_for<n::generation>(_imp->merge_list_generation),
                 value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
@@ -1140,7 +1139,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
                 z = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
-                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp, _imp->opts->match_package_options)));
+                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp, _imp->opts->match_package_options())));
 
             if (zz != z.second)
                 continue;
@@ -1163,50 +1162,50 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
     }
 
     /* add suggests */
-    if (_imp->opts->suggested == dl_suggested_show && p->suggested_dependencies_key())
+    if (_imp->opts->suggested() == dl_suggested_show && p->suggested_dependencies_key())
     {
         Context c("When showing suggestions:");
         Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                 next(our_merge_entry_position));
-        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags, false);
+        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags(), false);
         p->suggested_dependencies_key()->value()->accept(visitor);
     }
 
     /* add suggests in post depend too */
-    if (_imp->opts->suggested == dl_suggested_show && p->post_dependencies_key())
+    if (_imp->opts->suggested() == dl_suggested_show && p->post_dependencies_key())
     {
         Context c("When showing suggestions in post dependencies key:");
         Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                 next(our_merge_entry_position));
-        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags, true);
+        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags(), true);
         p->post_dependencies_key()->value()->accept(visitor);
     }
 
     /* add pre dependencies */
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations, false);
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations, false);
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations,
-                (_imp->opts->suggested == dl_suggested_install) ? false : true);
-    if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
-        add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post(), "post", destinations,
+                (_imp->opts->suggested() == dl_suggested_install) ? false : true);
+    if (_imp->opts->suggested() == dl_suggested_install && p->suggested_dependencies_key())
+        add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
 
     our_merge_entry_position->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
     /* add post dependencies */
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations, false);
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations, false);
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations,
-                (_imp->opts->suggested == dl_suggested_install) ? false : true);
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post(), "post", destinations,
+                (_imp->opts->suggested() == dl_suggested_install) ? false : true);
 
-    if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
-        add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations, false);
+    if (_imp->opts->suggested() == dl_suggested_install && p->suggested_dependencies_key())
+        add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
 
     our_merge_entry_position->state() = dle_has_all_deps;
 }
@@ -1327,8 +1326,8 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
             }
             catch (const CircularDependencyError &)
             {
-                Save<DepListCircularOption> save_circular(&_imp->opts->circular,
-                        _imp->opts->circular == dl_circular_discard_silently ?
+                Save<DepListCircularOption> save_circular(&_imp->opts->circular(),
+                        _imp->opts->circular() == dl_circular_discard_silently ?
                         dl_circular_discard_silently : dl_circular_discard);
                 Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position,
                         _imp->merge_list.end());
@@ -1374,7 +1373,7 @@ DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageI
                 value_for<n::tag>(tag)
                 ));
 
-    if (_imp->opts->dependency_tags && _imp->current_package_id())
+    if (_imp->opts->dependency_tags() && _imp->current_package_id())
         our_merge_entry->tags()->insert(make_named_values<DepTagEntry>(
                     value_for<n::generation>(_imp->merge_list_generation),
                     value_for<n::tag>(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
@@ -1384,21 +1383,21 @@ DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageI
             our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations, false);
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations, false);
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations, true);
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post(), "post", destinations, true);
 
     our_merge_entry->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations, false);
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations, false);
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations, true);
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post(), "post", destinations, true);
 }
 
 namespace
@@ -1438,7 +1437,7 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 {
     do
     {
-        switch (_imp->opts->target_type)
+        switch (_imp->opts->target_type())
         {
             case dl_target_package:
                 if (! _imp->current_package_id())
@@ -1456,16 +1455,16 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
                 ;
         }
 
-        throw InternalError(PALUDIS_HERE, "Bad target_type value '" + stringify(_imp->opts->target_type) + "'");
+        throw InternalError(PALUDIS_HERE, "Bad target_type value '" + stringify(_imp->opts->target_type()) + "'");
     } while (false);
 
-    if (dl_reinstall_always == _imp->opts->reinstall)
+    if (dl_reinstall_always == _imp->opts->reinstall())
             return false;
 
-    if (dl_upgrade_as_needed == _imp->opts->upgrade)
+    if (dl_upgrade_as_needed == _imp->opts->upgrade())
         return true;
 
-    if (dl_reinstall_scm_never != _imp->opts->reinstall_scm)
+    if (dl_reinstall_scm_never != _imp->opts->reinstall_scm())
         if (uninstalled.version() == installed.version() &&
                 (installed.version().is_scm() || is_scm(installed.name())))
         {
@@ -1476,7 +1475,7 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
 
             do
             {
-                switch (_imp->opts->reinstall_scm)
+                switch (_imp->opts->reinstall_scm())
                 {
                     case dl_reinstall_scm_always:
                         return false;
@@ -1507,7 +1506,7 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
     if (uninstalled.version() != installed.version())
         return false;
 
-    if (dl_reinstall_if_use_changed == _imp->opts->reinstall)
+    if (dl_reinstall_if_use_changed == _imp->opts->reinstall())
     {
         std::set<ChoiceNameWithPrefix> common;
         if (installed.choices_key() && uninstalled.choices_key())
@@ -1594,7 +1593,7 @@ DepList::is_top_level_target(const PackageID & e) const
     if (! _imp->current_top_level_target)
         throw InternalError(PALUDIS_HERE, "current_top_level_target not set?");
 
-    return match_package_in_set(*_imp->env, *_imp->current_top_level_target, e, _imp->opts->match_package_options);
+    return match_package_in_set(*_imp->env, *_imp->current_top_level_target, e, _imp->opts->match_package_options());
 }
 
 namespace
@@ -1653,7 +1652,7 @@ DepList::replaced(const PackageID & m) const
 
     PackageDepSpec spec(make_package_dep_spec().package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
-                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options)))))
+                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options())))))
     {
         if (p.first->second->package_id()->slot() != m.slot())
             p.first = next(p.first);
@@ -1674,7 +1673,7 @@ DepList::match_on_list(const PackageDepSpec & a) const
         p = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
     return p.second != std::find_if(p.first, p.second,
-            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a, _imp->opts->match_package_options));
+            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a, _imp->opts->match_package_options()));
 }
 
 DepList::Iterator
