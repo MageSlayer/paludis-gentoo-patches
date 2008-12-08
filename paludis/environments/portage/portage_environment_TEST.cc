@@ -172,6 +172,8 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-four-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
+            std::tr1::shared_ptr<const KeywordNameSet> empty(new KeywordNameSet);
+            TEST_CHECK(env.accept_keywords(empty, *id4));
         }
     } test_accept_keywords;
 }

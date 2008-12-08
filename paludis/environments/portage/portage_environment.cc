@@ -601,39 +601,34 @@ bool
 PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNameSet> & keywords,
         const PackageID & d) const
 {
-    bool result(false);
-
     if (keywords->end() != keywords->find(KeywordName("*")))
         return true;
 
-    for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
-            k != k_end ; ++k)
+    std::set<std::string> accepted;
+    std::copy(_imp->accept_keywords.begin(), _imp->accept_keywords.end(), std::inserter(accepted, accepted.begin()));
+    for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
+             it_end(_imp->package_keywords.end()); it_end != it; ++it)
     {
-        bool local_result(false);
+        if (! match_package(*this, *it->first, d, MatchPackageOptions()))
+            continue;
 
-        if (_imp->accept_keywords.end() != _imp->accept_keywords.find(stringify(*k)))
-            local_result = true;
-
-        for (PackageKeywords::const_iterator i(_imp->package_keywords.begin()), i_end(_imp->package_keywords.end()) ;
-                i != i_end ; ++i)
-        {
-            if (! match_package(*this, *i->first, d, MatchPackageOptions()))
-                continue;
-
-            if (i->second == stringify(*k))
-                local_result = true;
-            else if (i->second == "-" + stringify(*k))
-                local_result = false;
-            else if (i->second == "-*")
-                local_result = false;
-            else if (i->second == "**")
-                local_result = true;
-        }
-
-        result |= local_result;
+        if ("-*" == it->second)
+            accepted.clear();
+        else if ('-' == it->second.at(0))
+            accepted.erase(it->second.substr(1));
+        else
+            accepted.insert(it->second);
     }
 
-    return result;
+    if (accepted.end() != accepted.find("**"))
+        return true;
+
+    for (KeywordNameSet::ConstIterator it(keywords->begin()),
+             it_end(keywords->end()); it_end != it; ++it)
+        if (accepted.end() != accepted.find(stringify(*it)))
+            return true;
+
+    return false;
 }
 
 const FSEntry
