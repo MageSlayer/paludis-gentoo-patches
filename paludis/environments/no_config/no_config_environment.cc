@@ -46,7 +46,6 @@
 using namespace paludis;
 using namespace paludis::no_config_environment;
 
-#include <paludis/environments/no_config/no_config_environment-sr.cc>
 #include <paludis/environments/no_config/no_config_environment-se.cc>
 
 namespace paludis
@@ -150,30 +149,30 @@ namespace
 Implementation<NoConfigEnvironment>::Implementation(
         NoConfigEnvironment * const env, const no_config_environment::Params & p) :
     params(p),
-    top_level_dir(p.repository_dir),
-    write_cache(p.write_cache),
-    accept_unstable(p.accept_unstable),
-    is_vdb(is_vdb_repository(p.repository_dir, p.repository_type)),
+    top_level_dir(p.repository_dir()),
+    write_cache(p.write_cache()),
+    accept_unstable(p.accept_unstable()),
+    is_vdb(is_vdb_repository(p.repository_dir(), p.repository_type())),
     paludis_command("false"),
     package_database(new PackageDatabase(env)),
     format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "no_config")),
     repository_dir_key(new LiteralMetadataValueKey<FSEntry>("repository_dir", "Repository dir",
-                mkt_normal, p.repository_dir))
+                mkt_normal, p.repository_dir()))
 {
 }
 
 void
 Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 {
-    Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir) + "':");
+    Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir()) + "':");
 
     if (! is_vdb)
     {
         bool ignored_one(false);
-        for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs->begin()), d_end(params.extra_repository_dirs->end()) ;
+        for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs()->begin()), d_end(params.extra_repository_dirs()->end()) ;
                 d != d_end ; ++d)
         {
-            if (params.repository_dir.realpath() == d->realpath())
+            if (params.repository_dir().realpath() == d->realpath())
             {
                 Log::get_instance()->message("no_config_environment.extra_repository.ignoring", ll_warning, lc_context)
                     << "Ignoring extra_repository_dir '" << *d << "' because it is the same as repository_dir";
@@ -183,57 +182,57 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
 
-            if (params.extra_params)
-                std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
+            if (params.extra_params())
+                std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
             keys->insert("format", "ebuild");
             keys->insert("location", stringify(*d));
             keys->insert("profiles", "/var/empty");
             keys->insert("ignore_deprecated_profiles", "true");
-            keys->insert("write_cache", stringify(params.write_cache));
+            keys->insert("write_cache", stringify(params.write_cache()));
             keys->insert("names_cache", "/var/empty");
             keys->insert("builddir", "/var/empty");
-            if (params.disable_metadata_cache)
+            if (params.disable_metadata_cache())
                 keys->insert("cache", "/var/empty");
 
             std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(
                         env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-            if (stringify(repo->name()) == params.master_repository_name)
+            if (stringify(repo->name()) == params.master_repository_name())
                 master_repo = repo;
             package_database->add_repository(1, repo);
         }
 
-        if ((! params.master_repository_name.empty()) && (! master_repo) && (! ignored_one))
-            throw ConfigurationError("Can't find repository '" + params.master_repository_name + "'");
+        if ((! params.master_repository_name().empty()) && (! master_repo) && (! ignored_one))
+            throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
 
         std::tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
 
-        if (params.extra_params)
-            std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
+        if (params.extra_params())
+            std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
         keys->insert("format", "ebuild");
-        keys->insert("location", stringify(params.repository_dir));
+        keys->insert("location", stringify(params.repository_dir()));
         keys->insert("profiles", "/var/empty");
         keys->insert("ignore_deprecated_profiles", "true");
-        keys->insert("write_cache", stringify(params.write_cache));
+        keys->insert("write_cache", stringify(params.write_cache()));
         keys->insert("names_cache", "/var/empty");
         keys->insert("builddir", "/var/empty");
 
-        if (params.disable_metadata_cache)
+        if (params.disable_metadata_cache())
             keys->insert("cache", "/var/empty");
 
         if (master_repo)
-            keys->insert("master_repository", params.master_repository_name);
+            keys->insert("master_repository", params.master_repository_name());
 
-        if ((params.repository_dir / "metadata" / "profiles_desc.conf").exists())
+        if ((params.repository_dir() / "metadata" / "profiles_desc.conf").exists())
             keys->insert("layout", "exheres");
 
         package_database->add_repository(2, ((main_repo =
                         RepositoryFactory::get_instance()->create(env,
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
 
-        if ((! params.master_repository_name.empty()) && (! master_repo) && (params.master_repository_name != stringify(main_repo->name())))
-            throw ConfigurationError("Can't find repository '" + params.master_repository_name + "'");
+        if ((! params.master_repository_name().empty()) && (! master_repo) && (params.master_repository_name() != stringify(main_repo->name())))
+            throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
@@ -248,8 +247,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context) << "VDB, using vdb_db";
 
         std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-        if (params.extra_params)
-            std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
+        if (params.extra_params())
+            std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
         keys->insert("format", "vdb");
         keys->insert("names_cache", "/var/empty");
@@ -379,7 +378,7 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
 
         if (arch_var.empty())
         {
-            if (_imp->params.extra_accept_keywords.empty())
+            if (_imp->params.extra_accept_keywords().empty())
                 throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
         }
         else
@@ -412,7 +411,7 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
 
     {
         std::list<KeywordName> accepted;
-        tokenise_whitespace(_imp->params.extra_accept_keywords,
+        tokenise_whitespace(_imp->params.extra_accept_keywords(),
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
         for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;

@@ -434,11 +434,17 @@ struct NoConfigEnvironmentWrapper :
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
             const std::string & master_repo_name, const std::tr1::shared_ptr<const FSEntrySequence> & extra_repository_dirs
             ) :
-        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false, false, "",
-                    no_config_environment::ncer_auto, master_repo_name,
-                    extra_repository_dirs,
-                    std::tr1::shared_ptr<Map<std::string, std::string> >())
-                )
+        NoConfigEnvironment(make_named_values<no_config_environment::Params>(
+                    value_for<n::accept_unstable>(false),
+                    value_for<n::disable_metadata_cache>(false),
+                    value_for<n::extra_accept_keywords>(""),
+                    value_for<n::extra_params>(make_null_shared_ptr()),
+                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
+                    value_for<n::master_repository_name>(master_repo_name),
+                    value_for<n::repository_dir>(env_dir),
+                    value_for<n::repository_type>(no_config_environment::ncer_auto),
+                    value_for<n::write_cache>(cache_dir)
+                ))
     {
     }
 };

@@ -23,6 +23,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace test;
 using namespace paludis;
@@ -35,16 +36,17 @@ namespace test_cases
 
         void run()
         {
-            NoConfigEnvironment e(no_config_environment::Params::create()
-                    .repository_dir(FSEntry("no_config_environment_TEST_dir/repo"))
-                    .write_cache(FSEntry("/var/empty"))
-                    .accept_unstable(false)
-                    .repository_type(no_config_environment::ncer_auto)
-                    .disable_metadata_cache(false)
-                    .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
-                    .extra_accept_keywords("")
-                    .master_repository_name("")
-                    .extra_repository_dirs(make_shared_ptr(new FSEntrySequence)));
+            NoConfigEnvironment e(make_named_values<no_config_environment::Params>(
+                        value_for<n::accept_unstable>(false),
+                        value_for<n::disable_metadata_cache>(false),
+                        value_for<n::extra_accept_keywords>(""),
+                        value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
+                        value_for<n::extra_repository_dirs>(make_shared_ptr(new FSEntrySequence)),
+                        value_for<n::master_repository_name>(""),
+                        value_for<n::repository_dir>(FSEntry("no_config_environment_TEST_dir/repo")),
+                        value_for<n::repository_type>(no_config_environment::ncer_auto),
+                        value_for<n::write_cache>(FSEntry("/var/empty"))
+                    ));
 
             TEST_CHECK(e.package_database());
         }

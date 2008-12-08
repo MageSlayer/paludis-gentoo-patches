@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_named_values.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -352,16 +353,17 @@ namespace
                 path = StringValuePtr(argv[0]);
 
             std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(new
-                    NoConfigEnvironment(no_config_environment::Params::create()
-                        .repository_dir(FSEntry(path))
-                        .write_cache(write_cache)
-                        .accept_unstable(false)
-                        .disable_metadata_cache(false)
-                        .repository_type(no_config_environment::ncer_auto)
-                        .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
-                        .extra_repository_dirs(extra_repository_dirs)
-                        .extra_accept_keywords("")
-                        .master_repository_name(master_repository_name)));
+                    NoConfigEnvironment(make_named_values<no_config_environment::Params>(
+                            value_for<n::accept_unstable>(false),
+                            value_for<n::disable_metadata_cache>(false),
+                            value_for<n::extra_accept_keywords>(""),
+                            value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
+                            value_for<n::extra_repository_dirs>(extra_repository_dirs),
+                            value_for<n::master_repository_name>(master_repository_name),
+                            value_for<n::repository_dir>(FSEntry(path)),
+                            value_for<n::repository_type>(no_config_environment::ncer_auto),
+                            value_for<n::write_cache>(write_cache)
+                            )));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;

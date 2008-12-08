@@ -25,6 +25,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_named_values.hh>
 #include <list>
 
 using namespace paludis;
@@ -84,17 +85,17 @@ namespace
         }
 
         return std::tr1::shared_ptr<Environment>(new NoConfigEnvironment(
-                    no_config_environment::Params::create()
-                    .repository_dir(repository_dir)
-                    .write_cache(write_cache)
-                    .master_repository_name(master_repository_name)
-                    .extra_repository_dirs(extra_repository_dirs)
-                    .extra_params(extra_params)
-                    .repository_type(repository_type)
-                    .disable_metadata_cache(disable_metadata_cache)
-                    .accept_unstable(accept_unstable)
-                    .extra_accept_keywords(extra_accept_keywords)
-                    ));
+                    make_named_values<no_config_environment::Params>(
+                        value_for<n::accept_unstable>(accept_unstable),
+                        value_for<n::disable_metadata_cache>(disable_metadata_cache),
+                        value_for<n::extra_accept_keywords>(extra_accept_keywords),
+                        value_for<n::extra_params>(extra_params),
+                        value_for<n::extra_repository_dirs>(extra_repository_dirs),
+                        value_for<n::master_repository_name>(master_repository_name),
+                        value_for<n::repository_dir>(repository_dir),
+                        value_for<n::repository_type>(repository_type),
+                        value_for<n::write_cache>(write_cache)
+                    )));
     }
 }
 

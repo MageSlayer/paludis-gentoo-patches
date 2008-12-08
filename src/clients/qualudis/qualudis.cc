@@ -336,17 +336,17 @@ int main(int argc, char *argv[])
                 d != d_end ; ++d)
             extra_repository_dirs->push_back(*d);
 
-        std::tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
-                    .repository_dir(get_location())
-                    .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
-                    .accept_unstable(false)
-                    .repository_type(no_config_environment::ncer_ebuild)
-                    .extra_repository_dirs(extra_repository_dirs)
-                    .master_repository_name(QualudisCommandLine::get_instance()->a_master_repository_name.argument())
-                    .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
-                    .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >())
-                    .extra_accept_keywords("")
-                    ));
+        std::tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(make_named_values<no_config_environment::Params>(
+                    value_for<n::accept_unstable>(false),
+                    value_for<n::disable_metadata_cache>(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified()),
+                    value_for<n::extra_accept_keywords>(""),
+                    value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
+                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
+                    value_for<n::master_repository_name>(QualudisCommandLine::get_instance()->a_master_repository_name.argument()),
+                    value_for<n::repository_dir>(get_location()),
+                    value_for<n::repository_type>(no_config_environment::ncer_ebuild),
+                    value_for<n::write_cache>(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
+                    )));
 
         if (! (*env->main_repository()).qa_interface())
             throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");

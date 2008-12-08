@@ -34,6 +34,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <iostream>
 #include <cstdlib>
@@ -134,18 +135,18 @@ main(int argc, char *argv[])
                 d != d_end ; ++d)
             extra_repository_dirs->push_back(*d);
 
-        NoConfigEnvironment env(no_config_environment::Params::create()
-                .repository_dir(get_location_and_add_filters())
-                .write_cache(CommandLine::get_instance()->a_write_cache_dir.argument())
-                .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
-                .repository_type(
-                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? no_config_environment::ncer_auto :
-                    no_config_environment::ncer_ebuild)
-                .disable_metadata_cache(false)
-                .master_repository_name(CommandLine::get_instance()->a_master_repository_name.argument())
-                .extra_accept_keywords("")
-                .extra_repository_dirs(extra_repository_dirs)
-                .extra_params(std::tr1::shared_ptr<Map<std::string, std::string> >()));
+        NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
+                value_for<n::accept_unstable>(CommandLine::get_instance()->a_unstable.specified()),
+                value_for<n::disable_metadata_cache>(false),
+                value_for<n::extra_accept_keywords>(""),
+                value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
+                value_for<n::extra_repository_dirs>(extra_repository_dirs),
+                value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
+                value_for<n::repository_dir>(get_location_and_add_filters()),
+                value_for<n::repository_type>((CommandLine::get_instance()->a_reverse_deps.specified()) ?
+                    no_config_environment::ncer_auto : no_config_environment::ncer_ebuild),
+                value_for<n::write_cache>(CommandLine::get_instance()->a_write_cache_dir.argument())
+                ));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

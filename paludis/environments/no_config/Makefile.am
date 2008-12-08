@@ -1,6 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o *.epicfail
-DISTCLEANFILES = no_config_environment-sr.hh no_config_environment-sr.cc no_config_environment-se.hh \
-		 no_config_environment-se.cc
+DISTCLEANFILES = no_config_environment-se.hh no_config_environment-se.cc
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
@@ -25,13 +24,9 @@ libenv_LTLIBRARIES = libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la
 paludis_environment_no_config_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/no_config
 paludis_environment_no_config_include_HEADERS = \
 	no_config_environment.hh \
-	no_config_environment-sr.hh \
 	no_config_environment-se.hh
 
 EXTRA_DIST = \
-	no_config_environment-sr.hh \
-	no_config_environment-sr.cc \
-	no_config_environment.sr \
 	no_config_environment-se.hh \
 	no_config_environment-se.cc \
 	no_config_environment.se \
@@ -66,16 +61,8 @@ no_config_environment_TEST_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 BUILT_SOURCES = \
-	no_config_environment-sr.hh \
-	no_config_environment-sr.cc \
 	no_config_environment-se.hh \
 	no_config_environment-se.cc
-
-no_config_environment-sr.hh : no_config_environment.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/no_config_environment.sr > $@
-
-no_config_environment-sr.cc : no_config_environment.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/no_config_environment.sr > $@
 
 no_config_environment-se.hh : no_config_environment.se $(top_srcdir)/misc/make_se.bash
 	$(top_srcdir)/misc/make_se.bash --header $(srcdir)/no_config_environment.se > $@

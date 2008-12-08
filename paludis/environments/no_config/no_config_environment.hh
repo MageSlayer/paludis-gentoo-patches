@@ -28,10 +28,42 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct accept_unstable;
+        struct disable_metadata_cache;
+        struct extra_accept_keywords;
+        struct extra_params;
+        struct extra_repository_dirs;
+        struct master_repository_name;
+        struct repository_dir;
+        struct repository_type;
+        struct write_cache;
+    }
+
     namespace no_config_environment
     {
 #include <paludis/environments/no_config/no_config_environment-se.hh>
-#include <paludis/environments/no_config/no_config_environment-sr.hh>
+
+        /**
+         * Parameters for a NoConfigEnvironment.
+         *
+         * \see NoConfigEnvironment
+         * \ingroup grpnoconfigenvironment
+         * \nosubgrouping
+         */
+        struct Params
+        {
+            NamedValue<n::accept_unstable, bool> accept_unstable;
+            NamedValue<n::disable_metadata_cache, bool> disable_metadata_cache;
+            NamedValue<n::extra_accept_keywords, std::string> extra_accept_keywords;
+            NamedValue<n::extra_params, std::tr1::shared_ptr<Map<std::string, std::string> > > extra_params;
+            NamedValue<n::extra_repository_dirs, std::tr1::shared_ptr<const FSEntrySequence> > extra_repository_dirs;
+            NamedValue<n::master_repository_name, std::string> master_repository_name;
+            NamedValue<n::repository_dir, FSEntry> repository_dir;
+            NamedValue<n::repository_type, no_config_environment::RepositoryType> repository_type;
+            NamedValue<n::write_cache, FSEntry> write_cache;
+        };
     }
 
     /**
