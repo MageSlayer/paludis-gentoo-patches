@@ -1,6 +1,4 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-DISTCLEANFILES = \
-	use_config_entry-sr.hh use_config_entry-sr.cc
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -49,7 +47,6 @@ paludis_environment_paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT
 paludis_environment_paludis_include_HEADERS = \
 	paludis_config.hh \
 	paludis_environment.hh \
-	use_config_entry-sr.hh \
 	use_conf.hh \
 	keywords_conf.hh \
 	licenses_conf.hh \
@@ -63,8 +60,7 @@ EXTRA_DIST = \
 	paludis_environment_TEST_setup.sh \
 	paludis_environment_TEST.cc \
 	paludis_environment_TEST_cleanup.sh \
-	$(BUILT_SOURCES) \
-	use_config_entry.sr
+	$(BUILT_SOURCES)
 
 TESTS = paludis_environment_TEST
 
@@ -119,12 +115,6 @@ endif
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-use_config_entry-sr.hh : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/use_config_entry.sr > $@
-
-use_config_entry-sr.cc : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/use_config_entry.sr > $@
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 

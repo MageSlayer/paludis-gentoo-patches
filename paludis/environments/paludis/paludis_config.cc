@@ -79,8 +79,6 @@ using namespace paludis::paludis_environment;
 
 template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >;
 
-#include <paludis/environments/paludis/use_config_entry-sr.cc>
-
 namespace
 {
     std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
