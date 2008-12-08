@@ -23,7 +23,6 @@
 #include <paludis/action.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 

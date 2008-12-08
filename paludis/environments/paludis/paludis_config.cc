@@ -34,7 +34,6 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>

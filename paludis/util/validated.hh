@@ -24,7 +24,7 @@
 #include <functional>
 #include <paludis/util/validated-fwd.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/sr.hh>
+#include <paludis/util/select.hh>
 
 /** \file
  * Validated declarations.

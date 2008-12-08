@@ -29,7 +29,6 @@
 #include <paludis/qa-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>

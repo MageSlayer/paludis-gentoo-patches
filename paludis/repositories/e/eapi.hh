@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/repositories/e/iuse.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>

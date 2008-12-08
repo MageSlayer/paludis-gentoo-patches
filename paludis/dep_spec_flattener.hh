@@ -29,7 +29,6 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <paludis/util/sr.hh>
 #include <tr1/memory>
 
 /** \file

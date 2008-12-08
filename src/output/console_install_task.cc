@@ -24,7 +24,6 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>

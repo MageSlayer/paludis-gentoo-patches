@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@
 #include <paludis/util/attributes.hh>
 
 /** \file
- * Declarations for various sr-related utility classes.
+ * Declarations for various metaprogramming utility classes.
  *
  * \ingroup g_oo
  *
@@ -34,17 +34,6 @@
 
 namespace paludis
 {
-    /**
-     * Metaprogramming: an empty class.
-     *
-     * \ingroup g_oo
-     */
-    struct Empty
-    {
-        /// Convenience instance.
-        static const PALUDIS_VISIBLE Empty instance;
-    };
-
     template <bool value_, typename IfTrue_, typename IfFalse_>
     struct Select;
 
@@ -107,3 +96,4 @@ namespace paludis
 }
 
 #endif
+

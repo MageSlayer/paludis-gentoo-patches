@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_MATCHER_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/sr.hh>
 #include <paludis/util/exception.hh>
 #include <string>
 #include <tr1/memory>
