@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -38,14 +39,14 @@ namespace test_cases
         {
             TestEnvironment env;
             env.package_database()->add_repository(1, make_shared_ptr(new GemsRepository(
-                            gems::RepositoryParams::create()
-                            .location(FSEntry("gems_repository_TEST_dir/repo"))
-                            .install_dir(FSEntry("gems_repository_TEST_dir/install"))
-                            .sync("")
-                            .sync_options("")
-                            .environment(&env)
-                            .builddir(FSEntry("gems_repository_TEST_dir/build"))
-                            )));
+                            make_named_values<gems::RepositoryParams>(
+                                value_for<n::builddir>(FSEntry("gems_repository_TEST_dir/build")),
+                                value_for<n::environment>(&env),
+                                value_for<n::install_dir>(FSEntry("gems_repository_TEST_dir/install")),
+                                value_for<n::location>(FSEntry("gems_repository_TEST_dir/repo")),
+                                value_for<n::sync>(""),
+                                value_for<n::sync_options>("")
+                            ))));
         }
     } test_creation;
 }
