@@ -1,6 +1,5 @@
 SUBDIRS = cran .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-DISTCLEANFILES = cran_repository-sr.hh cran_repository-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -29,9 +28,7 @@ paludis_repositories_cran_include_HEADERS = \
 	cran_package_id.hh \
 	cran_dep_parser.hh \
 	cran_repository.hh \
-	cran_repository-sr.hh \
 	cran_installed_repository.hh \
-	cran_installed_repository-sr.hh \
 	description_file.hh \
 	masks.hh \
 	keys.hh \
@@ -108,21 +105,9 @@ EXTRA_DIST = \
 	cran_repository_TEST.cc \
 	cran_repository_TEST_setup.sh \
 	cran_repository_TEST_cleanup.sh \
-	cran_repository.sr \
-	cran_repository-sr.hh \
-	cran_repository-sr.cc \
-	cran_installed_repository.sr \
-	cran_installed_repository-sr.hh \
-	cran_installed_repository-sr.cc \
 	cran_installed_repository_TEST.cc \
 	cran_installed_repository_TEST_setup.sh \
 	cran_installed_repository_TEST_cleanup.sh
-
-BUILT_SOURCES = \
-	cran_repository-sr.hh \
-	cran_repository-sr.cc \
-	cran_installed_repository-sr.hh \
-	cran_installed_repository-sr.cc
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = \
@@ -138,18 +123,6 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
-
-cran_repository-sr.hh : cran_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/cran_repository.sr > $@
-
-cran_repository-sr.cc : cran_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_repository.sr > $@
-
-cran_installed_repository-sr.hh : cran_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/cran_installed_repository.sr > $@
-
-cran_installed_repository-sr.cc : cran_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_installed_repository.sr > $@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

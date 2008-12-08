@@ -38,7 +38,34 @@ namespace paludis
 {
     class PackageDatabase;
 
-#include <paludis/repositories/cran/cran_repository-sr.hh>
+    namespace n
+    {
+        struct builddir;
+        struct distdir;
+        struct environment;
+        struct library;
+        struct location;
+        struct mirror;
+        struct sync;
+    }
+
+    /**
+     * Parameters used to create a CRANRepository
+     *
+     * \see CRANRepository
+     * \ingroup grpcranrepository
+     * \nosubgrouping
+     */
+    struct CRANRepositoryParams
+    {
+        NamedValue<n::builddir, FSEntry> builddir;
+        NamedValue<n::distdir, FSEntry> distdir;
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::library, FSEntry> library;
+        NamedValue<n::location, FSEntry> location;
+        NamedValue<n::mirror, std::string> mirror;
+        NamedValue<n::sync, std::string> sync;
+    };
 
     /**
      * A CRANRepository is a Repository that handles the layout used by

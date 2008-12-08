@@ -54,8 +54,6 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/cran/cran_repository-sr.cc>
-
 typedef std::tr1::unordered_map<
         QualifiedPackageName,
         std::tr1::shared_ptr<const cranrepository::CRANPackageID>,
@@ -89,12 +87,12 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, c
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
-    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location)),
-    distdir_key(new LiteralMetadataValueKey<FSEntry> ("distdir", "distdir", mkt_normal, params.distdir)),
+    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location())),
+    distdir_key(new LiteralMetadataValueKey<FSEntry> ("distdir", "distdir", mkt_normal, params.distdir())),
     format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "cran")),
-    builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir", mkt_normal, params.builddir)),
-    library_key(new LiteralMetadataValueKey<FSEntry> ("library", "library", mkt_normal, params.library)),
-    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync))
+    builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir", mkt_normal, params.builddir())),
+    library_key(new LiteralMetadataValueKey<FSEntry> ("library", "library", mkt_normal, params.library())),
+    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync()))
 {
 }
 
@@ -105,8 +103,8 @@ Implementation<CRANRepository>::~Implementation()
 
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     Repository(
-            p.environment,
-            CRANRepository::fetch_repo_name(stringify(p.location)),
+            p.environment(),
+            CRANRepository::fetch_repo_name(stringify(p.location())),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
@@ -222,10 +220,10 @@ CRANRepository::need_ids() const
 
     Context context("When loading IDs for " + stringify(name()) + ":");
 
-    for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location()), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
         {
-            std::tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment,
+            std::tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment(),
                         shared_from_this(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
                 Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context)
@@ -376,9 +374,9 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
     Lock l(*_imp->big_nasty_mutex);
 
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
-                    _imp->params.sync + "/src/contrib/Descriptions/' ./");
+                    _imp->params.sync() + "/src/contrib/Descriptions/' ./");
 
-    Command command1(Command(cmd).with_chdir(_imp->params.location));
+    Command command1(Command(cmd).with_chdir(_imp->params.location()));
 
     if (output_deviant)
         command1
@@ -393,11 +391,11 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
             ;
 
     if (0 != run_command(command1))
-        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
-    cmd = "rsync --progress '" + _imp->params.sync + "/src/contrib/PACKAGES' ./";
+    cmd = "rsync --progress '" + _imp->params.sync() + "/src/contrib/PACKAGES' ./";
 
-    Command command2(Command(cmd).with_chdir(_imp->params.location));
+    Command command2(Command(cmd).with_chdir(_imp->params.location()));
 
     if (output_deviant)
         command2
@@ -412,11 +410,11 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
             ;
 
     if (0 != run_command(command2))
-        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
-    cmd = "rsync --progress '" + _imp->params.sync + "/CRAN_mirrors.csv' ./";
+    cmd = "rsync --progress '" + _imp->params.sync() + "/CRAN_mirrors.csv' ./";
 
-    Command command3(Command(cmd).with_chdir(_imp->params.location));
+    Command command3(Command(cmd).with_chdir(_imp->params.location()));
 
     if (output_deviant)
         command3
@@ -431,7 +429,7 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
             ;
 
     if (0 != run_command(command3))
-        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
+        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
     return true;
 }
@@ -467,14 +465,15 @@ CRANRepository::repository_factory_create(
     if (builddir.empty())
         builddir = "/var/tmp/paludis";
 
-    return std::tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
-                .environment(env)
-                .location(location)
-                .distdir(distdir)
-                .sync(sync)
-                .builddir(builddir)
-                .library(library)
-                .mirror(mirror)));
+    return std::tr1::shared_ptr<Repository>(new CRANRepository(make_named_values<CRANRepositoryParams>(
+                    value_for<n::builddir>(builddir),
+                    value_for<n::distdir>(distdir),
+                    value_for<n::environment>(env),
+                    value_for<n::library>(library),
+                    value_for<n::location>(location),
+                    value_for<n::mirror>(mirror),
+                    value_for<n::sync>(sync)
+                )));
 }
 
 RepositoryName

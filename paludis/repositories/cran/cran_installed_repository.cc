@@ -53,8 +53,6 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/cran/cran_installed_repository-sr.cc>
-
 typedef std::tr1::unordered_map<
     QualifiedPackageName,
     std::tr1::shared_ptr<const cranrepository::CRANPackageID>,
@@ -82,8 +80,8 @@ namespace paludis
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
     params(p),
     has_ids(false),
-    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location)),
-    installed_root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root", mkt_normal, params.root)),
+    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location())),
+    installed_root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root", mkt_normal, params.root())),
     format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed_cran"))
 {
 }
@@ -158,7 +156,7 @@ Implementation<CRANInstalledRepository>::need_ids() const
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(
-            p.environment,
+            p.environment(),
             RepositoryName("installed-cran"),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
@@ -391,10 +389,11 @@ CRANInstalledRepository::repository_factory_create(
     if (! f("world").empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
-    return std::tr1::shared_ptr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()
-                .environment(env)
-                .location(location)
-                .root(root)));
+    return std::tr1::shared_ptr<Repository>(new CRANInstalledRepository(make_named_values<CRANInstalledRepositoryParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::location>(location),
+                    value_for<n::root>(root)
+                )));
 }
 
 RepositoryName
@@ -505,7 +504,7 @@ CRANInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 bool
 CRANInstalledRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == installed_root_key()->value();
+    return _imp->params.environment()->root() == installed_root_key()->value();
 }
 
 bool

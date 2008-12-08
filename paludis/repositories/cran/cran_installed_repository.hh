@@ -35,8 +35,26 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct environment;
+        struct location;
+        struct root;
+    }
 
-#include <paludis/repositories/cran/cran_installed_repository-sr.hh>
+    /**
+     * Parameters used to create a CRANInstalledRepository
+     *
+     * \see CRANInstalledRepository
+     * \ingroup grpcraninstrepository
+     * \nosubgrouping
+     */
+    struct CRANInstalledRepositoryParams
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::location, FSEntry> location;
+        NamedValue<n::root, FSEntry> root;
+    };
 
     /**
      * A CRANInstalledRepository represents the database used for
