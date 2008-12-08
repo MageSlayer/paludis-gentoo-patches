@@ -76,11 +76,11 @@ namespace paludis
             has_category_names(false),
             has_ids(false),
             install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
-                        mkt_normal, params.install_dir)),
+                        mkt_normal, params.install_dir())),
             builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                        mkt_normal, params.builddir)),
+                        mkt_normal, params.builddir())),
             root_key(new LiteralMetadataValueKey<FSEntry> (
-                        "root", "root", mkt_normal, params.root)),
+                        "root", "root", mkt_normal, params.root())),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "gems"))
         {
@@ -89,7 +89,7 @@ namespace paludis
 }
 
 InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepositoryParams & params) :
-    Repository(params.environment,
+    Repository(params.environment(),
             RepositoryName("installed-gems"),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
@@ -234,7 +234,7 @@ InstalledGemsRepository::need_ids() const
     std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
     _imp->package_names.insert(std::make_pair(gems, pkgs));
 
-    for (DirIterator d(_imp->params.install_dir / "specifications"), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.install_dir() / "specifications"), d_end ; d != d_end ; ++d)
     {
         if (! is_file_with_extension(*d, ".gemspec", IsFileWithOptions()))
             continue;
@@ -255,7 +255,7 @@ InstalledGemsRepository::need_ids() const
         if (_imp->ids.end() == _imp->ids.find(gems + p))
             _imp->ids.insert(std::make_pair(gems + p, make_shared_ptr(new PackageIDSequence)));
         _imp->ids.find(gems + p)->second->push_back(make_shared_ptr(new gems::GemSpecification(
-                        _imp->params.environment, shared_from_this(), p, v, *d)));
+                        _imp->params.environment(), shared_from_this(), p, v, *d)));
     }
 }
 
@@ -414,10 +414,11 @@ InstalledGemsRepository::repository_factory_create(
     if (root.empty())
         root = "/";
 
-    return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
-                .environment(env)
-                .install_dir(install_dir)
-                .root(root)
-                .builddir(builddir)));
+    return make_shared_ptr(new InstalledGemsRepository(make_named_values<gems::InstalledRepositoryParams>(
+                value_for<n::builddir>(builddir),
+                value_for<n::environment>(env),
+                value_for<n::install_dir>(install_dir),
+                value_for<n::root>(root)
+                )));
 }
 

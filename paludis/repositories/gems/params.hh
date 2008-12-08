@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,18 +23,43 @@
 #include <paludis/repositories/gems/params-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/sr.hh>
+#include <paludis/util/named_value.hh>
 #include <string>
 
 namespace paludis
 {
     class Environment;
 
+    namespace n
+    {
+        struct builddir;
+        struct environment;
+        struct install_dir;
+        struct location;
+        struct root;
+        struct sync;
+        struct sync_options;
+    }
+
     namespace gems
     {
+        struct RepositoryParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::install_dir, FSEntry> install_dir;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::sync, std::string> sync;
+            NamedValue<n::sync_options, std::string> sync_options;
+        };
 
-#include <paludis/repositories/gems/params-sr.hh>
-
+        struct InstalledRepositoryParams
+        {
+            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::install_dir, FSEntry> install_dir;
+            NamedValue<n::root, FSEntry> root;
+        };
     }
 }
 

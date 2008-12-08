@@ -73,15 +73,15 @@ namespace paludis
             has_category_names(false),
             has_ids(false),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params.location)),
+                        mkt_significant, params.location())),
             install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
-                        mkt_normal, params.install_dir)),
+                        mkt_normal, params.install_dir())),
             builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                        mkt_normal, params.builddir)),
+                        mkt_normal, params.builddir())),
             sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync",
-                        mkt_normal, params.sync)),
+                        mkt_normal, params.sync())),
             sync_options_key(new LiteralMetadataValueKey<std::string> (
-                        "sync_options", "sync_options", mkt_normal, params.sync_options)),
+                        "sync_options", "sync_options", mkt_normal, params.sync_options())),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "gems"))
         {
@@ -90,7 +90,7 @@ namespace paludis
 }
 
 GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
-    Repository(params.environment, RepositoryName("gems"),
+    Repository(params.environment(), RepositoryName("gems"),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
@@ -244,13 +244,13 @@ GemsRepository::need_ids() const
 
     Context context("When loading gems yaml file:");
 
-    std::ifstream yaml_file(stringify(_imp->params.location / "yaml").c_str());
+    std::ifstream yaml_file(stringify(_imp->params.location() / "yaml").c_str());
     if (! yaml_file)
-        throw ConfigurationError("Gems yaml file '" + stringify(_imp->params.location / "yaml") + "' not readable");
+        throw ConfigurationError("Gems yaml file '" + stringify(_imp->params.location() / "yaml") + "' not readable");
 
     std::string output((std::istreambuf_iterator<char>(yaml_file)), std::istreambuf_iterator<char>());
     yaml::Document master_doc(output);
-    gems::GemSpecifications specs(_imp->params.environment, shared_from_this(), *master_doc.top());
+    gems::GemSpecifications specs(_imp->params.environment(), shared_from_this(), *master_doc.top());
 
     for (gems::GemSpecifications::ConstIterator i(specs.begin()), i_end(specs.end()) ;
             i != i_end ; ++i)
@@ -385,13 +385,14 @@ GemsRepository::repository_factory_create(
         builddir = gems::GemsExtraDistributionData::get_instance()->data_from_distribution(
                 *DistributionData::get_instance()->distribution_from_string(env->distribution()))->default_buildroot();
 
-    return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
-                .location(location)
-                .sync(sync)
-                .sync_options(sync_options)
-                .environment(env)
-                .install_dir(install_dir)
-                .builddir(builddir)));
+    return make_shared_ptr(new GemsRepository(make_named_values<gems::RepositoryParams>(
+                value_for<n::builddir>(builddir),
+                value_for<n::environment>(env),
+                value_for<n::install_dir>(install_dir),
+                value_for<n::location>(location),
+                value_for<n::sync>(sync),
+                value_for<n::sync_options>(sync_options)
+                )));
 }
 
 RepositoryName

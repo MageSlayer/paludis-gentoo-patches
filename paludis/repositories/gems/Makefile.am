@@ -1,6 +1,5 @@
 SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-DISTCLEANFILES = params-sr.hh params-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -25,7 +24,7 @@ paludis_repositories_gems_include_HEADERS = \
 	yaml.hh yaml-fwd.hh \
 	gem_specification.hh gem_specification-fwd.hh \
 	gem_specifications.hh \
-	params-fwd.hh params.hh params-sr.hh \
+	params-fwd.hh params.hh \
 	extra_distribution_data.hh
 
 libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
@@ -111,13 +110,7 @@ EXTRA_DIST = \
 	gems_repository_TEST_cleanup.sh \
 	yaml_TEST.cc \
 	gem_specification_TEST.cc \
-	gem_specifications_TEST.cc \
-	params-sr.hh \
-	params-sr.cc \
-	params.sr
-
-BUILT_SOURCES = \
-	params-sr.hh params-sr.cc
+	gem_specifications_TEST.cc
 
 check_SCRIPTS = \
 	gems_repository_TEST_setup.sh gems_repository_TEST_cleanup.sh
@@ -143,12 +136,6 @@ check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-params-sr.hh : params.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/params.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-params-sr.cc : params.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/params.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
