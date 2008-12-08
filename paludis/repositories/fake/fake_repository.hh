@@ -21,10 +21,29 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_FAKE_FAKE_REPOSITORY_HH 1
 
 #include <paludis/repositories/fake/fake_repository_base.hh>
+#include <paludis/util/named_value.hh>
 
 namespace paludis
 {
-#include <paludis/repositories/fake/fake_repository-sr.hh>
+    namespace n
+    {
+        struct environment;
+        struct name;
+    }
+
+    /**
+     * Options for FakeRepository.
+     *
+     * \ingroup grpfakerepository
+     * \see FakeRepository
+     * \since 0.26
+     * \nosubgrouping
+     */
+    struct FakeRepositoryParams
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::name, RepositoryName> name;
+    };
 
     /**
      * Fake repository for use in test cases.

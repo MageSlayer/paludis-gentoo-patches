@@ -35,8 +35,6 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/fake/fake_repository-sr.cc>
-
 namespace paludis
 {
     template<>
@@ -82,7 +80,7 @@ FakeRepository::FakeRepository(const Environment * const env, const RepositoryNa
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(params.environment, params.name, make_named_values<RepositoryCapabilities>(
+    FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
@@ -95,7 +93,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
-                            params.environment->distribution())).support_old_style_virtuals() ? this : 0)
+                            params.environment()->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {

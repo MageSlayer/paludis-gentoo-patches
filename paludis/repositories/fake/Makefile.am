@@ -29,9 +29,6 @@ check_PROGRAMS = $(TESTS)
 EXTRA_DIST = \
 	fake_repository_TEST.cc \
 	fake_installed_repository_TEST.cc \
-	fake_repository-sr.hh \
-	fake_repository-sr.cc \
-	fake_repository.sr \
 	dep_parser_TEST.cc
 
 fake_repository_TEST_LDADD = \
@@ -89,18 +86,7 @@ paludis_repositories_fake_include_HEADERS = \
 	fake_repository.hh \
 	fake_repository_base.hh \
 	fake_installed_repository.hh \
-	fake_package_id.hh \
-	fake_repository-sr.hh
-
-BUILT_SOURCES = \
-	fake_repository-sr.hh \
-	fake_repository-sr.cc
-
-fake_repository-sr.hh : fake_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/fake_repository.sr > $@
-
-fake_repository-sr.cc : fake_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/fake_repository.sr > $@
+	fake_package_id.hh
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
