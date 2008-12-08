@@ -212,11 +212,11 @@ namespace test_cases
 
             std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("unpackaged_repository_TEST_dir/installed"))
-                        .root(FSEntry("unpackaged_repository_TEST_dir/root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/installed")),
+                            value_for<n::root>(FSEntry("unpackaged_repository_TEST_dir/root"))
+                        )));
             env.package_database()->add_repository(0, installed_repo);
 
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/root/first").is_regular_file());
@@ -265,11 +265,11 @@ namespace test_cases
 
             std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("unpackaged_repository_TEST_dir/under_installed"))
-                        .root(FSEntry("unpackaged_repository_TEST_dir/under_root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/under_installed")),
+                            value_for<n::root>(FSEntry("unpackaged_repository_TEST_dir/under_root"))
+                        )));
             env.package_database()->add_repository(0, installed_repo);
 
             TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());

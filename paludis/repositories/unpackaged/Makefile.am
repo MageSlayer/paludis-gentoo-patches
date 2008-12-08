@@ -1,7 +1,5 @@
 SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-DISTCLEANFILES = \
-	installed_repository-sr.hh installed_repository-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -27,7 +25,6 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	unpackaged_key.hh \
 	unpackaged_stripper.hh \
 	installed_repository.hh \
-	installed_repository-sr.hh \
 	installed_id.hh
 
 libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
@@ -88,14 +85,8 @@ EXTRA_DIST = \
 	installed_repository_TEST.cc \
 	installed_repository_TEST_setup.sh \
 	installed_repository_TEST_cleanup.sh \
-	installed_repository.sr \
-	installed_repository-sr.hh \
-	installed_repository-sr.cc \
 	installed_id.cc \
 	dep_parser_TEST.cc
-
-BUILT_SOURCES = \
-	installed_repository-sr.hh installed_repository-sr.cc
 
 check_SCRIPTS = \
 	unpackaged_repository_TEST_setup.sh \
@@ -127,12 +118,6 @@ check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-installed_repository-sr.hh : installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/installed_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-installed_repository-sr.cc : installed_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/installed_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 

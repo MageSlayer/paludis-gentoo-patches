@@ -23,12 +23,25 @@
 #include <paludis/repository.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/named_value.hh>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct environment;
+        struct location;
+        struct root;
+    }
+
     namespace unpackaged_repositories
     {
-#include <paludis/repositories/unpackaged/installed_repository-sr.hh>
+        struct InstalledUnpackagedRepositoryParams
+        {
+            NamedValue<n::environment, Environment *> environment;
+            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::root, FSEntry> root;
+        };
     }
 
     class PALUDIS_VISIBLE InstalledUnpackagedRepository :

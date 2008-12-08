@@ -96,11 +96,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_repository_TEST_dir/root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo1")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> ids(
@@ -119,11 +119,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_repository_TEST_dir/root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo1")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
@@ -173,11 +173,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_repository_TEST_dir/root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo1")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
@@ -203,11 +203,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_repository_TEST_dir/root"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo1")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<InstallAction>()));
@@ -240,11 +240,11 @@ namespace test_cases
 
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo2"))
-                        .root(FSEntry("installed_repository_TEST_dir/root2"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo2")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root2"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
@@ -292,11 +292,11 @@ namespace test_cases
 
             std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
-                        unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                        .environment(&env)
-                        .location(FSEntry("installed_repository_TEST_dir/repo3"))
-                        .root(FSEntry("installed_repository_TEST_dir/root3"))
-                        ));
+                        make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo3")),
+                            value_for<n::root>(FSEntry("installed_repository_TEST_dir/root3"))
+                        )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
@@ -343,11 +343,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(1, repo);
 
                 const std::tr1::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
@@ -362,11 +362,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(0, repo);
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
@@ -417,11 +417,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(0, repo);
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
@@ -474,11 +474,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(0, repo);
 
                 std::tr1::shared_ptr<Repository> source_repo(new UnpackagedRepository(
@@ -531,11 +531,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(0, repo);
 
                 {
@@ -573,11 +573,11 @@ namespace test_cases
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
                             RepositoryName("installed-unpackaged"),
-                            unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                            .environment(&env)
-                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_repository_TEST_dir/root4"))
-                            ));
+                            make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::location>(FSEntry("installed_repository_TEST_dir/repo4")),
+                                value_for<n::root>(FSEntry("installed_repository_TEST_dir/root4"))
+                            )));
                 env.package_database()->add_repository(0, repo);
 
                 {

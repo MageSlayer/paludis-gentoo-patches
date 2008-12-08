@@ -46,8 +46,6 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/installed_repository-sr.cc>
-
 namespace
 {
     bool supported_installed_unpackaged(const std::string & s)
@@ -70,11 +68,11 @@ namespace paludis
 
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
-            ndbam(p.location, &supported_installed_unpackaged, "installed_unpackaged-1"),
+            ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1"),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
-                        mkt_significant, params.location)),
+                        mkt_significant, params.location())),
             root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
-                        mkt_normal, params.root)),
+                        mkt_normal, params.root())),
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_unpackaged"))
         {
@@ -85,7 +83,7 @@ namespace paludis
 InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
     PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
-    Repository(p.environment, n, make_named_values<RepositoryCapabilities>(
+    Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
@@ -128,7 +126,7 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
     {
         Lock l(*(*e).mutex());
         if (! (*e).package_id())
-            (*e).package_id().reset(new InstalledUnpackagedID(_imp->params.environment, (*e).name(), (*e).version(),
+            (*e).package_id().reset(new InstalledUnpackagedID(_imp->params.environment(), (*e).name(), (*e).version(),
                         (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->value(), &_imp->ndbam));
         result->push_back((*e).package_id());
     }
@@ -296,7 +294,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         }
     }
 
-    FSEntry uid_dir(_imp->params.location);
+    FSEntry uid_dir(_imp->params.location());
     if (if_same_name_id)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
@@ -354,9 +352,9 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 value_for<n::config_protect>(getenv_with_default("CONFIG_PROTECT", "")),
                 value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
                 value_for<n::contents_file>(target_ver_dir / "contents"),
-                value_for<n::environment>(_imp->params.environment),
+                value_for<n::environment>(_imp->params.environment()),
                 value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one,
-                        _imp->params.environment, rewrite_ids_over_to_root, _1)),
+                        _imp->params.environment(), rewrite_ids_over_to_root, _1)),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::install_under>(install_under),
                 value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
@@ -392,7 +390,7 @@ InstalledUnpackagedRepository::is_suitable_destination_for(const PackageID & e) 
 bool
 InstalledUnpackagedRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == installed_root_key()->value();
+    return _imp->params.environment()->root() == installed_root_key()->value();
 }
 
 bool
@@ -502,10 +500,11 @@ InstalledUnpackagedRepository::repository_factory_create(
         throw unpackaged_repositories::RepositoryConfigurationError("Key 'root' not specified or empty");
 
     return make_shared_ptr(new InstalledUnpackagedRepository(RepositoryName("installed-unpackaged"),
-                unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
-                .environment(env)
-                .location(location)
-                .root(root)));
+                make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::location>(location),
+                    value_for<n::root>(root)
+                )));
 }
 
 RepositoryName
