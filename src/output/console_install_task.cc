@@ -456,7 +456,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_non_package_tags(d, m);
     if (! want_compact())
         display_merge_list_entry_package_tags(d, m);
-    display_merge_list_entry_choices(d, m, existing_repo);
+    display_merge_list_entry_choices(d, m, existing_repo, existing_slot_repo);
     display_merge_list_entry_description(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_distsize(d, m);
     if (want_compact())
@@ -1058,7 +1058,8 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 void
 ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
         const DisplayMode m,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
+        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo
         )
 {
     switch (m)
@@ -1073,10 +1074,14 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                 if (! d.package_id()->choices_key())
                     break;
 
+                std::tr1::shared_ptr<const PackageID> old_id;
+                if (existing_slot_repo && ! existing_slot_repo->empty())
+                    old_id = *existing_slot_repo->last();
+                else if (existing_repo && ! existing_repo->empty())
+                    old_id = *existing_repo->last();
                 std::tr1::shared_ptr<const Choices> old_choices;
-                if (existing_repo && ! existing_repo->empty())
-                    if ((*existing_repo->last())->choices_key())
-                        old_choices = (*existing_repo->last())->choices_key()->value();
+                if (old_id && old_id->choices_key())
+                    old_choices = old_id->choices_key()->value();
 
                 ColourFormatter formatter;
                 std::string s;
@@ -1126,13 +1131,18 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                         }
 
                         bool changed(false), added(false);
-                        if (old_choices && (*k)->consider_added_or_changed())
+                        if ((*k)->consider_added_or_changed())
                         {
-                            std::tr1::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
-                            if (! old_choice)
+                            if (old_choices)
+                            {
+                                std::tr1::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                                if (! old_choice)
+                                    added = true;
+                                else if (old_choice->enabled() != (*i)->enabled())
+                                    changed = true;
+                            }
+                            else
                                 added = true;
-                            else if (old_choice->enabled() != (*i)->enabled())
-                                changed = true;
                         }
 
                         if (changed)
@@ -1143,7 +1153,8 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                         }
                         else if (added)
                         {
-                            t = formatter.decorate(**i, t, format::Added());
+                            if (old_id)
+                                t = formatter.decorate(**i, t, format::Added());
                             if (want_new_use_flags())
                                 _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id());
                         }

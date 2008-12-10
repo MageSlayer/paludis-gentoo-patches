@@ -223,7 +223,8 @@ namespace paludis
                     const std::tr1::shared_ptr<const PackageIDSequence> &,
                     const std::tr1::shared_ptr<const PackageIDSequence> &, const DisplayMode);
             virtual void display_merge_list_entry_choices(const DepListEntry &, const DisplayMode,
-                    const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo);
+                    const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
+                    const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo);
             virtual void display_merge_list_entry_distsize(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_non_package_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_tags(const DepListEntry &, const DisplayMode);
