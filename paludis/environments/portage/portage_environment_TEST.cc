@@ -66,7 +66,7 @@ namespace
     {
         const std::tr1::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
         if (! v)
-            return false;
+            throw InternalError(PALUDIS_HERE, "oops");
         return v->enabled();
     }
 }
@@ -102,6 +102,9 @@ namespace test_cases
             TEST_CHECK(get_use("four", env, id1));
             TEST_CHECK(! get_use("five", env, id1));
             TEST_CHECK(! get_use("six", env, id1));
+
+            TEST_CHECK(get_use("bar_cards_bar", env, id1));
+            TEST_CHECK(! get_use("bar_cards_monkey", env, id1));
         }
     } test_query_use;
 

@@ -9,8 +9,9 @@ cat <<END > profile/make.defaults
 ROOT="`pwd`"
 ARCH="arch"
 ACCEPT_KEYWORDS="arch"
-USE_EXPAND="FOO_CARDS"
+USE_EXPAND="FOO_CARDS BAR_CARDS"
 FOO_CARDS="four"
+BAR_CARDS="monkey"
 USE="foo_c six"
 END
 
@@ -32,6 +33,7 @@ ln -s $(pwd )/profile query_use/${SYSCONFDIR}/make.profile
 cat <<END > query_use/${SYSCONFDIR}/make.conf
 USE="one two -three -six"
 PORTDIR="`pwd`/repo"
+BAR_CARDS="bar"
 END
 cat <<"END" > query_use/${SYSCONFDIR}/portage/package.use
 cat-one/pkg-one -one four

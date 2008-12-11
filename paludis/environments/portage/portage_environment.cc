@@ -84,7 +84,7 @@ namespace paludis
 
         std::tr1::shared_ptr<KeyValueConfigFile> vars;
 
-        std::list<std::string> use_with_expands;
+        std::multimap<ChoicePrefixName, std::string> use_and_expands;
         std::set<std::string> use_expand;
         std::set<std::string> accept_keywords;
         std::multimap<std::string, std::string> mirrors;
@@ -260,6 +260,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions(),
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
+
     if ((_imp->conf_dir / "make.globals").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
@@ -289,7 +290,14 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     /* use etc */
 
-    tokenise_whitespace(_imp->vars->get("USE"), std::back_inserter(_imp->use_with_expands));
+    {
+        std::list<std::string> use;
+        tokenise_whitespace(_imp->vars->get("USE"), std::back_inserter(use));
+        for (std::list<std::string>::const_iterator u(use.begin()), u_end(use.end()) ;
+                u != u_end ; ++u)
+            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(""), *u));
+    }
+
     tokenise_whitespace(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand, _imp->use_expand.begin()));
     for (std::set<std::string>::const_iterator i(_imp->use_expand.begin()), i_end(_imp->use_expand.end()) ;
             i != i_end ; ++i)
@@ -298,11 +306,10 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         std::transform(i->begin(), i->end(), std::back_inserter(lower_i), ::tolower);
 
         std::set<std::string> values;
-        tokenise_whitespace(_imp->vars->get(*i), std::inserter(values,
-                    values.begin()));
+        tokenise_whitespace(_imp->vars->get(*i), std::inserter(values, values.begin()));
         for (std::set<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
                 v != v_end ; ++v)
-            _imp->use_with_expands.push_back(lower_i + "_" + *v);
+            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(lower_i), *v));
     }
 
     /* accept keywords */
@@ -557,17 +564,27 @@ PortageEnvironment::want_choice_enabled(
             "' in Portage environment:");
 
     Tribool state(indeterminate);
-    ChoiceNameWithPrefix f(stringify(choice->prefix()) + (stringify(choice->prefix()).empty() ? "" : "_") + stringify(suffix));
 
     /* check use: general user config */
-    for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()), i_end(_imp->use_with_expands.end()) ;
+    std::pair<std::multimap<ChoicePrefixName, std::string>::const_iterator,
+        std::multimap<ChoicePrefixName, std::string>::const_iterator> p(_imp->use_and_expands.equal_range(choice->prefix()));
+
+    /* use expand? if it's mentioned at all, pretend it's like -* */
+    if ((! stringify(choice->prefix()).empty()) && p.first != p.second)
+        state = false;
+
+    for (std::multimap<ChoicePrefixName, std::string>::const_iterator i(p.first), i_end(p.second) ;
             i != i_end ; ++i)
-        if (*i == "-*")
+    {
+        if (i->second == "-*")
             state = false;
-        else if (*i == stringify(f))
+        else if (i->second == stringify(suffix))
             state = true;
-        else if (*i == "-" + stringify(f))
+        else if (i->second == "-" + stringify(suffix))
             state = false;
+    }
+
+    ChoiceNameWithPrefix f(stringify(choice->prefix()) + (stringify(choice->prefix()).empty() ? "" : "_") + stringify(suffix));
 
     /* check use: per package config */
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
@@ -660,10 +677,12 @@ PortageEnvironment::known_choice_value_names(const std::tr1::shared_ptr<const Pa
     std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
     std::string prefix_lower(stringify(choice->prefix()) + "_");
 
-    for (std::list<std::string>::const_iterator i(_imp->use_with_expands.begin()),
-            i_end(_imp->use_with_expands.end()) ; i != i_end ; ++i)
-        if (0 == i->compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
-            result->insert(UnprefixedChoiceName(i->substr(prefix_lower.length())));
+    std::pair<std::multimap<ChoicePrefixName, std::string>::const_iterator,
+        std::multimap<ChoicePrefixName, std::string>::const_iterator> p(_imp->use_and_expands.equal_range(choice->prefix()));
+    for (std::multimap<ChoicePrefixName, std::string>::const_iterator i(p.first), i_end(p.second) ;
+            i != i_end ; ++i)
+        if ('-' != i->second.at(0))
+            result->insert(UnprefixedChoiceName(i->second));
 
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
