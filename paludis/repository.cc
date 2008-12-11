@@ -139,7 +139,7 @@ Repository::Repository(
     if (! reason.empty())
         Log::get_instance()->message("repository.blacklisted", ll_warning, lc_no_context)
             << "Repository '" << stringify(name())
-            << "' is blacklisted with reason '" << reason << "'. Consult the FAQ for more details.";
+            << "' is blacklisted with reason '" << reason << "'.";
 }
 
 Repository::~Repository()
