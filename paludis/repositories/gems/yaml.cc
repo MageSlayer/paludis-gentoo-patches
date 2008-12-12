@@ -142,8 +142,7 @@ MapNode::end() const
 
 namespace
 {
-    struct MatchStringVisitor :
-        ConstVisitor<NodeVisitorTypes>
+    struct MatchStringVisitor
     {
         bool found;
         const std::string target;

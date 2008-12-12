@@ -29,7 +29,6 @@ namespace paludis
     struct SlotExactRequirement;
     struct SlotAnyLockedRequirement;
     struct SlotAnyUnlockedRequirement;
-    struct SlotRequirementVisitorTypes;
 
     std::ostream & operator<< (std::ostream &, const SlotRequirement &) PALUDIS_VISIBLE;
 }

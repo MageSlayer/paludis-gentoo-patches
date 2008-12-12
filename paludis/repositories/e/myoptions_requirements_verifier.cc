@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
@@ -137,7 +137,7 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
     for (MetadataSectionKey::MetadataConstIterator m(annotations_key->begin_metadata()), m_end(annotations_key->end_metadata()) ;
             m != m_end ; ++m)
     {
-        const MetadataValueKey<std::string> * mm(visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! mm)
         {
             Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
@@ -292,7 +292,7 @@ MyOptionsRequirementsVerifier::visit_sequence(const AllDepSpec & s,
         for (MetadataSectionKey::MetadataConstIterator m(s.annotations_key()->begin_metadata()), m_end(s.annotations_key()->end_metadata()) ;
                 m != m_end ; ++m)
         {
-            const MetadataValueKey<std::string> * mm(visitor_cast<const MetadataValueKey<std::string> >(**m));
+            const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
             if (! mm)
             {
                 Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)

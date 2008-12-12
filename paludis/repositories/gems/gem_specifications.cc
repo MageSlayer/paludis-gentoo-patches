@@ -53,8 +53,7 @@ namespace
 {
     std::string extract_text_only(const yaml::Node & n, const std::string & extra);
 
-    struct ExtractTextVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct ExtractTextVisitor
     {
         const std::string extra;
         const bool accept_sequence;
@@ -101,8 +100,7 @@ namespace
         return v.result;
     }
 
-    struct GemsVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct GemsVisitor
     {
         Implementation<GemSpecifications> * const _imp;
         const Environment * const environment;
@@ -155,8 +153,7 @@ namespace
         throw BadSpecificationError("Top level 'gems' right hand node is text '" + n.text() + "', not map");
     }
 
-    struct TopVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct TopVisitor
     {
         Implementation<GemSpecifications> * const _imp;
         const Environment * const environment;

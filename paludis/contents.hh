@@ -21,12 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_CONTENTS_HH 1
 
 #include <paludis/contents-fwd.hh>
-
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/type_list.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <tr1/memory>
-
 #include <string>
 
 /** \file
@@ -42,26 +42,6 @@
 namespace paludis
 {
     /**
-     * Visit a contents heirarchy.
-     *
-     * \ingroup g_contents
-     * \nosubgrouping
-     */
-    struct ContentsVisitorTypes :
-        VisitorTypes<
-            ContentsVisitorTypes,
-            ContentsEntry,
-            ContentsFileEntry,
-            ContentsDirEntry,
-            ContentsSymEntry,
-            ContentsFifoEntry,
-            ContentsDevEntry,
-            ContentsMiscEntry
-        >
-    {
-    };
-
-    /**
      * Base class for a contents entry.
      *
      * \ingroup g_contents
@@ -69,7 +49,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsEntry :
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
-        public virtual ConstAcceptInterface<ContentsVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<ContentsEntry, MakeTypeList<
+            ContentsFileEntry, ContentsDirEntry, ContentsSymEntry, ContentsFifoEntry, ContentsDevEntry, ContentsMiscEntry>::Type>
     {
         friend std::ostream & operator<< (std::ostream &, const ContentsEntry &);
 
@@ -109,7 +90,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsFileEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsFileEntry>
     {
         public:
             ///\name Basic operations
@@ -128,7 +109,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsDirEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsDirEntry>
     {
         public:
             ///\name Basic operations
@@ -147,7 +128,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsMiscEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsMiscEntry>
     {
         public:
             ///\name Basic operations
@@ -166,7 +147,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsFifoEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsFifoEntry>
     {
         public:
             ///\name Basic operations
@@ -185,7 +166,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsDevEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsDevEntry>
     {
         public:
             ///\name Basic operations
@@ -204,7 +185,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
         public ContentsEntry,
-        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsSymEntry>
     {
         private:
             std::string _target;
@@ -264,24 +245,7 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
     extern template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
-
-    extern template class ConstAcceptInterface<ContentsVisitorTypes>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>;
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>;
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>;
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>;
-    extern template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
-
     extern template class PrivateImplementationPattern<Contents>;
-
-    extern template class Visits<const ContentsFileEntry>;
-    extern template class Visits<const ContentsDirEntry>;
-    extern template class Visits<const ContentsSymEntry>;
-    extern template class Visits<const ContentsFifoEntry>;
-    extern template class Visits<const ContentsDevEntry>;
-    extern template class Visits<const ContentsMiscEntry>;
 #endif
 }
 

@@ -146,8 +146,7 @@ namespace paludis
 
 namespace
 {
-    struct LabelsPopulator :
-        ConstVisitor<DependencyLabelVisitorTypes>
+    struct LabelsPopulator
     {
         Implementation<ActiveDependencyLabels> & _imp;
         const std::tr1::shared_ptr<const DependencyLabel> _l;
@@ -324,74 +323,6 @@ ActiveDependencyLabels::suggest_labels() const
 {
     return _imp->suggest_labels;
 }
-
-template class ConstAcceptInterface<DependencyABIsLabelVisitorTypes>;
-template class ConstAcceptInterface<DependencyLabelVisitorTypes>;
-template class ConstAcceptInterface<DependencySuggestLabelVisitorTypes>;
-template class ConstAcceptInterface<DependencySystemLabelVisitorTypes>;
-template class ConstAcceptInterface<DependencyTypeLabelVisitorTypes>;
-template class ConstAcceptInterface<URILabelVisitorTypes>;
-
-template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>;
-
-template class Visits<DependencyABIsLabel>;
-template class Visits<DependencySuggestLabel>;
-template class Visits<DependencySystemLabel>;
-template class Visits<DependencyTypeLabel>;
-
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsThenListedLabel>;
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsOnlyLabel>;
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedOnlyLabel>;
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedThenMirrorsLabel>;
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URILocalMirrorsOnlyLabel>;
-template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIManualOnlyLabel>;
-
-template class Visits<URIMirrorsThenListedLabel>;
-template class Visits<URIMirrorsOnlyLabel>;
-template class Visits<URIListedOnlyLabel>;
-template class Visits<URIListedThenMirrorsLabel>;
-template class Visits<URILocalMirrorsOnlyLabel>;
-template class Visits<URIManualOnlyLabel>;
-
-// template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencySystemLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyHostLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyTargetLabel>;
-
-template class Visits<DependencyHostLabel>;
-template class Visits<DependencyTargetLabel>;
-
-template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyBuildLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyRunLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyPostLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyInstallLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyCompileLabel>;
-
-template class Visits<DependencyBuildLabel>;
-template class Visits<DependencyRunLabel>;
-template class Visits<DependencyPostLabel>;
-template class Visits<DependencyInstallLabel>;
-template class Visits<DependencyCompileLabel>;
-
-template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencySuggestedLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRecommendedLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRequiredLabel>;
-
-template class Visits<DependencySuggestedLabel>;
-template class Visits<DependencyRecommendedLabel>;
-template class Visits<DependencyRequiredLabel>;
-
-template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyAnyLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyMineLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyPrimaryLabel>;
-template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyABILabel>;
-
-template class Visits<DependencyAnyLabel>;
-template class Visits<DependencyMineLabel>;
-template class Visits<DependencyPrimaryLabel>;
-template class Visits<DependencyABILabel>;
 
 template class InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>;
 template class InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>;

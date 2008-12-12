@@ -546,7 +546,7 @@ namespace paludis
     template <typename T_>
     struct Implementation<LabelsDepSpec<T_ > >
     {
-        std::list<std::tr1::shared_ptr<const typename T_::BasicNode> > items;
+        std::list<std::tr1::shared_ptr<const T_> > items;
     };
 }
 
@@ -589,7 +589,7 @@ LabelsDepSpec<T_>::end() const
 
 template <typename T_>
 void
-LabelsDepSpec<T_>::add_label(const std::tr1::shared_ptr<const typename T_::BasicNode> & item)
+LabelsDepSpec<T_>::add_label(const std::tr1::shared_ptr<const T_> & item)
 {
     _imp->items.push_back(item);
 }
@@ -1254,13 +1254,8 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
     return operator const PackageDepSpec();
 }
 
-template class LabelsDepSpec<URILabelVisitorTypes>;
-template class WrappedForwardIterator<LabelsDepSpec<URILabelVisitorTypes>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const URILabelVisitorTypes::BasicNode> >;
-
-template class LabelsDepSpec<DependencyLabelVisitorTypes>;
-template class WrappedForwardIterator<LabelsDepSpec<DependencyLabelVisitorTypes>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const DependencyLabelVisitorTypes::BasicNode> >;
+template class LabelsDepSpec<URILabel>;
+template class LabelsDepSpec<DependencyLabel>;
 
 template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 

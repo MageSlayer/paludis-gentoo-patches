@@ -34,8 +34,8 @@ namespace
     static VALUE c_glsa_dep_tag;
     static VALUE c_general_set_dep_tag;
     static VALUE c_target_dep_tag;
-    struct V :
-        ConstVisitor<DepTagVisitorTypes>
+
+    struct V
     {
         VALUE value;
         std::tr1::shared_ptr<const DepTag> mm;

@@ -94,7 +94,7 @@ struct RelocationA
 template <typename ElfType_, typename Relocation_>
 class RelocationSection :
     public Section<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , RelocationSection<ElfType_, Relocation_> >,
+    public paludis::ImplementAcceptMethods<Section<ElfType_>, RelocationSection<ElfType_, Relocation_> >,
     private paludis::PrivateImplementationPattern<RelocationSection<ElfType_, Relocation_> >
 {
     using paludis::PrivateImplementationPattern<RelocationSection>::_imp;

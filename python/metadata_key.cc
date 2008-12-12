@@ -35,8 +35,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-class MetadataKeySptrToPythonVisitor :
-    public ConstVisitor<MetadataKeyVisitorTypes>
+class MetadataKeySptrToPythonVisitor
 {
     private:
         const std::tr1::shared_ptr<const MetadataKey> & _m_ptr;

@@ -26,7 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/hashes.hh>
@@ -280,13 +280,13 @@ UnpackagedID::transient_key() const
 bool
 UnpackagedID::supports_action(const SupportsActionTestBase & test) const
 {
-    return visitor_cast<const SupportsActionTest<InstallAction> >(test);
+    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(test);
 }
 
 void
 UnpackagedID::perform_action(Action & action) const
 {
-    const InstallAction * const install_action(visitor_cast<const InstallAction>(action));
+    const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
     if (! install_action)
         throw UnsupportedActionError(*this, action);
 

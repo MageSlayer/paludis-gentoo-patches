@@ -23,7 +23,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
@@ -70,8 +70,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(spec.long_description_key()->value(), "A longer description");
 
             TEST_CHECK(spec.find_metadata("authors") != spec.end_metadata());
-            TEST_CHECK(visitor_cast<const MetadataValueKey<std::string> >(**spec.find_metadata("authors")));
-            TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**spec.find_metadata("authors"))->value(), "Fred, Barney");
+            TEST_CHECK(simple_visitor_cast<const MetadataValueKey<std::string> >(**spec.find_metadata("authors")));
+            TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**spec.find_metadata("authors"))->value(), "Fred, Barney");
 
 #if 0
             TEST_CHECK_EQUAL(spec.homepage(), "");

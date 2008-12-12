@@ -23,6 +23,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/validated.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/set.hh>
 
 using namespace paludis;
 

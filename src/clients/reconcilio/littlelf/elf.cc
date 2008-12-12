@@ -132,11 +132,8 @@ namespace
     };
 
     template <typename ElfType_>
-    class StringResolvingVisitor :
-        public SectionVisitor<ElfType_>
+    class StringResolvingVisitor
     {
-        using SectionVisitor<ElfType_>::visit;
-
         private:
             ElfObject<ElfType_> *_elf_object;
 
@@ -146,7 +143,11 @@ namespace
             {
             }
 
-            virtual void visit(SymbolSection<ElfType_> & section)
+            void visit(Section<ElfType_> &)
+            {
+            }
+
+            void visit(SymbolSection<ElfType_> & section)
             {
                 typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
                 if (_elf_object->section_end() == sec)
@@ -156,7 +157,7 @@ namespace
                 section.resolve_symbols(*sec);
             }
 
-            virtual void visit(DynamicSection<ElfType_> & section)
+            void visit(DynamicSection<ElfType_> & section)
             {
                 typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
                 if (_elf_object->section_end() == sec)
@@ -171,11 +172,8 @@ namespace
 namespace littlelf_internals
 {
     template <typename ElfType_>
-    class SectionNameResolvingVisitor :
-        public ConstSectionVisitor<ElfType_>
+    class SectionNameResolvingVisitor
     {
-        using ConstSectionVisitor<ElfType_>::visit;
-
         private:
             typename ElfObject<ElfType_>::SectionIterator _begin, _end;
 
@@ -186,7 +184,11 @@ namespace littlelf_internals
             {
             }
 
-            virtual void visit(const StringSection<ElfType_> & section)
+            void visit(const Section<ElfType_> &)
+            {
+            }
+
+            void visit(const StringSection<ElfType_> & section)
             {
                 for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
                     try

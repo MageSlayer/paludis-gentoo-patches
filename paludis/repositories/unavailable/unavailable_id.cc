@@ -22,7 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
@@ -148,7 +148,7 @@ UnavailableID::repository() const
 bool
 UnavailableID::supports_action(const SupportsActionTestBase & a) const
 {
-    return visitor_cast<const SupportsActionTest<InstallAction> >(a);
+    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(a);
 }
 
 void

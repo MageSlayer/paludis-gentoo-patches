@@ -19,7 +19,7 @@
 
 #include "man.hh"
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <tr1/functional>
 #include <ostream>
 #include <sstream>
@@ -31,8 +31,7 @@ using std::endl;
 
 namespace
 {
-    struct ExtraText :
-        ConstVisitor<ArgsVisitorTypes>
+    struct ExtraText
     {
         DocWriter & _dw;
 
@@ -119,7 +118,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         for (paludis::args::ArgsGroup::ConstIterator b((*a)->begin()), b_end((*a)->end()) ;
                 b != b_end ; ++b)
         {
-            if (visitor_cast<const paludis::args::AliasArg>(**b) && visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
+            if (simple_visitor_cast<const paludis::args::AliasArg>(**b) &&
+                    simple_visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
                 continue;
 
             dw.arg_group_item((*b)->short_name(), (*b)->long_name(),

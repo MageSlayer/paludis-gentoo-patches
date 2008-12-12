@@ -25,7 +25,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -52,8 +52,8 @@ namespace
     {
         bool operator() (const std::tr1::shared_ptr<const MetadataKey> & a, const std::tr1::shared_ptr<const MetadataKey> & b) const
         {
-            bool a_is_section(visitor_cast<const MetadataSectionKey>(*a));
-            bool b_is_section(visitor_cast<const MetadataSectionKey>(*b));
+            bool a_is_section(simple_visitor_cast<const MetadataSectionKey>(*a));
+            bool b_is_section(simple_visitor_cast<const MetadataSectionKey>(*b));
             if (a_is_section != b_is_section)
                 return b_is_section;
             if (a->type() != b->type())
@@ -62,8 +62,7 @@ namespace
         }
     };
 
-    struct InfoDisplayer :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct InfoDisplayer
     {
         std::string indent;
 

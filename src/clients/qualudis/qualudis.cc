@@ -71,8 +71,7 @@ namespace
         throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
     }
 
-    struct MetadataKeyPrettyPrinter :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct MetadataKeyPrettyPrinter
     {
         std::ostringstream stream;
         StringifyFormatter formatter;

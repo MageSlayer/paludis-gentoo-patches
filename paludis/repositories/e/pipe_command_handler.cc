@@ -31,7 +31,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
@@ -218,9 +218,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";
-                if (! visitor_cast<const MetadataValueKey<FSEntry> >(**key))
+                if (! simple_visitor_cast<const MetadataValueKey<FSEntry> >(**key))
                     return "Einstalled repository location key is not a MetadataValueKey<FSEntry> ";
-                return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSEntry> >(**key)->value());
+                return "O0;" + stringify(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**key)->value());
             }
         }
         else if (tokens[0] == "OPTIONQ")

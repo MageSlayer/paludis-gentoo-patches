@@ -26,8 +26,9 @@
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
 #include <tr1/memory>
 #include <string>
 #include <iosfwd>
@@ -40,34 +41,14 @@ template <typename ElfType_> class DynamicEntryString;
 template <typename ElfType_> class DynamicEntryFlag;
 
 template <typename ElfType_>
-struct DynamicEntryVisitorTypes :
-    paludis::VisitorTypes<
-        DynamicEntryVisitorTypes<ElfType_>,
-        DynamicEntry<ElfType_>,
+class DynamicEntry :
+    public virtual paludis::DeclareAbstractAcceptMethods<DynamicEntry<ElfType_>, typename paludis::MakeTypeList<
         DynamicEntryUnknown<ElfType_>,
         DynamicEntryValue<ElfType_>,
         DynamicEntryPointer<ElfType_>,
         DynamicEntryString<ElfType_>,
         DynamicEntryFlag<ElfType_>
-        >
-{
-};
-
-template <typename ElfType_>
-class DynamicEntriesVisitor :
-    public paludis::Visitor<DynamicEntryVisitorTypes<ElfType_> >
-{
-    public:
-        virtual void visit(DynamicEntryUnknown<ElfType_> &) {}
-        virtual void visit(DynamicEntryString<ElfType_> &)  {}
-        virtual void visit(DynamicEntryPointer<ElfType_> &) {}
-        virtual void visit(DynamicEntryValue<ElfType_> &)   {}
-        virtual void visit(DynamicEntryFlag<ElfType_> &)    {}
-};
-
-template <typename ElfType_>
-class DynamicEntry :
-    public virtual paludis::AcceptInterface<DynamicEntryVisitorTypes<ElfType_> >,
+    >::Type>,
     public virtual paludis::Cloneable<DynamicEntry<ElfType_> >
 {
     private:
@@ -90,7 +71,7 @@ class DynamicEntry :
 template <typename ElfType_>
 class DynamicEntryUnknown :
     public virtual DynamicEntry<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<DynamicEntryVisitorTypes<ElfType_> , DynamicEntryUnknown<ElfType_> >,
+    public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >,
     public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >
 {
     public:
@@ -101,7 +82,7 @@ class DynamicEntryUnknown :
 template <typename ElfType_>
 class DynamicEntryFlag :
     public virtual DynamicEntry<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<DynamicEntryVisitorTypes<ElfType_> , DynamicEntryFlag<ElfType_> >,
+    public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >,
     public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >
 {
     public:
@@ -112,7 +93,7 @@ class DynamicEntryFlag :
 template <typename ElfType_>
 class DynamicEntryValue :
     public virtual DynamicEntry<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<DynamicEntryVisitorTypes<ElfType_> , DynamicEntryValue<ElfType_> >,
+    public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >,
     public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >
 {
     private:
@@ -132,7 +113,7 @@ class DynamicEntryValue :
 template <typename ElfType_>
 class DynamicEntryPointer :
     public virtual DynamicEntry<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<DynamicEntryVisitorTypes<ElfType_> , DynamicEntryPointer<ElfType_> >,
+    public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >,
     public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >
 {
     private:
@@ -157,7 +138,7 @@ namespace littlelf_internals
 template <typename ElfType_>
 class DynamicEntryString :
     public virtual DynamicEntry<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<DynamicEntryVisitorTypes<ElfType_> , DynamicEntryString<ElfType_> >,
+    public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >,
     public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >
 {
     friend class littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_>;
@@ -210,7 +191,7 @@ class DynamicEntries :
 template <typename ElfType_>
 class DynamicSection :
     public Section<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , DynamicSection<ElfType_> >,
+    public paludis::ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
     private paludis::PrivateImplementationPattern<DynamicSection<ElfType_> >
 {
     using paludis::PrivateImplementationPattern<DynamicSection>::_imp;

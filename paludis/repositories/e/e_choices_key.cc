@@ -32,7 +32,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
@@ -150,7 +150,7 @@ namespace
                         m_end(s.annotations_key()->end_metadata()) ;
                         m != m_end ; ++m)
                 {
-                    const MetadataValueKey<std::string> * mm(visitor_cast<const MetadataValueKey<std::string> >(**m));
+                    const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
                     if (! mm)
                     {
                         Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)

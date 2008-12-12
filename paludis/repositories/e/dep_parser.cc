@@ -633,7 +633,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     if (c.empty())
         throw EDepParseError(s, "Unknown label");
 
-    std::tr1::shared_ptr<URILabelsDepSpec> l(new LabelsDepSpec<URILabelVisitorTypes>);
+    std::tr1::shared_ptr<URILabelsDepSpec> l(new URILabelsDepSpec);
 
     if (c == "URIMirrorsThenListedLabel")
         l->add_label(make_shared_ptr(new URIMirrorsThenListedLabel(s.substr(0, s.length() - 1))));

@@ -23,7 +23,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
@@ -558,7 +558,7 @@ DepSpecPrettyPrinter::do_annotations(const DepSpec & p)
         for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()), k_end(p.annotations_key()->end_metadata()) ;
                 k != k_end ; ++k)
         {
-            const MetadataValueKey<std::string> * r(visitor_cast<const MetadataValueKey<std::string> >(**k));
+            const MetadataValueKey<std::string> * r(simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
             if (! r)
                 throw InternalError(PALUDIS_HERE, "annotations must be string keys");
             _imp->s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";

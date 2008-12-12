@@ -42,8 +42,7 @@ namespace
 {
     /* This visitor class is used to determine whether a label represents a
      * fetch restriction. */
-    class IsLabelRestrictedVisitor :
-        public ConstVisitor<URILabelVisitorTypes>
+    class IsLabelRestrictedVisitor
     {
         public:
             bool result;

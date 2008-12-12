@@ -44,8 +44,7 @@ using namespace paludis;
 
 namespace
 {
-    struct ContentsDumper :
-        ConstVisitor<ContentsVisitorTypes>
+    struct ContentsDumper
     {
         std::stringstream s;
 

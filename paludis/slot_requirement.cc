@@ -23,11 +23,6 @@
 
 using namespace paludis;
 
-template class ConstAcceptInterface<SlotRequirementVisitorTypes>;
-template class ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotExactRequirement>;
-template class ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotAnyLockedRequirement>;
-template class ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotAnyUnlockedRequirement>;
-
 std::ostream &
 paludis::operator<< (std::ostream & s, const SlotRequirement & r)
 {

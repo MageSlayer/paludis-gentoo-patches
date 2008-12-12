@@ -83,15 +83,15 @@ int main(int argc, char * argv[])
             /* And again for restricts. There's no global restrict key, since
              * it has no meaning outside of the repositories that support it.
              * Instead, we use PackageID::find_metadata to see if the key we
-             * want exists, and then visitor_cast<> to see whether it's of a
-             * suitable type (the key could be something other than a
+             * want exists, and then simple_visitor_cast<> to see whether it's
+             * of a suitable type (the key could be something other than a
              * MetadataSpecTreeKey<PlainTextSpecTree>). */
             if ((*i)->end_metadata() != (*i)->find_metadata("RESTRICT") &&
-                    visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**(*i)->find_metadata("RESTRICT")))
+                    simple_visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**(*i)->find_metadata("RESTRICT")))
             {
                 DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env.get());
 
-                visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(
+                simple_visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(
                         **(*i)->find_metadata("RESTRICT"))->value()->accept(restricts);
 
                 cout << "    " << left << setw(24) << "Restricts:" << " "

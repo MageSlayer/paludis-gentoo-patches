@@ -581,54 +581,50 @@ InstalledUnpackagedID::transient_key() const
 
 namespace
 {
-    struct SupportVisitor :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SupportVisitor
     {
-        bool result;
-
-        void visit(const SupportsActionTest<UninstallAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
-           result = false;
+           return false;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            result = false;
+            return false;
         }
     };
 
-    struct PerformAction :
-        Visitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const InstalledUnpackagedID * const id;
 
@@ -682,8 +678,7 @@ bool
 InstalledUnpackagedID::supports_action(const SupportsActionTestBase & test) const
 {
     SupportVisitor v;
-    test.accept(v);
-    return v.result;
+    return test.accept_returning<bool>(v);
 }
 
 void

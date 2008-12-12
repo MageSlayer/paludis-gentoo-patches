@@ -24,6 +24,8 @@
 #include <src/clients/reconcilio/littlelf/elf.hh>
 #include <src/clients/reconcilio/littlelf/elf_dynamic_section.hh>
 #include <src/clients/reconcilio/littlelf/elf_types.hh>
+#include <src/clients/reconcilio/littlelf/elf_relocation_section.hh>
+#include <src/clients/reconcilio/littlelf/elf_symbol_section.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
@@ -32,8 +34,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/member_iterator-impl.hh>
-#include <paludis/util/visitor_cast.hh>
-#include <paludis/util/visitor-impl.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <algorithm>
 #include <cerrno>
@@ -190,13 +192,13 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream
         for (typename ElfObject<ElfType_>::SectionIterator sec_it(elf.section_begin()),
                  sec_it_end(elf.section_end()); sec_it_end != sec_it; ++sec_it)
         {
-            const DynamicSection<ElfType_> * dyn_sec(visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
+            const DynamicSection<ElfType_> * dyn_sec(simple_visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
 
             if (0 != dyn_sec)
                 for (typename DynamicSection<ElfType_>::EntryIterator ent_it(dyn_sec->entry_begin()),
                          ent_it_end(dyn_sec->entry_end()); ent_it_end != ent_it; ++ent_it)
                 {
-                    const DynamicEntryString<ElfType_> * ent_str(visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
+                    const DynamicEntryString<ElfType_> * ent_str(simple_visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
 
                     if (0 != ent_str && "NEEDED" == ent_str->tag_name())
                     {

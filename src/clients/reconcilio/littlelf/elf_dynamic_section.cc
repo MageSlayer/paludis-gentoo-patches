@@ -19,7 +19,11 @@
  */
 
 #include "elf_dynamic_section.hh"
+#include "elf_sections.hh"
 #include "elf_types.hh"
+#include "elf_relocation_section.hh"
+#include "elf_sections.hh"
+#include "elf_symbol_section.hh"
 #include "elf.hh"
 
 #include <paludis/util/byte_swap.hh>
@@ -55,11 +59,8 @@ namespace paludis
 namespace littlelf_internals
 {
     template <typename ElfType_>
-    class DynEntriesStringResolvingVisitor :
-        public DynamicEntriesVisitor<ElfType_>
+    class DynEntriesStringResolvingVisitor
     {
-        using DynamicEntriesVisitor<ElfType_>::visit;
-
         private:
             const DynamicSection<ElfType_> & _dyn_section;
             const StringSection<ElfType_> & _string_section;
@@ -73,7 +74,11 @@ namespace littlelf_internals
             {
             }
 
-            virtual void visit(DynamicEntryString<ElfType_> & entry)
+            void visit(DynamicEntry<ElfType_> &)
+            {
+            }
+
+            void visit(DynamicEntryString<ElfType_> & entry)
             {
                 try
                 {
@@ -103,11 +108,8 @@ namespace
     };
 
     template <typename ElfType_>
-    class DynamicSectionStringResolvingVisitor :
-        public SectionVisitor<ElfType_>
+    class DynamicSectionStringResolvingVisitor
     {
-        using SectionVisitor<ElfType_>::visit;
-
         private:
             const DynamicSection<ElfType_> & _dyn_section;
             typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator _begin, _end;
@@ -123,7 +125,11 @@ namespace
             {
             }
 
-            virtual void visit(StringSection<ElfType_> & section)
+            void visit(Section<ElfType_> &)
+            {
+            }
+
+            void visit(StringSection<ElfType_> & section)
             {
                 littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_> v(_dyn_section, section);
                 for(typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::iterator i = _begin; i != _end; ++i)

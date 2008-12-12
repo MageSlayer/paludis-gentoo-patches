@@ -35,8 +35,7 @@ using namespace cave;
 
 namespace
 {
-    struct ValueGetter :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct ValueGetter
     {
         std::stringstream s;
 

@@ -37,8 +37,7 @@ namespace
     static VALUE c_contents_dev_entry;
     static VALUE c_contents_fifo_entry;
 
-    struct V :
-        ConstVisitor<ContentsVisitorTypes>
+    struct V
     {
         VALUE value;
         std::tr1::shared_ptr<const ContentsEntry> mm;

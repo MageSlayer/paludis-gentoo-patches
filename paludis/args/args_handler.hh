@@ -25,7 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
-
+#include <tr1/memory>
 #include <iosfwd>
 #include <string>
 

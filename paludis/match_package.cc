@@ -44,8 +44,7 @@ using namespace paludis;
 
 namespace
 {
-    struct SlotRequirementChecker :
-        ConstVisitor<SlotRequirementVisitorTypes>
+    struct SlotRequirementChecker
     {
         const SlotName actual;
         bool result;

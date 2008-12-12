@@ -833,50 +833,46 @@ EInstalledRepositoryID::extra_hash_value() const
 
 namespace
 {
-    struct SupportsActionQuery :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SupportsActionQuery
     {
-        bool result;
-
-        SupportsActionQuery() :
-            result(false)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-            result = true;
-        }
-
-        void visit(const SupportsActionTest<UninstallAction> &)
-        {
-            result = true;
+            return true;
         }
     };
 }
@@ -885,14 +881,12 @@ bool
 EInstalledRepositoryID::supports_action(const SupportsActionTestBase & b) const
 {
     SupportsActionQuery q;
-    b.accept(q);
-    return q.result;
+    return b.accept_returning<bool>(q);
 }
 
 namespace
 {
-    struct PerformAction :
-        ConstVisitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const std::tr1::shared_ptr<const erepository::ERepositoryID> id;
 

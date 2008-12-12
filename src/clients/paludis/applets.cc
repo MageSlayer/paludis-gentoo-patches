@@ -41,8 +41,7 @@ using namespace paludis;
 
 namespace
 {
-    struct ValuePrinter :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct ValuePrinter
     {
         int return_code;
 

@@ -31,7 +31,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
@@ -346,7 +346,7 @@ Implementation<BrokenLinkageFinder>::gather_package(const std::tr1::shared_ptr<c
     for (Contents::ConstIterator it(contents->begin()),
              it_end(contents->end()); it_end != it; ++it)
     {
-        const ContentsFileEntry * file(visitor_cast<const ContentsFileEntry>(**it));
+        const ContentsFileEntry * file(simple_visitor_cast<const ContentsFileEntry>(**it));
         if (0 != file)
         {
             Lock l(mutex);

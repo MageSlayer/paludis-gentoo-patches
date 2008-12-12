@@ -338,8 +338,7 @@ struct DepList::AddVisitor :
 
 namespace
 {
-    struct SuggestActiveVisitor :
-        ConstVisitor<DependencySuggestLabelVisitorTypes>
+    struct SuggestActiveVisitor
     {
         bool result;
 

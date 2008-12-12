@@ -22,23 +22,14 @@
 
 #include <paludis/slot_requirement-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
 
 namespace paludis
 {
-    struct SlotRequirementVisitorTypes :
-        VisitorTypes<
-            SlotRequirementVisitorTypes,
-            SlotRequirement,
-            SlotExactRequirement,
-            SlotAnyLockedRequirement,
-            SlotAnyUnlockedRequirement
-        >
-    {
-    };
-
     class PALUDIS_VISIBLE SlotRequirement :
-        public virtual ConstAcceptInterface<SlotRequirementVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<SlotRequirement, MakeTypeList<
+            SlotExactRequirement, SlotAnyLockedRequirement, SlotAnyUnlockedRequirement>::Type>
     {
         public:
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -46,7 +37,7 @@ namespace paludis
 
     class PALUDIS_VISIBLE SlotExactRequirement :
         public SlotRequirement,
-        public ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotExactRequirement>
+        public ImplementAcceptMethods<SlotRequirement, SlotExactRequirement>
     {
         public:
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -54,13 +45,13 @@ namespace paludis
 
     class PALUDIS_VISIBLE SlotAnyLockedRequirement :
         public SlotRequirement,
-        public ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotAnyLockedRequirement>
+        public ImplementAcceptMethods<SlotRequirement, SlotAnyLockedRequirement>
     {
     };
 
     class PALUDIS_VISIBLE SlotAnyUnlockedRequirement :
         public SlotRequirement,
-        public ConstAcceptInterfaceVisitsThis<SlotRequirementVisitorTypes, SlotAnyUnlockedRequirement>
+        public ImplementAcceptMethods<SlotRequirement, SlotAnyUnlockedRequirement>
     {
     };
 }

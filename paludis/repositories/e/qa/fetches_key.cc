@@ -35,7 +35,7 @@ using namespace paludis;
 
 namespace
 {
-    struct LabelToFetchRestrict : ConstVisitor<URILabelVisitorTypes>
+    struct LabelToFetchRestrict
     {
         bool value;
 

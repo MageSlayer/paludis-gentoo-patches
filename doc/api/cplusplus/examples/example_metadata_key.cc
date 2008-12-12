@@ -34,8 +34,7 @@ namespace
 
     /* We use this visitor to display extra information about a MetadataKey,
      * depending upon its type. */
-    class MetadataKeyInformationVisitor :
-        public ConstVisitor<MetadataKeyVisitorTypes>
+    class MetadataKeyInformationVisitor
     {
         private:
             /* Various methods need a formatter. See \ref example_stringify_formatter.cc

@@ -35,8 +35,6 @@ namespace paludis
     class DepListEntryHandledFailed;
     class DepListEntryUnhandled;
     class DepListEntryNoHandlingRequired;
-
-    class DepListEntryHandledVisitorTypes;
 }
 
 #endif

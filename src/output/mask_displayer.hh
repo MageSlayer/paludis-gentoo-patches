@@ -28,7 +28,6 @@
 namespace paludis
 {
     class MaskDisplayer :
-        public ConstVisitor<MaskVisitorTypes>,
         private PrivateImplementationPattern<MaskDisplayer>
     {
         public:

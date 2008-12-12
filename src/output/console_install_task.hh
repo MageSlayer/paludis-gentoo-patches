@@ -31,8 +31,7 @@ namespace paludis
 {
     class ConsoleInstallTask;
 
-    class PALUDIS_VISIBLE DepTagSummaryDisplayer :
-        public ConstVisitor<DepTagVisitorTypes>
+    class PALUDIS_VISIBLE DepTagSummaryDisplayer
     {
         private:
             ConsoleInstallTask * _task;
@@ -52,8 +51,7 @@ namespace paludis
             }
     };
 
-    class PALUDIS_VISIBLE EntryDepTagDisplayer :
-        public ConstVisitor<DepTagVisitorTypes>
+    class PALUDIS_VISIBLE EntryDepTagDisplayer
     {
         private:
             std::string _text;

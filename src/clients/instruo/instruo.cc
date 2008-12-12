@@ -34,7 +34,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -52,8 +52,7 @@ using std::endl;
 
 namespace
 {
-    struct KeyValidator :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct KeyValidator
     {
         void visit(const MetadataValueKey<std::string> & k)
         {
@@ -269,13 +268,13 @@ main(int argc, char *argv[])
                     continue;
                 }
 
-                if (! visitor_cast<const MetadataValueKey<std::string> >(**eapi_i))
+                if (! simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i))
                 {
                     results.insert(std::make_pair(*i, "EAPI metadata key is not a string key"));
                     continue;
                 }
 
-                if (visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
+                if (simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
                 {
                     results.insert(std::make_pair(*i, "EAPI is 'UNKNOWN'"));
                     continue;

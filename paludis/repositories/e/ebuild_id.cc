@@ -935,51 +935,46 @@ EbuildID::load_remote_ids(const std::string & r, const std::string & h, const st
 
 namespace
 {
-    struct SupportsActionQuery :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SupportsActionQuery
     {
-        bool result;
-
-        SupportsActionQuery() :
-            result(false)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-            result = true;
-        }
-
-        void visit(const SupportsActionTest<UninstallAction> &)
-        {
+            return false;
         }
     };
 }
@@ -988,15 +983,12 @@ bool
 EbuildID::supports_action(const SupportsActionTestBase & b) const
 {
     SupportsActionQuery q;
-    b.accept(q);
-
-    return q.result && eapi()->supported();
+    return b.accept_returning<bool>(q) && eapi()->supported();
 }
 
 namespace
 {
-    struct PerformAction :
-        Visitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const std::tr1::shared_ptr<const PackageID> id;
 

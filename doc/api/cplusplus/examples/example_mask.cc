@@ -32,8 +32,7 @@ namespace
 {
     /* We use this visitor to display extra information about a Mask,
      * depending upon its type. */
-    class MaskInformationVisitor :
-        public ConstVisitor<MaskVisitorTypes>
+    class MaskInformationVisitor
     {
         public:
             void visit(const UserMask &)

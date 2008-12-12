@@ -24,6 +24,7 @@
 #include <paludis/args/args_visitor.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/type_list.hh>
 
 /** \file
  * Declarations for ArgsOption.
@@ -47,7 +48,8 @@ namespace paludis
          * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsOption :
-            public virtual AcceptInterface<ArgsVisitorTypes>
+            public virtual DeclareAbstractAcceptMethods<ArgsOption, MakeTypeList<
+                    StringArg, AliasArg, SwitchArg, IntegerArg, EnumArg, StringSetArg, StringSequenceArg>::Type>
         {
             friend class ArgsHandler;
 
@@ -146,7 +148,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE SwitchArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>
+            public ImplementAcceptMethods<ArgsOption, SwitchArg>
         {
             private:
                 bool _can_be_negated;
@@ -172,7 +174,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>
+            public ImplementAcceptMethods<ArgsOption, StringArg>
         {
             private:
                 std::string _argument;
@@ -213,7 +215,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>,
+            public ImplementAcceptMethods<ArgsOption, StringSetArg>,
             private PrivateImplementationPattern<StringSetArg>
         {
             private:
@@ -316,7 +318,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSequenceArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSequenceArg>,
+            public ImplementAcceptMethods<ArgsOption, StringSequenceArg>,
             private PrivateImplementationPattern<StringSequenceArg>
         {
             public:
@@ -358,7 +360,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE AliasArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>
+            public ImplementAcceptMethods<ArgsOption, AliasArg>
         {
             private:
                 ArgsOption * const _other;
@@ -408,7 +410,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE IntegerArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>
+            public ImplementAcceptMethods<ArgsOption, IntegerArg>
         {
             private:
                 int _argument;
@@ -440,7 +442,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
-            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>,
+            public ImplementAcceptMethods<ArgsOption, EnumArg>,
             private PrivateImplementationPattern<EnumArg>
         {
             private:

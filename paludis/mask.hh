@@ -23,11 +23,12 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/type_list.hh>
 #include <string>
 
 /** \file
@@ -66,26 +67,6 @@ namespace paludis
     };
 
     /**
-     * Types for a visitor that can visit a Mask subclass.
-     *
-     * \ingroup g_mask
-     * \since 0.26
-     * \nosubgrouping
-     */
-    struct MaskVisitorTypes :
-        VisitorTypes<
-            MaskVisitorTypes,
-            Mask,
-            UserMask,
-            UnacceptedMask,
-            RepositoryMask,
-            UnsupportedMask,
-            AssociationMask
-        >
-    {
-    };
-
-    /**
      * A Mask represents one reason why a PackageID is masked (not available to
      * be installed).
      *
@@ -103,7 +84,8 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Mask :
-        public virtual ConstAcceptInterface<MaskVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<Mask, MakeTypeList<
+            UserMask, UnacceptedMask, RepositoryMask, UnsupportedMask, AssociationMask>::Type>
     {
         public:
             ///\name Basic operations
@@ -134,7 +116,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UserMask :
         public Mask,
-        public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UserMask>
+        public ImplementAcceptMethods<Mask, UserMask>
     {
     };
 
@@ -149,7 +131,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UnacceptedMask :
         public Mask,
-        public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UnacceptedMask>
+        public ImplementAcceptMethods<Mask, UnacceptedMask>
     {
         public:
             /**
@@ -168,7 +150,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositoryMask :
         public Mask,
-        public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, RepositoryMask>
+        public ImplementAcceptMethods<Mask, RepositoryMask>
     {
         public:
             /**
@@ -189,7 +171,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UnsupportedMask :
         public Mask,
-        public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UnsupportedMask>
+        public ImplementAcceptMethods<Mask, UnsupportedMask>
     {
         public:
             /**
@@ -211,7 +193,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE AssociationMask :
         public Mask,
-        public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, AssociationMask>
+        public ImplementAcceptMethods<Mask, AssociationMask>
     {
         public:
             /**

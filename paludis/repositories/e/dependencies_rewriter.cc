@@ -24,7 +24,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/metadata_key.hh>
 #include <list>
@@ -46,7 +46,7 @@ namespace
                     k_end(a.annotations_key()->end_metadata()) ;
                     k != k_end ; ++k)
             {
-                const MetadataValueKey<std::string> * r(visitor_cast<const MetadataValueKey<std::string> >(**k));
+                const MetadataValueKey<std::string> * r(simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
                 if (! r)
                     throw InternalError(PALUDIS_HERE, "annotations must be string keys");
                 s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
@@ -196,8 +196,7 @@ DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
 
 namespace
 {
-    struct AddWhereNecessary :
-        ConstVisitor<DependencyTypeLabelVisitorTypes>
+    struct AddWhereNecessary
     {
         std::string & d, & r, & p;
         const std::string & s;

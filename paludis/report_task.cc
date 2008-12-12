@@ -30,7 +30,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
@@ -100,7 +100,7 @@ namespace
                     generator::Matches(a, MatchPackageOptions()))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
-            if (a.tag() && visitor_cast<const GLSADepTag>(*a.tag()))
+            if (a.tag() && simple_visitor_cast<const GLSADepTag>(*a.tag()))
                 _found.insert(std::make_pair(*i, a.tag()));
             else
                 throw InternalError(PALUDIS_HERE, "didn't get a tag");

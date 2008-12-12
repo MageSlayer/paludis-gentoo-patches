@@ -452,53 +452,55 @@ CRANPackageID::canonical_form(const PackageIDCanonicalForm f) const
 
 namespace
 {
-    struct SupportsActionQuery :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SupportsActionQuery
     {
-        bool result;
         const std::tr1::shared_ptr<const CRANRepository> cran_repository;
         const std::tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
 
         SupportsActionQuery(const std::tr1::shared_ptr<const CRANRepository> & c, const std::tr1::shared_ptr<const CRANInstalledRepository> & r) :
-            result(false),
             cran_repository(c),
             cran_installed_repository(r)
         {
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            result = cran_repository;
+            return cran_repository;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            result = cran_repository;
+            return cran_repository;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            result = cran_repository;
+            return cran_repository;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<UninstallAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
+            return false;
         }
     };
 }
@@ -507,8 +509,7 @@ bool
 CRANPackageID::supports_action(const SupportsActionTestBase & b) const
 {
     SupportsActionQuery q(_imp->cran_repository, _imp->cran_installed_repository);
-    b.accept(q);
-    return q.result;
+    return b.accept_returning<bool>(q);
 }
 
 void

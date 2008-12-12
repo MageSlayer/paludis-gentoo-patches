@@ -33,8 +33,7 @@ using std::endl;
 
 namespace
 {
-    struct ContentsDisplayer :
-        ConstVisitor<ContentsVisitorTypes>
+    struct ContentsDisplayer
     {
         void visit(const ContentsFileEntry & e)
         {

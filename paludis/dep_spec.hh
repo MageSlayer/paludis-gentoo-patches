@@ -900,10 +900,10 @@ namespace paludis
      * \ingroup g_dep_spec
      * \nosubgrouping
      */
-    template <typename SpecTree_>
+    template <typename Labels_>
     class PALUDIS_VISIBLE LabelsDepSpec :
         public DepSpec,
-        private PrivateImplementationPattern<LabelsDepSpec<SpecTree_> >
+        private PrivateImplementationPattern<LabelsDepSpec<Labels_> >
     {
         private:
             typename PrivateImplementationPattern<LabelsDepSpec>::ImpPtr & _imp;
@@ -923,11 +923,11 @@ namespace paludis
             ///\name Contained labels
             ///\{
 
-            void add_label(const std::tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
+            void add_label(const std::tr1::shared_ptr<const Labels_> &);
 
             struct ConstIteratorTag;
             typedef WrappedForwardIterator<ConstIteratorTag,
-                    const std::tr1::shared_ptr<const typename SpecTree_::BasicNode> > ConstIterator;
+                    const std::tr1::shared_ptr<const Labels_> > ConstIterator;
 
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));

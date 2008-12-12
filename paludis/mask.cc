@@ -18,16 +18,8 @@
  */
 
 #include <paludis/mask.hh>
-#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
-
-template class ConstAcceptInterface<MaskVisitorTypes>;
-template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UserMask>;
-template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UnacceptedMask>;
-template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, RepositoryMask>;
-template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UnsupportedMask>;
-template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, AssociationMask>;
 
 Mask::~Mask()
 {

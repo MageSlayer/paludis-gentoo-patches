@@ -35,8 +35,7 @@ namespace
     static VALUE c_unsupported_mask;
     static VALUE c_association_mask;
 
-    struct V :
-        ConstVisitor<MaskVisitorTypes>
+    struct V
     {
         VALUE value;
         std::tr1::shared_ptr<const Mask> mm;

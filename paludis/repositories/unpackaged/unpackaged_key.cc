@@ -27,6 +27,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/validated.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/set.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 #include <tr1/memory>

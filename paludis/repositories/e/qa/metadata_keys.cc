@@ -33,8 +33,7 @@ using namespace paludis::erepository;
 
 namespace
 {
-    struct KeyValidator :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct KeyValidator
     {
         void visit(const MetadataValueKey<std::string> & k)
         {

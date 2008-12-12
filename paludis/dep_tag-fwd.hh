@@ -41,8 +41,6 @@ namespace paludis
     class DependencyDepTag;
     class TargetDepTag;
 
-    class DepTagVisitorTypes;
-
     class DepTagEntry;
     class DepTagEntryComparator;
 

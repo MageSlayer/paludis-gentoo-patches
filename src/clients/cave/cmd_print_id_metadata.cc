@@ -24,7 +24,7 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
@@ -116,7 +116,7 @@ namespace
             cout << format_plain_metadata_key(k, name_prefix, cmdline.a_format.argument());
         } while (false);
 
-        const MetadataSectionKey * section(visitor_cast<const MetadataSectionKey>(*k));
+        const MetadataSectionKey * section(simple_visitor_cast<const MetadataSectionKey>(*k));
         if (section)
         {
             for (MetadataSectionKey::MetadataConstIterator s(section->begin_metadata()), s_end(section->end_metadata()) ;

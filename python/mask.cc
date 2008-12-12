@@ -41,8 +41,7 @@ namespace
     }
 }
 
-class MaskSptrToPythonVisitor :
-    public ConstVisitor<MaskVisitorTypes>
+class MaskSptrToPythonVisitor
 {
     private:
         const std::tr1::shared_ptr<const Mask> & _m_ptr;

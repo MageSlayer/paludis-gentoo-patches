@@ -342,8 +342,7 @@ VirtualsPackageID::need_keys_added() const
 
 namespace
 {
-    struct PerformAction :
-        ConstVisitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const PackageID * const id;
 

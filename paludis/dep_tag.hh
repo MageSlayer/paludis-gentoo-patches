@@ -39,11 +39,12 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/type_list.hh>
 
 #include <string>
 #include <tr1/memory>
@@ -55,26 +56,6 @@ namespace paludis
         struct generation;
         struct tag;
     }
-
-    /**
-     * Visitor class for visiting the different DepTag subclasses.
-     *
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     * \since 0.26
-     * \see DepTag
-     */
-    struct DepTagVisitorTypes :
-        VisitorTypes<
-            DepTagVisitorTypes,
-            DepTag,
-            GLSADepTag,
-            GeneralSetDepTag,
-            DependencyDepTag,
-            TargetDepTag
-        >
-    {
-    };
 
     /**
      * A DepTagCategory is identified by its name and has associated display
@@ -168,9 +149,10 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTag :
-        InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
+        private InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public relational_operators::HasRelationalOperators,
-        public virtual ConstAcceptInterface<DepTagVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<DepTag, MakeTypeList<
+            GLSADepTag, GeneralSetDepTag, DependencyDepTag, TargetDepTag>::Type>
     {
         protected:
             ///\name Basic operations
@@ -211,7 +193,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GLSADepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>
+        public ImplementAcceptMethods<DepTag, GLSADepTag>
     {
         private:
             const std::string _id;
@@ -256,7 +238,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>,
+        public ImplementAcceptMethods<DepTag, GLSADepTag>,
         private PrivateImplementationPattern<GeneralSetDepTag>
     {
         public:
@@ -286,7 +268,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>,
+        public ImplementAcceptMethods<DepTag, DependencyDepTag>,
         private PrivateImplementationPattern<DependencyDepTag>
     {
         private:
@@ -332,7 +314,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE TargetDepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>
+        public ImplementAcceptMethods<DepTag, TargetDepTag>
     {
         public:
             ///\name Basic operations
@@ -376,18 +358,6 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class ConstAcceptInterface<DepTagVisitorTypes>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
-    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>;
-    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>;
-    extern template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>;
-
-    extern template class Visits<const GeneralSetDepTag>;
-    extern template class Visits<const GLSADepTag>;
-    extern template class Visits<const DependencyDepTag>;
-    extern template class Visits<const TargetDepTag>;
-
     extern template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
     extern template class PrivateImplementationPattern<DependencyDepTag>;
     extern template class PrivateImplementationPattern<GeneralSetDepTag>;

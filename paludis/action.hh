@@ -24,13 +24,14 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/output_deviator-fwd.hh>
+#include <paludis/util/type_list.hh>
 #include <tr1/functional>
 
 /** \file
@@ -126,52 +127,6 @@ namespace paludis
     };
 
     /**
-     * Types for visiting an action.
-     *
-     * \since 0.26
-     * \ingroup g_actions
-     * \nosubgrouping
-     */
-    struct ActionVisitorTypes :
-        VisitorTypes<
-            ActionVisitorTypes,
-            Action,
-            InstallAction,
-            FetchAction,
-            InstalledAction,
-            UninstallAction,
-            PretendAction,
-            ConfigAction,
-            InfoAction,
-            PretendFetchAction
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a supports action query.
-     *
-     * \since 0.26
-     * \ingroup g_actions
-     * \nosubgrouping
-     */
-    struct SupportsActionTestVisitorTypes :
-        VisitorTypes<
-            SupportsActionTestVisitorTypes,
-            SupportsActionTestBase,
-            SupportsActionTest<InstallAction>,
-            SupportsActionTest<FetchAction>,
-            SupportsActionTest<InstalledAction>,
-            SupportsActionTest<UninstallAction>,
-            SupportsActionTest<PretendAction>,
-            SupportsActionTest<ConfigAction>,
-            SupportsActionTest<InfoAction>,
-            SupportsActionTest<PretendFetchAction>
-        >
-    {
-    };
-
-    /**
      * An Action represents an action that can be executed by a PackageID via
      * PackageID::perform_action.
      *
@@ -180,7 +135,9 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Action :
-        public virtual AcceptInterface<ActionVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<Action, MakeTypeList<
+            InstallAction, InstalledAction, UninstallAction, PretendAction, ConfigAction, FetchAction,
+            InfoAction, PretendFetchAction>::Type>
     {
         public:
             ///\name Basic operations
@@ -202,7 +159,7 @@ namespace paludis
     class PALUDIS_VISIBLE InstallAction :
         public Action,
         private PrivateImplementationPattern<InstallAction>,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>
+        public ImplementAcceptMethods<Action, InstallAction>
     {
         public:
             ///\name Basic operations
@@ -228,7 +185,7 @@ namespace paludis
     class PALUDIS_VISIBLE FetchAction :
         public Action,
         private PrivateImplementationPattern<FetchAction>,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
+        public ImplementAcceptMethods<Action, FetchAction>
     {
         public:
             ///\name Basic operations
@@ -253,7 +210,7 @@ namespace paludis
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
         private PrivateImplementationPattern<UninstallAction>,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
+        public ImplementAcceptMethods<Action, UninstallAction>
     {
         public:
             ///\name Basic operations
@@ -280,7 +237,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstalledAction :
         public Action,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>
+        public ImplementAcceptMethods<Action, InstalledAction>
     {
     };
 
@@ -295,7 +252,7 @@ namespace paludis
     class PALUDIS_VISIBLE PretendAction :
         public Action,
         private PrivateImplementationPattern<PretendAction>,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>
+        public ImplementAcceptMethods<Action, PretendAction>
     {
         public:
             ///\name Basic operations
@@ -324,7 +281,7 @@ namespace paludis
     class PALUDIS_VISIBLE PretendFetchAction :
         public Action,
         private PrivateImplementationPattern<PretendFetchAction>,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>
+        public ImplementAcceptMethods<Action, PretendFetchAction>
     {
         public:
             ///\name Basic operations
@@ -353,7 +310,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>
+        public ImplementAcceptMethods<Action, ConfigAction>
     {
     };
 
@@ -372,7 +329,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InfoAction:
         public Action,
-        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>
+        public ImplementAcceptMethods<Action, InfoAction>
     {
     };
 
@@ -385,7 +342,10 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SupportsActionTestBase :
-        public virtual AcceptInterface<SupportsActionTestVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<SupportsActionTestBase, MakeTypeList<
+            SupportsActionTest<InstallAction>, SupportsActionTest<InstalledAction>, SupportsActionTest<UninstallAction>,
+            SupportsActionTest<PretendAction>, SupportsActionTest<ConfigAction>, SupportsActionTest<FetchAction>,
+            SupportsActionTest<InfoAction>, SupportsActionTest<PretendFetchAction> >::Type>
     {
         public:
             virtual ~SupportsActionTestBase() = 0;
@@ -409,7 +369,7 @@ namespace paludis
     template <typename A_>
     class PALUDIS_VISIBLE SupportsActionTest :
         public SupportsActionTestBase,
-        public AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<A_> >
+        public ImplementAcceptMethods<SupportsActionTestBase, SupportsActionTest<A_> >
     {
     };
 
@@ -568,45 +528,6 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class AcceptInterface<ActionVisitorTypes>;
-    extern template class AcceptInterface<SupportsActionTestVisitorTypes>;
-
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>;
-    extern template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
-
-    extern template class Visits<ConfigAction>;
-    extern template class Visits<FetchAction>;
-    extern template class Visits<InfoAction>;
-    extern template class Visits<InstallAction>;
-    extern template class Visits<InstalledAction>;
-    extern template class Visits<PretendAction>;
-    extern template class Visits<PretendFetchAction>;
-    extern template class Visits<UninstallAction>;
-
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
-    extern template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
-
-    extern template class Visits<SupportsActionTest<ConfigAction> >;
-    extern template class Visits<SupportsActionTest<FetchAction> >;
-    extern template class Visits<SupportsActionTest<InfoAction> >;
-    extern template class Visits<SupportsActionTest<InstallAction> >;
-    extern template class Visits<SupportsActionTest<InstalledAction> >;
-    extern template class Visits<SupportsActionTest<PretendAction> >;
-    extern template class Visits<SupportsActionTest<PretendFetchAction> >;
-    extern template class Visits<SupportsActionTest<UninstallAction> >;
-
     extern template class PrivateImplementationPattern<FetchAction>;
     extern template class PrivateImplementationPattern<InstallAction>;
     extern template class PrivateImplementationPattern<PretendAction>;

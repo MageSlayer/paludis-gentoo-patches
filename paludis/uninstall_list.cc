@@ -24,7 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -281,7 +281,7 @@ namespace
 
             bool best_only(false);
             if (a.slot_requirement_ptr())
-                best_only = visitor_cast<const SlotAnyUnlockedRequirement>(*a.slot_requirement_ptr());
+                best_only = simple_visitor_cast<const SlotAnyUnlockedRequirement>(*a.slot_requirement_ptr());
 
             std::tr1::shared_ptr<const PackageIDSequence> m(
                     best_only ?

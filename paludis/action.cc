@@ -19,7 +19,6 @@
 
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -172,58 +171,51 @@ UnsupportedActionError::UnsupportedActionError(const PackageID & id, const Actio
 
 namespace
 {
-    struct ActionStringifier :
-        ConstVisitor<ActionVisitorTypes>
+    struct ActionStringifier
     {
-        std::ostream & s;
-
-        ActionStringifier(std::ostream & ss) :
-            s(ss)
+        std::string visit(const InstallAction & a)
         {
-        }
-
-        void visit(const InstallAction & a)
-        {
-            s << "install to ";
+            std::string s("install to ");
             if (a.options.destination())
-                s << a.options.destination()->name();
+                s.append(stringify(a.options.destination()->name()));
             else
-                s << "nowhere";
+                s.append("nowhere");
+            return s;
         }
 
-        void visit(const UninstallAction &)
+        std::string visit(const UninstallAction &)
         {
-            s << "uninstall";
+            return "uninstall";
         }
 
-        void visit(const PretendAction &)
+        std::string visit(const PretendAction &)
         {
-            s << "pretend";
+            return "pretend";
         }
 
-        void visit(const InstalledAction &)
+        std::string visit(const InstalledAction &)
         {
-            s << "installed";
+            return "installed";
         }
 
-        void visit(const ConfigAction &)
+        std::string visit(const ConfigAction &)
         {
-            s << "config";
+            return "config";
         }
 
-        void visit(const InfoAction &)
+        std::string visit(const InfoAction &)
         {
-            s << "info";
+            return "info";
         }
 
-        void visit(const FetchAction &)
+        std::string visit(const FetchAction &)
         {
-            s << "fetch";
+            return "fetch";
         }
 
-        void visit(const PretendFetchAction &)
+        std::string visit(const PretendFetchAction &)
         {
-            s << "pretend fetch";
+            return "pretend fetch";
         }
     };
 }
@@ -231,9 +223,8 @@ namespace
 std::ostream &
 paludis::operator<< (std::ostream & s, const Action & a)
 {
-    ActionStringifier t(s);
-    a.accept(t);
-    return s;
+    ActionStringifier t;
+    return s << a.accept_returning<std::string>(t);
 }
 
 ActionError::ActionError(const std::string & msg) throw () :
@@ -282,45 +273,6 @@ InfoActionError::InfoActionError(const std::string & msg) throw () :
     ActionError("Info error: " + msg)
 {
 }
-
-template class AcceptInterface<ActionVisitorTypes>;
-template class AcceptInterface<SupportsActionTestVisitorTypes>;
-
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendFetchAction>;
-template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
-
-template class Visits<ConfigAction>;
-template class Visits<FetchAction>;
-template class Visits<InfoAction>;
-template class Visits<InstallAction>;
-template class Visits<InstalledAction>;
-template class Visits<PretendAction>;
-template class Visits<PretendFetchAction>;
-template class Visits<UninstallAction>;
-
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendFetchAction> >;
-template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
-
-template class Visits<SupportsActionTest<ConfigAction> >;
-template class Visits<SupportsActionTest<FetchAction> >;
-template class Visits<SupportsActionTest<InfoAction> >;
-template class Visits<SupportsActionTest<InstallAction> >;
-template class Visits<SupportsActionTest<InstalledAction> >;
-template class Visits<SupportsActionTest<PretendAction> >;
-template class Visits<SupportsActionTest<PretendFetchAction> >;
-template class Visits<SupportsActionTest<UninstallAction> >;
 
 template class PrivateImplementationPattern<FetchAction>;
 template class PrivateImplementationPattern<InstallAction>;

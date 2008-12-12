@@ -22,8 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/dep_spec.hh>
@@ -160,7 +159,7 @@ paludis::elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec)
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Flag"));
     if (i == spec.end_metadata())
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Flag metadata");
-    const MetadataValueKey<std::string>  * key(visitor_cast<const MetadataValueKey<std::string> >(**i));
+    const MetadataValueKey<std::string>  * key(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
     if (! key)
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Flag metadata which is not a string");
     return ChoiceNameWithPrefix(key->value());
@@ -172,7 +171,7 @@ paludis::elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec)
     ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Inverse"));
     if (i == spec.end_metadata())
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Inverse metadata");
-    const MetadataValueKey<std::string>  * key(visitor_cast<const MetadataValueKey<std::string> >(**i));
+    const MetadataValueKey<std::string>  * key(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
     if (! key)
         throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Inverse metadata which is not a string");
     return destringify<bool>(key->value());

@@ -135,7 +135,7 @@ namespace paludis
             FetchableURISpecTree,
             DepSpec,
             TreeLeaf<FetchableURISpecTree, FetchableURIDepSpec>,
-            TreeLeaf<FetchableURISpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
+            TreeLeaf<FetchableURISpecTree, URILabelsDepSpec>,
             ConstTreeSequence<FetchableURISpecTree, AllDepSpec>,
             ConstTreeSequence<FetchableURISpecTree, ConditionalDepSpec>
         >

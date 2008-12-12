@@ -17,30 +17,19 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_tag.hh"
+#include <paludis/dep_tag.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/visitor-impl.hh>
+#include <algorithm>
 #include <sstream>
 
 using namespace paludis;
-
-template class ConstVisitor<DepTagVisitorTypes>;
-template class ConstAcceptInterface<DepTagVisitorTypes>;
-
-template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>;
-template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>;
-template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
-template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>;
-
-template class Visits<const GeneralSetDepTag>;
-template class Visits<const GLSADepTag>;
-template class Visits<const DependencyDepTag>;
-template class Visits<const TargetDepTag>;
 
 template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
 
@@ -202,7 +191,7 @@ namespace
         visit_leaf(const DependencyLabelsDepSpec & l)
         {
             std::copy(indirect_iterator(l.begin()), indirect_iterator(l.end()),
-                    std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));
+                    std::ostream_iterator<DependencyLabel>(s, ","));
             s << ":";
         }
 
@@ -213,8 +202,7 @@ namespace
         }
     };
 
-    struct DepTagComparator :
-        ConstVisitor<DepTagVisitorTypes>
+    struct DepTagComparator
     {
         std::string value;
 

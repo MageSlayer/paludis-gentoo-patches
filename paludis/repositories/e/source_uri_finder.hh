@@ -33,8 +33,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE SourceURIFinder :
-            private PrivateImplementationPattern<SourceURIFinder>,
-            public ConstVisitor<URILabelVisitorTypes>
+            private PrivateImplementationPattern<SourceURIFinder>
         {
             private:
                 void add_local_mirrors();

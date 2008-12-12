@@ -19,7 +19,10 @@
  */
 
 #include "elf_symbol_section.hh"
+#include "elf_sections.hh"
 #include "elf_types.hh"
+#include "elf_relocation_section.hh"
+#include "elf_dynamic_section.hh"
 #include "elf.hh"
 
 #include <paludis/util/byte_swap.hh>
@@ -63,11 +66,8 @@ namespace
 namespace littlelf_internals
 {
     template <typename ElfType_>
-    class SymbolStringResolvingVisitor :
-        public SectionVisitor<ElfType_>
+    class SymbolStringResolvingVisitor
     {
-        using SectionVisitor<ElfType_>::visit;
-
         private:
             const SymbolSection<ElfType_> & _sym_section;
             typename std::vector<Symbol<ElfType_> >::iterator _begin, _end;
@@ -82,7 +82,11 @@ namespace littlelf_internals
             {
             }
 
-            virtual void visit(StringSection<ElfType_> & string_section)
+            void visit(Section<ElfType_> &)
+            {
+            }
+
+            void visit(StringSection<ElfType_> & string_section)
             {
                 for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
                     try

@@ -136,8 +136,7 @@ ShowSuggestVisitor::visit_leaf(const BlockDepSpec &)
 
 namespace
 {
-    struct SuggestActiveVisitor :
-        ConstVisitor<DependencySuggestLabelVisitorTypes>
+    struct SuggestActiveVisitor
     {
         bool result;
 

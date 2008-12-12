@@ -21,9 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_HANDLED_INFORMATION_HH 1
 
 #include <paludis/handled_information-fwd.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/type_list.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
@@ -41,27 +42,6 @@
 namespace paludis
 {
     /**
-     * Types for a visitor that can visit a DepListEntry subclass.
-     *
-     * \ingroup g_dep_list
-     * \since 0.26
-     * \nosubgrouping
-     */
-    struct DepListEntryHandledVisitorTypes :
-        VisitorTypes<
-            DepListEntryHandledVisitorTypes,
-            DepListEntryHandled,
-            DepListEntryHandledSuccess,
-            DepListEntryHandledSkippedUnsatisfied,
-            DepListEntryHandledSkippedDependent,
-            DepListEntryHandledFailed,
-            DepListEntryUnhandled,
-            DepListEntryNoHandlingRequired
-        >
-    {
-    };
-
-    /**
      * Represents a DepListEntry that has been handled.
      *
      * \ingroup g_dep_list
@@ -69,7 +49,13 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepListEntryHandled :
-        public virtual ConstAcceptInterface<DepListEntryHandledVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<DepListEntryHandled, MakeTypeList<
+                DepListEntryHandledSuccess,
+                DepListEntryHandledSkippedUnsatisfied,
+                DepListEntryHandledSkippedDependent,
+                DepListEntryHandledFailed,
+                DepListEntryUnhandled,
+                DepListEntryNoHandlingRequired>::Type>
     {
         public:
             virtual ~DepListEntryHandled() = 0;
@@ -84,7 +70,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryUnhandled :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryUnhandled>
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryUnhandled>
     {
     };
 
@@ -97,7 +83,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryNoHandlingRequired :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryNoHandlingRequired>
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryNoHandlingRequired>
     {
     };
 
@@ -110,7 +96,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryHandledSuccess :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSuccess>
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSuccess>
     {
     };
 
@@ -124,7 +110,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryHandledSkippedUnsatisfied :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSkippedUnsatisfied>,
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSkippedUnsatisfied>,
         private PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>
     {
         public:
@@ -153,7 +139,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryHandledSkippedDependent :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSkippedDependent>,
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSkippedDependent>,
         private PrivateImplementationPattern<DepListEntryHandledSkippedDependent>
     {
         public:
@@ -181,7 +167,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepListEntryHandledFailed :
         public DepListEntryHandled,
-        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledFailed>
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledFailed>
     {
     };
 }

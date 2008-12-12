@@ -35,8 +35,7 @@ using std::endl;
 
 namespace
 {
-    struct ExecutablesDisplayer :
-        ConstVisitor<ContentsVisitorTypes>
+    struct ExecutablesDisplayer
     {
         private:
             const std::list<std::string> _paths;

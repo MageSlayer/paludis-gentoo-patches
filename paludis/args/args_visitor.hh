@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
@@ -50,31 +50,11 @@ namespace paludis
         class StringSequenceArg;
 
         /**
-         * Visitor types for visitors that can visit Args.
-         *
-         * \ingroup g_args
-         */
-        struct ArgsVisitorTypes :
-            VisitorTypes<
-                ArgsVisitorTypes,
-                ArgsOption,
-                StringArg,
-                AliasArg,
-                SwitchArg,
-                IntegerArg,
-                EnumArg,
-                StringSetArg,
-                StringSequenceArg>
-        {
-        };
-
-        /**
          * Visitor class. Processes command-line options as they are found.
          *
          * \ingroup g_args
          */
-        class PALUDIS_VISIBLE ArgsVisitor :
-            public Visitor<ArgsVisitorTypes>
+        class PALUDIS_VISIBLE ArgsVisitor
         {
             public:
                 struct ArgsIteratorTag;

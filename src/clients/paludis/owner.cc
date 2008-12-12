@@ -34,8 +34,7 @@ using std::endl;
 
 namespace
 {
-    struct ContentsFinder :
-        ConstVisitor<ContentsVisitorTypes>
+    struct ContentsFinder
     {
         std::set<std::string> matches;
         const std::string query;

@@ -44,9 +44,6 @@ namespace paludis
     class SupportsActionTestBase;
     template <typename A_> class SupportsActionTest;
 
-    class ActionVisitorTypes;
-    class SupportsActionTestVisitorTypes;
-
     class ActionError;
     class UnsupportedActionError;
     class InstallActionError;

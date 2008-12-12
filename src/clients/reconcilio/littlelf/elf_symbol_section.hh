@@ -77,7 +77,7 @@ class Symbol
 template <typename ElfType_>
 class SymbolSection :
     public Section<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , SymbolSection<ElfType_> >,
+    public paludis::ImplementAcceptMethods<Section<ElfType_>, SymbolSection<ElfType_> >,
     private paludis::PrivateImplementationPattern<SymbolSection<ElfType_> >
 {
     using paludis::PrivateImplementationPattern<SymbolSection>::_imp;

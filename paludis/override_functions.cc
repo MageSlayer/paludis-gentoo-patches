@@ -19,7 +19,7 @@
 
 #include <paludis/override_functions.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/environment.hh>
@@ -35,11 +35,11 @@ paludis::override_tilde_keywords(const Environment * const e, const PackageID & 
 {
     Context c("When working out whether mask is a tilde keyword mask for override:");
 
-    const UnacceptedMask * const mm(visitor_cast<const UnacceptedMask>(m));
+    const UnacceptedMask * const mm(simple_visitor_cast<const UnacceptedMask>(m));
     if (! mm)
         return false;
 
-    const MetadataCollectionKey<KeywordNameSet> * const k(visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    const MetadataCollectionKey<KeywordNameSet> * const k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
     if (! k)
         return false;
 
@@ -60,11 +60,11 @@ paludis::override_unkeyworded(const Environment * const e, const PackageID & id,
 {
     Context c("When working out whether mask is an unkeyworded mask for override:");
 
-    const UnacceptedMask * const mm(visitor_cast<const UnacceptedMask>(m));
+    const UnacceptedMask * const mm(simple_visitor_cast<const UnacceptedMask>(m));
     if (! mm)
         return false;
 
-    const MetadataCollectionKey<KeywordNameSet> * const k(visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    const MetadataCollectionKey<KeywordNameSet> * const k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
     if (! k)
         return false;
 
@@ -81,15 +81,15 @@ bool
 paludis::override_repository_masks(const Mask & m)
 {
     Context c("When working out whether mask is a repository mask for override:");
-    return visitor_cast<const RepositoryMask>(m);
+    return simple_visitor_cast<const RepositoryMask>(m);
 }
 
 bool
 paludis::override_license(const Mask & m)
 {
     Context c("When working out whether mask is a license mask for override:");
-    const UnacceptedMask * const mm(visitor_cast<const UnacceptedMask>(m));
-    return mm && visitor_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(*mm->unaccepted_key());
+    const UnacceptedMask * const mm(simple_visitor_cast<const UnacceptedMask>(m));
+    return mm && simple_visitor_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(*mm->unaccepted_key());
 }
 
 

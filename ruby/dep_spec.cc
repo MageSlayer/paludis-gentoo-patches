@@ -65,8 +65,7 @@ namespace
     static VALUE c_slot_any_locked_requirement;
     static VALUE c_slot_any_unlocked_requirement;
 
-    struct V :
-        ConstVisitor<SlotRequirementVisitorTypes>
+    struct V
     {
         VALUE value;
         std::tr1::shared_ptr<const SlotRequirement> mm;
@@ -1020,8 +1019,7 @@ namespace
 
     }
 
-    struct URILabelToValue :
-        ConstVisitor<URILabelVisitorTypes>
+    struct URILabelToValue
     {
         VALUE value;
         std::tr1::shared_ptr<const URILabel> mm;

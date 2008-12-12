@@ -29,8 +29,7 @@ using std::setw;
 namespace
 {
     /* This visitor displays information about ContentsEntry subclasses. */
-    class ContentsPrinter :
-        public ConstVisitor<ContentsVisitorTypes>
+    class ContentsPrinter
     {
         public:
             void visit(const ContentsDevEntry & d)

@@ -74,8 +74,7 @@ namespace
 {
     std::string extract_text_only(const yaml::Node & n, const std::string & extra);
 
-    struct VersionVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct VersionVisitor
     {
         std::string text;
 
@@ -101,8 +100,7 @@ namespace
         throw BadSpecificationError("Version child node is sequence, not map");
     }
 
-    struct ExtractTextVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct ExtractTextVisitor
     {
         const std::string extra;
         const bool accept_sequence;
@@ -191,8 +189,7 @@ namespace
         return v.text;
     }
 
-    struct TopVisitor :
-        ConstVisitor<yaml::NodeVisitorTypes>
+    struct TopVisitor
     {
         Implementation<GemSpecification> * const _imp;
 
@@ -499,8 +496,7 @@ GemSpecification::supports_action(const SupportsActionTestBase & b) const
 
 namespace
 {
-    struct PerformAction :
-        ConstVisitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const PackageID * const id;
 

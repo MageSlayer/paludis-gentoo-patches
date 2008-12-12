@@ -54,8 +54,7 @@ namespace paludis
 
 namespace
 {
-    struct KeyPrettyPrinter :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct KeyPrettyPrinter
     {
         std::ostringstream s;
 

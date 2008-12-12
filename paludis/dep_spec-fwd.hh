@@ -58,7 +58,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef LabelsDepSpec<URILabelVisitorTypes> URILabelsDepSpec;
+    typedef LabelsDepSpec<URILabel> URILabelsDepSpec;
 
     /**
      * A DependencyLabelsDepSpec represents labels in a DependencySpecTree.
@@ -66,7 +66,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelsDepSpec;
+    typedef LabelsDepSpec<DependencyLabel> DependencyLabelsDepSpec;
 
     class PackageDepSpecData;
     class PartiallyMadePackageDepSpec;

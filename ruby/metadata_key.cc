@@ -91,8 +91,7 @@ namespace
         }
     };
 
-    struct V :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct V
     {
         VALUE value;
         std::tr1::shared_ptr<const MetadataKey> mm;

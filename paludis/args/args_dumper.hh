@@ -22,7 +22,6 @@
 
 #include <iosfwd>
 #include <paludis/args/args_visitor.hh>
-#include <paludis/util/visitor.hh>
 
 /** \file
  * Declarations for the ArgsDumper class.
@@ -50,8 +49,7 @@ namespace paludis
          *
          * \ingroup g_args
          */
-        class PALUDIS_VISIBLE ArgsDumper :
-            public ConstVisitor<ArgsVisitorTypes>
+        class PALUDIS_VISIBLE ArgsDumper
         {
             private:
                 std::ostream & _os;

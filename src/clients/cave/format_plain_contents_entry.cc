@@ -32,8 +32,7 @@ using namespace cave;
 
 namespace
 {
-    struct ValueGetter :
-        ConstVisitor<ContentsVisitorTypes>
+    struct ValueGetter
     {
         std::string target;
         std::string slash;

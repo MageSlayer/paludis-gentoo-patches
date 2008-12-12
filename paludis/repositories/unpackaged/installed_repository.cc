@@ -31,7 +31,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
@@ -167,49 +167,46 @@ InstalledUnpackagedRepository::has_category_named(const CategoryNamePart & c) co
 
 namespace
 {
-    struct SomeIDsMightSupportVisitor :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SomeIDsMightSupportVisitor
     {
-        bool result;
-
-        void visit(const SupportsActionTest<UninstallAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
-            result = true;
+            return true;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
-           result = false;
+           return false;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            result = false;
+            return false;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            result = false;
+            return false;
         }
     };
 }
@@ -218,8 +215,7 @@ bool
 InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase & test) const
 {
     SomeIDsMightSupportVisitor v;
-    test.accept(v);
-    return v.result;
+    return test.accept_returning<bool>(v);
 }
 
 namespace
@@ -262,7 +258,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("install_under"));
         if (k == m.package_id()->repository()->end_metadata())
             throw InstallActionError("Could not fetch install_under key from owning repository");
-        const MetadataValueKey<FSEntry> * kk(visitor_cast<const MetadataValueKey<FSEntry> >(**k));
+        const MetadataValueKey<FSEntry> * kk(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k));
         if (! kk)
             throw InstallActionError("Fetched install_under key but did not get an FSEntry key from owning repository");
         install_under = kk->value();
@@ -273,7 +269,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("rewrite_ids_over_to_root"));
         if (k == m.package_id()->repository()->end_metadata())
             throw InstallActionError("Could not fetch rewrite_ids_over_to_root key from owning repository");
-        const MetadataValueKey<long> * kk(visitor_cast<const MetadataValueKey<long> >(**k));
+        const MetadataValueKey<long> * kk(simple_visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
             throw InstallActionError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
         rewrite_ids_over_to_root = kk->value();

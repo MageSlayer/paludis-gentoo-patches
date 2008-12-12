@@ -32,8 +32,6 @@
 
 namespace paludis
 {
-    class MetadataKeyVisitorTypes;
-
     class MetadataKey;
     class MetadataSectionKey;
     class MetadataTimeKey;

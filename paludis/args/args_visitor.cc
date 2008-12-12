@@ -34,30 +34,6 @@
 using namespace paludis;
 using namespace paludis::args;
 
-template class Visitor<ArgsVisitorTypes>;
-template class AcceptInterface<ArgsVisitorTypes>;
-
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>;
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>;
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>;
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>;
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>;
-template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>;
-
-template class Visits<IntegerArg>;
-template class Visits<EnumArg>;
-template class Visits<StringArg>;
-template class Visits<StringSetArg>;
-template class Visits<AliasArg>;
-template class Visits<SwitchArg>;
-
-template class Visits<const IntegerArg>;
-template class Visits<const EnumArg>;
-template class Visits<const StringArg>;
-template class Visits<const StringSetArg>;
-template class Visits<const AliasArg>;
-template class Visits<const SwitchArg>;
-
 template class WrappedForwardIterator<ArgsVisitor::ArgsIteratorTag, std::string>;
 
 ArgsVisitor::ArgsVisitor(ArgsIterator * ai, ArgsIterator ae,

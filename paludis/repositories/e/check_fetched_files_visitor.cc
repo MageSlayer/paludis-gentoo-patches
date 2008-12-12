@@ -139,8 +139,7 @@ CheckFetchedFilesVisitor::visit_sequence(const AllDepSpec &,
 
 namespace
 {
-    struct InNoFetchVisitor :
-        ConstVisitor<URILabelVisitorTypes>
+    struct InNoFetchVisitor
     {
         bool result;
 

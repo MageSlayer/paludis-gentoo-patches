@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,11 +21,13 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_YAML_HH 1
 
 #include <paludis/repositories/gems/yaml-fwd.hh>
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/type_list.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 namespace paludis
 {
@@ -37,29 +39,14 @@ namespace paludis
         class MapNode;
 
         /**
-         * Visitor types for a yaml node heirarchy.
-         *
-         * \ingroup grpgemsrepository
-         * \nosubgrouping
-         */
-        struct NodeVisitorTypes :
-            VisitorTypes<
-                NodeVisitorTypes,
-                Node,
-                StringNode,
-                SequenceNode,
-                MapNode>
-        {
-        };
-
-        /**
          * A node in a yaml document.
          *
          * \ingroup grpgemsrepository
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Node :
-            public virtual ConstAcceptInterface<NodeVisitorTypes>
+            public virtual DeclareAbstractAcceptMethods<Node, MakeTypeList<
+                StringNode, SequenceNode, MapNode>::Type>
         {
             public:
                 ///\name Basic operations
@@ -78,7 +65,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringNode :
             public Node,
-            public ConstAcceptInterfaceVisitsThis<NodeVisitorTypes, StringNode>,
+            public ImplementAcceptMethods<Node, StringNode>,
             private PrivateImplementationPattern<StringNode>
         {
             public:
@@ -104,7 +91,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE SequenceNode :
             public Node,
-            public ConstAcceptInterfaceVisitsThis<NodeVisitorTypes, SequenceNode>,
+            public ImplementAcceptMethods<Node, SequenceNode>,
             private PrivateImplementationPattern<SequenceNode>
         {
             public:
@@ -140,7 +127,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE MapNode :
             public Node,
-            public ConstAcceptInterfaceVisitsThis<NodeVisitorTypes, MapNode>,
+            public ImplementAcceptMethods<Node, MapNode>,
             private PrivateImplementationPattern<MapNode>
         {
             public:

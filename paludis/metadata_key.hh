@@ -35,8 +35,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/remove_shared_ptr.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
 #include <tr1/type_traits>
 #include <string>
 
@@ -52,42 +53,6 @@
 
 namespace paludis
 {
-    /**
-     * Types for a visitor that can visit a MetadataKey subclass.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     * \nosubgrouping
-     */
-    struct MetadataKeyVisitorTypes :
-        VisitorTypes<
-            MetadataKeyVisitorTypes,
-            MetadataKey,
-            MetadataCollectionKey<KeywordNameSet>,
-            MetadataCollectionKey<Set<std::string> >,
-            MetadataCollectionKey<Sequence<std::string> >,
-            MetadataCollectionKey<PackageIDSequence>,
-            MetadataCollectionKey<FSEntrySequence>,
-            MetadataSpecTreeKey<DependencySpecTree>,
-            MetadataSpecTreeKey<LicenseSpecTree>,
-            MetadataSpecTreeKey<FetchableURISpecTree>,
-            MetadataSpecTreeKey<SimpleURISpecTree>,
-            MetadataSpecTreeKey<ProvideSpecTree>,
-            MetadataSpecTreeKey<PlainTextSpecTree>,
-            MetadataValueKey<std::string>,
-            MetadataValueKey<long>,
-            MetadataValueKey<bool>,
-            MetadataValueKey<FSEntry>,
-            MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
-            MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
-            MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,
-            MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
-            MetadataTimeKey,
-            MetadataSectionKey
-            >
-    {
-    };
-
     /**
      * A MetadataKey is a generic key that contains a particular piece of
      * information about a PackageID or Repository instance.
@@ -121,7 +86,29 @@ namespace paludis
     class PALUDIS_VISIBLE MetadataKey :
         private InstantiationPolicy<MetadataKey, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<MetadataKey>,
-        public virtual ConstAcceptInterface<MetadataKeyVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<MetadataKey, MakeTypeList<
+                MetadataCollectionKey<KeywordNameSet>,
+                MetadataCollectionKey<Set<std::string> >,
+                MetadataCollectionKey<Sequence<std::string> >,
+                MetadataCollectionKey<PackageIDSequence>,
+                MetadataCollectionKey<FSEntrySequence>,
+                MetadataSpecTreeKey<DependencySpecTree>,
+                MetadataSpecTreeKey<LicenseSpecTree>,
+                MetadataSpecTreeKey<FetchableURISpecTree>,
+                MetadataSpecTreeKey<SimpleURISpecTree>,
+                MetadataSpecTreeKey<ProvideSpecTree>,
+                MetadataSpecTreeKey<PlainTextSpecTree>,
+                MetadataValueKey<std::string>,
+                MetadataValueKey<long>,
+                MetadataValueKey<bool>,
+                MetadataValueKey<FSEntry>,
+                MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
+                MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
+                MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,
+                MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+                MetadataTimeKey,
+                MetadataSectionKey
+                >::Type>
     {
         protected:
             ///\name Basic operations
@@ -160,7 +147,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE MetadataSectionKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSectionKey>,
+        public ImplementAcceptMethods<MetadataKey, MetadataSectionKey>,
         public MetadataKeyHolder
     {
         protected:
@@ -260,7 +247,7 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE MetadataValueKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataValueKey<C_> >,
+        public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >,
         public virtual ExtraMetadataValueKeyMethods<C_>
     {
         protected:
@@ -288,7 +275,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE MetadataTimeKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataTimeKey>
+        public ImplementAcceptMethods<MetadataKey, MetadataTimeKey>
     {
         protected:
             ///\name Basic operations
@@ -317,7 +304,7 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE MetadataCollectionKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<C_> >
+        public ImplementAcceptMethods<MetadataKey, MetadataCollectionKey<C_> >
     {
         protected:
             ///\name Basic operations
@@ -354,7 +341,7 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE MetadataSpecTreeKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<C_> >
+        public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<C_> >
     {
         protected:
             ///\name Basic operations
@@ -400,7 +387,7 @@ namespace paludis
     template <>
     class PALUDIS_VISIBLE MetadataSpecTreeKey<FetchableURISpecTree> :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<FetchableURISpecTree> >
+        public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<FetchableURISpecTree> >
     {
         protected:
             ///\name Basic operations
@@ -453,7 +440,7 @@ namespace paludis
     template <>
     class PALUDIS_VISIBLE MetadataSpecTreeKey<DependencySpecTree> :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<DependencySpecTree> >
+        public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<DependencySpecTree> >
     {
         protected:
             ///\name Basic operations

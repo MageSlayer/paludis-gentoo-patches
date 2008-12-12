@@ -951,8 +951,7 @@ FakePackageID::make_unsupported()
 
 namespace
 {
-    struct PerformAction :
-        ConstVisitor<ActionVisitorTypes>
+    struct PerformAction
     {
         const PackageID * const id;
 

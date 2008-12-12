@@ -33,7 +33,6 @@
 
 namespace paludis
 {
-    struct URILabelVisitorTypes;
     struct URILabel;
 
     template <typename T_> struct ConcreteURILabel;
@@ -64,7 +63,6 @@ namespace paludis
      */
     std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
 
-    struct DependencyLabelVisitorTypes;
     struct DependencyLabel;
     struct DependencySystemLabel;
     struct DependencyTypeLabel;

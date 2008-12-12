@@ -28,7 +28,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
@@ -483,8 +483,8 @@ namespace test_cases
                                             &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                    TEST_CHECK(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
-                    TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
+                    TEST_CHECK(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
+                    TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
                     StringifyFormatter ff;
@@ -1230,7 +1230,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1240,7 +1240,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
             }
 
@@ -1250,7 +1250,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
             }
 
@@ -1260,7 +1260,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
             }
 
@@ -1358,7 +1358,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
 
@@ -1368,7 +1368,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
 
@@ -1378,7 +1378,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
 
@@ -1388,7 +1388,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
 
@@ -1398,7 +1398,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
             }
         }
@@ -1451,7 +1451,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
 
@@ -1461,7 +1461,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
 
@@ -1471,7 +1471,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1481,7 +1481,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1491,7 +1491,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
 
@@ -1501,7 +1501,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
 
@@ -1511,7 +1511,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
 
@@ -1521,7 +1521,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_compile-via-default-func-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
         }
@@ -1574,7 +1574,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
 
@@ -1584,7 +1584,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1594,7 +1594,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-vars-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "UNKNOWN");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "UNKNOWN");
             }
 
             {
@@ -1603,7 +1603,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
 
@@ -1613,7 +1613,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-fail-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
 
@@ -1623,7 +1623,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
 
@@ -1633,7 +1633,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
 
@@ -1643,7 +1643,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
         }
@@ -1693,7 +1693,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/info-success-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 id->perform_action(action);
             }
 
@@ -1703,7 +1703,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/info-fail-kdebuild-1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
                 TEST_CHECK_THROWS(id->perform_action(action), InfoActionError);
             }
         }

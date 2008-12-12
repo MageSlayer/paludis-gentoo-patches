@@ -23,8 +23,8 @@
 
 #include <string>
 #include <iosfwd>
-
-#include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
 
 template <typename ElfType_> class ElfObject;
 template <typename ElfType_> class Section;
@@ -37,47 +37,6 @@ template <typename ElfType_, class RelocationType_> class RelocationSection;
 template <typename ElfType_> class Relocation;
 template <typename ElfType_> class RelocationA;
 
-template <typename ElfType_>
-struct SectionVisitorTypes :
-    paludis::VisitorTypes<
-        SectionVisitorTypes<ElfType_>,
-        Section<ElfType_>,
-        StringSection<ElfType_>,
-        DynamicSection<ElfType_>,
-        SymbolSection<ElfType_>,
-        GenericSection<ElfType_>,
-        RelocationSection<ElfType_, Relocation<ElfType_> >,
-        RelocationSection<ElfType_, RelocationA<ElfType_> >
-        >
-{
-};
-
-template <typename ElfType_>
-class ConstSectionVisitor :
-    public paludis::ConstVisitor<SectionVisitorTypes<ElfType_> >
-{
-    public:
-        virtual void visit(const StringSection<ElfType_> &)  {}
-        virtual void visit(const SymbolSection<ElfType_> &)  {}
-        virtual void visit(const DynamicSection<ElfType_> &) {}
-        virtual void visit(const GenericSection<ElfType_> &) {}
-        virtual void visit(const RelocationSection<ElfType_, Relocation<ElfType_> > &)  {}
-        virtual void visit(const RelocationSection<ElfType_, RelocationA<ElfType_> > &) {}
-};
-
-template <typename ElfType_>
-class SectionVisitor :
-    public paludis::Visitor<SectionVisitorTypes<ElfType_> >
-{
-    public:
-        virtual void visit(StringSection<ElfType_> &)  {}
-        virtual void visit(SymbolSection<ElfType_> &)  {}
-        virtual void visit(DynamicSection<ElfType_> &) {}
-        virtual void visit(GenericSection<ElfType_> &) {}
-        virtual void visit(RelocationSection<ElfType_, Relocation<ElfType_> > &)  {}
-        virtual void visit(RelocationSection<ElfType_, RelocationA<ElfType_> > &) {}
-};
-
 namespace littlelf_internals
 {
     template <typename ElfType_> class SectionNameResolvingVisitor;
@@ -85,7 +44,14 @@ namespace littlelf_internals
 
 template <typename ElfType_>
 class Section :
-    public virtual paludis::AcceptInterface<SectionVisitorTypes<ElfType_> >
+    public virtual paludis::DeclareAbstractAcceptMethods<Section<ElfType_>, typename paludis::MakeTypeList<
+        StringSection<ElfType_>,
+        DynamicSection<ElfType_>,
+        SymbolSection<ElfType_>,
+        GenericSection<ElfType_>,
+        RelocationSection<ElfType_, Relocation<ElfType_> >,
+        RelocationSection<ElfType_, RelocationA<ElfType_> >
+    >::Type>
 {
     friend class littlelf_internals::SectionNameResolvingVisitor<ElfType_>;
 
@@ -146,7 +112,7 @@ class Section :
 template <typename ElfType_>
 class GenericSection :
     public Section<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , GenericSection<ElfType_> >
+    public paludis::ImplementAcceptMethods<Section<ElfType_>, GenericSection<ElfType_> >
 {
     public:
         GenericSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &);
@@ -157,7 +123,7 @@ class GenericSection :
 template <typename ElfType_>
 class StringSection :
     public Section<ElfType_>,
-    public paludis::AcceptInterfaceVisitsThis<SectionVisitorTypes<ElfType_> , StringSection<ElfType_> >
+    public paludis::ImplementAcceptMethods<Section<ElfType_>, StringSection<ElfType_> >
 {
     private:
         std::string _stringTable;

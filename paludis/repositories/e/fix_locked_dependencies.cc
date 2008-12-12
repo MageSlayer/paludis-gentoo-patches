@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -137,7 +137,7 @@ namespace
                 if (! s.slot_requirement_ptr())
                     break;
 
-                const SlotAnyLockedRequirement * const r(visitor_cast<const SlotAnyLockedRequirement>(*s.slot_requirement_ptr()));
+                const SlotAnyLockedRequirement * const r(simple_visitor_cast<const SlotAnyLockedRequirement>(*s.slot_requirement_ptr()));
                 if (! r)
                     break;
 

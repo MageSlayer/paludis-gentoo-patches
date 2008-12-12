@@ -203,47 +203,46 @@ UnwrittenRepository::package_ids(const QualifiedPackageName & p) const
 
 namespace
 {
-    struct SupportsActionQuery :
-        ConstVisitor<SupportsActionTestVisitorTypes>
+    struct SupportsActionQuery
     {
-        bool result;
-
-        SupportsActionQuery() :
-            result(false)
+        bool visit(const SupportsActionTest<InstalledAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<InstalledAction> &)
+        bool visit(const SupportsActionTest<InstallAction> &) const
         {
+            return true;
         }
 
-        void visit(const SupportsActionTest<InstallAction> &)
+        bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const SupportsActionTest<FetchAction> &)
+        bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendFetchAction> &)
+        bool visit(const SupportsActionTest<ConfigAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<ConfigAction> &)
+        bool visit(const SupportsActionTest<PretendAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<PretendAction> &)
+        bool visit(const SupportsActionTest<InfoAction> &) const
         {
+            return false;
         }
 
-        void visit(const SupportsActionTest<InfoAction> &)
+        bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-        }
-
-        void visit(const SupportsActionTest<UninstallAction> &)
-        {
+            return false;
         }
     };
 }
@@ -252,8 +251,7 @@ bool
 UnwrittenRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
-    a.accept(q);
-    return q.result;
+    return a.accept_returning<bool>(q);
 }
 
 bool

@@ -279,8 +279,7 @@ InstallTask::serialised_format() const
 
 namespace
 {
-    struct HandledDisplayer :
-        ConstVisitor<DepListEntryHandledVisitorTypes>
+    struct HandledDisplayer
     {
         std::string result;
         const bool undo_failures;
@@ -535,8 +534,7 @@ InstallTask::_display_task_list()
 
 namespace
 {
-    struct SummaryVisitor :
-        ConstVisitor<DepListEntryHandledVisitorTypes>
+    struct SummaryVisitor
     {
         int total, successes, skipped, failures, unreached;
         InstallTask & task;
@@ -1391,8 +1389,7 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
 
 namespace
 {
-    struct CheckHandledVisitor :
-        ConstVisitor<DepListEntryHandledVisitorTypes>
+    struct CheckHandledVisitor
     {
         bool failure;
         bool skipped;
@@ -1619,8 +1616,7 @@ InstallTask::_dependent(const DepListEntry & e) const
 
 namespace
 {
-    struct AlreadyDoneVisitor :
-        ConstVisitor<DepListEntryHandledVisitorTypes>
+    struct AlreadyDoneVisitor
     {
         bool result;
 

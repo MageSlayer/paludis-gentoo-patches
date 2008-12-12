@@ -270,8 +270,7 @@ namespace
             }
     };
 
-    class Displayer :
-        public ConstVisitor<MetadataKeyVisitorTypes>
+    class Displayer
     {
         private:
             const ConsoleQueryTask * const task;

@@ -23,9 +23,11 @@
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/simple_visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/type_list.hh>
 
 /** \file
  * Declarations for dependency label-related classes.
@@ -43,120 +45,6 @@
 namespace paludis
 {
     /**
-     * Types for visiting a URI label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct URILabelVisitorTypes :
-        VisitorTypes<
-            URILabelVisitorTypes,
-            URILabel,
-            URIMirrorsThenListedLabel,
-            URIMirrorsOnlyLabel,
-            URIListedOnlyLabel,
-            URIListedThenMirrorsLabel,
-            URILocalMirrorsOnlyLabel,
-            URIManualOnlyLabel
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a dependency label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct DependencyLabelVisitorTypes :
-        VisitorTypes<
-            DependencyLabelVisitorTypes,
-            DependencyLabel,
-            DependencySystemLabel,
-            DependencyTypeLabel,
-            DependencySuggestLabel,
-            DependencyABIsLabel
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a dependency system label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct DependencySystemLabelVisitorTypes :
-        VisitorTypes<
-            DependencySystemLabelVisitorTypes,
-            DependencySystemLabel,
-            DependencyHostLabel,
-            DependencyTargetLabel
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a dependency type label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct DependencyTypeLabelVisitorTypes :
-        VisitorTypes<
-            DependencyTypeLabelVisitorTypes,
-            DependencyTypeLabel,
-            DependencyBuildLabel,
-            DependencyRunLabel,
-            DependencyPostLabel,
-            DependencyInstallLabel,
-            DependencyCompileLabel
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a dependency suggests label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct DependencySuggestLabelVisitorTypes :
-        VisitorTypes<
-            DependencySuggestLabelVisitorTypes,
-            DependencySuggestLabel,
-            DependencySuggestedLabel,
-            DependencyRecommendedLabel,
-            DependencyRequiredLabel
-        >
-    {
-    };
-
-    /**
-     * Types for visiting a dependency abi label.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct DependencyABIsLabelVisitorTypes :
-        VisitorTypes<
-            DependencyABIsLabelVisitorTypes,
-            DependencyABIsLabel,
-            DependencyAnyLabel,
-            DependencyMineLabel,
-            DependencyPrimaryLabel,
-            DependencyABILabel
-        >
-    {
-    };
-
-    /**
      * URI label base class.
      *
      * \since 0.26
@@ -165,7 +53,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE URILabel :
         private InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>,
-        public virtual ConstAcceptInterface<URILabelVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<URILabel, MakeTypeList<
+            URIMirrorsThenListedLabel, URIMirrorsOnlyLabel, URIListedOnlyLabel, URIListedThenMirrorsLabel,
+            URILocalMirrorsOnlyLabel, URIManualOnlyLabel>::Type>
     {
         public:
             ///\name Basic operations
@@ -189,7 +79,7 @@ namespace paludis
     template <typename T_>
     class PALUDIS_VISIBLE ConcreteURILabel :
         public URILabel,
-        public ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, ConcreteURILabel<T_> >,
+        public ImplementAcceptMethods<URILabel, ConcreteURILabel<T_> >,
         private PrivateImplementationPattern<ConcreteURILabel<T_> >
     {
         private:
@@ -219,7 +109,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DependencyLabel :
         private InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>,
-        public virtual ConstAcceptInterface<DependencyLabelVisitorTypes>
+        public virtual DeclareAbstractAcceptMethods<DependencyLabel, MakeTypeList<
+            DependencySystemLabel, DependencyTypeLabel, DependencySuggestLabel, DependencyABIsLabel>::Type>
     {
         public:
             ///\name Basic operations
@@ -242,14 +133,15 @@ namespace paludis
      */
     struct PALUDIS_VISIBLE DependencySystemLabel :
         public DependencyLabel,
-        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>,
-        public virtual ConstAcceptInterface<DependencySystemLabelVisitorTypes>
+        public ImplementAcceptMethods<DependencyLabel, DependencySystemLabel>,
+        public virtual DeclareAbstractAcceptMethods<DependencySystemLabel, MakeTypeList<
+            DependencyHostLabel, DependencyTargetLabel>::Type>
     {
-        /// Convenience alias for our visitor types.
-        typedef DependencySystemLabelVisitorTypes VisitorTypes;
+        typedef DeclareAbstractAcceptMethods<DependencySystemLabel, MakeTypeList<
+            DependencyHostLabel, DependencyTargetLabel>::Type>::VisitableTypeList VisitableTypeList;
 
-        typedef ConstAcceptInterface<DependencySystemLabelVisitorTypes>::Heirarchy Heirarchy;
-        using ConstAcceptInterface<DependencySystemLabelVisitorTypes>::accept;
+        using DeclareAbstractAcceptMethods<DependencySystemLabel, MakeTypeList<
+            DependencyHostLabel, DependencyTargetLabel>::Type>::accept;
     };
 
     /**
@@ -261,14 +153,18 @@ namespace paludis
      */
     struct PALUDIS_VISIBLE DependencyTypeLabel :
         public DependencyLabel,
-        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>,
-        public virtual ConstAcceptInterface<DependencyTypeLabelVisitorTypes>
+        public ImplementAcceptMethods<DependencyLabel, DependencyTypeLabel>,
+        public virtual DeclareAbstractAcceptMethods<DependencyTypeLabel, MakeTypeList<
+            DependencyBuildLabel, DependencyRunLabel, DependencyPostLabel, DependencyInstallLabel,
+            DependencyCompileLabel>::Type>
     {
-        /// Convenience alias for our visitor types.
-        typedef DependencyTypeLabelVisitorTypes VisitorTypes;
+        typedef DeclareAbstractAcceptMethods<DependencyTypeLabel, MakeTypeList<
+            DependencyBuildLabel, DependencyRunLabel, DependencyPostLabel, DependencyInstallLabel,
+            DependencyCompileLabel>::Type>::VisitableTypeList VisitableTypeList;
 
-        typedef ConstAcceptInterface<DependencyTypeLabelVisitorTypes>::Heirarchy Heirarchy;
-        using ConstAcceptInterface<DependencyTypeLabelVisitorTypes>::accept;
+        using DeclareAbstractAcceptMethods<DependencyTypeLabel, MakeTypeList<
+            DependencyBuildLabel, DependencyRunLabel, DependencyPostLabel, DependencyInstallLabel,
+            DependencyCompileLabel>::Type>::accept;
     };
 
     /**
@@ -280,14 +176,17 @@ namespace paludis
      */
     struct PALUDIS_VISIBLE DependencySuggestLabel :
         public DependencyLabel,
-        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>,
-        public virtual ConstAcceptInterface<DependencySuggestLabelVisitorTypes>
+        public ImplementAcceptMethods<DependencyLabel, DependencySuggestLabel>,
+        public virtual DeclareAbstractAcceptMethods<DependencySuggestLabel, MakeTypeList<
+            DependencySuggestedLabel, DependencyRecommendedLabel, DependencyRequiredLabel>::Type>
     {
-        /// Convenience alias for our visitor types.
-        typedef DependencySuggestLabelVisitorTypes VisitorTypes;
+        typedef DeclareAbstractAcceptMethods<DependencySuggestLabel, MakeTypeList<
+            DependencySuggestedLabel, DependencyRecommendedLabel,
+            DependencyRequiredLabel>::Type>::VisitableTypeList VisitableTypeList;
 
-        typedef ConstAcceptInterface<DependencySuggestLabelVisitorTypes>::Heirarchy Heirarchy;
-        using ConstAcceptInterface<DependencySuggestLabelVisitorTypes>::accept;
+        using DeclareAbstractAcceptMethods<DependencySuggestLabel, MakeTypeList<
+            DependencySuggestedLabel, DependencyRecommendedLabel,
+            DependencyRequiredLabel>::Type>::accept;
     };
 
     /**
@@ -299,14 +198,17 @@ namespace paludis
      */
     struct PALUDIS_VISIBLE DependencyABIsLabel :
         public DependencyLabel,
-        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>,
-        public virtual ConstAcceptInterface<DependencyABIsLabelVisitorTypes>
+        public ImplementAcceptMethods<DependencyLabel, DependencyABIsLabel>,
+        public virtual DeclareAbstractAcceptMethods<DependencyABIsLabel, MakeTypeList<
+            DependencyAnyLabel, DependencyMineLabel, DependencyPrimaryLabel, DependencyABILabel>::Type>
     {
-        /// Convenience alias for our visitor types.
-        typedef DependencyABIsLabelVisitorTypes VisitorTypes;
+        typedef DeclareAbstractAcceptMethods<DependencyABIsLabel, MakeTypeList<
+            DependencyAnyLabel, DependencyMineLabel, DependencyPrimaryLabel,
+            DependencyABILabel>::Type>::VisitableTypeList VisitableTypeList;
 
-        typedef ConstAcceptInterface<DependencyABIsLabelVisitorTypes>::Heirarchy Heirarchy;
-        using ConstAcceptInterface<DependencyABIsLabelVisitorTypes>::accept;
+        using DeclareAbstractAcceptMethods<DependencyABIsLabel, MakeTypeList<
+            DependencyAnyLabel, DependencyMineLabel, DependencyPrimaryLabel,
+            DependencyABILabel>::Type>::accept;
     };
 
     /**
@@ -319,7 +221,7 @@ namespace paludis
     template <typename T_, typename C_>
     class PALUDIS_VISIBLE ConcreteDependencyLabel :
         public C_,
-        public ConstAcceptInterfaceVisitsThis<typename C_::VisitorTypes, ConcreteDependencyLabel<T_, C_> >,
+        public ImplementAcceptMethods<C_, ConcreteDependencyLabel<T_, C_> >,
         private PrivateImplementationPattern<ConcreteDependencyLabel<T_, C_> >
     {
         private:
@@ -375,74 +277,6 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class ConstAcceptInterface<DependencyABIsLabelVisitorTypes>;
-    extern template class ConstAcceptInterface<DependencyLabelVisitorTypes>;
-    extern template class ConstAcceptInterface<DependencySuggestLabelVisitorTypes>;
-    extern template class ConstAcceptInterface<DependencySystemLabelVisitorTypes>;
-    extern template class ConstAcceptInterface<DependencyTypeLabelVisitorTypes>;
-    extern template class ConstAcceptInterface<URILabelVisitorTypes>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>;
-
-    extern template class Visits<DependencyABIsLabel>;
-    extern template class Visits<DependencySuggestLabel>;
-    extern template class Visits<DependencySystemLabel>;
-    extern template class Visits<DependencyTypeLabel>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsThenListedLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIMirrorsOnlyLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedOnlyLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIListedThenMirrorsLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URILocalMirrorsOnlyLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<URILabelVisitorTypes, URIManualOnlyLabel>;
-
-    extern template class Visits<URIMirrorsThenListedLabel>;
-    extern template class Visits<URIMirrorsOnlyLabel>;
-    extern template class Visits<URIListedOnlyLabel>;
-    extern template class Visits<URIListedThenMirrorsLabel>;
-    extern template class Visits<URILocalMirrorsOnlyLabel>;
-    extern template class Visits<URIManualOnlyLabel>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyHostLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencySystemLabelVisitorTypes, DependencyTargetLabel>;
-
-    extern template class Visits<DependencySystemLabel>;
-    extern template class Visits<DependencyHostLabel>;
-    extern template class Visits<DependencyTargetLabel>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyBuildLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyRunLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyPostLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyInstallLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyTypeLabelVisitorTypes, DependencyCompileLabel>;
-
-    extern template class Visits<DependencyBuildLabel>;
-    extern template class Visits<DependencyRunLabel>;
-    extern template class Visits<DependencyPostLabel>;
-    extern template class Visits<DependencyInstallLabel>;
-    extern template class Visits<DependencyCompileLabel>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencySuggestedLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRecommendedLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencySuggestLabelVisitorTypes, DependencyRequiredLabel>;
-
-    extern template class Visits<DependencySuggestedLabel>;
-    extern template class Visits<DependencyRecommendedLabel>;
-    extern template class Visits<DependencyRequiredLabel>;
-
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyAnyLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyMineLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyPrimaryLabel>;
-    extern template class ConstAcceptInterfaceVisitsThis<DependencyABIsLabelVisitorTypes, DependencyABILabel>;
-
-    extern template class Visits<DependencyAnyLabel>;
-    extern template class Visits<DependencyMineLabel>;
-    extern template class Visits<DependencyPrimaryLabel>;
-    extern template class Visits<DependencyABILabel>;
-
     extern template class InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>;
     extern template class InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>;
 

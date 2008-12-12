@@ -17,36 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "contents.hh"
-#include <paludis/util/visitor-impl.hh>
+#include <paludis/contents.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
-
-template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
-template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
-
-template class ConstAcceptInterface<ContentsVisitorTypes>;
-
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>;
-template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
-
-template class PrivateImplementationPattern<Contents>;
-
-template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
-
-template class Visits<const ContentsFileEntry>;
-template class Visits<const ContentsDirEntry>;
-template class Visits<const ContentsSymEntry>;
-template class Visits<const ContentsFifoEntry>;
-template class Visits<const ContentsDevEntry>;
-template class Visits<const ContentsMiscEntry>;
 
 ContentsEntry::ContentsEntry(const std::string & n) :
     _name(n)
@@ -154,4 +130,11 @@ ContentsSymEntry::as_string() const
 {
     return name() + " -> " + target();
 }
+
+template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
+template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
+
+template class PrivateImplementationPattern<Contents>;
+
+template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 

@@ -35,8 +35,7 @@ typedef std::set<std::string> SeenCategories;
 namespace
 {
     /* This visitor is used to display information about a tag. */
-    class TagDisplayer :
-        public ConstVisitor<DepTagVisitorTypes>
+    class TagDisplayer
     {
         public:
             void visit(const DependencyDepTag & tag)

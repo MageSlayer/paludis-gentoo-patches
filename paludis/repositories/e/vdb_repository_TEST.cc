@@ -152,8 +152,7 @@ namespace test_cases
     {
         VDBRepositoryContentsTest() : TestCase("CONTENTS") { }
 
-        struct ContentsGatherer :
-            ConstVisitor<ContentsVisitorTypes>
+        struct ContentsGatherer
         {
             std::string _str;
 

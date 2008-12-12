@@ -178,8 +178,7 @@ namespace
             }
     };
 
-    class KeyVisitor :
-        public ConstVisitor<MetadataKeyVisitorTypes>
+    class KeyVisitor
     {
         private:
             const std::string _key;

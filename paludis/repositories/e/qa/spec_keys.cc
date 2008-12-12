@@ -287,8 +287,7 @@ namespace
         }
     };
 
-    struct CheckForwarder :
-        ConstVisitor<MetadataKeyVisitorTypes>
+    struct CheckForwarder
     {
         const FSEntry entry;
         QAReporter & reporter;
