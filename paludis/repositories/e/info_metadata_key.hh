@@ -11,6 +11,8 @@
 
 namespace paludis
 {
+    struct ERepository;
+
     namespace erepository
     {
         class InfoPkgsMetadataKey :
@@ -25,7 +27,8 @@ namespace paludis
 
             public:
                 InfoPkgsMetadataKey(const Environment * const e,
-                        const std::tr1::shared_ptr<const FSEntrySequence> & f, const std::string & p);
+                        const std::tr1::shared_ptr<const FSEntrySequence> & f,
+                        const ERepository * const);
                 ~InfoPkgsMetadataKey();
         };
 

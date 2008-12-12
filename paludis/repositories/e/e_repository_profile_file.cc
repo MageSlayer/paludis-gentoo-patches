@@ -17,8 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "e_repository_profile_file.hh"
-#include "e_repository_mask_file.hh"
+#include <paludis/repositories/e/e_repository_profile_file.hh>
+#include <paludis/repositories/e/e_repository_mask_file.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>
@@ -40,7 +43,7 @@ namespace
     struct FileEntryTraits;
 
     template<>
-    struct FileEntryTraits<std::string>
+    struct FileEntryTraits<const std::string>
     {
         static const std::string extract_key(const std::string & k)
         {
@@ -49,7 +52,7 @@ namespace
     };
 
     template <typename F_, typename S_>
-    struct FileEntryTraits<std::pair<F_, S_> >
+    struct FileEntryTraits<const std::pair<F_, S_> >
     {
         static const std::string extract_key(const std::pair<F_, S_> & p)
         {
@@ -70,7 +73,7 @@ namespace
         template <typename U_>
         bool operator() (const U_ & y)
         {
-            return FileEntryTraits<U_>::extract_key(y) == _x;
+            return FileEntryTraits<typename U_::second_type>::extract_key(y.second) == _x;
         }
     };
 }
@@ -80,11 +83,18 @@ namespace paludis
     template <typename F_>
     struct Implementation<ProfileFile<F_> >
     {
-        typedef std::list<typename std::tr1::remove_const<typename std::tr1::remove_reference<
-            typename F_::ConstIterator::value_type>::type>::type> Lines;
+        const ERepository * const repository;
+
+        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
+                const typename std::tr1::remove_reference<typename F_::ConstIterator::value_type>::type> > Lines;
         Lines lines;
 
         std::set<std::string> removed;
+
+        Implementation(const ERepository * const r) :
+            repository(r)
+        {
+        }
     };
 }
 
@@ -97,11 +107,16 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     if (! f.exists())
         return;
 
+    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                this->_imp->repository->eapi_for_file(f)));
+    if (! eapi->supported())
+        throw ERepositoryConfigurationError("Can't use profile file '" + stringify(f) +
+                "' because it uses an unsupported EAPI");
+
     F_ file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        const std::string & key(FileEntryTraits<typename std::tr1::remove_const<typename std::tr1::remove_reference<
-                typename F_::ConstIterator::value_type>::type>::type>::extract_key(*line));
+        const std::string key(FileEntryTraits<const typename std::tr1::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
             typename Implementation<ProfileFile>::Lines::iterator i(
@@ -129,13 +144,13 @@ ProfileFile<F_>::add_file(const FSEntry & f)
             }
         }
         else
-            this->_imp->lines.push_back(*line);
+            this->_imp->lines.push_back(std::make_pair(eapi, *line));
     }
 }
 
 template <typename F_>
-ProfileFile<F_>::ProfileFile() :
-    PrivateImplementationPattern<ProfileFile>(new Implementation<ProfileFile<F_> >)
+ProfileFile<F_>::ProfileFile(const ERepository * const r) :
+    PrivateImplementationPattern<ProfileFile>(new Implementation<ProfileFile<F_> >(r))
 {
 }
 
@@ -159,8 +174,5 @@ ProfileFile<F_>::end() const
 }
 
 template class ProfileFile<LineConfigFile>;
-template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIteratorTag, LineConfigFile::ConstIterator::value_type>;
-
 template class ProfileFile<MaskFile>;
-template class WrappedForwardIterator<ProfileFile<MaskFile>::ConstIteratorTag, MaskFile::ConstIterator::value_type>;
 

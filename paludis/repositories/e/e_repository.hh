@@ -234,6 +234,8 @@ namespace paludis
 
             const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > arch_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::tr1::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const std::string eapi_for_file(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

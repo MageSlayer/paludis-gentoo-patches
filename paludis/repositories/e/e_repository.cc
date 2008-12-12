@@ -115,6 +115,7 @@ typedef std::tr1::unordered_map<QualifiedPackageName,
 typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > MirrorMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
+typedef std::map<FSEntry, std::string> EAPIForFileMap;
 
 namespace
 {
@@ -170,6 +171,7 @@ namespace paludis
             Mutex use_desc_mutex;
             Mutex profile_ptr_mutex;
             Mutex news_ptr_mutex;
+            Mutex eapi_for_file_mutex;
         };
 
         ERepository * const repo;
@@ -201,6 +203,8 @@ namespace paludis
         mutable std::tr1::shared_ptr<ERepositoryEntries> entries_ptr;
         mutable std::tr1::shared_ptr<Layout> layout;
 
+        mutable EAPIForFileMap eapi_for_file_map;
+
         Implementation(ERepository * const, const ERepositoryParams &, std::tr1::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
         ~Implementation();
 
@@ -227,7 +231,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > master_repositories_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_when_unspecified_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
         std::tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
@@ -293,16 +297,15 @@ namespace paludis
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown())),
         eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
                     "eapi_when_unspecified", "eapi_when_unspecified", mkt_normal, params.eapi_when_unspecified())),
-        profile_eapi_key(new LiteralMetadataValueKey<std::string> (
-                    "profile_eapi", "profile_eapi", mkt_normal, params.profile_eapi())),
+        profile_eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
+                    "profile_eapi_when_unspecified", "profile_eapi_when_unspecified", mkt_normal, params.profile_eapi_when_unspecified())),
         use_manifest_key(new LiteralMetadataValueKey<std::string> (
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest()))),
         info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
                     layout->info_packages_files()->end(),
                     std::tr1::bind(std::tr1::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
                         std::tr1::placeholders::_1)) ?
-                make_shared_ptr(new InfoPkgsMetadataKey(params.environment(), layout->info_packages_files(),
-                        params.profile_eapi())) :
+                make_shared_ptr(new InfoPkgsMetadataKey(params.environment(), layout->info_packages_files(), repo)) :
                 std::tr1::shared_ptr<InfoPkgsMetadataKey>()
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
@@ -506,7 +509,7 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->builddir_key);
     add_metadata_key(_imp->eapi_when_unknown_key);
     add_metadata_key(_imp->eapi_when_unspecified_key);
-    add_metadata_key(_imp->profile_eapi_key);
+    add_metadata_key(_imp->profile_eapi_when_unspecified_key);
     if (_imp->master_repositories_key)
         add_metadata_key(_imp->master_repositories_key);
     add_metadata_key(_imp->use_manifest_key);
@@ -561,26 +564,24 @@ ERepository::repository_masked(const PackageID & id) const
         using namespace std::tr1::placeholders;
 
         std::tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
-        ProfileFile<MaskFile> repository_mask_file;
+        ProfileFile<MaskFile> repository_mask_file(this);
         std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
                       std::tr1::bind(&ProfileFile<MaskFile>::add_file, std::tr1::ref(repository_mask_file), _1));
 
         for (ProfileFile<MaskFile>::ConstIterator
-                 line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
+                line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
                 line != line_end ; ++line)
         {
             try
             {
                 std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(parse_elike_package_dep_spec(
-                                line->first,
-                                EAPIData::get_instance()->eapi_from_string(
-                                    _imp->params.profile_eapi())->supported()->package_dep_spec_parse_options(),
+                                line->second.first, line->first->supported()->package_dep_spec_parse_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
                 if (a->package_ptr())
-                    _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
+                    _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
                 else
                     Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                        << "Loading package mask spec '" << line->first << "' failed because specification does not restrict to a "
+                        << "Loading package mask spec '" << line->second.first << "' failed because specification does not restrict to a "
                         "unique package";
             }
             catch (const InternalError &)
@@ -590,7 +591,7 @@ ERepository::repository_masked(const PackageID & id) const
             catch (const Exception & e)
             {
                 Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context) << "Loading package mask spec '"
-                    << line->first << "' failed due to exception '" << e.message() << "' ("
+                    << line->second.first << "' failed due to exception '" << e.message() << "' ("
                     << e.what() << ")";
             }
         }
@@ -1231,15 +1232,17 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 std::string
 ERepository::accept_keywords_variable() const
 {
-    return EAPIData::get_instance()->eapi_from_string(params().profile_eapi())->supported()
-        ->ebuild_environment_variables()->env_accept_keywords();
+    return EAPIData::get_instance()->eapi_from_string(
+            eapi_for_file(*_imp->profiles_key->value()->begin())
+            )->supported()->ebuild_environment_variables()->env_accept_keywords();
 }
 
 std::string
 ERepository::arch_variable() const
 {
-    return EAPIData::get_instance()->eapi_from_string(params().profile_eapi())->supported()
-        ->ebuild_environment_variables()->env_arch();
+    return EAPIData::get_instance()->eapi_from_string(
+            eapi_for_file(*_imp->profiles_key->value()->begin())
+            )->supported()->ebuild_environment_variables()->env_arch();
 }
 
 void
@@ -1470,7 +1473,15 @@ ERepository::repository_factory_create(
                         env->distribution()))->default_eapi_when_unspecified();
     }
 
-    std::string profile_eapi(f("profile_eapi"));
+    std::string profile_eapi(f("profile_eapi_when_unspecified"));
+    if (profile_eapi.empty())
+    {
+        profile_eapi = f("profile_eapi");
+        if (! profile_eapi.empty())
+            Log::get_instance()->message("e.ebuild.configuration.profile_eapi", ll_warning, lc_context) <<
+                "Key 'profile_eapi' in '" + f("repo_file") + "' is deprecated, use profile_eapi_when_unspecified";
+    }
+
     if (profile_eapi.empty())
     {
         if (! layout_conf
@@ -1566,7 +1577,7 @@ ERepository::repository_factory_create(
                     value_for<n::master_repositories>(master_repositories),
                     value_for<n::names_cache>(FSEntry(names_cache).realpath_if_exists()),
                     value_for<n::newsdir>(FSEntry(newsdir).realpath_if_exists()),
-                    value_for<n::profile_eapi>(profile_eapi),
+                    value_for<n::profile_eapi_when_unspecified>(profile_eapi),
                     value_for<n::profiles>(profiles),
                     value_for<n::securitydir>(FSEntry(securitydir).realpath_if_exists()),
                     value_for<n::setsdir>(FSEntry(setsdir).realpath_if_exists()),
@@ -1620,5 +1631,34 @@ ERepository::use_desc() const
     }
 
     return _imp->use_desc;
+}
+
+const std::string
+ERepository::eapi_for_file(const FSEntry & f) const
+{
+    FSEntry dir(f.dirname());
+    Lock lock(_imp->mutexes->eapi_for_file_mutex);
+    EAPIForFileMap::const_iterator i(_imp->eapi_for_file_map.find(dir));
+    if (i == _imp->eapi_for_file_map.end())
+    {
+        Context context("When finding the EAPI to use for file '" + stringify(f) + "':");
+        if ((dir / "eapi").is_regular_file_or_symlink_to_regular_file())
+        {
+            LineConfigFile file(dir / "eapi", LineConfigFileOptions() + lcfo_disallow_continuations);
+            if (file.begin() == file.end())
+            {
+                Log::get_instance()->message("e.ebuild.profile_eapi_file.empty", ll_warning, lc_no_context)
+                    << "File '" << (dir / "eapi") << "' has no content";
+                i = _imp->eapi_for_file_map.insert(std::make_pair(
+                            dir, _imp->params.profile_eapi_when_unspecified())).first;
+            }
+            else
+                i = _imp->eapi_for_file_map.insert(std::make_pair(dir, *file.begin())).first;
+        }
+        else
+            i = _imp->eapi_for_file_map.insert(std::make_pair(
+                        dir, _imp->params.profile_eapi_when_unspecified())).first;
+    }
+    return i->second;
 }
 

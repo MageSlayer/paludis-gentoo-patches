@@ -59,6 +59,7 @@
 #include <ctype.h>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 template class WrappedForwardIterator<ERepositoryProfile::VirtualsConstIteratorTag,
          const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >;
@@ -113,19 +114,19 @@ namespace paludis
             void load_profile_make_defaults(const FSEntry & dir);
 
             void load_basic_use_file(const FSEntry & file, FlagStatusMap & m);
-            void load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m);
+            void load_spec_use_file(const EAPI &, const FSEntry & file, PackageFlagStatusMapList & m);
 
             void add_use_expand_to_use();
             void fish_out_use_expand_names();
             void make_vars_from_file_vars();
             void handle_profile_arch_var(const std::string &);
-            void load_special_make_defaults_vars();
+            void load_special_make_defaults_vars(const FSEntry &);
 
-            erepository::ProfileFile<LineConfigFile> packages_file;
-            erepository::ProfileFile<LineConfigFile> virtuals_file;
-            erepository::ProfileFile<erepository::MaskFile> package_mask_file;
+            ProfileFile<LineConfigFile> packages_file;
+            ProfileFile<LineConfigFile> virtuals_file;
+            ProfileFile<MaskFile> package_mask_file;
 
-            bool is_incremental(const std::string & s) const;
+            bool is_incremental(const EAPI &, const std::string & s) const;
 
         public:
             ///\name General variables
@@ -182,6 +183,9 @@ namespace paludis
             Implementation(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSEntrySequence & dirs,
                     const std::string & arch_var_if_special) :
+                packages_file(p),
+                virtuals_file(p),
+                package_mask_file(p),
                 env(e),
                 repository(p),
                 system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
@@ -191,6 +195,10 @@ namespace paludis
                 use_expand_hidden(new Set<std::string>)
             {
                 Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
+
+                if (dirs.empty())
+                    throw ERepositoryConfigurationError("No profiles directories specified");
+
                 load_environment();
 
                 for (FSEntrySequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
@@ -207,7 +215,7 @@ namespace paludis
                 }
 
                 make_vars_from_file_vars();
-                load_special_make_defaults_vars();
+                load_special_make_defaults_vars(*dirs.begin());
                 add_use_expand_to_use();
                 fish_out_use_expand_names();
                 if (! arch_var_if_special.empty())
@@ -241,6 +249,13 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
         return;
     }
 
+    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                repository->eapi_for_file(dir / "use.mask")));
+
+    if (! eapi->supported())
+        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                "' because it uses an unsupported EAPI");
+
     stacked_values_list.push_back(StackedValues(stringify(dir)));
 
     load_profile_parent(dir);
@@ -248,9 +263,9 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
 
     load_basic_use_file(dir / "use.mask", stacked_values_list.back().use_mask);
     load_basic_use_file(dir / "use.force", stacked_values_list.back().use_force);
-    load_spec_use_file(dir / "package.use", stacked_values_list.back().package_use);
-    load_spec_use_file(dir / "package.use.mask", stacked_values_list.back().package_use_mask);
-    load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
+    load_spec_use_file(*eapi, dir / "package.use", stacked_values_list.back().package_use);
+    load_spec_use_file(*eapi, dir / "package.use.mask", stacked_values_list.back().package_use_mask);
+    load_spec_use_file(*eapi, dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
     if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
@@ -312,6 +327,12 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     if (! (dir / "make.defaults").exists())
         return;
 
+    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                repository->eapi_for_file(dir / "make.defaults")));
+    if (! eapi->supported())
+        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                "' because it uses an unsupported EAPI");
+
     KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
             kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
@@ -319,7 +340,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
             k != k_end ; ++k)
     {
-        if (is_incremental(k->first))
+        if (is_incremental(*eapi, k->first))
         {
             std::list<std::string> val, val_add;
             tokenise_whitespace(environment_variables[k->first], std::back_inserter(val));
@@ -344,8 +365,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
             environment_variables[k->first] = k->second;
     }
 
-    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand());
+    std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
         use_expand->clear();
@@ -364,10 +384,15 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
 }
 
 void
-Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
+Implementation<ERepositoryProfile>::load_special_make_defaults_vars(const FSEntry & dir)
 {
-    std::string use_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use());
+    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                repository->eapi_for_file(dir / "make.defaults")));
+    if (! eapi->supported())
+        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                "' because it uses an unsupported EAPI");
+
+    std::string use_var(eapi->supported()->ebuild_environment_variables()->env_use());
     try
     {
         use.clear();
@@ -390,8 +415,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
             << "Loading '" << use_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 
-    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand());
+    std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
     try
     {
         use_expand->clear();
@@ -408,8 +432,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
             << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
 
-    std::string use_expand_hidden_var(erepository::EAPIData::get_instance()->eapi_from_string(
-                repository->params().profile_eapi())->supported()->ebuild_environment_variables()->env_use_expand_hidden());
+    std::string use_expand_hidden_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_hidden());
     try
     {
         use_expand_hidden->clear();
@@ -429,16 +452,14 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 }
 
 bool
-Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
+Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::string & s) const
 {
-    std::tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi()));
-
     Context c("When checking whether '" + s + "' is incremental:");
 
     return (! s.empty()) && (
-            (s == e->supported()->ebuild_environment_variables()->env_use())
-            || (s == e->supported()->ebuild_environment_variables()->env_use_expand())
-            || (s == e->supported()->ebuild_environment_variables()->env_use_expand_hidden())
+            (s == e.supported()->ebuild_environment_variables()->env_use())
+            || (s == e.supported()->ebuild_environment_variables()->env_use_expand())
+            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_hidden())
             || s == "CONFIG_PROTECT"
             || s == "CONFIG_PROTECT_MASK"
             || use_expand->end() != use_expand->find(s));
@@ -450,17 +471,16 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
     try
     {
         if (! repository->params().master_repositories())
-            for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
+            for (ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
                     i_end(packages_file.end()) ; i != i_end ; ++i)
             {
-                if (0 != i->compare(0, 1, "*", 0, 1))
+                if (0 != i->second.compare(0, 1, "*", 0, 1))
                     continue;
 
-                Context context_spec("When parsing '" + *i + "':");
+                Context context_spec("When parsing '" + i->second + "':");
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                            parse_elike_package_dep_spec(i->substr(1),
-                                erepository::EAPIData::get_instance()->eapi_from_string(
-                                    repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
+                            parse_elike_package_dep_spec(i->second.substr(1),
+                                i->first->supported()->package_dep_spec_parse_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
@@ -481,19 +501,19 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 env->distribution())).support_old_style_virtuals())
         try
         {
-            for (erepository::ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
+            for (ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                tokenise_whitespace(*line, std::back_inserter(tokens));
+                tokenise_whitespace(line->second, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
 
                 QualifiedPackageName v(tokens[0]);
                 virtuals.erase(v);
                 virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_elike_package_dep_spec(tokens[1], erepository::EAPIData::get_instance()->eapi_from_string(
-                                            repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
+                                    parse_elike_package_dep_spec(tokens[1],
+                                        line->first->supported()->package_dep_spec_parse_options(),
                                         std::tr1::shared_ptr<const PackageID>())))));
             }
         }
@@ -507,24 +527,24 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
 
-    for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
+    for (ProfileFile<MaskFile>::ConstIterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
             line != line_end ; ++line)
     {
-        if (line->first.empty())
+        if (line->second.first.empty())
             continue;
 
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
-                        parse_elike_package_dep_spec(line->first, erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
+                        parse_elike_package_dep_spec(line->second.first,
+                            line->first->supported()->package_dep_spec_parse_options(),
                             std::tr1::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
-                package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
+                package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
             else
                 Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package.mask spec '" << line->first << "' failed because specification does not restrict to a "
+                    << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
                     "unique package";
         }
         catch (const InternalError &)
@@ -534,7 +554,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
         catch (const Exception & e)
         {
             Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                << "Loading package.mask spec '" << line->first << "' failed due to exception '" << e.message() << "' ("
+                << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
                 << e.what() << ")";
         }
     }
@@ -580,7 +600,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
 }
 
 void
-Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
+Implementation<ERepositoryProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
 {
     if (! file.exists())
         return;
@@ -599,8 +619,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
-                        parse_elike_package_dep_spec(*tokens.begin(), erepository::EAPIData::get_instance()->eapi_from_string(
-                                repository->params().profile_eapi())->supported()->package_dep_spec_parse_options(),
+                        parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
                             std::tr1::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 

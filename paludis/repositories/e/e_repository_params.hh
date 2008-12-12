@@ -58,7 +58,7 @@ namespace paludis
         struct master_repositories;
         struct names_cache;
         struct newsdir;
-        struct profile_eapi;
+        struct profile_eapi_when_unspecified;
         struct profiles;
         struct securitydir;
         struct setsdir;
@@ -94,7 +94,7 @@ namespace paludis
             NamedValue<n::master_repositories, std::tr1::shared_ptr<const ERepositorySequence> > master_repositories;
             NamedValue<n::names_cache, FSEntry> names_cache;
             NamedValue<n::newsdir, FSEntry> newsdir;
-            NamedValue<n::profile_eapi, std::string> profile_eapi;
+            NamedValue<n::profile_eapi_when_unspecified, std::string> profile_eapi_when_unspecified;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::securitydir, FSEntry> securitydir;
             NamedValue<n::setsdir, FSEntry> setsdir;

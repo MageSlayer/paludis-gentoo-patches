@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,14 +20,18 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH 1
 
+#include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/mask-fwd.hh>
+#include <tr1/type_traits>
 
 namespace paludis
 {
+    struct ERepository;
+
     namespace erepository
     {
         /**
@@ -45,7 +49,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                ProfileFile();
+                ProfileFile(const ERepository * const);
                 ~ProfileFile();
 
                 ///\}
@@ -59,7 +63,10 @@ namespace paludis
                 ///\{
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, typename F_::ConstIterator::value_type> ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::pair<
+                    std::tr1::shared_ptr<const erepository::EAPI>,
+                          const typename std::tr1::remove_reference<
+                              typename F_::ConstIterator::value_type>::type> > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
 

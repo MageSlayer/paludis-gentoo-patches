@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/info_metadata_key.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
@@ -40,7 +41,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/formatter.hh>
-#include <set>
+#include <map>
 #include <algorithm>
 #include <tr1/functional>
 
@@ -68,16 +69,16 @@ namespace paludis
     {
         const Environment * const env;
         const std::tr1::shared_ptr<const FSEntrySequence> locations;
-        const std::string eapi;
+        const ERepository * const e_repository;
 
         mutable Mutex mutex;
         mutable bool added;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const FSEntrySequence> & l,
-                const std::string & p) :
+                const ERepository * const r) :
             env(e),
             locations(l),
-            eapi(p),
+            e_repository(r),
             added(false)
         {
         }
@@ -122,9 +123,10 @@ InfoVarsMetadataKey::value() const
 }
 
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
-        const std::tr1::shared_ptr<const FSEntrySequence> & f, const std::string & p) :
+        const std::tr1::shared_ptr<const FSEntrySequence> & f,
+        const ERepository * const r) :
     MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
-    PrivateImplementationPattern<InfoPkgsMetadataKey>(new Implementation<InfoPkgsMetadataKey>(e, f, p)),
+    PrivateImplementationPattern<InfoPkgsMetadataKey>(new Implementation<InfoPkgsMetadataKey>(e, f, r)),
     _imp(PrivateImplementationPattern<InfoPkgsMetadataKey>::_imp)
 {
 }
@@ -140,7 +142,7 @@ InfoPkgsMetadataKey::need_keys_added() const
     if (_imp->added)
         return;
 
-    std::set<std::string> info_pkgs;
+    std::map<std::string, std::string> info_pkgs;
     for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
             location != location_end ; ++location)
     {
@@ -149,31 +151,41 @@ InfoPkgsMetadataKey::need_keys_added() const
 
         if (location->is_regular_file_or_symlink_to_regular_file())
         {
+            std::string eapi(_imp->e_repository->eapi_for_file(*location));
             LineConfigFile p(*location, LineConfigFileOptions() + lcfo_disallow_continuations);
-            std::copy(p.begin(), p.end(), std::inserter(info_pkgs, info_pkgs.begin()));
+            for (LineConfigFile::ConstIterator line(p.begin()), line_end(p.end()) ;
+                    line != line_end ; ++line)
+                info_pkgs.insert(std::make_pair(*line, eapi));
         }
     }
 
-    for (std::set<std::string>::const_iterator i(info_pkgs.begin()), i_end(info_pkgs.end()) ;
+    for (std::map<std::string, std::string>::const_iterator i(info_pkgs.begin()), i_end(info_pkgs.end()) ;
             i != i_end ; ++i)
     {
+        std::tr1::shared_ptr<const EAPI> eapi(erepository::EAPIData::get_instance()->eapi_from_string(i->second));
         std::tr1::shared_ptr<MetadataKey> key;
-        std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(parse_elike_package_dep_spec(*i,
-                            erepository::EAPIData::get_instance()->eapi_from_string(_imp->eapi)->supported()->package_dep_spec_parse_options(),
-                            std::tr1::shared_ptr<const PackageID>()), MatchPackageOptions()) |
-                    filter::InstalledAtRoot(_imp->env->root()))]);
 
-        if (q->empty())
-            key.reset(new LiteralMetadataValueKey<std::string>(*i, *i, mkt_normal, "(none)"));
-        else
+        if (eapi->supported())
         {
-            using namespace std::tr1::placeholders;
-            std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
-            std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
-                    std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
-            key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
+            std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
+                        generator::Matches(parse_elike_package_dep_spec(i->first,
+                                eapi->supported()->package_dep_spec_parse_options(),
+                                std::tr1::shared_ptr<const PackageID>()), MatchPackageOptions()) |
+                        filter::InstalledAtRoot(_imp->env->root()))]);
+
+            if (q->empty())
+                key.reset(new LiteralMetadataValueKey<std::string>(i->first, i->first, mkt_normal, "(none)"));
+            else
+            {
+                using namespace std::tr1::placeholders;
+                std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
+                std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
+                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
+                key.reset(new LiteralMetadataStringSetKey(i->first, i->first, mkt_normal, s));
+            }
         }
+        else
+            key.reset(new LiteralMetadataValueKey<std::string>(i->first, i->first, mkt_normal, "(unknown EAPI)"));
 
         add_metadata_key(key);
     }
