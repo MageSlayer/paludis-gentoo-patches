@@ -44,7 +44,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ names_cache sync sync_options eclassdirs cache write_cache
 	    \ provides_cache importance layout use_manifest
 	    \ binary_uri_prefix binary_keywords binary_destination
-	    \ eapi_when_unspecified eapi_when_unknown profile_eapi
+	    \ eapi_when_unspecified eapi_when_unknown profile_eapi_when_unspecified
 	    \ name
 
 syn keyword PaludisRepositoriesConfBadKey contained
