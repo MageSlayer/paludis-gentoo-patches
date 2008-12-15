@@ -238,7 +238,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
-        public ImplementAcceptMethods<DepTag, GLSADepTag>,
+        public ImplementAcceptMethods<DepTag, GeneralSetDepTag>,
         private PrivateImplementationPattern<GeneralSetDepTag>
     {
         public:
