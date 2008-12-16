@@ -46,16 +46,18 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <code>$D</code>.</dd>
 
     <dt>nostrip</dt>
-    <dd>Use <code>--debug-build internal</code>.</dd>
+    <dd>Set the flags <code>-split -strip</code> in the BUILD_OPTIONS group in use.conf, for the packages you want it
+    to apply to.</dd>
 
     <dt>sandbox</dt>
     <dd>Always on.</dd>
 
     <dt>splitdebug</dt>
-    <dd>Use <code>--debug-build split</code>.</dd>
+    <dd>Set the flags <code>split strip</code> in the BUILD_OPTIONS group in use.conf, for the packages you want it to
+    apply to.</dd>
 
     <dt>test</dt>
-    <dd>Controlled by <code>--checks</code>.</dd>
+    <dd>Controlled by <code>BUILD_OPTIONS: optional_tests</code> in use.conf.</dd>
 </dl>
 
 <h2 id="emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code> Equivalent</h2>

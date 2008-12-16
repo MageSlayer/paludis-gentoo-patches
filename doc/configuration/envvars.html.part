@@ -12,7 +12,7 @@ the environment before Paludis is launched; using them in a configuration bashrc
 <code>RECONCILIO</code> etc. For example, you might find something like the following helpful:</p>
 
 <pre>
-export PALUDIS_OPTIONS="--show-reasons summary --debug-build split --dl-reinstall-scm weekly"
+export PALUDIS_OPTIONS="--show-reasons summary --dl-reinstall-scm weekly"
 </pre>
 
 <h2>Internal Variables</h2>

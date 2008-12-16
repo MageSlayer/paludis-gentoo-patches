@@ -46,9 +46,6 @@ SANDBOX_WRITE="${SANDBOX_WRITE}:${DISTCC_DIR}"
 <p>Often users want to specify certain options by default. Common choices include:</p>
 
 <ul>
-    <li><code>--debug-build split</code>, to make debugging easier (at the cost of disk
-    space)</li>
-
     <li><code>--log-level warning</code> (you should <strong>not</strong> use
     <code>silent</code> in this way -- warnings are warnings because you need
     to read them)</li>
