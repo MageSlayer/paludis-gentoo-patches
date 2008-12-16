@@ -45,8 +45,6 @@ _reconcilio() {
         --dl-fall-back"
     install_opts="--pretend -p \
         --no-config-protection \
-        --debug-build \
-        --checks \
         --fetch -f \
         --no-safe-resume \
         --show-reasons \
@@ -87,14 +85,6 @@ _reconcilio() {
                 ## Enum operators
                 --log-level)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
-                    return 0
-                    ;;
-                --debug-build)
-                    COMPREPLY=($(compgen -W "none split internal" -- "${cur}"))
-                    return 0
-                    ;;
-                --checks)
-                    COMPREPLY=($(compgen -W "none default always" -- "${cur}"))
                     return 0
                     ;;
                 --show-reasons)
