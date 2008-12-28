@@ -1479,7 +1479,7 @@ ERepository::repository_factory_create(
     if (profile_eapi.empty())
     {
         if (! layout_conf
-                || (profile_eapi = layout_conf->get("eapi_when_unspecified")).empty())
+                || (profile_eapi = layout_conf->get("profile_eapi_when_unspecified")).empty())
             profile_eapi = EExtraDistributionData::get_instance()->data_from_distribution(
                     *DistributionData::get_instance()->distribution_from_string(
                         env->distribution()))->default_profile_eapi();
