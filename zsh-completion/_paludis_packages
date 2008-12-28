@@ -7,15 +7,17 @@
 
 local flags prepo packages categories paludis_pkgs
 _paludis_packages_update_available() {
-    if [[ $PREFIX != */* ]];then
-        paludis_pkgs=(${(o)${${(M)${(f)"$(paludis --log-level silent --list-packages)"}:#\* *}##\* }##*/})
-        _wanted paludis_pkgs expl "packages" compadd - ${(@)paludis_pkgs}
-        categories=(${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* })
-        _wanted cat_packages expl "category/packages" compadd -S "/" $categories
-    else
-        compset -P '*/'
-        packages=(${${${(M)${(f)"$(paludis --log-level silent --category ${IPREFIX//\//} --list-packages)"}:#\* *}##\* }//$IPREFIX/})
-        _wanted cat_packages expl "category/packages" compadd ${(@)packages}
+    if [[ $PREFIX != -* ]]; then
+        if [[ $PREFIX != */* ]];then
+            paludis_pkgs=(${(o)${${(M)${(f)"$(paludis --log-level silent --list-packages)"}:#\* *}##\* }##*/})
+            _wanted paludis_pkgs expl "packages" compadd - ${(@)paludis_pkgs}
+            categories=(${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* })
+            _wanted cat_packages expl "category/packages" compadd -S "/" $categories
+        else
+            compset -P '*/'
+            packages=(${${${(M)${(f)"$(paludis --log-level silent --category ${IPREFIX//\//} --list-packages)"}:#\* *}##\* }//$IPREFIX/})
+            _wanted cat_packages expl "category/packages" compadd ${(@)packages}
+        fi
     fi
 }
 
