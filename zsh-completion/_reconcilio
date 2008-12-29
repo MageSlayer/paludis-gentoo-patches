@@ -52,7 +52,7 @@ _reconcilio() {
         "--dl-fall-back[When to fall back to installed packages]:When:(as-needed-except-targets as-needed never)"
     )
     action_options=(
-        "($actions)"{--fix-linkage}"[Search for and rebuild packages linked against non-existant libraries]"
+        "($actions)--fix-linkage[Search for and rebuild packages linked against non-existant libraries]"
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--help,-h}"[Display program help]"
     )

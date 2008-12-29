@@ -45,8 +45,8 @@ _adjutrix() {
         "($actions)"{--reverse-deps,-r}"[all package that depend on a given dep spec]:Packages:"
         "($actions)"{--display-profiles-use,-u}"[Display USE information for all profiles]"
         "($actions)"{--display-default-system-resolution,-S}"[Display package names and versions that are included in the default resolution of the system set]"
-        "($actions)"{--build-downgrade-check-list}"[Build the downgrade check lists]"
-        "($actions)"{--downgrade-check}"[Perform the dowgrade check]"
+        "($actions)--build-downgrade-check-list[Build the downgrade check lists]"
+        "($actions)--downgrade-check[Perform the dowgrade check]"
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--help,-h}"[Display program help]"
     )
