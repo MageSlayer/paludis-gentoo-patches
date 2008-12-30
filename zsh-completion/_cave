@@ -7,6 +7,8 @@
 _cave()
 {
   local -a _cave_arguments _cave_commands
+  local cmd
+
   _cave_arguments=(
     '(-E --environment)'{-E,--environment}'[Environment specification]:environment specification: '
     '--log-level[Specify the log level]:log level:((debug\:"Show debug output (noisy)"
