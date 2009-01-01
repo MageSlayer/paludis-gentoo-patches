@@ -12,7 +12,7 @@ _inquisitio() {
         --help -h
     )
     matching_options=(
-        "(--keys -k)"{-k,--keys}"[Match using listed metadata keys]"
+        "(--keys -k)"{-k,--keys}"[Match using listed metadata keys]:Key: "
         "(--matcher -m)"{-m,--matcher}"[Which match algorithm to use]:algorithm:((text\:Simple\ text\ match pcre\:Regular\ expression exact\:Exact\ text\ match))"
         "(--flatten -f)"{-f,--flatten}"[Flatten spec trees, rather than matching against individual items]"
         "(--enabled-only -e)"{-e,--enabled-only}"[When searching spec trees, only look in enabled subtrees]"
@@ -32,7 +32,7 @@ _inquisitio() {
     general_options=(
         "--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))"
         "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
-        "(--environment -E)"{-E,--environment}"[Environment specification]"
+        "(--environment -E)"{-E,--environment}"[Environment specification]:Environment: "
     )
     output_options=(
         "--compact[Display output using one line per entry]"
