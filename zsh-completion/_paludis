@@ -5,7 +5,7 @@
 # Written by Baptiste Daroussin <baptux at free.fr>
 
 _paludis() {
-    local actions action_args query_args general_args deplist_args install_uninstall_args list_args lists owner_args
+    local actions action_args query_args general_args deplist_descriptions deplist_args install_uninstall_args list_args lists owner_args
     actions=(
         --query --install -i --uninstall -u --uninstall-unused --sync -s --report --contents -k --executables --owner -o --config
         --version -V --info -I --help -h -has-version --best-version --environment-variable --list-repositories --list-categories --list-packages --list-sets 
@@ -52,7 +52,7 @@ _paludis() {
         "(: -)--list-dep-tag-categories[List known dep tag categories]"
     )
     general_args=(
-        "--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))" 
+        '--log-level[Specify the log level]:log level:((debug\:"Show debug output (noisy)" qa\:"Show QA messages and warnings only (default)"  warning\:"Show warnings only" silent\:"Suppress all log messages (UNSAFE)"))'
         "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
         "--no-suggestions[Do not give suggestions if an unknown name is specified]"
         "(--environment -E)"{-E,--environment}"[Environment specification]"
@@ -84,26 +84,32 @@ _paludis() {
     owner_args=(
         "--full-match[Match whole filename]"
     )
+    deplist_descriptions='
+        pre\:"As pre dependencies"
+        pre-or-post\:"As pre dependencies, or post dependencies where needed"
+        post\:"As post dependencies"
+        try-post\:"As post dependencies, with no error for failures"
+        discard\:"Discard (default)"'
     deplist_args=(
         "--dl-blocks[How to handle blocks]:How:(accumulate error discard)"
-        "--dl-override-masks[Zero or more mask kinds that can be overridden as necessary]:What:(none tilde-keyword unkeyworded profile repository license)"
-        "--dl-suggested[How to handle suggested dependencies]:How:(show install discard)"
-        "--dl-downgrade[When to downgrade packages]:When:(as-needed warning error)"
-        "--dl-reinstall[When to reinstall packages]:When:(never always if-use-changed)"
-        "--dl-reinstall-scm[When to reinstall scm packages]:When:(never always daily weekly)"
-        "--dl-reinstall-targets[When to reinstall targets]:When:(auto never always)"
-        "--dl-upgrade[When to upgrade packages]:When:(always as-needed)"
-        "--dl-deps-default[Override default behaviour for all dependency classes]:How:(pre pre-or-post post try-post discard)"
-        "--dl-installed-deps-pre[How to handle pre dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-installed-deps-runtime[How to handle runtime dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-installed-deps-post[How to handle post dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-uninstalled-deps-pre[How to handle pre dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-uninstalled-deps-post[How to handle post dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-uninstalled-deps-runtime[How to handle runtime dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-uninstalled-deps-suggested[How to handle suggested dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
-        "--dl-circular[How to handle circular dependencies]:How:(error discard)"
-        "--dl-fall-back[When to fall back to installed packages]:When:(as-needed-except-targets as-needed never)"
-        "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:(always as-needed)"
+        "--dl-override-masks[Zero or more mask kinds that can be overridden as necessary]:What:((none tilde-keyword unkeyworded profile repository license))"
+        "--dl-suggested[How to handle suggested dependencies]:How:((show install discard))"
+        "--dl-downgrade[When to downgrade packages]:When:((as-needed warning error))"
+        "--dl-reinstall[When to reinstall packages]:When:((never always if-use-changed))"
+        "--dl-reinstall-scm[When to reinstall scm packages]:When:((never always daily weekly))"
+        "--dl-reinstall-targets[When to reinstall targets]:When:((auto never always))"
+        "--dl-upgrade[When to upgrade packages]:When:((always as-needed))"
+        "--dl-deps-default[Override default behaviour for all dependency classes]:How:(($deplist_descriptions))"
+        "--dl-installed-deps-pre[How to handle pre dependencies for installed packages]:How:(($deplist_descriptions))"
+        "--dl-installed-deps-runtime[How to handle runtime dependencies for installed packages]:How:(($deplist_descriptions))"
+        "--dl-installed-deps-post[How to handle post dependencies for installed packages]:How:(($deplist_descriptions))"
+        "--dl-uninstalled-deps-pre[How to handle pre dependencies for uninstalled packages]:How:(($deplist_descriptions))"
+        "--dl-uninstalled-deps-post[How to handle post dependencies for uninstalled packages]:How:(($deplist_descriptions))"
+        "--dl-uninstalled-deps-runtime[How to handle runtime dependencies for uninstalled packages]:How:(($deplist_descriptions))"
+        "--dl-uninstalled-deps-suggested[How to handle suggested dependencies for uninstalled packages]:How:(($deplist_descriptions))"
+        "--dl-circular[How to handle circular dependencies]:How:((error discard))"
+        "--dl-fall-back[When to fall back to installed packages]:When:((as-needed-except-targets as-needed never))"
+        "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:((always as-needed))"
     )
     #dispatch
     if (( $words[(I)(--(uninstall|config)|-[[:alpha:]]#u[[:alpha:]]#)] )) ; then
