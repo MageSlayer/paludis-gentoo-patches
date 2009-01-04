@@ -36,7 +36,6 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/distribution.hh>
 
 #include <set>
 #include <ostream>
@@ -63,7 +62,6 @@ namespace paludis
         const ERepository * const e_repository;
         const erepository::ERepositoryParams params;
 
-        const FSEntry news_directory;
         const FSEntry skip_file;
         const FSEntry unread_file;
 
@@ -72,10 +70,9 @@ namespace paludis
             environment(e),
             e_repository(p),
             params(k),
-            news_directory((*DistributionData::get_instance()->distribution_from_string(e->distribution())).news_directory()),
-            skip_file(e->root() / news_directory /
+            skip_file(e->root() / "var" / "lib" / "gentoo" / "news" /
                     ("news-" + stringify(e_repository->name()) + ".skip")),
-            unread_file(e->root() / news_directory /
+            unread_file(e->root() / "var" / "lib" / "gentoo" / "news" /
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }

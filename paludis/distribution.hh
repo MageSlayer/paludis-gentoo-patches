@@ -53,7 +53,6 @@ namespace paludis
         struct name;
         struct paludis_package;
         struct support_old_style_virtuals;
-        struct news_directory;
     }
 
     /**
@@ -78,7 +77,6 @@ namespace paludis
         NamedValue<n::name, std::string> name;
         NamedValue<n::paludis_package, std::string> paludis_package;
         NamedValue<n::support_old_style_virtuals, bool> support_old_style_virtuals;
-        NamedValue<n::news_directory, FSEntry> news_directory;
     };
 
     /**
