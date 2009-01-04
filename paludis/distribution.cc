@@ -74,7 +74,8 @@ namespace paludis
                                         value_for<n::fallback_environment>(k.get("fallback_environment")),
                                         value_for<n::name>(strip_trailing_string(d->basename(), ".conf")),
                                         value_for<n::paludis_package>(k.get("paludis_package")),
-                                        value_for<n::support_old_style_virtuals>(destringify<bool>(k.get("support_old_style_virtuals")))
+                                        value_for<n::support_old_style_virtuals>(destringify<bool>(k.get("support_old_style_virtuals"))),
+                                        value_for<n::news_directory>(FSEntry(k.get("news_directory")))
                                         )))));
             }
         }
