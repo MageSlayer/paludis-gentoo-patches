@@ -255,7 +255,9 @@ VDBUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo>
 {
     std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
-    if (! (_imp->options.root() / f).is_regular_file())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
     else if ((_imp->options.root() / f).mtime() != fie->_mtime)
         display("--- [!time] " + stringify(f));
@@ -284,7 +286,9 @@ VDBUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> 
 {
     std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
-    if (! (_imp->options.root() / f).is_symbolic_link())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
     else if ((_imp->options.root() / f).mtime() != sie->_mtime)
         display("--- [!time] " + stringify(f));
@@ -301,7 +305,9 @@ VDBUnmerger::check_misc(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo>
 {
     std::tr1::shared_ptr<MiscExtraInfo> mie(std::tr1::static_pointer_cast<MiscExtraInfo>(ei));
 
-    if ("fif" == mie->_type && ! (_imp->options.root() / f).is_fifo())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if ("fif" == mie->_type && ! (_imp->options.root() / f).is_fifo())
         display("--- [!type] " + stringify(f));
     else if ("dev" == mie->_type && ! (_imp->options.root() / f).is_device())
         display("--- [!type] " + stringify(f));
@@ -314,7 +320,9 @@ VDBUnmerger::check_misc(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo>
 bool
 VDBUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
 {
-    if (! (_imp->options.root() / f).is_directory())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));
     else if (DirIterator(_imp->options.root() / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
         display("--- [!empt] " + stringify(f));

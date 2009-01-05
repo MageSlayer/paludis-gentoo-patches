@@ -218,7 +218,9 @@ NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInf
 {
     std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
 
-    if (! (_imp->options.root() / f).is_regular_file())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
     else if ((_imp->options.root() / f).mtime() != fie->_mtime)
         display("--- [!time] " + stringify(f));
@@ -247,7 +249,10 @@ NDBAMUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo
 {
     std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
-    if (! (_imp->options.root() / f).is_symbolic_link())
+
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
     else if ((_imp->options.root() / f).mtime() != sie->_mtime)
         display("--- [!time] " + stringify(f));
@@ -268,7 +273,9 @@ NDBAMUnmerger::check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo>
 bool
 NDBAMUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
 {
-    if (! (_imp->options.root() / f).is_directory())
+    if (! (_imp->options.root() / f).exists())
+        display("--- [gone ] " + stringify(f));
+    else if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));
     else if (DirIterator(_imp->options.root() / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
         display("--- [!empt] " + stringify(f));

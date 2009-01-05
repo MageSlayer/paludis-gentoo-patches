@@ -189,6 +189,9 @@ namespace test_cases
 
             FSEntry k("fs_entry_TEST_dir/dir_a/file_in_a");
             TEST_CHECK_THROWS(k.mkdir(), FSError);
+
+            FSEntry l("fs_entry_TEST_dir/file_a/file_that_triggers_ENOTDIR");
+            TEST_CHECK(! l.exists());
         }
     } test_fs_entry_behaviour;
 

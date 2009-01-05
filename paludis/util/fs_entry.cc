@@ -404,7 +404,7 @@ FSEntry::_stat() const
     _imp->stat_info.reset(new struct stat);
     if (0 != lstat(_imp->path.c_str(), _imp->stat_info.get()))
     {
-        if (errno != ENOENT)
+        if (errno != ENOENT && errno != ENOTDIR)
             throw FSError("Error running stat() on '" + stringify(_imp->path) + "': "
                     + strerror(errno));
 

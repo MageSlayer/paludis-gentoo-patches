@@ -180,6 +180,16 @@ namespace test_cases
         }
     } test_vdb_unmerger_file_bad_mtime;
 
+    struct VDBUnmergerTestFileReplacesDirectory : VDBUnmergerTest
+    {
+        VDBUnmergerTestFileReplacesDirectory() : VDBUnmergerTest("file_replaces_dir") { }
+
+        void run()
+        {
+            unmerger.unmerge();
+        }
+    } test_vdb_unmerger_file_replaces_directory;
+
     struct VDBUnmergerTestDirOk : VDBUnmergerTest
     {
         VDBUnmergerTestDirOk() : VDBUnmergerTest("dir_ok") { }

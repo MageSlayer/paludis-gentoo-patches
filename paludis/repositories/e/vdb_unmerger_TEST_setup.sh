@@ -44,6 +44,10 @@ make_file "bad_md5sum" "bad_md5sum"
 make_file "bad_mtime" "" "123"
 echo "obj /file_bad_entry foo" > ../CONTENTS/file_bad_entry
 
+echo "dir /file_replaces_dir" > ../CONTENTS/file_replaces_dir
+echo "obj /file_replaces_dir/foo 00000000000000000000000 123" >> ../CONTENTS/file_replaces_dir
+> file_replaces_dir
+
 mkdir dir_ok
 echo "dir /dir_ok" > ../CONTENTS/dir_ok
 
