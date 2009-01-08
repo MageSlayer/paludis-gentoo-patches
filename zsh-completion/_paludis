@@ -68,6 +68,7 @@ _paludis() {
         "($actions)--uninstall-unused[Uninstall unused packages]"
         "(: -)"{--report,-r}"[Report the current state of the system]"
         "(: -)"{--contents,-k}"[Display contents of a package]:package:_paludis_packages installed"
+        "(: -)"--executables"[Display executable contents of a package]:package:_paludis_packages installed"
         "(: -)"{--owner,-o}"[Display the owner of a file]"
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--info,-I}"[Display program version and system information]"
