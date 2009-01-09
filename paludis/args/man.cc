@@ -380,6 +380,19 @@ ManWriter::start_arg_group(const std::string & name, const std::string & descrip
     _os << description << endl;
 }
 
+namespace
+{
+    void escape(std::ostream & stream, const std::string & s)
+    {
+        for (std::string::const_iterator t(s.begin()), t_end(s.end()); t != t_end; ++t)
+        {
+            if ('\\' == *t)
+                stream << '\\';
+            stream << *t;
+        }
+    }
+}
+
 void
 ManWriter::arg_group_item(const char & short_name, const std::string & long_name,
         const std::string & negated_long_name, const std::string & description)
@@ -392,7 +405,8 @@ ManWriter::arg_group_item(const char & short_name, const std::string & long_name
     if (! negated_long_name.empty())
         _os << " (\\-\\-" << negated_long_name << ")\"";
     _os << endl;
-    _os << description << endl;
+    escape(_os, description);
+    _os << endl;
 }
 
 void
@@ -479,7 +493,8 @@ void
 ManWriter::example(const std::string & first, const std::string & second)
 {
     _os << ".TP" << endl;
-    _os << first << endl;
+    escape(_os, first);
+    _os << endl;
     _os << ungroff(second) << endl << endl;
 }
 

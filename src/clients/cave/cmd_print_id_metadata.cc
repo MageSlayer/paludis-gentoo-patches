@@ -91,6 +91,10 @@ namespace
         {
             a_format.set_argument("%i%i%r=%v\\n");
             add_usage_line("[ --raw-name key ] [ --human-name key ] [ --format format ] spec");
+
+            add_example(
+                "cave print-id-metadata --format \"%r\\n\" sys-apps/paludis::installed",
+                "Print the raw names for all keys a given ID has.");
         }
     };
 
