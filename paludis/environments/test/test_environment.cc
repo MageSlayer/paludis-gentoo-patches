@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -241,37 +241,6 @@ TestEnvironment::config_location_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
-
-#if 0
-
-void
-TestEnvironment::add_set(const SetName & s, const std::string & members_str)
-{
-    Context context("When adding set '" + stringify(s) + "' to test environment:");
-
-    std::list<std::string> members;
-    tokenise_whitespace(members_str, std::back_inserter(members));
-
-    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<SetSpecTree, AllDepSpec>(make_shared_ptr(new AllDepSpec)));
-    for (std::list<std::string>::const_iterator m(members.begin()), m_end(members.end()) ;
-            m != m_end ; ++m)
-    {
-        try
-        {
-            top->add(make_shared_ptr(new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                    parse_user_package_dep_spec(*m, this, UserPackageDepSpecOptions() + updso_throw_if_set + updso_no_disambiguation))))));
-        }
-        catch (const GotASetNotAPackageDepSpec &)
-        {
-            top->add(make_shared_ptr(new TreeLeaf<SetSpecTree, NamedSetDepSpec>(make_shared_ptr(new NamedSetDepSpec(SetName(*m))))));
-        }
-    }
-
-    _imp->sets[s] = top;
-}
-
-#endif
 
 const Tribool
 TestEnvironment::want_choice_enabled(
